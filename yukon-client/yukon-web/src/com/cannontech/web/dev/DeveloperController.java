@@ -32,6 +32,7 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -74,6 +75,7 @@ import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.ItronSecurityKeyPair;
 import com.cannontech.encryption.ItronSecurityService;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
+import com.cannontech.encryption.impl.ItronSecurityException;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
@@ -327,11 +329,20 @@ public class DeveloperController {
     }
     
     @GetMapping("/getItronKeyPair")
-    public ModelAndView itronKeyPair(ModelMap model) throws Exception {
-        ItronSecurityKeyPair keyPair = itronSecurityService.getItronSshRsaKeyPair();
+    public String itronKeyPair(ModelMap model, FlashScope flash) {
+        ItronSecurityKeyPair keyPair;
+        try {
+            keyPair = itronSecurityService.getItronSshRsaKeyPair();
+        } catch(ItronSecurityException e) {
+            MessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.dev.itronKeyPair.loadError");
+            flash.setError(message);
+            log.warn("Error retrieving Itron keys", e);
+            keyPair = new ItronSecurityKeyPair("", "");
+        }
+        
         model.addAttribute("decryptFailed", keyPair.isPrivateKeyEncrypted());
-        ModelAndView itronKeys = new ModelAndView("itronKeyPair.jsp", "keyPair", keyPair);
-        return itronKeys;
+        model.addAttribute("keyPair", keyPair);
+        return "itronKeyPair.jsp";
     }
 
     @PostMapping(path = "/saveItronKeyPair")
