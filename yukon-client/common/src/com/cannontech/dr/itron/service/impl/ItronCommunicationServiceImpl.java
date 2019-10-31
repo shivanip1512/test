@@ -171,10 +171,11 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         log.debug("ITRON-findDevice url:{} primary mac:{}", url, primaryMacAddress);
         
         try {
-            FindDeviceResponseType response = (FindDeviceResponseType) ItronEndpointManager.DEVICE
-                                                                                           .getTemplate(settingDao)
-                                                                                           .marshalSendAndReceive(url, request);
+            JAXBElement<FindDeviceResponseType> responseElement = 
+                    (JAXBElement<FindDeviceResponseType>) ItronEndpointManager.DEVICE.getTemplate(settingDao)
+                                                                                     .marshalSendAndReceive(url, request);
             
+            FindDeviceResponseType response = responseElement.getValue();
             if (response.getDeviceCount() == 0) {
                 log.info("No secondary mac found for device with primary mac {}", primaryMacAddress);
                 return;
