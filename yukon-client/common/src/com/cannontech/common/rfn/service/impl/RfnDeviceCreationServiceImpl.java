@@ -206,7 +206,9 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     public synchronized RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier) {
         log.info("Creating gateway: " + rfnIdentifier);
         PaoType gatewayType;
-        if (rfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_2_MODEL_STRING)) {
+        if (rfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_3_MODEL_STRING)) {
+            gatewayType = PaoType.VIRTUAL_GATEWAY;
+        } else if (rfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_2_MODEL_STRING)) {
             gatewayType = PaoType.GWY800;
         } else {
             gatewayType = PaoType.RFN_GATEWAY;

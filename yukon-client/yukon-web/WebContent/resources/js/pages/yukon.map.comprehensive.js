@@ -133,7 +133,7 @@ yukon.map.comprehensive = (function () {
         if (pao.paoType === 'RFN_RELAY') {
             scale = _relayScale;
             currentStyle.setZIndex(_relayLayerIndex);
-        } else if (pao.paoType === 'RFN_GATEWAY' || pao.paoType === 'GWY800') {
+        } else if (pao.paoType === 'RFN_GATEWAY' || pao.paoType === 'GWY800' || pao.paoType === 'VIRTUAL_GATEWAY') {
             scale = _gatewayScale;
             currentStyle.setZIndex(_gatewayLayerIndex);
         }

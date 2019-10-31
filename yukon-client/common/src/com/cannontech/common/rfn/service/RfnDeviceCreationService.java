@@ -12,6 +12,7 @@ public interface RfnDeviceCreationService {
     
     public static final String GATEWAY_1_MODEL_STRING = "RFGateway";
     public static final String GATEWAY_2_MODEL_STRING = "RFGateway2";
+    public static final String GATEWAY_3_MODEL_STRING = "RFVirtualGateway";
     
     /**
      * Creates an rfn device using {@link DeviceCreationService} using an
