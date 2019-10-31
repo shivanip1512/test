@@ -36,8 +36,7 @@ public interface MeterProgrammingService {
 
     /**
      * Accepts meter program upload again
-     * Returns true if success
      */
-    boolean acceptMeterProgrammingStatus(SimpleDevice device, YukonUserContext context, UUID reportedGuid);
+    MeterProgramCommandResult acceptMeterProgrammingStatus(SimpleDevice device, YukonUserContext context, UUID reportedGuid);
 
 }
