@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/9/2019 10:36:44 AM                         */
+/* Created on:     10/29/2019 2:28:20 PM                        */
 /*==============================================================*/
 
 
@@ -3452,6 +3452,7 @@ go
 create table DeviceMacAddress (
    DeviceId             numeric              not null,
    MacAddress           varchar(255)         not null,
+   SecondaryMacAddress  varchar(255)         null,
    constraint PK_DeviceMacAddress primary key (DeviceId)
 )
 go
