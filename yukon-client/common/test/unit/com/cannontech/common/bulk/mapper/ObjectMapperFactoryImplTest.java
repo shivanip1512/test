@@ -15,11 +15,11 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoMacAddress;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -509,27 +509,42 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public void updateDeviceMacAddress(PaoType type, int deviceId, String macAddress) {
-            throw new MethodNotImplementedException();
+            throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
         public String getDeviceMacAddress(int deviceId) {
-            throw new MethodNotImplementedException();
+            throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
         public boolean isMacAddressExists(String macAddress) {
-            throw new MethodNotImplementedException();
+            throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
         public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
-            throw new MethodNotImplementedException();
+            throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
         public int getDeviceIdFromMacAddress(String macAddress) {
-            throw new MethodNotImplementedException();
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void updateSecondaryMacAddress(PaoType type, int deviceId, String macAddress) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public String getSecondaryMacAddressForDevice(int deviceId) throws NotFoundException {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress() {
+            throw new UnsupportedOperationException("Method not implemented");
         }
     }
 }
