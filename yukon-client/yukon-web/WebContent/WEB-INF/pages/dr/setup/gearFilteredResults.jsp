@@ -15,7 +15,7 @@
     <cti:param name="filterByType" value="${lmSetupFilter.filterByType}"/>
 </cti:url> 
 <div id="js-filtered-gear-results-container" data-url="${filterUrl}" data-static>
-    <table class="compact-results-table has-actions row-highlighting wrbw" style="table-layout:fixed;">
+    <table class="compact-results-table row-highlighting wrbw" style="table-layout:fixed;">
         <thead>
             <tr>
                 <tags:sort column="${NAME}" width="20%"/>
