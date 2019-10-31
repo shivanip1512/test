@@ -11,6 +11,6 @@
     <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
     <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/OpenJDK11.0.2"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="start"/>
-    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcatalina.base=&quot;C:\dev\Workspace\git-7.3\.metadata\.plugins\org.eclipse.wst.server.core\tmp3&quot; -Dcatalina.home=&quot;C:\dev\apache-tomcat-9.0.20&quot; -Dwtp.deploy=&quot;C:\dev\Workspace\git-7.3&quot; -Xmx1024m -Dcom.cooperindustries.dev.wsdir=&quot;${workspace_loc}\yukon\yukon-client&quot;"/>
+    <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dcatalina.base=&quot;C:\dev\Workspace\git-7.3\.metadata\.plugins\org.eclipse.wst.server.core\tmp1&quot; -Dcatalina.home=&quot;C:\dev\apache-tomcat-9.0.20&quot; -Dwtp.deploy=&quot;C:\dev\Workspace\git-7.3&quot; -Xmx1024m -Dcom.cooperindustries.dev.wsdir=&quot;${workspace_loc}\yukon\yukon-client&quot;"/>
     <stringAttribute key="server-id" value="EIM Server"/>
 </launchConfiguration>
