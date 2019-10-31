@@ -22,8 +22,13 @@ namespace Cti::Messaging::Rfn {
     class E2eDataRequestMsg;
 }
 
+namespace Cti::Protocols::Coap {
+    enum class RequestMethod;
+}
+
 namespace Cti::Simulator {
 
+struct e2edt_packet;
 struct e2edt_request_packet;
 struct e2edt_reply_packet;
 
@@ -52,22 +57,21 @@ private:
     std::unique_ptr<Messaging::ActiveMQ::ManagedProducer> indicationProducer;
 
     void handleE2eDtRequest(const cms::Message *msg);
+    void delayProcessing(float delay, const Messaging::Rfn::E2eDataRequestMsg requestMsg);
 
     void sendNetworkManagerRequestAck(const Messaging::Rfn::NetworkManagerRequestHeader&, const cms::Destination*);
     void sendE2eDataConfirm(const Messaging::Rfn::E2eDataRequestMsg&);
 
-    std::unique_ptr<e2edt_request_packet> parseE2eDtRequestPayload(const std::vector<unsigned char>&, const RfnIdentifier&);
+    std::unique_ptr<e2edt_packet> parseE2eDtRequestPayload(const Bytes&, const RfnIdentifier&);
 
-    Bytes buildE2eDtReplyPayload(const e2edt_reply_packet&) const;
-    Bytes buildE2eDtRequestPayload(const e2edt_request_packet&) const;
+    Bytes buildE2eDtReply(const e2edt_reply_packet&) const;
+    Bytes buildE2eDtRequest(const e2edt_request_packet&) const;
     Bytes buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const;
 
-    void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const std::vector<unsigned char>&);
+    void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const Bytes&);
 
-    Bytes buildRfnResponse(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
-    Bytes buildRfnGetResponse(const std::vector<unsigned char> &request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
-    Bytes buildRfnGetRequest(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
-    Bytes buildDnp3Response(const std::vector<unsigned char>& request);
+    Bytes buildResponse(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
+    Bytes processRfnPostRequest(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
 };
 
 }

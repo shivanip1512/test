@@ -16,10 +16,14 @@ public:
         long size;
     };
 
-    static std::vector<unsigned char> DataStreamingConfig(const std::vector<unsigned char> &request, const RfnIdentifier &rfnId);
+    using Bytes = std::vector<unsigned char>;
 
-    static path_size RequestMeterProgram(const std::vector<unsigned char> &request, const RfnIdentifier &rfnId);
-    static path_size RequestMeterProgramContinuation(const std::vector<unsigned char> &request, const RfnIdentifier &rfnId);
+    static Bytes doChannelManagerRequest(const std::vector<unsigned char> &request, const RfnIdentifier& rfnId);
+
+    static std::unique_ptr<e2edt_reply_packet> processChannelManagerPost()
+
+    static path_size ParseSetMeterProgram(const Bytes& request, const RfnIdentifier& rfnId);
+    static path_size RequestMeterProgramContinuation(const Bytes& request, const RfnIdentifier& rfnId);
 };
 
 }
