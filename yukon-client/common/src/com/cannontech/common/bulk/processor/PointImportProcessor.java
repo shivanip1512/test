@@ -106,6 +106,14 @@ public abstract class PointImportProcessor extends SingleProcessor<ImportRow> {
             String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointExists", pointName, deviceName);
             throw new ProcessingException(error, "pointExists", pointName, deviceName);
         }
+ 
+         //make sure the Point name is not more than 60 chars
+		if (pointName.length() > 60) {
+			String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointNameWidthExceed",
+					pointName, deviceName);
+			throw new ProcessingException(error, " width exceed", pointName, deviceName);
+		}
+        /* */
         return paoId;
     }
     

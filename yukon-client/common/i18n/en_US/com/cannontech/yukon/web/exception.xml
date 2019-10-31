@@ -54,6 +54,7 @@
 <entry key="yukon.exception.processingException.pointDoesNotExist">Point "{0}" does not exist on device "{1}"</entry>
 <entry key="yukon.exception.processingException.invalidDevice">The device "{0}" does not exist</entry>
 <entry key="yukon.exception.processingException.pointExists">Point "{0}" already exists on device "{1}"</entry>
+<entry key="yukon.exception.processingException.pointNameWidthExceed">Point "{0}" width exceeded for device"{1}"</entry>
 <entry key="yukon.exception.processingException.addressInvalidRange">Address not in valid range for device type: {0}.</entry>
 <entry key="yukon.exception.processingException.disconnectAddressNotAccepted">Device type does not accept disconnect addresses.</entry>
 <entry key="yukon.exception.processingException.invalidRouteName">Invalid route name: {0}.</entry>
