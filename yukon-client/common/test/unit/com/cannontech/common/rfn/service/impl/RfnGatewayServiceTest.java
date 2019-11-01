@@ -885,6 +885,7 @@ public class RfnGatewayServiceTest {
         GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
         gatewayDataResponse.setRfnIdentifier(gateway3RfnId);
         gatewayDataResponse.setIpAddress(ipAddress3);
+        gatewayDataResponse.setPort(port3.toString());
         gatewayDataResponse.setAdmin(admin3);
         gatewayDataResponse.setSuperAdmin(superAdmin3);
         RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse, gatewayName);
