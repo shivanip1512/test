@@ -385,6 +385,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewayCreateRequest request = new GatewayCreateRequest();
         GatewaySaveData data = new GatewaySaveData();
         data.setIpAddress(settings.getIpAddress());
+        if(settings.getPort() != null) {
+            data.setPort(settings.getPort());
+        }
         data.setName(settings.getName());
         
         data.setAdmin(settings.getAdmin());
@@ -450,7 +453,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             editData.setName(newGatewayData.getName());
             sendGatewayEditRequest = true;
         }
-        
+        if (newGatewayData.getPort() != null 
+                && !newGatewayData.getPort().equals(existingGatewayData.getPort())) {
+            editData.setPort(Integer.valueOf(newGatewayData.getPort()));
+            sendGatewayEditRequest = true;
+        }
+
         GatewayUpdateResult result = GatewayUpdateResult.SUCCESSFUL;
         
         // If necessary, send GatewayEditRequest
