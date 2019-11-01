@@ -216,16 +216,12 @@ public class GatewayUpdateServerController {
         GatewayFirmwareVersion minimumSupportedFirmwareVersion = null;
         try {
             GatewayFirmwareVersion version = GatewayFirmwareVersion.parse(versionString);
-            if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
-                // For Virtual Gateway, make sure firmware version is >= 9.2.0 or the feature is not supported
-                minimumSupportedFirmwareVersion = new GatewayFirmwareVersion(9, 2, 0);
-            } else if (gateway.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
-                // For Gateway 2.0, make sure firmware version is >= 6.1.0 or the feature is not supported
-                minimumSupportedFirmwareVersion = new GatewayFirmwareVersion(6, 1, 0);
-            } else if (gateway.getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY) {
-                // For Gateway 1.5, make sure firmware version is >= 6.1.1 or the feature is not supported
-                minimumSupportedFirmwareVersion = new GatewayFirmwareVersion(6, 1, 1);
-            }
+            Map<PaoType, GatewayFirmwareVersion> minimumUpgradeVersions = Map.of(
+                    PaoType.VIRTUAL_GATEWAY, new GatewayFirmwareVersion(9, 2, 0),
+                    PaoType.GWY800, new GatewayFirmwareVersion(6, 1, 0),
+                    PaoType.RFN_GATEWAY, new GatewayFirmwareVersion(6, 1, 1));
+
+            minimumSupportedFirmwareVersion = minimumUpgradeVersions.get(gateway.getPaoIdentifier().getPaoType());
             log.debug("Minimum supported firmware version for upgrade: " + minimumSupportedFirmwareVersion);
             int compare = version.compareTo(minimumSupportedFirmwareVersion);
             boolean isUpgradeable = compare >= 0;

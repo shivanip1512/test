@@ -83,7 +83,7 @@ public class RfnGatewayServiceTest {
     private final String ipAddress3 = "123.123.123.125";
     private final static String gateway3Name = "Test Gateway 3";
     private final PaoIdentifier gateway3PaoId = new PaoIdentifier(102, PaoType.VIRTUAL_GATEWAY);
-    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "CPS", "RFGateway3");
+    private static final RfnIdentifier gateway3RfnId = new RfnIdentifier("10002", "CPS", "VGW");
     
     @Before
     public void init() {
