@@ -93,9 +93,12 @@ public class GatewayDataTopicListener implements MessageListener {
             cache.put(rfnDevice.getPaoIdentifier(), data);
             
             // Archive data streaming point values only if data streaming is enabled and gateway supports it
-            if (isDataStreamingEnabled && rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
-                rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
-                    data.getDataStreamingLoadingPercent(), false);
+            if (isDataStreamingEnabled) {
+                if (rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800
+                        || rfnDevice.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
+                    rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
+                            data.getDataStreamingLoadingPercent(), false);
+                }
             }
             
             // Archive ready nodes values, at most, once per hour
