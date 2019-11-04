@@ -6061,7 +6061,7 @@ create table JOB  (
 );
 
 
-/* Skipping entry with jobId=-3 for oracle because ‘spSmartIndexMaintanenceJobDefinition’ bean job entry is there with jobId=-3 and that is SqlServer specific only */
+/* Skipping entry with jobId=-3 for oracle because the 'spSmartIndexMaintanenceJobDefinition' bean job entry is there with jobId=-3, and that is SqlServer specific only */
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N', -1);
