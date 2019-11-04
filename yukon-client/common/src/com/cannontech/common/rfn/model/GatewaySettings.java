@@ -8,6 +8,8 @@ public class GatewaySettings {
     private Integer id;
     private String name;
     private String ipAddress;
+    private boolean virtual;
+    private Integer port;
     private Authentication admin;
     private Authentication superAdmin;
     private Double latitude;
@@ -39,7 +41,7 @@ public class GatewaySettings {
     @Override
     public String toString() {
         return String.format(
-            "GatewaySettings [id=%s, name=%s, ipAddress=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s]",
+            "GatewaySettings [id=%s, name=%s, ipAddress=%s, port=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s]",
             id, name, ipAddress, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin, useDefault);
     }
 
@@ -50,6 +52,7 @@ public class GatewaySettings {
         result = prime * result + ((admin == null) ? 0 : admin.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + ((port == null) ? 0 : port.hashCode());
         result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
         result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -90,6 +93,13 @@ public class GatewaySettings {
                 return false;
             }
         } else if (!ipAddress.equals(other.ipAddress)) {
+            return false;
+        }
+        if (port == null) {
+            if (other.port != null) {
+                return false;
+            }
+        } else if (!port.equals(other.port)) {
             return false;
         }
         if (latitude == null) {
@@ -195,6 +205,22 @@ public class GatewaySettings {
 
     public void setUseDefault(boolean useDefault) {
         this.useDefault = useDefault;
+    }
+
+    public Integer getPort() {
+        return port;
+    }
+
+    public void setPort(Integer port) {
+        this.port = port;
+    }
+
+    public boolean isVirtual() {
+        return virtual;
+    }
+
+    public void setVirtual(boolean virtual) {
+        this.virtual = virtual;
     }
 
 }
