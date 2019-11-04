@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
@@ -105,6 +106,8 @@ public class SiteMapHelper {
                 permissions += ((GlobalSettingType) permission).name() + " ";
             } else if (permission instanceof MasterConfigBoolean) {
                 permissions += ((MasterConfigBoolean) permission).name() + " ";
+            } else if (permission instanceof MasterConfigLicenseKey) {
+                permissions += ((MasterConfigLicenseKey) permission).name() + " ";
             } else if (permission instanceof OtherPermission) {
                 switch((OtherPermission) permission){
                 case EC_OPERATOR:
@@ -152,6 +155,8 @@ public class SiteMapHelper {
                 }
             } else if (permission instanceof MasterConfigBoolean) {
                 hasPermission = configurationSource.getBoolean((MasterConfigBoolean) permission);
+            } else if (permission instanceof MasterConfigLicenseKey) {
+                hasPermission = configurationSource.isLicenseEnabled((MasterConfigLicenseKey) permission);
             } else if (permission instanceof OtherPermission) {
                 switch((OtherPermission) permission){
                 case EC_OPERATOR:
