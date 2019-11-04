@@ -24,6 +24,7 @@
            <class name = "com.cannontech.rest.api.documentation.loadprogram.MeterDisconnectProgramSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramGearSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramGearSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.controlarea.ControlAreaSetupApiControllerTest" />
         </classes>
     </test>
 </suite>

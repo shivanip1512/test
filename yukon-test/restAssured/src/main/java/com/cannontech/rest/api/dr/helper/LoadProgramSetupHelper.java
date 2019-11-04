@@ -73,7 +73,7 @@ public class LoadProgramSetupHelper {
         List<MockNotificationGroup> assignedNotificationGroups = new ArrayList<>();
         MockNotificationGroup notificationGroup = MockNotificationGroup.builder()
                                                                .notificationGrpID(2)
-                                                               .notificationGrpName("shikhanotificationgroup")
+                                                               .notificationGrpName("Jess Notification")
                                                                .build();
         assignedNotificationGroups.add(notificationGroup);
 
