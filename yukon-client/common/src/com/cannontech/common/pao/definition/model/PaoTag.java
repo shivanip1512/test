@@ -65,7 +65,7 @@ public enum PaoTag {
     GATEWAY_DETAIL_DISPLAYABLE("Gateway Detail Displayable"),
     ITRON_PROGRAM_ENROLLMENT("Itron Program Enrollment"),
     METER_PROGRAMMING("Meter Programming"),
-    DATA_STREAMING("Data Streaming Enabled")
+    DATA_STREAMING("Data Streaming Capable")
     ;
 
     private final String description;
