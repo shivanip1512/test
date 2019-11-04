@@ -9,15 +9,15 @@ import com.cannontech.user.YukonUserContext;
 
 public interface MeterProgrammingService {
 	
-	/**
-	 * Retrieves meter programming status
-	 */
-	int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection, YukonUserContext context);
-	
-	/**
-	 * Initiates meter program upload
-	 */
-	int initiateMeterProgramUpload(DeviceCollection deviceCollection, UUID guid, YukonUserContext context);
+    /**
+     * Retrieves meter programming status
+     */
+    int retrieveMeterProgrammingStatus(DeviceCollection deviceCollection, YukonUserContext context);
+
+    /**
+     * Initiates meter program upload
+     */
+    int initiateMeterProgramUpload(DeviceCollection deviceCollection, UUID guid, YukonUserContext context);
 
     /**
      * Retrieves meter programming status

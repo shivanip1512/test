@@ -84,7 +84,7 @@ public class MeterProgramSummaryDetail {
     }
 
     public boolean displayCancel() {
-        return status == DisplayableStatus.IN_PROGRESS;
+        return status == DisplayableStatus.IN_PROGRESS && programInfo.getSource().isActionable();
     }
     
     public boolean displayProgressBar() {
@@ -92,15 +92,15 @@ public class MeterProgramSummaryDetail {
     }
 
     public boolean displayRead() {
-        return status == DisplayableStatus.CONFIRMING || programInfo.getSource() == MeterProgramSource.OLD_FIRMWARE;
+        return (status == DisplayableStatus.CONFIRMING &&  programInfo.getSource().isActionable()) ||  programInfo.getSource() == MeterProgramSource.OLD_FIRMWARE ;
     }
 
     public boolean displaySend() {
-        return status == DisplayableStatus.FAILURE && programInfo.getSource() != MeterProgramSource.OLD_FIRMWARE;
+        return status == DisplayableStatus.FAILURE && programInfo.getSource().isActionable();
     }
     
     public boolean displayAccept() {
-        return status == DisplayableStatus.FAILURE;
+        return status == DisplayableStatus.FAILURE && programInfo.getSource().isActionable();
     }
 
     @Override
