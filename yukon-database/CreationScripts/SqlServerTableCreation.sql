@@ -1,7 +1,7 @@
-/*==============================================================*/
+﻿/*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/29/2019 2:28:20 PM                        */
+/* Created on:     11/1/2019 12:24:56 PM                        */
 /*==============================================================*/
 
 
@@ -7679,6 +7679,7 @@ create table MeterProgram (
    Name                 varchar(100)         not null,
    PaoType              varchar(30)          not null,
    Program              varbinary(Max)       not null,
+   Password             varchar(200)         not null,
    constraint PK_MeterProgram primary key (Guid)
 )
 go

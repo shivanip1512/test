@@ -1,7 +1,7 @@
-/*==============================================================*/
+﻿/*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/30/2019 9:54:25 AM                        */
+/* Created on:     11/1/2019 12:22:42 PM                        */
 /*==============================================================*/
 
 
@@ -7241,6 +7241,7 @@ create table MeterProgram  (
    Name                 VARCHAR2(100)                   not null,
    PaoType              VARCHAR2(30)                    not null,
    Program              BLOB                            not null,
+   Password             VARCHAR2(200)                   not null,
    constraint PK_MeterProgram primary key (Guid)
 );
 

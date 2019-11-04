@@ -186,6 +186,14 @@ AND Type = 'NOT_CONFIGURED';
 INSERT INTO DBUpdates VALUES ('YUK-20780', '7.4.0', GETDATE());
 /* @end YUK-20780 */
 
+/* @start YUK-20801 */
+ALTER TABLE MeterProgram
+ADD Password VARCHAR(200) NOT NULL DEFAULT '(none)';
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-20801', '7.4.0', GETDATE());
+/* @end YUK-20801 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
