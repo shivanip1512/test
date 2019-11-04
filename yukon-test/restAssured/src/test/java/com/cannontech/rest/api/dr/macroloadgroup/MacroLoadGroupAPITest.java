@@ -27,15 +27,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Listeners(com.cannontech.test.base.TestBase.class)
 public class MacroLoadGroupAPITest {
-    // Logger log = new Log();
-    private ArrayList<MockLMPaoDto> allLoadGroups = new ArrayList<MockLMPaoDto>();
+ 
+    private ArrayList<MockLMPaoDto> allLoadGroups = new ArrayList<>();
 
-    @Test()
+    @Test
     public void macroLoadGroup_01_createWithDigiSEPLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgName = "MLG001_DigiSEP";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         MockMacroLoadGroup macroLoadGroup = LoadGroupHelper.createMacroLoadGroup(mlgName,
@@ -55,10 +54,9 @@ public class MacroLoadGroupAPITest {
 
     @Test(dependsOnMethods = { "macroLoadGroup_01_createWithDigiSEPLoadGroup" })
     public void macroLoadGroup_03_updateWithDigiSEPLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgNameUpdated = "MLG001_DigiSEP_Updated";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         // Add MockLMPaoDto objects to global array to use later in MLG creation with multiple LoadGroups
@@ -99,12 +97,11 @@ public class MacroLoadGroupAPITest {
                 + " deleted successfully.");
     }
 
-    @Test()
+    @Test
     public void macroLoadGroup_07_createWithEmetconLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgName = "MLG001_Emetcon";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EMETCON);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EMETCON);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         // Add MockLMPaoDto objects to global array to use later in MLG creation with multiple LoadGroups
@@ -126,10 +123,9 @@ public class MacroLoadGroupAPITest {
 
     @Test(dependsOnMethods = { "macroLoadGroup_07_createWithEmetconLoadGroup" })
     public void macroLoadGroup_09_updateWithEmetconLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgNameUpdated = "MLG001_Emetcon_Updated";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EMETCON);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EMETCON);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         // Add MockLMPaoDto objects to global array to use later in MLG creation with multiple LoadGroups
@@ -170,12 +166,11 @@ public class MacroLoadGroupAPITest {
                 + " deleted successfully.");
     }
 
-    @Test()
+    @Test
     public void macroLoadGroup_13_createWithVersacomLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgName = "MLG001_Versacom";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_VERSACOM);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_VERSACOM);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         // Add MockLMPaoDto objects to global array to use later in MLG creation with multiple LoadGroups
@@ -197,10 +192,9 @@ public class MacroLoadGroupAPITest {
 
     @Test(dependsOnMethods = { "macroLoadGroup_13_createWithVersacomLoadGroup" })
     public void macroLoadGroup_15_updateWithVersacomLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgNameUpdated = "MLG001_Versacom_Updated";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_VERSACOM);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_VERSACOM);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         // Add MockLMPaoDto objects to global array to use later in MLG creation with multiple LoadGroups
@@ -241,12 +235,11 @@ public class MacroLoadGroupAPITest {
                 + " deleted successfully.");
     }
 
-    @Test()
+    @Test
     public void macroLoadGroup_19_createWithMeterDisconnectLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgName = "MLG001_MeterDisconnect";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         // Add MockLMPaoDto objects to global array to use later in MLG creation with multiple LoadGroups
@@ -268,10 +261,9 @@ public class MacroLoadGroupAPITest {
 
     @Test(dependsOnMethods = { "macroLoadGroup_19_createWithMeterDisconnectLoadGroup" })
     public void macroLoadGroup_21_updateWithMeterDisconnectLoadGroup(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         String mlgNameUpdated = "MLG001_MeterDisconnect_Updated";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_METER_DISCONNECT);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         // Add MockLMPaoDto objects to global array to use later in MLG creation with multiple LoadGroups
@@ -330,7 +322,7 @@ public class MacroLoadGroupAPITest {
      * Negative scenario: validation Macro Load Group can't be created with another Macro Load Group
      */
     @Test(dependsOnMethods = { "macroLoadGroup_25_createWithMultipleAllowedLoadGroups" })
-    public void macroLoadGroup_26_canNotBeCreateWithAnotherMLG(ITestContext context) {
+    public void macroLoadGroup_26_cannotBeCreateWithAnotherMLG(ITestContext context) {
         String mlgName = "MLG_MacroLoadGroup";
         String expectedErrorMsg = "Assigned load groups must not contain Ecobee, Honeywell, Itron, Nest and Macro Load Group";
         // build Macro Load Group which needs to be assigned in Macro load Group
@@ -348,14 +340,13 @@ public class MacroLoadGroupAPITest {
         log.info(response.path("message").toString());
     }
 
-    @Test()
-    public void macroLoadGroup_27_nameLengthVAlidation(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
+    @Test
+    public void macroLoadGroup_27_nameLengthValidation(ITestContext context) {
         // Test data
         String mlgName = "MLG_name_more_then_60_chars_is_not_allowed_MLG_name_more_then_60_chars_is_not_allowed";
         String expectedErrorMsg = "Exceeds maximum length of 60.";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
         // create MockLMPaoDto object from created load group object
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         MockMacroLoadGroup macroLoadGroup = LoadGroupHelper.buildMacroLoadGroup(mlgName, List.of(loadGroupToBeAssigned));
@@ -368,15 +359,14 @@ public class MacroLoadGroupAPITest {
         Assert.assertTrue(validateFieldError(response, expectedErrorMsg), "Expected Error not found:" + expectedErrorMsg);
     }
 
-    @Test()
+    @Test
     public void macroLoadGroup_28_notAllowedCharsValidationInName(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
         // Test data
         String mlgName = "MLG_dummy";
         char notAllowedChars[] = { '/', '\\', ',', '\'', '"', '|' };
-        String expectedErrorMsg = "Cannot be blank or include any of the following characters: / \\ , ' \" |";
+        String expectedErrorMsg = "cannot be blank or include any of the following characters: / \\ , ' \" |";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         for (char ch : notAllowedChars) {
             String invaidGrpName = mlgName + ch;
@@ -394,14 +384,13 @@ public class MacroLoadGroupAPITest {
     /**
      * Negative scenario: validation Macro Load Group can't be created with Honeywell Load Group
      */
-    @Test()
-    public void macroLoadGroup_29_canNotBeCreateWithHoneywell(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
+    @Test
+    public void macroLoadGroup_29_cannotBeCreateWithHoneywell(ITestContext context) {
         // Test data
         String mlgName = "MLG_Honeywell";
         String expectedErrorMsg = "Assigned load groups must not contain Ecobee, Honeywell, Itron, Nest and Macro Load Group";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_HONEYWELL);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_HONEYWELL);
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         MockMacroLoadGroup macroLoadGroup = LoadGroupHelper.buildMacroLoadGroup(mlgName, List.of(loadGroupToBeAssigned));
         // get post response
@@ -416,14 +405,13 @@ public class MacroLoadGroupAPITest {
     /**
      * Negative scenario: validation Macro Load Group can't be created with ECOBEE Load Group
      */
-    @Test()
-    public void macroLoadGroup_30_canNotBeCreateWithEcobee(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
+    @Test
+    public void macroLoadGroup_30_cannotBeCreateWithEcobee(ITestContext context) {
         // Test data
         String mlgName = "MLG_ECOBEE";
         String expectedErrorMsg = "Assigned load groups must not contain Ecobee, Honeywell, Itron, Nest and Macro Load Group";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_ECOBEE);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_ECOBEE);
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         MockMacroLoadGroup macroLoadGroup = LoadGroupHelper.buildMacroLoadGroup(mlgName, List.of(loadGroupToBeAssigned));
         // get post response
@@ -438,14 +426,13 @@ public class MacroLoadGroupAPITest {
     /**
      * Negative scenario: validation Macro Load Group can't be created with Itron Load Group
      */
-    @Test()
-    public void macroLoadGroup_31_canNotBeCreateWithItron(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
+    @Test
+    public void macroLoadGroup_31_cannotBeCreateWithItron(ITestContext context) {
         // Test data
         String mlgName = "MLG_Itron";
         String expectedErrorMsg = "Assigned load groups must not contain Ecobee, Honeywell, Itron, Nest and Macro Load Group";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_ITRON);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_ITRON);
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         MockMacroLoadGroup macroLoadGroup = LoadGroupHelper.buildMacroLoadGroup(mlgName, List.of(loadGroupToBeAssigned));
         // get post response
@@ -460,14 +447,13 @@ public class MacroLoadGroupAPITest {
     /**
      * Negative Scenario: validation Macro Load Group can't be created with Nest Load Group
      */
-    @Test()
-    public void macroLoadGroup_32_canNotBeCreateWithNest(ITestContext context) {
-        MockLoadGroupBase loadGroup = null;
+    @Test
+    public void macroLoadGroup_32_cannotBeCreateWithNest(ITestContext context) {
         // Test data
         String mlgName = "MLG_Nest";
         String expectedErrorMsg = "Assigned load groups must not contain Ecobee, Honeywell, Itron, Nest and Macro Load Group";
         // create Load Group which needs to be assigned in Macro load Group
-        loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_NEST);
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_NEST);
         MockLMPaoDto loadGroupToBeAssigned = LoadGroupHelper.getMockLMPaoDtoObject(loadGroup);
         MockMacroLoadGroup macroLoadGroup = LoadGroupHelper.buildMacroLoadGroup(mlgName, List.of(loadGroupToBeAssigned));
         // get post response
