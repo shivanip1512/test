@@ -175,7 +175,7 @@ INSERT INTO DBUpdates VALUES ('YUK-20780', '7.4.0', SYSDATE);
 
 /* @start YUK-20801 */
 ALTER TABLE MeterProgram
-ADD Password VARCHAR2(200) DEFAULT '(none)' NOT NULL; /* Default value won't be used when deployed */
+ADD Password VARCHAR2(200) NOT NULL;
 
 INSERT INTO DBUpdates VALUES ('YUK-20801', '7.4.0', SYSDATE);
 /* @end YUK-20801 */
