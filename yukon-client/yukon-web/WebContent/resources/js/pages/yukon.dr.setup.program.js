@@ -250,12 +250,15 @@ yukon.dr.setup.program = (function() {
                 var picker = yukon.pickers['js-avaliable-groups-picker'];
 
                 picker.selectedItems.forEach(function(loadGroup) {
-                    var clonedRow = $('.js-template-group-row').clone();
-                    clonedRow.attr('data-id', loadGroup.paoId);
-                    clonedRow.find(".js-group-name").text(loadGroup.paoName);
-                    clonedRow.removeClass('dn js-template-group-row');
-                    clonedRow.appendTo($("#js-assigned-groups"));
-                    picker.disableItem(loadGroup.paoId);
+                    var divSelector = 'div[data-id="' + loadGroup.paoId + '"]';
+                    if (!$("#js-assigned-groups").find(divSelector).exists()) {
+                        var clonedRow = $('.js-template-group-row').clone();
+                        clonedRow.attr('data-id', loadGroup.paoId);
+                        clonedRow.find(".js-group-name").text(loadGroup.paoName);
+                        clonedRow.removeClass('dn js-template-group-row');
+                        clonedRow.appendTo($("#js-assigned-groups"));
+                        picker.disableItem(loadGroup.paoId);
+                    }
                 });
                 $("#js-assigned-groups").closest('.select-box').find('.js-with-movables').trigger(
                 'yukon:ordered-selection:added-removed');

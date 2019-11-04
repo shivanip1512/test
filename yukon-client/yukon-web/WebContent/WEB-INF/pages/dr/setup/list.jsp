@@ -63,15 +63,36 @@
                     <cti:msg2 var="namePlaceholder" key="yukon.common.name"/>
                     <cti:msg2 var="filterLbl" key="yukon.common.filter"/>
                     <cti:msg2 var="selectLbl" key="yukon.web.modules.dr.setup.loadGroup.filter.types"/>
+                    
+                    <c:set var="displayGearFilters" value="${isFilterByGearSelected ? '' : 'dn'}"/>
+                    <c:set var="displayLoadGroupFilters" value="${isFilterByLoadGroupSelected ? '' : 'dn'}"/>
+                    <c:set var="displayLoadProgramFilters" value="${isFilterByLoadProgramSelected ? '' : 'dn'}"/>
+                    
                     <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat"/>
                     <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat" id="js-name"/>
-                    <div class="js-load-group-types-container dib dn">
+                    <div class="js-load-group-types-container dib ${displayLoadGroupFilters}">
                         <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectLbl}" 
                                               id="js-load-group-types"/>
                     </div>
-                    <div class="js-load-program-types-container dib dn">
+                    <div class="js-load-program-types-container dib ${displayLoadProgramFilters}">
                         <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectLbl}"
                                               id="js-load-program-types"/>
+                    </div>
+                    <div class="js-gear-types-container dib ${displayGearFilters}">
+                        <tags:selectWithItems items="${gearTypes}" path="gearTypes" dataPlaceholder="${selectLbl}"
+                                                               id="js-gear-types"/>
+                    </div>
+                    <div class="js-program-container dib vat ${displayGearFilters}">
+                            <form:hidden path="programIds" id="js-programIds"/>
+                           <tags:pickerDialog id="programPicker"
+                                                            type="programPicker"
+                                                            destinationFieldId="js-programIds"
+                                                            linkType="selection"
+                                                            nameKey="selectPrograms"
+                                                            selectionProperty="paoName"
+                                                            multiSelectMode="true"
+                                                            initialIds="${lmSetupFilter.programIds}"
+                                                            endEvent="yukon:gear:filter:programSelected"/>
                     </div>
                     <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
                 </form:form>
@@ -83,6 +104,9 @@
     <c:choose>
         <c:when test="${filteredResults.hitCount == 0}">
             <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
+        </c:when>
+        <c:when test="${isFilterByGearSelected}">
+            <%@ include file="gearFilteredResults.jsp" %>
         </c:when>
         <c:otherwise>
             <%@ include file="filteredResults.jsp" %>

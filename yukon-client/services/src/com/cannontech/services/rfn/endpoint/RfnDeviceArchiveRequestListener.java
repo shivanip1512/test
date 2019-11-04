@@ -65,7 +65,11 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
             try {
                 lookupAndAcknowledge(entry, processor);
             } catch (Exception e) {
-                createAndAcknowedge(entry, processor);
+                log.debug("LookupAndAcknowledge failed for entry " + entry.toString()
+                          + ". Using processor " + processor + ".",
+                          e);
+                log.debug("Attempting createAndAcknowledge");
+                createAndAcknowledge(entry, processor);
             }
         } else {
             sendAcknowledgement(entry, processor);
@@ -86,7 +90,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
      * If creation failed and the mode is dev or device is marked to always acknowledge sends acknowledgement to NM.
      * Otherwise logs exception and acknowledgement is not sent to NM.
      */
-    private void createAndAcknowedge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
+    private void createAndAcknowledge(Map.Entry<Long, RfnIdentifier> entry, String processor) {
         try {
             create(entry.getValue(), processor);
             sendAcknowledgement(entry, processor);

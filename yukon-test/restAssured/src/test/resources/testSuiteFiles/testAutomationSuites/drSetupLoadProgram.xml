@@ -5,6 +5,8 @@
 	<test name="DR Setup Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.loadprogram.HoneywellProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.EcobeeProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.DirectProgramApiTest" />
         </classes>
 	</test>
 </suite>

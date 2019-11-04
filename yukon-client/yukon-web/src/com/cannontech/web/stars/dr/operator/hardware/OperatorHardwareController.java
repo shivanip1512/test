@@ -895,7 +895,7 @@ public class OperatorHardwareController {
                 }
             }
             if (allowAccountEditing) {
-                if (inventoryChecking) {
+                if (inventoryChecking && type != HardwareType.YUKON_METER) {
                     model.addAttribute("showMeterChangeoutAction", true);
                 }
             }

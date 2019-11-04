@@ -123,10 +123,19 @@ include::SepProgramSupportedGearsCreate.adoc[]
 
 == Control Area
 === Create
+include::ControlAreaThresholdPointTriggerCreate.adoc[]
+include::ControlAreaThresholdTriggerCreate.adoc[]
+include::ControlAreaStatusTriggerCreate.adoc[]
+
 === Retrieve
+include::ControlAreaThresholdPointTriggerGet.adoc[]
+
 === Update
+include::ControlAreaThresholdPointTriggerUpdate.adoc[]
+
 === Delete
-=== GetNormalState
+include::ControlAreaThresholdPointTriggerDelete.adoc[]
+
 
 == Control Scenario
 === Create

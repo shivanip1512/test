@@ -151,6 +151,13 @@ AND RolePropertyID IN (-21200, -21404, -21405, -21406, -90049);
 INSERT INTO DBUpdates VALUES ('YUK-20689', '7.4.0', SYSDATE);
 /* @end YUK-20689 */
 
+/* @start YUK-20819 */
+ALTER TABLE DeviceMacAddress
+ADD SecondaryMacAddress VARCHAR2(255);
+
+INSERT INTO DBUpdates VALUES ('YUK-20819', '7.3.2', SYSDATE);
+/* @end YUK-20819 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

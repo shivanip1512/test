@@ -340,8 +340,6 @@ yukon.protoPicker = function (okText,
             ss;
         
         updatePagingArea.call(this, json);
-        this.selectAllPagesMsg = json.selectAllPages;
-        this.allPagesSelectedMsg = json.allPagesSelected;
         $('#' + this.resultAreaId).remove();
         $('#' + this.errorHolderId).remove();
         resultHolder.append(newResultArea);
@@ -762,9 +760,14 @@ yukon.protoPicker = function (okText,
     
     /** Used to enable an item in the selection list. */
     yukon.protoPicker.prototype.enableItem = function (selectedId) {
-        var row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]');
+        var row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]'),
+              index;
         row.removeClass('disabled-look');
-        var index = this.disabledIds.indexOf(selectedId);
+        if ($.isNumeric(selectedId)) {
+            index = this.disabledIds.indexOf(Number(selectedId));
+        } else {
+            index = this.disabledIds.indexOf(selectedId);
+        }
         this.disabledIds.splice(index, 1);
     };
     
@@ -825,7 +828,6 @@ yukon.protoPicker = function (okText,
         this.jqAllPagesSelectedParentNode.hide();
         // Cap "select all on every page" at 5000.
         if (this.selectAllCheckBox.checked && this.nextIndex !== -1 && this.hitCount <= 5000) {
-            this.selectAllPagesLink.innerHTML = this.selectAllPagesMsg;
             this.jqSelectAllPagesLinkParentNode.show();
         } else {
             this.jqSelectAllPagesLinkParentNode.hide();
@@ -853,12 +855,27 @@ yukon.protoPicker = function (okText,
                 }
             });
         } else {
-            this.selectedItems = hitList;
+            // If there are no disabled items, select all the items returned in the response.
+            if ($.isEmptyObject(this.disabledIds)) {
+                this.selectedItems = hitList;
+            } else {
+                pickerThis = this;
+                var selectedItemIds = [];
+                pickerThis.selectedItems.forEach(function (item, index, arr) {
+                    selectedItemIds.push(item[pickerThis.idFieldName])
+                });
+                hitList.forEach(function (hit, index) {
+                    // Add an item to the selectedItems array only if this item is not disabled and is not already selected.
+                    if (pickerThis.disabledIds.indexOf(hit[pickerThis.idFieldName]) === -1 
+                            && selectedItemIds.indexOf(hit[pickerThis.idFieldName]) === -1) {
+                        pickerThis.selectedItems.push(hit);
+                    }
+                });
+            }
         }
         this.inSearch = false;
         this.ssInput.focus();
         this.jqSelectAllPagesLinkParentNode.hide();
-        this.allPagesSelected.innerHTML = this.allPagesSelectedMsg;
         this.jqAllPagesSelectedParentNode.show();
         this.unblock();
     };
