@@ -44,18 +44,12 @@ int conProcessBlob(const FILEINFO_t *pData, func callback)
     return 0;
 }
 
+std::mutex programMux;
+Cti::Pil::MeterProgrammingManager::Bytes globalBuffer;
+
 }
 
 namespace Cti::Pil {
-
-std::mutex programMux;
-MeterProgrammingManager::Bytes globalBuffer;
-    
-void captureBuffer(void *buf, size_t len) 
-{
-    auto ucBuf = reinterpret_cast<unsigned char*>(buf);
-    globalBuffer.assign(ucBuf, ucBuf + len);
-}
 
 MeterProgrammingManager::MeterProgrammingManager(CtiDeviceManager& deviceManager)
     :   _deviceManager  { deviceManager }
@@ -128,7 +122,12 @@ Etiam viverra tincidunt gravida. Curabitur felis eros, ullamcorper in volutpat a
     {
         std::lock_guard lg(programMux);
 
-        if( auto error = conProcessBlob(&fileInfo, captureBuffer) )
+        auto captureToBuffer = [](void *buf, size_t len) {
+            auto ucBuf = reinterpret_cast<unsigned char*>(buf);
+            globalBuffer.assign(ucBuf, ucBuf + len);
+        };
+
+        if( auto error = conProcessBlob(&fileInfo, captureToBuffer) )
         {
             CTILOG_ERROR(dout, "Error processing meter program buffer" << FormattedList::of(
                 "Error", error,
