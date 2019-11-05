@@ -11,5 +11,9 @@ public class RfnVirtualGateway extends RfnGateway {
     public RfnVirtualGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData data) {
         super(name, pao, rfnIdentifier, data);
     }
+    
+    public boolean isIpv6Supported() {
+        return false;
+    }
 
 }
