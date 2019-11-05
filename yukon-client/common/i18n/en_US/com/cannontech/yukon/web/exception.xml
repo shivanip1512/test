@@ -2,180 +2,109 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-	<!-- Processing Exceptions -->
-	<entry key="yukon.exception.processingException.deleteLocation">Could not delete location of device with paoId: {0}.</entry>
-	<entry key="yukon.exception.processingException.invalidLatitude">Valid Latitude (Must be between {0} and {1}) not
-		specified for device with paoId: {2}.</entry>
-	<entry key="yukon.exception.processingException.invalidLongitude">Valid Longitude (Must be between {0} and {1}) not
-		specified for device with paoId: {2}.</entry>
-	<entry key="yukon.exception.processingException.setLocation">Could not set location of device with paoId: {0}.</entry>
-	<entry key="yukon.exception.processingException.updateAddress">Unable to update address.</entry>
-	<entry
-		key="yukon.exception.processingException.illegalAttributeUse">Illegal use of attribute.</entry>
-	<entry key="yukon.exception.processingException.disconnectUpdate">Unable to update disconnect address.</entry>
-	<entry key="yukon.exception.processingException.enableDevice">Could not enable device with id: {0}.</entry>
-	<entry key="yukon.exception.processingException.disableDevice">Could not disable device with id: {0}.</entry>
-	<entry
-		key="yukon.exception.processingException.changeMeterNumber">Could not change meter number of device with id: {0}.</entry>
-	<entry key="yukon.exception.processingException.changeDeviceName">Could not change name of device with id: {0}.</entry>
-	<entry key="yukon.exception.processingException.changeRfnDevice">Could not change serial number, manufacturer, model of
-		device with id: {0}.</entry>
-	<entry key="yukon.exception.processingException.changeRoute">Could not change route of device with id: {0}, and
-		value: {2}.</entry>
-	<entry key="yukon.exception.processingException.pointOffsetInUse">Point offset {0} on device {1} is already in use</entry>
-	<entry key="yukon.exception.processingException.invalidAttribute">Invalid attribute {0} for device with id {1}.</entry>
-	<entry
-		key="yukon.exception.processingException.processorNotFound">Unable to find processor for field(s).</entry>
-	<entry
-		key="yukon.exception.processingException.deviceIncompatible">{0} is not an compatible type for device: {1} ; Type: {2}.</entry>
-	<entry
-		key="yukon.exception.processingException.invalidDeviceType">Invalid device type: {0}.</entry>
-	<entry key="yukon.exception.processingException.deviceNotFound">COULD NOT FIND: {0}.</entry>
-	<entry key="yukon.exception.processingException.changeDeviceType">Could not change device type for device with id: {0}.</entry>
-	<entry
-		key="yukon.exception.processingException.addressRouteRequired">Address and route id are required.</entry>
-	<entry key="yukon.exception.processingException.invalidAddress">Invalid address: {0}.</entry>
-	<entry
-		key="yukon.exception.processingException.deviceAlreadyExists">Device: {0} already exists.</entry>
-	<entry
-		key="yukon.exception.processingException.pointAlreadyExists">Point with name {0} already exists for device {1}.</entry>
-	<entry key="yukon.exception.processingException.addPointFailed">Add point failed.</entry>
-	<entry key="yukon.exception.processingException.paoNotFound">Could not find device: {0} (id={1}).</entry>
-	<entry
-		key="yukon.exception.processingException.paoNotFoundForSelectedDevices">Could not find device: {0} (id={2}).</entry>
-	<entry key="yukon.exception.processingException.deleteDevice">Could not delete device: {0} (id={1}).</entry>
-	<entry
-		key="yukon.exception.processingException.deleteSelectedDevices">Could not delete device: {0} (id={2}).</entry>
-	<entry
-		key="yukon.exception.processingException.invalidCalculation">No calculation is specified in the calculation file.</entry>
-	<entry
-		key="yukon.exception.processingException.invalidStateOrGroup">The specified state or state group is invalid.</entry>
-	<entry key="yukon.exception.processingException.unhandledAction">Unable to process action: {0}</entry>
-	<entry
-		key="yukon.exception.processingException.invalidDeviceType">Invalid device type.</entry>
-	<entry
-		key="yukon.exception.processingException.invalidColumnForInterface">The column {0} is not valid for interface {1}.</entry>
-	<entry key="yukon.exception.processingException.noValidInterface">Unable to find a valid interface for column {0}.</entry>
-	<entry
-		key="yukon.exception.processingException.noInterfaceColumns">Import Error: No interface-specific values provided.</entry>
-	<entry key="yukon.exception.processingException.missingAnyColumn">Import Error: Missing column value for {0}.</entry>
-	<entry key="yukon.exception.processingException.deviceNotFound">Import Error: No device found with name {0} and type
-		{1}.</entry>
-	<entry
-		key="yukon.exception.processingException.deviceNotFoundWithId">Could not find device with id: {0}.</entry>
-	<entry key="yukon.exception.processingException.pointNotFound">Point {0} on Device {1} is not a valid point.</entry>
-	<entry key="yukon.exception.processingException.invalidDirection">{0} is not a valid direction.</entry>
-	<entry
-		key="yukon.exception.processingException.unsupportedDirection">{0} direction is not supported by the {1} interface.</entry>
-	<entry key="yukon.exception.processingException.unableToInsert">Unable to insert translation - a conflicting
-		translation exists on this point.</entry>
-	<entry key="yukon.exception.processingException.unableToRemove">Unable to remove translation - no matching translation
-		found.</entry>
-	<entry key="yukon.exception.processingException.invalidAction">Import Error: Invalid Action.</entry>
-	<entry
-		key="yukon.exception.processingException.invalidDeviceTypeFdr">{0} is not a valid device type.</entry>
-	<entry key="yukon.exception.processingException.validationError">Unknown validation error: {0}.</entry>
-	<entry key="yukon.exception.processingException.unknownError">An unexpected error occurred. See application log for
-		additional information.</entry>
-	<entry
-		key="yukon.exception.processingException.pointDoesNotExist">Point "{0}" does not exist on device "{1}"</entry>
-	<entry key="yukon.exception.processingException.invalidDevice">The device "{0}" does not exist.</entry>
-	<entry key="yukon.exception.processingException.pointExists">Point "{0}" already exists on device "{1}"</entry>
-	<entry
-		key="yukon.exception.processingException.pointNameMaxLength">Point name "{0}" must 60 characters or less for device "{1}"</entry>
-	<entry
-		key="yukon.exception.processingException.addressInvalidRange">Address not in valid range for device type: {0}.</entry>
-	<entry
-		key="yukon.exception.processingException.disconnectAddressNotAccepted">Device type does not accept disconnect addresses.</entry>
-	<entry key="yukon.exception.processingException.invalidRouteName">Invalid route name: {0}.</entry>
-	<entry key="yukon.exception.processingException.processingError">Processing Error.</entry>
-	<entry
-		key="yukon.exception.processingException.deviceRequiresConfig">Device type: {0} cannot be unassigned from a configuration.</entry>
-	<entry key="yukon.exception.processingException.SUCCESS">Success - {0} succeeded for "{1}".</entry>
-	<entry
-		key="yukon.exception.processingException.INVALID_IMPORT_ACTION">Invalid Import Action - Cannot perform action "{0}" for "{1}"</entry>
-	<entry key="yukon.exception.processingException.OBJECT_EXISTS">Object Already Exists - {0} failed on "{1}"</entry>
-	<entry key="yukon.exception.processingException.NO_SUCH_OBJECT">Object Does Not Exist - {0} failed on "{1}"</entry>
-	<entry key="yukon.exception.processingException.MISSING_DATA">Data Missing - Required values were missing: {0}</entry>
-	<entry key="yukon.exception.processingException.BAD_DATA">Invalid Value - Specified value is not valid in
-		column: {0}</entry>
-	<entry
-		key="yukon.exception.processingException.CONDITIONAL_BAD_DATA">Invalid Value - {0} failed. The value "{1}" is not permitted for
-		{2} objects.</entry>
-	<entry key="yukon.exception.processingException.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for "{1}"</entry>
-	<entry key="yukon.exception.processingException.INVALID_CHARS">Name cannot include any of the following characters: /
-		\ , ' " |</entry>
-	<entry
-		key="yukon.exception.processingException.INVALID_CONFIG_ADD">Unable to attach configuration "{2}" to {1}. Using the default
-		configuration instead.</entry>
-	<entry
-		key="yukon.exception.processingException.INVALID_CONFIG_UPDATE">Unable to attach configuration "{2}" to {1}. Existing
-		configuration still in use.</entry>
-	<entry
-		key="yukon.exception.processingException.latitude.numberError">Latitude must be numeric.</entry>
-	<entry
-		key="yukon.exception.processingException.longitude.numberError">Longitude must be numeric.</entry>
+<!-- Processing Exceptions -->
+<entry key="yukon.exception.processingException.deleteLocation">Could not delete location of device with paoId: {0}.</entry>
+<entry key="yukon.exception.processingException.invalidLatitude">Valid Latitude (Must be between {0} and {1}) not specified for device with paoId: {2}.</entry>
+<entry key="yukon.exception.processingException.invalidLongitude">Valid Longitude (Must be between {0} and {1}) not specified for device with paoId: {2}.</entry>
+<entry key="yukon.exception.processingException.setLocation">Could not set location of device with paoId: {0}.</entry>
+<entry key="yukon.exception.processingException.updateAddress">Unable to update address.</entry>
+<entry key="yukon.exception.processingException.illegalAttributeUse">Illegal use of attribute.</entry>
+<entry key="yukon.exception.processingException.disconnectUpdate">Unable to update disconnect address.</entry>
+<entry key="yukon.exception.processingException.enableDevice">Could not enable device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.disableDevice">Could not disable device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.changeMeterNumber">Could not change meter number of device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.changeDeviceName">Could not change name of device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.changeRfnDevice">Could not change serial number, manufacturer, model of device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.changeRoute">Could not change route of device with id: {0}, and value: {2}.</entry>
+<entry key="yukon.exception.processingException.pointOffsetInUse">Point offset {0} on device {1} is already in use</entry>
+<entry key="yukon.exception.processingException.invalidAttribute">Invalid attribute {0} for device with id {1}.</entry>
+<entry key="yukon.exception.processingException.processorNotFound">Unable to find processor for field(s).</entry>
+<entry key="yukon.exception.processingException.deviceIncompatible">{0} is not an compatible type for device: {1} ; Type: {2}.</entry>
+<entry key="yukon.exception.processingException.invalidDeviceType">Invalid device type: {0}.</entry>
+<entry key="yukon.exception.processingException.deviceNotFound">COULD NOT FIND: {0}.</entry>
+<entry key="yukon.exception.processingException.changeDeviceType">Could not change device type for device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.addressRouteRequired">Address and route id are required.</entry>
+<entry key="yukon.exception.processingException.invalidAddress">Invalid address: {0}.</entry>
+<entry key="yukon.exception.processingException.deviceAlreadyExists">Device: {0} already exists.</entry>
+<entry key="yukon.exception.processingException.pointAlreadyExists">Point with name {0} already exists for device {1}.</entry>
+<entry key="yukon.exception.processingException.pointNameMaxLength">Point name "{0}" must 60 characters or less for device "{1}"</entry>
+<entry key="yukon.exception.processingException.addPointFailed">Add point failed.</entry>
+<entry key="yukon.exception.processingException.paoNotFound">Could not find device: {0} (id={1}).</entry>
+<entry key="yukon.exception.processingException.paoNotFoundForSelectedDevices">Could not find device: {0} (id={2}).</entry>
+<entry key="yukon.exception.processingException.deleteDevice">Could not delete device: {0} (id={1}).</entry>
+<entry key="yukon.exception.processingException.deleteSelectedDevices">Could not delete device: {0} (id={2}).</entry>
+<entry key="yukon.exception.processingException.invalidCalculation">No calculation is specified in the calculation file.</entry>
+<entry key="yukon.exception.processingException.invalidStateOrGroup">The specified state or state group is invalid</entry>
+<entry key="yukon.exception.processingException.unhandledAction">Unable to process action: {0}</entry>
+<entry key="yukon.exception.processingException.invalidDeviceType">Invalid device type.</entry>
+<entry key="yukon.exception.processingException.invalidColumnForInterface">The column {0} is not valid for interface {1}.</entry>
+<entry key="yukon.exception.processingException.noValidInterface">Unable to find a valid interface for column {0}.</entry>
+<entry key="yukon.exception.processingException.noInterfaceColumns">Import Error: No interface-specific values provided.</entry>
+<entry key="yukon.exception.processingException.missingAnyColumn">Import Error: Missing column value for {0}.</entry>
+<entry key="yukon.exception.processingException.deviceNotFound">Import Error: No device found with name {0} and type {1}.</entry>
+<entry key="yukon.exception.processingException.deviceNotFoundWithId">Could not find device with id: {0}.</entry>
+<entry key="yukon.exception.processingException.pointNotFound">Point {0} on Device {1} is not a valid point.</entry>
+<entry key="yukon.exception.processingException.invalidDirection">{0} is not a valid direction.</entry>
+<entry key="yukon.exception.processingException.unsupportedDirection">{0} direction is not supported by the {1} interface.</entry>
+<entry key="yukon.exception.processingException.unableToInsert">Unable to insert translation - a conflicting translation exists on this point.</entry>
+<entry key="yukon.exception.processingException.unableToRemove">Unable to remove translation - no matching translation found.</entry>
+<entry key="yukon.exception.processingException.invalidAction">Import Error: Invalid Action.</entry>
+<entry key="yukon.exception.processingException.invalidDeviceTypeFdr">{0} is not a valid device type.</entry>
+<entry key="yukon.exception.processingException.validationError">Unknown validation error: {0}.</entry>
+<entry key="yukon.exception.processingException.unknownError">An unexpected error occurred. See application log for additional information</entry>
+<entry key="yukon.exception.processingException.pointDoesNotExist">Point "{0}" does not exist on device "{1}"</entry>
+<entry key="yukon.exception.processingException.invalidDevice">The device "{0}" does not exist</entry>
+<entry key="yukon.exception.processingException.pointExists">Point "{0}" already exists on device "{1}"</entry>
+<entry key="yukon.exception.processingException.addressInvalidRange">Address not in valid range for device type: {0}.</entry>
+<entry key="yukon.exception.processingException.disconnectAddressNotAccepted">Device type does not accept disconnect addresses.</entry>
+<entry key="yukon.exception.processingException.invalidRouteName">Invalid route name: {0}.</entry>
+<entry key="yukon.exception.processingException.processingError">Processing Error.</entry>
+<entry key="yukon.exception.processingException.deviceRequiresConfig">Device type: {0} cannot be unassigned from a configuration.</entry>
+<entry key="yukon.exception.processingException.SUCCESS">Success - {0} succeeded for "{1}".</entry>
+<entry key="yukon.exception.processingException.INVALID_IMPORT_ACTION">Invalid Import Action - Cannot perform action "{0}" for "{1}"</entry>
+<entry key="yukon.exception.processingException.OBJECT_EXISTS">Object Already Exists - {0} failed on "{1}"</entry>
+<entry key="yukon.exception.processingException.NO_SUCH_OBJECT">Object Does Not Exist - {0} failed on "{1}"</entry>
+<entry key="yukon.exception.processingException.MISSING_DATA">Data Missing - Required values were missing: {0}</entry>
+<entry key="yukon.exception.processingException.BAD_DATA">Invalid Value - Specified value is not valid in column: {0}</entry>
+<entry key="yukon.exception.processingException.CONDITIONAL_BAD_DATA">Invalid Value - {0} failed. The value "{1}" is not permitted for {2} objects</entry>
+<entry key="yukon.exception.processingException.HAS_DEPENDENCIES">Object Has Dependencies - {0} failed for "{1}"</entry>
+<entry key="yukon.exception.processingException.INVALID_CHARS">Name cannot include any of the following characters: / \ , ' " |</entry>
+<entry key="yukon.exception.processingException.INVALID_CONFIG_ADD">Unable to attach configuration "{2}" to {1}. Using the default configuration instead.</entry>
+<entry key="yukon.exception.processingException.INVALID_CONFIG_UPDATE">Unable to attach configuration "{2}" to {1}. Existing configuration still in use.</entry>
+<entry key="yukon.exception.processingException.latitude.numberError">Latitude must be numeric.</entry>
+<entry key="yukon.exception.processingException.longitude.numberError">Longitude must be numeric.</entry>
 
-	<entry key="yukon.exception.deviceCreationException.invalidChars">Device name cannot be blank or include any of the
-		following characters: / \\ ,\" ' |</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidCharacters">Device name cannot be blank or include any of the following
-		characters: {0}.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.incompleteRow">Incomplete row.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.missingRequiredColumn">Missing required column: {0}.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidRouteName">Could not create device by type: Invalid route name.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.nonNumericAddress">Could not create device by type: Non-numeric address value.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidNewDevice">Could not create new device.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidRfnIdentifier">Could not create new RFN device - Serial Number, Manufacturer, and
-		Model fields must all be empty or all be filled in.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidDeviceType">Could not create device by type: Invalid device type.</entry>
-	<entry key="yukon.exception.deviceCreationException.maxLength">Device serial number must be numeric and serial number
-		length must be less than 30.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidRfnTemplate">Could not create new device named {0} from template {1}.Template
-		must be an RFN Device.</entry>
-	<entry key="yukon.exception.deviceCreationException.blankName">Device name is blank.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidAddress">Invalid address: {0}.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidRfnDeviceType">Could not create new device named {0}. Device Type must be RFN
-		Device Type.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidTemplate">Could not create new device named {0} from template {1}.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidTemplateDevice">Could not load template device from database: {0}.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidTemplateName">Template {0} not found.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.configurationProperty">RF Yukon systems with DR devices are required to specify the
-		RFN_ENERGY_COMPANY_NAME configuration property in master.cfg.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidDevice">Energy company {0} has no device for type: {1}.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.unsupportedDevice">Could not retrieve points for new device.</entry>
-	<entry
-		key="yukon.exception.deviceCreationException.invalidDeviceCreation">Exception while creating device.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidChars">Device name cannot be blank or include any of the following characters: / \\ ,\" ' |</entry>
+<entry key="yukon.exception.deviceCreationException.invalidCharacters">Device name cannot be blank or include any of the following characters: {0}</entry>
+<entry key="yukon.exception.deviceCreationException.incompleteRow">Incomplete row.</entry>
+<entry key="yukon.exception.deviceCreationException.missingRequiredColumn">Missing required column: {0}.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidRouteName">Could not create device by type: Invalid route name.</entry>
+<entry key="yukon.exception.deviceCreationException.nonNumericAddress">Could not create device by type: Non-numeric address value.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidNewDevice">Could not create new device.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidRfnIdentifier">Could not create new RFN device - Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidDeviceType">Could not create device by type: Invalid device type.</entry>
+<entry key="yukon.exception.deviceCreationException.maxLength">Device serial number must be numeric and serial number length must be less than 30.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidRfnTemplate">Could not create new device named {0} from template {1}.Template must be an RFN Device.</entry>
+<entry key="yukon.exception.deviceCreationException.blankName">Device name is blank.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidAddress">Invalid address: {0}.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidRfnDeviceType">Could not create new device named {0}. Device Type must be RFN Device Type.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidTemplate">Could not create new device named {0} from template {1}.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidTemplateDevice">Could not load template device from database: {0}.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidTemplateName">Template {0} not found.</entry>
+<entry key="yukon.exception.deviceCreationException.configurationProperty">RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidDevice">Energy company {0} has no device for type: {1}.</entry>
+<entry key="yukon.exception.deviceCreationException.unsupportedDevice">Could not retrieve points for new device.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidDeviceCreation">Exception while creating device.</entry>
 
-	<entry
-		key="yukon.exception.objectMappingException.invalidAddress">Device with address: {0} not found.</entry>
-	<entry
-		key="yukon.exception.objectMappingException.nonNumericAddress">Address {0} is not a valid address. Must be numeric.</entry>
-	<entry
-		key="yukon.exception.objectMappingException.invalidMeterNumber">Device with meter number: {0} not found.</entry>
-	<entry key="yukon.exception.objectMappingException.invalidId">Device with id: {0} not found.</entry>
-	<entry key="yukon.exception.objectMappingException.invalidName">Device with name {0} not found.</entry>
-	<entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value {0}</entry>
+<entry key="yukon.exception.objectMappingException.invalidAddress">Device with address: {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.nonNumericAddress">Address {0} is not a valid address. Must be numeric.</entry>
+<entry key="yukon.exception.objectMappingException.invalidMeterNumber">Device with meter number: {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.invalidId">Device with id: {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.invalidName">Device with name {0} not found.</entry>
+<entry key="yukon.exception.objectMappingException.invalidValue">Contains invalid value {0}</entry>
 
-	<entry
-		key="yukon.exception.apiCommunicationException.communicationError">Error while communicating with Api.</entry>
+<entry key="yukon.exception.apiCommunicationException.communicationError">Error while communicating with Api.</entry>
 
-	<entry key="yukon.exception.deviceGroupInUseException.summary"><![CDATA[Cannot delete Device Group ''{0}''.<BR/>]]></entry>
-	<entry key="yukon.exception.deviceGroupInUseException"><![CDATA[Device Group ''{0}'' is used in {1} ''{2}'', owned by {3}.<BR/>]]></entry>
+<entry key="yukon.exception.deviceGroupInUseException.summary"><![CDATA[Cannot delete Device Group ''{0}''.<BR/>]]></entry>
+<entry key="yukon.exception.deviceGroupInUseException"><![CDATA[Device Group ''{0}'' is used in {1} ''{2}'', owned by {3}.<BR/>]]></entry>
 </properties>
