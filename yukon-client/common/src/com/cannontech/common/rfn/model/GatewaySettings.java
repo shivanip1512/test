@@ -7,6 +7,7 @@ public class GatewaySettings {
     private Integer id;
     private String name;
     private String ipAddress;
+    private boolean virtual;
     private Integer port;
     private Authentication admin;
     private Authentication superAdmin;
@@ -38,6 +39,14 @@ public class GatewaySettings {
 
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+    }
+
+    public boolean isVirtual() {
+        return virtual;
+    }
+
+    public void setVirtual(boolean virtual) {
+        this.virtual = virtual;
     }
 
     public Integer getPort() {
@@ -192,4 +201,5 @@ public class GatewaySettings {
             return false;
         return true;
     }
+
 }
