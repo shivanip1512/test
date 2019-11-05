@@ -119,7 +119,8 @@ PilServer::PilServer(CtiDeviceManager& DM, CtiPointManager& PM, CtiRouteManager&
     _vgConnThread        (WorkerThread::Function([this]{ vgConnThread();         }).name("_vgConnThread")),
     _schedulerThread     (WorkerThread::Function([this]{ schedulerThread();      }).name("_schedulerThread")),
     _periodicActionThread(WorkerThread::Function([this]{ periodicActionThread(); }).name("_periodicActionThread")),
-    _rfDataStreamingProcessor { DM, PM }
+    _rfDataStreamingProcessor { DM, PM },
+    _rfnRequestManager { DM }
 {
     serverClosingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if( serverClosingEvent == (HANDLE)NULL )
