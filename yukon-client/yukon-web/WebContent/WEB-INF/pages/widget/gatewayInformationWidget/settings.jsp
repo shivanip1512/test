@@ -44,7 +44,7 @@
                 toggleGroup="virtual-gateway" toggleAction="invisible"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".virtual.port" data-toggle-group="virtual-gateway">
-            <tags:input path="port" maxlength="15" size="15" tabindex="3"/>
+            <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>
