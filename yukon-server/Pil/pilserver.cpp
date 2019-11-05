@@ -79,12 +79,11 @@ DLLEXPORT CtiFIFOQueue< CtiMessage >                  PorterSystemMessageQueue;
 
 using Cti::Timing::Chrono;
 
-namespace Cti {
-namespace Pil {
+namespace Cti::Pil {
 
 DLLEXPORT CtiFIFOQueue<CtiMessage> ClientReturnQueue;
 
-void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager );
+void ReportMessagePriority( CtiMessage* MsgPtr, CtiDeviceManager& DeviceManager );
 
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
 static bool findRestoreDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
@@ -105,7 +104,7 @@ bool NonViableConnection(CtiServer::ptr_type &CM, void* d)
 
 } // anonymous namespace
 
-PilServer::PilServer(CtiDeviceManager *DM, CtiPointManager *PM, CtiRouteManager *RM) :
+PilServer::PilServer(CtiDeviceManager& DM, CtiPointManager& PM, CtiRouteManager& RM) :
     DeviceManager(DM),
     PointManager (PM),
     RouteManager (RM),
@@ -156,7 +155,7 @@ int PilServer::execute()
         _schedulerThread .start();
 
         Messaging::Rfn::gE2eMessenger->start();
-        _rfnManager.start();
+        _rfnRequestManager.start();
         _rfDataStreamingProcessor.start();
 
         _periodicActionThread.start();
@@ -181,7 +180,7 @@ void PilServer::mainThread()
     VanGoghConnection.start();
     VanGoghConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg( PIL_REGISTRATION_NAME, GetCurrentThreadId(), true ), CALLSITE );
 
-    if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
+    if( CtiDeviceSPtr systemDevice = DeviceManager.getDeviceByID(0) )
     {
         systemDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
     }
@@ -315,7 +314,7 @@ void PilServer::mainThread()
             bServerClosing = TRUE;
             bQuit = TRUE;
 
-            if (CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0))
+            if (CtiDeviceSPtr systemDevice = DeviceManager.getDeviceByID(0))
             {
                 systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
             }
@@ -498,9 +497,9 @@ void PilServer::resultThread()
                 }
             }
 
-            auto pendingRfnResultQueue = _rfnManager.getResults(inQueueBlockSize);
+            auto pendingRfnResultQueue = _rfnRequestManager.getResults(inQueueBlockSize);
 
-            auto rfnUnsolicitedReports = _rfnManager.getUnsolicitedReports();
+            auto rfnUnsolicitedReports = _rfnRequestManager.getUnsolicitedReports();
 
             auto get_rfn_result_device = [](const RfnDeviceResult & result) { return result.request.parameters.deviceId; };
 
@@ -511,7 +510,7 @@ void PilServer::resultThread()
 
             if( ! paoids.empty() )
             {
-                PointManager->refreshListByPAOIDs(paoids);
+                PointManager.refreshListByPAOIDs(paoids);
             }
 
             WorkerThread::interruptionPoint();
@@ -612,13 +611,13 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
     CtiDeviceBase::CtiMessageList retList;
 
     // Find the device..
-    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(id);
+    CtiDeviceSPtr DeviceRecord = DeviceManager.getDeviceByID(id);
 
     if( ! DeviceRecord )
     {
         FormattedList logItems;
 
-        const auto error = DeviceManager->isPaoId(InMessage.DeviceID) ? ClientErrors::UnsupportedDevice : ClientErrors::IdNotFound;
+        const auto error = DeviceManager.isPaoId(InMessage.DeviceID) ? ClientErrors::UnsupportedDevice : ClientErrors::IdNotFound;
 
         logItems.add("Device ID")        << InMessage.DeviceID;
         logItems.add("Port listed as")   << InMessage.Port;
@@ -798,7 +797,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 void PilServer::handleRfnDeviceResult(RfnDeviceResult result)
 {
     // Find the device..
-    CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(result.request.parameters.deviceId);
+    CtiDeviceSPtr DeviceRecord = DeviceManager.getDeviceByID(result.request.parameters.deviceId);
 
     CtiDeviceBase::CtiMessageList vgList;
     CtiDeviceBase::CtiMessageList retList;
@@ -861,7 +860,7 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
     CTILOG_INFO(dout, "Handling unsolicited report for " << report.rfnId);
 
     auto rfnId = report.rfnId;
-    auto rfnDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId);
+    auto rfnDevice = DeviceManager.getDeviceByRfnIdentifier(rfnId);
 
     const auto invokeCommand = [](Devices::RfnDevice & rfnDev, const ConfigNotification &command) {
         rfnDev.extractCommandResult(command);
@@ -907,10 +906,10 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
 
             ConfigNotificationPtr command;
             RfnIdentifier rfnId;
-            CtiDeviceManager* DeviceManager;
+            CtiDeviceManager& DeviceManager;
             CommandInvoker invokeCommand;
 
-            DeviceLookupCallback(CtiDeviceManager* DeviceManager_, RfnIdentifier rfnId_, ConfigNotificationPtr command_, CommandInvoker invokeCommand_) 
+            DeviceLookupCallback(CtiDeviceManager& DeviceManager_, RfnIdentifier rfnId_, ConfigNotificationPtr command_, CommandInvoker invokeCommand_) 
                 :   DeviceManager { DeviceManager_ },
                     rfnId         { rfnId_ }, 
                     command       { std::move(command_) },
@@ -925,10 +924,10 @@ void PilServer::handleRfnUnsolicitedReport(RfnRequestManager::UnsolicitedReport 
                     CTILOG_DEBUG(dout, "Received device creation service call response for " << reply.descriptor->toString());
                     // force a device reload of the new device
                     auto & descriptor = *reply.descriptor;
-                    DeviceManager->refreshDeviceByID(descriptor.paoId, descriptor.category, descriptor.deviceType);
+                    DeviceManager.refreshDeviceByID(descriptor.paoId, descriptor.category, descriptor.deviceType);
 
                     // attempt to get the device again
-                    if( auto newDevice = DeviceManager->getDeviceByRfnIdentifier(rfnId) )
+                    if( auto newDevice = DeviceManager.getDeviceByRfnIdentifier(rfnId) )
                     {
                         invokeCommand(*newDevice, *command);
                     }
@@ -1220,7 +1219,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                     return In.Return.GrpMsgID == group_message_id;
                 });
 
-            _rfnManager.cancelByGroupMessageId(group_message_id);
+            _rfnRequestManager.cancelByGroupMessageId(group_message_id);
         }
 
         //  first, count the yet to be processed items
@@ -1234,7 +1233,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
             group_id_count += boost::count(_groupQueue | getGroupMessageId, 
                                            group_message_id);
 
-            group_id_count += _rfnManager.countByGroupMessageId(group_message_id);
+            group_id_count += _rfnRequestManager.countByGroupMessageId(group_message_id);
 
             tempReqMsg->setOptionsField(group_id_count);
         }
@@ -1274,7 +1273,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
     {
         for( auto& pExecReq : execList )
         {
-            if( CtiDeviceSPtr pDev = DeviceManager->getDeviceByID(pExecReq->DeviceId()) )
+            if( CtiDeviceSPtr pDev = DeviceManager.getDeviceByID(pExecReq->DeviceId()) )
             {
                 CtiDeviceBase &Dev = *pDev;
 
@@ -1315,7 +1314,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 outList.splice(outList.end(), executer.outList);
 
-                _rfnManager.submitRequests(std::move(executer.rfnRequests));
+                _rfnRequestManager.submitRequests(std::move(executer.rfnRequests));
 
                 for( CtiMessage *msg : executer.retList )
                 {
@@ -1352,7 +1351,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                 logItems.add("Command")   << pExecReq->CommandString();
                 logItems.add("Device ID") << pExecReq->DeviceId();
 
-                const auto error = DeviceManager->isPaoId(pExecReq->DeviceId()) ? ClientErrors::UnsupportedDevice : ClientErrors::IdNotFound;
+                const auto error = DeviceManager.isPaoId(pExecReq->DeviceId()) ? ClientErrors::UnsupportedDevice : ClientErrors::IdNotFound;
                 
                 CTILOG_ERROR(dout, CtiError::GetErrorString(error) <<
                         logItems);
@@ -1712,7 +1711,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
             // OK, someone tried to send us an override on the device ID
             pReq->setDeviceId(deviceId);
         }
-        else if( const CtiDeviceSPtr Dev = DeviceManager->RemoteGetEqualbyName(deviceName) )
+        else if( const CtiDeviceSPtr Dev = DeviceManager.RemoteGetEqualbyName(deviceName) )
         {
             pReq->setDeviceId(Dev->getID());
         }
@@ -1752,7 +1751,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
             // OK, someone tried to send us an override on the route ID
             pReq->setRouteId(routeId);
         }
-        else if( const CtiRouteSPtr Rte = RouteManager->getRouteByName(routeName) )
+        else if( const CtiRouteSPtr Rte = RouteManager.getRouteByName(routeName) )
         {
             pReq->setRouteId( Rte->getRouteID() );
         }
@@ -1764,7 +1763,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
 
     if(parse.getCommand() != GetValueRequest)
     {
-        CtiDeviceSPtr Dev = DeviceManager->getDeviceByID(pReq->DeviceId());
+        CtiDeviceSPtr Dev = DeviceManager.getDeviceByID(pReq->DeviceId());
 
         if( Dev )
         {
@@ -1867,7 +1866,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
             string lmgroup = parse.getsValue("template");
             string service = parse.getsValue("templateinservice");
 
-            CtiDeviceSPtr GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
+            CtiDeviceSPtr GrpDev = DeviceManager.RemoteGetEqualbyName( lmgroup );
             if(GrpDev)
             {
                 const std::string commandStr = StreamBuffer() <<
@@ -1886,7 +1885,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
              *  This indicates the user wants to put the devices defined by group addressing defined in the "fromxxx"
              *  keys into the selected versacom group.
              */
-            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)DeviceManager->getDeviceByID(pReq->DeviceId()).get();
+            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)DeviceManager.getDeviceByID(pReq->DeviceId()).get();
 
             if(GrpDev != NULL)
             {
@@ -1930,7 +1929,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
 
                 for( const long deviceid : getDeviceGroupMembers(groupname) )
                 {
-                    if( CtiDeviceSPtr device = DeviceManager->getDeviceByID(deviceid) )
+                    if( CtiDeviceSPtr device = DeviceManager.getDeviceByID(deviceid) )
                     {
                         //  if a freeze wasn't specified, grab the first MCT and initialize the freeze counter
                         //    with what he expects to hear next
@@ -1954,12 +1953,11 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
     }
 }
 
-void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager )
+void ReportMessagePriority( CtiMessage* MsgPtr, CtiDeviceManager& DeviceManager )
 {
     if(MsgPtr->isA() == MSG_PCREQUEST)
     {
-        CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(((CtiRequestMsg*)MsgPtr)->DeviceId());
-        if(DeviceRecord)
+        if( auto DeviceRecord = DeviceManager.getDeviceByID(((CtiRequestMsg*)MsgPtr)->DeviceId()) )
         {
             CtiRequestMsg *pCmd = (CtiRequestMsg*)MsgPtr;
 
@@ -1994,10 +1992,10 @@ INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, Requ
 {
     INT status = ClientErrors::None;
     int i;
-    CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
-    // CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
+    CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager.getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
+    // CtiRouteManager::LockGuard rte_guard(RouteManager.getMux());
 
-    CtiDeviceSPtr pRepeaterToRole = DeviceManager->getDeviceByID(Req.DeviceId());    // This is our repeater we are curious about!
+    CtiDeviceSPtr pRepeaterToRole = DeviceManager.getDeviceByID(Req.DeviceId());    // This is our repeater we are curious about!
 
     if(pRepeaterToRole)
     {
@@ -2013,7 +2011,7 @@ INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, Requ
             {
                 CTILOG_INFO(dout, "Looking for "<< pRepeaterToRole->getName() <<" in all routes");
 
-                RouteManager->buildRoleVector( pRepeaterToRole->getID(), Req, retList, roleVector );
+                RouteManager.buildRoleVector( pRepeaterToRole->getID(), Req, retList, roleVector );
             }
             catch(...)
             {
@@ -2067,9 +2065,9 @@ INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, Requ
 
 INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, list< CtiMessage* > & retList)
 {
-    CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
+    CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager.getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
 
-    CtiDeviceSPtr ptGroup = DeviceManager->getDeviceByID(Req.DeviceId());    // This is our repeater we are curious about!
+    CtiDeviceSPtr ptGroup = DeviceManager.getDeviceByID(Req.DeviceId());    // This is our repeater we are curious about!
 
     if(ptGroup)
     {
@@ -2107,11 +2105,11 @@ void PilServer::indicateControlOnSubGroups(CtiDeviceBase &Dev, CtiCommandParser 
 
                 if(parse.getFlags() & (CMD_FLAG_CTL_RESTORE|CMD_FLAG_CTL_TERMINATE|CMD_FLAG_CTL_CLOSE))
                 {
-                    DeviceManager->select(findRestoreDeviceGroupControl, (void*)(&Dev), match_coll);
+                    DeviceManager.select(findRestoreDeviceGroupControl, (void*)(&Dev), match_coll);
                 }
                 else
                 {
-                    DeviceManager->select(findShedDeviceGroupControl, (void*)(&Dev), match_coll);
+                    DeviceManager.select(findShedDeviceGroupControl, (void*)(&Dev), match_coll);
                 }
 
                 CtiDeviceSPtr sptr;
@@ -2265,7 +2263,7 @@ void PilServer::periodicActionThread()
 
             std::vector< CtiDeviceManager::ptr_type >   rdsDevices;
 
-            DeviceManager->getDevicesByType( TYPE_RDS, rdsDevices );
+            DeviceManager.getDevicesByType( TYPE_RDS, rdsDevices );
 
             for( CtiDeviceSPtr device : rdsDevices )
             {
@@ -2278,7 +2276,7 @@ void PilServer::periodicActionThread()
         }
 
         {
-            _rfnManager.tick();
+            _rfnRequestManager.tick();
 
             for( auto& msg : _rfDataStreamingProcessor.tick() )
             {
@@ -2292,7 +2290,7 @@ void PilServer::periodicActionThread()
 
             std::vector< CtiDeviceManager::ptr_type > rfDaDevices;
 
-            DeviceManager->getDevicesByType( TYPE_RFN1200, rfDaDevices );
+            DeviceManager.getDevicesByType( TYPE_RFN1200, rfDaDevices );
 
             for( CtiDeviceSPtr device : rfDaDevices )
             {
@@ -2311,5 +2309,3 @@ void PilServer::periodicActionThread()
 }
 
 }
-}
-
