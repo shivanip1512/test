@@ -732,7 +732,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         if (!enrollments.isEmpty()) {
             List<Integer> assignedProgramIds =
-                enrollments.stream().map(enrollment -> enrollment.getAssignedProgramId()).collect(Collectors.toList());
+                enrollments.stream().map(ProgramEnrollment::getAssignedProgramId).collect(Collectors.toList());
             Collection<Integer> programPaoIds = assignedProgramDao.getProgramIdsByAssignedProgramIds(assignedProgramIds).values();
             
             if(enroll) {
@@ -741,8 +741,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronProgramIds.addAll(itronDao.getItronProgramIds(programPaoIds).values());            
         }
         
-        log.debug("Sending enrollment request to itron for account {} enrolling itron program ids {} ", account.getAccountNumber(),
-            itronProgramIds);
+        log.debug("Sending enrollment request to itron for account {} enrolling itron program ids {}, isEnroll: {} ", account.getAccountNumber(),
+            itronProgramIds, enroll);
         SetServicePointEnrollmentRequest request =
             ProgramManagerHelper.buildEnrollmentRequest(account.getAccountNumber(), itronProgramIds);
         log.debug("ITRON-sendEnrollmentRequest url:{} account number:{}.", url, account.getAccountNumber());
