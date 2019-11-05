@@ -826,7 +826,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             new DeviceSummary(deviceCollection, deviceIds, unsupportedDeviceIds), requestSeqNumber, alertCallback,
             context);
         if (!devicesIdsWithoutBehavior.isEmpty()) {
-            // mark devices without behavior as "not configured".
+            // mark devices without behavior as "already configured".
             collectionActionService.addUnsupportedToResult(ALREADY_CONFIGURED, result,
                 getDeviceSubset(devices, new ArrayList<>(devicesIdsWithoutBehavior)));
         }
