@@ -39,6 +39,13 @@
         <tags:nameValue2 nameKey=".ipaddress">
             <tags:input path="ipAddress" inputClass="js-gateway-edit-ip" maxlength="15" size="15" tabindex="2"/>
         </tags:nameValue2>
+        <tags:nameValue2 nameKey=".virtual">
+            <tags:switchButton path="virtual" onNameKey=".yes.label" offNameKey=".no.label" 
+                toggleGroup="virtual-gateway" toggleAction="invisible"/>
+        </tags:nameValue2>
+        <tags:nameValue2 nameKey=".virtual.port" data-toggle-group="virtual-gateway">
+            <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
+        </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>
         
@@ -46,16 +53,16 @@
             <spring:bind path="admin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <tags:password path="admin.username" cssClass="js-gateway-edit-username M0 left ${clazz}"
-                      showPassword="true" placeholder="${phUsername}" tabindex="3" includeShowHideButton="true"/>
+                      showPassword="true" placeholder="${phUsername}" tabindex="4" includeShowHideButton="true"/>
             </spring:bind>
             <spring:bind path="admin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
                 <tags:password path="admin.password" cssClass="js-gateway-edit-password M0" 
-                      placeholder="${phPassword}" tabindex="4" showPassword="true" includeShowHideButton="true"/>
+                      placeholder="${phPassword}" tabindex="5" showPassword="true" includeShowHideButton="true"/>
                 <c:if test="${mode == 'EDIT'}">
                     <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn admin" 
-                         disabled="true" nameKey="testConnection" tabindex="5"/>
+                         disabled="true" nameKey="testConnection" tabindex="6"/>
                 </c:if>
             </spring:bind>
         </tags:nameValue2>
@@ -64,18 +71,18 @@
             <spring:bind path="superAdmin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <tags:password path="superAdmin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" 
-                     placeholder="${phUsername}" tabindex="6" showPassword="true" includeShowHideButton="true"/>
+                     placeholder="${phUsername}" tabindex="7" showPassword="true" includeShowHideButton="true"/>
             </spring:bind>
             <spring:bind path="superAdmin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
                 <div class="dib M0">
                     <tags:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0"
-                        placeholder="${phPassword}" tabindex="7" showPassword="true" includeShowHideButton="true"/>
+                        placeholder="${phPassword}" tabindex="8" showPassword="true" includeShowHideButton="true"/>
                 </div>
                 <c:if test="${mode == 'EDIT'}">
                     <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn superAdmin" 
-                         disabled="true" nameKey="testConnection" tabindex="8"/>
+                         disabled="true" nameKey="testConnection" tabindex="9"/>
                 </c:if>
             </spring:bind>
         </tags:nameValue2>

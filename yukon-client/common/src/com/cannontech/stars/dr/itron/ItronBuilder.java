@@ -60,6 +60,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
             deviceDao.updateDeviceMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
             itronCommunicationService.addDevice(hardware, account);
             hardware.setDeviceId(pao.getDeviceId());
+            itronCommunicationService.saveSecondaryMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
         } catch (ItronCommunicationException e) {
             log.error("Unable to create device.", e);
             MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(YukonUserContext.system);
@@ -69,7 +70,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void preDeleteCleanup(YukonPao pao, InventoryIdentifier inventoryId) {
-       
+       // Nothing to do.
     }
     
     @Override

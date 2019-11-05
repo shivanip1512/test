@@ -70,6 +70,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         }
         icons.put(PaoType.RFN_GATEWAY, Icon.TRANSMITTER);
         icons.put(PaoType.GWY800, Icon.TRANSMITTER);
+        icons.put(PaoType.VIRTUAL_GATEWAY, Icon.TRANSMITTER);
         
     }
     

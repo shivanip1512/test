@@ -1,0 +1,25 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+
+==== Control Area with Threshold Point Trigger
+
+*Request Properties* :
+
+include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/http-response.adoc[]

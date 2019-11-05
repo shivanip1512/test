@@ -6,6 +6,7 @@ import java.util.zip.ZipFile;
 import org.joda.time.Duration;
 
 import com.cannontech.common.inventory.Hardware;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.itron.service.impl.RecentEventParticipationItronData;
 import com.cannontech.stars.dr.account.model.AccountDto;
 
@@ -17,13 +18,19 @@ public interface ItronCommunicationService {
      * customers to add a ZigBee, Direct-to-Grid, or ESI devices
      * from the utility's web portal,
      */
-    public void addDevice(Hardware hardware, AccountDto account);
+    void addDevice(Hardware hardware, AccountDto account);
 
+    /**
+     * Request the secondary (LCR) mac address for a device, given the primary (ESI) mac address.
+     * If a secondary mac is found, it will be saved to use in data parsing.
+     */
+    void saveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress);
+    
     /**
      * Use to create and add a service point, which can include customer's
      * Account and Location information.
      */
-    public void addServicePoint(AccountDto account, String macAddress);
+    void addServicePoint(AccountDto account, String macAddress);
 
     /**
      * Removes existing Device from Service Point
@@ -94,6 +101,5 @@ public interface ItronCommunicationService {
     /**
      * Downloads devices logs for an itron device group, copies and zips the files to ExportArchive/Itron
      */
-
     ZipFile exportDeviceLogsForItronGroup(Long startRecordId, Long endRecordId, List<Integer> deviceId);
 }

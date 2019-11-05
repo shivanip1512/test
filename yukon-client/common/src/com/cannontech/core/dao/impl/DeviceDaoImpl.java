@@ -24,6 +24,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoMacAddress;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -72,6 +73,12 @@ public final class DeviceDaoImpl implements DeviceDao {
         }
     };
 
+    public static final YukonRowMapper<PaoMacAddress> PAO_MAC_ROW_MAPPER = (YukonResultSet rs) -> {
+        PaoIdentifier paoIdentifier = rs.getPaoIdentifier("DeviceId", "Type");
+        String macAddress = rs.getString("MacAddress");
+        return new PaoMacAddress(paoIdentifier, macAddress);
+    };
+    
     @PostConstruct
     public void init() {
         deviceRowMapper = new YukonDeviceRowMapper();
@@ -85,6 +92,17 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Override
     public void enableDevice(YukonDevice device) {
         enableDisableDevice(device, YNBoolean.NO);
+    }
+    
+    @Override
+    public void updateSecondaryMacAddress(PaoType type, int deviceId, String macAddress) {
+        validateMacAddress(type, macAddress);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink params = sql.update("DeviceMacAddress");
+        params.addValue("SecondaryMacAddress", macAddress);
+        sql.append("WHERE DeviceId").eq(deviceId);
+        jdbcTemplate.update(sql);
     }
     
     @Override
@@ -131,11 +149,36 @@ public final class DeviceDaoImpl implements DeviceDao {
         sql.append("SELECT DeviceId");
         sql.append("FROM DeviceMacAddress");
         sql.append("WHERE MacAddress").eq(macAddress);
+        sql.append("OR SecondaryMacAddress").eq(macAddress);
         try {
             return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("No Device ID found for MAC " + macAddress, e);
         }
+    }
+    
+    @Override
+    public String getSecondaryMacAddressForDevice(int deviceId) throws NotFoundException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT SecondaryMacAddress");
+        sql.append("FROM DeviceMacAddress");
+        sql.append("WHERE DeviceId").eq(deviceId);
+        try {
+            return jdbcTemplate.queryForString(sql);
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No entry found for device ID " + deviceId, e);
+        }
+    }
+    
+    @Override
+    public List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT dma.DeviceId, dma.MacAddress, ypo.Type");
+        sql.append("FROM DeviceMacAddress dma");
+        sql.append("JOIN YukonPaObject ypo ON ypo.paObjectId = dma.deviceId");
+        sql.append("WHERE SecondaryMacAddress IS NULL");
+        
+        return jdbcTemplate.query(sql, PAO_MAC_ROW_MAPPER);
     }
     
     @Override

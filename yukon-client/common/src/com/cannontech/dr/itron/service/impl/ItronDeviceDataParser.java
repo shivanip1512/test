@@ -128,7 +128,13 @@ public class ItronDeviceDataParser {
         }
         
         Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
-        ItronDataCategory category = ItronDataCategory.valueOf(rowData[1]);
+        ItronDataCategory category;
+        try {
+            category = ItronDataCategory.valueOf(rowData[1]);
+        } catch (IllegalArgumentException e) {
+            log.info("Unknown Itron data category: " + rowData[1]);
+            return pointValues;
+        }
         String eventTime = rowData[3];//ISO 8601 YYYY-MM-DD
         String source = rowData[5];//Mac address
         String[] text = rowData[9].split(",");//Tokenized CSV text
@@ -174,6 +180,7 @@ public class ItronDeviceDataParser {
                     pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
                 } catch (NotFoundException e) {
                     log.debug("Ignoring data for unknown device with MAC " + source);
+                    log.trace("Exception: ", e);
                     break;
                 }
                 
@@ -205,8 +212,8 @@ public class ItronDeviceDataParser {
         case EVENT_CAT_PROGRAM_EVENTS:
             //This event type is sent from Itron, but we are not parsing it because we can get the same information from EVENT_CAT_NIC_EVENTs
             break;
-        default:
-            log.trace("Unknown Event Category: " + rowData[1]);
+        case EVENT_CAT_ESP:
+            //This event type is not used.
             break;
         }
         
@@ -284,5 +291,6 @@ public class ItronDeviceDataParser {
 
 enum ItronDataCategory {
     EVENT_CAT_NIC_EVENT,
-    EVENT_CAT_PROGRAM_EVENTS
+    EVENT_CAT_PROGRAM_EVENTS,
+    EVENT_CAT_ESP
 }

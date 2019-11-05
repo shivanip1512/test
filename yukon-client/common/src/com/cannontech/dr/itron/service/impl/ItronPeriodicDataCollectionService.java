@@ -1,6 +1,7 @@
 package com.cannontech.dr.itron.service.impl;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -15,10 +16,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.pao.PaoMacAddress;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.service.ItronDataReadService;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -35,6 +39,8 @@ public class ItronPeriodicDataCollectionService {
     @Autowired private ItronDataReadService itronDataReadService;
     @Autowired private PaoDao paoDao;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private ItronCommunicationService itronCommunicationService;
     
     private Duration interval = Duration.ZERO;
     private ScheduledFuture<?> scheduledTask;
@@ -123,6 +129,9 @@ public class ItronPeriodicDataCollectionService {
             return;
         }
         
+        log.info("Checking for devices with no secondary mac address.");
+        updateSecondaryMacAddresses();
+        
         log.info("Starting Itron data collection");
         itronDataReadService.collectData();
         log.info("Itron data collection complete");
@@ -158,6 +167,21 @@ public class ItronPeriodicDataCollectionService {
         }
 
         return Duration.ZERO;
+    }
+    
+    /**
+     * Find all the Itron devices with no secondary (LCR) mac address, and request it from Itron for each of them.
+     * If no secondary mac is found for a device, we just keep going without error.
+     */
+    private void updateSecondaryMacAddresses() {
+        List<PaoMacAddress> devicesWithNoSecondaryMac = deviceDao.findAllDevicesWithNoSecondaryMacAddress();
+        log.info("{} devices with no secondary mac.", devicesWithNoSecondaryMac.size());
+        for (PaoMacAddress paoMacAddress : devicesWithNoSecondaryMac) {
+            log.debug("Requesting secondary mac for device ID {}", paoMacAddress.getPaoId());
+            itronCommunicationService.saveSecondaryMacAddress(paoMacAddress.getPaoType(), 
+                                                              paoMacAddress.getPaoId(), 
+                                                              paoMacAddress.getMacAddress());
+        }
     }
     
     private static String format(Duration d) {
