@@ -53,7 +53,7 @@ public class SepProgramApiTest {
                 loadGroups,
                 gearTypes,
                 programConstraint.getId());
-        loadProgram.setName("Auto_LmSepProgramTest2");
+        loadProgram.setName("Auto_LmSepProgramTest");
         loadProgram.setNotification(null);
         // Create Load Program
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
@@ -184,10 +184,10 @@ public class SepProgramApiTest {
         /// To delete load programs created with different gears
         MockLMDto deleteObject = MockLMDto.builder()
                 .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
-        ExtractableResponse<?> responsee = ApiCallHelper.delete("deleteLoadProgram", deleteObject,
+        ExtractableResponse<?> deleteLdPrgmResponse = ApiCallHelper.delete("deleteLoadProgram", deleteObject,
                 response.path("programId").toString());
-        assertTrue(responsee.statusCode() == 200, "Status code should be 200");
-        assertTrue(responsee.path("programId").equals(response.path("programId")),
+        assertTrue(deleteLdPrgmResponse.statusCode() == 200, "Status code should be 200");
+        assertTrue(deleteLdPrgmResponse.path("programId").equals(response.path("programId")),
                 "Expected programId to be deleted is not correct");
         Log.endTestCase("SepProgram_06_CreateWithDifferentGears");
 
@@ -554,16 +554,16 @@ public class SepProgramApiTest {
         // Delete LoadGroup which have been created for Load Program
         MockLoadGroupBase loadGroup = (MockLoadGroupBase) context.getAttribute("loadGroupDigiSep");
         deleteObject.setName(loadGroup.getName());
-        ExtractableResponse<?> response1 = ApiCallHelper.delete("deleteloadgroup", deleteObject, loadGroup.getId().toString());
-        softAssert.assertTrue(response1.statusCode() == 200, "Status code should be 200. Delete LoadGroup failed.");
+        ExtractableResponse<?> deleteLdGrpResponse = ApiCallHelper.delete("deleteloadgroup", deleteObject, loadGroup.getId().toString());
+        softAssert.assertTrue(deleteLdGrpResponse.statusCode() == 200, "Status code should be 200. Delete LoadGroup failed.");
 
         // Delete Program Constraint which have been created for Load Program
         MockLMDto deleteConstraint = MockLMDto.builder()
                 .name(context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME).toString()).build();
-        ExtractableResponse<?> response2 = ApiCallHelper.delete("deleteProgramConstraint",
+        ExtractableResponse<?> deletePrgmCnstResponse = ApiCallHelper.delete("deleteProgramConstraint",
                 deleteConstraint,
                 context.getAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID).toString());
-        softAssert.assertTrue(response2.statusCode() == 200, "Status code should be 200. Delete Program Constraint failed.");
+        softAssert.assertTrue(deletePrgmCnstResponse.statusCode() == 200, "Status code should be 200. Delete Program Constraint failed.");
         softAssert.assertAll();
         Log.endTestCase("tearDown");
     }
