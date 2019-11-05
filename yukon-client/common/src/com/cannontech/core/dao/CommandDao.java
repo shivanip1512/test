@@ -2,9 +2,11 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.command.CommandCategory;
 
 public interface CommandDao {
     
@@ -39,4 +41,29 @@ public interface CommandDao {
      * A valid command will look something like: putconfig tou 11122222 schedule 1 B/0:00 A/6:00 C/14:00 schedule 2 A/0:00 default A 
      */
     String buildTOUScheduleCommand(int scheduleId);
+
+    /**
+     * Adds command and label for pao type
+     */
+    void addCommand(String commandString, String label, PaoType paoType);
+
+    /**
+     * Adds command and label for all pao types in category
+     */
+    void addCommand(String commandString, String label, CommandCategory category);
+
+    /**
+     * Updates device type commands
+     */
+    void updateDeviceTypeCommands(List<LiteDeviceTypeCommand> commands);
+
+    /**
+     * Updates command
+     */
+    void updateCommand(LiteCommand command);
+
+    /**
+     * Deletes device type commands
+     */
+    void deleteDeviceTypeCommand(int deviceCommandId);
 }
