@@ -115,6 +115,8 @@ public enum RfnManufacturerModel {
     // RFN_GATEWAY(PaoType.RFN_GATEWAY, "CPS", "RFGateway"),
     // GWY_800(PaoType.GWY800, "CPS", "RFGateway2"),
     // NETWORK_MANAGER(null, "Eaton", "NetworkManager"),
+    // VIRTUAL_GATEWAY(PaoType.VIRTUAL_GATEWAY, "CPS", "VGW"),
+    
     ;
     
     //https://jira-prod.tcc.etn.com/browse/YUK-17425

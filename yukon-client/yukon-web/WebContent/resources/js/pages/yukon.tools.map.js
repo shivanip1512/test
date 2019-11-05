@@ -341,19 +341,19 @@ yukon.tools.map = (function() {
         for (var x in routeInfo) {
             var route = routeInfo[x],
                 feature = route.location.features[0],
+                pao = feature.properties.paoIdentifier,
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-                icon = new ol.Feature({ routeInfo: route });
+                icon = new ol.Feature({ routeInfo: route, pao: pao });
             
             icon.setStyle(style);
             
             //check if device already exists on map...the first device will always be the original device so make the icon larger
-            var deviceFound = _findFocusDevice(feature.properties.paoIdentifier.paoId, x == 0);
+            var deviceFound = _findFocusDevice(pao.paoId, x == 0);
             if (deviceFound) {
             	icon = deviceFound;
             	icon.set("routeInfo", route);
             	icon.unset("neighbor");
             } else {
-                icon.set("pao", feature.properties.paoIdentifier);
                 if (x == 0) {
                     _makeDeviceIconLarger(icon);
                 }
@@ -422,18 +422,18 @@ yukon.tools.map = (function() {
         for (var x in neighbors) {
             var neighbor = neighbors[x],
             feature = neighbor.location.features[0],
+            pao = feature.properties.paoIdentifier,
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ neighbor: neighbor });
+            icon = new ol.Feature({ neighbor: neighbor, pao: pao });
             
             //check if neighbor already exists on map
-            var neighborFound = _findFocusDevice(feature.properties.paoIdentifier.paoId, false);
+            var neighborFound = _findFocusDevice(pao.paoId, false);
             if (neighborFound) {
             	icon = neighborFound;
             	icon.set("neighbor", neighbor);
             	icon.unset("routeInfo");
             } else {
                 icon.setStyle(style);
-                icon.set("pao", feature.properties.paoIdentifier);
 
                 if (_srcProjection === _destProjection) {
                     icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
@@ -522,9 +522,13 @@ yukon.tools.map = (function() {
             var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
             _map.addOverlay(_overlay);
             _map.on('click', function(ev) {
-                var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { return feature; });
-                if (feature) {
-                    yukon.mapping.displayMappingPopup(feature, _overlay);
+                var paoFeature = _map.forEachFeatureAtPixel(ev.pixel, function(feature) {
+                    if (feature && feature.get('pao') != null) {
+                        return feature;
+                    }
+                });
+                if (paoFeature) {
+                    yukon.mapping.displayMappingPopup(paoFeature, _overlay);
                 } else {
                     var target = ev.originalEvent.target;
                     //check if user clicked on the cog, the error hide-reveal, or notes icon
@@ -704,8 +708,12 @@ yukon.tools.map = (function() {
             /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */
             $(_map.getViewport()).on('mousemove', function(e) {
                 var pixel = _map.getEventPixel(e.originalEvent),
-                    hit = _map.forEachFeatureAtPixel(pixel, function(feature, layer) { return true; });
-                $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
+                    paoFeature = _map.forEachFeatureAtPixel(pixel, function(feature) {
+                        if (feature && feature.get('pao') != null) {
+                            return feature;
+                        }
+                    });
+                $('#' + _map.getTarget()).css('cursor', paoFeature ? 'pointer' : 'default');
             });
             
             /** Remove the coordinates for the device when the user clicks OK on the confirmation popup. **/

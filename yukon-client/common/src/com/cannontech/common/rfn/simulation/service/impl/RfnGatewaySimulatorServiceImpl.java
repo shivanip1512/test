@@ -636,6 +636,12 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                                       RfnDeviceCreationService.GATEWAY_2_MODEL_STRING);
         }
         
+        if (settings != null && settings.isReturnVirtualGatewayModel()) {
+            rfnId = new RfnIdentifier(rfnId.getSensorSerialNumber(), 
+                                      rfnId.getSensorManufacturer(), 
+                                      RfnDeviceCreationService.GATEWAY_3_MODEL_STRING);
+        }
+        
         if (gatewayDataCache.get(rfnId) == null) {
             gatewayDataCache.put(rfnId, DefaultGatewaySimulatorData.getDefaultGatewayData());
         }
