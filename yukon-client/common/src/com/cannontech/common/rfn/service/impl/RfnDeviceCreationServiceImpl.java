@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -205,17 +206,16 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Override
     public synchronized RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier) {
         log.info("Creating gateway: " + rfnIdentifier);
-        PaoType gatewayType;
-        if (rfnIdentifier.getSensorModel().equalsIgnoreCase(GATEWAY_2_MODEL_STRING)) {
-            gatewayType = PaoType.GWY800;
-        } else {
-            gatewayType = PaoType.RFN_GATEWAY;
-        }
-        
+        Map<String, PaoType> modelTypes = Map.of(
+                GATEWAY_2_MODEL_STRING.toLowerCase(), PaoType.GWY800,
+                GATEWAY_3_MODEL_STRING.toLowerCase(), PaoType.VIRTUAL_GATEWAY);
+
+        PaoType gatewayType = modelTypes.getOrDefault(rfnIdentifier.getSensorModel().toLowerCase(),
+                PaoType.RFN_GATEWAY);
         SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(gatewayType, name, rfnIdentifier, true);
         return new RfnDevice(name, device.getPaoIdentifier(), rfnIdentifier);
     }
-    
+
     private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
         if (hardware == null) {
             /** Attempt to stub out a stars devices for lcr archive messages */ 

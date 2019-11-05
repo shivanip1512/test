@@ -7,6 +7,7 @@ import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 public class SimulatedGatewayDataSettings implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean returnGwy800Model;
+    private boolean returnVirtualGatewayModel;
     private double currentDataStreamingLoading;
     private Integer numberOfReadyNodes;
     private Integer numberOfNotReadyNodes;
@@ -19,6 +20,14 @@ public class SimulatedGatewayDataSettings implements Serializable {
 
     public void setReturnGwy800Model(boolean returnGwy800Model) {
         this.returnGwy800Model = returnGwy800Model;
+    }
+    
+    public boolean isReturnVirtualGatewayModel() {
+        return returnVirtualGatewayModel;
+    }
+
+    public void setReturnVirtualGatewayModel(boolean returnVirtualGatewayModel) {
+        this.returnVirtualGatewayModel = returnVirtualGatewayModel;
     }
 
     public double getCurrentDataStreamingLoading() {

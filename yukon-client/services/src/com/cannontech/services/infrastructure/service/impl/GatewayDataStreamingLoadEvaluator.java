@@ -28,7 +28,7 @@ public class GatewayDataStreamingLoadEvaluator implements InfrastructureWarningE
     
     @Override
     public Set<PaoType> getSupportedTypes() {
-        return ImmutableSet.of(PaoType.GWY800);
+        return ImmutableSet.of(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY);
     }
 
     @Override
