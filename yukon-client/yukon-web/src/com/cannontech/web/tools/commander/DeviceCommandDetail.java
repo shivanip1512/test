@@ -1,25 +1,25 @@
 package com.cannontech.web.tools.commander;
 
-public class DeviceCommandModel {
+public class DeviceCommandDetail {
     
-    private int deviceCommandId;
-    private int commandId;
+    private Integer deviceCommandId;
+    private Integer commandId;
     private String deviceType;
     private int displayOrder;
     private boolean visibleFlag;
     private String commandName;
     private String command;
     
-    public int getDeviceCommandId() {
+    public Integer getDeviceCommandId() {
         return deviceCommandId;
     }
-    public void setDeviceCommandId(int deviceCommandId) {
+    public void setDeviceCommandId(Integer deviceCommandId) {
         this.deviceCommandId = deviceCommandId;
     }
-    public int getCommandId() {
+    public Integer getCommandId() {
         return commandId;
     }
-    public void setCommandId(int commandId) {
+    public void setCommandId(Integer commandId) {
         this.commandId = commandId;
     }
     public String getDeviceType() {
