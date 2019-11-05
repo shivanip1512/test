@@ -1,7 +1,7 @@
 package com.cannontech.amr.rfn.dataStreaming.service.impl;
 
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.FAILURE;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.NOT_CONFIGURED;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.ALREADY_CONFIGURED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
 import static java.util.stream.Collectors.toList;
@@ -827,7 +827,7 @@ public class DataStreamingServiceImpl implements DataStreamingService, Collectio
             context);
         if (!devicesIdsWithoutBehavior.isEmpty()) {
             // mark devices without behavior as "not configured".
-            collectionActionService.addUnsupportedToResult(NOT_CONFIGURED, result,
+            collectionActionService.addUnsupportedToResult(ALREADY_CONFIGURED, result,
                 getDeviceSubset(devices, new ArrayList<>(devicesIdsWithoutBehavior)));
         }
 

@@ -16,6 +16,7 @@ public enum CollectionActionDetail implements DisplayableEnum {
     CONNECTED(CollectionActionDetailSummary.SUCCESS, null, "#009933"),  //green
     ARMED(CollectionActionDetailSummary.SUCCESS, null, "#5cb85c"),  //light green
     DISCONNECTED(CollectionActionDetailSummary.SUCCESS, null, "#ec971f"),  //orange
+    // NOT_CONFIGURED means the device was not in a proper state before the action was attempted so we were not able to perform the action.
     NOT_CONFIGURED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.NOT_CONFIGURED, "#4d90fe"),  //blue
     CANCELED(CollectionActionDetailSummary.NOT_ATTEMPTED, CommandRequestUnsupportedType.CANCELED, "#849ddf"), //light blue
     CONFIRMED(CollectionActionDetailSummary.SUCCESS, null, "#009933"), //green
