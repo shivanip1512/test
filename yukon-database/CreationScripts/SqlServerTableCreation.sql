@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/11/2019 1:33:48 PM                        */
+/* Created on:     10/29/2019 2:28:20 PM                        */
 /*==============================================================*/
 
 
@@ -3452,6 +3452,7 @@ go
 create table DeviceMacAddress (
    DeviceId             numeric              not null,
    MacAddress           varchar(255)         not null,
+   SecondaryMacAddress  varchar(255)         null,
    constraint PK_DeviceMacAddress primary key (DeviceId)
 )
 go
@@ -15382,8 +15383,6 @@ alter table Zone
    add constraint FK_Zone_Zone foreign key (ParentId)
       references Zone (ZoneId)
 go
-
-
 
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance;

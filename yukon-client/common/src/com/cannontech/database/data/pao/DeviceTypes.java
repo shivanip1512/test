@@ -278,4 +278,5 @@ public interface DeviceTypes extends TypeBase
 
     public final static int RFN420CLW = DEVICE_OFFSET + 211;
     public final static int RFN420CDW = DEVICE_OFFSET + 212;
+    public final static int VIRTUAL_GATEWAY = DEVICE_OFFSET + 213;
 }

@@ -3,12 +3,15 @@ package com.cannontech.common.dr.setup;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class LMSetupFilter {
 
     private LmSetupFilterType filterByType;
     private String name;
     private List<PaoType> types;
+    private List<GearControlMethod> gearTypes;
+    private List<Integer> programIds;
 
     public LmSetupFilterType getFilterByType() {
         return filterByType;
@@ -34,4 +37,19 @@ public class LMSetupFilter {
         this.types = types;
     }
 
+    public List<GearControlMethod> getGearTypes() {
+        return gearTypes;
+    }
+
+    public void setGearTypes(List<GearControlMethod> gearTypes) {
+        this.gearTypes = gearTypes;
+    }
+
+    public List<Integer> getProgramIds() {
+        return programIds;
+    }
+
+    public void setProgramIds(List<Integer> programIds) {
+        this.programIds = programIds;
+    }
 }

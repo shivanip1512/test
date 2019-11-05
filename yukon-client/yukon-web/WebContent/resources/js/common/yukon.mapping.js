@@ -21,6 +21,8 @@ yukon.mapping = (function () {
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
     _srcProjection = 'EPSG:4326',
+
+    _elevationLayer,
     
     /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
     _styles = { 
@@ -111,7 +113,8 @@ yukon.mapping = (function () {
                 actionsDiv.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
                 actionsDiv.find('.js-view-all-notes').attr('data-pao-id', pao.device.paoIdentifier.paoId);
                 yukon.tools.paonotespopup.hideShowNotesIcons(pao.device.paoIdentifier.paoId);
-                if (pao.device.paoIdentifier.paoType === 'RFN_GATEWAY' || pao.device.paoIdentifier.paoType === 'GWY800') {
+                if (pao.device.paoIdentifier.paoType === 'RFN_GATEWAY' || pao.device.paoIdentifier.paoType === 'GWY800'
+                    || pao.device.paoIdentifier.paoType === 'VIRTUAL_GATEWAY') {
                     actionsDiv.find('.js-device-route').addClass('dn');
                 }
                 $('.js-device').html(deviceLink + actionsDiv[0].outerHTML);
@@ -339,6 +342,25 @@ yukon.mapping = (function () {
             } else {
                 map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
                 map.getView().setZoom(13);
+            }
+        },
+
+        showHideElevationLayer: function(map, button) {
+            var checked = button.hasClass('on');
+            if (checked) {
+                button.removeClass('on');
+                map.removeLayer(_elevationLayer);
+            } else {
+                _elevationLayer = new ol.layer.VectorTile({
+                    declutter: true,
+                    opacity: 0.6,
+                    source: new ol.source.VectorTile({
+                        format: new ol.format.MVT(),
+                        url: yg.map_devices_elevation_url
+                    }),
+                })
+                button.addClass('on');
+                map.addLayer(_elevationLayer);
             }
         },
 

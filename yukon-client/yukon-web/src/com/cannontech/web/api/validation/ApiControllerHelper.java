@@ -107,9 +107,25 @@ public class ApiControllerHelper {
                     }
                     responseCode = checkUrl(userContext, request, webUrl);
                 }
-
+                
+                String serverPort = Integer.toString(request.getLocalPort());
                 if (responseCode != HttpStatus.OK) {
-                    String serverPort = Integer.toString(request.getLocalPort());
+                    if (request.isSecure()) {
+                        webUrl = "https://127.0.0.1:" + serverPort;
+                    } else {
+                        webUrl = "http://127.0.0.1:" + serverPort;
+                    }
+                    if (!request.getContextPath().isEmpty()) {
+                        webUrl = webUrl + request.getContextPath();
+                    }
+
+                    if (request.isSecure() && !isHttpsSettingInitialized) {
+                        SSLSettingsInitializer.initializeHttpsSetting();
+                    }
+                    responseCode = checkUrl(userContext, request, webUrl);
+                }
+                
+                if (responseCode != HttpStatus.OK) {
                     InetAddress[] inetAddress = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
                     for (InetAddress hostName : inetAddress) {
                         if (request.isSecure()) {
@@ -142,6 +158,7 @@ public class ApiControllerHelper {
             } else {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
+            log.info("Web server url for API connection " + webServerUrl);
         }
         return webServerUrl;
     }

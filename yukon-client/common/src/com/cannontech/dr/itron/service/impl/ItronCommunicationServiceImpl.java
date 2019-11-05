@@ -51,7 +51,10 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupReques
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupResponseType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.EditHANDeviceResponse;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.FindDeviceResponseType;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.FindHANDeviceRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ObjectFactory;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.PaginationType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsRequest;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.UpdateDeviceEventLogsResponse;
 import com.cannontech.dr.itron.model.jaxb.programEventManagerTypes_v1_6.AddHANLoadControlProgramEventRequest;
@@ -155,7 +158,42 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             handleException(e, ItronEndpointManager.DEVICE);
         }
     }
-      
+    
+    @Override
+    public void saveSecondaryMacAddress(PaoType type, int deviceId, String primaryMacAddress) {
+        FindHANDeviceRequest request = new FindHANDeviceRequest();
+        request.setESIMacID(primaryMacAddress);
+        PaginationType pagination = new PaginationType();
+        pagination.setPageSize(10);
+        pagination.setPageNumber(1);
+        request.setPagination(pagination);
+        String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
+        log.debug("ITRON-findDevice url:{} primary mac:{}", url, primaryMacAddress);
+        
+        try {
+            JAXBElement<FindDeviceResponseType> responseElement = 
+                    (JAXBElement<FindDeviceResponseType>) ItronEndpointManager.DEVICE.getTemplate(settingDao)
+                                                                                     .marshalSendAndReceive(url, request);
+            
+            FindDeviceResponseType response = responseElement.getValue();
+            if (response.getDeviceCount() == 0) {
+                log.info("No secondary mac found for device with primary mac {}", primaryMacAddress);
+                return;
+            }
+            
+            // 1 or more results found
+            log.info("Found {} secondary macs for device with primary mac {}.", response.getDeviceCount(), primaryMacAddress);
+            if (log.isDebugEnabled()) {
+                // Log secondary macs in case we run into a weird situation where we get multiple results
+                String secondaryMacs = response.getMacIDs().stream().collect(Collectors.joining(", "));
+                log.debug("Secondary macs: {}", secondaryMacs);
+            }
+            deviceDao.updateSecondaryMacAddress(type, deviceId, response.getMacIDs().get(0));
+        } catch (Exception e) {
+            handleException(e, ItronEndpointManager.DEVICE);
+        }
+    }
+    
     @Transactional
     @Override
     public void removeDeviceFromServicePoint(String macAddress) {
