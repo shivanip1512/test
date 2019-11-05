@@ -42,6 +42,8 @@
 <entry key="yukon.common.roleProperty.ENABLE_WEB_COMMANDER.description">Controls access to web Commander applications.</entry>
 <entry key="yukon.common.roleProperty.ENABLE_CLIENT_COMMANDER">Enable Client Commander</entry>
 <entry key="yukon.common.roleProperty.ENABLE_CLIENT_COMMANDER.description">Controls access to client Commander application.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_CUSTOM_COMMANDS">Manage Custom Commands</entry>
+<entry key="yukon.common.roleProperty.MANAGE_CUSTOM_COMMANDS.description">Controls access to the ability to manage custom commands in web commander</entry>
 
 <!-- Database Editor RoleProperties -->
 <entry key="yukon.common.roleProperty.DBEDITOR_LM">Load Management View Enabled</entry>
