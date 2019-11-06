@@ -724,7 +724,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     // send regulator heartbeat messages as long as we are communicating
     if ( ! state->isCommsLost() )
     {
-        sendKeepAlive( subbus );
+        sendKeepAlive( state, subbus );
     }
 
     stopDisabledDeviceHeartbeats( subbus );
@@ -2201,9 +2201,23 @@ bool IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 }
 
 
-void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
+void IVVCAlgorithm::sendKeepAlive(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
 {
     using namespace Cti::CapControl;
+
+    // Each call to this function only sends keepAlive messages to one of the regulator phases {A, B, C or Poly}
+    // and then the Capbank keepAlive messages.  There is a 1 to 2 second delay between calls that send messages.
+
+    CtiTime now;
+
+    if ( now < state->keepAlives.nextSendTime )
+    {
+        return;     // not time yet - bail out here
+    }
+
+    state->keepAlives.nextSendTime = now.addSeconds( 2 );   // the future!
+
+    const auto currentPhase = state->keepAlives.getCurrentPhase();  // this sets the next phase to send as well
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
@@ -2211,38 +2225,20 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
     Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
 
-    // need to send each phase seperated by a small delay...
-    // first send poly phase and phase A
-    // wait at least 1 second, send B, wait at least 1 s, send C
-    // send bank messages after regulator messages every time
-
-    CtiTime Now;
-    static CtiTime PreviousHeartbeat{ CtiTime::neg_infin };
-    static const std::array<Phase, 3> PhaseArray = { Phase_A, Phase_B, Phase_C };
-    static auto PhaseCounter = PhaseArray.size() - 1;
-
-    if ( Now <= PreviousHeartbeat + 1 )
-    {
-        return;
-    }
-
-    PhaseCounter = ++PhaseCounter % PhaseArray.size();
-    auto CurrentPhase = PhaseArray[ PhaseCounter ];
-
     for ( const auto & ID : subbusZoneIds )
     {
         // regulators
 
         ZoneManager::SharedPtr  zone = zoneManager.getZone( ID );
 
-        for ( const auto & mapping : zone->getRegulatorIds() )
+        for ( const auto & [ regulatorPhase, regulatorID ] : zone->getRegulatorIds() )
         {
             try
             {
-                if ( mapping.first == Phase_Poly || mapping.first == CurrentPhase )
+                if ( regulatorPhase == currentPhase )
                 {
                     VoltageRegulatorManager::SharedPtr regulator =
-                            store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
+                            store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
                     regulator->executePeriodicKeepAlive( SystemUser );
                 }
@@ -2259,7 +2255,6 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
                 }
             }
         }
-
 
         // capbanks
 
@@ -2298,8 +2293,6 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             }
         }
     }
-
-    PreviousHeartbeat = Now;
 }
 
 void IVVCAlgorithm::stopDisabledDeviceHeartbeats( CtiCCSubstationBusPtr subbus )

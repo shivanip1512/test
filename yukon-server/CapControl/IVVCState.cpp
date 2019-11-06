@@ -1,5 +1,24 @@
 #include "precompiled.h"
+
 #include "IVVCState.h"
+#include <array>
+
+
+Cti::CapControl::Phase  KeepAliveHelper::getCurrentPhase()
+{
+    static const std::array<Cti::CapControl::Phase, 4>  phases
+    { 
+        Cti::CapControl::Phase_Poly, 
+        Cti::CapControl::Phase_A,
+        Cti::CapControl::Phase_B, 
+        Cti::CapControl::Phase_C 
+    };
+
+    phaseIndex = ( phaseIndex + 1 ) % phases.size();
+
+    return phases[ phaseIndex ];
+}
+
 
 IVVCState::IVVCState() :
     _state(IVVC_WAIT),
