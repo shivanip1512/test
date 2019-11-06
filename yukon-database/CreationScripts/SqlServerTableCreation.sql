@@ -7679,6 +7679,7 @@ create table MeterProgram (
    Name                 varchar(100)         not null,
    PaoType              varchar(30)          not null,
    Program              varbinary(Max)       not null,
+   Password             varchar(200)         not null,
    constraint PK_MeterProgram primary key (Guid)
 )
 go
@@ -10890,7 +10891,7 @@ create table YukonRoleProperty (
    KeyName              varchar(100)         not null,
    DefaultValue         varchar(1000)        not null,
    Description          varchar(1000)        not null,
-   constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
+   constraint PK_YUKONROLEPROPERTY primary key nonclustered (RolePropertyID)
 )
 go
 
@@ -10936,7 +10937,7 @@ INSERT INTO YukonRoleProperty VALUES(-10315,-103,'Control Cap Control device', '
 INSERT INTO YukonRoleProperty VALUES(-10316,-103,'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
 INSERT INTO YukonRoleProperty VALUES(-10317,-103,'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
 INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true', 'Controls access to web commander applications');
-INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
+INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application');
 INSERT INTO YukonRoleProperty VALUES(-10320,-103,'Manage Custom Commands', 'VIEW', 'Controls access to the ability to manage custom commands in web commander');
 
 /* Dynamic Billing File Setup */
