@@ -91,11 +91,10 @@ public class SepProgramApiTest {
     }
 
     /**
-     * Test case is to update Load Program created by test case SepProgram_01_Create and validate updated data in
-     * response.
+     * Test case is to update Load Program and validate updated data in response.
      */
 
-    @Test(dependsOnMethods = "SepProgram_01_Create")
+    @Test(dependsOnMethods = "SepProgram_02_Get")
     public void SepProgram_03_Update(ITestContext context) {
 
         Log.startTestCase("SepProgram_03_Update");
@@ -121,7 +120,7 @@ public class SepProgramApiTest {
      * Test case is to create copy of SEP Load Program created by test case SepProgram_01_Create
      */
 
-    @Test(dependsOnMethods = "SepProgram_01_Create")
+    @Test(dependsOnMethods = "SepProgram_03_Update")
     public void SepProgram_04_Copy(ITestContext context) {
 
         Log.startTestCase("SepProgram_04_Copy");
@@ -137,28 +136,48 @@ public class SepProgramApiTest {
     }
 
     /**
+     * Test case to validate Load Program cannot be created with Program name already existing and validates valid error
+     * message in response
+     */
+
+    @Test(dependsOnMethods = "SepProgram_04_Copy")
+    public void SepProgram_05_CreateWithExistingProgramName(ITestContext context) {
+
+        Log.startTestCase("SepProgram_05_CreateWithExistingProgramName");
+        mockLoadProgram = buildMockLoadProgram();
+        mockLoadProgram.setName(context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME).toString());
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
+        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Name must be unique."),
+                "Expected code in response is not correct");
+        Log.endTestCase("SepProgram_05_CreateWithExistingProgramName");
+    }
+
+    /**
      * Test case is to delete the Sep Load Program created by test case SepProgram_01_Create
      */
 
-    @Test(dependsOnMethods = "SepProgram_01_Create")
-    public void SepProgram_05_Delete(ITestContext context) {
+    @Test(dependsOnMethods = "SepProgram_05_CreateWithExistingProgramName")
+    public void SepProgram_06_Delete(ITestContext context) {
 
-        Log.startTestCase("SepProgram_05_Delete");
+        Log.startTestCase("SepProgram_06_Delete");
         MockLMDto deleteObject = MockLMDto.builder()
                 .name((String) context.getAttribute(LoadProgramSetupHelper.CONTEXT_PROGRAM_NAME)).build();
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteLoadProgram", deleteObject, programId.toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
         assertTrue(response.path("programId").equals(programId), "Expected programId to be deleted is not correct");
-        Log.startTestCase("SepProgram_05_Delete");
+        Log.startTestCase("SepProgram_06_Delete");
     }
 
     /**
      * This Test case is to create Sep Load Program with all supported Gear Cycles provided via data provider
      */
     @Test(description = "Create Sep load program with supported gears", dataProvider = "GearCycleData")
-    public void SepProgram_06_CreateWithDifferentGears(MockGearControlMethod gearCycle, ITestContext context) {
+    public void SepProgram_07_CreateWithDifferentGears(MockGearControlMethod gearCycle, ITestContext context) {
 
-        Log.startTestCase("SepProgram_06_CreateWithDifferentGears");
+        Log.startTestCase("SepProgram_07_CreateWithDifferentGears");
         MockLoadGroupBase loadGroupDigiSep = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
         context.setAttribute("loadGroupDigiSep", loadGroupDigiSep);
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
@@ -189,7 +208,7 @@ public class SepProgramApiTest {
         assertTrue(deleteLdPrgmResponse.statusCode() == 200, "Status code should be 200");
         assertTrue(deleteLdPrgmResponse.path("programId").equals(response.path("programId")),
                 "Expected programId to be deleted is not correct");
-        Log.endTestCase("SepProgram_06_CreateWithDifferentGears");
+        Log.endTestCase("SepProgram_07_CreateWithDifferentGears");
 
     }
 
@@ -210,9 +229,9 @@ public class SepProgramApiTest {
      */
 
     @Test
-    public void SepProgram_07_NameCannotBeEmpty() {
+    public void SepProgram_08_NameCannotBeEmpty() {
 
-        Log.startTestCase("SepProgram_07_NameCannotBeEmpty");
+        Log.startTestCase("SepProgram_08_NameCannotBeEmpty");
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName(" ");
 
@@ -221,7 +240,7 @@ public class SepProgramApiTest {
         assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
         assertTrue(createResponse.path("fieldErrors.code[0]").equals("Name is required."),
                 "Expected code in response is not correct");
-        Log.endTestCase("SepProgram_07_NameCannotBeEmpty");
+        Log.endTestCase("SepProgram_08_NameCannotBeEmpty");
     }
 
     /**
@@ -230,9 +249,9 @@ public class SepProgramApiTest {
      */
 
     @Test
-    public void SepProgram_08_NameGreaterThanMaxLength() {
+    public void SepProgram_09_NameGreaterThanMaxLength() {
 
-        Log.startTestCase("SepProgram_08_NameGreaterThanMaxLength");
+        Log.startTestCase("SepProgram_09_NameGreaterThanMaxLength");
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacter");
 
@@ -241,7 +260,7 @@ public class SepProgramApiTest {
         assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
         assertTrue(createResponse.path("fieldErrors.code[0]").equals("Exceeds maximum length of 60."),
                 "Expected code in response is not correct");
-        Log.endTestCase("SepProgram_08_NameGreaterThanMaxLength");
+        Log.endTestCase("SepProgram_09_NameGreaterThanMaxLength");
     }
 
     /**
@@ -250,9 +269,9 @@ public class SepProgramApiTest {
      */
 
     @Test
-    public void SepProgram_09_NameWithSpecialChars() {
+    public void SepProgram_10_NameWithSpecialChars() {
 
-        Log.startTestCase("SepProgram_09_NameWithSpecialChars");
+        Log.startTestCase("SepProgram_10_NameWithSpecialChars");
         mockLoadProgram = buildMockLoadProgram();
         mockLoadProgram.setName("Test,//Test");
 
@@ -263,28 +282,9 @@ public class SepProgramApiTest {
                 createResponse.path("fieldErrors.code[0]")
                         .equals("Cannot be blank or include any of the following characters: / \\ , ' \" |"),
                 "Expected code in response is not correct");
-        Log.endTestCase("SepProgram_09_NameWithSpecialChars");
+        Log.endTestCase("SepProgram_10_NameWithSpecialChars");
     }
 
-    /**
-     * Test case to validate Load Program cannot be created with Program name already existing and validates valid error
-     * message in response
-     */
-
-    @Test(dependsOnMethods = "SepProgram_04_Copy")
-    public void SepProgram_10_CreateWithExistingProgramName(ITestContext context) {
-
-        Log.startTestCase("SepProgram_10_CreateWithExistingProgramName");
-        mockLoadProgram = buildMockLoadProgram();
-        mockLoadProgram.setName(context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME).toString());
-
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Name must be unique."),
-                "Expected code in response is not correct");
-        Log.endTestCase("SepProgram_10_CreateWithExistingProgramName");
-    }
 
     /**
      * Test case to validate Load Program cannot be created with trigger offset value less than 0 and validates valid
