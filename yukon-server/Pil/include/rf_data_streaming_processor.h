@@ -18,7 +18,7 @@ public:
     
     using ResultVector = std::vector<std::unique_ptr<CtiPointDataMsg>>;
 
-    RfDataStreamingProcessor( CtiDeviceManager *deviceManager, CtiPointManager *pointManager );
+    RfDataStreamingProcessor( CtiDeviceManager& deviceManager, CtiPointManager& pointManager );
 
     ResultVector tick();
 
@@ -63,8 +63,8 @@ private:
 
     ResultVector _results;
 
-    CtiDeviceManager *_deviceManager;
-    CtiPointManager  *_pointManager;
+    CtiDeviceManager & _deviceManager;
+    CtiPointManager  & _pointManager;
 };
 
 }

@@ -42,7 +42,11 @@ enum
 Rfn::E2eStatistics stats;
 unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTING_INTERVAL", E2EDT_STATS_REPORTING_INTERVAL);
 CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
-MeterProgrammingManager meterProgrammingMgr;
+
+RfnRequestManager::RfnRequestManager( CtiDeviceManager& DeviceManager )
+    :   _meterProgrammingMgr { DeviceManager }
+{
+}
 
 void RfnRequestManager::start()
 {
@@ -156,7 +160,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
         {
             auto guid = message.path.substr(meterProgramsPrefix.size());
 
-            if( ! meterProgrammingMgr.isUploading(rfnIdentifier, guid) )
+            if( ! _meterProgrammingMgr.isUploading(rfnIdentifier, guid) )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
@@ -165,11 +169,13 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            auto program = meterProgrammingMgr.getProgram(guid);
+            auto program = _meterProgrammingMgr.getProgram(guid);
 
             if( program.empty() )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+
+                return;
             }
 
             if( ! message.block && program.size() < E2EDT_DEFAULT_BLOCK_SIZE )
@@ -193,7 +199,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 block.more = false;
             }
 
-            meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, block.end());
+            _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, block.end());
 
             auto begin = program.begin() + block.start();
             auto end = program.size() < block.end()

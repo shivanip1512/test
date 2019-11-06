@@ -1,9 +1,12 @@
 #include <boost/test/unit_test.hpp>
 
 #include "mgr_rfn_request.h"
+#include "mgr_device.h"
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_ConfigNotification.h"
 #include "cmd_rfn_LoadProfile.h"
+
+#include "rtdb_test_helpers.h"
 
 #include "boost_test_helpers.h"
 
@@ -36,6 +39,13 @@ struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
 
 struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 {
+    Cti::Test::test_DeviceManager devMgr;
+
+    test_RfnRequestManager() 
+        :   RfnRequestManager { devMgr }
+    {
+    }
+
     struct test_E2eDataTransferProtocol : Cti::Protocols::E2eDataTransferProtocol
     {
         unsigned short id;

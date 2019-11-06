@@ -729,7 +729,7 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
                 try
                 {
-                    decrypted = Cti::Encryption::decrypt( Cti::Encryption::OneWayMsgEncryptionKey, encrypted );
+                    decrypted = Cti::Encryption::decrypt( Cti::Encryption::SharedKeyfile, encrypted );
                     route->setEncryptionKey( decrypted );
                 }
                 catch ( Cti::Encryption::Error e )

@@ -2,11 +2,84 @@
 
 #include "mgr_meter_programming.h"
 
+#include "mgr_device.h"
+#include "mgr_dyn_paoinfo.h"
+#include "dev_rfn.h"
+
+#include "database_reader.h"
+#include "encryption.h"
+#include "std_helper.h"
+
+namespace {
+    
+typedef void(*func)(void *pData, size_t dataSize);
+
+typedef struct _fileInfo_s
+{
+    char        *pFile;
+    uint16_t    fileSize;
+    char        *pPassword;
+    uint8_t     pwdLength;
+}FILEINFO_t;
+
+int conProcessBlob(const FILEINFO_t *pData)
+{
+    //  unused, writes to a file.
+
+    return 0;
+}
+int conProcessBlob(const FILEINFO_t *pData, func callback)
+{
+    std::vector<char> buf {
+        pData->pPassword,
+        pData->pPassword + pData->pwdLength };
+
+    //  just concatenate the two for testing purposes
+    buf.insert(buf.end(),
+        pData->pFile, 
+        pData->pFile + pData->fileSize);
+
+    callback(buf.data(), buf.size());
+
+    return 0;
+}
+
+std::mutex programMux;
+Cti::Pil::MeterProgrammingManager::Bytes globalBuffer;
+
+}
+
 namespace Cti::Pil {
 
+MeterProgrammingManager::MeterProgrammingManager(CtiDeviceManager& deviceManager)
+    :   _deviceManager  { deviceManager }
+{}
+    
 auto MeterProgrammingManager::getProgram(const std::string guid) -> Bytes
 {
-    static const std::string testString =
+    if( std::lock_guard lg(programMux); 
+        auto existingProgram = mapFindRef(_programs, guid) )
+    {
+        return *existingProgram;
+    }
+
+    std::string sql = "select program, password from MeterProgram where guid = ?";
+
+    Database::DatabaseConnection conn;
+    Database::DatabaseReader rdr { conn, sql };
+
+    rdr << guid;
+
+    rdr.execute();
+
+    if( ! rdr() )
+    {
+//        CTILOG_ERROR(dout, "Could not retrieve MeterProgram entry for guid " << guid);
+        
+//        return {};
+
+        //  Return Lorem Ipsum for the initial E2E Block Transfer integration test
+        static const std::string testString =
             R"testString(
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin eget sapien eleifend, viverra purus a, venenatis ex. Etiam massa leo, sollicitudin nec placerat a, ultrices a eros. In tristique nunc id eros placerat, sit amet consectetur risus dignissim. Morbi sit amet malesuada purus. Mauris lobortis ut lectus ac dapibus. Nam cursus vestibulum pharetra. Nullam cursus congue lectus vel efficitur. Phasellus lacus tellus, posuere ac dolor et, maximus rutrum dolor. Praesent a ex non ante tristique ullamcorper. Praesent in ante porta mauris vulputate fermentum eget ut mauris. Mauris tempor sagittis massa ac sagittis.
 In fermentum nulla vel nisi lacinia faucibus. Curabitur placerat viverra consequat. Curabitur facilisis pulvinar nibh ut luctus. Fusce ac ex ac lectus laoreet faucibus vel quis tortor. Vestibulum urna nulla, luctus ut quam in, tempus pellentesque nibh. Aenean bibendum metus ut placerat viverra. In sapien elit, vulputate a ornare quis, varius ut purus. Praesent gravida fermentum egestas. Donec sit amet eleifend mi. Nunc rutrum metus nec magna varius porta. Integer pellentesque risus vitae mauris mattis, vel lacinia sem tempor.
@@ -29,19 +102,63 @@ Vivamus quis quam sit amet nisi tempus porttitor. Vivamus nec hendrerit dui. Nun
 Nulla facilisi. Vestibulum eget diam eget leo viverra rhoncus eget nec augue. Maecenas ut mollis nulla. Etiam faucibus ornare lorem sit amet hendrerit. Nam rutrum vulputate leo ut eleifend. Cras vitae commodo urna. Nullam ultricies ultrices sem, iaculis malesuada sem pretium eu. Quisque finibus id magna at varius. Proin laoreet massa ac justo blandit, sed gravida velit commodo. Fusce ullamcorper mi a nisi sollicitudin, non bibendum nisl pretium. Donec id lobortis metus. Aliquam nec tellus a odio pellentesque elementum et eget enim. Fusce lorem ex, ultricies ut tempus quis, venenatis sed lacus. Aliquam a ornare neque, id venenatis est.
 Etiam viverra tincidunt gravida. Curabitur felis eros, ullamcorper in volutpat a, pretium sit amet elit. Donec eu purus et tortor elementum porttitor eu imperdiet ipsum. Sed nibh diam, vestibulum eget ex a, mattis dapibus elit. Etiam euismod laoreet placerat. Maecenas efficitur sapien vel tempus dapibus. Donec consequat purus quis venenatis iaculis. Ut sit amet enim faucibus, tempus arcu id, ultrices mauris. Proin id tristique dolor. Maecenas id dolor quis mauris commodo fringilla. Aenean laoreet diam erat, sed accumsan massa cursus a. Nunc interdum odio eu eleifend sollicitudin. Vestibulum hendrerit cursus justo id sodales. Praesent augue sapien, efficitur eget ultricies a, aliquam a odio metus.)testString";
 
-    //  TODO - convert to bytes
+        return { testString.begin(), testString.end() };
+    }
 
-    return { testString.begin(), testString.end() };
+    auto program = rdr["program"] .as<Bytes>();
+    auto encryptedPassword = rdr["password"].as<Bytes>();
+
+    auto password = Cti::Encryption::decrypt(Cti::Encryption::SharedKeyfile, encryptedPassword);
+
+    //  convert to bytes
+    std::vector<char> charProgram  { program.begin(),  program.end() };
+    std::vector<char> charPassword { password.begin(), password.end() };
+
+    FILEINFO_t fileInfo { charProgram.data(), static_cast<uint16_t>(charProgram.size()), 
+                          charPassword.data(), static_cast<uint8_t>(password.size()) };
+
+    Bytes buf;
+
+    {
+        std::lock_guard lg(programMux);
+
+        auto captureToBuffer = [](void *buf, size_t len) {
+            auto ucBuf = reinterpret_cast<unsigned char*>(buf);
+            globalBuffer.assign(ucBuf, ucBuf + len);
+        };
+
+        if( auto error = conProcessBlob(&fileInfo, captureToBuffer) )
+        {
+            CTILOG_ERROR(dout, "Error processing meter program buffer" << FormattedList::of(
+                "Error", error,
+                "GUID", guid));
+
+            return {};
+        }
+
+        buf = globalBuffer;
+
+        _programs[guid] = buf;
+    }
+
+    return buf;
 }
 
 bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, const std::string guid)
 {
+    //  TODO - remove after initial E2E block transfer integration test
     return true;
+
+    if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+    {
+        return rfnDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+    }
+    return false;
 }
 
 void MeterProgrammingManager::updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size)
 {
-
+    //  send a Cti::Messaging::Porter::MeterProgramArchiveStatusRequestMsg
 }
 
 }

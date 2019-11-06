@@ -24,8 +24,7 @@
 #include <iostream>
 #include <set>
 
-namespace Cti {
-namespace Pil {
+namespace Cti::Pil {
 
 class IM_EX_CTIPIL PilServer : public CtiServer
 {
@@ -34,9 +33,9 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
    CtiListenerConnection _listenerConnection;
 
-   CtiDeviceManager    *DeviceManager;
-   CtiPointManager     *PointManager;
-   CtiRouteManager     *RouteManager;
+   CtiDeviceManager&    DeviceManager;
+   CtiPointManager&     PointManager;
+   CtiRouteManager&     RouteManager;
 
    WorkerThread         _resultThread;     // Thread which translates INMESS to CtiReturnMsg
    WorkerThread         _vgConnThread;     // Thread which manages VanGogh requests!
@@ -48,7 +47,7 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    CtiCommandParser     _currentParse;
    long                 _currentUserMessageId;
 
-   RfnRequestManager    _rfnManager;
+   RfnRequestManager    _rfnRequestManager;
    unsigned long        _rfnRequestId;
 
    RfDataStreamingProcessor _rfDataStreamingProcessor;
@@ -90,7 +89,7 @@ public:
 
    typedef CtiServer Inherited;
 
-   PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL);
+   PilServer(CtiDeviceManager& DM, CtiPointManager& PM, CtiRouteManager& RM);
    virtual ~PilServer();
 
    void  clientShutdown(CtiServer::ptr_type &CM) override;
@@ -118,5 +117,3 @@ public:
 };
 
 }
-}
-

@@ -278,6 +278,15 @@ public:
         return _values[_currentRow][_currentColumn];
     }
 
+    operator Bytes() override
+    {
+        checkBounds();
+
+        const auto& str = _values[_currentRow][_currentColumn];
+
+        return { str.begin(), str.end() };
+    }
+
     //  only implemented for StringRow so far
     RowReader &extractChars(char *destination, unsigned count) override
     {
