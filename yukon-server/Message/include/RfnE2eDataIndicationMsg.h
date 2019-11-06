@@ -4,8 +4,7 @@
 #include "rfn_asid.h"
 #include "RfnE2eMsg.h"
 
-#include <boost/optional.hpp>
-
+#include <optional>
 #include <string>
 
 namespace Cti::Messaging::Rfn {
@@ -16,7 +15,7 @@ struct /*IM_EX_MSG*/ E2eDataIndicationMsg : E2eMsg  //  no methods, does not nee
     ApplicationServiceIdentifiers applicationServiceId;
     RfnIdentifier rfnIdentifier;
     bool highPriority;
-    boost::optional<std::string> security;
+    std::optional<std::string> security;
     std::vector<unsigned char> payload;
 };
 

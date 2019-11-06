@@ -10,12 +10,14 @@ namespace Cti {
 class RowReader
 {
 private:
-    void*  operator new   (size_t){return NULL;};
-    void*  operator new[] (size_t){return NULL;};
-    void   operator delete   (void *){};
-    void   operator delete[] (void *){};
+    void*  operator new      (size_t) = delete;
+    void*  operator new[]    (size_t) = delete;
+    void   operator delete   (void *) = delete;
+    void   operator delete[] (void *) = delete;
 
 public:
+
+    using Bytes = std::vector<unsigned char>;
 
     ~RowReader(){};
 
@@ -53,6 +55,7 @@ private:
     virtual operator CtiTime()         = 0;
     virtual operator boost_ptime()     = 0;
     virtual operator std::string()     = 0;
+    virtual operator Bytes()           = 0;
 
     virtual RowReader &extractChars(char *destination, unsigned count) = 0;
 

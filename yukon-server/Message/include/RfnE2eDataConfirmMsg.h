@@ -27,7 +27,7 @@ struct /*IM_EX_MSG*/ E2eDataConfirmMsg : E2eMsg  //  no methods, does not need t
     ApplicationServiceIdentifiers applicationServiceId;
     RfnIdentifier rfnIdentifier;
     ReplyType replyType;
-    boost::optional<NetworkManagerRequestHeader> header;
+    std::optional<NetworkManagerRequestHeader> header;
 };
 
 }

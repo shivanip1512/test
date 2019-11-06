@@ -13,8 +13,6 @@
 
 #include "boost_test_helpers.h"
 
-using namespace std::literals::string_literals;
-
 namespace std {
     ostream& operator<<(ostream& os, const std::chrono::system_clock::time_point &t)
     {
@@ -51,7 +49,7 @@ using Cti::Messaging::Rfn::E2eDataRequestMsg;
 
 struct test_RfDataStreamingProcessor : Cti::Pil::RfDataStreamingProcessor
 {
-    test_RfDataStreamingProcessor(CtiDeviceManager *DM, CtiPointManager *PM)
+    test_RfDataStreamingProcessor(CtiDeviceManager &DM, CtiPointManager &PM)
         :   RfDataStreamingProcessor(DM, PM)
     {}
 
@@ -61,97 +59,6 @@ struct test_RfDataStreamingProcessor : Cti::Pil::RfDataStreamingProcessor
 
     using RfDataStreamingProcessor::processPacket;
     using RfDataStreamingProcessor::processDeviceReport;
-};
-
-struct test_Rfn410flDevice : Cti::Devices::Rfn410flDevice
-{
-    test_Rfn410flDevice(std::string& name)
-    {
-        _name = name;
-        setDeviceType(TYPE_RFN410FL);
-    }
-};
-
-struct test_Rfn430sl1Device : Cti::Devices::Rfn430sl1Device
-{
-    test_Rfn430sl1Device(std::string& name)
-    {
-        _name = name;
-        setDeviceType(TYPE_RFN430SL1);
-    }
-};
-
-struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
-{
-    test_Rfn510flDevice(std::string& name)
-    {
-        _name = name;
-        setDeviceType(TYPE_RFN510FL);
-    }
-};
-
-struct test_DeviceManager : CtiDeviceManager
-{
-    std::map<int, Cti::Devices::RfnDeviceSPtr> devices {
-        { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
-        {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
-        { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
-        { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) }};
-
-    test_DeviceManager()
-    {
-        for( auto& device : devices )
-        {
-            device.second->setID(device.first, test_tag);
-        }
-    }
-
-    Cti::Devices::RfnDeviceSPtr getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
-    {
-        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" } )
-        {
-            return devices[123];
-        }
-        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "VITO" } )
-        {
-            return devices[49];
-        }
-        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "TURKEY TOM" } )
-        {
-            return devices[499];
-        }
-        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" } )
-        {
-            return devices[500];
-        }
-
-        return nullptr;
-    }
-};
-
-struct test_PointManager : CtiPointManager
-{
-    ptr_type getOffsetTypeEqual(long pao, int offset, CtiPointType_t type) override
-    {
-        //  We only expect analog points to come out of RFN Data Streaming
-        BOOST_REQUIRE_EQUAL( type, AnalogPointType );
-
-        if( pao > 100 )
-        {
-            auto pt = Cti::Test::makeAnalogPoint(pao, pao * 1000 + offset, offset);
-
-            //  Pao 499 gets non-default multipliers
-            if( pao == 499 )
-            {
-                pt->multiplier = 3;
-                pt->offset = 100;
-            }
-
-            return ptr_type{pt};
-        }
-
-        return nullptr;
-    }
 };
 
 BOOST_AUTO_TEST_CASE( test_processPacket_no_points )
@@ -367,10 +274,10 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
 
 BOOST_AUTO_TEST_CASE(test_processDeviceReport)
 {
-    test_DeviceManager dm;
-    test_PointManager pm;
+    Cti::Test::test_DeviceManager dm;
+    Cti::Test::test_PointManager pm;
 
-    test_RfDataStreamingProcessor p{ &dm, &pm };
+    test_RfDataStreamingProcessor p { dm, pm };
 
     Cti::Test::set_to_eastern_timezone();
 
