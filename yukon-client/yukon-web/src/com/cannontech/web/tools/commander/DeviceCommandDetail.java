@@ -4,11 +4,25 @@ public class DeviceCommandDetail {
     
     private Integer deviceCommandId;
     private Integer commandId;
-    private String deviceType;
+    private String category;
     private int displayOrder;
     private boolean visibleFlag;
     private String commandName;
     private String command;
+    
+    public DeviceCommandDetail() {
+    }
+    
+    public DeviceCommandDetail(Integer deviceCommandId, Integer commandId, String category, int displayOrder, 
+                               boolean visibleFlag, String commandName, String command) {
+        this.deviceCommandId = deviceCommandId;
+        this.commandId = commandId;
+        this.category = category;
+        this.displayOrder = displayOrder;
+        this.visibleFlag = visibleFlag;
+        this.commandName = commandName;
+        this.command = command;
+    }
     
     public Integer getDeviceCommandId() {
         return deviceCommandId;
@@ -22,11 +36,11 @@ public class DeviceCommandDetail {
     public void setCommandId(Integer commandId) {
         this.commandId = commandId;
     }
-    public String getDeviceType() {
-        return deviceType;
+    public String getCategory() {
+        return category;
     }
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
+    public void setCategory(String category) {
+        this.category = category;
     }
     public int getDisplayOrder() {
         return displayOrder;

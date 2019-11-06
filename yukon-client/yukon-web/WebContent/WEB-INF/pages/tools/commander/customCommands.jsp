@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="modules.tools.commander.customCommands">
@@ -25,8 +26,9 @@
             </div>
             
             <div class="action-area">
-                <cti:button nameKey="add" classes="fr" icon="icon-add"/>
+                <cti:button nameKey="add" classes="fr js-add-command" icon="icon-add"/>
             </div>
+            
         </div>
         
 </cti:msgScope>
