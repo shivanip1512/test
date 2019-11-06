@@ -23,9 +23,11 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -473,7 +475,7 @@ public class CommanderController {
         List<PaoType> existingPaoTypes = paoDao.getExistingPaoTypes();
         model.addAttribute("paoTypes", existingPaoTypes);
         
-        List<LiteDeviceTypeCommand> typeCommands = new ArrayList<>();
+        List<DeviceCommandDetail> typeCommands = new ArrayList<>();
 
         if (paoId != null) {
             YukonPao pao = cache.getAllPaosMap().get(paoId);
@@ -482,41 +484,57 @@ public class CommanderController {
             model.addAttribute("selectedPaoType", pao.getPaoIdentifier().getPaoType());
         } else if (category != null) {
             CommandCategory cmdCategory = CommandCategory.valueOf(category);
-            typeCommands = commandDao.getAllDevTypeCommands(cmdCategory.getDbString());
+            typeCommands = getCommandsByCategory(cmdCategory.getDbString());
             model.addAttribute("selectedCategory", cmdCategory.getDbString());
         }
-
-        model.addAttribute("typeCommands", typeCommands);
-        Map<Integer, LiteCommand> commands = cache.getAllCommands();
-        model.addAttribute("commands", commands);
+        
+        CustomCommandBean formBean = new CustomCommandBean();
+        formBean.setDetail(typeCommands);
+        model.addAttribute("formBean", formBean);
         return "commander/customCommands.jsp";
     }
     
-    private List<LiteDeviceTypeCommand> getCommandsByCategory(String category) {
-        List<LiteDeviceTypeCommand> typeCommands = new ArrayList<>();
-        
+    @PostMapping("/commander/customCommands")
+    public String saveCustomCommands(@ModelAttribute("formBean") CustomCommandBean formBean, BindingResult result) {
+        //TODO: save changes
+        return "commander/customCommands.jsp";
+    }
+    
+    private List<DeviceCommandDetail> getCommandsByCategory(String category) {
+        List<DeviceCommandDetail> cmdDetail = new ArrayList<>();
+
         //check if Command Category
         boolean commandCategory = CommandCategoryUtil.isCommandCategory(category);
         if (commandCategory || CommandCategoryUtil.isExpressComOrVersaCom(category)) {
             List<LiteCommand> cmds = commandDao.getAllCommandsByCategory(category);
             for (LiteCommand cmd : cmds) {
-                LiteDeviceTypeCommand typeCmd = new LiteDeviceTypeCommand(0, cmd.getCommandId(), category, 0, 'Y');
-                typeCommands.add(typeCmd);
+                DeviceCommandDetail detail = new DeviceCommandDetail(null, cmd.getCommandId(), category, 0, true, cmd.getLabel(), cmd.getCommand());
+                cmdDetail.add(detail);
             }
         } else {
             PaoType paoType = PaoType.valueOf(category);
-            typeCommands = commandDao.getAllDevTypeCommands(paoType.getDbString()); 
+            Map<Integer, LiteCommand> commands = cache.getAllCommands();
+            List<LiteDeviceTypeCommand> typeCommands = commandDao.getAllDevTypeCommands(paoType.getDbString()); 
+            for (LiteDeviceTypeCommand typeCommand : typeCommands) {
+                LiteCommand cmd = commands.get(typeCommand.getCommandId());
+                DeviceCommandDetail detail = new DeviceCommandDetail(typeCommand.getDeviceCommandId(), cmd.getCommandId(), cmd.getCategory(), 
+                                                                     typeCommand.getDisplayOrder(), typeCommand.isVisible(), cmd.getLabel(), cmd.getCommand());
+                cmdDetail.add(detail);
+            }
+
         }
         
-        return typeCommands;
+        return cmdDetail;
     }
     
     @GetMapping("/commander/customCommandsByCategory")
     public String customCommandsByCategory(ModelMap model, String category) {
-        List<LiteDeviceTypeCommand> typeCommands = getCommandsByCategory(category);
-        Map<Integer, LiteCommand> commands = cache.getAllCommands();
-        model.addAttribute("typeCommands", typeCommands);
-        model.addAttribute("commands", commands);
+        List<DeviceCommandDetail> typeCommands = getCommandsByCategory(category);
+        
+        CustomCommandBean formBean = new CustomCommandBean();
+        formBean.setDetail(typeCommands);
+        model.addAttribute("formBean", formBean);
+        
         return "commander/customCommandsTable.jsp";
     }
     

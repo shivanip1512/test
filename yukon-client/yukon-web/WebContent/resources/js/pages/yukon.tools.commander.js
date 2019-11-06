@@ -448,8 +448,19 @@ yukon.tools.commander = (function () {
         }
         
         _loadNearby(data.pao.liteID);
-    };
+    },
     
+    _reOrderCustomCommands = function () {
+        yukon.ui.reindexInputs('#commands');
+        //update display order
+        var table = $('#commands'),
+            rows = table.find('tbody tr');
+        rows.each(function (idx, elem) {
+            var row = $(elem);
+            row.find('.js-display-order').val(idx + 1);
+        });
+    }
+
     mod = {
         
         /** Initialize this module. */
@@ -513,9 +524,28 @@ yukon.tools.commander = (function () {
                     url: yukon.url('/tools/commander/customCommands'),
                     data: data
                 }).done(function (html) {
-                    var popup = $('#custom-commands-popup').html(html);
-                    popup.dialog({title: 'Device Commands', width: '980px'});
+                    var buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save'}),
+                        popup = $('#custom-commands-popup').html(html);
+                    popup.dialog({title: 'Device Commands', width: '980px', buttons: buttons});
+                    $("#commands").sortable({
+                        stop : function(event, ui) {
+                            ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                        }
+                    });
                 });
+            });
+            
+            $(document).on('click', '.js-with-movables .js-move-up, .js-with-movables .js-move-down', function () {
+                _reOrderCustomCommands();
+            });
+            
+            $(document).on('click', '.js-remove', function () {
+                $(this).closest('tr').remove();
+                _reOrderCustomCommands();
+            });
+            
+            $(document).on('yukon:tools:commander:commands:save', function (ev) {
+                $('#custom-commands-form').submit();
             });
 
             $(document).on('change', '.js-selected-category', function() {
