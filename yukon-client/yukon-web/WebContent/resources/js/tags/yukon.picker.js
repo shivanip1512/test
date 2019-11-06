@@ -344,7 +344,7 @@ yukon.protoPicker = function (okText,
         $('#' + this.errorHolderId).remove();
         resultHolder.append(newResultArea);
         updateSelectAllCheckbox.call(this);
-        
+        this.totalItemsCountDiv.textContent=json.totalItemsTxt;
         ss = this.ssInput.value;
         unblock.call(this);
         if (this.currentSearch !== ss) {
@@ -602,6 +602,7 @@ yukon.protoPicker = function (okText,
         this.jqAllPagesSelectedParentNode = this.allPagesSelected ? $(this.allPagesSelected.parentNode) : null;
         this.jqClearEntireSelectionLinkParentNode = this.clearEntireSelectionLink ? $(this.clearEntireSelectionLink.parentNode) : null;
         this.jqEntireSelectionCleared = $(this.entireSelectionCleared);
+        this.totalItemsCountDiv = document.getElementById('picker-' +  this.pickerId + '-total-item-count');
 
         doIdSearch.call(this, initialIds);
 
@@ -756,6 +757,9 @@ yukon.protoPicker = function (okText,
         var row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]');
         row.addClass('disabled-look');
         this.disabledIds.push(selectedId);
+       if (this.disabledIds.length === this.hitCount) {
+            this.selectAllCheckBox.disabled = true;
+        }
     };
     
     /** Used to enable an item in the selection list. */
@@ -769,6 +773,9 @@ yukon.protoPicker = function (okText,
             index = this.disabledIds.indexOf(selectedId);
         }
         this.disabledIds.splice(index, 1);
+        if (this.disabledIds.length !== this.hitCount) {
+            this.selectAllCheckBox.disabled = false;
+        }
     };
     
     /** Invoked from jsp */

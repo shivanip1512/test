@@ -21,6 +21,7 @@
 <entry key="yukon.web.picker.selectedMore">more</entry>
 <entry key="yukon.web.picker.selectItemsOnThisPage">Select items on this page.</entry>
 <entry key="yukon.web.picker.disabledItemsWillNotBeSelected">Disabled items will not be selected.</entry>
+<entry key="yukon.web.picker.totalItems">Total Items: {0}</entry>
 <!-- PAO Pickers -->
 <entry key="yukon.web.picker.pao.name">Name</entry>
 <entry key="yukon.web.picker.pao.type">Type</entry>

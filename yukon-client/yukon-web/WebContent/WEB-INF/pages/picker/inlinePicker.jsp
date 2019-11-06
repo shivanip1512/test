@@ -37,17 +37,19 @@
                 </a>
             </span>
             <span style="display: none">
-                <i:inline key=".selectionCleared"/>&nbsp;&nbsp;
+                <i:inline key=".selectionCleared"/><br>
                 <a id="picker-${id}-clear-entire-selection"
                     href="javascript:yukon.pickers['${id}'].clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span style="display: none">
-                <span id="picker-${id}-all-pages-selected"><i:inline key=".allPagesSelected"/></span>&nbsp;&nbsp;
+                <span id="picker-${id}-all-pages-selected"><i:inline key=".allPagesSelected"/></span><br>
                 <a href="javascript:yukon.pickers['${id}'].clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span id="picker-${id}-entire-selection-cleared" style="display: none">
                 <i:inline key=".entireSelectionCleared"/>
             </span>
+            <br>
+            <span id="picker-${id}-total-item-count">${totalItemsTxt}</span>
         </div>
     </c:if>
 </div>

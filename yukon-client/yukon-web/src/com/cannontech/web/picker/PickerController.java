@@ -128,6 +128,9 @@ public class PickerController {
                 MessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.common.paging.viewing",
                     searchResult.getStartIndex() + 1, searchResult.getEndIndex(), searchResult.getHitCount());
                 json.put("pages", messageSourceAccessor.getMessage(resolvable));
+                
+                resolvable = new YukonMessageSourceResolvable("yukon.web.picker.totalItems", searchResult.getHitCount());
+                json.put("totalItemsTxt", messageSourceAccessor.getMessage(resolvable));
             }
 
         } catch (RestClientException ex) {
