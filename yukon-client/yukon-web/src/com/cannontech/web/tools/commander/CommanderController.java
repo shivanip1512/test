@@ -476,19 +476,21 @@ public class CommanderController {
         model.addAttribute("paoTypes", existingPaoTypes);
         
         List<DeviceCommandDetail> typeCommands = new ArrayList<>();
+        CustomCommandBean formBean = new CustomCommandBean();
 
         if (paoId != null) {
             YukonPao pao = cache.getAllPaosMap().get(paoId);
             String type = pao.getPaoIdentifier().getPaoType().name();
             typeCommands = getCommandsByCategory(type);
+            formBean.setSelectedCategory(pao.getPaoIdentifier().getPaoType().name());
             model.addAttribute("selectedPaoType", pao.getPaoIdentifier().getPaoType());
         } else if (category != null) {
             CommandCategory cmdCategory = CommandCategory.valueOf(category);
             typeCommands = getCommandsByCategory(cmdCategory.getDbString());
+            formBean.setSelectedCategory(cmdCategory.getDbString());
             model.addAttribute("selectedCategory", cmdCategory.getDbString());
         }
         
-        CustomCommandBean formBean = new CustomCommandBean();
         formBean.setDetail(typeCommands);
         model.addAttribute("formBean", formBean);
         return "commander/customCommands.jsp";
@@ -533,6 +535,7 @@ public class CommanderController {
         
         CustomCommandBean formBean = new CustomCommandBean();
         formBean.setDetail(typeCommands);
+        formBean.setSelectedCategory(category);
         model.addAttribute("formBean", formBean);
         
         return "commander/customCommandsTable.jsp";
