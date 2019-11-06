@@ -10891,7 +10891,7 @@ create table YukonRoleProperty (
    KeyName              varchar(100)         not null,
    DefaultValue         varchar(1000)        not null,
    Description          varchar(1000)        not null,
-   constraint PK_YUKONROLEPROPERTY primary key nonclustered (RolePropertyID)
+   constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
 )
 go
 
