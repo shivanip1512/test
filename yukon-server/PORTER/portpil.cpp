@@ -14,7 +14,7 @@ extern CtiDeviceManager   DeviceManager;
 extern CtiPointManager    PorterPointManager;
 extern CtiRouteManager    RouteManager;
 
-Cti::Pil::PilServer PIL(&DeviceManager, &PorterPointManager, &RouteManager);
+Cti::Pil::PilServer PIL(DeviceManager, PorterPointManager, RouteManager);
 
 void PorterInterfaceThread()
 {

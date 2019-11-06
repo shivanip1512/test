@@ -171,6 +171,21 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-20819', '7.3.2', GETDATE());
 /* @end YUK-20819 */
 
+/* @start YUK-20780 */
+UPDATE CommandRequestUnsupported
+SET Type = 'ALREADY_CONFIGURED'
+WHERE CommandRequestExecId in 
+    (SELECT DISTINCT CommandRequestExecId 
+    FROM CollectionActionCommandRequest
+    WHERE CollectionActionId in 
+        (SELECT CollectionActionId
+        FROM CollectionAction
+        WHERE Action = 'REMOVE_DATA_STREAMING'))
+AND Type = 'NOT_CONFIGURED';
+
+INSERT INTO DBUpdates VALUES ('YUK-20780', '7.4.0', GETDATE());
+/* @end YUK-20780 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

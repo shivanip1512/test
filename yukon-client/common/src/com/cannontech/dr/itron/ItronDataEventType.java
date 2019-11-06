@@ -17,42 +17,57 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
 
+/**
+ * This enum maps events to the event IDs that will display in the data log, the attribute each event is associated
+ * with, and some organizational and data parsing information.
+ * 
+ * Event IDs here are taken from the firmware documents: 
+ * "Flash Logging Library 6.3.2 - SSN Log - Entry Types" and
+ * "Load Control Switch Feature Specification 11.1 - Logging - Event IDs"
+ * 
+ * The event IDs in the 0x0000 - 0x009F range are common data that Itron knows how to decode. These match the event IDs
+ * in "Flash Logging Library".
+ * 
+ * The event IDs in the 0x8000+ range are vendor extensions that Itron does not understand. So "Flash Logging Library"
+ * will list these event IDs in the lower range, but we expect many of them to be returned from Itron in the 0x8000+ 
+ * range. "Load Control Switch Feature Spec" lists the correct event ID for these.
+ */
 public enum ItronDataEventType {
     //Event where the value and attribute are known and defined. decode() is not used for these enums.
-    EVENT_STARTED(0x800E, BuiltInAttribute.CONTROL_STATUS, 0, 4, 1),
-    EVENT_STOPPED(0x800F, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
-    EVENT_CANCELED(0x8010, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
-    MEMORY_MAP_LOST(0x800A, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
+    EVENT_STARTED(0x000E, BuiltInAttribute.CONTROL_STATUS, 0, 4, 1),
+    EVENT_STOPPED(0x000F, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
+    EVENT_CANCELED(0x0010, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
+    MEMORY_MAP_LOST(0x8081, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
     MAX_CONTROL_EXCEEDED(0x8085, BuiltInAttribute.MAX_CONTROL_EXCEEDED, 0, 0, 1),
     NETWORK_TIMEOUT_CANCEL(0x8086, BuiltInAttribute.NETWORK_TIMEOUT_CANCEL, 0, 0, 1),
     CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1),
     TLS_FAIL(0x801F, BuiltInAttribute.TLS_FAIL, 0, 0, 1),
-    BAD_HDLC(0x8020, BuiltInAttribute.BAD_HDLC, 0, 0, 1),
+    BAD_HDLC(0x0020, BuiltInAttribute.BAD_HDLC, 0, 0, 1),
     FLUSH_LOG(0x8095, BuiltInAttribute.FLUSH_LOG, 0, 0, 1),
     
     //Events where the Relay Number for the Attribute is obtained from the payload.
-    LOAD_ON(0x8014, null, 0, 1, 3),
-    LOAD_OFF(0x8015, null, 0, 1, 2),
-    SHED_START(0x8018, null, 0, 1, 1),
-    SHED_END(0x8019, null, 0, 1, 0),
+    LOAD_ON(0x0014, null, 0, 1, 3),
+    LOAD_OFF(0x0015, null, 0, 1, 2),
+    SHED_START(0x0018, null, 0, 1, 1),
+    SHED_END(0x0019, null, 0, 1, 0),
     CALL_FOR_COOL_ON(0x8098, null, 0, 1, 1),
     CALL_FOR_COOL_OFF(0x8099, null, 0, 1, 0),
 
     //Events where the values are obtained from the payload.
     AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null),
-    EVENT_SUPERSEDED(0x8012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null),
-    FIRMWARE_UPDATE(0x8009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
+    EVENT_SUPERSEDED(0x0012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null),
+    FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
     TIME_SYNC(0x8082, BuiltInAttribute.TIME_SYNC, 0, 4, null),
-    COLD_START(0x8001, BuiltInAttribute.COLD_START, 0, 1, null),
+    COLD_START(0x0001, BuiltInAttribute.COLD_START, 0, 1, null),
     CONFIGURATION_PROCESSED(0x8087, BuiltInAttribute.CONFIGURATION_PROCESSED, 0, 4, null),
     TIME_LOST(0x8088, BuiltInAttribute.TIME_LOST, 0, 4, null),
-    SELF_CHECK_FAIL(0x8002, BuiltInAttribute.SELF_CHECK_FAIL, 0, 4, null),
-    INACTIVE_APPLIANCE(0x8017, BuiltInAttribute.INACTIVE_APPLIANCE, 0, 1, null),
+    SELF_CHECK_FAIL(0x0002, BuiltInAttribute.SELF_CHECK_FAIL, 0, 4, null),
+    INACTIVE_APPLIANCE(0x0017, BuiltInAttribute.INACTIVE_APPLIANCE, 0, 1, null),
     RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null),
     INCORRECT_TLS_IDENTITY(0x808F, BuiltInAttribute.INCORRECT_TLS_IDENTITY, 0, 2, null),
-    KEY_UPDATE(0x801C, BuiltInAttribute.KEY_UPDATE, 0, 2, null),
-    KEY_UPDATE_FAIL(0x801D, BuiltInAttribute.KEY_UPDATE_FAIL, 0, 2, null),
-    TLS_ALERT(0x8021, BuiltInAttribute.TLS_ALERT, 0, 1, null),
+    KEY_UPDATE(0x001C, BuiltInAttribute.KEY_UPDATE, 0, 2, null),
+    KEY_UPDATE_FAIL(0x001D, BuiltInAttribute.KEY_UPDATE_FAIL, 0, 2, null),
+    TLS_ALERT(0x0021, BuiltInAttribute.TLS_ALERT, 0, 1, null),
     OPTIMIZE_INTELLIGENT_CONTROL(0x8094, BuiltInAttribute.OPTIMIZE_INTELLIGENT_CONTROL, 0, 2, null),
     SNAP_TO_GOLD(0x8096, BuiltInAttribute.SNAP_TO_GOLD, 0, 4, null),
     EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null),

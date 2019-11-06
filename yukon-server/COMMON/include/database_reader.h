@@ -7,8 +7,7 @@
 #include <string>
 #include <SQLAPI.h>
 
-namespace Cti {
-namespace Database {
+namespace Cti::Database {
 
 class IM_EX_CTIBASE DatabaseReader : public RowReader
 {
@@ -56,6 +55,7 @@ private:
     operator CtiTime()        override;
     operator boost_ptime()    override;
     operator std::string()    override;
+    operator Bytes()          override;
     RowReader &extractChars(char *destination, unsigned count) override;
 
     void incrementColumnIndex() override;
@@ -95,4 +95,4 @@ public:
 };
 
 }
-}// Namespace Cti::Database
+
