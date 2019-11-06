@@ -5226,10 +5226,10 @@ C++ :
     project URL : "http://activemq.apache.org/cms/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : e7b6d0fe9b97527401085732e5e7196c
-    sha1 : 1ff332ae549de8e060f0c54eaea6aebf2d7fadd0 
+    md5 : ddadc8681194b5e1f626e8a9ecf520cd
+    sha1 : ad0b7887fb9f3f5919281b89730dba1e124a191b 
     fileCount : 806
-    totalSize : 37379903
+    totalSize : 37214610
     updated : 2018-09-11  
     jira : YUK-18778
     notes : 
@@ -5282,10 +5282,10 @@ C++ :
     project URL : "https://www.boost.org/"
     license : Boost
     license URLs : "https://www.boost.org/users/license.html"
-    md5 : 84360864b9e484509c2d462e06f2ac16
-    sha1 : d021fd39893c45fcb48d3335750fbc0706175ee8
+    md5 : 1379d54d4f97136be465d39290c67d69
+    sha1 : e7cfb297d5831b7c38e2eb24dadd9586bb8e1687
     fileCount : 13671
-    totalSize : 388382717
+    totalSize : 388382693
     updated : 2018-05-17  
     jira : YUK-18201
     notes : 
@@ -5310,10 +5310,10 @@ C++ :
     project URL : "https://github.com/nlohmann/json"
     license : MIT
     license URLs : "https://github.com/nlohmann/json/blob/develop/LICENSE.MIT"
-    md5 : d9f821c000749fa88a62c52e4772a069
-    sha1 : 7afc973b0a80d69091d6a80872a5c1199aaea62e 
+    md5 : 26d90a5f5b7b57ab570c7ed0dc299ac4
+    sha1 : bc5b8bb0f1e1e79bbb89597acc56f49925814011 
     fileCount : 1
-    totalSize : 613122
+    totalSize : 595822
     updated : 2018-05-21  
     jira : YUK-18276
     notes : 
@@ -5324,10 +5324,10 @@ C++ :
     project URL : "https://github.com/obgm/libcoap"
     license : BSD 2-clause
     license URLs : "https://github.com/obgm/libcoap/blob/develop/LICENSE"
-    md5 : d02f40d9a98d43854333ff5e5a6cb099
-    sha1 : 36cd97784c6261235d99d9c3c328de6468d60712
+    md5 : 9286b9797f4382373061bd56a92fb9af
+    sha1 : f341d617026ba4cf5596e0d293fd1e518b175232
     fileCount : 27
-    totalSize : 1278534
+    totalSize : 1273396
     updated : 2019-06-21  
     jira : YUK-19654
     notes : Modifications to allow operation as E2E
@@ -5338,10 +5338,10 @@ C++ :
     project URL : "https://logging.apache.org/log4cxx/latest_stable/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : 3232c6276586b0b0b2b32db8173293de
-    sha1 : 82d7af766a29272d9726976cf45ceced57a2ea81 
+    md5 : 5d82af18447f83e657ea20f416d94004
+    sha1 : 75b531e36aab7113ddde6f0fa285f072fae6413f 
     fileCount : 218
-    totalSize : 10820154
+    totalSize : 10789924
     updated : 2018-05-17  
     jira : YUK-18201
     notes : 
@@ -5366,10 +5366,10 @@ C++ :
     project URL : "https://www.openssl.org/"
     license : BSD-style
     license URLs : "https://github.com/openssl/openssl/blob/e216bf9d7ca761718f34e8b3094fcb32c7a143e4/LICENSE"
-    md5 : 6a8bf4f10b1de8fc71bc6bc74ca54b79
-    sha1 : 64fa9878f56f911b7dad8aa0423ccb18e8158738
+    md5 : 492bc968ab7e339da4bc219f52ed6974
+    sha1 : c9f83d4bfea74b0d4fa8d52b585c251e49391bc2
     fileCount : 117
-    totalSize : 9990797
+    totalSize : 9959082
     updated : 2019-07-30  
     jira : YUK-20287
     notes : Since transitioned to Apache 2.0 license
@@ -5380,10 +5380,10 @@ C++ :
     project URL : "http://www.sqlapi.com/"
     license : Eaton-owned
     license URLs : "https://confluence-prod.tcc.etn.com/pages/viewpage.action?pageId=20161384"
-    md5 : 30214cd2a96d00748259f49094b32907
-    sha1 : 7443ea042931aeb26903c94fced4179e079dd410 
+    md5 : ce94da8cba284987aca668448bacd9c1
+    sha1 : 6640a5c407d8ce7ab299465f0c4095593b346d7d 
     fileCount : 98
-    totalSize : 13894719
+    totalSize : 13894542
     updated : 2018-06-29
     jira : YUK-18429
     notes : 
@@ -5394,10 +5394,10 @@ C++ :
     project URL : "http://www.tcl.tk/software/tcltk/"
     license : BSD-style
     license URLs : "http://www.tcl.tk/software/tcltk/license.html"
-    md5 : 2d05614f9c3415efbc90a8a60f1b0aef
-    sha1 : 784575c8d71940f0270e0bbd88fc5fef24a75fe1 
+    md5 : 4bd68005db1a057f08b79304147c604b
+    sha1 : 85ad3e2205e68dedcef98043522aad65161e2793 
     fileCount : 40
-    totalSize : 5415879
+    totalSize : 5396292
     updated : 2019-03-18  
     jira : YUK-19164
     notes : 
@@ -5408,10 +5408,10 @@ C++ :
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : 25cdb9f19f80ebaa321033d4bcaab122
-    sha1 : 79520c9dfed31ffdf37c98824f35afa9c8f3898c 
+    md5 : d5fdb4629cf49f79ab5cd3c923b83794
+    sha1 : 2b46e80b1b064b8a4db0eba313b22fea37b46ec9 
     fileCount : 158
-    totalSize : 98332120
+    totalSize : 98314678
     updated : 2018-06-29  
     jira : YUK-18343
     notes : 
@@ -5422,10 +5422,10 @@ C++ :
     project URL : "http://xerces.apache.org/xerces-c/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : a669840dbf26d3986d2d1db5388b4987
-    sha1 : 5fc18c5e10b3f870d9332b7d3ba994b50169f6a2
+    md5 : 8f4f653d5ed16aebfb8fbe8e30203883
+    sha1 : d15633b4d5e52319098aec427b4ec9c7519c2a43
     fileCount : 473
-    totalSize : 18897778
+    totalSize : 18790332
     updated : 2019-03-12  
     jira : YUK-19155
     notes :
