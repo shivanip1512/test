@@ -27,7 +27,7 @@
 <entry key="yukon.exception.processingException.invalidAddress">Invalid address: {0}.</entry>
 <entry key="yukon.exception.processingException.deviceAlreadyExists">Device: {0} already exists.</entry>
 <entry key="yukon.exception.processingException.pointAlreadyExists">Point with name {0} already exists for device {1}.</entry>
-<entry key="yukon.exception.processingException.pointNameMaxLength">Point name "{0}" must 60 characters or less for device "{1}"</entry>
+<entry key="yukon.exception.processingException.pointNameMaxLength">Point name "{0}" must be 60 characters or less for device "{1}"</entry>
 <entry key="yukon.exception.processingException.addPointFailed">Add point failed.</entry>
 <entry key="yukon.exception.processingException.paoNotFound">Could not find device: {0} (id={1}).</entry>
 <entry key="yukon.exception.processingException.paoNotFoundForSelectedDevices">Could not find device: {0} (id={2}).</entry>
