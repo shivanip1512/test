@@ -24,7 +24,8 @@ function update-sql-keywords {
             Write-Progress -Activity "Updating $filename" -PercentComplete $percent
         }
         $regex.Replace($_, $replacement_callback)  # replace all regexes at once using the callback
-    } | out-file -Encoding utf8 $rewritten
+    } | out-file -Encoding ASCII $rewritten 
+    # TODO - Update Encoding to UTF8NoBom when we get PowerShell 6: https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/out-file?view=powershell-6
 
     if (!$changes) {
         Write-Output "$filename had no changes"

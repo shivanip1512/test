@@ -53,7 +53,7 @@ public class ItronDeviceDataParserTest {
     
     @Test
     public void validateRowParsingForEventStarted() {
-        String[] rowData = rowData("type: 0, log event ID: 32782 (0x800E) - Vendor-specific or Unknown, payload:  data(0000000000)");
+        String[] rowData = rowData("type: 1, log event ID: 14 (0x0e) - Event Started, payload: Event ID (90793) data(000162A900)");
 
         RecentEventParticipationService recentEventParticipationService = EasyMock.createMock(RecentEventParticipationService.class);
         recentEventParticipationService.updateDeviceControlEvent(EasyMock.anyInt(), EasyMock.anyInt(), EasyMock.anyObject(), EasyMock.anyObject());
@@ -68,7 +68,7 @@ public class ItronDeviceDataParserTest {
     
     @Test
     public void validateRowParsingForRelayNumberFinding() {
-        String[] rowData = rowData("type: 0, log event ID: 32792 (0x8018) - Vendor-specific or Unknown, payload:  data(0300000000)");
+        String[] rowData = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (3)  data(0300000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_3_SHED_STATUS, rowData);
         assertOnlyEntryEquals(data, 1);
     }

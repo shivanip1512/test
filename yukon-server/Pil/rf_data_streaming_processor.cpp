@@ -26,8 +26,7 @@ using Cti::Logging::Vector::Hex::operator<<;
 
 static const auto RF_DATA_STREAMING_STATS_REPORTING_INTERVAL = 86400;
 
-namespace Cti {
-namespace Pil {
+namespace Cti::Pil {
 
 namespace {
 
@@ -38,7 +37,7 @@ namespace {
     CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
 }
 
-RfDataStreamingProcessor::RfDataStreamingProcessor(CtiDeviceManager *deviceManager, CtiPointManager *pointManager)
+RfDataStreamingProcessor::RfDataStreamingProcessor(CtiDeviceManager& deviceManager, CtiPointManager& pointManager)
     :   _deviceManager{ deviceManager },
         _pointManager { pointManager  }
 {}
@@ -248,7 +247,7 @@ auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceRep
 
     long deviceId{};
 
-    if( const auto device = _deviceManager->getDeviceByRfnIdentifier(deviceReport.rfnId) )
+    if( const auto device = _deviceManager.getDeviceByRfnIdentifier(deviceReport.rfnId) )
     {
         deviceId = device->getID();
 
@@ -267,7 +266,7 @@ auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceRep
 
                 if( const auto pointOffset = DeviceAttributeLookup::Lookup(device->getDeviceType(), attributeDescriptor.attrib) )
                 {
-                    if( const auto point = _pointManager->getOffsetTypeEqual(device->getID(), pointOffset->offset, pointOffset->type) )
+                    if( const auto point = _pointManager.getOffsetTypeEqual(device->getID(), pointOffset->offset, pointOffset->type) )
                     {
                         if( point->isNumeric() )
                         {
@@ -367,7 +366,7 @@ void RfDataStreamingProcessor::handleStatistics()
 
              if( dev.first )
              {
-                 if( auto device = _deviceManager->getDeviceByID(dev.first) )
+                 if( auto device = _deviceManager.getDeviceByID(dev.first) )
                  {
                      report.setCell(row, 1) << device->getName();
 
@@ -418,4 +417,3 @@ void RfDataStreamingProcessor::handleStatistics()
 }
 
 }
-} //namespace Cti::Pil

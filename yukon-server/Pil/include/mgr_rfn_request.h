@@ -6,6 +6,7 @@
 #include "cmd_rfn.h"
 #include "rfn_asid.h"
 #include "rfn_e2e_messenger.h"
+#include "mgr_meter_programming.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 
@@ -64,6 +65,8 @@ struct RfnDeviceResult
 class IM_EX_CTIPIL RfnRequestManager
 {
 public:
+
+    RfnRequestManager(CtiDeviceManager& DeviceManager);
 
     using ConfigNotificationPtr = std::unique_ptr<Devices::Commands::RfnConfigNotificationCommand>;
     using Bytes = std::vector<unsigned char>;
@@ -169,6 +172,8 @@ private:
 
     Mutex                _pendingRequestsMux;
     RfnIdToRequestHeap   _pendingRequests;
+
+    MeterProgrammingManager _meterProgrammingMgr;
 
     struct RfnRequestIdentifier
     {

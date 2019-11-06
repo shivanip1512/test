@@ -250,6 +250,17 @@ DatabaseReader::operator std::string()
     return std::string{_command[_currentIndex].asString()};
 }
 
+DatabaseReader::operator Bytes()
+{
+    auto saBytes = _command[_currentIndex].asBytes();
+    const auto length = saBytes.GetBinaryLength();
+    const auto buf = saBytes.GetBinaryBuffer(length);
+    const unsigned char* begin = static_cast<unsigned char*>(buf);
+    const unsigned char* end = begin + length;
+
+    return { begin, end };
+}
+
 void DatabaseReader::incrementColumnIndex()
 {
     ++_currentIndex;

@@ -7,6 +7,7 @@ import com.cannontech.common.util.MatchStyle;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 
 public enum SiteMapPage implements DisplayableEnum {
     METERING(SiteMapCategory.AMI, "yukon.web.modules.amr.meteringStart.pageName", "/meter/start",
@@ -39,6 +40,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.BULK_UPDATE_OPERATION),
     AMI_POINT_IMPORT(SiteMapCategory.AMI, "yukon.web.modules.tools.bulk.pointImport.pageName", "/bulk/pointImport/upload",
                  MatchStyle.all, YukonRoleProperty.ADD_REMOVE_POINTS),
+    METER_PROGRAMMING(SiteMapCategory.AMI, "yukon.web.menu.ami.meterProgramming", "/amr/meterProgramming/home",
+                      MatchStyle.all, MasterConfigLicenseKey.METER_PROGRAMMING_ENABLED),
 
     DR_DASHBOARD(SiteMapCategory.DR, "yukon.web.modules.dr.home.pageName", "/dr/home",
             MatchStyle.all, YukonRole.DEMAND_RESPONSE),
@@ -88,6 +91,8 @@ public enum SiteMapPage implements DisplayableEnum {
              MatchStyle.all, YukonRoleProperty.ADD_REMOVE_POINTS),
     FDR_TRANSLATIONS(SiteMapCategory.VV, "yukon.web.modules.tools.bulk.fdrTranslationManagement.pageName", "/bulk/fdrTranslationManager/home",
              MatchStyle.all, YukonRoleProperty.FDR_TRANSLATION_MANAGER),
+    DMV_TEST(SiteMapCategory.VV, "yukon.web.menu.vv.dmvTest", "/capcontrol/dmvTestList", 
+             MatchStyle.all, MasterConfigLicenseKey.DEMAND_MEASUREMENT_VERIFICATION_ENABLED),
     
     CREATE_ACCOUNT(SiteMapCategory.ASSETS, "yukon.web.modules.operator.account.CREATE.pageName", "/stars/operator/account/accountCreate",
             MatchStyle.all, OtherPermission.EC_OPERATOR, YukonRoleProperty.OPERATOR_NEW_ACCOUNT_WIZARD),

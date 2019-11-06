@@ -165,6 +165,34 @@ VALUES (-10320, -103, 'Manage Custom Commands', 'VIEW', 'Controls access to the 
 INSERT INTO DBUpdates VALUES ('YUK-20788', '7.4.0', SYSDATE);
 /* @end YUK-20788 */
 
+/* @start YUK-20780 */
+UPDATE CommandRequestUnsupported
+SET Type = 'ALREADY_CONFIGURED'
+WHERE CommandRequestExecId in 
+    (SELECT DISTINCT CommandRequestExecId 
+    FROM CollectionActionCommandRequest
+    WHERE CollectionActionId in 
+        (SELECT CollectionActionId
+        FROM CollectionAction
+        WHERE Action = 'REMOVE_DATA_STREAMING'))
+AND Type = 'NOT_CONFIGURED';
+
+INSERT INTO DBUpdates VALUES ('YUK-20780', '7.4.0', SYSDATE);
+/* @end YUK-20780 */
+
+/* @start YUK-20801 */
+ALTER TABLE MeterProgram
+ADD Password VARCHAR2(200);
+
+UPDATE MeterProgram
+SET Password = '(none)';
+
+ALTER TABLE MeterProgram
+MODIFY Password VARCHAR2(200) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-20801', '7.4.0', SYSDATE);
+/* @end YUK-20801 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

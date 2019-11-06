@@ -192,19 +192,30 @@ public class ItronDeviceDataParser {
                     log.warn("No attribute matches " + event + " with data " + Arrays.toString(decodedData) + ". Ignoring.");
                     break;
                 }
-                LitePoint litePoint = attributeService.createAndFindPointForAttribute(pao, attribute);
+                
+                LitePoint litePoint;
+                try {
+                    litePoint = attributeService.createAndFindPointForAttribute(pao, attribute);
+                } catch (Exception e) {
+                    log.debug("Cannot get point for " + attribute + " on " + pao, e);
+                    break;
+                }
                 
                 // Update Asset Availability and Recent Event Participation, then add the point data to the list to
                 // return.
                 double currentValue = dataSource.getPointValue(litePoint.getPointID()).getValue();
-                Optional<PointData> optionalPointData = event.getPointData(decodedData, currentValue, eventTime , litePoint);
-                final byte[] decodedFinal = decodedData;
-                optionalPointData.ifPresent(pointData -> {
-                    updateRecentEventParticipation(pointData, event, pao, decodedFinal);
-                    updateAssetAvailability(pointData, pao);
-                    updatePointDataWithLitePointSettings(pointData, litePoint);
-                    pointValues.put(pao.getPaoIdentifier(), pointData);
-                });
+                try {
+                    Optional<PointData> optionalPointData = event.getPointData(decodedData, currentValue, eventTime , litePoint);
+                    final byte[] decodedFinal = decodedData;
+                    optionalPointData.ifPresent(pointData -> {
+                        updateRecentEventParticipation(pointData, event, pao, decodedFinal);
+                        updateAssetAvailability(pointData, pao);
+                        updatePointDataWithLitePointSettings(pointData, litePoint);
+                        pointValues.put(pao.getPaoIdentifier(), pointData);
+                    });
+                } catch (Exception e) {
+                    log.error("Error processing point data: " + Arrays.toString(decodedData) + " for point " + litePoint, e);
+                }
             } else if (log.isTraceEnabled()){
                 log.trace("No mapping for event ID " + eventId);
             }
