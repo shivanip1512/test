@@ -33,8 +33,7 @@ public class ApiRequestHelper {
     @Autowired private RestTemplate apiRestTemplate;
     @Autowired private GlobalSettingDao settingDao;
 
-    @PostConstruct
-    public void setProxy() {
+    public synchronized void setProxy() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
             factory.setProxy(httpProxy.getJavaHttpProxy());
@@ -42,7 +41,7 @@ public class ApiRequestHelper {
         factory.setOutputStreaming(false);
         apiRestTemplate.setRequestFactory(factory);
     }
-    
+
     @SuppressWarnings("rawtypes")
     public final static HashMap<Class, ParameterizedTypeReference> paramTypeRefMap = new HashMap<>();
     static {
