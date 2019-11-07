@@ -97,10 +97,10 @@ public class ApiControllerHelper {
     private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
         HttpStatus responseCode = null;
         if (StringUtils.isEmpty(webServerUrl)) {
-            responseCode=apiConnection(request,userContext);
+            responseCode = apiConnection(request, userContext);
             if (responseCode != HttpStatus.OK) {
                 apiRequestHelper.setProxy();
-                responseCode=apiConnection(request,userContext);
+                responseCode = apiConnection(request, userContext);
             }
             if (responseCode != HttpStatus.OK) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
