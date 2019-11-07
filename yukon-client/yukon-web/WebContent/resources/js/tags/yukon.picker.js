@@ -329,7 +329,7 @@ yukon.protoPicker = function (okText,
     
     /**
      * Update the UI with data from the search results.  This method calls
-     * renderTalbeResults to update the table itself and then updates the
+     * renderTableResults to update the table itself and then updates the
      * previous and next buttons appropriately.
      */
     updateSearchResults = function (xhr) {
@@ -344,7 +344,6 @@ yukon.protoPicker = function (okText,
         $('#' + this.errorHolderId).remove();
         resultHolder.append(newResultArea);
         updateSelectAllCheckbox.call(this);
-        this.totalItemsCountDiv.textContent=json.totalItemsTxt;
         ss = this.ssInput.value;
         unblock.call(this);
         if (this.currentSearch !== ss) {
@@ -602,7 +601,6 @@ yukon.protoPicker = function (okText,
         this.jqAllPagesSelectedParentNode = this.allPagesSelected ? $(this.allPagesSelected.parentNode) : null;
         this.jqClearEntireSelectionLinkParentNode = this.clearEntireSelectionLink ? $(this.clearEntireSelectionLink.parentNode) : null;
         this.jqEntireSelectionCleared = $(this.entireSelectionCleared);
-        this.totalItemsCountDiv = document.getElementById('picker-' +  this.pickerId + '-total-item-count');
 
         doIdSearch.call(this, initialIds);
 

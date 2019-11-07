@@ -31,7 +31,7 @@
             <label for="picker-${id}-select-all" class="cp"><i:inline key=".selectItemsOnThisPage"/></label>
             &nbsp;&nbsp;
             <span style="display: none">
-                <i:inline key=".pageSelected"/>&nbsp;&nbsp;
+                <i:inline key=".pageSelected"/><br>
                 <a id="picker-${id}-select-all-pages" href="javascript:yukon.pickers['${id}'].selectAllPages()" title="${selectItemsTooltip}">
                     <i:inline key=".selectAllPages"/>
                 </a>
@@ -48,8 +48,6 @@
             <span id="picker-${id}-entire-selection-cleared" style="display: none">
                 <i:inline key=".entireSelectionCleared"/>
             </span>
-            <br>
-            <span id="picker-${id}-total-item-count">${totalItemsTxt}</span>
         </div>
     </c:if>
 </div>
