@@ -497,9 +497,18 @@ public class CommanderController {
     }
     
     @PostMapping("/commander/customCommands")
-    public String saveCustomCommands(@ModelAttribute("formBean") CustomCommandBean formBean, BindingResult result) {
-        //TODO: save changes
-        return "commander/customCommands.jsp";
+    public String saveCustomCommands(@ModelAttribute("formBean") CustomCommandBean formBean, BindingResult result, ModelMap model, 
+                                     YukonUserContext userContext) {
+        commanderService.save(formBean.getSelectedCategory(), formBean.getDetail());
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        String successMsg = accessor.getMessage("yukon.web.modules.tools.commander.customCommands.saveSuccessful");
+        model.addAttribute("successMsg", successMsg);
+        List<DeviceCommandDetail> detail = getCommandsByCategory(formBean.getSelectedCategory());
+        CustomCommandBean savedForm = new CustomCommandBean();
+        savedForm.setDetail(detail);
+        savedForm.setSelectedCategory(formBean.getSelectedCategory());
+        model.addAttribute("formBean", savedForm);
+        return "commander/customCommandsTable.jsp";
     }
     
     private List<DeviceCommandDetail> getCommandsByCategory(String category) {

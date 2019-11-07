@@ -16,6 +16,7 @@ yukon.tools.commander = (function () {
     mod = {},
     
     _scrollLock = false,
+    _customCommandsDirty = false,
     
     /** {object} - Map of target button id's to CommandType enum entries. */
     _targetTypes = {
@@ -459,6 +460,21 @@ yukon.tools.commander = (function () {
             var row = $(elem);
             row.find('.js-display-order').val(idx + 1);
         });
+    },
+    
+    _switchCategory = function (category) {
+        $.ajax({ url: yukon.url('/tools/commander/customCommandsByCategory?category=' + category) })
+        .done(function (html) {
+            $('#device-commands-table').html(html);
+            _customCommandsDirty = false;
+            $("#commands tbody").sortable({
+                stop : function(event, ui) {
+                    ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                    _reOrderCustomCommands();
+                    _customCommandsDirty = true;
+                }
+            });
+        });
     }
 
     mod = {
@@ -525,11 +541,16 @@ yukon.tools.commander = (function () {
                     data: data
                 }).done(function (html) {
                     var buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save'}),
-                        popup = $('#custom-commands-popup').html(html);
-                    popup.dialog({title: 'Device Commands', width: '980px', buttons: buttons});
-                    $("#commands").sortable({
+                        popup = $('#custom-commands-popup'),
+                        title = popup.data('title');
+                    popup.html(html);
+                    popup.dialog({title: title, width: '985px', buttons: buttons});
+                    _customCommandsDirty = false;
+                    $("#commands tbody").sortable({
                         stop : function(event, ui) {
                             ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                            _reOrderCustomCommands();
+                            _customCommandsDirty = true;
                         }
                     });
                 });
@@ -537,23 +558,69 @@ yukon.tools.commander = (function () {
             
             $(document).on('click', '.js-with-movables .js-move-up, .js-with-movables .js-move-down', function () {
                 _reOrderCustomCommands();
+                _customCommandsDirty = true;
+            });
+            
+            $(document).on('click', '.js-add-command', function () {
+                var clonedRow = $('.js-template-row').clone();
+                clonedRow.find(':input').removeAttr('disabled');
+                clonedRow.removeClass('dn js-template-row');
+                clonedRow.appendTo($('#commands'));
+                var firstField = clonedRow.find('.js-command-fields').first();
+                firstField.focus();
+                $('#commands').trigger('yukon:ordered-selection:added-removed');
+                _reOrderCustomCommands();
+                _customCommandsDirty = true;
             });
             
             $(document).on('click', '.js-remove', function () {
                 $(this).closest('tr').remove();
+                $('#commands').trigger('yukon:ordered-selection:added-removed');
                 _reOrderCustomCommands();
+                _customCommandsDirty = true;
             });
             
             $(document).on('yukon:tools:commander:commands:save', function (ev) {
-                $('#custom-commands-form').submit();
+                var popup = $('#custom-commands-popup');
+                $('#custom-commands-form').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+                        $('#device-commands-table').html(xhr.responseText).scrollTop(0);
+                        _customCommandsDirty = false;
+                        var saveChangesPopup = $('#save-changes-popup');
+                        if (saveChangesPopup && saveChangesPopup.is(':visible')) {
+                            //close dialog and change selected back to previous
+                            var selectedCategory = $('#selectedCategory').val();
+                            saveChangesPopup.dialog('close');
+                            $('.js-selected-category').val(selectedCategory);
+                        }
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                        $('#save-changes-popup').dialog('close');
+                    }
+                });
+            });
+            
+            $(document).on('click', '.js-switch-category', function () {
+                var category = $('#save-changes-popup').attr('data-category');
+                _switchCategory(category);
+            });
+            
+            $(document).on('change', '.js-command-fields', function (event) {
+                _customCommandsDirty = true;
             });
 
             $(document).on('change', '.js-selected-category', function() {
                 var category = $(this).val();
-                $.ajax({ url: yukon.url('/tools/commander/customCommandsByCategory?category=' + category) })
-                .done(function (html) {
-                    $('#device-commands-table').html(html);
-                });
+                if (_customCommandsDirty) {
+                    var buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save', cancelClass: 'js-switch-category'}),
+                    popup = $('#save-changes-popup'),
+                    title = popup.data('title');
+                    popup.attr('data-category', category);
+                    popup.dialog({title: title, width: '400px', buttons: buttons});
+                } else {
+                    _switchCategory(category);
+                }
             });
             
             /** User clicked the device readings menu option, show points popup. */

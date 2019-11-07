@@ -31,4 +31,9 @@
             
         </div>
         
+        <cti:msg2 var="saveChangesTitle" key=".saveChangesTitle"/>
+        <div class="dn" id="save-changes-popup" data-dialog data-title="${saveChangesTitle}">
+            <i:inline key=".changesNotSaved"/>
+        </div>
+        
 </cti:msgScope>
