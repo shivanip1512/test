@@ -71,7 +71,7 @@
                     <!-- Available Load Groups -->
                     <div class="column one bordered-div">
                         <h3><i:inline key="yukon.common.available"/></h3>
-                        <div id="js-inline-picker-container" style="height:470px;" class="oa"></div>
+                        <div id="js-inline-picker-container" style="height:550px;" class="oa"></div>
                         <tags:pickerDialog id="js-avaliable-load-groups-picker" type="lmAvaliableGroupsForMacroGroupPicker" container="js-inline-picker-container"
                                            multiSelectMode="${true}" disabledIds="${selectedLoadGroupIds}"/>
                         <div class="action-area">
@@ -82,7 +82,7 @@
                     <!-- Assigned Load Groups -->
                     <div class="column two nogutter bordered-div">
                         <h3><i:inline key="yukon.common.assigned"/></h3>
-                        <div style="height:515px;" class="oa">
+                        <div style="height:596px;" class="oa">
                             <div id="js-assigned-load-groups" class="select-box-selected js-with-movables wrbw" style="min-height:150px;" data-item-selector=".select-box-item">
                                 <c:forEach var="item" items="${macroLoadGroup.assignedLoadGroups}" varStatus="status">
                                     <div class="select-box-item cm js-assigned-load-group" data-id="${item.id}">
