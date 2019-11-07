@@ -480,15 +480,13 @@ public class CommanderController {
 
         if (paoId != null) {
             YukonPao pao = cache.getAllPaosMap().get(paoId);
-            String type = pao.getPaoIdentifier().getPaoType().name();
+            String type = pao.getPaoIdentifier().getPaoType().getDbString();
             typeCommands = getCommandsByCategory(type);
-            formBean.setSelectedCategory(pao.getPaoIdentifier().getPaoType().name());
-            model.addAttribute("selectedPaoType", pao.getPaoIdentifier().getPaoType());
+            formBean.setSelectedCategory(type);
         } else if (category != null) {
             CommandCategory cmdCategory = CommandCategory.valueOf(category);
             typeCommands = getCommandsByCategory(cmdCategory.getDbString());
             formBean.setSelectedCategory(cmdCategory.getDbString());
-            model.addAttribute("selectedCategory", cmdCategory.getDbString());
         }
         
         formBean.setDetail(typeCommands);
@@ -523,9 +521,8 @@ public class CommanderController {
                 cmdDetail.add(detail);
             }
         } else {
-            PaoType paoType = PaoType.valueOf(category);
             Map<Integer, LiteCommand> commands = cache.getAllCommands();
-            List<LiteDeviceTypeCommand> typeCommands = commandDao.getAllDevTypeCommands(paoType.getDbString()); 
+            List<LiteDeviceTypeCommand> typeCommands = commandDao.getAllDevTypeCommands(category); 
             for (LiteDeviceTypeCommand typeCommand : typeCommands) {
                 LiteCommand cmd = commands.get(typeCommand.getCommandId());
                 DeviceCommandDetail detail = new DeviceCommandDetail(typeCommand.getDeviceCommandId(), cmd.getCommandId(), cmd.getCategory(), 

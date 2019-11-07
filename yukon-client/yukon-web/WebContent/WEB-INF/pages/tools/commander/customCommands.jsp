@@ -9,12 +9,12 @@
         <div class="column one">
             <select size="20" class="js-selected-category">
                 <c:forEach var="type" items="${categories}">
-                    <c:set var="selectedText" value="${type.dbString == selectedCategory ? 'selected=selected' : ''}"/>
+                    <c:set var="selectedText" value="${type.dbString == formBean.selectedCategory ? 'selected=selected' : ''}"/>
                     <option ${selectedText} value="${type.dbString}">${type.dbString}</option>
                 </c:forEach>
                 <c:forEach var="paoType" items="${paoTypes}">
-                    <c:set var="selectedText" value="${paoType == selectedPaoType ? 'selected=selected' : ''}"/>
-                    <option ${selectedText} value="${paoType}"><i:inline key="${paoType.formatKey}"/></option>
+                    <c:set var="selectedText" value="${paoType.dbString == formBean.selectedCategory ? 'selected=selected' : ''}"/>
+                    <option ${selectedText} value="${paoType.dbString}"><i:inline key="${paoType.formatKey}"/></option>
                 </c:forEach>
             </select>
         </div>
@@ -24,9 +24,9 @@
             <div id="device-commands-table" class="bordered-div oa" style="height:350px">
                 <%@ include file="customCommandsTable.jsp" %>
             </div>
-            
+                    
             <div class="action-area">
-                <cti:button nameKey="add" classes="fr js-add-command" icon="icon-add"/>
+                <cti:button nameKey="add" classes="fr js-add-command" icon="icon-add" disabled="${formBean.selectedCategory == null}"/>
             </div>
             
         </div>

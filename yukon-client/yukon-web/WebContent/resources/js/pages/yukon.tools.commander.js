@@ -566,6 +566,7 @@ yukon.tools.commander = (function () {
                 clonedRow.find(':input').removeAttr('disabled');
                 clonedRow.removeClass('dn js-template-row');
                 clonedRow.appendTo($('#commands'));
+                $('.js-empty-commands').remove();
                 var firstField = clonedRow.find('.js-command-fields').first();
                 firstField.focus();
                 $('#commands').trigger('yukon:ordered-selection:added-removed');
@@ -612,6 +613,7 @@ yukon.tools.commander = (function () {
 
             $(document).on('change', '.js-selected-category', function() {
                 var category = $(this).val();
+                $('.js-add-command').removeAttr('disabled');
                 if (_customCommandsDirty) {
                     var buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save', cancelClass: 'js-switch-category'}),
                     popup = $('#save-changes-popup'),

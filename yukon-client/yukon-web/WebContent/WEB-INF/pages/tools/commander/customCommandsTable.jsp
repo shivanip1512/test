@@ -63,7 +63,7 @@
                     </tr>
                 </c:forEach>
                 <c:if test="${empty formBean.detail}">
-                    <tr>
+                    <tr class="js-empty-commands">
                         <td colspan="6"><span class="empty-list"><i:inline key=".noResultsFound" /></span></td>
                     </tr>
                 </c:if>
