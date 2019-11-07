@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -16,11 +18,13 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
@@ -29,6 +33,7 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.database.db.command.CommandCategoryUtil;
 import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -38,6 +43,7 @@ import com.cannontech.message.util.ClientConnection;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.commander.DeviceCommandDetail;
 import com.cannontech.web.tools.commander.model.CommandParams;
 import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
@@ -408,5 +414,112 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         
         return command; 
     }
-    
+
+    @Transactional
+    @Override
+    public void save(String deviceTypeOrCategory, List<DeviceCommandDetail> details) {        
+        log.debug("Saving - deviceTypeOrCategory {}", deviceTypeOrCategory);
+        log.debug("       - details {}", details);
+
+        Map<Integer, LiteCommand> commandsInDb = commandDao.getAllCommands().stream()
+                .collect(Collectors.toMap(LiteCommand::getCommandId, Function.identity()));
+
+        deleteRemovedCommands(deviceTypeOrCategory, details);
+
+        Map<String, Long> displayOrderExistingCount = commandDao.getAllDeviceTypeCommands().stream()
+                .collect(Collectors.groupingBy(LiteDeviceTypeCommand::getDeviceType, Collectors.counting()));
+
+        details.forEach(detail -> {
+            if (detail.getCommandId() == null) {
+                createNewCommand(deviceTypeOrCategory, detail, displayOrderExistingCount);
+            } else {
+                // commands with ids less then 1 can't be modified
+                if (detail.getCommandId() > 1) {
+                    updateCommand(deviceTypeOrCategory, commandsInDb, detail);
+                }
+                if (!CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)) {
+                    updateDeviceTypeCommand(detail);
+                }
+            }
+        });
+    }
+
+    /**
+     * Updates device type command
+     */
+    private void updateDeviceTypeCommand(DeviceCommandDetail detail) {
+        LiteDeviceTypeCommand typeCommand = commandDao.getDeviceTypeCommand(detail.getCommandId());
+        log.debug("Updating device type command from [{}]", typeCommand);
+        typeCommand.setDisplayOrder(detail.getDisplayOrder());
+        typeCommand.setVisibleFlag(detail.isVisibleFlag() ? 'Y' : 'N');
+        log.debug("                                  -to [{}]", typeCommand);
+        commandDao.updateDeviceTypeCommand(typeCommand);
+    }
+
+    /**
+     * If new command is different from the old command, updates command
+     */
+    private void updateCommand(String deviceTypeOrCategory, Map<Integer, LiteCommand> commandsInDb, DeviceCommandDetail detail) {
+        LiteCommand existingCommand = commandsInDb.get(detail.getCommandId());
+        LiteCommand newCommand = new LiteCommand(detail.getCommandId(), detail.getCommand(), detail.getCommandName(),
+                deviceTypeOrCategory);
+        if (!existingCommand.equals(newCommand)) {
+            log.debug("Updating command from [{}] to [{}]", existingCommand, newCommand);
+            commandDao.updateCommand(newCommand);
+        }
+    }
+
+    /**
+     * Deletes commands for paos
+     */
+    private void deleteRemovedCommands(String deviceTypeOrCategory, List<DeviceCommandDetail> details) {
+        List<LiteCommand> commandsInDb = commandDao.getAllCommandsByCategory(deviceTypeOrCategory);
+
+        Map<Integer, DeviceCommandDetail> deviceTypes = details.stream()
+                .filter(detail -> detail.getDeviceCommandId() != null)
+                .collect(Collectors.toMap(DeviceCommandDetail::getDeviceCommandId, Function.identity()));
+
+        commandsInDb.removeIf(command -> deviceTypes.containsKey(command.getCommandId()) || command.getCommandId() < 1);
+        log.debug("Deleting commands {}", commandsInDb);
+        // the following commands were removed by user
+        commandsInDb.forEach(command -> {
+            List<LiteDeviceTypeCommand> typeCommands = commandDao.getAllDevTypeCommands(command.getCommandId());
+            log.debug("Deleting devices type commands {}", typeCommands);
+            typeCommands.forEach(typeCommand -> commandDao.deleteDeviceTypeCommand(typeCommand));
+            log.debug("                     -command {}", command);
+            commandDao.deleteCommand(command);
+        });
+    }
+
+    /**
+     * Creates new command
+     */
+    private void createNewCommand(String commandCategory, DeviceCommandDetail detail,
+            Map<String, Long> displayOrderExistingCount) {
+
+        if (CommandCategoryUtil.isCommandCategory(commandCategory)) {
+            CommandCategory category = CommandCategory.getForDbString(commandCategory);
+            List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(category);
+            paoTypes.forEach(paoType -> {
+                int displayOrder = findNextDisplayOrder(displayOrderExistingCount, paoType);
+                log.debug("Creating new command {} label {} paoType {} displayOrder {}", detail.getCommand(),
+                        detail.getCommandName(), paoType, displayOrder);
+                commandDao.addCommand(detail.getCommand(), detail.getCommandName(), paoType, commandCategory, displayOrder);
+            });
+        } else {
+            PaoType paoType = PaoType.getForDbString(commandCategory);
+            int displayOrder = findNextDisplayOrder(displayOrderExistingCount, paoType);
+            log.debug("Creating new command {} label {} paoType {} displayOrder {}", detail.getCommand(),
+                    detail.getCommandName(), paoType, displayOrder);
+            commandDao.addCommand(detail.getCommand(), detail.getCommandName(), paoType, commandCategory, displayOrder);
+        }
+    }
+
+    private int findNextDisplayOrder(Map<String, Long> displayOrderExistingCount, PaoType paoType) {
+        Long lastCommandsDisplayOrder = displayOrderExistingCount.get(paoType.getDbString());
+        if (lastCommandsDisplayOrder == null) {
+            return 1;
+        }
+        return lastCommandsDisplayOrder.intValue() + 1;
+    }
 }

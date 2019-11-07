@@ -5,7 +5,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -29,10 +28,7 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
-import com.cannontech.database.db.command.CommandCategory;
-import com.cannontech.database.db.command.CommandCategoryUtil;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class CommandDaoImpl implements CommandDao {
@@ -79,17 +75,22 @@ public final class CommandDaoImpl implements CommandDao {
     }
     
     @Override
-    public void deleteDeviceTypeCommand(int deviceCommandId) {
-        LiteDeviceTypeCommand typeCommand =  getDeviceTypeCommand(deviceCommandId);
+    public void deleteDeviceTypeCommand(LiteDeviceTypeCommand typeCommand) {
         dbPersistentDao.performDBChange(LiteFactory.createDBPersistent(typeCommand), TransactionType.DELETE);
     }
-  
+    
+    @Override
+    public void deleteCommand(LiteCommand command) {
+        dbPersistentDao.performDBChange(LiteFactory.createDBPersistent(command), TransactionType.DELETE);
+    }
+      
+      
     @Transactional
     @Override
-    public void addCommand(String commandString, String label, PaoType paoType) {
+    public void addCommand(String commandString, String label, PaoType paoType, String commandCategory, int displayOrder) {
         Command command = new Command();
         command.setLabel(label);
-        command.setCommand(commandString);
+        command.setCommand(commandCategory);
         command.setCategory(paoType.getDbString());
  
         dbPersistentDao.performDBChange(command, TransactionType.INSERT);
@@ -99,24 +100,15 @@ public final class CommandDaoImpl implements CommandDao {
         dbCommand.setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
         dbCommand.setCommandID(command.getCommandID());
         dbCommand.setDeviceType(paoType.getDbString());
-        dbCommand.setDisplayOrder(20);
+        dbCommand.setDisplayOrder(displayOrder);
         dbCommand.setVisibleFlag('Y');
 
         dbPersistentDao.performDBChange(dbCommand, TransactionType.INSERT);
     }
-    
+        
     @Override
-    public void addCommand(String commandString, String label, CommandCategory category) {
-        List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(category);
-        paoTypes.forEach(paoType -> addCommand(commandString, label, paoType));
-    }
-    
-    @Override
-    public void updateDeviceTypeCommands(List<LiteDeviceTypeCommand> commands) {
-        List<DBPersistent> dbCommands  = commands.stream()
-                .map(command -> LiteFactory.createDBPersistent(command))
-                .collect(Collectors.toList());
-        dbPersistentDao.performDBChangeWithNoMsg(dbCommands, TransactionType.UPDATE);
+    public void updateDeviceTypeCommand(LiteDeviceTypeCommand command) {
+        dbPersistentDao.performDBChange(LiteFactory.createDBPersistent(command), TransactionType.UPDATE);
     }
     
     @Override

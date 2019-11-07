@@ -6,7 +6,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.command.CommandCategory;
 
 public interface CommandDao {
     
@@ -45,17 +44,12 @@ public interface CommandDao {
     /**
      * Adds command and label for pao type
      */
-    void addCommand(String commandString, String label, PaoType paoType);
-
-    /**
-     * Adds command and label for all pao types in category
-     */
-    void addCommand(String commandString, String label, CommandCategory category);
+    void addCommand(String commandString, String label, PaoType paoType, String commandCategory, int displayOrder);
 
     /**
      * Updates device type commands
      */
-    void updateDeviceTypeCommands(List<LiteDeviceTypeCommand> commands);
+    void updateDeviceTypeCommand(LiteDeviceTypeCommand command);
 
     /**
      * Updates command
@@ -63,7 +57,12 @@ public interface CommandDao {
     void updateCommand(LiteCommand command);
 
     /**
-     * Deletes device type commands
+     * Deletes device type command
      */
-    void deleteDeviceTypeCommand(int deviceCommandId);
+    void deleteDeviceTypeCommand(LiteDeviceTypeCommand typeCommand);
+
+    /**
+     * Deletes command
+     */
+    void deleteCommand(LiteCommand command);
 }
