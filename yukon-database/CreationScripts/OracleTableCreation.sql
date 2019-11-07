@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/1/2019 12:22:42 PM                        */
+/* Created on:     11/5/2019 3:13:29 PM                         */
 /*==============================================================*/
 
 
@@ -10316,7 +10316,8 @@ INSERT INTO YukonRoleProperty VALUES(-10315,-103,'Control Cap Control device', '
 INSERT INTO YukonRoleProperty VALUES(-10316,-103,'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
 INSERT INTO YukonRoleProperty VALUES(-10317,-103,'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
 INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true', 'Controls access to web commander applications');
-INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
+INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application');
+INSERT INTO YukonRoleProperty VALUES(-10320,-103,'Manage Custom Commands', 'VIEW', 'Controls access to the ability to manage custom commands in web commander');
 
 /* Dynamic Billing File Setup */
 INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 

@@ -171,6 +171,13 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-20819', '7.3.2', GETDATE());
 /* @end YUK-20819 */
 
+/* @start YUK-20788 */
+INSERT into YukonRoleProperty
+VALUES (-10320, -103, 'Manage Custom Commands', 'VIEW', 'Controls access to the ability to manage custom commands in web commander');
+
+INSERT INTO DBUpdates VALUES ('YUK-20788', '7.4.0', GETDATE());
+/* @end YUK-20788 */
+
 /* @start YUK-20780 */
 UPDATE CommandRequestUnsupported
 SET Type = 'ALREADY_CONFIGURED'
