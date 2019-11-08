@@ -10,6 +10,7 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.TypeRowMapper;
 
 public class MeterProgrammingMetersGroupProvider extends BinningDeviceGroupProviderBase<String> {
 
@@ -23,9 +24,8 @@ public class MeterProgrammingMetersGroupProvider extends BinningDeviceGroupProvi
 
     @Override
     protected List<String> getAllBins() {
-        String sql = "SELECT Name FROM MeterProgram";
-        List<String> bins = getJdbcTemplate().query(sql, new StringRowMapper());
-        return bins;
+        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT Name FROM MeterProgram");
+        return getJdbcTemplate().query(sql, TypeRowMapper.STRING);
     }
 
     @Override
@@ -36,8 +36,8 @@ public class MeterProgrammingMetersGroupProvider extends BinningDeviceGroupProvi
         sql.append("JOIN MeterProgramAssignment mpa on mpa.Guid = mp.Guid");
         sql.append("WHERE mpa.DeviceId").eq(device.getPaoIdentifier().getPaoId());
         try {
-            String bin = getJdbcTemplate().queryForObject(sql.getSql(), new StringRowMapper(), sql.getArguments());
-            return Collections.singleton(bin);
+            List<String> bins = getJdbcTemplate().query(sql, TypeRowMapper.STRING);
+            return Set.copyOf(bins);
         } catch (EmptyResultDataAccessException e) {
             return Collections.emptySet();
         }
