@@ -34,7 +34,7 @@ public class MeterProgrammingMetersGroupProvider extends BinningDeviceGroupProvi
         sql.append("SELECT mp.Name");
         sql.append("FROM MeterProgram mp");
         sql.append("JOIN MeterProgramAssignment mpa on mpa.Guid = mp.Guid");
-        sql.append("WHERE mpa.DeviceId = ").appendArgument(device.getPaoIdentifier().getPaoId());
+        sql.append("WHERE mpa.DeviceId").eq(device.getPaoIdentifier().getPaoId());
         try {
             String bin = getJdbcTemplate().queryForObject(sql.getSql(), new StringRowMapper(), sql.getArguments());
             return Collections.singleton(bin);
@@ -49,7 +49,7 @@ public class MeterProgrammingMetersGroupProvider extends BinningDeviceGroupProvi
         sql.append("SELECT DeviceID");
         sql.append("FROM MeterProgramAssignment mpa");
         sql.append("JOIN MeterProgram mp on mpa.Guid = mp.Guid");
-        sql.append("WHERE mp.Name = ").appendArgument(bin);
+        sql.append("WHERE mp.Name").eq(bin);
         return sql;
     }
 
