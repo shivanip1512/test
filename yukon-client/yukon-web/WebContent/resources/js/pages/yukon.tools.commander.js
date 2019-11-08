@@ -467,6 +467,14 @@ yukon.tools.commander = (function () {
         .done(function (html) {
             $('#device-commands-table').html(html);
             _customCommandsDirty = false;
+            _setupDragDrop();
+        });
+    },
+    
+    _setupDragDrop = function () {
+        var isCategory = $('#isCategory').val(),
+            hasEditPermissions = $('#hasEditPermissions').val();
+        if (!isCategory && hasEditPermissions) {
             $("#commands tbody").sortable({
                 stop : function(event, ui) {
                     ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
@@ -474,7 +482,7 @@ yukon.tools.commander = (function () {
                     _customCommandsDirty = true;
                 }
             });
-        });
+        }
     }
 
     mod = {
@@ -540,19 +548,17 @@ yukon.tools.commander = (function () {
                     url: yukon.url('/tools/commander/customCommands'),
                     data: data
                 }).done(function (html) {
-                    var buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save'}),
+                    var buttons,
                         popup = $('#custom-commands-popup'),
                         title = popup.data('title');
                     popup.html(html);
+                    var hasEditPermissions = $('#hasEditPermissions').val();
+                    if (hasEditPermissions) {
+                        buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save'});
+                    }
                     popup.dialog({title: title, width: '985px', buttons: buttons});
                     _customCommandsDirty = false;
-                    $("#commands tbody").sortable({
-                        stop : function(event, ui) {
-                            ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
-                            _reOrderCustomCommands();
-                            _customCommandsDirty = true;
-                        }
-                    });
+                    _setupDragDrop();
                 });
             });
             
@@ -564,19 +570,31 @@ yukon.tools.commander = (function () {
             $(document).on('click', '.js-add-command', function () {
                 var clonedRow = $('.js-template-row').clone();
                 clonedRow.find(':input').removeAttr('disabled');
+                var isCategory = $('#isCategory').val();
+                if (isCategory) {
+                    clonedRow.find('.js-move-up').prop('disabled', true);
+                    clonedRow.find('.js-move-down').prop('disabled', true);
+                    clonedRow.find(':input[type=checkbox]').prop('disabled', true);
+                }
                 clonedRow.removeClass('dn js-template-row');
                 clonedRow.appendTo($('#commands'));
                 $('.js-empty-commands').remove();
                 var firstField = clonedRow.find('.js-command-fields').first();
                 firstField.focus();
-                $('#commands').trigger('yukon:ordered-selection:added-removed');
+                var isCategory = $('#isCategory').val();
+                if (!isCategory) {
+                    $('#commands').trigger('yukon:ordered-selection:added-removed');
+                }
                 _reOrderCustomCommands();
                 _customCommandsDirty = true;
             });
             
             $(document).on('click', '.js-remove', function () {
                 $(this).closest('tr').remove();
-                $('#commands').trigger('yukon:ordered-selection:added-removed');
+                var isCategory = $('#isCategory').val();
+                if (!isCategory) {
+                    $('#commands').trigger('yukon:ordered-selection:added-removed');
+                }
                 _reOrderCustomCommands();
                 _customCommandsDirty = true;
             });
@@ -596,7 +614,7 @@ yukon.tools.commander = (function () {
                         }
                     },
                     error: function (xhr, status, error, $form) {
-                        popup.html(xhr.responseText);
+                        $('#device-commands-table').html(xhr.responseText).scrollTop(0);
                         $('#save-changes-popup').dialog('close');
                     }
                 });

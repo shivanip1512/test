@@ -136,9 +136,11 @@
         <select id="common-commands" data-placeholder="<cti:msg2 key=".availableCommands.select"/>">
             <option value=""><cti:msg2 key=".availableCommands.select"/></option>
         </select>
-        <cti:button id="custom-commands" renderMode="buttonImage" icon="icon-script-edit" classes="fn vam"/>
-        <cti:msg2 var="customCommandsTitle" key=".customCommands.title"/>
-        <div class="dn" id="custom-commands-popup" data-dialog data-title="${customCommandsTitle}"></div>
+        <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="VIEW">      
+            <cti:button id="custom-commands" renderMode="buttonImage" icon="icon-script-edit" classes="fn vam"/>
+            <cti:msg2 var="customCommandsTitle" key=".customCommands.title"/>
+            <div class="dn" id="custom-commands-popup" data-dialog data-title="${customCommandsTitle}"></div>
+        </cti:checkRolesAndProperties>
     </tags:nameValue2>
     
     <tags:nameValue2 nameKey=".command">

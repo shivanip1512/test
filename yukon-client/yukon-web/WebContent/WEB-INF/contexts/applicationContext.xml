@@ -1445,4 +1445,6 @@
     <bean id="sepCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepCycleGearFieldsValidator"/>
     <bean id="sepTemperatureOffsetGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepTemperatureOffsetGearFieldsValidator"/>
 
+    <bean class="com.cannontech.web.tools.commander.CustomCommandBeanValidator"/>
+
 </beans>

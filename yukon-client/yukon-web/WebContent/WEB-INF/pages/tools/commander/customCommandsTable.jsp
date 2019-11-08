@@ -6,60 +6,100 @@
 
 <cti:msgScope paths="modules.tools.commander.customCommands">
 
-    <c:if test="${not empty successMsg}"><tags:alertBox type="success">${successMsg}</tags:alertBox></c:if>
-    <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
+    <c:if test="${not empty successMsg}"><tags:alertBox type="success" includeCloseButton="true">${successMsg}</tags:alertBox></c:if>
+    <c:if test="${not empty errorMsg}"><tags:alertBox includeCloseButton="true">${errorMsg}</tags:alertBox></c:if>
+    
+    <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="UPDATE">
+        <c:set var="hasEditPermissions" value="${true}"/>
+        <input type="hidden" id="hasEditPermissions" value="true"/>
+    </cti:checkRolesAndProperties>
+    
         
     <cti:url var="action" value="/tools/commander/customCommands"/>
     <form:form id="custom-commands-form" modelAttribute="formBean" action="${action}" method="POST">
         <cti:csrfToken/>
         <tags:hidden id="selectedCategory" path="selectedCategory"/>
+        <input type="hidden" id="isCategory" value="${isCategory}"/>
+        <cti:msg2 var="notAvailableForCategory" key=".notEnabledForCategory"/>
+        <c:set var="titleText" value="${isCategory ? notAvailableForCategory : ''}"/>
+        <c:set var="disabledForCategory" value="${isCategory ? 'readonly=readonly' : ''}"/>
+        <c:set var="cursorClass" value="${!isCategory && hasEditPermissions ? 'cm' : ''}"/>
 
         <table id="commands" class="compact-results-table row-highlighting select-box-selected js-with-movables" data-item-selector=".select-box-item">
             <thead>
-                <th style="max-width:30px;"></th>
+                <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="OWNER">      
+                    <th style="max-width:30px;"></th>
+                </cti:checkRolesAndProperties>
                 <th><i:inline key=".commandName"/></th>
                 <th><i:inline key=".command"/></th>
                 <th><i:inline key=".visible"/></th>
                 <th><i:inline key=".category"/></th>
-                <th style="width:90px"></th>
+                <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="UPDATE">      
+                    <th style="width:90px"></th>
+                </cti:checkRolesAndProperties>
             </thead>
             <tbody>
                 <c:forEach var="typeCommand" items="${formBean.detail}" varStatus="status">
                 
-                    <c:set var="isEditable" value="${typeCommand.commandId > 0}"/>
-                    <c:set var="disabledText" value="${isEditable ? '' : 'readonly=readonly'}"/>
-                    <tr class="select-box-item cm">
+                    <c:set var="isEditable" value="${typeCommand.commandId > 0 || empty typeCommand.commandId}"/>
+                    <tr class="select-box-item ${cursorClass}">
                         <tags:hidden path="detail[${status.index}].deviceCommandId"/>
                         <tags:hidden path="detail[${status.index}].commandId"/>
                         <input type="hidden" name="detail[${status.index}].displayOrder" class="js-display-order" value="${typeCommand.displayOrder}"/>
                         <tags:hidden path="detail[${status.index}].category"/>
-                        <td class="PL0 PR0">
-                            <c:if test="${isEditable}">
-                                <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove ML0 MR0"/>
-                            </c:if>
-                        </td>
-                        <td>
-                            <input type="text" name="detail[${status.index}].commandName" value="${typeCommand.commandName}" 
-                                title="${typeCommand.commandName}" size="20" ${disabledText} class="js-command-fields"/>
-                        </td>
-                        <td>
-                            <input type="text" name="detail[${status.index}].command" value="${typeCommand.command}" 
-                                title="${typeCommand.command}" size="20" ${disabledText} class="js-command-fields"/>
-                        </td>
-                        <td>
-                            <tags:checkbox path="detail[${status.index}].visibleFlag" styleClass="js-command-fields"/>
-                        </td>
+                        <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="OWNER">      
+                            <td class="PL0 PR0">
+                                <c:if test="${isEditable}">
+                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove ML0 MR0"/>
+                                </c:if>
+                            </td>
+                        </cti:checkRolesAndProperties>
+                        <c:choose>
+                            <c:when test="${hasEditPermissions}">
+                                <td>
+                                    <span title="${typeCommand.commandName}">
+                                        <tags:input path="detail[${status.index}].commandName" size="20" readonly="${!isEditable}" inputClass="js-command-fields"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="${typeCommand.command}">
+                                        <tags:input path="detail[${status.index}].command" size="20" readonly="${!isEditable}" inputClass="js-command-fields"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span title="${titleText}">
+                                        <tags:checkbox path="detail[${status.index}].visibleFlag" styleClass="js-command-fields" disabled="${isCategory}"/>
+                                        <c:if test="${isCategory}">
+                                            <tags:hidden path="detail[${status.index}].visibleFlag"/>
+                                        </c:if>
+                                    </span>
+                                </td>
+                            </c:when>
+                            <c:otherwise>
+                                <td style="width:35%;">
+                                    ${typeCommand.commandName}
+                                </td>
+                                <td style="width:35%;">
+                                    ${typeCommand.command}
+                                </td>
+                                <td>
+                                    <tags:checkbox path="detail[${status.index}].visibleFlag" disabled="true"/>
+                                </td>
+                            </c:otherwise>
+                        </c:choose>
                         <td>
                             ${typeCommand.category}
                         </td>
-                        <td>
-                            <div class="select-box-item-movers">
-                                <c:set var="disabled" value="${status.first}" />
-                                <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" disabled="${disabled}" />
-                                <c:set var="disabled" value="${status.last}" />
-                                <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${disabled}" />
-                            </div>
-                        </td>
+                        <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="UPDATE">      
+                            <td>
+                                <div class="select-box-item-movers">
+                                    <c:set var="disabled" value="${status.first || isCategory}" />
+                                    <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" disabled="${disabled}" title="${titleText}" />
+                                    <c:set var="disabled" value="${status.last || isCategory}" />
+                                    <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="${disabled}" title="${titleText}"/>
+                                </div>
+                            </td>
+                        </cti:checkRolesAndProperties>
                     </tr>
                 </c:forEach>
                 <c:if test="${empty formBean.detail}">
@@ -71,14 +111,16 @@
         </table>
         
         <table>
-            <tr class="select-box-item cm js-template-row dn">
+            <tr class="select-box-item js-template-row dn ${cursorClass}">
                 <input type="hidden" name="detail[0].commandId" disabled="disabled"/>
                 <input type="hidden" name="detail[0].deviceCommandId" disabled="disabled"/>
                 <input type="hidden" name="detail[0].displayOrder" class="js-display-order" disabled="disabled"/>
                 <input type="hidden" name="detail[0].category" value="${formBean.selectedCategory}" disabled="disabled"/>
-                <td class="PL0 PR0">
-                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove ML0 MR0"/>
-                </td>
+                <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="OWNER">      
+                    <td class="PL0 PR0">
+                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove ML0 MR0"/>
+                    </td>
+                </cti:checkRolesAndProperties>
                 <td>
                     <input type="text" name="detail[0].commandName" size="20" class="js-command-fields" disabled="disabled"/>
                 </td>
@@ -86,15 +128,18 @@
                     <input type="text" name="detail[0].command" size="20" class="js-command-fields" disabled="disabled"/>
                 </td>
                 <td>
-                    <input type="checkbox" name="detail[0].visibleFlag" checked="checked" styleClass="js-command-fields" disabled="disabled"/>
+                    <input type="checkbox" name="detail[0].visibleFlag" checked="checked" styleClass="js-command-fields" disabled="disabled" title="${titleText}"/>
+                    <c:if test="${isCategory}">
+                        <input type="hidden" name="detail[0].visibleFlag" value="true"/>
+                    </c:if>
                 </td>
                 <td>
                     ${formBean.selectedCategory}
                 </td>
                 <td>
                     <div class="select-box-item-movers">
-                        <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" />
-                        <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="true" />
+                        <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="left select-box-item-up js-move-up" title="${titleText}"/>
+                        <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="right select-box-item-down js-move-down" disabled="true" title="${titleText}"/>
                     </div>
                 </td>
             </tr>

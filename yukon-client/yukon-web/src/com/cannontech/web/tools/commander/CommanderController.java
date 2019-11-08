@@ -104,6 +104,7 @@ public class CommanderController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    @Autowired private CustomCommandBeanValidator customCommandValidator;
     
     private static final Logger log = YukonLogManager.getLogger(CommanderController.class);
     
@@ -463,6 +464,7 @@ public class CommanderController {
     
     
     @GetMapping("/commander/customCommands")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_CUSTOM_COMMANDS, level = HierarchyPermissionLevel.VIEW)
     public String customCommandsPopup(ModelMap model, @RequestParam(value="paoId", required=false) Integer paoId, 
                                       @RequestParam(value="category", required=false) String category) {
         //get command categories and paotypes
@@ -481,11 +483,11 @@ public class CommanderController {
         if (paoId != null) {
             YukonPao pao = cache.getAllPaosMap().get(paoId);
             String type = pao.getPaoIdentifier().getPaoType().getDbString();
-            typeCommands = getCommandsByCategory(type);
+            typeCommands = getCommandsByCategory(type, model);
             formBean.setSelectedCategory(type);
         } else if (category != null) {
             CommandCategory cmdCategory = CommandCategory.valueOf(category);
-            typeCommands = getCommandsByCategory(cmdCategory.getDbString());
+            typeCommands = getCommandsByCategory(cmdCategory.getDbString(), model);
             formBean.setSelectedCategory(cmdCategory.getDbString());
         }
         
@@ -495,13 +497,24 @@ public class CommanderController {
     }
     
     @PostMapping("/commander/customCommands")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_CUSTOM_COMMANDS, level = HierarchyPermissionLevel.UPDATE)
     public String saveCustomCommands(@ModelAttribute("formBean") CustomCommandBean formBean, BindingResult result, ModelMap model, 
-                                     YukonUserContext userContext) {
-        commanderService.save(formBean.getSelectedCategory(), formBean.getDetail());
+                                     YukonUserContext userContext, HttpServletResponse resp) {
+        //validate commands
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        customCommandValidator.validate(formBean, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            String errorMsg = accessor.getMessage("yukon.web.modules.tools.commander.customCommands.validationErrors");
+            model.addAttribute("errorMsg", errorMsg);
+            return "commander/customCommandsTable.jsp";
+        }
+        
+        commanderService.save(formBean.getSelectedCategory(), formBean.getDetail());
         String successMsg = accessor.getMessage("yukon.web.modules.tools.commander.customCommands.saveSuccessful");
         model.addAttribute("successMsg", successMsg);
-        List<DeviceCommandDetail> detail = getCommandsByCategory(formBean.getSelectedCategory());
+        List<DeviceCommandDetail> detail = getCommandsByCategory(formBean.getSelectedCategory(), model);
         CustomCommandBean savedForm = new CustomCommandBean();
         savedForm.setDetail(detail);
         savedForm.setSelectedCategory(formBean.getSelectedCategory());
@@ -509,12 +522,13 @@ public class CommanderController {
         return "commander/customCommandsTable.jsp";
     }
     
-    private List<DeviceCommandDetail> getCommandsByCategory(String category) {
+    private List<DeviceCommandDetail> getCommandsByCategory(String category, ModelMap model) {
         List<DeviceCommandDetail> cmdDetail = new ArrayList<>();
 
         //check if Command Category
         boolean commandCategory = CommandCategoryUtil.isCommandCategory(category);
         if (commandCategory || CommandCategoryUtil.isExpressComOrVersaCom(category)) {
+            model.addAttribute("isCategory", true);
             List<LiteCommand> cmds = commandDao.getAllCommandsByCategory(category);
             for (LiteCommand cmd : cmds) {
                 DeviceCommandDetail detail = new DeviceCommandDetail(null, cmd.getCommandId(), category, 0, true, cmd.getLabel(), cmd.getCommand());
@@ -536,8 +550,9 @@ public class CommanderController {
     }
     
     @GetMapping("/commander/customCommandsByCategory")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_CUSTOM_COMMANDS, level = HierarchyPermissionLevel.VIEW)
     public String customCommandsByCategory(ModelMap model, String category) {
-        List<DeviceCommandDetail> typeCommands = getCommandsByCategory(category);
+        List<DeviceCommandDetail> typeCommands = getCommandsByCategory(category, model);
         
         CustomCommandBean formBean = new CustomCommandBean();
         formBean.setDetail(typeCommands);

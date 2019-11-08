@@ -25,10 +25,11 @@
                 <%@ include file="customCommandsTable.jsp" %>
             </div>
                     
-            <div class="action-area">
-                <cti:button nameKey="add" classes="fr js-add-command" icon="icon-add" disabled="${formBean.selectedCategory == null}"/>
-            </div>
-            
+            <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="CREATE">      
+                <div class="action-area">
+                    <cti:button nameKey="add" classes="fr js-add-command" icon="icon-add" disabled="${formBean.selectedCategory == null}"/>
+                </div>
+            </cti:checkRolesAndProperties>
         </div>
         
         <cti:msg2 var="saveChangesTitle" key=".saveChangesTitle"/>
