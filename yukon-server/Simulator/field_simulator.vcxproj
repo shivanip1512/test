@@ -408,6 +408,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\Ccu711.h" />
     <ClInclude Include="include\Ccu721.h" />
     <ClInclude Include="include\CcuIDLC.h" />
+    <ClInclude Include="include\e2e_packet.h" />
     <ClInclude Include="include\field_simulator_service.h" />
     <ClInclude Include="include\CommInterface.h" />
     <ClInclude Include="include\CommsBehavior.h" />

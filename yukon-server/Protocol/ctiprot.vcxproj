@@ -574,6 +574,8 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dnp_object_time.h" />
     <ClInclude Include="include\dnp_objects.h" />
     <ClInclude Include="include\dnp_transport.h" />
+    <ClInclude Include="include\e2e_exceptions.h" />
+    <ClInclude Include="include\e2e_messaging.h" />
     <ClInclude Include="include\expresscom.h" />
     <ClInclude Include="include\id_ctiprot.h" />
     <ClInclude Include="include\ion_datastream.h" />

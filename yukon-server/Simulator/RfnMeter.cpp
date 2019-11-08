@@ -15,8 +15,12 @@
 #include <random>
 #include <time.h>
 
-namespace Cti {
-namespace Simulator {
+namespace Cti::Simulator {
+
+namespace {
+RandomGenerator<unsigned> idGenerator;
+std::map<RfnIdentifier, std::map<unsigned, std::string>> meterProgrammingRequests;
+}
 
 namespace streaming_metrics {
 
@@ -169,29 +173,56 @@ auto RfnMeter::doChannelManagerRequest(const std::vector<unsigned char>& request
     return {};
 }
 
-auto RfnMeter::processChannelManagerPost()
+auto RfnMeter::processReply(const e2edt_reply_packet& reply, const RfnIdentifier& rfnId) -> std::unique_ptr<e2edt_request_packet>
 {
-            if( ! post_request.payload.empty() )
+    if( auto requests = mapFindRef(meterProgrammingRequests, rfnId) )
+    {
+        if( auto existingRequestPath = mapFind(*requests, reply.token) )
+        {
+            if( reply.block && reply.block->more )
             {
-                switch( post_request.payload[0] )
-                {
-                    case 0x90:
-                        e2edt_request_packet request;
+                auto request = std::make_unique<e2edt_request_packet>();
 
-                        request.id = idGenerator();
-                        request.confirmable = true;
-                        request.method = Protocols::Coap::RequestMethod::Get;
-                        
-                        const auto meterProgramInfo = RfnMeter::ParseSetMeterProgram(post_request.payload, rfnId);
-                        
-                        meterProgrammingRequests[rfnId][post_request.token] = meterProgramInfo;
-                        
-                        request.path = meterProgramInfo.path;
-                        request.token = post_request.token;
+                request->id = idGenerator();
+                request->confirmable = true;
+                request->method = Protocols::Coap::RequestMethod::Get;
+                request->block = reply.block;
+                request->block->num++;
 
-                        return buildE2eDtRequest(request);
-                }
+                request->path = *existingRequestPath;
+                request->token = idGenerator();
+
+                return request;
             }
+        }
+    }
+
+    return nullptr;
+}
+
+auto RfnMeter::processChannelManagerPost(const e2edt_request_packet& post_request, const RfnIdentifier& rfnId) -> std::unique_ptr<e2edt_request_packet>
+{
+    if( ! post_request.payload.empty() )
+    {
+        switch( post_request.payload[0] )
+        {
+            case 0x90:
+                auto request = std::make_unique<e2edt_request_packet>();
+
+                request->id = idGenerator();
+                request->confirmable = true;
+                request->method = Protocols::Coap::RequestMethod::Get;
+                        
+                const auto meterProgramInfo = ParseSetMeterProgram(post_request.payload, rfnId);
+                        
+                request->path = meterProgramInfo.path;
+                request->token = idGenerator();
+
+                meterProgrammingRequests[rfnId][request->token] = request->path;
+                        
+                return request;
+        }
+    }
 }
 
 auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> path_size
@@ -461,5 +492,4 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
     return makeDataStreamingResponse(0x87, response);
 }
 
-}
 }

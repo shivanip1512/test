@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "prot_e2eDataTransfer.h"
+#include "e2e_exceptions.h"
 #include "coap_helper.h"
 
 extern "C" {
@@ -17,6 +18,8 @@ extern "C" {
 #include <ctime>
 
 namespace Cti::Protocols {
+
+using namespace E2e;
 
 E2eDataTransferProtocol::E2eDataTransferProtocol() :
     _generator(std::time(0))

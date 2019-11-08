@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "E2eSimulator.h"
+#include "e2e_packet.h"
 
 #include "RfnMeter.h"
 #include "RfDa.h"
@@ -15,7 +16,6 @@
 #include "coap_helper.h"
 
 #include "rfn_asid.h"
-#include "random_generator.h"
 
 #include "amq_util.h"
 #include "amq_connection.h"
@@ -47,31 +47,6 @@ DLLIMPORT MessageFactory<NetworkManagerBase> nmMessageFactory;
 }
     
 namespace Cti::Simulator {
-
-struct e2edt_packet
-{
-    virtual ~e2edt_packet() = default;  //  to provide a vtable and RTTI
-
-    std::vector<unsigned char> payload;
-    unsigned token;
-    unsigned id;
-    std::optional<Protocols::E2eDataTransferProtocol::Block> block;
-    std::string path;
-};
-
-struct e2edt_request_packet : e2edt_packet
-{
-    bool confirmable;
-    Protocols::Coap::RequestMethod method;
-};
-
-struct e2edt_reply_packet : e2edt_packet
-{
-    Protocols::Coap::ResponseCode status;
-};
-
-std::map<RfnIdentifier, std::map<unsigned, RfnMeter::path_size>> meterProgrammingRequests;
-RandomGenerator<unsigned> idGenerator;
 
 E2eSimulator::~E2eSimulator() = default;
 
@@ -169,7 +144,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 }
 
 
-void E2eSimulator::delayProcessing(float delay, E2eDataRequestMsg requestMsg) 
+void E2eSimulator::delayProcessing(float delay, const E2eDataRequestMsg requestMsg)
 {
     CTILOG_INFO(dout, "Delaying " << delay << " seconds");
     Sleep(delay * 1000);
@@ -183,6 +158,11 @@ void E2eSimulator::delayProcessing(float delay, E2eDataRequestMsg requestMsg)
         return;
     }
 
+    processE2eDtRequest(requestMsg);
+}
+
+void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
+{
     if( isAsid_E2eDt(requestMsg.applicationServiceId) )
     {
         auto msgPtr = parseE2eDtRequestPayload(requestMsg.payload, requestMsg.rfnIdentifier);
@@ -215,16 +195,11 @@ void E2eSimulator::delayProcessing(float delay, E2eDataRequestMsg requestMsg)
         }
         else if( auto e2edtReply = dynamic_cast<const e2edt_reply_packet*>(msgPtr.get()) )
         {
-            if( auto requests = mapFindRef(meterProgrammingRequests, requestMsg.rfnIdentifier) )
+            if( auto request = RfnMeter::processReply(*e2edtReply, requestMsg.rfnIdentifier) )
             {
-                if( auto existingRequest = mapFind(*requests, e2edtReply->token) )
-                {
-                    auto path = existingRequest->path;
+                const auto e2edtRequest = buildE2eDtRequest(*request);
 
-                    auto meterProgramRequest = RfnMeter::RequestMeterProgramContinuation();
-
-                    sendE2eDataIndication(requestMsg, meterProgramRequest);
-                }
+                sendE2eDataIndication(requestMsg, e2edtRequest);
             }
         }
         else
@@ -375,15 +350,15 @@ auto E2eSimulator::buildE2eRequestNotAcceptable(unsigned id, unsigned long token
 }
 
 
-auto E2eSimulator::buildE2eDtRequest(const e2edt_request_packet& requestContents) const -> Bytes
+auto E2eSimulator::buildE2eDtRequest(const e2edt_request_packet& request) const -> Bytes
 {
-    auto request_pdu = Protocols::Coap::scoped_pdu_ptr::make_confirmable_request(method, requestContents.token, requestContents.id);
+    auto request_pdu = Protocols::Coap::scoped_pdu_ptr::make_confirmable_request(request.method, request.token, request.id);
 
     std::array<unsigned char, 1024> allOptions;
 
     size_t allOptionLength = allOptions.size();
     
-    std::basic_string<unsigned char> path { requestContents.path.cbegin(), requestContents.path.cend() };
+    std::basic_string<unsigned char> path { request.path.cbegin(), request.path.cend() };
 
     auto options = coap_split_path(path.data(), path.size(), allOptions.data(), &allOptionLength);
 
@@ -394,17 +369,17 @@ auto E2eSimulator::buildE2eDtRequest(const e2edt_request_packet& requestContents
                 coap_opt_value(buf));
     }
 
-    if( requestContents.block )
+    if( request.block )
     {
         unsigned char buf[4];
 
-        unsigned len = coap_encode_var_bytes(buf, (requestContents.block->num << 4) | requestContents.block->size.szx);
+        unsigned len = coap_encode_var_bytes(buf, (request.block->num << 4) | request.block->size.szx);
 
         coap_add_option(request_pdu, COAP_OPTION_BLOCK2, len, buf);
     }
 
     //  add data to reply
-    coap_add_data(request_pdu, requestContents.payload.size(), requestContents.payload.data());
+    coap_add_data(request_pdu, request.payload.size(), request.payload.data());
 
     const unsigned char *raw_reply_pdu = reinterpret_cast<unsigned char *>(request_pdu->hdr);
 
@@ -444,6 +419,7 @@ auto E2eSimulator::buildResponse(const e2edt_request_packet& request, const Appl
         {
             using ASIDs = ApplicationServiceIdentifiers;
 
+            //  Eventually we will split to RfnMeter vs RfDa based on model/manufacturer
             static std::map<ASIDs, std::function<Bytes (Bytes, const RfnIdentifier&)>>
                 asidHandlers {
                     { ASIDs::ChannelManager, &RfnMeter::doChannelManagerRequest },
@@ -485,7 +461,7 @@ auto E2eSimulator::processRfnPostRequest(const e2edt_request_packet& post_reques
         {
             if( auto request = RfnMeter::processChannelManagerPost(post_request, rfnId) )
             {
-                return buildE2eDtRequest(request);
+                return buildE2eDtRequest(*request);
             }
         }
     }

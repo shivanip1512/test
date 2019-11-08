@@ -58,6 +58,7 @@ private:
 
     void handleE2eDtRequest(const cms::Message *msg);
     void delayProcessing(float delay, const Messaging::Rfn::E2eDataRequestMsg requestMsg);
+    void processE2eDtRequest(const Messaging::Rfn::E2eDataRequestMsg requestMsg);
 
     void sendNetworkManagerRequestAck(const Messaging::Rfn::NetworkManagerRequestHeader&, const cms::Destination*);
     void sendE2eDataConfirm(const Messaging::Rfn::E2eDataRequestMsg&);
