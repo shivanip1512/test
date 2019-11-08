@@ -42,7 +42,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
-                "Expected Error not found:" + "Gear Name is required.");
+                "Expected Error not found: Gear Name is required.");
     }
 
     /**
@@ -59,7 +59,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Exceeds maximum length of 30."),
-                "Expected Error not found:" + "Exceeds maximum length of 30.");
+                "Expected Error not found: Exceeds maximum length of 30.");
     }
 
     /**
@@ -79,7 +79,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent",
-                "Must be between 0 and 100."), "Expected Error not found:" + "Must be between 0 and 100.");
+                "Must be between 0 and 100."), "Expected Error not found: Must be between 0 and 100.");
     }
 
     /**
@@ -99,7 +99,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent",
-                "Must be between 0 and 100."), "Expected Error not found:" + "Must be between 0 and 100.");
+                "Must be between 0 and 100."), "Expected Error not found: Must be between 0 and 100.");
     }
 
     /**
@@ -119,7 +119,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.cyclePeriodInMinutes",
-                "Invalid Cycle Period value."), "Expected Error not found:" + "Invalid Cycle Period value.");
+                "Invalid Cycle Period value."), "Expected Error not found: Invalid Cycle Period value.");
     }
 
     /**
@@ -139,7 +139,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction",
-                "Must be between 0 and 100."), "Expected Error not found:" + "Must be between 0 and 100.");
+                "Must be between 0 and 100."), "Expected Error not found: Must be between 0 and 100.");
     }
 
     /**
@@ -159,7 +159,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction",
-                "Must be between 0 and 100."), "Expected Error not found:" + "Must be between 0 and 100.");
+                "Must be between 0 and 100."), "Expected Error not found: Must be between 0 and 100.");
     }
 
     /**
@@ -181,7 +181,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields",
                         "When To Change Fields is required."),
-                "Expected Error not found:" + "When To Change Fields is required.");
+                "Expected Error not found: When To Change Fields is required.");
     }
 
     /**
@@ -202,7 +202,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.changePriority",
-                "Must be between 0 and 9,999."), "Expected Error not found:" + "Must be between 0 and 9,999.");
+                "Must be between 0 and 9,999."), "Expected Error not found: Must be between 0 and 9,999.");
     }
 
     /**
@@ -223,7 +223,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.changePriority",
-                "Must be between 0 and 9,999."), "Expected Error not found:" + "Must be between 0 and 9,999.");
+                "Must be between 0 and 9,999."), "Expected Error not found: Must be between 0 and 9,999.");
     }
 
     /**
@@ -245,7 +245,7 @@ public class HoneywellControlGearValidationAPITest {
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse,
                 "gears[0].fields.whenToChangeFields.changeDurationInMinutes", "Must be between 0 and 99,999."),
-                "Expected Error not found:" + "Must be between 0 and 99,999.");
+                "Expected Error not found: Must be between 0 and 99,999.");
     }
 
     /**
@@ -267,7 +267,7 @@ public class HoneywellControlGearValidationAPITest {
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse,
                 "gears[0].fields.whenToChangeFields.changeDurationInMinutes", "Must be between 0 and 99,999."),
-                "Expected Error not found:" + "Must be between 0 and 99,999.");
+                "Expected Error not found: Must be between 0 and 99,999.");
     }
 
     /**
@@ -287,9 +287,9 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
-                "Trigger Number is required."), "Expected Error not found:" + "Trigger Number is required.");
+                "Trigger Number is required."), "Expected Error not found: Trigger Number is required.");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerOffset",
-                "Trigger Offset is required."), "Expected Error not found:" + "Trigger Offset is required.");
+                "Trigger Offset is required."), "Expected Error not found: Trigger Offset is required.");
     }
 
     /**
@@ -310,7 +310,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
-                "Must be between 1 and 99,999."), "Expected Error not found:" + "Must be between 1 and 99,999.");
+                "Must be between 1 and 99,999."), "Expected Error not found: Must be between 1 and 99,999.");
     }
 
     /**
@@ -331,7 +331,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
-                "Must be between 1 and 99,999."), "Expected Error not found:" + "Must be between 1 and 99,999.");
+                "Must be between 1 and 99,999."), "Expected Error not found: Must be between 1 and 99,999.");
     }
 
     /**
@@ -354,7 +354,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerOffset",
                         "Must be between -100,000 and 100,000."),
-                "Expected Error not found:" + "Must be between -100,000 and 100,000.");
+                "Expected Error not found: Must be between -100,000 and 100,000.");
     }
 
     /**
@@ -377,7 +377,7 @@ public class HoneywellControlGearValidationAPITest {
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerOffset",
                         "Must be between -100,000 and 100,000."),
-                "Expected Error not found:" + "Must be between -100,000 and 100,000.");
+                "Expected Error not found: Must be between -100,000 and 100,000.");
     }
 
     /**
