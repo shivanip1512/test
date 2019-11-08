@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.data;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
@@ -71,7 +72,11 @@ public enum MspLoadActionCode {
             RfnDisconnectStatusState... rfnStates) {
         this.loadActionCode = loadActionCode;
         this.plcState = plcState;
-        this.rfnStates = Arrays.asList(rfnStates);
+        if (rfnStates != null) {
+            this.rfnStates = Arrays.asList(rfnStates);
+        } else {
+            this.rfnStates = Collections.emptyList();
+        }
     }
     
     public static MspLoadActionCode getForPlcState(Disconnect410State plcState)  {

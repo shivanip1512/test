@@ -1826,6 +1826,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     MspLoadActionCode mspLoadActionCode =
                         MspLoadActionCode.getForLoadActionCode(cdEvent.getLoadActionCode().getValue());
 
+                    if (mspLoadActionCode == null) {
+                        ErrorObject err = mspObjectDao.getErrorObject(meterNumber, "MeterNumber (" + meterNumber
+                                + ") - LoadActionCode '" + cdEvent.getLoadActionCode().getValue().toString() + "' is NOT Supported.",
+                                "Meter", "CDEvent", mspVendor.getCompanyName());
+                        errorObjects.add(err);
+                        continue;
+                    }
+
                     // validate is CD supported meter
                     if (!mspMeterDao.isCDSupportedMeter(meterNumber)) {
                         ErrorObject err =
