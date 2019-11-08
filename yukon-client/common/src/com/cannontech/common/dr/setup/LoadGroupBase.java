@@ -21,7 +21,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupEcobee.class, name = "LM_GROUP_ECOBEE"),
     @JsonSubTypes.Type(value = LoadGroupHoneywell.class, name = "LM_GROUP_HONEYWELL"),
     @JsonSubTypes.Type(value = LoadGroupNest.class, name = "LM_GROUP_NEST"),
-    @JsonSubTypes.Type(value = LoadGroupDisconnect.class, name = "LM_GROUP_METER_DISCONNECT")
+    @JsonSubTypes.Type(value = LoadGroupDisconnect.class, name = "LM_GROUP_METER_DISCONNECT"),
+    @JsonSubTypes.Type(value = LoadGroupMCT.class, name = "LM_GROUP_MCT")
     })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class LoadGroupBase<T extends LMGroup> implements LoadGroupSetupBase<T> {
