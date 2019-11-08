@@ -3,7 +3,6 @@ package com.cannontech.web.api;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -17,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.search.result.SearchResults;
@@ -33,8 +33,7 @@ public class ApiRequestHelper {
     @Autowired private RestTemplate apiRestTemplate;
     @Autowired private GlobalSettingDao settingDao;
 
-    @PostConstruct
-    public void setProxy() {
+    public synchronized void setProxy() {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
             factory.setProxy(httpProxy.getJavaHttpProxy());
@@ -42,7 +41,7 @@ public class ApiRequestHelper {
         factory.setOutputStreaming(false);
         apiRestTemplate.setRequestFactory(factory);
     }
-    
+
     @SuppressWarnings("rawtypes")
     public final static HashMap<Class, ParameterizedTypeReference> paramTypeRefMap = new HashMap<>();
     static {

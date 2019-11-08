@@ -4,6 +4,7 @@
 #include "ctitime.h"
 #include "cccapbank.h"
 #include "PointDataRequest.h"
+#include "ccutil.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -22,6 +23,22 @@ struct DmvTestData
     double
         StepSize;
 };
+
+
+struct KeepAliveHelper
+{
+    std::size_t phaseIndex;
+    CtiTime     nextSendTime;
+
+    Cti::CapControl::Phase  getCurrentPhase();
+
+    KeepAliveHelper()
+        :   phaseIndex { 0 }
+    {
+        // empty...
+    }
+};
+
 
 class IVVCState
 {
@@ -83,6 +100,7 @@ class IVVCState
         }
         bumpDirection;
 
+        KeepAliveHelper keepAlives;
 
 //        typedef std::map<Zone::IdSet::value_type, int>  TapOperationZoneMap;
         typedef std::map<long, double>  TapOperationZoneMap;
