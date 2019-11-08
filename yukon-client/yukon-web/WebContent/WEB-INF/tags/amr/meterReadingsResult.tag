@@ -7,18 +7,22 @@
 <%@ attribute name="result" required="true" type="com.cannontech.common.device.commands.CommandResultHolder" %>
 <%@ attribute name="errorMsg" %>
 <%@ attribute name="successMsg" %>
+<%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="titleClass" required="false" type="java.lang.String" %>
+<%@ attribute name="style" required="false" type="java.lang.String" %>
+<%@ attribute name="divStyle" required="false" type="java.lang.String" %>
 
 <c:if test="${result.anyErrorOrException}">
     <div class="scroll-md">
         <c:choose>
             <c:when test="${not empty pageScope.errorMsg}">
-                <div class="error stacked">${pageScope.errorMsg}</div>
+                <div class="error">${pageScope.errorMsg}</div>
             </c:when>
             <c:otherwise>
-                <div class="error"><i:inline key="yukon.common.device.attributeRead.general.errorHeading"/></div>
+                <div class="error" style="${pageScope.divStyle}"><i:inline key="yukon.common.device.attributeRead.general.errorHeading"/></div>
                 <c:forEach items="${result.errors}" var="error">
                     <c:if test="${not empty error.detail}">
-                        <tags:hideReveal2 titleKey="${error.summary}" showInitially="false"><i:inline key="${error.detail}"/></tags:hideReveal2>
+                        <tags:hideReveal2 titleKey="${error.summary}" showInitially="false" styleClass="${pageScope.styleClass}" titleClass="${pageScope.titleClass}" style="${pageScope.style}"><i:inline key="${error.detail}"/></tags:hideReveal2>
                     </c:if>  
                     <c:if test="${empty error.detail}">
                         <div><i:inline key="${error.summary}"/></div>

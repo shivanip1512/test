@@ -13,10 +13,10 @@
             <tags:nameValue2 nameKey=".verifyResult">
                 <c:choose>
                     <c:when test="${verifyResult.synced}">
-                        <span class="success"><i:inline key=".inSync"/></span>
+                        <span class="success dib" style="margin-left: 9px;"><i:inline key=".inSync"/></span>
                     </c:when>
                     <c:otherwise>
-                        <span class="error">${failureResult} ${fn:escapeXml(verifyResult.discrepancies)}</span>
+                        <span class="error dib" style="margin-left: 9px;">${failureResult} ${fn:escapeXml(verifyResult.discrepancies)}</span>
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>
@@ -24,24 +24,24 @@
     </c:when>
     <c:when test="${sendResult != null}">
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameClass="wsnw" nameKey=".sendResult">
+            <tags:nameValue2 nameKey=".sendResult">
                 <c:choose>
-                    <c:when test="${sendResult.anyErrorOrException}"><span class="error"><i:inline key=".fail"/></span></c:when>
-                    <c:otherwise><span class="success"><i:inline key=".sendConfigSuccess"/></span></c:otherwise>
+                    <c:when test="${sendResult.anyErrorOrException}"><span class="error dib" style="margin-left: 9px;"><i:inline key=".fail"/></span></c:when>
+                    <c:otherwise><span class="success dib" style="margin-left: 9px;"><i:inline key=".sendConfigSuccess"/></span></c:otherwise>
                 </c:choose>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-        <amr:meterReadingsResult result="${sendResult}"/>
+        <amr:meterReadingsResult result="${sendResult}" styleClass="error" titleClass="error" style="margin-left: 146px;" divStyle="margin-left: 152px;"/>
     </c:when>
     <c:when test="${readResult != null}">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".readResult">
                 <c:choose>
-                    <c:when test="${readResult.anyErrorOrException}"><span class="error"><i:inline key=".fail"/></span></c:when>
-                    <c:otherwise><span class="success"><i:inline key=".readSentSuccess"/></span></c:otherwise>
+                    <c:when test="${readResult.anyErrorOrException}"><span class="error dib" style="margin-left: 9px;"><i:inline key=".fail"/></span></c:when>
+                    <c:otherwise><span class="success dib" style="margin-left: 9px;"><i:inline key=".readSentSuccess"/></span></c:otherwise>
                 </c:choose>
             </tags:nameValue2>
         </tags:nameValueContainer2>
-        <amr:meterReadingsResult result="${readResult}"/>
+        <amr:meterReadingsResult result="${readResult}" styleClass="error" titleClass="error" style="margin-left: 146px;" divStyle="margin-left: 152px;"/>
     </c:when>
 </c:choose>

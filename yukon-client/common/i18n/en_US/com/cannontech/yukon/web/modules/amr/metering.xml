@@ -166,9 +166,10 @@
 
     <!-- configWidget/render.jsp -->
     <entry key="yukon.web.widgets.configWidget.meterProgramming">Meter Programming</entry>
-    <entry key="yukon.web.widgets.configWidget.program.label">Program</entry>
-    <entry key="yukon.web.widgets.configWidget.currentConfigurations">Current Configuration</entry>
-    <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configurations</entry>
+    <entry key="yukon.web.widgets.configWidget.currentMeterProgram">Current Program</entry>
+    <entry key="yukon.web.widgets.configWidget.program.label">Configure Program</entry>
+    <entry key="yukon.web.widgets.configWidget.currentConfiguration">Current Configuration</entry>
+    <entry key="yukon.web.widgets.configWidget.deviceConfigurations">Device Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.unassign.label">Unassign</entry>
     <entry key="yukon.web.widgets.configWidget.unassign.labelBusy">Unassigning</entry>
     <entry key="yukon.web.widgets.configWidget.assign.label">Assign</entry>
@@ -181,8 +182,10 @@
     <entry key="yukon.web.widgets.configWidget.verify.labelBusy">Verifying</entry>
     <entry key="yukon.web.widgets.configWidget.noConfigurations">There are no existing configurations.</entry>
     <entry key="yukon.web.widgets.configWidget.dataStreaming">Data Streaming</entry>
+    <entry key="yukon.web.widgets.configWidget.currentDataStreaming">Current Data Streaming</entry>
     <entry key="yukon.web.widgets.configWidget.dataStreamingConfiguration">Data Streaming Configuration</entry>
-    
+    <entry key="yukon.web.widgets.configWidget.action">Action</entry>
+
     <!-- configWidget/configWidgetResult.jsp -->
     <entry key="yukon.web.widgets.configWidget.inSync">In Sync</entry>
     <entry key="yukon.web.widgets.configWidget.fail">Failed</entry>

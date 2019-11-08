@@ -7,6 +7,7 @@
 <%@ attribute name="escapeTitle" type="java.lang.Boolean" %>
 <%@ attribute name="showInitially" type="java.lang.Boolean" %>
 <%@ attribute name="styleClass" %>
+<%@ attribute name="style" required="false" type="java.lang.String" %>
 <%@ attribute name="titleKey" required="true" type="java.lang.Object" %>
 <%@ attribute name="titleClass" required="false" type="java.lang.String" %>
 
@@ -16,4 +17,4 @@
     id="${pageScope.id}" 
     showInitially="${pageScope.showInitially}" 
     styleClass="${pageScope.styleClass}"
-    titleClass="${pageScope.titleClass}"><jsp:doBody/></tags:hideReveal>
+    titleClass="${pageScope.titleClass}" style="${pageScope.style}"><jsp:doBody/></tags:hideReveal>
