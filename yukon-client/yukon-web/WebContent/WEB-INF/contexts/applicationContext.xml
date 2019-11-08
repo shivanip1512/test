@@ -1386,11 +1386,6 @@
                 <ref bean="jacksonHttpMessageConverter"/>
             </list>
         </property>
-        <property name="requestFactory">
-            <bean class="org.springframework.http.client.SimpleClientHttpRequestFactory">
-                <property name="outputStreaming" value="false" />
-            </bean>
-        </property>
         <property name="errorHandler" ref="customDefaultResponseErrorHandler"></property>
      </bean>
 

@@ -2,6 +2,8 @@ package com.cannontech.web.api.validation;
 
 import static com.cannontech.web.SSLSettingsInitializer.isHttpsSettingInitialized;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -92,30 +94,18 @@ public class ApiControllerHelper {
      * Checks for TestConnection and returns the correct hostname:port for next api Urls.
      * @throws ApiCommunicationException
      */
-    private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext)
-            throws ApiCommunicationException {
+    private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
+        HttpStatus responseCode = null;
         if (StringUtils.isEmpty(webServerUrl)) {
-            String serverPort = Integer.toString(request.getLocalPort());
-            String webUrl = "http://127.0.0.1:" + serverPort;
-            if (!request.getContextPath().isEmpty()) {
-                webUrl = webUrl + request.getContextPath();
-            }
-            HttpStatus responseCode = checkUrl(userContext, request, webUrl);
+            responseCode = apiConnection(request, userContext);
             if (responseCode != HttpStatus.OK) {
-                if (!getYukonInternalUrl().isEmpty()) {
-                    webUrl = getYukonInternalUrl();
-                    boolean isHttps = StringUtils.startsWithIgnoreCase(webUrl, "https");
-                    if (isHttps && !isHttpsSettingInitialized) {
-                        SSLSettingsInitializer.initializeHttpsSetting();
-                    }
-                    responseCode = checkUrl(userContext, request, webUrl);
-                }
+                apiRequestHelper.setProxy();
+                responseCode = apiConnection(request, userContext);
             }
-            if (responseCode == HttpStatus.OK) {
-                setWebServerUrl(webUrl);
-            } else {
+            if (responseCode != HttpStatus.OK) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
+            log.info("Web server url for API connection " + webServerUrl);
         }
         return webServerUrl;
     }
@@ -125,7 +115,7 @@ public class ApiControllerHelper {
      */
     private HttpStatus checkUrl(YukonUserContext userContext, HttpServletRequest request, String webUrl) {
         try {
-            String testConnectionUrl = webUrl + "/api/test";
+            String testConnectionUrl = webUrl + "/api/yUk0n1ranD6_";
             log.info("Checking the Api communication with URL: " + testConnectionUrl);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request,
                 testConnectionUrl, HttpMethod.GET, String.class);
@@ -134,6 +124,71 @@ public class ApiControllerHelper {
             log.error("Error communicating with Api. " + ex.getMessage());
         }
         return HttpStatus.NOT_FOUND;
+    }
+
+    private HttpStatus apiConnection(HttpServletRequest request, YukonUserContext userContext) {
+        HttpStatus responseCode = null;
+        String webUrl = null;
+        try {
+            if (!getYukonInternalUrl().isEmpty()) {
+                webUrl = getYukonInternalUrl();
+                boolean isHttps = StringUtils.startsWithIgnoreCase(webUrl, "https");
+                if (isHttps && !isHttpsSettingInitialized) {
+                    SSLSettingsInitializer.initializeHttpsSetting();
+                }
+                responseCode = checkUrl(userContext, request, webUrl);
+            }
+
+            String serverPort = Integer.toString(request.getLocalPort());
+            if (responseCode != HttpStatus.OK) {
+                if (request.isSecure()) {
+                    webUrl = "https://127.0.0.1:" + serverPort;
+                } else {
+                    webUrl = "http://127.0.0.1:" + serverPort;
+                }
+                if (!request.getContextPath().isEmpty()) {
+                    webUrl = webUrl + request.getContextPath();
+                }
+
+                if (request.isSecure() && !isHttpsSettingInitialized) {
+                    SSLSettingsInitializer.initializeHttpsSetting();
+                }
+                responseCode = checkUrl(userContext, request, webUrl);
+            }
+
+            if (responseCode != HttpStatus.OK) {
+                InetAddress[] inetAddress = InetAddress.getAllByName(InetAddress.getLocalHost().getHostName());
+                for (InetAddress hostName : inetAddress) {
+                    if (request.isSecure()) {
+                        webUrl = "https://" + hostName.getHostAddress() + ":" + serverPort;
+                    } else {
+                        webUrl = "http://" + hostName.getHostAddress() + ":" + serverPort;
+                    }
+
+                    if (!request.getContextPath().isEmpty()) {
+                        webUrl = webUrl + request.getContextPath();
+                    }
+
+                    if (request.isSecure() && !isHttpsSettingInitialized) {
+                        SSLSettingsInitializer.initializeHttpsSetting();
+                    }
+
+                    responseCode = checkUrl(userContext, request, webUrl);
+                    if (responseCode != HttpStatus.OK) {
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        } catch (UnknownHostException | SecurityException ex) {
+            log.warn("Error while finding API host " + ex.getMessage());
+        }
+
+        if (responseCode == HttpStatus.OK) {
+            setWebServerUrl(webUrl);
+        }
+        return responseCode;
     }
 
     /**
