@@ -64,6 +64,7 @@
     <entry key="yukon.web.modules.tools.commander.customCommands.changesNotSaved">Changes have been made that are not saved. Would you like to save them before continuing?</entry>
     <entry key="yukon.web.modules.tools.commander.customCommands.notEnabledForCategory">This functionality is only available at the device type level (not category).</entry>
     <entry key="yukon.web.modules.tools.commander.customCommands.validationErrors">There are validation errors. Please review commands for errors.</entry>
+    <entry key="yukon.web.modules.tools.commander.customCommands.deleteFromAllDeviceTypes">This command will be deleted from all associated device types. Would you like to delete this command?</entry>
     
     <!-- Map -->
     <entry key="yukon.web.modules.tools.map.pageTitle">Tools: Map Devices ({0})</entry>

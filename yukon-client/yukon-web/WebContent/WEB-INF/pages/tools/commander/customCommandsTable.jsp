@@ -42,7 +42,8 @@
                 <c:forEach var="typeCommand" items="${formBean.detail}" varStatus="status">
                 
                     <c:set var="isEditable" value="${typeCommand.commandId > 0 || empty typeCommand.commandId}"/>
-                    <tr class="select-box-item ${cursorClass}">
+                    <c:set var="matchesSelectedCategory" value="${typeCommand.category == formBean.selectedCategory}"/>
+                    <tr class="select-box-item ${cursorClass}" data-command-id=${typeCommand.commandId}>
                         <tags:hidden path="detail[${status.index}].deviceCommandId"/>
                         <tags:hidden path="detail[${status.index}].commandId"/>
                         <input type="hidden" name="detail[${status.index}].displayOrder" class="js-display-order" value="${typeCommand.displayOrder}"/>
@@ -58,12 +59,12 @@
                             <c:when test="${hasEditPermissions}">
                                 <td>
                                     <span title="${typeCommand.commandName}">
-                                        <tags:input path="detail[${status.index}].commandName" size="20" readonly="${!isEditable}" inputClass="js-command-fields"/>
+                                        <tags:input path="detail[${status.index}].commandName" size="20" readonly="${!isEditable || !matchesSelectedCategory}" inputClass="js-command-fields"/>
                                     </span>
                                 </td>
                                 <td>
                                     <span title="${typeCommand.command}">
-                                        <tags:input path="detail[${status.index}].command" size="20" readonly="${!isEditable}" inputClass="js-command-fields"/>
+                                        <tags:input path="detail[${status.index}].command" size="20" readonly="${!isEditable || !matchesSelectedCategory}" inputClass="js-command-fields"/>
                                     </span>
                                 </td>
                                 <td>

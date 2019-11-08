@@ -581,7 +581,6 @@ yukon.tools.commander = (function () {
                 $('.js-empty-commands').remove();
                 var firstField = clonedRow.find('.js-command-fields').first();
                 firstField.focus();
-                var isCategory = $('#isCategory').val();
                 if (!isCategory) {
                     $('#commands').trigger('yukon:ordered-selection:added-removed');
                 }
@@ -590,13 +589,34 @@ yukon.tools.commander = (function () {
             });
             
             $(document).on('click', '.js-remove', function () {
-                $(this).closest('tr').remove();
-                var isCategory = $('#isCategory').val();
-                if (!isCategory) {
-                    $('#commands').trigger('yukon:ordered-selection:added-removed');
+                var isCategory = $('#isCategory').val(),
+                    tableRow = $(this).closest('tr'),
+                    commandId = tableRow.data('command-id');
+                if (isCategory && commandId) {
+                    //show delete confirmation
+                    var buttons = yukon.ui.buttons({ okText: yg.text.deleteButton, event: 'yukon:tools:commander:commands:delete'}),
+                    popup = $('#delete-from-all-popup'),
+                    title = popup.data('title');
+                    popup.attr('data-command-id', commandId);
+                    popup.dialog({title: title, width: '400px', buttons: buttons});
+                } else {
+                    tableRow.remove();
+                    if (!category) {
+                        $('#commands').trigger('yukon:ordered-selection:added-removed');
+                    }
+                    _reOrderCustomCommands();
+                    _customCommandsDirty = true;
                 }
+            });
+            
+            $(document).on('yukon:tools:commander:commands:delete', function (ev) {
+                var popup = $('#delete-from-all-popup'),
+                    commandId = popup.attr('data-command-id'),
+                    row = $('#commands').find('tr[data-command-id=' + commandId + ']');
+                row.remove();
                 _reOrderCustomCommands();
                 _customCommandsDirty = true;
+                popup.dialog('close');
             });
             
             $(document).on('yukon:tools:commander:commands:save', function (ev) {

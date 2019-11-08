@@ -37,4 +37,9 @@
             <i:inline key=".changesNotSaved"/>
         </div>
         
+        <cti:msg2 var="deleteConfirmationTitle" key="yukon.web.components.ajaxConfirm.confirmDelete.title"/>
+        <div class="dn" id="delete-from-all-popup" data-dialog data-title="${deleteConfirmationTitle}">
+            <i:inline key=".deleteFromAllDeviceTypes"/>
+        </div>
+        
 </cti:msgScope>
