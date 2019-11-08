@@ -40,12 +40,7 @@ public interface CommandDao {
      * A valid command will look something like: putconfig tou 11122222 schedule 1 B/0:00 A/6:00 C/14:00 schedule 2 A/0:00 default A 
      */
     String buildTOUScheduleCommand(int scheduleId);
-
-    /**
-     * Adds command and label for pao type
-     */
-    void addCommand(String commandString, String label, PaoType paoType, String commandCategory, int displayOrder);
-
+    
     /**
      * Updates device type commands
      */
@@ -65,4 +60,19 @@ public interface CommandDao {
      * Deletes command
      */
     void deleteCommand(LiteCommand command);
+
+    /**
+     * Deletes and returns unused commands.
+     */
+    List<LiteCommand> deleteUnusedCommands();
+
+    /**
+     * Creates device type command
+     */
+    void createDeviceTypeCommand(int commandId, PaoType paoType, int displayOrder, boolean isVisible);
+
+    /**
+     * Creates new command
+     */
+    int createCommand(String commandString, String label, String commandCategory);
 }

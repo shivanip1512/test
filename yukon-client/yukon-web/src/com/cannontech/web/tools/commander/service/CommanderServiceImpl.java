@@ -424,17 +424,17 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         Map<Integer, LiteCommand> commandsInDb = commandDao.getAllCommands().stream()
                 .collect(Collectors.toMap(LiteCommand::getCommandId, Function.identity()));
 
-        deleteRemovedCommands(deviceTypeOrCategory, details);
-
         Map<String, Long> displayOrderExistingCount = commandDao.getAllDeviceTypeCommands().stream()
                 .collect(Collectors.groupingBy(LiteDeviceTypeCommand::getDeviceType, Collectors.counting()));
 
+        deleteRemovedCommands(deviceTypeOrCategory, details);
+        
         details.forEach(detail -> {
             if (detail.getCommandId() == null) {
                 createNewCommand(deviceTypeOrCategory, detail, displayOrderExistingCount);
-            } else {
+            } else { 
                 // commands with ids less then 1 can't be modified
-                if (detail.getCommandId() > 1) {
+                if (detail.getCommandId() > 1 && detail.getCategory().equals(deviceTypeOrCategory)) {
                     updateCommand(deviceTypeOrCategory, commandsInDb, detail);
                 }
                 if (!CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)) {
@@ -443,12 +443,49 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
             }
         });
     }
+    
+   /** 
+    * Deletes commands
+    */
+   private void deleteRemovedCommands(String deviceTypeOrCategory, List<DeviceCommandDetail> details) {
+             
+       if (CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)) {
+           Set<Integer> commandIds = details.stream()
+                   .map(detail -> detail.getCommandId())
+                   .collect(Collectors.toSet());
+           List<LiteCommand> commands = commandDao.getAllCommandsByCategory(deviceTypeOrCategory);
+           log.debug("all commands {}", commands);
+           commands.removeIf(command -> commandIds.contains(command.getCommandId()));
+           log.debug("commands to delete {}", commands);           
+           commands.forEach(command -> {
+               commandDao.getAllDevTypeCommands(command.getCommandId()).forEach(commandType -> {
+                   log.debug("deleting {}", command);
+                   commandDao.deleteDeviceTypeCommand(commandType);
+               });
+               commandDao.deleteCommand(command);
+           });
+       }else {
+           Set<Integer> deviceCommandIds = details.stream()
+                   .map(detail -> detail.getDeviceCommandId())
+                   .collect(Collectors.toSet());
+           List<LiteDeviceTypeCommand> typeCommands = commandDao.getAllDevTypeCommands(deviceTypeOrCategory); 
+           log.debug("typeCommands {}", typeCommands);
+           typeCommands.removeIf(command -> deviceCommandIds.contains(command.getDeviceCommandId()));
+           log.debug("commands to delete {}", typeCommands);
+           typeCommands.forEach(typeCommand -> {
+               log.debug("deleting {}", typeCommand);
+               commandDao.deleteDeviceTypeCommand(typeCommand);
+           });
+           List<LiteCommand> unusedCommands = commandDao.deleteUnusedCommands();
+           log.debug("unused commands deleted {}", unusedCommands);
+       }
+   }
 
     /**
      * Updates device type command
      */
     private void updateDeviceTypeCommand(DeviceCommandDetail detail) {
-        LiteDeviceTypeCommand typeCommand = commandDao.getDeviceTypeCommand(detail.getCommandId());
+        LiteDeviceTypeCommand typeCommand = commandDao.getDeviceTypeCommand(detail.getDeviceCommandId());
         log.debug("Updating device type command from [{}]", typeCommand);
         typeCommand.setDisplayOrder(detail.getDisplayOrder());
         typeCommand.setVisibleFlag(detail.isVisibleFlag() ? 'Y' : 'N');
@@ -470,48 +507,28 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     }
 
     /**
-     * Deletes commands for paos
-     */
-    private void deleteRemovedCommands(String deviceTypeOrCategory, List<DeviceCommandDetail> details) {
-        List<LiteCommand> commandsInDb = commandDao.getAllCommandsByCategory(deviceTypeOrCategory);
-
-        Map<Integer, DeviceCommandDetail> deviceTypes = details.stream()
-                .filter(detail -> detail.getDeviceCommandId() != null)
-                .collect(Collectors.toMap(DeviceCommandDetail::getDeviceCommandId, Function.identity()));
-
-        commandsInDb.removeIf(command -> deviceTypes.containsKey(command.getCommandId()) || command.getCommandId() < 1);
-        log.debug("Deleting commands {}", commandsInDb);
-        // the following commands were removed by user
-        commandsInDb.forEach(command -> {
-            List<LiteDeviceTypeCommand> typeCommands = commandDao.getAllDevTypeCommands(command.getCommandId());
-            log.debug("Deleting devices type commands {}", typeCommands);
-            typeCommands.forEach(typeCommand -> commandDao.deleteDeviceTypeCommand(typeCommand));
-            log.debug("                     -command {}", command);
-            commandDao.deleteCommand(command);
-        });
-    }
-
-    /**
      * Creates new command
      */
     private void createNewCommand(String commandCategory, DeviceCommandDetail detail,
             Map<String, Long> displayOrderExistingCount) {
-
+        
+        log.debug("Creating new command:{} label:{} category:{}", detail.getCommand(),
+                detail.getCommandName(), commandCategory);
+        int commandId = commandDao.createCommand(detail.getCommand(), detail.getCommandName(), commandCategory);
         if (CommandCategoryUtil.isCommandCategory(commandCategory)) {
             CommandCategory category = CommandCategory.getForDbString(commandCategory);
             List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(category);
             paoTypes.forEach(paoType -> {
                 int displayOrder = findNextDisplayOrder(displayOrderExistingCount, paoType);
-                log.debug("Creating new command {} label {} paoType {} displayOrder {}", detail.getCommand(),
-                        detail.getCommandName(), paoType, displayOrder);
-                commandDao.addCommand(detail.getCommand(), detail.getCommandName(), paoType, commandCategory, displayOrder);
+                commandDao.createDeviceTypeCommand(commandId, paoType, displayOrder,
+                        detail.isVisibleFlag());
             });
         } else {
             PaoType paoType = PaoType.getForDbString(commandCategory);
-            int displayOrder = findNextDisplayOrder(displayOrderExistingCount, paoType);
-            log.debug("Creating new command {} label {} paoType {} displayOrder {}", detail.getCommand(),
-                    detail.getCommandName(), paoType, displayOrder);
-            commandDao.addCommand(detail.getCommand(), detail.getCommandName(), paoType, commandCategory, displayOrder);
+            log.debug("Creating new command device type  paoType:{} displayOrder:{} isVisibleFlag:{}", paoType,
+                    detail.getDisplayOrder(), detail.isVisibleFlag());
+            commandDao.createDeviceTypeCommand(commandId, paoType, detail.getDisplayOrder(),
+                    detail.isVisibleFlag());
         }
     }
 

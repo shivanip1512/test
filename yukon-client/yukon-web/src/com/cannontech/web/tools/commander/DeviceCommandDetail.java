@@ -1,5 +1,8 @@
 package com.cannontech.web.tools.commander;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class DeviceCommandDetail {
     
     private Integer deviceCommandId;
@@ -66,6 +69,10 @@ public class DeviceCommandDetail {
     public void setCommand(String command) {
         this.command = command;
     }
-
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 
 }

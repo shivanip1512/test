@@ -1,16 +1,20 @@
 package com.cannontech.database.db.command;
 
+import java.util.ArrayList;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 
 /**
  * Creation date: (10/18/2001 1:20:37 PM)
  */
-public class DeviceTypeCommand extends DBPersistent 
+public class DeviceTypeCommand extends DBPersistent implements com.cannontech.database.db.CTIDbChange
 {
 	public static int DEFAULT_COMMANDS_GROUP_ID = -1;
 	private Integer deviceCommandID = null;
@@ -22,7 +26,7 @@ public class DeviceTypeCommand extends DBPersistent
 	private Integer displayOrder = new Integer(99);	//default to "end of the list"ish area
 	private Character visibleFlag = new Character('Y');	//default on
 	
-	private Integer commandGroupID = null;
+	private Integer commandGroupID = com.cannontech.database.db.command.DeviceTypeCommand.DEFAULT_COMMANDS_GROUP_ID;
 	
 	public static final String[] SETTER_COLUMNS = 
 	{ 
@@ -327,4 +331,18 @@ public void update() throws java.sql.SQLException
 			return true;
 		return false;
 	}
+    @Override
+    public DBChangeMsg[] getDBChangeMsgs(DbChangeType dbChangeType) {
+        ArrayList<DBChangeMsg> list = new ArrayList<DBChangeMsg>(10);
+
+        //add the basic change method
+        list.add( new DBChangeMsg(
+                                        getDeviceCommandID().intValue(),
+                                        DBChangeMsg.CHANGE_DEVICETYPE_COMMAND_DB,
+                                        DBChangeMsg.CAT_DEVICETYPE_COMMAND,
+                                        dbChangeType) );
+         
+        DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
+        return list.toArray( dbChange );
+    }
 }
