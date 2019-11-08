@@ -174,7 +174,7 @@ public class ControlScenarioSetupApiControllerTest {
     }
 
     /**
-     * Test case is to update Control Area created by test case Test_ControlArea_ThresholdPointTrigger_Create and to
+     * Test case is to update Control Scenario created by test case Test_ControlScenario_Create and to
      * generate Rest api documentation for update request.
      */
     @Test(dependsOnMethods = { "Test_ControlScenario_Get" })
@@ -198,7 +198,7 @@ public class ControlScenarioSetupApiControllerTest {
     }
 
     /**
-     * Test case is to delete Control Area created by test case Test_ControlArea_ThresholdPointTrigger_Create and to
+     * Test case is to delete Control Scenario created by test case Test_ControlScenario_Create and to
      * generate Rest api documentation for delete request.
      */
     @Test(dependsOnMethods = { "Test_ControlScenario_Update" })
