@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "mgr_rfn_request.h"
+#include "e2e_exceptions.h"
 #include "mgr_meter_programming.h"
 #include "amq_connection.h"
 #include "dev_rfn.h"
@@ -23,7 +24,6 @@ using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Messaging::Rfn::E2eMessenger;
 
 using namespace std::chrono_literals;
-using EndpointMessage = Cti::Protocols::E2eDataTransferProtocol::EndpointMessage;
 
 namespace Cti::Pil {
 
@@ -88,7 +88,7 @@ void RfnRequestManager::tick()
 }
 
 
-EndpointMessage RfnRequestManager::handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId)
+auto RfnRequestManager::handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId) -> EndpointMessage
 {
     return _e2edt.handleIndication(payload, endpointId);
 }
@@ -139,7 +139,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                     completedDevices.insert(indication.rfnIdentifier);
                 }
             }
-            catch( const Protocols::E2eDataTransferProtocol::E2eException &ex )
+            catch( const Protocols::E2e::E2eException &ex )
             {
                 CTILOG_EXCEPTION_WARN(dout, ex, "E2E exception for device " << indication.rfnIdentifier);
             }
@@ -264,7 +264,7 @@ auto RfnRequestManager::handleResponse(const CtiTime Now, const RfnIdentifier rf
     return std::nullopt;
 }
 
-void RfnRequestManager::handleBlockContinuation(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload, const Protocols::E2eDataTransferProtocol::Block block)
+void RfnRequestManager::handleBlockContinuation(const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload, const Block block)
 {
     CTILOG_INFO(dout, "Block continuation received for token " << token << " for device " << rfnIdentifier <<
         std::endl << "rfnId: " << rfnIdentifier << ": " << payload);
@@ -593,7 +593,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                         ? sendE2eDtPost(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId)
                         : sendE2eDtRequest(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId);
             }
-            catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
+            catch( Protocols::E2e::PayloadTooLarge )
             {
                 throw DeviceCommand::CommandException(
                         ClientErrors::E2eRequestPayloadTooLarge,

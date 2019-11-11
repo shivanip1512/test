@@ -3,6 +3,7 @@
 #include "dlldefs.h"
 #include "yukon.h"  //  for YukonError_t
 #include "rfn_identifier.h"
+#include "e2e_messaging.h"
 
 #include <boost/optional.hpp>
 #include <boost/random.hpp>
@@ -23,73 +24,6 @@ public:
 
     using Bytes = std::vector<unsigned char>;
 
-    struct BlockSize
-    {
-        unsigned szx;
-
-        size_t getSize() const { return 16 << szx; }
-    };
-
-    struct Block
-    {
-        unsigned num;
-        bool more;
-        BlockSize size;
-
-        size_t start() const { return size.getSize() * (num + 0); }
-        size_t end() const   { return size.getSize() * (num + 1); }
-    };
-
-    struct EndpointMessage
-    {
-        bool nodeOriginated;
-
-        unsigned short id;
-
-        int code;  //  Either a ResponseCode or a RequestMethod.
-
-        unsigned long token;
-
-        std::string path;
-
-        Bytes data;
-
-        bool confirmable;
-
-        std::optional<Block> block;
-    };
-
-    struct E2eException : std::exception
-    {
-        const std::string reason;
-
-        E2eException(std::string reason_) : reason(reason_) {}
-
-        const char * what() const override
-        {
-            return reason.c_str();
-        }
-    };
-    struct UnexpectedAck : E2eException
-    {
-        UnexpectedAck(unsigned short unexpected, unsigned short expected) :
-            E2eException("Unexpected ACK: " + std::to_string(unexpected) + ", expected " + std::to_string(expected))
-        {}
-        UnexpectedAck(unsigned short unexpected) :
-            E2eException("Unexpected ACK: " + std::to_string(unexpected) + ", no outbounds recorded")
-        {}
-    };
-    struct UnknownRequestMethod : E2eException
-    {
-        UnknownRequestMethod(unsigned short id, int method) :
-            E2eException("Unknown request method " + std::to_string(method) + " for packet id " + std::to_string(id))
-        {}
-    };
-    struct ResetReceived   : E2eException { ResetReceived()                      : E2eException("Reset packet received") {} };
-    struct PayloadTooLarge : E2eException { PayloadTooLarge()                    : E2eException("Payload too large")     {} };
-    struct DuplicatePacket : E2eException { DuplicatePacket(int id)              : E2eException("Duplicate packet, id: " + std::to_string(id)) {} };
-    struct RequestInactive : E2eException { RequestInactive(unsigned long token) : E2eException("Response received for inactive token " + std::to_string(token)) {} };
-
     enum
     {
         MaxOutboundPayload = 1000
@@ -107,15 +41,15 @@ public:
     Bytes sendReply  (const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws PayloadTooLarge
-    Bytes sendBlockReply(const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token, const Block block);
+    Bytes sendBlockReply(const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token, const E2e::Block block);
 
     Bytes sendAck(const unsigned short id);
     Bytes sendBadRequest(const unsigned short id);
 
-    Bytes sendBlockContinuation(const BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
+    Bytes sendBlockContinuation(const E2e::BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws E2eException
-    EndpointMessage handleIndication(const Bytes &payload, const RfnIdentifier endpointId);
+    E2e::EndpointMessage handleIndication(const Bytes &payload, const RfnIdentifier endpointId);
     static YukonError_t translateIndicationCode(const unsigned short code, const RfnIdentifier endpointId);
 
     void handleTimeout(const RfnIdentifier endpointId);

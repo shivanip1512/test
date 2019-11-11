@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "prot_e2eDataTransfer.h"
+#include "e2e_exceptions.h"
 #include "coap_helper.h"
 
 extern "C" {
@@ -17,6 +18,8 @@ extern "C" {
 #include <ctime>
 
 namespace Cti::Protocols {
+
+using namespace E2e;
 
 E2eDataTransferProtocol::E2eDataTransferProtocol() :
     _generator(std::time(0))
@@ -63,7 +66,7 @@ auto E2eDataTransferProtocol::sendRequest(const Bytes& payload, const RfnIdentif
         throw PayloadTooLarge();
     }
 
-    auto pdu = Coap::scoped_pdu_ptr::make_get_request(token, getOutboundIdForEndpoint(endpointId));
+    auto pdu = Coap::scoped_pdu_ptr::make_confirmable_request(Coap::RequestMethod::Get, token, getOutboundIdForEndpoint(endpointId));
 
     coap_add_data(pdu, payload.size(), &payload.front());
 
@@ -78,7 +81,7 @@ auto E2eDataTransferProtocol::sendPost(const Bytes& payload, const RfnIdentifier
         throw PayloadTooLarge();
     }
 
-    auto pdu = Coap::scoped_pdu_ptr::make_post(token, getOutboundIdForEndpoint(endpointId));
+    auto pdu = Coap::scoped_pdu_ptr::make_nonconfirmable_request(Coap::RequestMethod::Post, token, getOutboundIdForEndpoint(endpointId));
 
     coap_add_data(pdu, payload.size(), &payload.front());
 
@@ -233,7 +236,7 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
     //  Look for any block option
     if( coap_block_t block; coap_get_block(indication_pdu, COAP_OPTION_BLOCK2, &block) )
     {
-        message.block = { block.num, !! block.m, 16u << block.szx };
+        message.block = { block.num, !! block.m, block.szx };
     }
 
     return message;
