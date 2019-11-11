@@ -193,6 +193,19 @@ MODIFY Password VARCHAR2(200) NOT NULL;
 INSERT INTO DBUpdates VALUES ('YUK-20801', '7.4.0', SYSDATE);
 /* @end YUK-20801 */
 
+/* @start YUK-20919 */
+BEGIN
+    DECLARE @MaxDeviceGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE DG.DeviceGroupId < 100)
+    DECLARE @RootParentGroupId NUMERIC = (SELECT MAX(DG.DeviceGroupId) FROM DeviceGroup DG WHERE SystemGroupEnum = 'SYSTEM_METERS')
+
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+    VALUES(@MaxDeviceGroupId + 1, 'Meter Programming', @RootParentGroupId, 'NOEDIT_NOMOD', 'METERS_METER_PROGRAMMING', '11-NOV-2019', 'METER_PROGRAMMING')
+END;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-20919', '7.4.0', SYSDATE);
+/* @end YUK-20919 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
