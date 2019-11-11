@@ -100,7 +100,7 @@ public class MeterProgramSummaryDetail {
     }
     
     public boolean displayAccept() {
-        return status == DisplayableStatus.FAILURE && programInfo.getSource().isActionable();
+        return status == DisplayableStatus.FAILURE && (programInfo.getSource().isActionable() || (programInfo.getSource() == MeterProgramSource.UNPROGRAMMED && assignedGuid != null));
     }
 
     @Override

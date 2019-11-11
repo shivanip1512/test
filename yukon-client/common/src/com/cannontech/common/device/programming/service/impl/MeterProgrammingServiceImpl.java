@@ -46,6 +46,7 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
+import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
@@ -150,14 +151,20 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         MeterProgramStatus status = meterProgrammingDao.getMeterProgramStatus(device.getDeviceId());
 
         if (status != null && failures.contains(status.getStatus())) {
-            // Yukon program
-            meterProgrammingDao.assignDevicesToProgram(reportedGuid, Lists.newArrayList(device));
-            status.setLastUpdate(new Instant());
-            status.setStatus(ProgrammingStatus.IDLE);
-            meterProgrammingDao.updateMeterProgramStatus(status);
-            logCompleted(device, null, true, context.getYukonUser());
+            if( status.getSource() == MeterProgramSource.UNPROGRAMMED) {
+                meterProgrammingDao.unassignDeviceFromProgram(device.getDeviceId());
+                logCompleted(device, null, true, context.getYukonUser());
+            } else {
+                // Yukon program
+                meterProgrammingDao.assignDevicesToProgram(reportedGuid, Lists.newArrayList(device));
+                status.setLastUpdate(new Instant());
+                status.setStatus(ProgrammingStatus.IDLE);
+                meterProgrammingDao.updateMeterProgramStatus(status);
+                logCompleted(device, null, true, context.getYukonUser());
+            }
             return new MeterProgramCommandResult(true);
         }
+        
         return createFailureResult(null, device, context);
     }
 
