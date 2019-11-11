@@ -131,7 +131,7 @@
                 <td>
                     <input type="checkbox" name="detail[0].visibleFlag" checked="checked" styleClass="js-command-fields" disabled="disabled" title="${titleText}"/>
                     <c:if test="${isCategory}">
-                        <input type="hidden" name="detail[0].visibleFlag" value="true"/>
+                        <input type="hidden" name="detail[0].visibleFlag" value="true" disabled="disabled"/>
                     </c:if>
                 </td>
                 <td>
