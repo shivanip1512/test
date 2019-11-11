@@ -36,18 +36,18 @@
             <input type="checkbox" id="picker-${id}-select-all" onclick="javascript:yukon.pickers['${id}'].selectAll()" title="${selectItemsTooltip}">
             <label for="picker-${id}-select-all" class="cp"><i:inline key=".selectItemsOnThisPage"/></label>&nbsp;&nbsp;
             <span style="display: none">
-                <i:inline key=".pageSelected"/>&nbsp;&nbsp;
+                <i:inline key=".pageSelected"/><br>
                 <a id="picker-${id}-select-all-pages" href="javascript:yukon.pickers['${id}'].selectAllPages()" title="${selectItemsTooltip}">
                     <i:inline key=".selectAllPages"/>
                 </a>
             </span>
             <span style="display: none">
-                <i:inline key=".selectionCleared"/>&nbsp;&nbsp;
+                <i:inline key=".selectionCleared"/><br>
                 <a id="picker-${id}-clear-entire-selection"
                     href="javascript:yukon.pickers['${id}'].clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span style="display: none">
-                <span id="picker-${id}-all-pages-selected"><i:inline key=".allPagesSelected"/></span>&nbsp;&nbsp;
+                <span id="picker-${id}-all-pages-selected"><i:inline key=".allPagesSelected"/></span><br>
                 <a href="javascript:yukon.pickers['${id}'].clearEntireSelection()"><i:inline key=".clearEntireSelection"/></a>
             </span>
             <span id="picker-${id}-entire-selection-cleared" style="display: none">

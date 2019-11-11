@@ -3,6 +3,8 @@ package com.cannontech.rest.api.dr.macroloadgroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.ITestContext;
 import org.testng.annotations.Listeners;
@@ -18,16 +20,15 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.loadgroup.request.MockMacroLoadGroup;
 
 import io.restassured.response.ExtractableResponse;
-import lombok.extern.log4j.Log4j2;
 
 /*
  * List of allowed Load Groups in any Macro Load Group DigiSEP, RFNExpresscom, Emetcon, Versacom, MeterDisconnect
  * List of not allowed Load Groups in any Macro Load Group Honeywell, Nest,Ecobee,Itron,Macro Load Group
  */
-@Log4j2
+
 @Listeners(com.cannontech.test.base.TestBase.class)
 public class MacroLoadGroupAPITest {
- 
+    private static final Logger log = LogManager.getLogger(MacroLoadGroupAPITest.class);
     private ArrayList<MockLMPaoDto> allLoadGroups = new ArrayList<>();
 
     @Test
