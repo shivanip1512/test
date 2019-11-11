@@ -12,7 +12,7 @@
 
 <!-- Device Configuration -->
 <c:if test="${configurableDevice}">
-    <tags:nameValueContainer2>
+    <tags:nameValueContainer2 tableClass="spaced-form-controls">
         <tags:nameValue2 nameKey=".currentConfiguration" nameColumnWidth="150px">${fn:escapeXml(currentConfigName)}</tags:nameValue2>
 
         <c:if test="${not empty currentConfigId}">
@@ -31,7 +31,7 @@
         </c:if>
     </tags:nameValueContainer2>
 
-    <tags:nameValueContainer2>
+    <tags:nameValueContainer2 tableClass="spaced-form-controls">
         <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
             <tags:nameValue2 nameKey=".deviceConfigurations" nameColumnWidth="150px">
                 <select id="configuration" name="configuration" style="max-width: 200px; margin-left: -1px;">
@@ -51,23 +51,21 @@
     <c:if test="${streamableDevice}">
         <cti:msg var="dataStreamingTitle" key="yukon.web.widgets.configWidget.dataStreaming"/>
         <tags:sectionContainer title="${dataStreamingTitle}">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".currentDataStreaming" valueClass="full-width" nameClass="wsnw">
-                    <span class="fl">
-                        <c:choose>
-                            <c:when test="${dataStreamingConfig != null}">
-                                <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(dataStreamingConfig.name)}</a>
-                            </c:when>
-                            <c:otherwise>
-                                <i:inline key="yukon.common.none.choice"/>
-                            </c:otherwise>
-                        </c:choose>
-                    </span>
-                    <c:if test="${dataStreamingDiscrepancy != null}">
-                        <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
-                        <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
-                        <cti:icon icon="icon-error" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
-                    </c:if>
+            <tags:nameValueContainer2 tableClass="spaced-form-controls">
+                <tags:nameValue2 nameKey=".currentDataStreaming" valueClass="full-width dib" nameClass="wsnw">
+                    <c:choose>
+                        <c:when test="${dataStreamingConfig != null}">
+                            <a href="javascript:void(0);" data-popup="#data-streaming-popup">
+                                ${fn:escapeXml(dataStreamingConfig.name)}
+                                <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
+                                <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
+                                <cti:icon icon="icon-error fn ML0" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <i:inline key="yukon.common.none.choice"/>
+                        </c:otherwise>
+                    </c:choose>
                 </tags:nameValue2>
                 <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
                     <tags:nameValue2 nameKey=".action">
@@ -104,7 +102,7 @@
 <c:if test="${showMeterProgramming}">
     <cti:msg var="meterProgrammingTitle" key="yukon.web.widgets.configWidget.meterProgramming"/>
     <tags:sectionContainer title="${meterProgrammingTitle}">
-        <tags:nameValueContainer2 naturalWidth="true">
+        <tags:nameValueContainer2 tableClass="spaced-form-controls">
             <c:choose>
                 <c:when test="${!empty meterProgram}">
                     <tags:nameValue2 nameKey=".currentMeterProgram">
