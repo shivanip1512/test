@@ -1,5 +1,8 @@
 #pragma once
 
+#include "mgr_device.h"
+#include "mgr_route.h"
+#include "mgr_point.h"
 #include "mgr_config.h"
 #include "mgr_dyn_paoinfo.h"
 //  for test_DevicePointHelper
@@ -8,8 +11,13 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "dev_single.h"
+#include "dev_rfnMeter.h"
+#include "dev_rfnCommercial.h"
+#include "dev_rfn_LgyrFocus_al.h"
 
 #include "test_reader.h"
+#include "std_helper.h"
+
 #include "boost_test_helpers.h"
 #include <boost/range/algorithm/count.hpp>
 #include <boost/test/unit_test.hpp>
@@ -17,8 +25,7 @@
 
 #include <numeric>
 
-namespace Cti {
-namespace Test {
+namespace Cti::Test {
 namespace {
 
 using std::to_string;
@@ -425,6 +432,150 @@ struct DevicePointHelper
     }
 };
 
+struct test_Rfn410flDevice : Cti::Devices::Rfn410flDevice
+{
+    test_Rfn410flDevice(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFN410FL);
+    }
+};
+
+struct test_Rfn430sl1Device : Cti::Devices::Rfn430sl1Device
+{
+    test_Rfn430sl1Device(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFN430SL1);
+    }
+};
+
+struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
+{
+    test_Rfn510flDevice(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFN510FL);
+    }
+};
+
+using namespace std::literals::string_literals;
+
+struct test_DeviceManager : CtiDeviceManager
+{
+    ptr_type devSingle { boost::make_shared<CtiDeviceSingle>() };
+
+    test_DeviceManager()
+    {
+        devSingle->setID(42, test_tag);
+
+        //  set the IDs for all the devices
+        for( auto& device : devices )
+        {
+            device.second->setID(device.first, test_tag);
+        }
+    }
+
+    ptr_type getDeviceByID(long id) override
+    {
+        if( id == 42 )
+        {
+            return devSingle;
+        }
+
+        return mapFindOrDefault(devices, id, Cti::Devices::RfnDeviceSPtr());
+    }
+
+    ptr_type RemoteGetEqualbyName(const std::string &RemoteName) override
+    {
+        if( RemoteName == "beetlebrox" )
+        {
+            return devSingle;
+        }
+        //  TODO - return RFN test devices by name, rather than hardcoding?
+        return ptr_type();
+    }
+
+    std::map<int, Cti::Devices::RfnDeviceSPtr> devices {
+        { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
+        {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
+        { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
+        { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) } };
+
+    Cti::Devices::RfnDeviceSPtr getDeviceByRfnIdentifier(const Cti::RfnIdentifier& rfnId) override
+    {
+        //  TODO - lookup map instead of hardcoding?
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "GARGANTUAN" } )
+        {
+            return devices[123];
+        }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "VITO" } )
+        {
+            return devices[49];
+        }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "TURKEY TOM" } )
+        {
+            return devices[499];
+        }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" } )
+        {
+            return devices[500];
+        }
+
+        return nullptr;
+    }
+};
+
+struct test_RouteManager : CtiRouteManager
+{
+    CtiRouteSPtr rte;
+
+    struct test_route : CtiRouteBase
+    {
+        test_route() {
+            _tblPAO.setID(84, test_tag);
+        }
+        YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override { return ClientErrors::None; }
+    };
+
+    test_RouteManager() :
+        rte(new test_route())
+    {
+    }
+
+    virtual ptr_type getRouteByName(std::string RouteName)
+    {
+        return (RouteName == "sixty-six")
+            ? rte
+            : ptr_type();
+    }
+};
+
+struct test_PointManager : CtiPointManager
+{
+    ptr_type getOffsetTypeEqual(long pao, int offset, CtiPointType_t type) override
+    {
+        //  We only expect analog points to come out of RFN Data Streaming
+        BOOST_REQUIRE_EQUAL(type, AnalogPointType);
+
+        if( pao > 100 )
+        {
+            auto pt = Cti::Test::makeAnalogPoint(pao, pao * 1000 + offset, offset);
+
+            //  Pao 499 gets non-default multipliers
+            if( pao == 499 )
+            {
+                pt->multiplier = 3;
+                pt->offset = 100;
+            }
+
+            return ptr_type{ pt };
+        }
+
+        return nullptr;
+    }
+};
+
 
 /**
 Runs through a list of return messages, comparing them to the oracle expected messages, as well 
@@ -479,6 +630,5 @@ struct PaoInfoValidator
     }
 };
 
-}
 }
 }

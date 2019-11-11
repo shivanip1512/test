@@ -200,7 +200,7 @@ namespace
     }
 
 
-    Buffer doOneWayEncryptionKey( const Buffer & input )
+    Buffer doSharedKeyfileDecrypt( const Buffer & input )
     {
         static Buffer   aesKey;
         static Buffer   initVector;
@@ -215,7 +215,7 @@ namespace
             if ( ! _keysLoaded )
             {
                 loadKeysFromFileData( "Bdk=5ohaIc51ifstd-zl2dCV)5iUE(DG",
-                                      getFileData( OneWayMsgEncryptionKey, "server\\config\\keys\\sharedKeyfile.dat" ),
+                                      getFileData( SharedKeyfile, "server\\config\\keys\\sharedKeyfile.dat" ),
                                       aesKey, initVector, hmacKey );
                 _keysLoaded = true;
             }
@@ -251,9 +251,9 @@ IM_EX_CTIBASE Buffer decrypt( const EncryptionType type, const Buffer & input )
     {
         return doMasterCfgDecrypt( input );
     }
-    else if ( type == OneWayMsgEncryptionKey )
+    else if ( type == SharedKeyfile )
     {
-        return doOneWayEncryptionKey( input );
+        return doSharedKeyfileDecrypt( input );
     }
 
     return Buffer();

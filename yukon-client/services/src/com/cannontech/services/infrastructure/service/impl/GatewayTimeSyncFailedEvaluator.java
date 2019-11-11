@@ -1,6 +1,5 @@
 package com.cannontech.services.infrastructure.service.impl;
 
-import java.util.Collections;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoType;
@@ -8,6 +7,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureStatusWarningEvaluator;
+import com.google.common.collect.ImmutableSet;
 
 public class GatewayTimeSyncFailedEvaluator extends InfrastructureStatusWarningEvaluator {
     
@@ -29,7 +29,7 @@ public class GatewayTimeSyncFailedEvaluator extends InfrastructureStatusWarningE
 
     @Override
     public Set<PaoType> getSupportedTypes() {
-        return Collections.singleton(PaoType.GWY800);
+        return ImmutableSet.of(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY);
     }
     
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoMacAddress;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
@@ -183,9 +184,25 @@ public interface DeviceDao {
     Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds);
     
     /**
-     * 
-     * @param macAddress
-     * @return
+     * @return The ID of the device with this mac address.
+     * @throws NotFoundException If no device with this mac address exists.
      */
-    int getDeviceIdFromMacAddress(String macAddress);
+    int getDeviceIdFromMacAddress(String macAddress) throws NotFoundException;
+    
+    /**
+     * Update the secondary mac address for the specified device.
+     */
+    void updateSecondaryMacAddress(PaoType type, int deviceId, String macAddress);
+    
+    /**
+     * @return The secondary mac address for the device with the specified ID, or null, if the device has no secondary
+     * mac address.
+     * @throws NotFoundException If no device is found with the specified device ID.
+     */
+    String getSecondaryMacAddressForDevice(int deviceId) throws NotFoundException;
+    
+    /**
+     * @return The PaoMacAddress of each device with a primary mac address, but no secondary mac address.
+     */
+    List<PaoMacAddress> findAllDevicesWithNoSecondaryMacAddress();
 }

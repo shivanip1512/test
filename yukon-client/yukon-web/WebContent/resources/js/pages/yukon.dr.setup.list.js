@@ -13,10 +13,21 @@ yukon.dr.setup.list = (function() {
     var
     _initialized = false,
     
-    _initTypes = function () {
-        var selectedFilterByType = $("#js-filter-by-type option:selected").val();
-        $(".js-load-group-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_GROUP');
-        $(".js-load-program-types-container").toggleClass("dn", selectedFilterByType !== 'LOAD_PROGRAM');
+    _filterResults = function (isFilterByTypeChanged) {
+        if (isFilterByTypeChanged) {
+            var selectedFilterByType = $("#js-filter-by-type option:selected").val();
+            $("#js-name").val('');
+            if (!$("#js-load-group-types").is(":visible")) {
+                $("#js-load-group-types").val("").trigger("chosen:updated");
+            }
+            if (!$("#js-load-program-types").is(":visible")) {
+                $("#js-load-program-types").val("").trigger("chosen:updated");
+            }
+            if (!$("#js-gear-types").is(":visible")) {
+                $("#js-gear-types").val("").trigger("chosen:updated");
+            }
+        }
+        $('#setupFilter').submit();
     },
     
     mod = {
@@ -26,29 +37,32 @@ yukon.dr.setup.list = (function() {
             
             if (_initialized) return;
             
-            if ($("#js-load-group-types").exists()) {
+           if ($("#js-load-group-types").is(":visible")) {
                 $("#js-load-group-types").chosen({width: "450px"});
             }
             
-            if ($("#js-load-program-types").exists()) {
+            if ($("#js-load-program-types").is(":visible")) {
                 $("#js-load-program-types").chosen({width: "305px"});
             }
             
-            _initTypes();
+            if ($("#js-gear-types").is(":visible")) {
+                $("#js-gear-types").chosen({width: "250px"});
+            }
             
-            $('#setupFilter :input').change(function (ev) {
-                var changedInput = ev.currentTarget;
-                if (changedInput.id === 'js-filter-by-type') {
-                    var selectedFilterByType = $("#js-filter-by-type option:selected").val();
-                    $("#js-name").val('');
-                    if (selectedFilterByType !== 'LOAD_GROUP') {
-                        $("#js-load-group-types").val("").trigger("chosen:updated");
-                    }
-                    if (selectedFilterByType !== 'LOAD_PROGRAM') {
-                        $("#js-load-program-types").val("").trigger("chosen:updated");
-                    }
-                }
-                $('#setupFilter').submit();
+            $('#setupFilter :input').change(function (event) {
+                var isFilterByTypeChanged = event.currentTarget.id === 'js-filter-by-type';
+                _filterResults(isFilterByTypeChanged);
+            });
+            
+            $(document).on("yukon:gear:filter:programSelected", function (event) {
+                _filterResults(false);
+            });
+            
+            $(document).on("click", ".js-gear-link", function (event) {
+               var dialogDiv = $("<div/>").attr({
+                  'data-title': "Gear Dialog"
+               }).text("This is a div. This is a div. This is a div.");
+                yukon.ui.dialog(dialogDiv[0].outerHTML);
             });
             
             _initialized = true;

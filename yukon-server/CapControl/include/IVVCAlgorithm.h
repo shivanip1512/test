@@ -102,7 +102,7 @@ class IVVCAlgorithm
         virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, const Cti::CapControl::EventLogEntries &ccEvents);
         virtual void sendPointChanges(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges);
 
-        virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
+        virtual void sendKeepAlive(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
         virtual void stopDisabledDeviceHeartbeats(CtiCCSubstationBusPtr subbus);
 

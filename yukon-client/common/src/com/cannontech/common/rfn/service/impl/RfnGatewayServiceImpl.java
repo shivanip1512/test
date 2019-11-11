@@ -59,6 +59,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGwy800;
+import com.cannontech.common.rfn.model.RfnVirtualGateway;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -164,7 +165,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public Set<RfnGateway> getAllNonLegacyGateways() {
-        return getGateways(Lists.newArrayList(PaoType.GWY800));
+        return getGateways(Lists.newArrayList(PaoType.GWY800, PaoType.VIRTUAL_GATEWAY));
     }
     
     private Set<RfnGateway> getGateways(Collection<PaoType> types) {
@@ -250,6 +251,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         if (paoId.getPaoType() == PaoType.GWY800) {
             gateway = new RfnGwy800(name, paoId, rfId, data);
+        } else if (paoId.getPaoType() == PaoType.VIRTUAL_GATEWAY){
+            gateway = new RfnVirtualGateway(name, paoId, rfId, data);
         } else {
             gateway = new RfnGateway(name, paoId, rfId, data);
         }
@@ -382,6 +385,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewayCreateRequest request = new GatewayCreateRequest();
         GatewaySaveData data = new GatewaySaveData();
         data.setIpAddress(settings.getIpAddress());
+        if(settings.getPort() != null) {
+            data.setPort(settings.getPort());
+        }
         data.setName(settings.getName());
         
         data.setAdmin(settings.getAdmin());
@@ -447,7 +453,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             editData.setName(newGatewayData.getName());
             sendGatewayEditRequest = true;
         }
-        
+        if (newGatewayData.getPort() != null 
+                && !newGatewayData.getPort().equals(existingGatewayData.getPort())) {
+            editData.setPort(Integer.valueOf(newGatewayData.getPort()));
+            sendGatewayEditRequest = true;
+        }
+
         GatewayUpdateResult result = GatewayUpdateResult.SUCCESSFUL;
         
         // If necessary, send GatewayEditRequest

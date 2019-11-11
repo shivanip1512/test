@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/11/2019 1:31:48 PM                        */
+/* Created on:     11/5/2019 3:13:29 PM                         */
 /*==============================================================*/
 
 
@@ -3235,6 +3235,7 @@ create table DeviceMCT400Series  (
 create table DeviceMacAddress  (
    DeviceId             NUMBER                          not null,
    MacAddress           VARCHAR2(255)                   not null,
+   SecondaryMacAddress  VARCHAR2(255),
    constraint PK_DeviceMacAddress primary key (DeviceId)
 );
 
@@ -6060,7 +6061,7 @@ create table JOB  (
 );
 
 
-/* Skipping entry with jobId=-3 for oracle because ‘spSmartIndexMaintanenceJobDefinition’ bean job entry is there with jobId=-3 and that is SqlServer specific only */
+/* Skipping entry with jobId=-3 for oracle because the 'spSmartIndexMaintanenceJobDefinition' bean job entry is there with jobId=-3, and that is SqlServer specific only */
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N', -1);
@@ -7240,6 +7241,7 @@ create table MeterProgram  (
    Name                 VARCHAR2(100)                   not null,
    PaoType              VARCHAR2(30)                    not null,
    Program              BLOB                            not null,
+   Password             VARCHAR2(200)                   not null,
    constraint PK_MeterProgram primary key (Guid)
 );
 
@@ -10314,7 +10316,8 @@ INSERT INTO YukonRoleProperty VALUES(-10315,-103,'Control Cap Control device', '
 INSERT INTO YukonRoleProperty VALUES(-10316,-103,'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
 INSERT INTO YukonRoleProperty VALUES(-10317,-103,'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
 INSERT INTO YukonRoleProperty VALUES(-10318,-103,'Enable Web Commander', 'true', 'Controls access to web commander applications');
-INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application'); 
+INSERT INTO YukonRoleProperty VALUES(-10319,-103,'Enable Client Commander', 'true', 'Controls access to client commander application');
+INSERT INTO YukonRoleProperty VALUES(-10320,-103,'Manage Custom Commands', 'VIEW', 'Controls access to the ability to manage custom commands in web commander');
 
 /* Dynamic Billing File Setup */
 INSERT INTO YukonRoleProperty VALUES(-10600,-106,'Dynamic Billing File Setup','true','Controls access to create, edit, and delete dynamic billing files.'); 

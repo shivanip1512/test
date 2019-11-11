@@ -13,13 +13,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.token.TokenHelper;
 
@@ -27,6 +31,16 @@ public class ApiRequestHelper {
 
     private final static String authToken = "authToken";
     @Autowired private RestTemplate apiRestTemplate;
+    @Autowired private GlobalSettingDao settingDao;
+
+    public synchronized void setProxy() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
+            factory.setProxy(httpProxy.getJavaHttpProxy());
+        });
+        factory.setOutputStreaming(false);
+        apiRestTemplate.setRequestFactory(factory);
+    }
 
     @SuppressWarnings("rawtypes")
     public final static HashMap<Class, ParameterizedTypeReference> paramTypeRefMap = new HashMap<>();

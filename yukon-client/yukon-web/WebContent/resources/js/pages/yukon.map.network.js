@@ -119,8 +119,9 @@ yukon.map.network = (function () {
             source = _map.getLayers().getArray()[_tiles.length].getSource(),
             feature = parent.location.features[0],
             src_projection = fc.crs.properties.name,
+            pao = feature.properties.paoIdentifier,
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ parent: parent });
+            icon = new ol.Feature({ parent: parent, pao: pao });
         
         icon.setStyle(style);
     
@@ -252,8 +253,9 @@ yukon.map.network = (function () {
             var neighbor = neighbors[x],
             feature = neighbor.location.features[0],
             src_projection = fc.crs.properties.name,
+            pao = feature.properties.paoIdentifier,
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ neighbor: neighbor });
+            icon = new ol.Feature({ neighbor: neighbor, pao: pao });
             
             icon.setStyle(style);
             
@@ -357,8 +359,9 @@ yukon.map.network = (function () {
             var route = routeInfo[x],
                 feature = route.location.features[0],
                 src_projection = fc.crs.properties.name,
+                pao = feature.properties.paoIdentifier,
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-                icon = new ol.Feature({ routeInfo: route });
+                icon = new ol.Feature({ routeInfo: route, pao: pao });
             
             icon.setStyle(style);
             
@@ -574,15 +577,13 @@ yukon.map.network = (function () {
                 var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
                 _map.addOverlay(_overlay);
                 _map.on('click', function(ev) {
-
-                    var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { 
-                        var featureProperties = feature.getProperties();
-                        if (featureProperties.name != 'Line') {
-                            return feature; 
+                    var paoFeature = _map.forEachFeatureAtPixel(ev.pixel, function(feature) {
+                        if (feature && feature.get('pao') != null) {
+                            return feature;
                         }
                     });
-                    if (feature) {
-                        yukon.mapping.displayMappingPopup(feature, _overlay);
+                    if (paoFeature) {
+                        yukon.mapping.displayMappingPopup(paoFeature, _overlay);
                     } else {
                         var target = ev.originalEvent.target;
                         //check if user clicked on the cog, the error hide-reveal, or notes icon
@@ -598,13 +599,12 @@ yukon.map.network = (function () {
                 /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */
                 $(_map.getViewport()).on('mousemove', function(e) {
                     var pixel = _map.getEventPixel(e.originalEvent),
-                        hit = _map.forEachFeatureAtPixel(pixel, function(feature, layer) { 
-                            var featureProperties = feature.getProperties();
-                            if (featureProperties.name != 'Line') {
-                                return true; 
+                        paoFeature = _map.forEachFeatureAtPixel(pixel, function(feature) {
+                            if (feature && feature.get('pao') != null) {
+                                return feature;
                             }
                         });
-                    $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
+                    $('#' + _map.getTarget()).css('cursor', paoFeature ? 'pointer' : 'default');
                 });
                 
                 /** Remove the coordinates for the device when the user clicks OK on the confirmation popup. **/
@@ -814,6 +814,11 @@ yukon.map.network = (function () {
                         _checkToGoBackToDeviceOriginalStyle();
                     }
 
+                });
+
+                /** Add an elevation layer to the map **/
+                $(document).on('click', '.js-elevation-layer', function() {
+                    yukon.mapping.showHideElevationLayer(_map, $(this));
                 });
                 
                 /** Gets the nearby devices **/

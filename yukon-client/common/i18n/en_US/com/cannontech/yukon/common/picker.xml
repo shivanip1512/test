@@ -12,14 +12,15 @@
 <entry key="yukon.web.picker.nothingSelected">You have not selected anything.</entry>
 <entry key="yukon.web.picker.tooManySelections">A maximum of {0} selections can be made.</entry>
 <entry key="yukon.web.picker.pageSelected">Selected items on this page.</entry>
-<entry key="yukon.web.picker.selectAllPages">Select all {0} matching items.</entry>
-<entry key="yukon.web.picker.allPagesSelected">All {0} matching items selected.</entry>
+<entry key="yukon.web.picker.selectAllPages">Select all matching items.</entry>
+<entry key="yukon.web.picker.allPagesSelected">All matching items selected.</entry>
 <entry key="yukon.web.picker.selectionCleared">Cleared selected items on this page.</entry>
 <entry key="yukon.web.picker.clearEntireSelection">Clear entire selection.</entry>
 <entry key="yukon.web.picker.entireSelectionCleared">All items unselected.</entry>
 <entry key="yukon.web.picker.selectedAnd">and</entry>
 <entry key="yukon.web.picker.selectedMore">more</entry>
-
+<entry key="yukon.web.picker.selectItemsOnThisPage">Select All</entry>
+<entry key="yukon.web.picker.disabledItemsWillNotBeSelected">Disabled items will not be selected.</entry>
 <!-- PAO Pickers -->
 <entry key="yukon.web.picker.pao.name">Name</entry>
 <entry key="yukon.web.picker.pao.type">Type</entry>

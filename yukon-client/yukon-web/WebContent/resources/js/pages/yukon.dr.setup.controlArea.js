@@ -112,31 +112,34 @@ yukon.dr.setup.controlArea = (function() {
                 var picker = yukon.pickers['js-avaliable-programs-picker'];
                 
                 picker.selectedItems.forEach(function (program) {
-                    var clonedRow = $('.js-template-row').clone();
-                    clonedRow.find('.js-program-name').text(program.paoName);
-                    clonedRow.find('.js-program-id').val(program.paoId).removeAttr('disabled');
-                    clonedRow.find('.js-remove').attr('data-id', program.paoId);
-                    var startPriority = clonedRow.find('.js-start-priority'),
-                        minValue = startPriority.data('minValue'),
-                        maxValue = startPriority.data('maxValue');
-                    startPriority.removeAttr('disabled');
-                    startPriority.val(1);
-                    startPriority.spinner({
-                        minValue: minValue,
-                        maxValue: maxValue
-                    })
-                    var stopPriority = clonedRow.find('.js-stop-priority'),
-                        minValue = stopPriority.data('minValue'),
-                        maxValue = stopPriority.data('maxValue');
-                    stopPriority.removeAttr('disabled');
-                    stopPriority.val(1);
-                    stopPriority.spinner({
-                        minValue: minValue,
-                        maxValue: maxValue
-                    })
-                    clonedRow.removeClass('dn js-template-row');
-                    clonedRow.appendTo($('#program-assignments'));
-                    picker.disableItem(program.paoId);
+                    var selector = 'button[data-id="' + program.paoId + '"]';
+                    if (!$('#program-assignments').find(selector).exists()) {
+                        var clonedRow = $('.js-template-row').clone();
+                        clonedRow.find('.js-program-name').text(program.paoName);
+                        clonedRow.find('.js-program-id').val(program.paoId).removeAttr('disabled');
+                        clonedRow.find('.js-remove').attr('data-id', program.paoId);
+                        var startPriority = clonedRow.find('.js-start-priority'),
+                              minValue = startPriority.data('minValue'),
+                              maxValue = startPriority.data('maxValue');
+                        startPriority.removeAttr('disabled');
+                        startPriority.val(1);
+                        startPriority.spinner({
+                            minValue: minValue,
+                            maxValue: maxValue
+                        })
+                        var stopPriority = clonedRow.find('.js-stop-priority'),
+                            minValue = stopPriority.data('minValue'),
+                            maxValue = stopPriority.data('maxValue');
+                        stopPriority.removeAttr('disabled');
+                        stopPriority.val(1);
+                        stopPriority.spinner({
+                            minValue: minValue,
+                            maxValue: maxValue
+                        })
+                        clonedRow.removeClass('dn js-template-row');
+                        clonedRow.appendTo($('#program-assignments'));
+                        picker.disableItem(program.paoId);
+                    }
                 });
                 picker.clearEntireSelection();
                 yukon.ui.reindexInputs('#program-assignments');

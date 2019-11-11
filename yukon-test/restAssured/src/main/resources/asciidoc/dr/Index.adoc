@@ -123,18 +123,32 @@ include::SepProgramSupportedGearsCreate.adoc[]
 
 == Control Area
 === Create
+include::ControlAreaThresholdPointTriggerCreate.adoc[]
+include::ControlAreaThresholdTriggerCreate.adoc[]
+include::ControlAreaStatusTriggerCreate.adoc[]
+
 === Retrieve
+include::ControlAreaThresholdPointTriggerGet.adoc[]
+
 === Update
+include::ControlAreaThresholdPointTriggerUpdate.adoc[]
+
 === Delete
-=== GetNormalState
+include::ControlAreaThresholdPointTriggerDelete.adoc[]
 
 == Control Scenario
 === Create
+include::ControlScenarioCreate.adoc[]
+
 === Retrieve
+include::ControlScenarioGet.adoc[]
+
 === Update
-=== Copy
+include::ControlScenarioUpdate.adoc[]
+
 === Delete
-=== GetAllPrograms
+include::ControlScenarioDelete.adoc[]
+
 
 == ProgramConstraint
 === Create

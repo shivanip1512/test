@@ -8,6 +8,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.search.lucene.criteria.CategoryAndClassFilteredPaoPicker;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -62,6 +63,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = UnassignedProgramPicker.class, name = "UNASSIGNED_PROGRAM_PICKER"),
     @JsonSubTypes.Type(value = UserGroupPicker.class, name = "USER_GROUP_PICKER"),
     @JsonSubTypes.Type(value = UserPicker.class, name = "USER_PICKER"),
+    @JsonSubTypes.Type(value = DatabasePaoPicker.class, name = "DATABASE_PAO_PICKER"),
+    @JsonSubTypes.Type(value = CategoryAndClassFilteredPaoPicker.class, name = "CATEGORY_AND_CLASS_FILTERED_PAO_PICKER"),
     })
 public interface Picker<T> {
 

@@ -250,6 +250,7 @@ public class PaoTypeTest {
                             PaoType.VIRTUAL_SYSTEM,
                             PaoType.RFN_GATEWAY,
                             PaoType.GWY800,
+                            PaoType.VIRTUAL_GATEWAY,
                             PaoType.RFN_RELAY);
     
     private static final ImmutableSet<PaoType> nonCbcTypes =
@@ -466,6 +467,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
+                        PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
@@ -602,6 +604,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
+                        PaoType.VIRTUAL_GATEWAY,
                         PaoType.RFN_1200,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
@@ -805,6 +808,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
+                        PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
@@ -1018,6 +1022,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
+                        PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
@@ -1247,6 +1252,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
+                        PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
@@ -1469,6 +1475,7 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
+                        PaoType.VIRTUAL_GATEWAY,
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
@@ -1600,6 +1607,7 @@ public class PaoTypeTest {
                 PaoType.LCR6700_RFN,
                 PaoType.RFN_GATEWAY,
                 PaoType.GWY800,
+                PaoType.VIRTUAL_GATEWAY,
                 PaoType.RFN_RELAY,
                 PaoType.ION_7700,
                 PaoType.ION_8300,
@@ -1705,8 +1713,7 @@ public class PaoTypeTest {
                 PaoType.RFW201,
                 PaoType.RFG201,
                 PaoType.RFG301,
-                PaoType.NEST
-            );
+                PaoType.NEST);
     
     @Test
     public void testIsMeter() {

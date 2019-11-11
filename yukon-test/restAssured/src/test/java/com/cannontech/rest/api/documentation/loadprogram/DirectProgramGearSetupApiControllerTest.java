@@ -47,14 +47,16 @@ public class DirectProgramGearSetupApiControllerTest {
     @BeforeMethod
     public void setUp(Method method) {
         baseURI = ApiCallHelper.getProperty("baseURI");
-        this.restDocumentation.beforeTest(getClass(), method.getName());
-        this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
+        restDocumentation.beforeTest(getClass(), method.getName());
+        documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
         programIdDescriptor = fieldWithPath("programId").type(JsonFieldType.NUMBER).description("Program Id of Load Program");
+        
         if (programConstraint == null) {
-            programConstraint_Create();
+            programConstraint = ProgramConstraintHelper.createProgramConstraint();
         }
         if (loadGroups == null) {
-            assignedLoadGroup_Create();
+            loadGroups = new ArrayList<>();
+            loadGroups.add(LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM));
         }
     }
 
@@ -77,35 +79,6 @@ public class DirectProgramGearSetupApiControllerTest {
     @AfterMethod
     public void tearDown() {
         this.restDocumentation.afterTest();
-    }
-
-    /**
-     * Method to create Load group as we need to pass load group in request of Direct Load Program.
-     */
-
-    // Problem: every time a program require new name for assigned Group. So for this
-
-    public void assignedLoadGroup_Create() {
-        MockLoadGroupBase loadGroupExpresscomm = LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroupExpresscomm);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        loadGroups = new ArrayList<>();
-        Integer loadGroupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID);
-        loadGroupExpresscomm.setId(loadGroupId);
-        loadGroups.add(loadGroupExpresscomm);
-    }
-
-    /**
-     * Method to create Program Constraint as we need to pass constraint in request of Direct Load Program.
-     */
-
-    public void programConstraint_Create() {
-        programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
-        Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
-        programConstraint.setId(constraintId);
-        assertTrue("Constraint Id should not be Null", constraintId != null);
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
     }
 
     @Test

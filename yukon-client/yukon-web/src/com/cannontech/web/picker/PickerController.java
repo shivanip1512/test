@@ -128,15 +128,6 @@ public class PickerController {
                 MessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.common.paging.viewing",
                     searchResult.getStartIndex() + 1, searchResult.getEndIndex(), searchResult.getHitCount());
                 json.put("pages", messageSourceAccessor.getMessage(resolvable));
-
-                resolvable =
-                    new YukonMessageSourceResolvable("yukon.web.picker.selectAllPages", searchResult.getHitCount());
-                json.put("selectAllPages", messageSourceAccessor.getMessage(resolvable));
-
-                resolvable =
-                    new YukonMessageSourceResolvable("yukon.web.picker.allPagesSelected", searchResult.getHitCount());
-                json.put("allPagesSelected", messageSourceAccessor.getMessage(resolvable));
-                json.put("hits", searchResult);
             }
 
         } catch (RestClientException ex) {

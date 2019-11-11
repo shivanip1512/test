@@ -36,6 +36,7 @@ public enum YukonRoleProperty {
     EXECUTE_MANUAL_COMMAND(COMMANDER, COMMANDER.getBasePropertyId() - 17, booleanType()),
     ENABLE_WEB_COMMANDER(COMMANDER, COMMANDER.getBasePropertyId() - 18, booleanType()),
     ENABLE_CLIENT_COMMANDER(COMMANDER, COMMANDER.getBasePropertyId() - 19, booleanType()),
+    MANAGE_CUSTOM_COMMANDS(COMMANDER, COMMANDER.getBasePropertyId() - 20, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW)),
     
     DBEDITOR_LM(DATABASE_EDITOR, DATABASE_EDITOR.getBasePropertyId() - 2, booleanType()),
     DBEDITOR_SYSTEM(DATABASE_EDITOR, DATABASE_EDITOR.getBasePropertyId() - 4, booleanType()),

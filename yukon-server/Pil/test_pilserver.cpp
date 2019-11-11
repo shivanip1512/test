@@ -5,79 +5,21 @@
 #include "dev_rfn.h"
 #include "cmd_rfn_demandFreeze.h"
 
+#include "rtdb_test_helpers.h"
 #include "boost_test_helpers.h"
 
 BOOST_AUTO_TEST_SUITE( test_pilserver )
 
 using namespace std;
 
-struct test_DeviceManager : CtiDeviceManager
-{
-    CtiDeviceSPtr devSingle;
-    CtiDeviceSPtr devRfn;
-
-    test_DeviceManager() :
-        devSingle(new CtiDeviceSingle),
-        devRfn(new Cti::Devices::RfnDevice)
-    {
-        devSingle->setID(42, test_tag);
-        devRfn->setID(123, test_tag);
-    }
-
-    ptr_type getDeviceByID(long id) override
-    {
-        switch( id )
-        {
-            case 42:  return devSingle;
-            case 123: return devRfn;
-        }
-
-        return ptr_type();
-    }
-
-    ptr_type RemoteGetEqualbyName(const std::string &RemoteName) override
-    {
-        if( RemoteName == "beetlebrox" )
-        {
-            return devSingle;
-        }
-        return ptr_type();
-    }
-};
-
-struct test_RouteManager : CtiRouteManager
-{
-    CtiRouteSPtr rte;
-
-    struct test_route : CtiRouteBase
-    {
-        test_route() {
-            _tblPAO.setID(84, test_tag);
-        }
-        YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override { return ClientErrors::None; }
-    };
-
-    test_RouteManager() :
-        rte(new test_route())
-    {
-    }
-
-    virtual ptr_type getRouteByName(std::string RouteName)
-    {
-        return (RouteName == "sixty-six")
-            ? rte
-            : ptr_type();
-    }
-};
-
-
 struct Test_PilServer : Cti::Pil::PilServer
 {
-    test_DeviceManager dev_mgr;
-    test_RouteManager  rte_mgr;
+    Cti::Test::test_DeviceManager dev_mgr;
+    Cti::Test::test_PointManager  pt_mgr;
+    Cti::Test::test_RouteManager  rte_mgr;
 
     Test_PilServer() :
-        PilServer(&dev_mgr, 0, &rte_mgr)
+        PilServer(dev_mgr, pt_mgr, rte_mgr)
     {}
 
     using PilServer::handleRfnDeviceResult;
@@ -110,12 +52,12 @@ struct Test_PilServer : Cti::Pil::PilServer
 
     void sendResults(CtiDeviceBase::CtiMessageList &vgList_, CtiDeviceBase::CtiMessageList &retList_, const int priority, Cti::ConnectionHandle connectionHandle) override
     {
-        for each( CtiMessage *msg in vgList_ )
+        for( CtiMessage *msg : vgList_ )
         {
             vgList.push_back(msg);
         }
 
-        for each( CtiMessage *msg in retList_ )
+        for( CtiMessage *msg : retList_ )
         {
             retList.push_back(msg);
         }
