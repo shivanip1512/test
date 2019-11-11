@@ -24,7 +24,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static final String BASIC_URL_PATH_FRAGMENT = "(/[a-zA-Z0-9_\\-]+)*/?(\\.[a-z]+)?";
     public static final String BASIC_URL_PATH_REGEX = "\\A" + BASIC_URL_PATH_FRAGMENT + "\\Z";
     public static final String BASIC_RESTFUL_URL_REGEX = "\\Ahttps?\\://([a-zA-Z0-9_\\-]+\\.)*[a-zA-Z0-9]+(\\:[0-9]+)?"
-            + BASIC_URL_PATH_FRAGMENT + "\\Z";
+        + BASIC_URL_PATH_FRAGMENT + "\\Z";
     public static final String BASIC_BLACKLISTED_CHAR_LIST = "[\\\\!#$%&'*();+=<>?{}\"|,/]";
 
     public static boolean isUrlPath(String input) {
@@ -33,16 +33,16 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         return input.matches(BASIC_URL_PATH_REGEX);
     }
-
+    
     /**
      * Check to ensure that the serial Number of an RFN device is a valid numeric value
      */
     public static boolean isRfnSerialNumberValid(String serialNumber) {
-
+        
         if (StringUtils.isEmpty(serialNumber)) {
             return true;
         }
-
+        
         if (serialNumber.length() <= 30) {
             return true;
         }
@@ -52,7 +52,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {
         if (fieldValue != null && fieldValue.length() > max) {
             errors.rejectValue(field, "yukon.web.error.exceedsMaximumLength", new Object[] { max },
-                    "Exceeds maximum length of " + max);
+                "Exceeds maximum length of " + max);
             return true;
         }
         return false;
@@ -84,11 +84,10 @@ public class YukonValidationUtils extends ValidationUtils {
      * Convenience method to combine the above two common operations.
      */
     public static void checkIsBlankOrExceedsMaxLength(Errors errors, String field, String fieldValue,
-            boolean fieldAllowsNull, int max) {
-        if (!checkIsBlank(errors, field, fieldValue, fieldAllowsNull)) {
-            checkExceedsMaxLength(errors, field, fieldValue, max);
-            checkBlacklistedCharacter(errors, field, fieldValue);
-        }
+                                                      boolean fieldAllowsNull, int max) {
+        checkIsBlank(errors, field, fieldValue, fieldAllowsNull);
+        checkExceedsMaxLength(errors, field, fieldValue, max);
+        checkBlacklistedCharacter(errors, field, fieldValue);
     }
 
     public static void checkIsPositiveShort(Errors errors, String field, Short fieldValue) {
@@ -96,7 +95,7 @@ public class YukonValidationUtils extends ValidationUtils {
             errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
         }
     }
-
+    
     public static void checkIsPositiveInt(Errors errors, String field, Integer fieldValue) {
         if (fieldValue == null || fieldValue < 0) {
             errors.rejectValue(field, "yukon.web.error.isNotPositiveInt");
@@ -130,12 +129,11 @@ public class YukonValidationUtils extends ValidationUtils {
             }
         }
     }
-
+    
     /**
      * Check to ensure that the Data Archiving Interval is less than or equal to the Interval Data Gathering Duration
      */
-    public static void checkIsDataArchivingIntervalTooLarge(Errors errors, String field, Integer dataArchivingInterval,
-            Integer intervalDataGatheringDuration) {
+    public static void checkIsDataArchivingIntervalTooLarge(Errors errors, String field, Integer dataArchivingInterval, Integer intervalDataGatheringDuration) {
         // intervalDataGatheringDuration is multiplied by 60 to convert minutes into seconds.
         if (dataArchivingInterval > (intervalDataGatheringDuration * 60)) {
             errors.rejectValue(field, "yukon.web.error.dataArchivingIntervalTooLarge");
@@ -160,15 +158,14 @@ public class YukonValidationUtils extends ValidationUtils {
 
         if (fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0) {
             errors.rejectValue(field, "yukon.web.error.outOfRange", new Object[] { min, max }, "Must be between " + min
-                    + " and " + max + ".");
+                + " and " + max + ".");
         }
     }
 
     /**
      * Check to ensure that the given value is within the given range, checking inclusive/exclusive based off Range.
      */
-    public static <T extends Comparable<T>> void checkRange(Errors errors, String field, T fieldValue, Range<T> range,
-            boolean required) {
+    public static <T extends Comparable<T>> void checkRange(Errors errors, String field, T fieldValue, Range<T> range, boolean required) {
         if (fieldValue == null) {
             if (required) {
                 errors.rejectValue(field, "yukon.web.error.required", "Field is required");
@@ -177,12 +174,10 @@ public class YukonValidationUtils extends ValidationUtils {
         }
 
         if (fieldValue != null && !range.intersects(fieldValue)) {
-            // using outOfRange for error message, could improve to something that better explains any inclusive/exclusive
-            // requirements as well
-            errors.rejectValue(field, "yukon.web.error.outOfRangeObject",
-                    new Object[] { range.isIncludesMinValue() ? 1 : 0, range.getMin(),
-                            range.isIncludesMaxValue() ? 1 : 0, range.getMax() },
-                    "Must be " + range.toString() + ".");
+            // using outOfRange for error message, could improve to something that better explains any inclusive/exclusive requirements as well
+            errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { range.isIncludesMinValue() ? 1 : 0, range.getMin(),
+                                                                                         range.isIncludesMaxValue() ? 1 : 0, range.getMax() },
+                                                                                         "Must be " + range.toString() + ".");
         }
     }
 
@@ -198,18 +193,18 @@ public class YukonValidationUtils extends ValidationUtils {
     }
 
     /**
-     * Think twice before using this method. Then get some coffee, talk to your neighbor, and
-     * think about using it again. This method was created out of necessity: YUK-10443.
+     * Think twice before using this method.  Then get some coffee, talk to your neighbor, and
+     * think about using it again.  This method was created out of necessity: YUK-10443.
      * Example:
-     * Thermostat schedules do not have a space for binding field errors. Even though the UI does a good job
+     * Thermostat schedules do not have a space for binding field errors.  Even though the UI does a good job
      * of validating/preventing error states on the schedules there are cases where errors might have existed
      * pre-update and we need to display that to the user.
      *
      * This is really the only reasonable case for including the FieldErrors in in the top level.
      *
      * @param bindingResult
-     * @param includeFieldErrors if set to true, all field errors will be returned in a flat list with the
-     *                           global errors.
+     * @param includeFieldErrors    if set to true, all field errors will be returned in a flat list with the
+     *                              global errors.
      * @return
      */
     public static List<MessageSourceResolvable> errorsForBindingResult(BindingResult bindingResult,
@@ -219,8 +214,8 @@ public class YukonValidationUtils extends ValidationUtils {
         // global
         Iterable<ObjectError> globalErrors = Iterables.filter(bindingResult.getGlobalErrors(), ObjectError.class);
         for (ObjectError objectError : globalErrors) {
-            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(objectError.getCodes(),
-                    objectError.getArguments(),
+            YukonMessageSourceResolvable message =
+                new YukonMessageSourceResolvable(objectError.getCodes(), objectError.getArguments(),
                     objectError.getDefaultMessage());
             retVal.add(message);
         }
@@ -229,8 +224,8 @@ public class YukonValidationUtils extends ValidationUtils {
             // field errors
             Iterable<ObjectError> fieldErrors = Iterables.filter(bindingResult.getFieldErrors(), ObjectError.class);
             for (ObjectError objectError : fieldErrors) {
-                YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(objectError.getCodes(),
-                        objectError.getArguments(),
+                YukonMessageSourceResolvable message =
+                    new YukonMessageSourceResolvable(objectError.getCodes(), objectError.getArguments(),
                         objectError.getDefaultMessage());
                 retVal.add(message);
             }
@@ -250,7 +245,7 @@ public class YukonValidationUtils extends ValidationUtils {
 
     /**
      * This method allows you to use one error key for multiple fields.
-     * A good example of this would be a date range. If the startDate is after the stopDate
+     * A good example of this would be a date range.  If the startDate is after the stopDate
      * both fields should be flagged as having an error.
      */
     public static void rejectValues(Errors errors, String errorMessageKey, String... fields) {
@@ -259,7 +254,7 @@ public class YukonValidationUtils extends ValidationUtils {
 
     /**
      * This method allows you to use one error key for multiple fields.
-     * A good example of this would be a date range. If the startDate is after the stopDate
+     * A good example of this would be a date range.  If the startDate is after the stopDate
      * both fields should be flagged as having an error.
      */
     public static void rejectValues(Errors errors, String errorMessageKey, Object[] errorArgs, String... fields) {
@@ -294,34 +289,34 @@ public class YukonValidationUtils extends ValidationUtils {
         return true;
     }
 
-    public static void ipHostNameValidator(Errors errors, String field, String fieldValue) {
-        Pattern ipHostNameMatcher = Pattern.compile(
-                "^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
-        rejectIfEmptyOrWhitespace(errors, "ipAddress", "yukon.web.error.ipAddressRequired");
+    public static void ipHostNameValidator(Errors errors, String field, String fieldValue ){
+        Pattern ipHostNameMatcher =
+                Pattern.compile("^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
+        rejectIfEmptyOrWhitespace(errors, "ipAddress", "yukon.web.error.ipAddressRequired");       
         if (!errors.hasFieldErrors(field)) {
-            if (!ipHostNameMatcher.matcher(fieldValue).matches()) {
-                errors.rejectValue(field, "yukon.web.error.invalidIPHostName");
-            }
-        }
-    }
-
+           if (!ipHostNameMatcher.matcher(fieldValue).matches()) {
+               errors.rejectValue(field, "yukon.web.error.invalidIPHostName");
+           }
+       }
+   }
+    
     public static void validatePort(Errors errors, String field, String fieldValue) {
         rejectIfEmptyOrWhitespace(errors, "port", "yukon.web.error.invalidPort");
         if (!errors.hasFieldErrors(field)) {
             try {
-                Integer portID = Integer.valueOf(fieldValue);
-                checkRange(errors, field, portID, 1, 65535, true);
+                 Integer portID = Integer.valueOf(fieldValue);
+                 checkRange(errors, field, portID, 1, 65535, true);
             } catch (Exception e) {
                 errors.rejectValue(field, "yukon.web.error.invalidPort");
             }
         }
     }
-
+    
     /* Validate string for exact length. */
     public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
             int stringLength) {
         if (fieldValue != null && fieldValue.length() != stringLength) {
-            errors.rejectValue(field, "yukon.web.error.invalidStringLength", new Object[] { fieldName, stringLength }, "");
+            errors.rejectValue(field, "yukon.web.error.invalidStringLength", new Object[] { fieldName, stringLength },"");
         }
     }
 
@@ -332,3 +327,6 @@ public class YukonValidationUtils extends ValidationUtils {
         }
     }
 }
+
+
+  
