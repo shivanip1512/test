@@ -24,6 +24,8 @@ import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
+import com.cannontech.rest.api.utilities.ValidationHelper;
+
 import io.restassured.response.ExtractableResponse;
 
 public class DirectProgramApiTest {
@@ -159,7 +161,7 @@ public class DirectProgramApiTest {
                 loadGroups,
                 gearTypes,
                 programConstraint.getId());
-        loadProgram.setName("HoneywellProgramTest_" + gearCycle + "4");
+        loadProgram.setName("DirectProgramTest_" + gearCycle);
         loadProgram.setNotification(null);
         ExtractableResponse<?> response = ApiCallHelper.post("saveLoadProgram", loadProgram);
         assertTrue(response.statusCode() == 200, "Status code should be 200. Actual status code : " + response.statusCode());
@@ -167,7 +169,6 @@ public class DirectProgramApiTest {
 
         loadProgram.setProgramId(response.path("programId"));
         programs.put(loadProgram.getProgramId(), loadProgram.getName());
-        context.setAttribute("expectedloadProgram", loadProgram);
     }
 
     @DataProvider(name = "GearCycleData")
@@ -196,8 +197,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setName(" ");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Name is required."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name is required."),
                 "Expected code in response is not correct");
     }
 
@@ -212,8 +214,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setName("TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacter");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Exceeds maximum length of 60."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Exceeds maximum length of 60."),
                 "Expected code in response is not correct");
     }
 
@@ -228,10 +231,11 @@ public class DirectProgramApiTest {
         mockLoadProgram.setName("Test,//Test");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
         assertTrue(
-                createResponse.path("fieldErrors.code[0]")
-                        .equals("Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                ValidationHelper.validateFieldError(createResponse, "name",
+                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
                 "Expected code in response is not correct");
     }
 
@@ -246,8 +250,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setName(context.getAttribute(LoadProgramSetupHelper.CONTEXT_COPIED_PROGRAM_NAME).toString());
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Name must be unique."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name must be unique."),
                 "Expected code in response is not correct");
     }
 
@@ -262,8 +267,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setTriggerOffset((double) -1);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Must be between 0 and 100,000."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "triggerOffset", "Must be between 0 and 100,000."),
                 "Expected code in response is not correct");
     }
 
@@ -278,8 +284,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setTriggerOffset((double) 100000);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Must be between 0 and 100,000."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "triggerOffset", "Must be between 0 and 100,000."),
                 "Expected code in response is not correct");
     }
 
@@ -294,8 +301,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setRestoreOffset((double) -10000);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Must be between -10,000 and 100,000."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "restoreOffset", "Must be between -10,000 and 100,000."),
                 "Expected code in response is not correct");
     }
 
@@ -310,8 +318,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setRestoreOffset((double) 100000);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Must be between -10,000 and 100,000."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "restoreOffset", "Must be between -10,000 and 100,000."),
                 "Expected code in response is not correct");
     }
 
@@ -327,7 +336,8 @@ public class DirectProgramApiTest {
         mockLoadProgram.setNotification(null);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
         assertTrue(
                 createResponse.path("globalErrors.code[0]")
                         .equals("At least 1 load group must be present in this current program."),
@@ -345,7 +355,8 @@ public class DirectProgramApiTest {
         mockLoadProgram.setNotification(null);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
         assertTrue(createResponse.path("globalErrors.code[0]").equals("Program must contain 1 or more gears."),
                 "Expected code in response is not correct");
     }
@@ -362,8 +373,9 @@ public class DirectProgramApiTest {
         mockLoadProgram.setNotification(null);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[0]").equals("Program Constraint is required."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "constraint", "Program Constraint is required."),
                 "Expected code in response is not correct");
     }
 
@@ -380,8 +392,9 @@ public class DirectProgramApiTest {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[1]").equals("Gear Name is required."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
                 "Expected code in response is not correct");
     }
 
@@ -398,8 +411,11 @@ public class DirectProgramApiTest {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,439."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "controlWindow.controlWindowOne.availableStartTimeInMinutes",
+                        "Must be between 0 and 1,439."),
                 "Expected code in response is not correct");
     }
 
@@ -416,8 +432,11 @@ public class DirectProgramApiTest {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "controlWindow.controlWindowOne.availableStopTimeInMinutes",
+                        "Must be between 0 and 1,440."),
                 "Expected code in response is not correct");
     }
 
@@ -434,8 +453,11 @@ public class DirectProgramApiTest {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,439."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "controlWindow.controlWindowOne.availableStartTimeInMinutes",
+                        "Must be between 0 and 1,439."),
                 "Expected code in response is not correct");
     }
 
@@ -452,8 +474,11 @@ public class DirectProgramApiTest {
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
-        assertTrue(createResponse.path("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "controlWindow.controlWindowOne.availableStopTimeInMinutes",
+                        "Must be between 0 and 1,440."),
                 "Expected code in response is not correct");
     }
 

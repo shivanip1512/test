@@ -3,7 +3,6 @@ package com.cannontech.rest.api.dr.controlarea;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.testng.ITestContext;
@@ -12,7 +11,6 @@ import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
-import com.cannontech.rest.api.common.model.MockApiFieldError;
 import com.cannontech.rest.api.common.model.MockApiGlobalError;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
@@ -29,6 +27,7 @@ import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -73,9 +72,9 @@ public class ControlAreaApiTest {
 
         MockControlArea controlArea = buildControlArea("controlAreaTest_Name");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        context.setAttribute("controlArea_Id", createResponse.path("controlAreaId"));
+        context.setAttribute("controlArea_Id", createResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
         assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
-        assertTrue(createResponse.path("controlAreaId") != null, "Control Area Id should not be Null");
+        assertTrue(createResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID) != null, "Control Area Id should not be Null");
         context.setAttribute("expectedControlArea", controlArea);
         Log.endTestCase("controlArea_01_CreateWithoutProgramAndTrigger");
     }
@@ -125,7 +124,6 @@ public class ControlAreaApiTest {
         controlArea.setAllTriggersActiveFlag(true);
 
         context.setAttribute("controlArea_Name", name);
-        System.out.println(context.getAttribute("controlArea_Name"));
 
         ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlArea",
                 controlArea,
@@ -156,10 +154,11 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = buildControlArea("controlAreaTest_Name");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
 
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Name must be unique.".equals(validationCode.get("code")), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name must be unique."),
+                "Expected code in response is not correct");
 
         Log.endTestCase("controlArea_05_Name_Is_Same_Validation");
     }
@@ -172,7 +171,6 @@ public class ControlAreaApiTest {
 
         Log.startTestCase("controlArea_04_Delete");
 
-        System.out.println(context.getAttribute("controlArea_Name"));
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute("controlArea_Name").toString()).build();
 
         Log.info("Delete Load Group is : " + lmDeleteObject);
@@ -185,8 +183,7 @@ public class ControlAreaApiTest {
         ExtractableResponse<?> getDeletedLoadGroupResponse = ApiCallHelper.get("getControlArea",
                 context.getAttribute("controlArea_Id").toString());
         assertTrue(getDeletedLoadGroupResponse.statusCode() == 400, "Status code should be 400");
-        MockApiError error = getDeletedLoadGroupResponse.as(MockApiError.class);
-        assertTrue(error.getMessage().contains("Control area Id not found"),
+        assertTrue(ValidationHelper.validateErrorMessage(getDeletedLoadGroupResponse, "Control area Id not found"),
                 "Expected error message Should contains Text: " + "Control area Id not found");
 
         Log.endTestCase("controlArea_04_Delete");
@@ -229,7 +226,8 @@ public class ControlAreaApiTest {
         MockApiError error = response.as(MockApiError.class);
         List<MockApiGlobalError> globalError = error.getGlobalErrors();
         assertTrue(response.statusCode() == 422, "Status code should be " + 422);
-        // assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation
+        // assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be -
+        // Validation
         // error");
         assertTrue("Maximum two valid triggers are allowed.".equals(globalError.get(0).getCode()),
                 "Expected code in response is not correct");
@@ -254,15 +252,17 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.setTriggers(triggers);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse,
-                "programAssignment[0].programId");
+
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Program Id does not exist or already assigned to other Control Area.".equals(validationCode.get("code")),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "programAssignment[0].programId",
+                        "Program Id does not exist or already assigned to other Control Area."),
                 "Expected code in response is not correct");
 
     }
-    
+
     /**
      * Negative validation when Control Area name field is passed as blank while creation of Control Area
      */
@@ -274,10 +274,11 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = buildControlArea("");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
 
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Name is required.".equals(validationCode.get("code")), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name is required."),
+                "Expected code in response is not correct");
 
         Log.endTestCase("controlArea_06_Name_As_Blank_Validation");
     }
@@ -293,10 +294,12 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = buildControlArea("controlAreaTest_\"Name");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
 
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Cannot be blank or include any of the following characters: / \\ , ' \" |".equals(validationCode.get("code")),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "name",
+                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
                 "Expected code in response is not correct");
 
         Log.endTestCase("loadControl AreaVersacom_07_Control AreaName_With_Special_Characters_Validation");
@@ -313,11 +316,10 @@ public class ControlAreaApiTest {
         MockControlArea controlArea = buildControlArea("TestControlAreaName_MoreThanSixtyCharacter_TestControlAreaNames");
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
 
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "name");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue(validationCode.get("message").equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Exceeds maximum length of 60.".equals(validationCode.get("code")),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Exceeds maximum length of 60."),
                 "Expected code in response is not correct");
 
         Log.endTestCase("controlArea_08_Name_With_MoreThan_Sixty_Characters_Validation");
@@ -332,10 +334,12 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setThreshold((double) 1000000);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "triggers[0].threshold");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between -1,000,000 and 1,000,000.".equals(validationCode.get("code")),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "triggers[0].threshold",
+                        "Must be between -1,000,000 and 1,000,000."),
                 "Expected code in response is not correct");
     }
 
@@ -348,10 +352,12 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setThreshold((double) -1000000);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "triggers[0].threshold");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between -1,000,000 and 1,000,000.".equals(validationCode.get("code")),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "triggers[0].threshold",
+                        "Must be between -1,000,000 and 1,000,000."),
                 "Expected code in response is not correct");
     }
 
@@ -364,10 +370,11 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setThreshold(null);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "triggers[0].threshold");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Threshold is required.".equals(validationCode.get("code")), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "triggers[0].threshold", "Threshold is required."),
+                "Expected code in response is not correct");
     }
 
     /**
@@ -379,10 +386,12 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setMinRestoreOffset(-100000.0000);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "triggers[0].minRestoreOffset");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between -100,000 and 100,000.".equals(validationCode.get("code")),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "triggers[0].minRestoreOffset",
+                        "Must be between -100,000 and 100,000."),
                 "Expected code in response is not correct");
     }
 
@@ -395,10 +404,12 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getTriggers().get(0).setMinRestoreOffset(100000.0000);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse, "triggers[0].minRestoreOffset");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between -100,000 and 100,000.".equals(validationCode.get("code")),
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "triggers[0].minRestoreOffset",
+                        "Must be between -100,000 and 100,000."),
                 "Expected code in response is not correct");
     }
 
@@ -411,11 +422,11 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStartPriority(1025);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse,
-                "programAssignment[0].startPriority");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between 1 and 1,024.".equals(validationCode.get("code")), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "programAssignment[0].startPriority",
+                "Must be between 1 and 1,024."), "Expected code in response is not correct");
     }
 
     /**
@@ -427,11 +438,11 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStartPriority(0);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse,
-                "programAssignment[0].startPriority");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between 1 and 1,024.".equals(validationCode.get("code")), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "programAssignment[0].startPriority",
+                "Must be between 1 and 1,024."), "Expected code in response is not correct");
     }
 
     /**
@@ -443,11 +454,11 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStopPriority(1025);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse,
-                "programAssignment[0].stopPriority");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between 1 and 1,024.".equals(validationCode.get("code")), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "programAssignment[0].stopPriority",
+                "Must be between 1 and 1,024."), "Expected code in response is not correct");
     }
 
     /**
@@ -459,14 +470,12 @@ public class ControlAreaApiTest {
                 loadProgram.getProgramId());
         controlArea.getProgramAssignment().get(0).setStopPriority(0);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlArea", controlArea);
-        HashMap<String, String> validationCode = fetchValidationCodeForFieldError(createResponse,
-                "programAssignment[0].stopPriority");
         assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
-        assertTrue((validationCode.get("message")).equals("Validation error"), "Expected message should be - Validation error");
-        assertTrue("Must be between 1 and 1,024.".equals(validationCode.get("code")), "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "programAssignment[0].stopPriority",
+                "Must be between 1 and 1,024."), "Expected code in response is not correct");
     }
-
-    
 
     /**
      * This function build Mock Control Area to be used for creation of Control Area with default values
@@ -482,27 +491,6 @@ public class ControlAreaApiTest {
                 .build();
 
         return controlArea;
-    }
-
-    /**
-     * This function fetches Validation Code For the Field passed as argument while creation of Versacom load group
-     */
-    public HashMap<String, String> fetchValidationCodeForFieldError(ExtractableResponse<?> response, String field) {
-        HashMap<String, String> validationCode = new HashMap<String, String>();
-        MockApiError error = response.as(MockApiError.class);
-        List<MockApiFieldError> fieldErrors = error.getFieldErrors();
-        String code = "";
-        String message = error.getMessage();
-        for (MockApiFieldError fieldError : fieldErrors) {
-            if (fieldError.getField().equals(field)) {
-                code = fieldError.getCode();
-                break;
-            }
-        }
-        validationCode.put("message", message);
-        validationCode.put("code", code);
-
-        return validationCode;
     }
 
     /**
