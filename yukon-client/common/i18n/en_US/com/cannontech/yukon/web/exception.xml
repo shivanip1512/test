@@ -16,7 +16,7 @@
 <entry key="yukon.exception.processingException.changeDeviceName">Could not change name of device with id: {0}.</entry>
 <entry key="yukon.exception.processingException.changeRfnDevice">Could not change serial number, manufacturer, model of device with id: {0}.</entry>
 <entry key="yukon.exception.processingException.changeRoute">Could not change route of device with id: {0}, and value: {2}.</entry>
-<entry key="yukon.exception.processingException.pointOffsetInUse">Point offset {0} on device {1} is already in use</entry>
+<entry key="yukon.exception.processingException.pointOffsetInUse">Point offset {0} on device {1} is already in use.</entry>
 <entry key="yukon.exception.processingException.invalidAttribute">Invalid attribute {0} for device with id {1}.</entry>
 <entry key="yukon.exception.processingException.processorNotFound">Unable to find processor for field(s).</entry>
 <entry key="yukon.exception.processingException.deviceIncompatible">{0} is not an compatible type for device: {1} ; Type: {2}.</entry>
@@ -27,7 +27,7 @@
 <entry key="yukon.exception.processingException.invalidAddress">Invalid address: {0}.</entry>
 <entry key="yukon.exception.processingException.deviceAlreadyExists">Device: {0} already exists.</entry>
 <entry key="yukon.exception.processingException.pointAlreadyExists">Point with name {0} already exists for device {1}.</entry>
-Re<entry key="yukon.exception.processingException.pointNameMaxLength">Point name "{0}" must be 60 characters or less for device "{1}".</entry>
+<entry key="yukon.exception.processingException.pointNameMaxLength">Point name "{0}" must be 60 characters or less for device "{1}".</entry>
 <entry key="yukon.exception.processingException.addPointFailed">Add point failed.</entry>
 <entry key="yukon.exception.processingException.paoNotFound">Could not find device: {0} (id={1}).</entry>
 <entry key="yukon.exception.processingException.paoNotFoundForSelectedDevices">Could not find device: {0} (id={2}).</entry>
@@ -36,7 +36,7 @@ Re<entry key="yukon.exception.processingException.pointNameMaxLength">Point name
 <entry key="yukon.exception.processingException.invalidCalculation">No calculation is specified in the calculation file.</entry>
 <entry key="yukon.exception.processingException.invalidStateOrGroup">The specified state or state group is invalid</entry>
 <entry key="yukon.exception.processingException.unhandledAction">Unable to process action: {0}</entry>
-<entry key="yukon.exception.processingException.invalidDeviceType">Invalid device type.</entry>
+<entry key="yukon.exception.processingException.invalidDeviceType">Invalid device type</entry>
 <entry key="yukon.exception.processingException.invalidColumnForInterface">The column {0} is not valid for interface {1}.</entry>
 <entry key="yukon.exception.processingException.noValidInterface">Unable to find a valid interface for column {0}.</entry>
 <entry key="yukon.exception.processingException.noInterfaceColumns">Import Error: No interface-specific values provided.</entry>
