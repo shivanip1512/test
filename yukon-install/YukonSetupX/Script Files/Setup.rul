@@ -63,6 +63,8 @@ begin
 	if(StrFindEx(sDirLow, "yukon", StrLengthChars(sDirLow)-5) < 0) then
 		sDir = sDir ^ "Yukon";
 	endif;
+    // Add Local service access to Yukon root directory.
+    AddLocalServiceAccess(TARGETDIR);
 	
     GetSystemInfo(DATE, nResult, sDateString);
     // Format date pattern in YYYYMMDD
@@ -614,8 +616,6 @@ begin
     if (nResult >= ISERR_SUCCESS && StrLengthChars(sTARGETDIR)) then
         TARGETDIR = sTARGETDIR;
     endif;
-    // Add Local service access to Yukon root directory.
-    AddLocalServiceAccess(TARGETDIR);
 end;
 
 //---------------------------------------------------------------------------
