@@ -170,7 +170,7 @@ public class LoadGroupSetupControllerHelper {
                 if (result.hasFieldErrors("mctDeviceId")) {
                     model.addAttribute("mctAddressHasError", true);
                 } else {
-                    model.addAttribute("mctAddressHasError", true);
+                    model.addAttribute("mctAddressHasError", false);
                 }
             }
             break;

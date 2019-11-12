@@ -167,7 +167,7 @@ public class LoadGroupSetupController {
     @PostMapping("/save")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String save(@ModelAttribute("loadGroup") LoadGroupBase loadGroup, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model) {
+            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         try {
             String url;
