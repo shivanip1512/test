@@ -1,12 +1,9 @@
 package com.cannontech.rest.api.dr.gears;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.testng.Assert.assertTrue;
-
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
@@ -38,7 +35,7 @@ public class ItronCycleGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
@@ -55,7 +52,7 @@ public class ItronCycleGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Characters");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Exceeds maximum length of 30."),
@@ -75,7 +72,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setDutyCyclePercent(-2);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.dutyCyclePercent",
@@ -95,7 +92,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setDutyCyclePercent(101);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.dutyCyclePercent",
@@ -115,7 +112,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setDutyCyclePeriodInMinutes(0);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.dutyCyclePeriodInMinutes",
@@ -136,7 +133,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setCapacityReduction(-2);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction",
@@ -156,7 +153,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setCapacityReduction(101);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction",
@@ -176,7 +173,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setWhenToChangeFields(null);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(
@@ -199,7 +196,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setChangePriority(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.changePriority",
@@ -220,7 +217,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setChangePriority(100000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.changePriority",
@@ -241,7 +238,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setChangeDurationInMinutes(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse,
@@ -263,7 +260,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setChangeDurationInMinutes(100000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse,
@@ -284,7 +281,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
@@ -307,7 +304,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setTriggerNumber(0);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
@@ -328,7 +325,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setTriggerNumber(100000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
@@ -349,7 +346,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setTriggerOffset(-100005.000000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(
@@ -372,7 +369,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.getWhenToChangeFields().setTriggerOffset(100005.000000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(
@@ -394,7 +391,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setCriticality(-2);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality",
@@ -414,7 +411,7 @@ public class ItronCycleGearValidationAPITest {
         mockItronCycleGearFields.setCriticality(256);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality",

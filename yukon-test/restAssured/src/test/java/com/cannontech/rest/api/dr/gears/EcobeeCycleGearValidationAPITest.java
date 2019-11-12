@@ -1,7 +1,5 @@
 package com.cannontech.rest.api.dr.gears;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +36,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
@@ -55,7 +53,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Characters");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Exceeds maximum length of 30."),
@@ -75,7 +73,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.setControlPercent(-2);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent",
@@ -95,7 +93,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.setControlPercent(101);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent",
@@ -115,7 +113,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.setMandatory(null);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.mandatory",
@@ -135,7 +133,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.setCapacityReduction(-2);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction",
@@ -155,7 +153,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.setCapacityReduction(101);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.capacityReduction",
@@ -175,7 +173,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.setWhenToChangeFields(null);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(
@@ -198,7 +196,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setChangePriority(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.changePriority",
@@ -219,7 +217,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setChangePriority(100000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.changePriority",
@@ -240,7 +238,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setChangeDurationInMinutes(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse,
@@ -262,7 +260,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setChangeDurationInMinutes(100000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse,
@@ -283,7 +281,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.TriggerOffset);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
@@ -306,7 +304,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setTriggerNumber(0);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
@@ -327,7 +325,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setTriggerNumber(100000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields.triggerNumber",
@@ -348,7 +346,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setTriggerOffset(-100005.000000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(
@@ -371,7 +369,7 @@ public class EcobeeCycleGearValidationAPITest {
         mockEcobeeCycleGearFields.getWhenToChangeFields().setTriggerOffset(100005.000000);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
         assertTrue(
