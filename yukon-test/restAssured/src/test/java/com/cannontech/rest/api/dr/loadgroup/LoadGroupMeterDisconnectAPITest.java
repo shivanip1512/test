@@ -52,7 +52,8 @@ public class LoadGroupMeterDisconnectAPITest {
 
         assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(meterDisconnectGroup.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == meterDisconnectGroup.getType());
-        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(meterDisconnectGroup.getKWCapacity()));
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(),
+                loadGroup.getKWCapacity().equals(meterDisconnectGroup.getKWCapacity()));
 
         Boolean disableGroup = meterDisconnectGroup.isDisableGroup();
         assertTrue("Group Should be disabled : ", !disableGroup);
@@ -81,7 +82,8 @@ public class LoadGroupMeterDisconnectAPITest {
         MockLoadGroupBase updatedMeterDisconnectGroup = getUpdatedResponse.as(MockLoadGroupBase.class);
         assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(updatedMeterDisconnectGroup.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == updatedMeterDisconnectGroup.getType());
-        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(updatedMeterDisconnectGroup.getKWCapacity()));
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(),
+                loadGroup.getKWCapacity().equals(updatedMeterDisconnectGroup.getKWCapacity()));
 
         Log.endTestCase("loadGroupMeterDisconnect_03_Update");
     }
@@ -94,15 +96,17 @@ public class LoadGroupMeterDisconnectAPITest {
 
         Log.startTestCase("loadGroupMeterDisconnect_04_Copy");
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
-                                                           .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_METER_DISCONNECT))
-                                                           .build();
+                .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_METER_DISCONNECT))
+                .build();
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
-                                                                 loadGroupCopy,
-                                                                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        String copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
-        assertTrue("Group Id should not be Null", copyPaoId != null);
+                loadGroupCopy,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
+        assertTrue("Group Id should not be Null", copyGroupId != null);
+        context.setAttribute("MR_CopyGrpId", copyGroupId);
+        context.setAttribute("MR_CopyGrpName", loadGroupCopy.getName());
         Log.endTestCase("loadGroupMeterDisconnect_04_Copy");
     }
 
@@ -118,15 +122,24 @@ public class LoadGroupMeterDisconnectAPITest {
 
         Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
-                                                               lmDeleteObject,
-                                                               context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                lmDeleteObject,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup",
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
         MockApiError error = getDeletedResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
+
+        // Delete copy Load group
+        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("MR_CopyGrpName").toString()).build();
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
+                lmDeleteObject,
+                context.getAttribute("MR_CopyGrpId").toString());
+        assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
+
         Log.startTestCase("loadGroupMeterDisconnect_05_Delete");
     }
 }

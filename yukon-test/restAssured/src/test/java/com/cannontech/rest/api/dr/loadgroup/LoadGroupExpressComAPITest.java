@@ -68,7 +68,8 @@ public class LoadGroupExpressComAPITest {
 
         assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(loadGroupExpresscomResponse.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == loadGroupExpresscomResponse.getType());
-        assertTrue("routeId Should be : " + loadGroup.getRouteId(), loadGroup.getRouteId().intValue() == loadGroupExpresscomResponse.getRouteId().intValue());
+        assertTrue("routeId Should be : " + loadGroup.getRouteId(),
+                loadGroup.getRouteId().intValue() == loadGroupExpresscomResponse.getRouteId().intValue());
 
         Log.endTestCase("loadGroupExpresscom_02_Get");
 
@@ -95,10 +96,14 @@ public class LoadGroupExpressComAPITest {
 
         ExtractableResponse<?> getupdatedLoadGroupExpresscomResponse = ApiCallHelper.get("getloadgroup", groupId);
 
-        MockLoadGroupExpresscom updatedLoadGroupExpresscomResponse = getupdatedLoadGroupExpresscomResponse.as(MockLoadGroupExpresscom.class);
-        assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(updatedLoadGroupExpresscomResponse.getName()));
-        assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == updatedLoadGroupExpresscomResponse.getType());
-        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(updatedLoadGroupExpresscomResponse.getKWCapacity()));
+        MockLoadGroupExpresscom updatedLoadGroupExpresscomResponse = getupdatedLoadGroupExpresscomResponse
+                .as(MockLoadGroupExpresscom.class);
+        assertTrue("Name Should be : " + loadGroup.getName(),
+                loadGroup.getName().equals(updatedLoadGroupExpresscomResponse.getName()));
+        assertTrue("Type Should be : " + loadGroup.getType(),
+                loadGroup.getType() == updatedLoadGroupExpresscomResponse.getType());
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(),
+                loadGroup.getKWCapacity().equals(updatedLoadGroupExpresscomResponse.getKWCapacity()));
         Log.endTestCase("loadGroupExpresscom_04_Update");
 
     }
@@ -110,14 +115,17 @@ public class LoadGroupExpressComAPITest {
     public void loadGroupExpresscom_04_Copy(ITestContext context) {
 
         Log.startTestCase("loadGroupExpresscom_04_Copy");
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).build();
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+                .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).build();
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
-                                                                 loadGroupCopy,
-                                                                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        String copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
-        assertTrue("Group Id should not be Null", copyPaoId != null);
+                loadGroupCopy,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
+        assertTrue("Group Id should not be Null", copyGroupId != null);
+        context.setAttribute("expresscom_CopyGrpId", copyGroupId);
+        context.setAttribute("expresscom_CopyGrpName", loadGroupCopy.getName());
         Log.endTestCase("loadGroupExpresscom_04_Copy");
     }
 
@@ -134,17 +142,24 @@ public class LoadGroupExpressComAPITest {
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
         Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
-                                                               lmDeleteObject,
-                                                               context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                lmDeleteObject,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup",
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
 
         MockApiError error = getDeletedResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
 
+        // Delete copy Load group
+        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("expresscom_CopyGrpName").toString()).build();
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
+                lmDeleteObject,
+                context.getAttribute("expresscom_CopyGrpId").toString());
+        assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
         Log.endTestCase("loadGroupExpresscom_05_Delete");
     }
 
@@ -153,7 +168,8 @@ public class LoadGroupExpressComAPITest {
      * DataProviderClass
      */
     @Test(dataProvider = "ExpresscomAddressData", dependsOnMethods = "loadGroupExpresscom_01_Create")
-    public void loadGroupExpresscom_06_PhysicalAddressValidation(String spid, String geoId, String subId, String zip, String user, String expectedErrorMsg,
+    public void loadGroupExpresscom_06_PhysicalAddressValidation(String spid, String geoId, String subId, String zip, String user,
+            String expectedErrorMsg,
             Integer expectedStatusCode) {
 
         Log.startTestCase("loadGroupExpresscom_06_PhysicalAddressValidation");
@@ -172,22 +188,22 @@ public class LoadGroupExpressComAPITest {
         relayUsage.add(MockLoads.Load_1);
 
         MockLoadGroupExpresscom loadGroup = MockLoadGroupExpresscom.builder()
-                                                                   .name("Test_ExpressCom_LoadGroup")
-                                                                   .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
-                                                                   .routeId(1)
-                                                                   .disableControl(false)
-                                                                   .disableGroup(false)
-                                                                   .feeder("1000000000000000")
-                                                                   .serviceProvider(100)
-                                                                   .geo(223)
-                                                                   .zip(3334)
-                                                                   .kWCapacity(0.0)
-                                                                   .addressUsage(addressUsage)
-                                                                   .relayUsage(relayUsage)
-                                                                   .serialNumber("1245")
-                                                                   .program(12)
-                                                                   .protocolPriority(MockControlPriority.DEFAULT)
-                                                                   .build();
+                .name("Test_ExpressCom_LoadGroup")
+                .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
+                .routeId(47)
+                .disableControl(false)
+                .disableGroup(false)
+                .feeder("1000000000000000")
+                .serviceProvider(100)
+                .geo(223)
+                .zip(3334)
+                .kWCapacity(0.0)
+                .addressUsage(addressUsage)
+                .relayUsage(relayUsage)
+                .serialNumber("1245")
+                .program(12)
+                .protocolPriority(MockControlPriority.DEFAULT)
+                .build();
 
         loadGroup.setSplinter(Integer.valueOf(spid));
         loadGroup.setGeo(Integer.valueOf(geoId));

@@ -53,12 +53,14 @@ public class LoadGroupItronAPITest {
 
         assertTrue("Name Should be : " + loadGroup.getName(), loadGroup.getName().equals(loadGroupResponse.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == loadGroupResponse.getType());
-        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(loadGroupResponse.getKWCapacity()));
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(),
+                loadGroup.getKWCapacity().equals(loadGroupResponse.getKWCapacity()));
         Boolean disableGroup = loadGroupResponse.isDisableGroup();
         assertTrue("Group Should be disabled : ", !disableGroup);
         Boolean disableControl = loadGroupResponse.isDisableControl();
         assertTrue("Control Should be disabled : ", !disableControl);
-        assertTrue("VirtualRelayId Should be : " + loadGroup.getVirtualRelayId(), loadGroup.getVirtualRelayId().equals(loadGroupResponse.getVirtualRelayId()));
+        assertTrue("VirtualRelayId Should be : " + loadGroup.getVirtualRelayId(),
+                loadGroup.getVirtualRelayId().equals(loadGroupResponse.getVirtualRelayId()));
         Log.endTestCase("loadGroupItron_02_Get");
     }
 
@@ -79,13 +81,15 @@ public class LoadGroupItronAPITest {
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
 
         ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup", groupId);
+        assertTrue("Status code should be 200", getupdatedResponse.statusCode() == 200);
 
         MockLoadGroupItron updatedLoadGroupResponse = getupdatedResponse.as(MockLoadGroupItron.class);
         assertTrue("Name Should be : " + name, name.equals(updatedLoadGroupResponse.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType().equals(updatedLoadGroupResponse.getType()));
-        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(), loadGroup.getKWCapacity().equals(updatedLoadGroupResponse.getKWCapacity()));
+        assertTrue("kWCapacity Should be : " + loadGroup.getKWCapacity(),
+                loadGroup.getKWCapacity().equals(updatedLoadGroupResponse.getKWCapacity()));
         assertTrue("Virtual Relay Id Should be : " + loadGroup.getVirtualRelayId(),
-                   loadGroup.getVirtualRelayId().equals(updatedLoadGroupResponse.getVirtualRelayId()));
+                loadGroup.getVirtualRelayId().equals(updatedLoadGroupResponse.getVirtualRelayId()));
         Log.endTestCase("loadGroupItron_03_Update");
     }
 
@@ -97,14 +101,17 @@ public class LoadGroupItronAPITest {
     public void loadGroupItron_04_Copy(ITestContext context) {
 
         Log.startTestCase("loadGroupItron_04_Copy");
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_ITRON)).build();
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+                .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_ITRON)).build();
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
-                                                                 loadGroupCopy,
-                                                                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                loadGroupCopy,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         String copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
-        assertTrue("Group Id should not be Null", copyPaoId != null);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
+        assertTrue("Group Id should not be Null", copyPaoId != null);
+        context.setAttribute("Itron_CopyGrpId", copyPaoId);
+        context.setAttribute("Itron_CopyGrpName", loadGroupCopy.getName());
         Log.endTestCase("loadGroupItron_04_Copy");
     }
 
@@ -139,7 +146,8 @@ public class LoadGroupItronAPITest {
     }
 
     @Test(dataProvider = "VirtualRelayIdData", dependsOnMethods = "loadGroupItron_01_Create")
-    public void loadGroupItron_07_VirtualRelayIdValidation(Integer virtualRelayId, String expectedFieldCode, int expectedStatusCode) {
+    public void loadGroupItron_07_VirtualRelayIdValidation(Integer virtualRelayId, String expectedFieldCode,
+            int expectedStatusCode) {
 
         Log.startTestCase("loadGroupItron_07_VirtualRelayIdValidation");
 
@@ -167,16 +175,24 @@ public class LoadGroupItronAPITest {
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
         Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
-                                                               lmDeleteObject,
-                                                               context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                lmDeleteObject,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup",
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
 
         MockApiError error = getDeletedResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
+
+        // Delete copy Load group
+        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("Itron_CopyGrpName").toString()).build();
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
+                lmDeleteObject,
+                context.getAttribute("Itron_CopyGrpId").toString());
+        assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
 
         Log.endTestCase("loadGroupItron_08_Delete");
     }
