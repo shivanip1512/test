@@ -628,10 +628,14 @@ public class TdcDisplayController {
         List<DisplayData> displayData;
         if (display.isPageable()) {
             AlarmFilter filter = null;
-            if (alarmFilter != null) {
+            if (alarmFilter != null && StringUtils.isNotBlank(alarmFilter)) {
                 filter = AlarmFilter.valueOf(alarmFilter);
+            } else {
+                filter = AlarmFilter.NO_FILTER;
             }
-            displayData = tdcService.getSortedDisplayData(display, null, PagingParameters.EVERYTHING, null, null, new DateTime(date), filter).getResultList();
+            displayData = tdcService
+                    .getSortedDisplayData(display, null, PagingParameters.EVERYTHING, null, null, new DateTime(date), filter)
+                    .getResultList();
 
         }
         else {
