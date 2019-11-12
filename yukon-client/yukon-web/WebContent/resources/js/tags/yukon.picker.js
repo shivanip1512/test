@@ -329,7 +329,7 @@ yukon.protoPicker = function (okText,
     
     /**
      * Update the UI with data from the search results.  This method calls
-     * renderTalbeResults to update the table itself and then updates the
+     * renderTableResults to update the table itself and then updates the
      * previous and next buttons appropriately.
      */
     updateSearchResults = function (xhr) {
@@ -344,7 +344,6 @@ yukon.protoPicker = function (okText,
         $('#' + this.errorHolderId).remove();
         resultHolder.append(newResultArea);
         updateSelectAllCheckbox.call(this);
-        
         ss = this.ssInput.value;
         unblock.call(this);
         if (this.currentSearch !== ss) {
@@ -756,6 +755,9 @@ yukon.protoPicker = function (okText,
         var row = $('#' + this.pickerId + ' tr[data-id="' + selectedId + '"]');
         row.addClass('disabled-look');
         this.disabledIds.push(selectedId);
+       if (this.disabledIds.length === this.hitCount) {
+            this.selectAllCheckBox.disabled = true;
+        }
     };
     
     /** Used to enable an item in the selection list. */
@@ -769,6 +771,9 @@ yukon.protoPicker = function (okText,
             index = this.disabledIds.indexOf(selectedId);
         }
         this.disabledIds.splice(index, 1);
+        if (this.disabledIds.length !== this.hitCount) {
+            this.selectAllCheckBox.disabled = false;
+        }
     };
     
     /** Invoked from jsp */

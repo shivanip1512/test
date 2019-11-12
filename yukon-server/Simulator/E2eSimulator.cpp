@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "E2eSimulator.h"
+#include "e2e_packet.h"
 
 #include "RfnMeter.h"
 #include "RfDa.h"
@@ -11,6 +12,7 @@
 #include "RfnE2eDataIndicationMsg.h"
 #include "NetworkManagerRequest.h"
 
+#include "prot_e2eDataTransfer.h"
 #include "coap_helper.h"
 
 #include "rfn_asid.h"
@@ -21,8 +23,6 @@
 #include "amq_queues.h"
 #include "CParms.h"
 
-#include "prot_dnpSlave.h"
-
 extern "C" {
 #include "coap/pdu.h"
 #include "coap/block.h"
@@ -30,10 +30,10 @@ extern "C" {
 
 #include <random>
 #include <future>
+#include <map>
 
 using namespace Cti::Messaging::ActiveMQ;
 using namespace Cti::Messaging::Rfn;
-using namespace std::chrono_literals;
 
 using Cti::Messaging::Serialization::MessageFactory;
 using Cti::Messaging::Serialization::MessagePtr;
@@ -47,27 +47,6 @@ DLLIMPORT MessageFactory<NetworkManagerBase> nmMessageFactory;
 }
     
 namespace Cti::Simulator {
-
-struct e2edt_packet
-{
-    std::vector<unsigned char> payload;
-    unsigned token;
-    unsigned id;
-};
-
-struct e2edt_request_packet : e2edt_packet
-{
-    bool confirmable;
-    std::string path;
-    std::optional<size_t> block;
-    std::optional<size_t> blockSize;
-    Protocols::Coap::RequestMethod method;
-};
-
-struct e2edt_reply_packet : e2edt_packet
-{
-    Protocols::Coap::ResponseCode status;
-};
 
 E2eSimulator::~E2eSimulator() = default;
 
@@ -120,9 +99,9 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
     if( const auto b = dynamic_cast<const cms::BytesMessage*>(msg) )
     {
-        const auto buf = std::unique_ptr<unsigned char> { b->getBodyBytes() };
+        const auto buf = std::unique_ptr<unsigned char>{ b->getBodyBytes() };
 
-        std::vector<unsigned char> payload { buf.get(), buf.get() + b->getBodyLength() };
+        Bytes payload { buf.get(), buf.get() + b->getBodyLength() };
 
         CTILOG_INFO(dout, "Received BytesMessage on RFN E2E queue, attempting to decode as E2eDataRequest");
 
@@ -130,8 +109,8 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
         if( E2eDataRequestMsg *requestMsgPtr = dynamic_cast<E2eDataRequestMsg *>(e2eMsg.get()) )
         {
+            std::unique_ptr<E2eDataRequestMsg> requestMsg{ requestMsgPtr };
             e2eMsg.release();
-            std::unique_ptr<E2eDataRequestMsg> requestMsg { requestMsgPtr };
 
             CTILOG_INFO(dout, "Got new RfnE2eDataRequestMsg" << requestMsg->payload);
 
@@ -147,7 +126,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                 CTILOG_INFO(dout, "Not sending NM acknowledgement for " << requestMsg->rfnIdentifier);
                 return;
             }
-                
+
             sendNetworkManagerRequestAck(requestMsg->header, msg->getCMSReplyTo());
 
             //  NM queue timeout
@@ -159,69 +138,85 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
             float delay = dist(rd) * gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_DELAY_SECONDS", 3);
 
-            std::thread {
-                [this](float delay, E2eDataRequestMsg requestMsg) {
+            std::thread { &E2eSimulator::delayProcessing, this, delay, *requestMsg }.detach();
+        }
+    }
+}
 
-                    CTILOG_INFO(dout, "Delaying " << delay << " seconds");
-                    Sleep(delay * 1000);
 
-                    sendE2eDataConfirm(requestMsg);
+void E2eSimulator::delayProcessing(float delay, const E2eDataRequestMsg requestMsg)
+{
+    CTILOG_INFO(dout, "Delaying " << delay << " seconds");
+    Sleep(delay * 1000);
 
-                    //  E2E timeout
-                    if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
-                    {
-                        CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg.rfnIdentifier);
-                        return;
-                    }
+    sendE2eDataConfirm(requestMsg);
 
-                    if( isAsid_E2eDt(requestMsg.applicationServiceId) )
-                    {
-                        if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg.payload, requestMsg.rfnIdentifier) )
-                        {
-                            //e2edtRequest->method
+    //  E2E timeout
+    if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
+    {
+        CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg.rfnIdentifier);
+        return;
+    }
 
-                            //  Request Unacceptable
-                            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
-                            {
-                                CTILOG_INFO(dout, "Sending E2E Request Not Acceptable for " << requestMsg.rfnIdentifier);
+    processE2eDtRequest(requestMsg);
+}
 
-                                const auto e2edtReply = buildE2eRequestNotAcceptable(e2edtRequest->id, e2edtRequest->token);
+void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
+{
+    if( isAsid_E2eDt(requestMsg.applicationServiceId) )
+    {
+        auto msgPtr = parseE2eDtRequestPayload(requestMsg.payload, requestMsg.rfnIdentifier);
+                        
+        if( auto e2edtRequest = dynamic_cast<const e2edt_request_packet*>(msgPtr.get()) )
+        {
+            //  Request Unacceptable
+            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
+            {
+                CTILOG_INFO(dout, "Sending E2E Request Not Acceptable for " << requestMsg.rfnIdentifier);
 
-                                sendE2eDataIndication(requestMsg, e2edtReply);
+                const auto e2edtReply = buildE2eRequestNotAcceptable(e2edtRequest->id, e2edtRequest->token);
 
-                                CTILOG_INFO(dout, "Delaying 4 seconds for E2E Request Not Acceptable repeat");
+                sendE2eDataIndication(requestMsg, e2edtReply);
 
-                                Sleep(4000);
+                CTILOG_INFO(dout, "Delaying 4 seconds for E2E Request Not Acceptable repeat");
 
-                                CTILOG_INFO(dout, "Sending E2E Request Not Acceptable repeat");
+                Sleep(4000);
 
-                                sendE2eDataIndication(requestMsg, e2edtReply);
+                CTILOG_INFO(dout, "Sending E2E Request Not Acceptable repeat");
 
-                                return;
-                            }
+                sendE2eDataIndication(requestMsg, e2edtReply);
 
-                            const auto replyPacket = buildRfnResponse(*e2edtRequest, requestMsg.applicationServiceId, requestMsg.rfnIdentifier);
+                return;
+            }
 
-                            sendE2eDataIndication(requestMsg, replyPacket);
-                        }
-                        else
-                        {
-                            CTILOG_INFO(dout, "Could not parse E2EDT request for " << requestMsg.rfnIdentifier);
-                        }
-                    }
-                    else if( isAsid_Dnp3(requestMsg.applicationServiceId) )
-                    {
-                        if( auto dnp3Response = buildDnp3Response(requestMsg.payload); 
-                            ! dnp3Response.empty() )
-                        {
-                            sendE2eDataIndication(requestMsg, dnp3Response);
-                        }
-                        else
-                        {
-                            CTILOG_INFO(dout, "Not sending DNP3 response for " << requestMsg.rfnIdentifier);
-                        }
-                    }
-                }, delay, *requestMsg }.detach();
+            const auto replyPacket = buildResponse(*e2edtRequest, requestMsg.applicationServiceId, requestMsg.rfnIdentifier);
+
+            sendE2eDataIndication(requestMsg, replyPacket);
+        }
+        else if( auto e2edtReply = dynamic_cast<const e2edt_reply_packet*>(msgPtr.get()) )
+        {
+            if( auto request = RfnMeter::processReply(*e2edtReply, requestMsg.rfnIdentifier) )
+            {
+                const auto e2edtRequest = buildE2eDtRequest(*request);
+
+                sendE2eDataIndication(requestMsg, e2edtRequest);
+            }
+        }
+        else
+        {
+            CTILOG_INFO(dout, "Could not parse E2EDT request for " << requestMsg.rfnIdentifier);
+        }
+    }
+    else if( isAsid_Dnp3(requestMsg.applicationServiceId) )
+    {
+        if( auto dnp3Response = RfDa::buildDnp3Response(requestMsg.payload); 
+            ! dnp3Response.empty() )
+        {
+            sendE2eDataIndication(requestMsg, dnp3Response);
+        }
+        else
+        {
+            CTILOG_INFO(dout, "Not sending DNP3 response for " << requestMsg.rfnIdentifier);
         }
     }
 }
@@ -233,7 +228,7 @@ void E2eSimulator::sendNetworkManagerRequestAck(const NetworkManagerRequestHeade
 
     requestAck.header = header;
 
-    std::vector<unsigned char> requestAckBytes;
+    Bytes requestAckBytes;
 
     nmMessageFactory.serialize(requestAck, requestAckBytes);
 
@@ -257,7 +252,7 @@ void E2eSimulator::sendE2eDataConfirm(const E2eDataRequestMsg& requestMsg)
     confirm.replyType            = E2eDataConfirmMsg::ReplyType::OK;
     confirm.rfnIdentifier        = requestMsg.rfnIdentifier;
 
-    std::vector<unsigned char> confirmBytes;
+    Bytes confirmBytes;
 
     e2eMessageFactory.serialize(confirm, confirmBytes);
 
@@ -269,44 +264,65 @@ void E2eSimulator::sendE2eDataConfirm(const E2eDataRequestMsg& requestMsg)
 }
 
 
-auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& payload, const RfnIdentifier &rfnId) -> std::unique_ptr<e2edt_request_packet>
+auto E2eSimulator::parseE2eDtRequestPayload(const Bytes& payload, const RfnIdentifier &rfnId) -> std::unique_ptr<e2edt_packet>
 {
     auto request_pdu = Protocols::Coap::scoped_pdu_ptr::parse(payload);
 
-    auto e2edtRequest = std::make_unique<e2edt_request_packet>();
+    std::unique_ptr<e2edt_packet> packet;
 
-    if( request_pdu->hdr->type == COAP_MESSAGE_CON )
+    switch( const auto type = request_pdu->hdr->type )
     {
-        CTILOG_INFO(dout, "Received CONfirmable packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
-        e2edtRequest->confirmable = true;
-    }
-    else if( request_pdu->hdr->type == COAP_MESSAGE_NON )
-    {
-        CTILOG_INFO(dout, "Received NONconfirmable packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
-        e2edtRequest->confirmable = false;
-    }
-    else if( request_pdu->hdr->type == COAP_MESSAGE_ACK )
-    {
-        CTILOG_INFO(dout, "Received ACKnowledge packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
-        e2edtRequest->confirmable = false;
-    }
-    else
-    {
-        CTILOG_INFO(dout, "Received unhandled type ("<< request_pdu->hdr->type <<") for rfnIdentifier "<< rfnId);
-        return nullptr;
+        case COAP_MESSAGE_CON:
+        case COAP_MESSAGE_NON:
+        {
+            auto e2edtRequest = std::make_unique<e2edt_request_packet>();
+
+            e2edtRequest->confirmable = (type == COAP_MESSAGE_CON);
+            auto typeStr = e2edtRequest->confirmable
+                ? "CONfirmable"
+                : "NONconfirmable";
+
+            CTILOG_INFO(dout, "Received " << typeStr << " packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
+
+            e2edtRequest->method = static_cast<Protocols::Coap::RequestMethod>(request_pdu->hdr->code);
+
+            packet = std::move(e2edtRequest);
+            
+            break;
+        }
+        case COAP_MESSAGE_ACK:
+        {
+            auto e2edtReply = std::make_unique<e2edt_reply_packet>();
+
+            CTILOG_INFO(dout, "Received ACKnowledge packet (" << request_pdu->hdr->id << ") for rfnIdentifier " << rfnId);
+
+            e2edtReply->status = static_cast<Protocols::Coap::ResponseCode>(request_pdu->hdr->code);
+
+            packet = std::move(e2edtReply);
+
+            break;
+        }
+        default:
+        {
+            CTILOG_INFO(dout, "Received unhandled type (" << request_pdu->hdr->type << ") for rfnIdentifier " << rfnId);
+            return nullptr;
+        }
     }
 
-    e2edtRequest->id     = request_pdu->hdr->id;
-    e2edtRequest->token  = coap_decode_var_bytes(request_pdu->hdr->token, request_pdu->hdr->token_length);
+    packet->id     = request_pdu->hdr->id;
+    packet->token  = coap_decode_var_bytes(request_pdu->hdr->token, request_pdu->hdr->token_length);
 
     coap_opt_iterator_t opt_iter;
 
     for( auto option = coap_check_option(request_pdu, COAP_OPTION_URI_PATH, &opt_iter); option; option = coap_option_next(&opt_iter) )
     {
-        e2edtRequest->path += "/" + std::string(reinterpret_cast<const char *>(coap_opt_value(option)), coap_opt_length(option));
+        packet->path += "/" + std::string(reinterpret_cast<const char *>(coap_opt_value(option)), coap_opt_length(option));
     }
 
-    e2edtRequest->method = static_cast<Protocols::Coap::RequestMethod>(request_pdu->hdr->code);
+    if( coap_block_t block; coap_get_block(request_pdu, COAP_OPTION_BLOCK2, &block) )
+    {
+        packet->block = { block.num, !! block.m, block.szx };
+    }
 
     //  Extract the data from the packet
     unsigned char *data;
@@ -314,19 +330,19 @@ auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& pa
 
     coap_get_data(request_pdu, &len, &data);
 
-    e2edtRequest->payload.assign(data, data + len);
+    packet->payload.assign(data, data + len);
 
-    return e2edtRequest;
+    return packet;
 }
 
 
-std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_reply_packet& replyContents) const
+auto E2eSimulator::buildE2eDtReply(const e2edt_reply_packet& replyContents) const -> Bytes
 {
     return Protocols::Coap::scoped_pdu_ptr::make_data_ack(replyContents.token, replyContents.id, replyContents.payload).as_bytes();
 }
 
 
-std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const
+auto E2eSimulator::buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const -> Bytes
 {
     auto reply_pdu = Protocols::Coap::scoped_pdu_ptr::make_ack(token, id, Protocols::Coap::ResponseCode::NotAcceptable);
 
@@ -334,38 +350,36 @@ std::vector<unsigned char> E2eSimulator::buildE2eRequestNotAcceptable(unsigned i
 }
 
 
-std::vector<unsigned char> E2eSimulator::buildE2eDtRequestPayload(const e2edt_request_packet& requestContents) const
+auto E2eSimulator::buildE2eDtRequest(const e2edt_request_packet& request) const -> Bytes
 {
-    auto request_pdu = Protocols::Coap::scoped_pdu_ptr::make_get_request(requestContents.token, requestContents.id);
+    auto request_pdu = Protocols::Coap::scoped_pdu_ptr::make_confirmable_request(request.method, request.token, request.id);
 
     std::array<unsigned char, 1024> allOptions;
 
     size_t allOptionLength = allOptions.size();
     
-    std::basic_string<unsigned char> path { requestContents.path.cbegin(), requestContents.path.cend() };
+    std::basic_string<unsigned char> path { request.path.cbegin(), request.path.cend() };
 
     auto options = coap_split_path(path.data(), path.size(), allOptions.data(), &allOptionLength);
 
-    for( auto buf = allOptions.data(); options--; )
+    for( auto buf = allOptions.data(); options--; buf += coap_opt_size(buf) )
     {
         coap_add_option(request_pdu, COAP_OPTION_URI_PATH,
                 coap_opt_length(buf),
                 coap_opt_value(buf));
-
-        buf += coap_opt_size(buf);
     }
 
-    if( requestContents.block && requestContents.blockSize )
+    if( request.block )
     {
         unsigned char buf[4];
 
-        unsigned len = coap_encode_var_bytes(buf, (*requestContents.block << 4) | *requestContents.blockSize);
+        unsigned len = coap_encode_var_bytes(buf, (request.block->num << 4) | request.block->size.szx);
 
         coap_add_option(request_pdu, COAP_OPTION_BLOCK2, len, buf);
     }
 
     //  add data to reply
-    coap_add_data(request_pdu, requestContents.payload.size(), requestContents.payload.data());
+    coap_add_data(request_pdu, request.payload.size(), request.payload.data());
 
     const unsigned char *raw_reply_pdu = reinterpret_cast<unsigned char *>(request_pdu->hdr);
 
@@ -374,7 +388,7 @@ std::vector<unsigned char> E2eSimulator::buildE2eDtRequestPayload(const e2edt_re
 }
 
 
-void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, const std::vector<unsigned char>& payload)
+void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, const Bytes& payload)
 {
     E2eDataIndicationMsg indication;
 
@@ -385,7 +399,7 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
     indication.rfnIdentifier = requestMsg.rfnIdentifier;
     indication.security      = requestMsg.security;
 
-    std::vector<unsigned char> indicationBytes;
+    Bytes indicationBytes;
 
     e2eMessageFactory.serialize(indication, indicationBytes);
 
@@ -397,153 +411,62 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
 }
 
 
-std::vector<unsigned char> E2eSimulator::buildRfnResponse(const e2edt_request_packet& request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId)
+auto E2eSimulator::buildResponse(const e2edt_request_packet& request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId) -> Bytes
 {
     switch( request.method )
     {
         case Protocols::Coap::RequestMethod::Get:
         {
-            e2edt_reply_packet replyPacket;
+            using ASIDs = ApplicationServiceIdentifiers;
 
-            replyPacket.id = request.id;
-            replyPacket.token = request.token;
-            replyPacket.payload = buildRfnGetResponse(request.payload, asid, rfnId);
-            replyPacket.status = Protocols::Coap::ResponseCode::Content;
+            //  Eventually we will split to RfnMeter vs RfDa based on model/manufacturer
+            static std::map<ASIDs, std::function<Bytes (Bytes, const RfnIdentifier&)>>
+                asidHandlers {
+                    { ASIDs::ChannelManager, &RfnMeter::doChannelManagerRequest },
+                    { ASIDs::HubMeterCommandSet, &RfDa::doHubMeterRequest } };
 
-            return buildE2eDtReplyPayload(replyPacket);
+            if( auto handler = mapFind(asidHandlers, asid) )
+            {
+                e2edt_reply_packet replyPacket;
+
+                replyPacket.id = request.id;
+                replyPacket.token = request.token;
+                replyPacket.payload = (*handler)(request.payload, rfnId);
+                replyPacket.status = Protocols::Coap::ResponseCode::Content;
+
+                return buildE2eDtReply(replyPacket);
+            }
+
+            CTILOG_INFO(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << rfnId);
+            return {};
         }
         case Protocols::Coap::RequestMethod::Post:
         {
-            return buildRfnGetRequest(request, asid, rfnId);
+            //  The only POST we process at present is the Set Meter Configuration request, which results in a GET request back to Yukon.
+            return processRfnPostRequest(request, asid, rfnId);
         }
         default:
+        {
             CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << rfnId);
             return {};
+        }
     }
 }
 
-std::vector<unsigned char> E2eSimulator::buildRfnGetResponse(const std::vector<unsigned char> &request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId)
+auto E2eSimulator::processRfnPostRequest(const e2edt_request_packet& post_request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId) -> Bytes
 {
     switch( asid )
     {
         case ApplicationServiceIdentifiers::ChannelManager:
         {
-            if( ! request.empty() )
+            if( auto request = RfnMeter::processChannelManagerPost(post_request, rfnId) )
             {
-                switch( request[0] )
-                {
-                    case 0x84:
-                    case 0x86:
-                        return RfnMeter::DataStreamingConfig(request, rfnId);
-                }
+                return buildE2eDtRequest(*request);
             }
-            break;
-        }
-        case ApplicationServiceIdentifiers::HubMeterCommandSet:
-        {
-            if( ! request.empty() )
-            {
-                switch( request[0] )
-                {
-                    case 0x35:
-                        return RfDa::Dnp3Address(request, rfnId);
-                }
-            }
-            break;
         }
     }
 
     return {};
-}
-
-std::vector<unsigned char> E2eSimulator::buildRfnGetRequest(const e2edt_request_packet& post_request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId)
-{
-    switch( asid )
-    {
-        case ApplicationServiceIdentifiers::ChannelManager:
-        {
-            if( ! post_request.payload.empty() )
-            {
-                switch( post_request.payload[0] )
-                {
-                    case 0x90:
-                        e2edt_request_packet request;
-
-                        request.id = post_request.id;
-                        request.confirmable = true;
-                        request.method = Protocols::Coap::RequestMethod::Get;
-                        const auto meterProgramInfo = RfnMeter::RequestMeterProgram(post_request.payload, rfnId);
-                        request.path = meterProgramInfo.path;
-                        request.token = post_request.token;
-
-                        return buildE2eDtRequestPayload(request);
-                }
-            }
-            break;
-        }
-    }
-
-    return {};
-}
-
-std::vector<unsigned char> E2eSimulator::buildDnp3Response(const std::vector<unsigned char>& request)
-{
-    Protocols::DnpSlaveProtocol prot;
-
-    const std::vector<char> requestAsChar { request.begin(), request.end() };
-
-    auto requestId = prot.identifyRequest(requestAsChar.data(), requestAsChar.size());
-
-    std::vector<unsigned char> response;
-
-    if( requestId.first == Protocols::DnpSlaveProtocol::Commands::Class1230Read )
-    {
-        std::vector<Protocols::DnpSlave::output_point> points;
-        using PT = Protocols::DnpSlave::PointType;
-
-        points.emplace_back(17,   true,  PT::AnalogInput,  331);
-        points.emplace_back(170,  true,  PT::BinaryInput,  true);
-        points.emplace_back(1700, true,  PT::Accumulator,  3310);
-        points.emplace_back(34,   true,  PT::AnalogOutput, 662);
-        points.emplace_back(35,   false, PT::AnalogOutput, 662);
-        points.emplace_back(340,  true,  PT::BinaryOutput, true);
-        points.emplace_back(341,  false, PT::BinaryOutput, true);
-
-        prot.setScanCommand(std::move(points));
-    }
-    else if( requestId.first == Protocols::DnpSlaveProtocol::Commands::DelayMeasurement )
-    {
-        prot.setDelayMeasurementCommand( 0ms );
-    }
-    else
-    {
-        return response;
-    }
-
-    CtiXfer xfer;
-
-    while( ! prot.isTransactionComplete() )
-    {
-        if( prot.generate(xfer) == ClientErrors::None )
-        {
-            if( xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0 )
-            {
-                auto packet = arrayToRange(xfer.getOutBuffer(), xfer.getOutCount());
-
-                CTILOG_INFO(dout, "Generated DNP3 packet:" << packet);
-
-                response.insert(response.end(), packet.begin(), packet.end());
-            }
-
-            prot.decode(xfer);
-        }
-        else 
-        {
-            CTILOG_WARN(dout, "Was not able to generate scan response.");
-        }
-    }
-
-    return response;
 }
 
 }

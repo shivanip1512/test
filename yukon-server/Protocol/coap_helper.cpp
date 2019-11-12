@@ -65,9 +65,9 @@ void scoped_pdu_ptr::add_token(unsigned long token)
     coap_add_token(pdu, token_len, token_buf);
 }
 
-scoped_pdu_ptr scoped_pdu_ptr::make_get_request(unsigned long token, unsigned short id)
+scoped_pdu_ptr scoped_pdu_ptr::make_confirmable_request(RequestMethod method, unsigned long token, unsigned short id)
 {
-    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, static_cast<unsigned char>(RequestMethod::Get), id, COAP_MAX_PDU_SIZE) };
+    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, static_cast<unsigned char>(method), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
 
@@ -89,10 +89,9 @@ scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsign
     return pdu;
 }
 
-scoped_pdu_ptr scoped_pdu_ptr::make_post(unsigned long token, unsigned short id)
+scoped_pdu_ptr scoped_pdu_ptr::make_nonconfirmable_request(RequestMethod method, unsigned long token, unsigned short id)
 {
-    //  TODO - make the CON/NON selectable, maybe by splitting this method?
-    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_NON, static_cast<unsigned char>(RequestMethod::Post), id, COAP_MAX_PDU_SIZE) };
+    scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_NON, static_cast<unsigned char>(method), id, COAP_MAX_PDU_SIZE) };
 
     pdu.add_token(token);
 

@@ -15,8 +15,12 @@
 #include <random>
 #include <time.h>
 
-namespace Cti {
-namespace Simulator {
+namespace Cti::Simulator {
+
+namespace {
+RandomGenerator<unsigned> idGenerator;
+std::map<RfnIdentifier, std::map<unsigned, std::string>> meterProgrammingRequests;
+}
 
 namespace streaming_metrics {
 
@@ -150,7 +154,7 @@ RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
 std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
 std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
 
-std::vector<unsigned char> RfnMeter::DataStreamingConfig(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId)
+auto RfnMeter::doChannelManagerRequest(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> Bytes
 {
     if( ! request.empty() )
     {
@@ -169,7 +173,59 @@ std::vector<unsigned char> RfnMeter::DataStreamingConfig(const std::vector<unsig
     return {};
 }
 
-auto RfnMeter::RequestMeterProgram(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> path_size
+auto RfnMeter::processReply(const e2edt_reply_packet& reply, const RfnIdentifier& rfnId) -> std::unique_ptr<e2edt_request_packet>
+{
+    if( auto requests = mapFindRef(meterProgrammingRequests, rfnId) )
+    {
+        if( auto existingRequestPath = mapFind(*requests, reply.token) )
+        {
+            if( reply.block && reply.block->more )
+            {
+                auto request = std::make_unique<e2edt_request_packet>();
+
+                request->id = idGenerator();
+                request->confirmable = true;
+                request->method = Protocols::Coap::RequestMethod::Get;
+                request->block = reply.block;
+                request->block->num++;
+
+                request->path = *existingRequestPath;
+                request->token = idGenerator();
+
+                return request;
+            }
+        }
+    }
+
+    return nullptr;
+}
+
+auto RfnMeter::processChannelManagerPost(const e2edt_request_packet& post_request, const RfnIdentifier& rfnId) -> std::unique_ptr<e2edt_request_packet>
+{
+    if( ! post_request.payload.empty() )
+    {
+        switch( post_request.payload[0] )
+        {
+            case 0x90:
+                auto request = std::make_unique<e2edt_request_packet>();
+
+                request->id = idGenerator();
+                request->confirmable = true;
+                request->method = Protocols::Coap::RequestMethod::Get;
+                        
+                const auto meterProgramInfo = ParseSetMeterProgram(post_request.payload, rfnId);
+                        
+                request->path = meterProgramInfo.path;
+                request->token = idGenerator();
+
+                meterProgrammingRequests[rfnId][request->token] = request->path;
+                        
+                return request;
+        }
+    }
+}
+
+auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> path_size
 {
     auto pos = 1;
     const auto end = request.size();
@@ -436,5 +492,4 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
     return makeDataStreamingResponse(0x87, response);
 }
 
-}
 }

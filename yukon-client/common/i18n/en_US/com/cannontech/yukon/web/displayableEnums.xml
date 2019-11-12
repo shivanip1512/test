@@ -132,6 +132,7 @@
     <entry key="yukon.common.systemGroupEnum.LOADGROUPS">/System/Demand Response/Load Groups</entry>
     <entry key="yukon.common.systemGroupEnum.LOADPROGRAMS">/System/Demand Response/Load Programs</entry>
     <entry key="yukon.common.systemGroupEnum.CISDEVICECLASS">/System/Meters/CIS DeviceClass</entry>
+    <entry key="yukon.common.systemGroupEnum.METERPROGRAMMING">/System/Meters/Meter Programming</entry>
     
     
     
