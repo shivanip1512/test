@@ -84,6 +84,22 @@ yukon.dr.setup.loadGroup = (function() {
                 });
             });
             
+            $(document).on('change', '.js-address-level', function (event) {
+                var addressTextRow = $(this).closest(".js-mct-load-group-container").find(".js-address"),
+                       mctAddressRow = $(this).closest(".js-mct-load-group-container").find(".js-mct-address"),
+                       mctAdressEnumVal = $(this).closest(".js-mct-load-group-container").find(".js-addr-level-mct-addr-val").val(),
+                       isMctAddrSelected = $(this).val() === mctAdressEnumVal;
+                
+                addressTextRow.toggleClass("dn", isMctAddrSelected);
+                mctAddressRow.toggleClass("dn", !isMctAddrSelected);
+                
+                if (isMctAddrSelected) {
+                    $(this).closest(".js-mct-load-group-container").find(".js-address-txt").val('');
+                } else {
+                    $(this).closest(".js-mct-load-group-container").find(".js-mct-meter-id").val('');
+                }
+            });
+            
             $(document).on('change', '#type', function (event) {
                 _loadGroup();
             });

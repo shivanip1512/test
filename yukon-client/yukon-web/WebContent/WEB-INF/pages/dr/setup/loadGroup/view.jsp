@@ -75,8 +75,8 @@
                     <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
                         <%@ include file="itron.jsp" %>
                     </c:if>
-                    <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||
-                        selectedSwitchType == 'LM_GROUP_EMETCON' || selectedSwitchType == 'LM_GROUP_VERSACOM'}">
+                    <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||  selectedSwitchType == 'LM_GROUP_EMETCON' 
+                                              || selectedSwitchType == 'LM_GROUP_VERSACOM' || isMctGroupSelected}">
                         <tags:nameValue2 nameKey=".route" rowClass="noswitchtype">
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
                                 <tags:selectWithItems items="${routes}" id="route" path="routeId" itemValue="liteID"/>
@@ -86,7 +86,6 @@
                             </cti:displayForPageEditModes>
                         </tags:nameValue2>
                     </c:if>
-                
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         <div id='js-loadgroup-container' class='noswitchtype'>
@@ -103,6 +102,9 @@
             </c:if>
             <c:if test="${selectedSwitchType == 'LM_GROUP_EMETCON'}">
                 <%@ include file="emetcon.jsp" %>
+            </c:if>
+            <c:if test="${isMctGroupSelected}">
+                <%@ include file="mctGroup.jsp" %>
             </c:if>
             <c:if test="${not empty selectedSwitchType}">
                 <%@ include file="loadGroupOptional.jsp" %>

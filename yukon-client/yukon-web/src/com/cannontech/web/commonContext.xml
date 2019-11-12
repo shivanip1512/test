@@ -411,6 +411,12 @@
         </property>
     </bean>
     
+    <bean name="mctMeterPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.MctMeterCriteria"/>
+        </property>
+    </bean>
+    
     <bean name="pointValidationUtil" class="com.cannontech.web.tools.points.validators.PointValidationUtil"/>
     <bean class="com.cannontech.dr.itron.simulator.model.SimulatedItronSettings"/>
     <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
