@@ -63,8 +63,6 @@ begin
 	if(StrFindEx(sDirLow, "yukon", StrLengthChars(sDirLow)-5) < 0) then
 		sDir = sDir ^ "Yukon";
 	endif;
-    // Add Local service access to Yukon root directory.
-    AddLocalServiceAccess(TARGETDIR);
 	
     GetSystemInfo(DATE, nResult, sDateString);
     // Format date pattern in YYYYMMDD
@@ -129,6 +127,8 @@ begin
 	pEnv = &sEnv;
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 	
+	// Add Local service access to Yukon root directory.
+    AddLocalServiceAccess(TARGETDIR);
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
