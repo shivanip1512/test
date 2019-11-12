@@ -603,6 +603,7 @@ string sTARGETDIR;
 begin
     // In maintenance mode the value of TARGETDIR is read from the log file.
     if (MAINTENANCE) then
+        AddLocalServiceAccess(TARGETDIR);
         return ISERR_SUCCESS;
     endif;
     // Set TARGETDIR to script default.
@@ -613,6 +614,8 @@ begin
     if (nResult >= ISERR_SUCCESS && StrLengthChars(sTARGETDIR)) then
         TARGETDIR = sTARGETDIR;
     endif;
+    // Add Local service access to Yukon root directory.
+    AddLocalServiceAccess(TARGETDIR);
 end;
 
 //---------------------------------------------------------------------------
