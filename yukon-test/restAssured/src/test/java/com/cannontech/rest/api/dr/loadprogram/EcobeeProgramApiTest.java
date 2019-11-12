@@ -21,7 +21,7 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.Log;
 import io.restassured.response.ExtractableResponse;
 
-public class LoadProgramEcobeeTest {
+public class EcobeeProgramApiTest {
 
     private Integer programId = 0;
     private MockLoadProgram mockLoadProgram = null;
