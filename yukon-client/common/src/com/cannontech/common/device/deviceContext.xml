@@ -187,7 +187,7 @@
                 <entry key="COMPOSED" value-ref="composedGroupProvider"/>
                 <entry key="ATTRIBUTE_DEFINED" value-ref="attributeDefinedGroupProvider"/>
                 <entry key="ATTRIBUTE_EXISTS" value-ref="attributeExistsGroupProvider"/>
-                <entry key="METER_PROGRAMMING_METERS" value-ref="meterProgrammingMetersGroupProvider"/>
+                <entry key="METERS_METER_PROGRAMMING" value-ref="meterProgrammingMetersGroupProvider"/>
                 <entry key="METERS_ALL_PLC_METERS" value-ref="mctMetersGroupProvider"/>
                 <entry key="METERS_ALL_RF_ELECTRIC_METERS" value-ref="rfnMetersGroupProvider"/>
                 <entry key="METERS_ALL_RFW_METERS" value-ref="rfwMetersGroupProvider"/>
