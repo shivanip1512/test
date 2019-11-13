@@ -8,7 +8,7 @@ public enum PerformanceVerificationMessageStatus implements DisplayableEnum {
     FAILURE("#ec971f"),
     UNKNOWN("#888");
 
-    private String color;
+    private final String color;
     
     private PerformanceVerificationMessageStatus(String color) {
         this.color = color;
