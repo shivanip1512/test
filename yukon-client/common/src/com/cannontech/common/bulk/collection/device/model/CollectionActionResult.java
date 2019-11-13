@@ -4,6 +4,7 @@ import static com.cannontech.common.device.commands.CommandRequestExecutionStatu
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.COMPLETE;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
+import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.CANCELING;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,7 +74,7 @@ public class CollectionActionResult {
             DeviceMemoryCollectionProducer producer, 
             CollectionActionLogDetailService logService,
             YukonUserContext context) {        
-        if(action == CollectionAction.MASS_DELETE && !isLoadedFromDatabase()) {
+        if(action == CollectionAction.MASS_DELETE && producer != null) {
             // deleted devices - in order for the devices to be visible the "in memory" collection
             // is created
             DeviceCollection allDeviceCollection = producer.createDeviceCollection(allDevices);
@@ -107,10 +108,7 @@ public class CollectionActionResult {
             startTime = new Instant();
         }
         
-        if(context != null) {
-           //result is cached
-            logService.loadPointNames(this);
-        }
+        logService.loadPointNames(this);
     }
 
     public CollectionActionResult(CollectionAction action, List<? extends YukonPao> allDevices,
@@ -121,12 +119,21 @@ public class CollectionActionResult {
         this(action, allDevices, inputs, null, editorDao, tempGroupService, groupHelper, producer, logService, context);
     }
 
+
     public boolean isCancelable() {
-        return action.isCancelable() && isValidCancelStatus();
+        return status == STARTED && !cancelationCallbacks.isEmpty();
     }
-   
-    private boolean isValidCancelStatus() {
-        return status != null && status == STARTED;
+    
+    public boolean isTerminatable() {
+        if(status == CANCELING && !cancelationCallbacks.isEmpty()) {
+            // in the process of canceling
+            return false;
+        }
+        return !isComplete();
+    }
+    
+    public boolean displayCancelButton() {
+        return status == STARTED && action.isCancelable();
     }
     
     public boolean isComplete() {
