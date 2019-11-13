@@ -194,16 +194,18 @@ INSERT INTO DBUpdates VALUES ('YUK-20801', '7.4.0', SYSDATE);
 /* @end YUK-20801 */
 
 /* @start YUK-20919 */
+/* @start-block */
 DECLARE
-    MaxDeviceGroupId NUMERIC;
-    RootParentGroupId NUMERIC;
+    v_MaxDeviceGroupId NUMERIC;
+    v_RootParentGroupId NUMERIC;
 BEGIN
-    SELECT MAX(DG.DeviceGroupId) INTO MaxDeviceGroupId FROM DeviceGroup DG WHERE DG.DeviceGroupId < 100;
-    SELECT MAX(DG.DeviceGroupId) INTO RootParentGroupId FROM DeviceGroup DG WHERE DG.SystemGroupEnum = 'SYSTEM_METERS';
+    SELECT MAX(DG.DeviceGroupId) INTO v_MaxDeviceGroupId FROM DeviceGroup DG WHERE DG.DeviceGroupId < 100;
+    SELECT DG.DeviceGroupId INTO v_RootParentGroupId FROM DeviceGroup DG WHERE DG.SystemGroupEnum = 'SYSTEM_METERS';
     
     INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
-    VALUES(MaxDeviceGroupId + 1, 'Meter Programming', RootParentGroupId, 'NOEDIT_NOMOD', 'METERS_METER_PROGRAMMING', '11-NOV-2019', 'METER_PROGRAMMING');
+    VALUES(v_MaxDeviceGroupId + 1, 'Meter Programming', v_RootParentGroupId, 'NOEDIT_NOMOD', 'METERS_METER_PROGRAMMING', SYSDATE, 'METER_PROGRAMMING');
 END;
+/* @end-block */
 
 INSERT INTO DBUpdates VALUES ('YUK-20919', '7.4.0', SYSDATE);
 /* @end YUK-20919 */
