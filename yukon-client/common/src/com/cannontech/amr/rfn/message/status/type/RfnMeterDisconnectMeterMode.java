@@ -1,6 +1,7 @@
 package com.cannontech.amr.rfn.message.status.type;
 
 public enum RfnMeterDisconnectMeterMode {
+    UNKNOWN,
     TERMINATE,                      // Legacy or on-demand disconnect mode
     ARM,                            // Legacy or on-demand disconnect mode
     RESUME,                         // Legacy or on-demand disconnect mode
