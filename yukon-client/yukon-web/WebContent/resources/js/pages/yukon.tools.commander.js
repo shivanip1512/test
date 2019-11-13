@@ -483,6 +483,28 @@ yukon.tools.commander = (function () {
                 }
             });
         }
+    },
+    
+    _setCommandsInDropdown = function () {
+        
+        /** Setup form components based on inputs.  Use input values for target instead of 
+         * retreiving from cookie to support the browser 'back' button behavior at least for devices. */
+        var target = _targetButtons[$('#target-row .on').attr('id')];
+        var paoId = target === _targetTypes.device ? $('#pao-id').val() : $('#lm-group-id').val();
+        
+        if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
+            if (paoId) {
+                _updateCommandsForPao(paoId);
+                if (target === _targetTypes.device) {
+                    $.ajax({ url: 'commander/' + paoId + '/data' })
+                    .done(function (data) { _setupFieldsForDevice(data); });
+                }
+            }
+        } else {
+            var category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
+            var url = 'commander/type-commands?' + $.param({ type: category });
+            $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
+        }
     }
 
     mod = {
@@ -491,30 +513,11 @@ yukon.tools.commander = (function () {
         init: function () {
             
             if (_initialized) return;
-            
-            var target, paoId, category, url, lastReq;
-            
-            /** Setup form components based on inputs.  Use input values for target instead of 
-             * retreiving from cookie to support the browser 'back' button behavior at least for devices. */
-            target = _targetButtons[$('#target-row .on').attr('id')];
-            paoId = target === _targetTypes.device ? $('#pao-id').val() : $('#lm-group-id').val();
-            
-            if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
-                if (paoId) {
-                    _updateCommandsForPao(paoId);
-                    if (target === _targetTypes.device) {
-                        $.ajax({ url: 'commander/' + paoId + '/data' })
-                        .done(function (data) { _setupFieldsForDevice(data); });
-                    }
-                }
-            } else {
-                category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
-                url = 'commander/type-commands?' + $.param({ type: category });
-                $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
-            }
+
+            _setCommandsInDropdown();
             
             /** Scroll the console to the bottom incase there are previous commands */
-            lastReq = $('#commander-results .cmd-req-resp:last-child');
+            var lastReq = $('#commander-results .cmd-req-resp:last-child');
             if (lastReq.length) $('#commander-results').scrollTo(lastReq);
             
             _scrollLock = yukon.cookie.get('commander', 'scrollLock', false);
@@ -556,10 +559,15 @@ yukon.tools.commander = (function () {
                     if (hasEditPermissions) {
                         buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save'});
                     }
-                    popup.dialog({title: title, width: '985px', buttons: buttons});
+                    popup.dialog({title: title, modal: true, width: '985px', buttons: buttons});
                     _customCommandsDirty = false;
                     _setupDragDrop();
                 });
+            });
+            
+            $(document).on('dialogclose', '#custom-commands-popup', function (event, ui) {
+                //refresh commands in dropdown
+                _setCommandsInDropdown();
             });
             
             $(document).on('click', '.js-with-movables .js-move-up, .js-with-movables .js-move-down', function () {
@@ -568,14 +576,16 @@ yukon.tools.commander = (function () {
             });
             
             $(document).on('click', '.js-add-command', function () {
-                var clonedRow = $('.js-template-row').clone();
+                var clonedRow = $('.js-template-row').clone(),
+                    isCategory = $('#isCategory').val(),
+                    category = $('.js-selected-category option:selected').text();
                 clonedRow.find(':input').removeAttr('disabled');
-                var isCategory = $('#isCategory').val();
                 if (isCategory) {
                     clonedRow.find('.js-move-up').prop('disabled', true);
                     clonedRow.find('.js-move-down').prop('disabled', true);
                     clonedRow.find(':input[type=checkbox]').prop('disabled', true);
                 }
+                clonedRow.find('.js-category').text(category);
                 clonedRow.removeClass('dn js-template-row');
                 clonedRow.appendTo($('#commands'));
                 $('.js-empty-commands').remove();
@@ -591,17 +601,18 @@ yukon.tools.commander = (function () {
             $(document).on('click', '.js-remove', function () {
                 var isCategory = $('#isCategory').val(),
                     tableRow = $(this).closest('tr'),
-                    commandId = tableRow.data('command-id');
+                    commandId = tableRow.data('command-id'),
+                    commandName = tableRow.find('.js-command-fields:first').val();
                 if (isCategory && commandId) {
                     //show delete confirmation
                     var buttons = yukon.ui.buttons({ okText: yg.text.deleteButton, event: 'yukon:tools:commander:commands:delete'}),
-                    popup = $('#delete-from-all-popup'),
+                    popup = $('#delete-popup-' + commandId),
                     title = popup.data('title');
                     popup.attr('data-command-id', commandId);
-                    popup.dialog({title: title, width: '400px', buttons: buttons});
+                    popup.dialog({title: title, modal: true, width: '400px', buttons: buttons});
                 } else {
                     tableRow.remove();
-                    if (!category) {
+                    if (!isCategory) {
                         $('#commands').trigger('yukon:ordered-selection:added-removed');
                     }
                     _reOrderCustomCommands();
@@ -610,7 +621,7 @@ yukon.tools.commander = (function () {
             });
             
             $(document).on('yukon:tools:commander:commands:delete', function (ev) {
-                var popup = $('#delete-from-all-popup'),
+                var popup = $(ev.target),
                     commandId = popup.attr('data-command-id'),
                     row = $('#commands').find('tr[data-command-id=' + commandId + ']');
                 row.remove();
@@ -657,7 +668,7 @@ yukon.tools.commander = (function () {
                     popup = $('#save-changes-popup'),
                     title = popup.data('title');
                     popup.attr('data-category', category);
-                    popup.dialog({title: title, width: '400px', buttons: buttons});
+                    popup.dialog({title: title, modal: true, width: '400px', buttons: buttons});
                 } else {
                     _switchCategory(category);
                 }
