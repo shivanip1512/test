@@ -1087,8 +1087,8 @@ end;
 //-----------------------------------------------------------------------
 // Helper function to add Local service account access to Yukon directory
 //-----------------------------------------------------------------------
-export prototype AddLocalServiceAccess(STRING);
-function AddLocalServiceAccess(sDir)
+export prototype UpdateYukonFolderPermissionsForLocalServiceAccount(STRING);
+function UpdateYukonFolderPermissionsForLocalServiceAccount(sDir)
 string sProg, sCMD;
 begin
     sProg = "cmd.exe";
