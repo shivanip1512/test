@@ -418,8 +418,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Transactional
     @Override
     public void save(String deviceTypeOrCategory, List<DeviceCommandDetail> details) {        
-        log.debug("Saving - deviceTypeOrCategory {}", deviceTypeOrCategory);
-        log.debug("       - details {}", details);
+        log.debug("Saving - deviceTypeOrCategory {} \n - details {}", deviceTypeOrCategory, details);
 
         Map<Integer, LiteCommand> commandsInDb = commandDao.getAllCommands().stream()
                 .collect(Collectors.toMap(LiteCommand::getCommandId, Function.identity()));
@@ -434,11 +433,12 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
                 createNewCommand(deviceTypeOrCategory, detail, displayOrderExistingCount);
             } else { 
                 // commands with ids less then 1 can't be modified
-                if (detail.getCommandId() > 1 && detail.getCategory().equals(deviceTypeOrCategory)) {
+                if (detail.getCommandId() > 0 && detail.getCategory().equals(deviceTypeOrCategory)) {
                     updateCommand(deviceTypeOrCategory, commandsInDb, detail);
                 }
                 if (!CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)
-                        && !CommandCategoryUtil.isExpressComOrVersaCom(deviceTypeOrCategory)) {
+                        && !CommandCategoryUtil.isExpressComOrVersaCom(deviceTypeOrCategory)
+                        && !CommandCategoryUtil.isSerialNumberOrDeviceGroup(deviceTypeOrCategory)) {
                     updateDeviceTypeCommand(detail);
                 }
             }
@@ -450,7 +450,8 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     */
    private void deleteRemovedCommands(String deviceTypeOrCategory, List<DeviceCommandDetail> details) { 
         if (CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)
-                || CommandCategoryUtil.isExpressComOrVersaCom(deviceTypeOrCategory)) {
+                || CommandCategoryUtil.isExpressComOrVersaCom(deviceTypeOrCategory)
+                || CommandCategoryUtil.isSerialNumberOrDeviceGroup(deviceTypeOrCategory)) {
            Set<Integer> commandIds = details.stream()
                    .map(detail -> detail.getCommandId())
                    .collect(Collectors.toSet());
@@ -524,7 +525,8 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
                 commandDao.createDeviceTypeCommand(commandId, paoType.getDbString(), displayOrder,
                         detail.isVisibleFlag());
             });
-        } else if (CommandCategoryUtil.isExpressComOrVersaCom(commandCategory)) {
+        } else if (CommandCategoryUtil.isExpressComOrVersaCom(commandCategory)
+                || CommandCategoryUtil.isSerialNumberOrDeviceGroup(commandCategory)) {
             commandDao.createDeviceTypeCommand(commandId, commandCategory, detail.getDisplayOrder(),
                     detail.isVisibleFlag());
         } else {
