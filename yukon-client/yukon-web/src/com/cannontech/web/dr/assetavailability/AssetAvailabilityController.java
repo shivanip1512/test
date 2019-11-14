@@ -20,7 +20,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -63,6 +67,7 @@ import com.cannontech.web.common.widgets.service.AssetAvailabilityWidgetService;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.support.SiteMapPage;
+import com.cannontech.web.tools.mapping.MappingColorCollection;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -89,6 +94,7 @@ public class AssetAvailabilityController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
+    @Autowired private DeviceMemoryCollectionProducer deviceMemoryCollectionProducer;
 
     @GetMapping(value = "updateChart")
     public @ResponseBody Map<String, Object> updateChart(Integer controlAreaOrProgramOrScenarioId, YukonUserContext userContext) throws Exception {
@@ -162,7 +168,7 @@ public class AssetAvailabilityController {
     
     @GetMapping(value = "collectionAction")
     public String collectionAction(String actionUrl, Integer paobjectId, Integer[] selectedGatewayIds, String[] deviceSubGroups,
-            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext) {
+            AssetAvailabilityCombinedStatus[] statuses, YukonUserContext userContext, RedirectAttributes attrs) {
         PaoIdentifier paoIdentifier = cache.getAllPaosMap().get(paobjectId).getPaoIdentifier();
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         SearchResults<AssetAvailabilityDetails> searchResults = assetAvailabilityService.getAssetAvailabilityDetails(
@@ -174,6 +180,22 @@ public class AssetAvailabilityController {
                                                                         .collect(Collectors.toList());
         List<SimpleDevice> devices = deviceDao.getYukonDeviceObjectByIds(deviceIds);
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+        if (CollectionActionUrl.MAPPING.getUrl().equals(actionUrl)) {
+            List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
+            Map<String, List<Integer>> mappingMap = new HashMap<String, List<Integer>>();
+            for (AssetAvailabilityCombinedStatus status : statuses) {
+                List<Integer> ids = searchResults.getResultList().stream()
+                    .filter(detail -> detail.getAvailability().equals(status) && detail.getDeviceId() != 0)
+                    .map(d -> d.getDeviceId())
+                    .collect(Collectors.toList());
+                DeviceCollection statusCollection = deviceMemoryCollectionProducer.createDeviceCollection(ids);
+                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getColor(), status.getFormatKey());
+                colorCollections.add(mapCollection);
+                mappingMap.put(status.getColor(), ids);
+            }
+            attrs.addFlashAttribute("mappingColors", mappingMap);
+            attrs.addFlashAttribute("colorCollections", colorCollections);
+        }
         return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }
 

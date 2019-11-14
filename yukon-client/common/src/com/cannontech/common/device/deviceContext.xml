@@ -105,6 +105,11 @@
         <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
 
+    <bean id="meterProgrammingMetersGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.MeterProgrammingMetersGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao" />
+    </bean>
+
     <bean id="loadProfileScanIndicatingDevice" class="com.cannontech.common.device.groups.dao.impl.providers.helpers.LoadProfileScanIndicatingDevice" />
     <bean id="loadProfileScanningMetersGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ScanningMetersGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
@@ -182,6 +187,7 @@
                 <entry key="COMPOSED" value-ref="composedGroupProvider"/>
                 <entry key="ATTRIBUTE_DEFINED" value-ref="attributeDefinedGroupProvider"/>
                 <entry key="ATTRIBUTE_EXISTS" value-ref="attributeExistsGroupProvider"/>
+                <entry key="METERS_METER_PROGRAMMING" value-ref="meterProgrammingMetersGroupProvider"/>
                 <entry key="METERS_ALL_PLC_METERS" value-ref="mctMetersGroupProvider"/>
                 <entry key="METERS_ALL_RF_ELECTRIC_METERS" value-ref="rfnMetersGroupProvider"/>
                 <entry key="METERS_ALL_RFW_METERS" value-ref="rfwMetersGroupProvider"/>

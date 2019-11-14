@@ -203,6 +203,9 @@
     <ClInclude Include="include\RfDa.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\e2e_packet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">
