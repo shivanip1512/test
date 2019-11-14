@@ -556,7 +556,8 @@ public class CommanderController {
                             displayableCategory = accessor.getMessage(pao.getFormatKey());
                         }
                     } catch (Exception e) {
-                        log.error("Command not found for " + category, e);
+                        //category or pao type not found so just display db string
+                        log.info("Command not found for " + category, e);
                     }
                 }
                 DeviceCommandDetail detail = new DeviceCommandDetail(typeCommand.getDeviceCommandId(), cmd.getCommandId(), dbCategory, displayableCategory,
