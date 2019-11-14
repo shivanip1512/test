@@ -69,7 +69,7 @@ public interface CommandDao {
     /**
      * Creates device type command
      */
-    void createDeviceTypeCommand(int commandId, PaoType paoType, int displayOrder, boolean isVisible);
+    void createDeviceTypeCommand(int commandId, String deviceType, int displayOrder, boolean isVisible);
 
     /**
      * Creates new command

@@ -92,12 +92,12 @@ public final class CommandDaoImpl implements CommandDao {
     }
     
     @Override
-    public void createDeviceTypeCommand(int commandId, PaoType paoType, int displayOrder, boolean isVisible) {
+    public void createDeviceTypeCommand(int commandId, String deviceType, int displayOrder, boolean isVisible) {
                         
         com.cannontech.database.db.command.DeviceTypeCommand dbCommand = new  com.cannontech.database.db.command.DeviceTypeCommand();
         dbCommand.setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
         dbCommand.setCommandID(commandId);
-        dbCommand.setDeviceType(paoType.getDbString());
+        dbCommand.setDeviceType(deviceType);
         dbCommand.setDisplayOrder(displayOrder);
         dbCommand.setVisibleFlag(isVisible ? 'Y' : 'N');
 

@@ -437,7 +437,8 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
                 if (detail.getCommandId() > 1 && detail.getCategory().equals(deviceTypeOrCategory)) {
                     updateCommand(deviceTypeOrCategory, commandsInDb, detail);
                 }
-                if (!CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)) {
+                if (!CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)
+                        && !CommandCategoryUtil.isExpressComOrVersaCom(deviceTypeOrCategory)) {
                     updateDeviceTypeCommand(detail);
                 }
             }
@@ -449,7 +450,8 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     */
    private void deleteRemovedCommands(String deviceTypeOrCategory, List<DeviceCommandDetail> details) {
              
-       if (CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)) {
+        if (CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)
+                || CommandCategoryUtil.isExpressComOrVersaCom(deviceTypeOrCategory)) {
            Set<Integer> commandIds = details.stream()
                    .map(detail -> detail.getCommandId())
                    .collect(Collectors.toSet());
@@ -520,14 +522,17 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
             List<PaoType> paoTypes = CommandCategoryUtil.getAllTypesForCategory(category);
             paoTypes.forEach(paoType -> {
                 int displayOrder = findNextDisplayOrder(displayOrderExistingCount, paoType);
-                commandDao.createDeviceTypeCommand(commandId, paoType, displayOrder,
+                commandDao.createDeviceTypeCommand(commandId, paoType.getDbString(), displayOrder,
                         detail.isVisibleFlag());
             });
+        } else if (CommandCategoryUtil.isExpressComOrVersaCom(commandCategory)) {
+            commandDao.createDeviceTypeCommand(commandId, commandCategory, detail.getDisplayOrder(),
+                    detail.isVisibleFlag());
         } else {
             PaoType paoType = PaoType.getForDbString(commandCategory);
             log.debug("Creating new command device type  paoType:{} displayOrder:{} isVisibleFlag:{}", paoType,
                     detail.getDisplayOrder(), detail.isVisibleFlag());
-            commandDao.createDeviceTypeCommand(commandId, paoType, detail.getDisplayOrder(),
+            commandDao.createDeviceTypeCommand(commandId, paoType.getDbString(), detail.getDisplayOrder(),
                     detail.isVisibleFlag());
         }
     }
