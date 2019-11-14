@@ -93,7 +93,7 @@ public class CommandCategoryUtil {
     }
     
     /**
-     * Return true if category is either ExpressCom or VersaCom
+     * Return true if category is either SerialNumber or DeviceGroup
      * false if not.
      */
     public static boolean isSerialNumberOrDeviceGroup(String category) {
