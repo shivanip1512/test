@@ -277,8 +277,8 @@ public class LoadGroupHelper {
     }
 
     public static MockMacroLoadGroup updateMacroLoadGroup(String loadGroupIDtoUpdate, String updatedName,
-        List<MockLMPaoDto> assignedLoadGroupsUpdated) {
-        MockMacroLoadGroup macroLoadGroup =  buildMacroLoadGroup(updatedName, assignedLoadGroupsUpdated);
+            List<MockLMPaoDto> assignedLoadGroupsUpdated) {
+        MockMacroLoadGroup macroLoadGroup = buildMacroLoadGroup(updatedName, assignedLoadGroupsUpdated);
         ExtractableResponse<?> updateResponse = ApiCallHelper.post("updateMacroLoadGroup", macroLoadGroup, loadGroupIDtoUpdate);
         Integer macroGroupId = updateResponse.path(MacroLoadGroupSetupApiControllerTest.CONTEXT_MACRO_GROUP_ID);
         assertTrue("Status code should be 200", updateResponse.statusCode() == 200);
@@ -325,6 +325,7 @@ public class LoadGroupHelper {
                 .build();
         return macroLoadGroup;
     }
+
     public static MockLMPaoDto getMockLMPaoDtoObject(MockLoadGroupBase loadGroup) {
 
         return MockLMPaoDto.builder().id(loadGroup.getId()).name(loadGroup.getName()).type(loadGroup.getType()).build();

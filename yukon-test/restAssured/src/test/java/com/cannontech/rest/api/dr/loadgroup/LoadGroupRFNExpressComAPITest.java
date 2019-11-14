@@ -27,7 +27,7 @@ public class LoadGroupRFNExpressComAPITest {
     public void loadGroupRFNExpresscom_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupRFNExpresscom_01_Create");
         loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
-        
+
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         String groupId = createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, groupId);
@@ -68,7 +68,7 @@ public class LoadGroupRFNExpressComAPITest {
     public void loadGroupRFNExpresscom_03_Update(ITestContext context) {
         Log.startTestCase("loadGroupRFNExpresscom_03_Update");
         loadGroup = (MockLoadGroupExpresscom) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM);
-       
+
         String groupId = context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         String name = "RFNExpresscommGroup_Update";
         context.setAttribute("rfnExpresscom_UpdateGrpName", name);
@@ -126,10 +126,10 @@ public class LoadGroupRFNExpressComAPITest {
         String expectedMessage = "Id not found";
         String grpToDelete = "rfnExpresscom_UpdateGrpName";
         Log.startTestCase("loadGroupRFNExpresscom_05_Delete");
-        
+
         // Delete Created Load group
         MockLMDto lmDeleteObject = MockLMDto.builder().name(context.getAttribute(grpToDelete).toString()).build();
-        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",lmDeleteObject,
+        ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup", lmDeleteObject,
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(response.statusCode() == 200, "Status code should be 200");
 
@@ -220,7 +220,7 @@ public class LoadGroupRFNExpressComAPITest {
         loadGroup.setAddressUsage(rfnAddressUsage);
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
         assertTrue(ValidationHelper.validateFieldError(response, "addressUsage",
-                        "Load Address should atleast have LOAD, SPLINTER or PROGRAM"),
+                "Load Address should atleast have LOAD, SPLINTER or PROGRAM"),
                 "Load Address should atleast have LOAD, SPLINTER or PROGRAM");
         Log.endTestCase("loadGroupRFNExpresscom_08_WithoutRequiredAddressUsage");
     }
@@ -245,8 +245,9 @@ public class LoadGroupRFNExpressComAPITest {
                 "Serial Number is required."), "Serial Number is required.");
         Log.endTestCase("loadGroupRFNExpresscom_09_WithoutSerialNumber");
     }
+
     /**
-     * This test case validates Serial Not Allowed With Other UsageTypes 
+     * This test case validates Serial Not Allowed With Other UsageTypes
      * validation error. When serial Address is selected then other usage types are not allowed
      */
     @Test
