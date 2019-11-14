@@ -92,6 +92,15 @@ public class CommandCategoryUtil {
         return CommandCategory.EXPRESSCOM_SERIAL.getDbString().equals(category) || CommandCategory.VERSACOM_SERIAL.getDbString().equals(category);
     }
     
+    /**
+     * Return true if category is either ExpressCom or VersaCom
+     * false if not.
+     */
+    public static boolean isSerialNumberOrDeviceGroup(String category) {
+        return CommandCategory.SERIALNUMBER.getDbString().equals(category) || CommandCategory.DEVICE_GROUP.getDbString().equals(category);
+    }
+    
+    
     public static List<PaoType> getAllTypesForCategory(CommandCategory category) {
         
         if (category == CommandCategory.ALPHA_BASE) {
