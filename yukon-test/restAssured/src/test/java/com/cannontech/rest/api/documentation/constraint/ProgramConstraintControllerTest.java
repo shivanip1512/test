@@ -73,7 +73,7 @@ public class ProgramConstraintControllerTest {
                                 .header("Authorization","Bearer " + ApiCallHelper.authToken)
                                 .body(programConstraint)
                                 .when()
-                                .post(ApiCallHelper.getProperty("createProgramConstraint"))
+                                .post(ApiCallHelper.getProperty("saveProgramConstraint"))
                                 .then()
                                 .extract()
                                 .response();
