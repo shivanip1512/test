@@ -22,7 +22,7 @@
             <c:choose>
                 <c:when test="${not isViewMode}">
                     <div class="${mctAddressHasError ? 'MT5 MB5' : ''}">
-                        <form:hidden id="js-mct-meter-selected-${uniqueId}" path="mctDeviceId"  cssClass="js-mct-meter-id"/>
+                        <form:hidden id="js-mct-meter-selected-${uniqueId}" path="mctDeviceId" cssClass="js-mct-meter-id"/>
                         <tags:pickerDialog id="mctMeterPicker_${uniqueId}"
                                                          type="mctMeterPicker" 
                                                          linkType="selection"

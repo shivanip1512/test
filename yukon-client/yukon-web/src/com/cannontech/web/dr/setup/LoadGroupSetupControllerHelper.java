@@ -223,6 +223,12 @@ public class LoadGroupSetupControllerHelper {
             ((LoadGroupDigiSep) group).setRampInMinutes(30);
             ((LoadGroupDigiSep) group).setRampOutMinutes(30);
             break;
+        case LM_GROUP_MCT:
+            LoadGroupMCT loadGroupMCT = ((LoadGroupMCT) group);
+            List relayUsages = Lists.newArrayList();
+            relayUsages.add(Relays.RELAY_1);
+            loadGroupMCT.setRelayUsage(relayUsages);
+            break;
         }
         // Set default value for common field.
         group.setkWCapacity(0.0);
