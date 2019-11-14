@@ -49,7 +49,8 @@ yukon.dr.setup.list = (function() {
                 $("#js-gear-types").chosen({width: "250px"});
             }
             
-            $('#setupFilter :input').change(function (event) {
+            $(document).on('change', '#setupFilter :input', function (event) {
+                yukon.ui.blockPage();
                 var isFilterByTypeChanged = event.currentTarget.id === 'js-filter-by-type';
                 _filterResults(isFilterByTypeChanged);
             });
