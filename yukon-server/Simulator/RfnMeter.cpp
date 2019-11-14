@@ -153,6 +153,7 @@ RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
 
 std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
 std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
+std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId);
 
 auto RfnMeter::doChannelManagerRequest(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> Bytes
 {
@@ -167,6 +168,10 @@ auto RfnMeter::doChannelManagerRequest(const std::vector<unsigned char>& request
             case 0x86:
             {
                 return DataStreamingWrite(request, rfnId);
+            }
+            case 0x91:
+            {
+                return GetMeterProgrammingConfiguration(rfnId);
             }
         }
     }
@@ -341,6 +346,19 @@ metric_response mangleResponse(metric_response contents, double mangleFactor)
 
 extern std::mt19937_64 rd;
 extern std::uniform_real_distribution<double> dist;
+
+std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId)
+{
+    //  TODO - cache the meter program that was last sent to the meter
+    const std::string configurationId = "R7d444840-9dc0-11d1-b245-5ffdce74fad2";
+        
+    std::vector<unsigned char> response { 0x92, 0x00, 0x00, 0x01, 0x03 };
+
+    response.push_back(configurationId.length());
+    response.insert(response.end(), configurationId.begin(), configurationId.end());
+
+    return response;
+}
 
 std::vector<unsigned char> makeDataStreamingResponse(const unsigned char responseCode, const metric_response& original)
 {
