@@ -145,8 +145,9 @@ public class GearFieldHelper {
                                                .groupSelectionMethod(MockGroupSelectionMethod.LastControlled)
                                                .howToStopControl(MockHowToStopControl.TimeIn)
                                                .numberOfGroups(0)
-                                               .sendRate(30)
-                                               .shedTime(10)
+                                               .sendRate(1800)
+                                               .shedTime(1800)
+                                               .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                .build();
             break;
         case Latching:
