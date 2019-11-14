@@ -1,12 +1,13 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Demand Response Setup Suite">
-	<test name="DR Setup Test">
+<suite name="DR Program Setup Suite">
+	<test name="Load Program Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.loadprogram.HoneywellProgramApiTest" />
             <class name="com.cannontech.rest.api.dr.loadprogram.EcobeeProgramApiTest" />
             <class name="com.cannontech.rest.api.dr.loadprogram.DirectProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.SepProgramApiTest" />
         </classes>
 	</test>
 </suite>

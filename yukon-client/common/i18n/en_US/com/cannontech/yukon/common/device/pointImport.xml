@@ -43,7 +43,7 @@
     
     <!-- result messages -->
     <entry key="yukon.web.modules.tools.bulk.pointImport.operationSuccessful">Line {0}: Operation successful.</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.operationFailed">Line {0}: Operation failed - {1}.</entry>
+    <entry key="yukon.web.modules.tools.bulk.pointImport.operationFailed">Line {0}: Operation failed - {1}</entry>
     
     <!-- column descriptions -->
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.action">The type of import operation to perform.</entry>

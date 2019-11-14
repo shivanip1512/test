@@ -127,6 +127,8 @@ begin
 	pEnv = &sEnv;
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 	
+	// Add Local service access to Yukon root directory.
+    UpdateYukonFolderPermissionsForLocalServiceAccount(TARGETDIR);
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
     AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
@@ -603,6 +605,7 @@ string sTARGETDIR;
 begin
     // In maintenance mode the value of TARGETDIR is read from the log file.
     if (MAINTENANCE) then
+        UpdateYukonFolderPermissionsForLocalServiceAccount(TARGETDIR);
         return ISERR_SUCCESS;
     endif;
     // Set TARGETDIR to script default.

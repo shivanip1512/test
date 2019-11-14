@@ -1,9 +1,10 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-<suite name="Yukon restAssured Suite">
+<suite name="Demand Response Setup Suite">
     <suite-files>
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/automationsetup.xml"></suite-file> 
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/drsetupLoadGroup.xml"></suite-file>
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/drsetupLoadProgram.xml"></suite-file>
+        <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/drsetupControlArea.xml"></suite-file>
     </suite-files>
 </suite>

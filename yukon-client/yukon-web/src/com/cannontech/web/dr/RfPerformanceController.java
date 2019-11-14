@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,8 +30,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
+import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -73,6 +78,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
+import com.cannontech.web.tools.mapping.MappingColorCollection;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -97,6 +103,7 @@ public class RfPerformanceController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
     @Autowired private RfnPerformanceVerificationService verificationService;
+    @Autowired private DeviceMemoryCollectionProducer deviceMemoryCollectionProducer;
     
     public static final String UNREPORTED = "unreported";
     @Autowired @Qualifier("rfnPerformanceVerification")
@@ -318,7 +325,7 @@ public class RfPerformanceController {
 
     @GetMapping(value = "/rf/broadcast/eventDetail/collectionAction")
     public String collectionAction(String actionUrl, ModelMap model, long eventId, String[] deviceSubGroups,
-            PerformanceVerificationMessageStatus[] statuses, YukonUserContext userContext) {
+            PerformanceVerificationMessageStatus[] statuses, YukonUserContext userContext, RedirectAttributes attrs) {
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         List<BroadcastEventDeviceDetails> broadcastEventDetails =
             verificationService.getDevicesWithStatus(eventId, statuses, PagingParameters.EVERYTHING, subGroups);
@@ -328,6 +335,23 @@ public class RfPerformanceController {
         devices.addAll(deviceDao.getYukonDeviceObjectByIds(deviceIds));
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
+        
+        if (CollectionActionUrl.MAPPING.getUrl().equals(actionUrl)) {
+            List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
+            Map<String, List<Integer>> mappingMap = new HashMap<String, List<Integer>>();
+            for (PerformanceVerificationMessageStatus status : statuses) {
+                List<Integer> ids = broadcastEventDetails.stream()
+                    .filter(detail -> detail.getMessageStatus() == status)
+                    .map(d -> d.getHardware().getDeviceId())
+                    .collect(Collectors.toList());
+                DeviceCollection statusCollection = deviceMemoryCollectionProducer.createDeviceCollection(ids);
+                MappingColorCollection mapCollection = new MappingColorCollection(statusCollection, status.getColor(), status.getFormatKey());
+                colorCollections.add(mapCollection);
+                mappingMap.put(status.getColor(), ids);
+            }
+            attrs.addFlashAttribute("mappingColors", mappingMap);
+            attrs.addFlashAttribute("colorCollections", colorCollections);
+        }
 
         return "redirect:" + actionUrl + "?collectionType=group&group.name=" + tempGroup.getFullName();
     }

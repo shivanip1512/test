@@ -54,6 +54,7 @@ public enum SystemGroupEnum {
     LOAD_GROUPS,
     LOAD_PROGRAMS,
     CIS_DEVICECLASS,
+    METER_PROGRAMMING,
     ;
 }
 

@@ -9,6 +9,7 @@ extern "C" {
 namespace Cti::Protocols::Coap {
 
 enum class ResponseCode;
+enum class RequestMethod;
 
 class IM_EX_PROT scoped_pdu_ptr
 {
@@ -31,9 +32,9 @@ public:
     scoped_pdu_ptr(const scoped_pdu_ptr& other) = delete;
     scoped_pdu_ptr& operator=(const scoped_pdu_ptr&) = delete;
 
-    static scoped_pdu_ptr make_get_request(unsigned long token, unsigned short id);
+    static scoped_pdu_ptr make_confirmable_request(RequestMethod method, unsigned long token, unsigned short id);
     static scoped_pdu_ptr make_get_continuation(unsigned long token, unsigned short id, const unsigned size, const unsigned num);
-    static scoped_pdu_ptr make_post(unsigned long token, unsigned short id);
+    static scoped_pdu_ptr make_nonconfirmable_request(RequestMethod method, unsigned long token, unsigned short id);
     static scoped_pdu_ptr make_ack(unsigned long token, unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_ack(unsigned short id, ResponseCode status);
     static scoped_pdu_ptr make_data_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data);

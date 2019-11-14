@@ -334,14 +334,16 @@ yukon.mapping = (function () {
         updateZoom: function(map) {
             var source = map.getLayers().getArray()[_tiles.length].getSource();
             var features = source.getFeatures();
-            if (features != null && features.length > 1) {
-                map.getView().fit(source.getExtent(), map.getSize());
-                if (map.getView().getZoom() > 16){
-                    map.getView().setZoom(16);
+            if (features != null && features.length > 0) {
+                if (features.length > 1) {
+                    map.getView().fit(source.getExtent(), map.getSize());
+                    if (map.getView().getZoom() > 16){
+                        map.getView().setZoom(16);
+                    }
+                } else {
+                    map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+                    map.getView().setZoom(13);
                 }
-            } else {
-                map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-                map.getView().setZoom(13);
             }
         },
 

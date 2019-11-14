@@ -1,14 +1,22 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Demand Response Setup Suite">
-	<test name="DR Setup Test">
+<suite name="DR Group Setup Suite">
+	<test name="Load Group Test">
         <classes>       
             <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupItronAPITest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupMeterDisconnectAPITest" />
-            <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupNestAPITest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupEmetconAPITest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupExpressComAPITest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupDigiSepAPITest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupEcobeeAPITest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupHoneywellAPITest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupVersacomAPITest" />
+        </classes>
+	</test>
+		<test name="Macro Load Group Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.dr.macroloadgroup.MacroLoadGroupAPITest" />
         </classes>
 	</test>
 </suite>

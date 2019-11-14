@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "prot_e2eDataTransfer.h"
+#include "e2e_exceptions.h"
 
 #include "boost_test_helpers.h"
 
@@ -121,7 +122,7 @@ BOOST_AUTO_TEST_CASE(test_handleIndication_repeat)
         e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
-    catch( Cti::Protocols::E2eDataTransferProtocol::RequestInactive &ex )
+    catch( Cti::Protocols::E2e::RequestInactive &ex )
     {
         BOOST_CHECK_EQUAL(ex.reason, "Response received for inactive token 23254");
     }
@@ -176,7 +177,7 @@ BOOST_AUTO_TEST_CASE( test_handleTimeout )
         e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
-    catch( Cti::Protocols::E2eDataTransferProtocol::RequestInactive &ex )
+    catch( Cti::Protocols::E2e::RequestInactive &ex )
     {
         BOOST_CHECK_EQUAL(ex.reason, "Response received for inactive token 23254");
     }
@@ -208,7 +209,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
         e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
-    catch( Cti::Protocols::E2eDataTransferProtocol::DuplicatePacket &ex )
+    catch( Cti::Protocols::E2e::DuplicatePacket &ex )
     {
         BOOST_CHECK_EQUAL(ex.reason, "Duplicate packet, id: 29442");
     }
@@ -324,7 +325,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )
         e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
-    catch( Cti::Protocols::E2eDataTransferProtocol::UnexpectedAck &ex )
+    catch( Cti::Protocols::E2e::UnexpectedAck &ex )
     {
         BOOST_CHECK_EQUAL(ex.reason, "Unexpected ACK: 29441, expected 29442");
     }
@@ -350,7 +351,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_noRequest )
         e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
-    catch( Cti::Protocols::E2eDataTransferProtocol::UnexpectedAck &ex )
+    catch( Cti::Protocols::E2e::UnexpectedAck &ex )
     {
         BOOST_CHECK_EQUAL(ex.reason, "Unexpected ACK: 29442, no outbounds recorded");
     }
@@ -376,7 +377,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_resetReceived )
         e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
-    catch( Cti::Protocols::E2eDataTransferProtocol::ResetReceived &ex )
+    catch( Cti::Protocols::E2e::ResetReceived &ex )
     {
         BOOST_CHECK_EQUAL(ex.reason, "Reset packet received");
     }

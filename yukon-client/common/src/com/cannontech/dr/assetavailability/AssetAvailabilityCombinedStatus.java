@@ -7,12 +7,14 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 
 public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
-    ACTIVE(AssetAvailabilityStatus.ACTIVE),
-    OPTED_OUT(null),
-    INACTIVE(AssetAvailabilityStatus.INACTIVE),
-    UNAVAILABLE(AssetAvailabilityStatus.UNAVAILABLE);
+    ACTIVE(AssetAvailabilityStatus.ACTIVE, "#093"),
+    OPTED_OUT(null, "#4d90fe"),
+    INACTIVE(AssetAvailabilityStatus.INACTIVE, "#ec971f"),
+    UNAVAILABLE(AssetAvailabilityStatus.UNAVAILABLE, "#888");
 
     private final AssetAvailabilityStatus backingStatus;
+    private String color;
+
     private final static ImmutableMap<AssetAvailabilityStatus, AssetAvailabilityCombinedStatus> byBackingStatus;
     static {
         Builder<AssetAvailabilityStatus, AssetAvailabilityCombinedStatus> builder = ImmutableMap.builder();
@@ -24,12 +26,17 @@ public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
         byBackingStatus = builder.build();
     }
 
-    private AssetAvailabilityCombinedStatus(AssetAvailabilityStatus backingStatus) {
+    private AssetAvailabilityCombinedStatus(AssetAvailabilityStatus backingStatus, String color) {
         this.backingStatus = backingStatus;
+        this.color = color;
     }
 
     public String getValue() {
         return name();
+    }
+    
+    public String getColor() {
+        return color;
     }
     
     public AssetAvailabilityCombinedStatus getCombinedStatus() {

@@ -74,21 +74,14 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         
         for (RfnLcrPointDataMap entry : rfnLcrPointDataMap) {
             
-            LitePoint point = null;
-            
             if (entry.isRelayData()) {
                 attributeService.createPointForAttribute(device, entry.getAttribute());
             }
             
-            try {
-                point = attributeService.findPointForAttribute(device, entry.getAttribute());
-            } catch (@SuppressWarnings("unused") IllegalUseOfAttribute e) {
-                log.warn("The attribute: " + entry.getAttribute().toString() 
-                         + " is not defined for the device: " + device.getName() 
-                         + " of type: " + device.getPaoIdentifier().getPaoType());
-                continue;
-            } catch (@SuppressWarnings("unused") NotFoundException e) {
-                log.debug("Point for attribute (" + entry.getAttribute().toString() + ") does not exist for device: " + device.getName());
+            LitePoint point = attributeService.findPointForAttribute(device, entry.getAttribute());
+            
+            if (point == null) {
+                log.debug("Point for attribute ({}) does not exist for device: {}", entry.getAttribute(), device.getName());
                 continue;
             }
             

@@ -54,7 +54,7 @@
                                 <c:if test="${status == 'UNKNOWN'}">
                                     <c:set var="buttonTextColor" value="grey"/>
                                 </c:if>
-                                <tags:check name="statuses" key=".status.${status}" classes="M0" 
+                                <tags:check name="statuses" key="${status.formatKey}" classes="M0" 
                                             buttonTextClasses="${buttonTextColor}" checked="${checked}" value="${status}"/>
                             </c:forEach>
                         </div>

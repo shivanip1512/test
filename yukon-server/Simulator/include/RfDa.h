@@ -8,10 +8,12 @@ struct RfnIdentifier;
     
 namespace Simulator {
 
-class RfDa
+struct RfDa
 {
-public:
-    static std::vector<unsigned char> Dnp3Address(const std::vector<unsigned char> &request, const RfnIdentifier &rfnId);
+    using Bytes = std::vector<unsigned char>;
+
+    static Bytes doHubMeterRequest(const Bytes& request, const RfnIdentifier& rfnId);
+    static Bytes buildDnp3Response(const Bytes& request);
 };
 
 }

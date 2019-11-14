@@ -62,6 +62,13 @@
 <entry key="yukon.web.widgets.deviceGroupWidget">Device Groups</entry>
 <entry key="yukon.web.widgets.touWidget">Time of Use</entry>
 <entry key="yukon.web.widgets.configWidget">Device Configuration</entry>
+<entry key="yukon.web.widgets.configWidget.helpText">
+<![CDATA[The Device Configuration widget allows for the configuration of devices, data streaming, and meter programming.
+<br><br><b>Device Configuration</b> – If the device is configured, the current configuration will be displayed along with options to Unassign, Send, Read, and Verify. 
+There is also an option to Assign a different configuration to the device.
+<br><br><b>Data Streaming</b> – If Data Streaming is enabled on the system, a section will display showing the current data streaming configuration, along with the options to Configure or Remove.
+<br><br><b>Meter Programming</b> – If Meter Programming is enabled on the system and the device supports Meter Programming, a section will display showing the current Program. If the device is not programmed, an option will display to Configure the programming.
+]]></entry>
 <entry key="yukon.web.widgets.disconnectMeterWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget">Outages</entry>

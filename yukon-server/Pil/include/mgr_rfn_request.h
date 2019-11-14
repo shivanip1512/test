@@ -70,8 +70,9 @@ public:
 
     using ConfigNotificationPtr = std::unique_ptr<Devices::Commands::RfnConfigNotificationCommand>;
     using Bytes = std::vector<unsigned char>;
-    using Block = Protocols::E2eDataTransferProtocol::Block;
-    using BlockSize = Protocols::E2eDataTransferProtocol::BlockSize;
+    using Block = Protocols::E2e::Block;
+    using BlockSize = Protocols::E2e::BlockSize;
+    using EndpointMessage = Protocols::E2e::EndpointMessage;
 
     struct UnsolicitedReport
     {
@@ -102,7 +103,7 @@ public:
 
 protected:
 
-    virtual Protocols::E2eDataTransferProtocol::EndpointMessage handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId);
+    virtual EndpointMessage handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId);
     virtual Bytes sendE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
     virtual Bytes sendE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
     virtual Bytes sendE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const unsigned long token);
@@ -202,9 +203,9 @@ private:
 
     using OptionalResult = std::optional<RfnDeviceResult>;
 
-    void                  handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message, const ApplicationServiceIdentifiers asid);
-    OptionalResult        handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const Protocols::E2eDataTransferProtocol::EndpointMessage & message);
-    void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload, const Protocols::E2eDataTransferProtocol::Block block);
+    void                  handleNodeOriginated     (const CtiTime Now, const RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid);
+    OptionalResult        handleResponse           (const CtiTime Now, const RfnIdentifier rfnIdentifier, const EndpointMessage & message);
+    void                  handleBlockContinuation  (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload, const Block block);
     RfnDeviceResult       handleCommandResponse    (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const unsigned long token, const Bytes& payload);
     RfnDeviceResult       handleCommandError       (const CtiTime Now, const RfnIdentifier rfnIdentifier, ActiveRfnRequest & activeRequest, const YukonError_t error);
 };

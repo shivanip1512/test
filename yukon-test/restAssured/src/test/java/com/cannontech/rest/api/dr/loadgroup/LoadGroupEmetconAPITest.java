@@ -96,7 +96,8 @@ public class LoadGroupEmetconAPITest {
         MockLoadGroupEmetcon updatedLoadGroupEmetcon = getupdatedResponse.as(MockLoadGroupEmetcon.class);
         assertTrue("Name Should be : " + name, name.equals(updatedLoadGroupEmetcon.getName()));
         assertTrue("Type Should be : " + loadGroup.getType(), loadGroup.getType() == updatedLoadGroupEmetcon.getType());
-        assertTrue("relayUsage Should be : " + MockEmetconRelayUsage.RELAY_B, MockEmetconRelayUsage.RELAY_B == updatedLoadGroupEmetcon.getRelayUsage());
+        assertTrue("relayUsage Should be : " + MockEmetconRelayUsage.RELAY_B,
+                MockEmetconRelayUsage.RELAY_B == updatedLoadGroupEmetcon.getRelayUsage());
         Log.endTestCase("loadGroupEmetcon_04_Update");
 
     }
@@ -108,14 +109,17 @@ public class LoadGroupEmetconAPITest {
     public void loadGroupEmetcon_04_Copy(ITestContext context) {
 
         Log.startTestCase("loadGroupEmetcon_04_Copy");
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).build();
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+                .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).build();
 
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
-                                                                 loadGroupCopy,
-                                                                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-        String copyPaoId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
-        assertTrue("Group Id should not be Null", copyPaoId != null);
+                loadGroupCopy,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        String copyGroupId = copyResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID).toString();
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
+        assertTrue("Group Id should not be Null", copyGroupId != null);
+        context.setAttribute("Emetcon_CopyGrpId", copyGroupId);
+        context.setAttribute("Emetcon_CopyGrpName", loadGroupCopy.getName());
         Log.endTestCase("loadGroupEmetcon_04_Copy");
     }
 
@@ -124,7 +128,8 @@ public class LoadGroupEmetconAPITest {
      * DataProviderClass
      */
     @Test(dataProvider = "EmetconAddressData", dependsOnMethods = "loadGroupEmetcon_01_Create")
-    public void loadGroupEmetcon_05_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg, Integer expectedStatusCode) {
+    public void loadGroupEmetcon_05_AddressValidation(String goldAddress, String silverAddress, String expectedErrorMsg,
+            Integer expectedStatusCode) {
 
         Log.startTestCase("loadGroupEmetcon_05_AddressValidation");
 
@@ -157,15 +162,23 @@ public class LoadGroupEmetconAPITest {
 
         Log.info("Delete Load Group is : " + lmDeleteObject);
         ExtractableResponse<?> response = ApiCallHelper.delete("deleteloadgroup",
-                                                               lmDeleteObject,
-                                                               context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+                lmDeleteObject,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         // Get request to validate load group is deleted
-        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup", context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        ExtractableResponse<?> getDeletedResponse = ApiCallHelper.get("getloadgroup",
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue("Status code should be 400", getDeletedResponse.statusCode() == 400);
         MockApiError error = getDeletedResponse.as(MockApiError.class);
         assertTrue("Expected error message Should be : " + expectedMessage, expectedMessage.equals(error.getMessage()));
+
+        // Delete copy Load group
+        lmDeleteObject = MockLMDto.builder().name(context.getAttribute("Emetcon_CopyGrpName").toString()).build();
+        ExtractableResponse<?> deleteCopyResponse = ApiCallHelper.delete("deleteloadgroup",
+                lmDeleteObject,
+                context.getAttribute("Emetcon_CopyGrpId").toString());
+        assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
 
         Log.endTestCase("loadGroupEmetcon_06_Delete");
     }
