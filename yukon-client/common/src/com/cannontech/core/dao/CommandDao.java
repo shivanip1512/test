@@ -75,4 +75,5 @@ public interface CommandDao {
      * Creates new command
      */
     int createCommand(String commandString, String label, String commandCategory);
+    
 }

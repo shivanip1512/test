@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
@@ -29,7 +28,7 @@ import com.cannontech.database.db.command.Command;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class CommandDaoImpl implements CommandDao {
-    
+
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;

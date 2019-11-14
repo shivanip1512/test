@@ -448,8 +448,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
    /** 
     * Deletes commands
     */
-   private void deleteRemovedCommands(String deviceTypeOrCategory, List<DeviceCommandDetail> details) {
-             
+   private void deleteRemovedCommands(String deviceTypeOrCategory, List<DeviceCommandDetail> details) { 
         if (CommandCategoryUtil.isCommandCategory(deviceTypeOrCategory)
                 || CommandCategoryUtil.isExpressComOrVersaCom(deviceTypeOrCategory)) {
            Set<Integer> commandIds = details.stream()
