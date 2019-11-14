@@ -228,6 +228,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.incorrectCombination">Address Usage, SERIAL not allowed with other usage types.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.loadAddressingRequired">At least 1 load group must be selected when LOAD usage is checked.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.feederAddressRequired">At least one feeder must be selected in Feeder Address when Address Usage of Feeder checked.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidDeviceType">Invalid device type.</entry>
 
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>
