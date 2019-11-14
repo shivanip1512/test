@@ -368,16 +368,19 @@
     
      <!--  Meter Programming -->
     <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadInitiated">Meter program upload to device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadCompleted">Meter program upload to device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadCompleted">Meter program upload to device {1} {7,choice,0#failed|1#succeeded}. Initiated by {2}.</entry>
     <entry key="yukon.common.events.device.programming.initiateMeterProgramUploadCompleted.7">Success(1)/Fail(0)</entry>
     
     <entry key="yukon.common.events.device.programming.retrieveMeterProgrammingStatusInitiated">Retrieve meter programming status for device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.programming.retrieveMeterProgrammingStatusCompleted">Retrieve meter programming status for device  {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.programming.retrieveMeterProgrammingStatusCompleted">Retrieve meter programming status for device  {1} {7,choice,0#failed|1#succeeded}. Initiated by {2}.</entry>
     <entry key="yukon.common.events.device.programming.retrieveMeterProgrammingStatusCompleted.7">Success(1)/Fail(0)</entry>
     
     <entry key="yukon.common.events.device.programming.cancelMeterProgramUploadInitiated">Meter program upload cancellation for device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.programming.cancelMeterProgramUploadCompleted">Meter program upload cancellation for device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.programming.cancelMeterProgramUploadCompleted">Meter program upload cancellation for device {1} {7,choice,0#failed|1#succeeded}. Initiated by {2}.</entry>
     <entry key="yukon.common.events.device.programming.cancelMeterProgramUploadCompleted.7">Success(1)/Fail(0)</entry>
+    
+    <entry key="yukon.common.events.device.programming.acceptMeterProgramCompleted">Attempt to accept program state for {1} device {1} {7,choice,0#failed|1#succeeded}. Initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.programming.acceptMeterProgramCompleted.7">Success(1)/Fail(0)</entry>
 
     <!-- Demand Reset-->
     <entry key="yukon.common.events.amr.demand.reset.demandResetAttempted">Demand Reset attempted by {2}. (To Send:{7}, Unsupported:{8}, To Verify:{9}, Unsupported Verify:{10}). Key:{1}</entry>

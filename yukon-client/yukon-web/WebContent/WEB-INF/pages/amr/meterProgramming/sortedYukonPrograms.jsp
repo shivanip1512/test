@@ -25,14 +25,7 @@
                             <cti:param name="programs[0].name" value="${program.programInfo.name}"/>
                             <cti:param name="programs[0].source" value="${program.programInfo.source}"/>
                         </cti:url>
-                        <c:choose>
-                            <c:when test="${program.deviceTotal > 0 || program.inProgressTotal > 0}">
-                                <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
-                            </c:when>
-                            <c:otherwise>
-                                ${fn:escapeXml(program.programInfo.name)}
-                            </c:otherwise>
-                        </c:choose>
+                        <a href="${programUrl}">${fn:escapeXml(program.programInfo.name)}</a>
                     </td>
                     <td>
                         <c:choose>

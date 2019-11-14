@@ -7,26 +7,33 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface MeterProgrammingEventLogService {
 
-	@YukonEventLog(category = "device.programming")
-	public void initiateMeterProgramUploadInitiated(@Arg(ArgEnum.deviceName) String deviceName,
-			@Arg(ArgEnum.username) LiteYukonUser yukonUser);
-	
-	@YukonEventLog(category = "device.programming")
-	public void initiateMeterProgramUploadCompleted(@Arg(ArgEnum.deviceName) String deviceName, Integer successOrFail);
+    @YukonEventLog(category = "device.programming")
+    public void initiateMeterProgramUploadInitiated(@Arg(ArgEnum.deviceName) String deviceName,
+            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
-	@YukonEventLog(category = "device.programming")
-	public void retrieveMeterProgrammingStatusInitiated(@Arg(ArgEnum.deviceName) String deviceName,
-			@Arg(ArgEnum.username) LiteYukonUser yukonUser);
-	
-	@YukonEventLog(category = "device.programming")
-	public void retrieveMeterProgrammingStatusCompleted(@Arg(ArgEnum.deviceName) String deviceName, Integer successOrFail);
-	
-	@YukonEventLog(category = "device.programming")
-	public void cancelMeterProgramUploadInitiated(@Arg(ArgEnum.deviceName) String deviceName,
-			@Arg(ArgEnum.username) LiteYukonUser yukonUser);
-	
-	@YukonEventLog(category = "device.programming")
-	public void cancelMeterProgramUploadCompleted(@Arg(ArgEnum.deviceName) String deviceName, Integer successOrFail);
+    @YukonEventLog(category = "device.programming")
+    public void initiateMeterProgramUploadCompleted(@Arg(ArgEnum.deviceName) String deviceName, Integer successOrFail,
+            @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(category = "device.programming")
+    public void retrieveMeterProgrammingStatusInitiated(@Arg(ArgEnum.deviceName) String deviceName,
+            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
+
+    @YukonEventLog(category = "device.programming")
+    public void retrieveMeterProgrammingStatusCompleted(@Arg(ArgEnum.deviceName) String deviceName, Integer successOrFail,
+            @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(category = "device.programming")
+    public void cancelMeterProgramUploadInitiated(@Arg(ArgEnum.deviceName) String deviceName,
+            @Arg(ArgEnum.username) LiteYukonUser yukonUser);
+
+    @YukonEventLog(category = "device.programming")
+    public void cancelMeterProgramUploadCompleted(@Arg(ArgEnum.deviceName) String deviceName, Integer successOrFail,
+            @Arg(ArgEnum.username) LiteYukonUser user);
+
+    @YukonEventLog(category = "device.programming")
+    public void acceptMeterProgramCompleted(@Arg(ArgEnum.deviceName) String deviceName, Integer successOrFail,
+            @Arg(ArgEnum.username) LiteYukonUser user);
         
 	@YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "device.programming")
 	public void meterProgramUploadCancelled(@Arg(ArgEnum.action) String action, @Arg(ArgEnum.input) String input,

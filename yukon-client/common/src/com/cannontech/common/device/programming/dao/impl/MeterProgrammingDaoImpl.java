@@ -188,7 +188,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
             public SqlFragmentSource generate(List<SimpleDevice> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append("SELECT PAObjectID, type");
-                sql.append("FROM  MeterProgramStatus status JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
+                sql.append("FROM MeterProgramStatus status JOIN YukonPAObject ypo ON status.DeviceId = ypo.PAObjectID");
                 sql.append("JOIN MeterProgramAssignment assignment ON assignment.DeviceId = status.DeviceId");
                 sql.append("AND status.DeviceId").in(subList.stream()
                                               .map(SimpleDevice::getDeviceId)
