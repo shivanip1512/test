@@ -137,7 +137,8 @@
             <option value=""><cti:msg2 key=".availableCommands.select"/></option>
         </select>
         <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="VIEW">      
-            <cti:button id="custom-commands" renderMode="buttonImage" icon="icon-script-edit" classes="fn vam"/>
+            <cti:msg2 var="customCommandsTooltip" key=".customCommands.tooltip"/>
+            <cti:button id="custom-commands" renderMode="buttonImage" icon="icon-script-edit" classes="fn vam" title="${customCommandsTooltip}"/>
             <cti:msg2 var="customCommandsTitle" key=".customCommands.title"/>
             <div class="dn" id="custom-commands-popup" data-dialog data-title="${customCommandsTitle}"></div>
         </cti:checkRolesAndProperties>

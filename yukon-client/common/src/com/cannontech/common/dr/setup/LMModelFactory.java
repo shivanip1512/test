@@ -58,7 +58,9 @@ public class LMModelFactory {
         case LM_GROUP_EMETCON:
             loadGroup = new LoadGroupEmetcon();
             break;
-
+        case LM_GROUP_MCT:
+            loadGroup = new LoadGroupMCT();
+            break;
         }
         return loadGroup;
     }

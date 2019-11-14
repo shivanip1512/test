@@ -70,6 +70,20 @@ public class CommandCategoryUtil {
         return false;
     }
     
+    
+    /**
+     * Return category if category is one from ALL_CATEGORIES
+     * 
+     */
+    public static CommandCategory getCommandCategory(String category) {
+        
+        for (CommandCategory commandCategory :  CommandCategory.values()) {
+            if (commandCategory.getDbString().equalsIgnoreCase(category)) return commandCategory;
+        }
+        
+        return null;
+    }
+    
     /**
      * Return true if category is either ExpressCom or VersaCom
      * false if not.

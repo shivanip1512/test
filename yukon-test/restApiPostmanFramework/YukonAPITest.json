@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "425b5451-a09c-49d7-b0a1-123b35b61e52",
+        "_postman_id": "67072791-9616-4e7f-95d2-86518a0547f1",
         "name": "YukonAPITest",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
@@ -977,12 +977,33 @@
                                     "response": []
                                 },
                                 {
-                                    "name": "Test",
+                                    "name": "MCT",
                                     "request": {
-                                        "method": "GET",
-                                        "header": [],
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{ \r\n   \"LM_GROUP_MCT\":{ \r\n      \"name\":\"LmGroup_MCT_Test\",\r\n      \"type\":\"LM_GROUP_MCT\",\r\n      \"kWCapacity\":\"78.26\",\r\n      \"disableGroup\":true,\r\n      \"disableControl\":false,\r\n      \"routeId\":123,\r\n      \"level\":\"BRONZE\",\r\n      \"address\":12536,\r\n      \"mctDeviceId\":2135,\r\n      \"relayUsage\":[\"RELAY_1\"]\r\n   }\r\n}"
+                                        },
                                         "url": {
-                                            "raw": ""
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "create"
+                                            ]
                                         }
                                     },
                                     "response": []
@@ -1287,6 +1308,39 @@
                                         }
                                     },
                                     "response": []
+                                },
+                                {
+                                    "name": "MCT",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"LM_GROUP_MCT\": {\n        \"name\": \"LmGroup_MCT_Test\",\n        \"type\": \"LM_GROUP_MCT\",\n        \"kWCapacity\": 78.32,\n        \"disableGroup\": true,\n        \"disableControl\": false,\n        \"routeId\": 730,\n        \"routeName\": \"CCU Parkwood\",\n        \"level\": \"BRONZE\",\n        \"address\": 12536,\n        \"mctDeviceId\": 0,\n        \"relayUsage\": [\n            \"RELAY_1\", \"RELAY_3\"\n        ]\n    }\n}"
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "update",
+                                                "151386"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
                                 }
                             ],
                             "description": "Update an existing load group.",
@@ -1411,14 +1465,11 @@
                                             "raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"MeterDisconnectcopy\"\r\n     }\r\n}"
                                         },
                                         "url": {
-                                            "raw": "http://localhost:8080/yukon/api/dr/setup/loadGroup/copy/10055",
-                                            "protocol": "http",
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10055",
                                             "host": [
-                                                "localhost"
+                                                "{{api-url}}"
                                             ],
-                                            "port": "8080",
                                             "path": [
-                                                "yukon",
                                                 "api",
                                                 "dr",
                                                 "setup",
@@ -1483,20 +1534,50 @@
                                             "raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"DigiSepcopy\"\r\n     }\r\n}"
                                         },
                                         "url": {
-                                            "raw": "http://localhost:8080/yukon/api/dr/setup/loadGroup/copy/10055",
-                                            "protocol": "http",
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/copy/10055",
                                             "host": [
-                                                "localhost"
+                                                "{{api-url}}"
                                             ],
-                                            "port": "8080",
                                             "path": [
-                                                "yukon",
                                                 "api",
                                                 "dr",
                                                 "setup",
                                                 "loadGroup",
                                                 "copy",
                                                 "10055"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "MCT",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"MCTcopy\"\r\n     }\r\n}"
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "copy",
+                                                "151386"
                                             ]
                                         }
                                     },

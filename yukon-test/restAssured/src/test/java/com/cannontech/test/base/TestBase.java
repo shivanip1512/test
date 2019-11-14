@@ -1,17 +1,14 @@
 package com.cannontech.test.base;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class TestBase implements ITestListener {
+    private static final Logger log = LogManager.getLogger(TestBase.class);
     long testStartTime, testEndTime, testExecutionTime;
 
     @Override

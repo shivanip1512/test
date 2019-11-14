@@ -217,7 +217,7 @@
                         <!-- Available Programs -->
                             <div class="column one">
                                 <h3><i:inline key="yukon.common.available"/></h3>
-                                <div id="js-inline-picker-container" style="height:470px;" class="bordered-div oa">
+                                <div id="js-inline-picker-container" style="height:570px;" class="bordered-div oa">
                                     <tags:pickerDialog id="js-avaliable-programs-picker" type="unassignedProgramPicker" container="js-inline-picker-container"
                                                        multiSelectMode="${true}" disabledIds="${assignedProgramIds}" extraArgs="${controlArea.controlAreaId}"/>
                                 </div>

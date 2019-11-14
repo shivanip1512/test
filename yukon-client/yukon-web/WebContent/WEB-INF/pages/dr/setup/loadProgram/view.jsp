@@ -281,7 +281,7 @@
                                 <h3>
                                     <i:inline key="yukon.common.available" />
                                 </h3>
-                                <div id="js-inline-group-picker-container" style="height: 300px;" class="oa"></div>
+                                <div id="js-inline-group-picker-container" style="height: 550px;" class="oa"></div>
                                 <tags:pickerDialog id="js-avaliable-groups-picker" 
                                                    type="loadGroupPicker" 
                                                    container="js-inline-group-picker-container"
@@ -298,7 +298,7 @@
                                 <h3>
                                     <i:inline key="yukon.common.assigned" />
                                 </h3>
-                                <div style="height: 346px;" class="oa">
+                                <div style="height: 596px;" class="oa">
                                     <div id="js-assigned-groups" class="select-box-selected js-with-movables" style="min-height: 150px;" data-item-selector=".select-box-item">
                                         <c:forEach var="item" items="${loadProgram.assignedGroups}" varStatus="status">
                                             <div class="select-box-item cm js-assigned-groups wrbw" data-id="${item.groupId}">

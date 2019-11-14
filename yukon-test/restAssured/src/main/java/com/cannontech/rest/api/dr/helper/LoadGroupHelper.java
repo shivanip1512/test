@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockLMDto;
@@ -35,11 +38,9 @@ import com.cannontech.rest.api.loadgroup.request.MockVersacomAddressUsage;
 import com.cannontech.rest.api.utilities.Log;
 
 import io.restassured.response.ExtractableResponse;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class LoadGroupHelper {
-
+    private static final Logger log = LogManager.getLogger(LoadGroupHelper.class);
     public final static String CONTEXT_GROUP_ID = "groupId";
 
     public final static MockLoadGroupBase buildLoadGroup(MockPaoType paoType) {
@@ -102,7 +103,7 @@ public class LoadGroupHelper {
             loadGroup = MockLoadGroupExpresscom.builder()
                     .name(getLoadGroupName(paoType))
                     .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
-                    .routeId(49)
+                    .routeId(1)
                     .disableControl(false)
                     .disableGroup(false)
                     .kWCapacity(123.0)
@@ -138,7 +139,7 @@ public class LoadGroupHelper {
             loadGroup = MockLoadGroupVersacom.builder()
                     .name(getLoadGroupName(paoType))
                     .type(MockPaoType.LM_GROUP_VERSACOM)
-                    .routeId(49)
+                    .routeId(1)
                     .disableControl(false)
                     .disableGroup(false)
                     .kWCapacity(123.0)
@@ -188,7 +189,7 @@ public class LoadGroupHelper {
                     .silverAddress(4)
                     .kWCapacity(4.0)
                     .relayUsage(MockEmetconRelayUsage.RELAY_A)
-                    .routeId(49)
+                    .routeId(1)
                     .build();
             break;
         }

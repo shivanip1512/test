@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -52,6 +53,12 @@
                             <td class="PL0 PR0">
                                 <c:if test="${isEditable}">
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove ML0 MR0"/>
+                                    <c:if test="${isCategory}">
+                                        <cti:msg2 var="deleteConfirmationTitle" key="yukon.web.components.ajaxConfirm.confirmDelete.title"/>
+                                        <div class="dn" id="delete-popup-${typeCommand.commandId}" data-dialog data-title="${deleteConfirmationTitle}">
+                                            <i:inline key=".deleteFromAllDeviceTypes" arguments="${typeCommand.commandName}"/>
+                                        </div>
+                                    </c:if>
                                 </c:if>
                             </td>
                         </cti:checkRolesAndProperties>
@@ -78,10 +85,10 @@
                             </c:when>
                             <c:otherwise>
                                 <td style="width:35%;">
-                                    ${typeCommand.commandName}
+                                    ${fn:escapeXml(typeCommand.commandName)}
                                 </td>
                                 <td style="width:35%;">
-                                    ${typeCommand.command}
+                                    ${fn:escapeXml(typeCommand.command)}
                                 </td>
                                 <td>
                                     <tags:checkbox path="detail[${status.index}].visibleFlag" disabled="true"/>
@@ -89,7 +96,7 @@
                             </c:otherwise>
                         </c:choose>
                         <td>
-                            ${typeCommand.category}
+                            ${typeCommand.displayableCategory}
                         </td>
                         <cti:checkRolesAndProperties value="MANAGE_CUSTOM_COMMANDS" level="UPDATE">      
                             <td>
@@ -131,10 +138,10 @@
                 <td>
                     <input type="checkbox" name="detail[0].visibleFlag" checked="checked" styleClass="js-command-fields" disabled="disabled" title="${titleText}"/>
                     <c:if test="${isCategory}">
-                        <input type="hidden" name="detail[0].visibleFlag" value="true"/>
+                        <input type="hidden" name="detail[0].visibleFlag" value="true" disabled="disabled"/>
                     </c:if>
                 </td>
-                <td>
+                <td class="js-category">
                     ${formBean.selectedCategory}
                 </td>
                 <td>

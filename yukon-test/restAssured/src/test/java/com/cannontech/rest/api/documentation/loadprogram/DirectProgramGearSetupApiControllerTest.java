@@ -50,11 +50,12 @@ public class DirectProgramGearSetupApiControllerTest {
         restDocumentation.beforeTest(getClass(), method.getName());
         documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
         programIdDescriptor = fieldWithPath("programId").type(JsonFieldType.NUMBER).description("Program Id of Load Program");
-        loadGroups = new ArrayList<>();
+        
         if (programConstraint == null) {
             programConstraint = ProgramConstraintHelper.createProgramConstraint();
         }
         if (loadGroups == null) {
+            loadGroups = new ArrayList<>();
             loadGroups.add(LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EXPRESSCOMM));
         }
     }

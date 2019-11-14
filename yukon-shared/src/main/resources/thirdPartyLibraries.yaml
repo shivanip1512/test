@@ -2976,18 +2976,18 @@ Java :
     notes : 
   
 Network Manager :
-  - filename : activemq-all-5.13.4.jar
+  - filename : activemq-all-5.15.10.jar
     yukon group : ActiveMQ
     project :  Apache ActiveMQ
-    version :  5.13.4
+    version :  5.15.10
     project URL : "http://activemq.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-broker/5.13.4"
-    md5 : b4c15ac5a9695f66568ccdecb43140de
-    sha1 : 723d2c5a1e7b3d3b53acc820fd5d9d0e0acf888f
-    updated : 2018-08-30
-    jira : NM-471
+    maven URL : "https://mvnrepository.com/artifact/org.apache.activemq/activemq-all/5.15.10"
+    md5 : ee36adeb3b011ec468f388605abf819c
+    sha1 : 1224d7a19bc4c875dd8ebfc4378968acf993cee7
+    updated : 2019-11-04
+    jira : NM-1372
     notes : 
 
   - filename : annotations-api.jar
@@ -3494,6 +3494,48 @@ Network Manager :
     jira : none
     notes : 
 
+  - filename : jackson-annotations-2.9.6.jar
+    yukon group : Jackson
+    project : Jackson
+    version : 2.9.6
+    project URL : "http://github.com/FasterXML/jackson"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.9.6"
+    md5 : 6486a3fb86a14e04ac131c44f078b6dc
+    sha1 : 6a0f0f154edaba00067772ce02e24f8c0973d84c
+    updated : 2019-11-04
+    jira : NM-1372
+    notes : Jackson Annotations
+  
+  - filename : jackson-core-2.9.8.jar
+    yukon group : Jackson
+    project : Jackson
+    version : 2.9.8
+    project URL : "http://github.com/FasterXML/jackson"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.9.8"
+    md5 : 65831e4f46f29db904708e4b9cc72843
+    sha1 : 0f5a654e4675769c716e5b387830d19b501ca191
+    updated : 2019-11-04
+    jira : NM-1372
+    notes : Jackson Core
+   
+  - filename : jackson-databind-2.9.8.jar
+    yukon group : Jackson
+    project : Jackson
+    version : 2.9.8
+    project URL : "http://github.com/FasterXML/jackson"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.9.8"
+    md5 : 39271d9bb1cb7ec563925953b1fa9ff7
+    sha1 : 11283f21cc480aa86c4df7a0a3243ec508372ed2
+    updated : 2019-11-04
+    jira : NM-1372
+    notes : Jackson Databind    
+    
   - filename : jakarta-oro.jar
     yukon group : Struts
     project : Apache Struts
