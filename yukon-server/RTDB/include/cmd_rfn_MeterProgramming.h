@@ -37,13 +37,15 @@ namespace Cti::Devices::Commands {
     {
     public:
 
-        RfnMeterProgrammingSetConfigurationCommand(std::string guid, std::size_t size);
+        RfnMeterProgrammingSetConfigurationCommand(std::string guid, std::size_t length);
 
         RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
         std::string getCommandName() override;
 
         bool isPost() const override;
+
+        bool isOneWay() const override;
 
     private:
 
@@ -54,6 +56,10 @@ namespace Cti::Devices::Commands {
 
         Bytes getCommandHeader() override;
         Bytes getCommandData()   override;
+
+        const std::string _guid;
+        const std::size_t _length;
+
     protected: 
 
         enum TlvType

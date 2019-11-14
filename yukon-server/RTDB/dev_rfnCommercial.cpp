@@ -20,7 +20,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
     }
     else if( containsString(parse.getCommandStr(), " meter programming") )
     {
-        rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>("unused", 42));
+        rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>("7d444840-9dc0-11d1-b245-5ffdce74fad2", 11235));
 
         return ClientErrors::None;
     }

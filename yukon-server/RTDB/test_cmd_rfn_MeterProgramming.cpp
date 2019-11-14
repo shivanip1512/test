@@ -12,18 +12,21 @@ const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
 BOOST_AUTO_TEST_CASE( test_setConfigurationCommand )
 {
-    Cti::Devices::Commands::RfnMeterProgrammingSetConfigurationCommand command{ "3.14159", 31415 };
+    Cti::Devices::Commands::RfnMeterProgrammingSetConfigurationCommand command{ "7d444840-9dc0-11d1-b245-5ffdce74fad2", 11235 };
+
+    BOOST_CHECK( command.isPost() );
+    BOOST_CHECK( command.isOneWay() );
 
     // execute
     {
-        std::vector<unsigned char> exp = { 
+        std::vector<unsigned char> exp { 
             0x90, 
             0x02, 
             0x01, 
-                0x04, 
+                0x00, 0x04, 
                     0x00, 0x00, 0x2b, 0xe3, 
             0x02, 
-                0x33 };
+                0x00, 0x33 };
         const std::string uri = "/meterPrograms/7d444840-9dc0-11d1-b245-5ffdce74fad2";
         exp.insert(exp.end(), uri.begin(), uri.end());
         auto rcv = command.executeCommand( execute_time );
@@ -37,7 +40,7 @@ BOOST_AUTO_TEST_CASE( test_setConfigurationCommand )
 
         auto rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "No respondo" );
+        BOOST_CHECK_EQUAL( rcv.description, "No response" );
     }
 }
 
