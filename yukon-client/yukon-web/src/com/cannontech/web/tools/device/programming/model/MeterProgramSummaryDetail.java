@@ -6,7 +6,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
 
 public class MeterProgramSummaryDetail {
@@ -84,7 +83,7 @@ public class MeterProgramSummaryDetail {
     }
 
     public boolean displayCancel() {
-        return status == DisplayableStatus.IN_PROGRESS && programInfo.getSource().isActionable();
+        return status == DisplayableStatus.IN_PROGRESS;
     }
     
     public boolean displayProgressBar() {
@@ -92,15 +91,15 @@ public class MeterProgramSummaryDetail {
     }
 
     public boolean displayRead() {
-        return (status == DisplayableStatus.CONFIRMING &&  programInfo.getSource().isActionable()) ||  programInfo.getSource() == MeterProgramSource.OLD_FIRMWARE ;
+        return status == DisplayableStatus.CONFIRMING || programInfo.getSource().isOldFirmware();
     }
 
     public boolean displaySend() {
-        return status == DisplayableStatus.FAILURE && programInfo.getSource().isActionable();
+        return status == DisplayableStatus.FAILURE && !programInfo.getSource().isOldFirmware();
     }
     
     public boolean displayAccept() {
-        return status == DisplayableStatus.FAILURE && (programInfo.getSource().isActionable() || (programInfo.getSource() == MeterProgramSource.UNPROGRAMMED && assignedGuid != null));
+        return status == DisplayableStatus.FAILURE && !programInfo.getSource().isOldFirmware();
     }
 
     @Override

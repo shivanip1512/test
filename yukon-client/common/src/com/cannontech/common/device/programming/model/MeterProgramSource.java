@@ -49,11 +49,6 @@ public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentatio
         return isOldFirmware() || this == UNPROGRAMMED;
     }
     
-    //True if action such as Send, Accept, Read, Cancel can be performed
-    public boolean isActionable() {
-        return this == YUKON || this == NEW || this == OPTICAL;
-    }
-    
     @Override
     public String getFormatKey() {
         return "yukon.web.modules.amr.meterProgramming.source." + name();

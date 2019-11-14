@@ -141,31 +141,32 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
       
     @Override
     public MeterProgramCommandResult acceptMeterProgrammingStatus(SimpleDevice device, YukonUserContext context, UUID reportedGuid) {
+        MeterProgramStatus status = meterProgrammingDao.getMeterProgramStatus(device.getDeviceId());
+
         // unknown program
         if (!meterProgrammingDao.hasMeterProgram(reportedGuid)) {
             meterProgrammingDao.unassignDeviceFromProgram(device.getDeviceId());
-            logCompleted(device, null, true, context.getYukonUser());
-            return new MeterProgramCommandResult(true);
+            return updateStatusToIdle(device, context, status);
         }
 
-        MeterProgramStatus status = meterProgrammingDao.getMeterProgramStatus(device.getDeviceId());
-
         if (status != null && failures.contains(status.getStatus())) {
-            if( status.getSource() == MeterProgramSource.UNPROGRAMMED) {
-                meterProgrammingDao.unassignDeviceFromProgram(device.getDeviceId());
-                logCompleted(device, null, true, context.getYukonUser());
-            } else {
-                // Yukon program
-                meterProgrammingDao.assignDevicesToProgram(reportedGuid, Lists.newArrayList(device));
-                status.setLastUpdate(new Instant());
-                status.setStatus(ProgrammingStatus.IDLE);
-                meterProgrammingDao.updateMeterProgramStatus(status);
-                logCompleted(device, null, true, context.getYukonUser());
-            }
-            return new MeterProgramCommandResult(true);
+            // Yukon program
+            meterProgrammingDao.assignDevicesToProgram(reportedGuid, Lists.newArrayList(device));
+            return updateStatusToIdle(device, context, status);
         }
         
         return createFailureResult(null, device, context);
+    }
+
+    /**
+     * Updates status to idle returns successful result
+     */
+    private MeterProgramCommandResult updateStatusToIdle(SimpleDevice device, YukonUserContext context, MeterProgramStatus status) {
+        status.setLastUpdate(new Instant());
+        status.setStatus(ProgrammingStatus.IDLE);
+        meterProgrammingDao.updateMeterProgramStatus(status);
+        logCompleted(device, null, true, context.getYukonUser());
+        return new MeterProgramCommandResult(true);
     }
 
     private MeterProgramCommandResult sendCommandToPorter(SimpleDevice device, YukonUserContext context, DeviceRequestType deviceRequestType) {
