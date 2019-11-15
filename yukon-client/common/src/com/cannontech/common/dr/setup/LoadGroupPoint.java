@@ -39,7 +39,7 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
         // Set parent fields
         super.buildModel(lmGroupPoint);
 
-        // Set Control fields
+        // Set from LMGroupPoint fields
         setDeviceIdUsage(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage());
         setPointIdUsage(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
         setStartControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState());
@@ -53,7 +53,6 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
 
         // Set LMGroupPoint fields
         com.cannontech.database.db.device.lm.LMGroupPoint lmGroupPoint = group.getLMGroupPoint();
-        // lmGroupPoint.setDeviceID(getId());
         lmGroupPoint.setDeviceIDUsage(getDeviceIdUsage());
         lmGroupPoint.setPointIDUsage(getPointIdUsage());
         lmGroupPoint.setStartControlRawState(getStartControlRawState());
