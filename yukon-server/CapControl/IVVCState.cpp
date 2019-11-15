@@ -19,6 +19,10 @@ Cti::CapControl::Phase  KeepAliveHelper::getCurrentPhase()
     return phases[ phaseIndex ];
 }
 
+bool IVVCState::isIvvcOnline() const
+{
+    return ! _commsLost && powerFlow.valid;
+}
 
 IVVCState::IVVCState() :
     _state(IVVC_WAIT),
