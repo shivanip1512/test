@@ -82,34 +82,63 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         saveAndLogResult(result, context.getYukonUser());
         return result;
     }
-    
+
+    @Transactional
     @Override
     public void cancel(int key, LiteYukonUser user) {
-        CollectionActionResult cachedResult = cache.getIfPresent(key);
-        if(cachedResult.isCancelable()) {
-            if (cachedResult.hasCancelationCallbacks()) {
-                log.debug("Attemting to cancel result for {}", cachedResult.getCacheKey());
-                Optional<CollectionActionCancellationService> service = cancellationService.stream()
-                                                                                           .filter(s -> s.isCancellable(cachedResult.getAction()))
-                                                                                           .findFirst();
-                if (service.isPresent()) {
-                    log.debug("Using " + service.get().getClass() + " to cancel result for " + key);
-                    log.debug("Result to be canceled:");
-                    cachedResult.log();
-                    service.get().cancel(cachedResult.getCacheKey(), user);
-                }
-            } else {
-                log.debug("Attemting to terminate result for {}", cachedResult.getCacheKey());
-            }
-        } else {
-            log.debug("Attemting to cancel result for " + key + " failed. The results was already completed with the status " + cachedResult.getStatus());
-            cachedResult.log();
+        CollectionActionResult result = cache.getIfPresent(key);
+        cancel(result, user);
+    }
+    
+    @Transactional
+    @Override
+    public void cancel(CollectionActionResult result, LiteYukonUser user) {
+        boolean isCanceled = cancelAction(result, user);
+        if (!isCanceled) {
+            isCanceled = terminate(result);
         }
+        if (!isCanceled) {
+            log.debug("Attemting to cancel result for " + result.getCacheKey() + " failed. The result status: "
+                    + result.getStatus());
+            result.log();
+        }
+    }
+
+    /**
+     * Attempts to terminate collection action
+     */
+    private boolean terminate(CollectionActionResult result) {
+        if (result.isTerminatable()) {
+            log.debug("Result to be terminated:");
+            result.log();
+            result.setCanceled(true);
+            updateResult(result, CommandRequestExecutionStatus.CANCELLED);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Attempts to cancel collection action, returns true if cancellation attempt is successful
+     */
+    private boolean cancelAction(CollectionActionResult result, LiteYukonUser user) {
+        Optional<CollectionActionCancellationService> service = cancellationService.stream()
+                .filter(s -> s.isCancellable(result.getAction()))
+                .findFirst();
+        if (service.isPresent() && result.isCancelable()) {
+            log.debug("Using " + service.get().getClass() + " to cancel result for " + result.getCacheKey());
+            log.debug("Result to be canceled:");
+            result.log();
+            service.get().cancel(result.getCacheKey(), user);
+            return true;
+        }
+        return false;
     }
         
     @Transactional
     @Override
     public void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status) {
+        
         // If one execution failed and one succeeded (PLC or RFN), consider the execution failed.
         log.debug("Cache key:" + result.getCacheKey() + " updating result status to " + status);
         CommandRequestExecution execution = result.getExecution();
@@ -135,7 +164,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         }
         result.setStopTime(new Instant(stopTime));
         eventLogHelper.log(result);
-    }
+    } 
 
     @Override
     public CollectionActionResult getResult(int key) {

@@ -17,6 +17,7 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -59,6 +60,11 @@ public enum CollectionAction implements DisplayableEnum {
     ASSIGN_CONFIG(DB, null, SUCCESS, FAILURE),
     UNASSIGN_CONFIG(DB, null, SUCCESS, FAILURE);
 	
+    private static List<CollectionAction> actionsWithCre = Arrays.asList(CollectionAction.values()).stream()
+            .filter(action -> action.getProcess() == CollectionActionProcess.CRE)
+            .collect(Collectors.toList());
+   
+    
     private CollectionActionProcess process;
 
     private List<CollectionActionDetail> details;
@@ -103,6 +109,10 @@ public enum CollectionAction implements DisplayableEnum {
 
     public CollectionActionDetail getDetail(CommandRequestUnsupportedType unsupportedType) {
         return this.getDetails().stream().filter(d -> d.getCreUnsupportedType() == unsupportedType).findFirst().get();
+    }
+    
+    public static  List<CollectionAction> getActionsWithCre() {
+        return actionsWithCre;
     }
 
     @Override

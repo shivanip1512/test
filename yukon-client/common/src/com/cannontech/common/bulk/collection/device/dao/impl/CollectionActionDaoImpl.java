@@ -74,7 +74,31 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
     @Autowired private DeviceGroupCollectionHelper groupHelper;
     @Autowired private CollectionActionLogDetailService logService;
    
-    private static final Logger log = YukonLogManager.getLogger(CollectionActionDao.class);
+    private static final Logger log = YukonLogManager.getLogger(CollectionActionDaoImpl.class);
+    
+    private final YukonRowMapper<CollectionActionResult> resultMapper = new YukonRowMapper<CollectionActionResult>() {
+        @Override
+        public CollectionActionResult mapRow(YukonResultSet rs) throws SQLException {
+            int key = rs.getInt("CollectionActionId");
+            
+            CollectionActionResult result = null;
+            CollectionAction action = rs.getEnum("Action", CollectionAction.class);
+            if (action.getProcess() == CollectionActionProcess.CRE) {
+                result = buildCreResult(action, key);
+            } else if (action.getProcess() == CollectionActionProcess.DB) {
+                result = buildDbResult(action, key);
+            }
+            result.setLoadedFromDatabase(true);
+            result.setCacheKey(key);
+            result.setStatus(rs.getEnum("Status", CommandRequestExecutionStatus.class));
+            result.setStartTime(rs.getInstant("StartTime"));
+            result.setStopTime(rs.getInstant("StopTime"));
+            result.setLogger(log);
+            log.debug("--------Loaded result:");
+            result.log();
+            return result;      
+        }
+    };
     
     @Override
     @Transactional
@@ -260,24 +284,17 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
         sql.append("SELECT CollectionActionId, Action, StartTime, StopTime, Status");
         sql.append("FROM CollectionAction");
         sql.append("WHERE CollectionActionId").eq(key);
-        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<CollectionActionResult>() {
-            @Override
-            public CollectionActionResult mapRow(YukonResultSet rs) throws SQLException {
-                CollectionActionResult result = null;
-                CollectionAction action = rs.getEnum("Action", CollectionAction.class);
-                if (action.getProcess() == CollectionActionProcess.CRE) {
-                    result = buildCreResult(action, key);
-                } else if (action.getProcess() == CollectionActionProcess.DB) {
-                    result = buildDbResult(action, key);
-                }
-                result.setLoadedFromDatabase(true);
-                result.setCacheKey(key);
-                result.setStatus(rs.getEnum("Status", CommandRequestExecutionStatus.class));
-                result.setStartTime(rs.getInstant("StartTime"));
-                result.setStopTime(rs.getInstant("StopTime"));
-                return result;      
-            }
-        });
+        return jdbcTemplate.queryForObject(sql, resultMapper);
+    }
+    
+    @Override
+    public List<CollectionActionResult> loadIncompeteResultsFromDb() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CollectionActionId, Action, StartTime, StopTime, Status");
+        sql.append("FROM CollectionAction");
+        sql.append("WHERE StopTime is NULL");
+        sql.append("AND Action").in_k(CollectionAction.getActionsWithCre());
+        return jdbcTemplate.query(sql, resultMapper);
     }
     
     @Override
@@ -326,7 +343,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             }
         });
         CollectionActionResult result = new CollectionActionResult(action, allDevices, loadInputs(key),
-            null, editorDao, tempGroupService, groupHelper, null, logService, null);
+            null, editorDao, tempGroupService, groupHelper, null, logService, YukonUserContext.system);
         //failure bucket
         result.addDevicesToGroup(FAILURE, failed, null);
         //success bucket
@@ -342,7 +359,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
                 type -> crerDao.getUnsupportedDeviceIdsByExecutionId(exec.getId(), type)));
         unsupported.values().forEach(values -> allDevices.addAll(values));
         CollectionActionResult result = new CollectionActionResult(action, Lists.newArrayList(allDevices),
-            loadInputs(key), exec, editorDao, tempGroupService, groupHelper, null, logService, null);
+            loadInputs(key), exec, editorDao, tempGroupService, groupHelper, null, logService, YukonUserContext.system);
         
         List<PaoIdentifier> succeeded = crerDao.getSucessDeviceIdsByExecutionId(exec.getId());
         List<PaoIdentifier> failed = crerDao.getFailDeviceIdsByExecutionId(exec.getId());
