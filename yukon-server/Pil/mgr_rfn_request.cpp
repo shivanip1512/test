@@ -337,7 +337,7 @@ RfnDeviceResult RfnRequestManager::handleCommandError(const CtiTime Now, const R
 
 RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
 {
-    RfnIdentifierSet rejected;
+    RfnIdentifierSet completed;
 
     ConfirmQueue recentConfirms;
 
@@ -375,18 +375,28 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
 
                 _resultsPerTick.emplace_back(std::move(activeRequest.request), std::move(commandErrors));
 
-                rejected.insert(confirm.rfnIdentifier);
+                completed.insert(confirm.rfnIdentifier);
 
                 _activeRequests.erase(confirm.rfnIdentifier);
+            } 
+            else if( activeRequest.request.command->isOneWay() )
+            {
+                RfnCommandResultList results { { "One-way command sent" } };
 
-                continue;
+                _resultsPerTick.emplace_back(std::move(activeRequest.request), results);
+
+                completed.insert(confirm.rfnIdentifier);
+
+                _activeRequests.erase(confirm.rfnIdentifier);
             }
-
-            _awaitingIndications.emplace(CtiTime::now().addSeconds(activeRequest.currentPacket.retransmissionDelay), RfnRequestIdentifier { confirm.rfnIdentifier, _activeTokens[confirm.rfnIdentifier] } );
+            else
+            {
+                _awaitingIndications.emplace(CtiTime::now().addSeconds(activeRequest.currentPacket.retransmissionDelay), RfnRequestIdentifier{ confirm.rfnIdentifier, _activeTokens[confirm.rfnIdentifier] });
+            }
         }
     }
 
-    return rejected;
+    return completed;
 }
 
 

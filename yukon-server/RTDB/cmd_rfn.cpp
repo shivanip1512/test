@@ -51,6 +51,11 @@ bool RfnCommand::isPost() const
     return false;
 }
 
+bool RfnCommand::isOneWay() const
+{
+    return false;
+}
+
 
 std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleUnsolicitedReport(const CtiTime now, RfnResponsePayload payload)
 {

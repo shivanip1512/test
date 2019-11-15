@@ -140,7 +140,6 @@ public:
 
     using RfnRequestPayload  = Bytes;
     using RfnResponsePayload = Bytes;
-    using RfnCommandPtr = std::unique_ptr<RfnCommand>;
 
     RfnRequestPayload executeCommand(const CtiTime now);
 
@@ -155,6 +154,7 @@ public:
     virtual ASID getApplicationServiceId() const;
 
     virtual bool isPost() const;
+    virtual bool isOneWay() const;
 
 protected:
 
@@ -176,7 +176,7 @@ protected:
 
 };
 
-using RfnCommandPtr = RfnCommand::RfnCommandPtr;
+using RfnCommandPtr = std::unique_ptr<RfnCommand>;
 using RfnCommandList = std::vector<RfnCommandPtr>;
 
 }

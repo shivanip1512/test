@@ -12,8 +12,9 @@ namespace Cti::Devices::Commands {
     unsigned char RfnMeterProgrammingCommand::getCommandCode() const { return {}; }
 
     RfnMeterProgrammingSetConfigurationCommand::RfnMeterProgrammingSetConfigurationCommand(std::string guid, std::size_t length)
+        :   _guid(guid),
+            _length(length)
     {
-        //  
     }
 
     auto RfnMeterProgrammingSetConfigurationCommand::getCommandHeader() -> Bytes
@@ -23,14 +24,13 @@ namespace Cti::Devices::Commands {
 
     auto RfnMeterProgrammingSetConfigurationCommand::getCommandData() -> Bytes
     {
-        long size = 11235;
-        std::string uri = "/meterPrograms/7d444840-9dc0-11d1-b245-5ffdce74fad2";
+        std::string uri = "/meterPrograms/" + _guid;
         std::vector<TypeLengthValue> tlvs;
 
-        TypeLengthValue tlv_size = TypeLengthValue(TlvType_ConfigurationSize);
-        TypeLengthValue tlv_uri = TypeLengthValue(TlvType_ConfigurationURI);
+        auto tlv_size = TypeLengthValue::makeLongTlv(TlvType_ConfigurationSize);
+        auto tlv_uri  = TypeLengthValue::makeLongTlv(TlvType_ConfigurationURI);
 
-        setBits_bEndian(tlv_size.value, 0, 32, size);
+        setBits_bEndian(tlv_size.value, 0, 32, _length);
         tlv_uri.value.assign(uri.begin(), uri.end());
 
         tlvs.push_back(tlv_size);
@@ -42,7 +42,7 @@ namespace Cti::Devices::Commands {
 
     RfnCommandResult RfnMeterProgrammingSetConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
     {
-        return { "No respondo", ClientErrors::E2eBadRequest };
+        return { "No response", ClientErrors::E2eBadRequest };
     }
 
 
@@ -52,6 +52,11 @@ namespace Cti::Devices::Commands {
     }
 
     bool RfnMeterProgrammingSetConfigurationCommand::isPost() const
+    {
+        return true;
+    }
+
+    bool RfnMeterProgrammingSetConfigurationCommand::isOneWay() const
     {
         return true;
     }

@@ -378,6 +378,6 @@
     <entry key="yukon.web.modules.amr.meterProgramming.summary.readLink">Read Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.resendLink">Resend Status</entry>
     <entry key="yukon.web.modules.amr.meterProgramming.summary.noProgramsFound">No programs found</entry>
-    
-    
+    <entry key="yukon.web.modules.amr.meterProgramming.summary.programDoesNotMatch">The program selected for this action no longer matches the current program for this device.</entry>
+ 
 </properties>

@@ -299,11 +299,11 @@ public class MeterProgrammingSummaryController {
         Map<String, Object> json = new HashMap<>();
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
         SimpleDevice device = new SimpleDevice(pao);
-        boolean success = meterProgrammingService.acceptMeterProgrammingStatus(device, userContext, UUID.fromString(guid));
-        if (success) {
+        MeterProgramCommandResult result = meterProgrammingService.acceptMeterProgrammingStatus(device, userContext, UUID.fromString(guid));
+        if (result.isSuccess()) {
             json.put("successMsg", accessor.getMessage(baseKey + "summary.acceptSuccessful"));
         } else {
-            json.put("errorMsg", accessor.getMessage(baseKey + "summary.acceptError"));
+            json.put("errorMsg", result.getErrorText());
         }
         return json;
     }

@@ -6,7 +6,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.common.device.model.DisplayableDevice;
-import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
 
 public class MeterProgramSummaryDetail {
@@ -92,15 +91,15 @@ public class MeterProgramSummaryDetail {
     }
 
     public boolean displayRead() {
-        return status == DisplayableStatus.CONFIRMING || programInfo.getSource() == MeterProgramSource.OLD_FIRMWARE;
+        return status == DisplayableStatus.CONFIRMING || programInfo.getSource().isOldFirmware();
     }
 
     public boolean displaySend() {
-        return status == DisplayableStatus.FAILURE && programInfo.getSource() != MeterProgramSource.OLD_FIRMWARE;
+        return status == DisplayableStatus.FAILURE && !programInfo.getSource().isOldFirmware();
     }
     
     public boolean displayAccept() {
-        return status == DisplayableStatus.FAILURE;
+        return status == DisplayableStatus.FAILURE && !programInfo.getSource().isOldFirmware();
     }
 
     @Override
