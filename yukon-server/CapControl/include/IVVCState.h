@@ -39,6 +39,17 @@ struct KeepAliveHelper
     }
 };
 
+struct PowerFlowHelper
+{
+    bool    valid;
+    CtiTime nextCheckTime;
+
+    PowerFlowHelper()
+        :   valid { false }
+    {
+        // empty...
+    }
+};
 
 class IVVCState
 {
@@ -102,13 +113,15 @@ class IVVCState
 
         KeepAliveHelper keepAlives;
 
-//        typedef std::map<Zone::IdSet::value_type, int>  TapOperationZoneMap;
+        PowerFlowHelper powerFlow;
+
         typedef std::map<long, double>  TapOperationZoneMap;
 
         TapOperationZoneMap     _tapOps;
         CtiTime                 _tapOpDelay;
         TapOperationZoneMap     _undoTapOps;    // keeps track of bump restoration to original state
 
+        bool isIvvcOnline() const;
 
         IVVCState();
 
