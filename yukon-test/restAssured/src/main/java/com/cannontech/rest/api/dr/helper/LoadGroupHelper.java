@@ -117,7 +117,38 @@ public class LoadGroupHelper {
                     .build();
 
         case LM_GROUP_RFN_EXPRESSCOMM:
-            // loadGroup = LoadGroupExpresscom.builder().build()
+            List<MockAddressUsage> rfnAddressUsage = new ArrayList<>();
+            rfnAddressUsage.add(MockAddressUsage.LOAD);
+            rfnAddressUsage.add(MockAddressUsage.ZIP);
+            rfnAddressUsage.add(MockAddressUsage.FEEDER);
+            rfnAddressUsage.add(MockAddressUsage.GEO);
+            rfnAddressUsage.add(MockAddressUsage.SUBSTATION);
+            rfnAddressUsage.add(MockAddressUsage.USER);
+            rfnAddressUsage.add(MockAddressUsage.PROGRAM);
+            rfnAddressUsage.add(MockAddressUsage.SPLINTER);
+
+            List<MockLoads> rfnRelayUsage = new ArrayList<>();
+            rfnRelayUsage.add(MockLoads.Load_1);
+            rfnRelayUsage.add(MockLoads.Load_2);
+
+            loadGroup = MockLoadGroupExpresscom.builder()
+                    .name(getLoadGroupName(paoType))
+                    .type(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM)
+                    .disableControl(false)
+                    .disableGroup(false)
+                    .kWCapacity(153.0)
+                    .addressUsage(rfnAddressUsage)
+                    .relayUsage(rfnRelayUsage)
+                    .feeder("1000000000000000")
+                    .serviceProvider(100)
+                    .geo(223)
+                    .user(6)
+                    .substation(3)
+                    .zip(334)
+                    .splinter(43)
+                    .program(12)
+                    .protocolPriority(MockControlPriority.DEFAULT)
+                    .build();
             break;
         case LM_GROUP_VERSACOM:
 
@@ -228,4 +259,5 @@ public class LoadGroupHelper {
 
         return loadGroup;
     }
+
 }

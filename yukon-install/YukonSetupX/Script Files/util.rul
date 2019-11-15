@@ -1083,3 +1083,15 @@ begin
     
     return sV1 + "." + sV2 + "." + sV4;
 end;
+
+//-----------------------------------------------------------------------
+// Helper function to add Local service account access to Yukon directory
+//-----------------------------------------------------------------------
+export prototype UpdateYukonFolderPermissionsForLocalServiceAccount(STRING);
+function UpdateYukonFolderPermissionsForLocalServiceAccount(sDir)
+string sProg, sCMD;
+begin
+    sProg = "cmd.exe";
+    sCMD = "/c " + "icacls " + sDir + " /grant LocalService:(OI)(CI)F /T";
+    LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
+end;
