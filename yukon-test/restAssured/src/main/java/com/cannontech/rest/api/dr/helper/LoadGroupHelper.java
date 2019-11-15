@@ -12,15 +12,12 @@ import org.apache.logging.log4j.Logger;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockLMDto;
-import com.cannontech.rest.api.common.model.MockLMPaoDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
-import com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockControlPriority;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconRelayUsage;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
-import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupDigiSep;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupDisconnect;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEcobee;
@@ -31,7 +28,6 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupNest;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
 import com.cannontech.rest.api.loadgroup.request.MockLoads;
-import com.cannontech.rest.api.loadgroup.request.MockMacroLoadGroup;
 import com.cannontech.rest.api.loadgroup.request.MockRelays;
 import com.cannontech.rest.api.loadgroup.request.MockSepDeviceClass;
 import com.cannontech.rest.api.loadgroup.request.MockVersacomAddressUsage;
@@ -232,5 +228,4 @@ public class LoadGroupHelper {
 
         return loadGroup;
     }
-
 }
