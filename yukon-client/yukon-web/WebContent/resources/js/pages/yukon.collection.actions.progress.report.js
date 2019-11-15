@@ -179,7 +179,7 @@ yukon.collection.actions.progress.report = (function () {
                 $('.js-progress-info').html(data.infoText).removeClass('dn');
             }
             //show/hide cancel
-            $('.js-cancel').toggleClass('dn', !data.cancelable);
+            $('.js-cancel').toggleClass('dn', data.displayCancelButton);
         }
     },
     

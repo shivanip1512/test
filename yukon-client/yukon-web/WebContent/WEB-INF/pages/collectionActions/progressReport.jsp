@@ -117,7 +117,7 @@
             <span class="js-status" style="padding-left:10px"></span>
             <span class="user-message error js-progress-error dn"></span>
             <span class="user-message info js-progress-info dn"></span>
-            <c:if test="${result.isCancelable()}">
+            <c:if test="${result.displayCancelButton()}">
                 <cti:button nameKey="cancel" classes="js-cancel fn" busy="true"/>
             </c:if>
             <c:if test="${result.action == 'LOCATE_ROUTE'}">

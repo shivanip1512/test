@@ -90,11 +90,9 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
                 @Override
                 public void run() {
                     List<SimpleDevice> devices = result.getInputs().getCollection().getDeviceList();
-                    log.debug("Point names load started for for cacheKey=" + result.getCacheKey() + " devices=" + devices.size());
                     List<LitePoint> points = pointDao.getLitePointsByDeviceIds(
                         devices.stream().map(d -> d.getDeviceId()).collect(Collectors.toList()));
                     pointNames.putAll(points.stream().collect(Collectors.toMap(p -> p.getLiteID(), p -> p.getPointName())));
-                    log.debug("Point names load completed for for cacheKey=" + result.getCacheKey() + " loaded point names=" + points.size());
                 }
             });
         }
