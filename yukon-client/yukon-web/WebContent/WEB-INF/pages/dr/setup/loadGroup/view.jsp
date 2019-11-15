@@ -75,8 +75,7 @@
                     <c:if test="${selectedSwitchType == 'LM_GROUP_ITRON'}">
                         <%@ include file="itron.jsp" %>
                     </c:if>
-                    <c:if test="${selectedSwitchType == 'LM_GROUP_EXPRESSCOMM' ||  selectedSwitchType == 'LM_GROUP_EMETCON' 
-                                              || selectedSwitchType == 'LM_GROUP_VERSACOM' || isMctGroupSelected}">
+                    <c:if test="${isLoadGroupSupportRoute}">
                         <tags:nameValue2 nameKey=".route" rowClass="noswitchtype">
                             <cti:displayForPageEditModes modes="CREATE,EDIT">
                                 <tags:selectWithItems items="${routes}" id="route" path="routeId" itemValue="liteID"/>

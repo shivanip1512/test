@@ -5,10 +5,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <tags:sectionContainer2 nameKey="address" styleClass="js-mct-load-group-container">
-    <input type="hidden" class="js-addr-level-bronze-val" value="${leadAddressEnumVal}"/>
-    <input type="hidden" class="js-addr-level-lead-val" value="${leadAddressEnumVal}"/>
     <input type="hidden" class="js-addr-level-mct-addr-val" value="${mctAddressEnumVal}"/>
     <cti:uniqueIdentifier var="uniqueId"/>
+    <input type="hidden" class="js-unique-value" value="${uniqueId}"/>
     <c:set var="displayMctPicker" value="${isMctAddressSelected ? '' : 'dn'}"/>
     <c:set var="displayAddressTxtField" value="${isMctAddressSelected ? 'dn' : ''}"/>
     <tags:nameValueContainer2>

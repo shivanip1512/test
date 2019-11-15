@@ -54,6 +54,9 @@ public class LoadGroupSetupControllerHelper {
      * Each load group can set its model attributes here.
      */
     public void buildModelMap(PaoType type, ModelMap model, HttpServletRequest request, YukonUserContext userContext, String bindingResultKey) {
+        LoadGroupBase<?> loadGroupBase = (LoadGroupBase<?>) model.get("loadGroup");
+        model.addAttribute("isLoadGroupSupportRoute", loadGroupBase.getType().isLoadGroupSupportRoute());
+        
         PageEditMode mode = (PageEditMode) model.get("mode");
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
@@ -160,8 +163,6 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("isMctGroupSelected", true);
             model.addAttribute("addressLevels", AddressLevel.values());
             model.addAttribute("isMctAddressSelected", loadGroupMCT.getLevel() == AddressLevel.MCT_ADDRESS);
-            model.addAttribute("leadAddressEnumVal", AddressLevel.LEAD);
-            model.addAttribute("bronzeAddressEnumVal", AddressLevel.BRONZE);
             model.addAttribute("mctAddressEnumVal", AddressLevel.MCT_ADDRESS);
             model.addAttribute("relayUsageList", Relays.values());
             model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
