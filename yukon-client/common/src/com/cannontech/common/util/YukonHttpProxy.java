@@ -71,7 +71,7 @@ public class YukonHttpProxy {
         
         Optional<YukonHttpProxy> oProxy = Optional.ofNullable(null);
         
-        if (StringUtils.isNotBlank(proxySetting) && !proxySetting.equals("none")) {
+        if (StringUtils.isNotBlank(proxySetting)) {
             try {
                 YukonHttpProxy proxy = new YukonHttpProxy(proxySetting);
                 oProxy = Optional.of(proxy);

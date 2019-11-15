@@ -386,7 +386,7 @@
     <entry key="yukon.common.setting.TEMP_DEVICE_GROUP_DELETION_IN_DAYS">Temporary Device Group Deletion Period</entry>
     <entry key="yukon.common.setting.TEMP_DEVICE_GROUP_DELETION_IN_DAYS.description">The time period to be used for temporary device group deletion.</entry>
     <entry key="yukon.common.setting.HTTP_PROXY">System HTTP Proxy</entry>
-    <entry key="yukon.common.setting.HTTP_PROXY.description">System wide HTTP proxy settings. Used to facilitate HTTP requests which require a proxy server. (values = ip:port or 'none')</entry>
+    <entry key="yukon.common.setting.HTTP_PROXY.description">System wide HTTP proxy settings. Used to facilitate HTTP requests which require a proxy server. (values = ip:port)</entry>
     <entry key="yukon.common.setting.CONTACT_EMAIL">Contact Email</entry>
     <entry key="yukon.common.setting.CONTACT_EMAIL.description">Email address displayed in the 'Contact Us' section of login page.</entry>
     <entry key="yukon.common.setting.CONTACT_PHONE">Contact Phone</entry>

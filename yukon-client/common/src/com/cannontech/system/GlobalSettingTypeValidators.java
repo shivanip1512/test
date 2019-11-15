@@ -111,7 +111,6 @@ public class GlobalSettingTypeValidators {
             YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[" + globalSettingType + "]", urlWithPort, true, 1000);
 
             if (!StringUtils.isBlank(urlWithPort)
-                    && !urlWithPort.equals("none")
                     && !urlWithPortMatcher.matcher(urlWithPort).matches()) {
                 errors.rejectValue("values["+globalSettingType+"]", baseKey + "invalidProxy", null,"");
             }
