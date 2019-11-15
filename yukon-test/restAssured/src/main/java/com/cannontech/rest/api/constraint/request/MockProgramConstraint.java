@@ -6,15 +6,18 @@ import com.cannontech.rest.api.common.model.MockLMDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@JsonInclude(Include.NON_NULL)
-
-@Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@JsonInclude(Include.NON_NULL)
 public class MockProgramConstraint {
     private Integer id;
     private String name;
