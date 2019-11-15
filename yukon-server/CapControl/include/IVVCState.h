@@ -41,14 +41,7 @@ struct KeepAliveHelper
 
 struct PowerFlowHelper
 {
-    bool    valid;
-    CtiTime nextCheckTime;
-
-    PowerFlowHelper()
-        :   valid { false }
-    {
-        // empty...
-    }
+    bool    valid = false;
 };
 
 class IVVCState

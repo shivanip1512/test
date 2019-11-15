@@ -4887,12 +4887,43 @@ bool IVVCAlgorithm::executeBusVerification( IVVCStatePtr state, CtiCCSubstationB
     return true;
 }
 
+namespace
+{
+
+void WritePowerFlowEventLog( CtiCCSubstationBusPtr subbus, bool properFlowDirection )
+{
+    CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
+
+    long stationId, areaId, spAreaId;
+    store->getSubBusParentInfo( subbus, spAreaId, areaId, stationId );
+
+    EventLogEntries ccEvents;
+    ccEvents.push_back(
+        EventLogEntry(
+            0,
+            SYS_PID_CAPCONTROL,
+            spAreaId,
+            areaId,
+            stationId,
+            subbus->getPaoId(),
+            0,
+            capControlIvvcPowerFlowIndication,
+            0,
+            properFlowDirection,
+            properFlowDirection
+                ? "Proper Power Flow Restored"
+                : "Improper Power Flow",
+            Cti::CapControl::SystemUser ) );
+
+    CtiCapController::submitEventLogEntries( ccEvents );
+}
+
+}
 
 bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubstationBusPtr subbus )
 {
-    const auto reason = handleReverseFlow( subbus );
-
-    if ( ! reason.empty() )
+    if ( const auto reason = handleReverseFlow( subbus );
+            ! reason.empty() )
     {
         if ( state->powerFlow.valid )   // transition from good to bad
         {
@@ -4902,67 +4933,18 @@ bool IVVCAlgorithm::isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubst
 
             sendDisableRemoteControl( subbus );
 
-            // Write to the event log.
-            {
-                CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-
-                long stationId, areaId, spAreaId;
-                store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
-
-                EventLogEntries ccEvents;
-                ccEvents.push_back(
-                    EventLogEntry(
-                        0,
-                        SYS_PID_CAPCONTROL,
-                        spAreaId,
-                        areaId,
-                        stationId,
-                        subbus->getPaoId(),
-                        0,
-                        capControlIvvcPowerFlowIndication,
-                        0,
-                        0,
-                        "Improper Power Flow",
-                        Cti::CapControl::SystemUser) );
-
-                CtiCapController::submitEventLogEntries(ccEvents);
-            }
+            WritePowerFlowEventLog( subbus, state->powerFlow.valid );
         }
 
         return true;
     }
-
-    if ( ! state->powerFlow.valid )     // transition from bad to good
+    else if ( ! state->powerFlow.valid )     // transition from bad to good
     {
         state->powerFlow.valid = true;
 
         CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Proper Power Flow Restored." );
 
-        // Write to the event log.
-        {
-            CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-
-            long stationId, areaId, spAreaId;
-            store->getSubBusParentInfo(subbus, spAreaId, areaId, stationId);
-
-            EventLogEntries ccEvents;
-            ccEvents.push_back(
-                EventLogEntry(
-                    0,
-                    SYS_PID_CAPCONTROL,
-                    spAreaId,
-                    areaId,
-                    stationId,
-                    subbus->getPaoId(),
-                    0,
-                    capControlIvvcPowerFlowIndication,
-                    0,
-                    1,
-                    "Proper Power Flow Restored",
-                    Cti::CapControl::SystemUser) );
-
-            CtiCapController::submitEventLogEntries(ccEvents);
-        }
+        WritePowerFlowEventLog( subbus, state->powerFlow.valid );
     }
 
     return false;
