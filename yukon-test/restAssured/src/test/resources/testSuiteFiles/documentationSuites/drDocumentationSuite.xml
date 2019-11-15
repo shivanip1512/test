@@ -13,6 +13,7 @@
            <class name = "com.cannontech.rest.api.documentation.loadgroup.EmetconLoadGroupSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadgroup.HoneywellLoadGroupSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadgroup.ItronLoadGroupSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.PointLoadGroupSetupApiControllerTest" />
 
            <class name = "com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.constraint.ProgramConstraintControllerTest" />

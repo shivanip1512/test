@@ -17,6 +17,7 @@ include::HoneywellCreate.adoc[]
 include::ItronCreate.adoc[]
 include::MeterDisconnectCreate.adoc[]
 include::VersacomCreate.adoc[]
+include::PointGroupCreate.adoc[]
 
 === Retrieve
 include::DigiSepGet.adoc[]
@@ -27,6 +28,7 @@ include::HoneywellGet.adoc[]
 include::ItronGet.adoc[]
 include::MeterDisconnectGet.adoc[]
 include::VersacomGet.adoc[]
+include::PointGroupGet.adoc[]
 
 === Update
 include::DigiSepUpdate.adoc[]
@@ -37,6 +39,7 @@ include::HoneywellUpdate.adoc[]
 include::ItronUpdate.adoc[]
 include::MeterDisconnectUpdate.adoc[]
 include::VersacomUpdate.adoc[]
+include::PointGroupUpdate.adoc[]
 
 === Delete
 include::DigiSepDelete.adoc[]
@@ -47,6 +50,7 @@ include::HoneywellDelete.adoc[]
 include::ItronDelete.adoc[]
 include::MeterDisconnectDelete.adoc[]
 include::VersacomDelete.adoc[]
+include::PointGroupDelete.adoc[]
 
 === Copy
 include::DigiSepCopy.adoc[]
@@ -55,6 +59,7 @@ include::ExpresscomCopy.adoc[]
 include::ItronCopy.adoc[]
 include::MeterDisconnectCopy.adoc[]
 include::VersacomCopy.adoc[]
+include::PointGroupCopy.adoc[]
 
 == Macro LoadGroup
 === Create
