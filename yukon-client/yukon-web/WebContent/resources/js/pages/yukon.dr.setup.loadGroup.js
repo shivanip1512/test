@@ -84,6 +84,25 @@ yukon.dr.setup.loadGroup = (function() {
                 });
             });
             
+            $(document).on('change', '.js-address-level', function (event) {
+                var container = $(this).closest(".js-mct-load-group-container"),
+                       addressTextRow = container.find(".js-address"),
+                       mctAddressRow = container.find(".js-mct-address"),
+                       mctAdressEnumVal = container.find(".js-addr-level-mct-addr-val").val(),
+                       isMctAddrSelected = $(this).val() === mctAdressEnumVal;
+
+                addressTextRow.toggleClass("dn", isMctAddrSelected);
+                mctAddressRow.toggleClass("dn", !isMctAddrSelected);
+                
+                if (isMctAddrSelected) {
+                    container.find(".js-address-txt").val('');
+                } else {
+                    var uniqueId = container.find(".js-unique-value").val(),
+                           mctPicker = yukon.pickers['mctMeterPicker_' + uniqueId];
+                    mctPicker.clearSelected.call(mctPicker);
+                }
+            });
+            
             $(document).on('change', '#type', function (event) {
                 _loadGroup();
             });

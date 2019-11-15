@@ -148,6 +148,14 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.retrieve.error">Load Program could not be retrieved.</entry>
 <entry key="yukon.web.modules.dr.setup.gear.error">Please check gear field errors in {0}.</entry>
 
+<!-- MCT Load Group -->
+<entry key="yukon.web.modules.dr.setup.loadGroup.address">Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel">Address Level</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.mctAddress">MCT Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.BRONZE">Bronze</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.LEAD">Lead</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.MCT_ADDRESS">MCT Address</entry>
+
 <!-- Versacom -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage.title">Address Usage</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.usage">Usage</entry>

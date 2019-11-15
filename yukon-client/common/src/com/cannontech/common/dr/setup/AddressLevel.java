@@ -2,9 +2,10 @@ package com.cannontech.common.dr.setup;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 
-public enum AddressLevel {
+public enum AddressLevel implements DisplayableEnum {
     
     BRONZE("B"),
     LEAD("L"),
@@ -34,5 +35,10 @@ public enum AddressLevel {
         AddressLevel addressLevel = lookupByLevel.get(value);
         checkArgument(addressLevel != null, addressLevel);
         return addressLevel;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.dr.setup.loadGroup.addressLevel." + name();
     }
 }

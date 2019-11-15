@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 
+import com.cannontech.common.dr.setup.AddressLevel;
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
@@ -24,6 +25,7 @@ import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
+import com.cannontech.common.dr.setup.LoadGroupMCT;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.dr.setup.Loads;
 import com.cannontech.common.dr.setup.Relays;
@@ -51,7 +53,10 @@ public class LoadGroupSetupControllerHelper {
     /**
      * Each load group can set its model attributes here.
      */
-    public void buildModelMap(PaoType type, ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public void buildModelMap(PaoType type, ModelMap model, HttpServletRequest request, YukonUserContext userContext, String bindingResultKey) {
+        LoadGroupBase<?> loadGroupBase = (LoadGroupBase<?>) model.get("loadGroup");
+        model.addAttribute("isLoadGroupSupportRoute", loadGroupBase.getType().isLoadGroupSupportRoute());
+        
         PageEditMode mode = (PageEditMode) model.get("mode");
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
@@ -152,6 +157,24 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_EMETCON:
             setCommunicationRoute(model, request, userContext);
             break;
+        case LM_GROUP_MCT:
+            LoadGroupMCT loadGroupMCT = (LoadGroupMCT) model.get("loadGroup");
+            setCommunicationRoute(model, request, userContext);
+            model.addAttribute("isMctGroupSelected", true);
+            model.addAttribute("addressLevels", AddressLevel.values());
+            model.addAttribute("isMctAddressSelected", loadGroupMCT.getLevel() == AddressLevel.MCT_ADDRESS);
+            model.addAttribute("mctAddressEnumVal", AddressLevel.MCT_ADDRESS);
+            model.addAttribute("relayUsageList", Relays.values());
+            model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
+            if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
+                BindingResult result = (BindingResult) model.get(bindingResultKey);
+                if (result.hasFieldErrors("mctDeviceId")) {
+                    model.addAttribute("mctAddressHasError", true);
+                } else {
+                    model.addAttribute("mctAddressHasError", false);
+                }
+            }
+            break;
         }
     }
 
@@ -200,6 +223,12 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_DIGI_SEP:
             ((LoadGroupDigiSep) group).setRampInMinutes(30);
             ((LoadGroupDigiSep) group).setRampOutMinutes(30);
+            break;
+        case LM_GROUP_MCT:
+            LoadGroupMCT loadGroupMCT = ((LoadGroupMCT) group);
+            List relayUsages = Lists.newArrayList();
+            relayUsages.add(Relays.RELAY_1);
+            loadGroupMCT.setRelayUsage(relayUsages);
             break;
         }
         // Set default value for common field.
