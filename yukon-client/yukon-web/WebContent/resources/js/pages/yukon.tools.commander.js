@@ -16,6 +16,7 @@ yukon.tools.commander = (function () {
     mod = {},
     
     _scrollLock = false,
+    _customCommandsDirty = false,
     
     /** {object} - Map of target button id's to CommandType enum entries. */
     _targetTypes = {
@@ -448,38 +449,75 @@ yukon.tools.commander = (function () {
         }
         
         _loadNearby(data.pao.liteID);
-    };
+    },
     
+    _reOrderCustomCommands = function () {
+        yukon.ui.reindexInputs('#commands');
+        //update display order
+        var table = $('#commands'),
+            rows = table.find('tbody tr');
+        rows.each(function (idx, elem) {
+            var row = $(elem);
+            row.find('.js-display-order').val(idx + 1);
+        });
+    },
+    
+    _switchCategory = function (category) {
+        $.ajax({ url: yukon.url('/tools/commander/customCommandsByCategory?category=' + category) })
+        .done(function (html) {
+            $('#device-commands-table').html(html);
+            _customCommandsDirty = false;
+            _setupDragDrop();
+        });
+    },
+    
+    _setupDragDrop = function () {
+        var isCategory = $('#isCategory').val(),
+            hasEditPermissions = $('#hasEditPermissions').val();
+        if (!isCategory && hasEditPermissions) {
+            $("#commands tbody").sortable({
+                stop : function(event, ui) {
+                    ui.item.closest('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                    _reOrderCustomCommands();
+                    _customCommandsDirty = true;
+                }
+            });
+        }
+    },
+    
+    _setCommandsInDropdown = function () {
+        
+        /** Setup form components based on inputs.  Use input values for target instead of 
+         * retreiving from cookie to support the browser 'back' button behavior at least for devices. */
+        var target = _targetButtons[$('#target-row .on').attr('id')];
+        var paoId = target === _targetTypes.device ? $('#pao-id').val() : $('#lm-group-id').val();
+        
+        if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
+            if (paoId) {
+                _updateCommandsForPao(paoId);
+                if (target === _targetTypes.device) {
+                    $.ajax({ url: 'commander/' + paoId + '/data' })
+                    .done(function (data) { _setupFieldsForDevice(data); });
+                }
+            }
+        } else {
+            var category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
+            var url = 'commander/type-commands?' + $.param({ type: category });
+            $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
+        }
+    }
+
     mod = {
         
         /** Initialize this module. */
         init: function () {
             
             if (_initialized) return;
-            
-            var target, paoId, category, url, lastReq;
-            
-            /** Setup form components based on inputs.  Use input values for target instead of 
-             * retreiving from cookie to support the browser 'back' button behavior at least for devices. */
-            target = _targetButtons[$('#target-row .on').attr('id')];
-            paoId = target === _targetTypes.device ? $('#pao-id').val() : $('#lm-group-id').val();
-            
-            if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
-                if (paoId) {
-                    _updateCommandsForPao(paoId);
-                    if (target === _targetTypes.device) {
-                        $.ajax({ url: 'commander/' + paoId + '/data' })
-                        .done(function (data) { _setupFieldsForDevice(data); });
-                    }
-                }
-            } else {
-                category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
-                url = 'commander/type-commands?' + $.param({ type: category });
-                $.getJSON(url).done(function (commands) { _updateCommonCommands(commands); });
-            }
+
+            _setCommandsInDropdown();
             
             /** Scroll the console to the bottom incase there are previous commands */
-            lastReq = $('#commander-results .cmd-req-resp:last-child');
+            var lastReq = $('#commander-results .cmd-req-resp:last-child');
             if (lastReq.length) $('#commander-results').scrollTo(lastReq);
             
             _scrollLock = yukon.cookie.get('commander', 'scrollLock', false);
@@ -494,6 +532,146 @@ yukon.tools.commander = (function () {
                 var on = $(this).toggleClass('on').is('.on');
                 yukon.cookie.set('commander', 'scrollLock', on);
                 _scrollLock = on;
+            });
+
+            /** User clicked the custom commands button, display the custom commands popup. */
+            $(document).on('click', '#custom-commands', function() {
+                var target = _targetButtons[$('#target-row .on').attr('id')],
+                    data = {};
+                if (target === _targetTypes.device || target === _targetTypes.lmGroup) {
+                    var paoId = target === _targetTypes.device ? $('#pao-id').val() : $('#lm-group-id').val();
+                    if (paoId != "") {
+                        data.paoId = paoId;
+                    }
+                } else {
+                    var category = target === _targetTypes.ecom ? 'EXPRESSCOM_SERIAL' : 'VERSACOM_SERIAL';
+                    data.category = category;
+                }
+                $.ajax({ 
+                    url: yukon.url('/tools/commander/customCommands'),
+                    data: data
+                }).done(function (html) {
+                    var buttons,
+                        popup = $('#custom-commands-popup'),
+                        title = popup.data('title');
+                    popup.html(html);
+                    var hasEditPermissions = $('#hasEditPermissions').val();
+                    if (hasEditPermissions) {
+                        buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save'});
+                    }
+                    popup.dialog({title: title, modal: true, width: '985px', buttons: buttons});
+                    _customCommandsDirty = false;
+                    _setupDragDrop();
+                });
+            });
+            
+            $(document).on('dialogclose', '#custom-commands-popup', function (event, ui) {
+                //refresh commands in dropdown
+                _setCommandsInDropdown();
+            });
+            
+            $(document).on('click', '.js-with-movables .js-move-up, .js-with-movables .js-move-down', function () {
+                _reOrderCustomCommands();
+                _customCommandsDirty = true;
+            });
+            
+            $(document).on('click', '.js-add-command', function () {
+                var clonedRow = $('.js-template-row').clone(),
+                    isCategory = $('#isCategory').val(),
+                    category = $('.js-selected-category option:selected').text();
+                clonedRow.find(':input').removeAttr('disabled');
+                if (isCategory) {
+                    clonedRow.find('.js-move-up').prop('disabled', true);
+                    clonedRow.find('.js-move-down').prop('disabled', true);
+                    clonedRow.find(':input[type=checkbox]').prop('disabled', true);
+                }
+                clonedRow.find('.js-category').text(category);
+                clonedRow.removeClass('dn js-template-row');
+                clonedRow.appendTo($('#commands'));
+                $('.js-empty-commands').remove();
+                var firstField = clonedRow.find('.js-command-fields').first();
+                firstField.focus();
+                if (!isCategory) {
+                    $('#commands').trigger('yukon:ordered-selection:added-removed');
+                }
+                _reOrderCustomCommands();
+                _customCommandsDirty = true;
+            });
+            
+            $(document).on('click', '.js-remove', function () {
+                var isCategory = $('#isCategory').val(),
+                    tableRow = $(this).closest('tr'),
+                    commandId = tableRow.data('command-id'),
+                    commandName = tableRow.find('.js-command-fields:first').val();
+                if (isCategory && commandId) {
+                    //show delete confirmation
+                    var buttons = yukon.ui.buttons({ okText: yg.text.deleteButton, event: 'yukon:tools:commander:commands:delete'}),
+                    popup = $('#delete-popup-' + commandId),
+                    title = popup.data('title');
+                    popup.attr('data-command-id', commandId);
+                    popup.dialog({title: title, modal: true, width: '400px', buttons: buttons});
+                } else {
+                    tableRow.remove();
+                    if (!isCategory) {
+                        $('#commands').trigger('yukon:ordered-selection:added-removed');
+                    }
+                    _reOrderCustomCommands();
+                    _customCommandsDirty = true;
+                }
+            });
+            
+            $(document).on('yukon:tools:commander:commands:delete', function (ev) {
+                var popup = $(ev.target),
+                    commandId = popup.attr('data-command-id'),
+                    row = $('#commands').find('tr[data-command-id=' + commandId + ']');
+                row.remove();
+                _reOrderCustomCommands();
+                _customCommandsDirty = true;
+                popup.dialog('close');
+            });
+            
+            $(document).on('yukon:tools:commander:commands:save', function (ev) {
+                var popup = $('#custom-commands-popup');
+                $('#custom-commands-form').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+                        $('#device-commands-table').html(xhr.responseText).scrollTop(0);
+                        _customCommandsDirty = false;
+                        var saveChangesPopup = $('#save-changes-popup');
+                        if (saveChangesPopup && saveChangesPopup.is(':visible')) {
+                            //close dialog and change selected back to previous
+                            var selectedCategory = $('#selectedCategory').val();
+                            saveChangesPopup.dialog('close');
+                            $('.js-selected-category').val(selectedCategory);
+                        }
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#device-commands-table').html(xhr.responseText).scrollTop(0);
+                        $('#save-changes-popup').dialog('close');
+                    }
+                });
+            });
+            
+            $(document).on('click', '.js-switch-category', function () {
+                var category = $('#save-changes-popup').attr('data-category');
+                _switchCategory(category);
+            });
+            
+            $(document).on('change', '.js-command-fields', function (event) {
+                _customCommandsDirty = true;
+            });
+
+            $(document).on('change', '.js-selected-category', function() {
+                var category = $(this).val();
+                $('.js-add-command').removeAttr('disabled');
+                if (_customCommandsDirty) {
+                    var buttons = yukon.ui.buttons({ okText: yg.text.save, event: 'yukon:tools:commander:commands:save', cancelClass: 'js-switch-category'}),
+                    popup = $('#save-changes-popup'),
+                    title = popup.data('title');
+                    popup.attr('data-category', category);
+                    popup.dialog({title: title, modal: true, width: '400px', buttons: buttons});
+                } else {
+                    _switchCategory(category);
+                }
             });
             
             /** User clicked the device readings menu option, show points popup. */

@@ -1447,4 +1447,6 @@
     
     <bean class="com.cannontech.web.collectionActions.service.StartupCancelationService"/>
 
+    <bean class="com.cannontech.web.tools.commander.CustomCommandBeanValidator"/>
+
 </beans>

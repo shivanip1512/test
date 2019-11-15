@@ -1,5 +1,8 @@
 package com.cannontech.database.data.lite;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.cannontech.database.data.command.YukonCommand;
 
 
@@ -68,7 +71,6 @@ public class LiteDeviceTypeCommand extends LiteBase implements YukonCommand {
     
     @Override
     public String toString() {
-        return getCommandId() + " " + getDeviceType();
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
-    
 }
