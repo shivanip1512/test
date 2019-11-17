@@ -8,4 +8,4 @@
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.2', '19-AUG-2019', 'Latest Update', 5, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('7.2', '18-NOV-2019', 'Latest Update', 5, GETDATE());
