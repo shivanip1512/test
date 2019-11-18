@@ -34,13 +34,16 @@ public class LoadGroupMCTValidator extends LoadGroupSetupValidator<LoadGroupMCT>
         lmValidatorHelper.checkIfFieldRequired("level", errors, loadGroup.getLevel(), "Address level");
         // Validate address.
         if (loadGroup.getLevel() == AddressLevel.MCT_ADDRESS) {
-            lmValidatorHelper.checkIfFieldRequired("mctDeviceId", errors, loadGroup.getMctDeviceId(), "mctDeviceId");
+            lmValidatorHelper.checkIfFieldRequired("mctDeviceId", errors, loadGroup.getMctDeviceId(), "MCT Address");
             if (!errors.hasFieldErrors("mctDeviceId") && !isValidMCTDeviceId(loadGroup.getMctDeviceId())) {
                 errors.rejectValue("mctDeviceId", "yukon.web.modules.dr.setup.loadGroup.error.mctDeviceId.doesNotExist");
             }
         } else {
             // Check for valid range of addresses.
-            YukonValidationUtils.checkRange(errors, "address", loadGroup.getAddress(), 1, Integer.MAX_VALUE, true);
+            lmValidatorHelper.checkIfFieldRequired("address", errors, loadGroup.getAddress(), "Address");
+            if (!errors.hasFieldErrors("address")) {
+                YukonValidationUtils.checkRange(errors, "address", loadGroup.getAddress(), 1, Integer.MAX_VALUE, true);
+            }
         }
     }
 
