@@ -69,8 +69,8 @@ public class SimpleThermostatRampingGearValidationAPITest {
     public void gearValidation_03_RandomStartTimeLessThanMinValue() {
 
         MockSimpleThermostatRampingGearFields simpleThermostatRampingGearFields = (MockSimpleThermostatRampingGearFields) mockLoadProgram
-                .getGears() .get(0).getFields();
-         
+                .getGears().get(0).getFields();
+
         simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -89,7 +89,7 @@ public class SimpleThermostatRampingGearValidationAPITest {
 
         MockSimpleThermostatRampingGearFields simpleThermostatRampingGearFields = (MockSimpleThermostatRampingGearFields) mockLoadProgram
                 .getGears().get(0).getFields();
-    
+
         simpleThermostatRampingGearFields.setRandomStartTimeInMinutes(121);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -108,9 +108,9 @@ public class SimpleThermostatRampingGearValidationAPITest {
 
         MockSimpleThermostatRampingGearFields simpleThermostatRampingGearFields = (MockSimpleThermostatRampingGearFields) mockLoadProgram
                 .getGears().get(0).getFields();
-    
+
         simpleThermostatRampingGearFields.setPreOpTemp(-25);
-     
+
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
@@ -168,7 +168,7 @@ public class SimpleThermostatRampingGearValidationAPITest {
 
         MockSimpleThermostatRampingGearFields simpleThermostatRampingGearFields = (MockSimpleThermostatRampingGearFields) mockLoadProgram
                 .getGears().get(0).getFields();
-         
+
         simpleThermostatRampingGearFields.setPreOpTimeInMinutes(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
