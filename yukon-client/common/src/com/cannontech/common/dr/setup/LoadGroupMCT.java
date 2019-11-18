@@ -76,34 +76,40 @@ public class LoadGroupMCT extends LoadGroupBase<LMGroupMCT> implements LoadGroup
             setMctDeviceId(lmGroupMCT.getMctDeviceID());
         }
 
-        String relayUsage = lmGroupMCT.getRelayUsage().trim();
-        List<Relays> relays = new ArrayList<>();
-        for (int i = 0; i < relayUsage.length(); i++) {
-            relays.add(Relays.getDisplayValue(relayUsage.charAt(i)));
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(lmGroupMCT.getRelayUsage())) {
+            String relayUsage = lmGroupMCT.getRelayUsage().trim();
+            List<Relays> relays = new ArrayList<>();
+            for (int i = 0; i < relayUsage.length(); i++) {
+                relays.add(Relays.getDisplayValue(relayUsage.charAt(i)));
+            }
+            setRelayUsage(relays.isEmpty() ? null : relays);
         }
-        setRelayUsage(relays.isEmpty() ? null : relays);
     }
 
     @Override
     public void buildDBPersistent(LMGroupMCT lmGroup) {
         super.buildDBPersistent(lmGroup);
         com.cannontech.database.db.device.lm.LMGroupMCT lmGroupMCT = new com.cannontech.database.db.device.lm.LMGroupMCT();
+        lmGroupMCT.setDeviceID(getId());
         lmGroupMCT.setRouteID(getRouteId());
         lmGroupMCT.setLevel(getLevel().getLevel().toString());
         if (getLevel() == AddressLevel.MCT_ADDRESS) {
             lmGroupMCT.setMctDeviceID(this.getMctDeviceId());
-            Integer address = getAddress() != null ? getAddress() : 0;
-            lmGroupMCT.setAddress(address);
+            lmGroupMCT.setAddress(0);
         } else {
             lmGroupMCT.setAddress(getAddress());
             lmGroupMCT.setMctDeviceID(0);
         }
 
-        String relayUsageStr = getRelayUsage().stream()
-                                              .map(e -> e.getRelayNumber())
-                                              .map(String::valueOf)
-                                              .collect(Collectors.joining());
-        lmGroupMCT.setRelayUsage(StringUtils.formatStringWithPattern(relayUsageStr, "1234"));
+        if (getRelayUsage() != null && !getRelayUsage().isEmpty()) {
+            String relayUsageStr = getRelayUsage().stream()
+                                                  .map(e -> e.getRelayNumber())
+                                                  .map(String::valueOf)
+                                                  .collect(Collectors.joining());
+            lmGroupMCT.setRelayUsage(StringUtils.formatStringWithPattern(relayUsageStr, "1234"));
+        } else {
+            lmGroupMCT.setRelayUsage(org.apache.commons.lang3.StringUtils.EMPTY);
+        }
         lmGroup.setLmGroupMCT(lmGroupMCT);
     }
 }
