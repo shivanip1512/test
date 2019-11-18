@@ -27,7 +27,7 @@ private:
         long size;
     };
 
-    static path_size ParseSetMeterProgram(const Bytes& request, const RfnIdentifier& rfnId);
+    static std::optional<path_size> ParseSetMeterProgram(const Bytes& request, const RfnIdentifier& rfnId);
 };
 
 }
