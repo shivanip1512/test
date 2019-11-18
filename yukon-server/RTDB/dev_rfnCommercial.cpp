@@ -28,6 +28,18 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
     return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, rfnRequests);
 }
 
+YukonError_t RfnCommercialDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    if( containsString(parse.getCommandStr(), " meter programming") )
+    {
+        rfnRequests.push_back( std::make_unique<Commands::RfnMeterProgrammingGetConfigurationCommand>() );
+
+        return ClientErrors::None;
+    }
+
+    return RfnMeterDevice::executeGetConfig(pReq, parse, returnMsgs, rfnRequests);
+}
+
 YukonError_t RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
                                                                 CtiCommandParser  & parse,
                                                                 ReturnMsgList     & returnMsgs,
@@ -47,6 +59,12 @@ YukonError_t RfnCommercialDevice::executeReadDemandFreezeInfo( CtiRequestMsg    
     rfnRequests.emplace_back( std::make_unique<Commands::RfnGetDemandFreezeInfoCommand>() );
 
     return ClientErrors::None;
+}
+
+void RfnCommercialDevice::handleCommandResult( const Commands::RfnMeterProgrammingGetConfigurationCommand & cmd )
+{
+
+    CTILOG_DEBUG( dout, "Meter Configuration ID: " << cmd.getMeterConfigurationID() );
 }
 
 }

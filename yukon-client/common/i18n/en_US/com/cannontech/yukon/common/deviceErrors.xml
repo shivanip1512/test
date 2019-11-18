@@ -1192,6 +1192,94 @@
     <entry key="yukon.web.error.code.311.description">The end device returned an error that is not categorized by Yukon.</entry>
     <entry key="yukon.web.error.code.311.troubleshooting">No troubleshooting is available for this error.</entry>
 
+    <entry key="yukon.web.error.code.312.porter">Meter is bricked, it is not responding to the node.</entry>
+    <entry key="yukon.web.error.code.312.description">Meter is bricked, it is not responding to the node.</entry>
+    <entry key="yukon.web.error.code.312.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.313.porter">The meter rejected a message from the node, no specific reason was provided.</entry>
+    <entry key="yukon.web.error.code.313.description">The meter rejected a message from the node, no specific reason was provided.</entry>
+    <entry key="yukon.web.error.code.313.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.314.porter">The meter rejected a command message because request could not be honored.</entry>
+    <entry key="yukon.web.error.code.314.description">The meter rejected a command message because request could not be honored.</entry>
+    <entry key="yukon.web.error.code.314.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.315.porter">The security code used to log into the meter was insufficient for configuration.</entry>
+    <entry key="yukon.web.error.code.315.description">The security code used to log into the meter was insufficient for configuration.</entry>
+    <entry key="yukon.web.error.code.315.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.316.porter">The node requested some action that is not possible.</entry>
+    <entry key="yukon.web.error.code.316.description">The node requested some action that is not possible.</entry>
+    <entry key="yukon.web.error.code.316.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.317.porter">The node requested an inappropriate action.</entry>
+    <entry key="yukon.web.error.code.317.description">The node requested an inappropriate action.</entry>
+    <entry key="yukon.web.error.code.317.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.318.porter">The node's request was not acted upon because the meter was busy.</entry>
+    <entry key="yukon.web.error.code.318.description">The node's request was not acted upon because the meter was busy.</entry>
+    <entry key="yukon.web.error.code.318.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.319.porter">The node’s request was unsuccessful because the requested data is not ready to be accessed.</entry>
+    <entry key="yukon.web.error.code.319.description">The node’s request was unsuccessful because the requested data is not ready to be accessed.</entry>
+    <entry key="yukon.web.error.code.319.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.320.porter">The node’s request was unsuccessful because the data cannot be accessed.</entry>
+    <entry key="yukon.web.error.code.320.description">The node’s request was unsuccessful because the data cannot be accessed.</entry>
+    <entry key="yukon.web.error.code.320.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.321.porter">The meter wishes to return to Base State and renegotiate communication parameters.</entry>
+    <entry key="yukon.web.error.code.321.description">The meter wishes to return to Base State and renegotiate communication parameters.</entry>
+    <entry key="yukon.web.error.code.321.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.322.porter">The node’s request is not accepted at the current service sequence state.</entry>
+    <entry key="yukon.web.error.code.322.description">The node’s request is not accepted at the current service sequence state.</entry>
+    <entry key="yukon.web.error.code.322.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.323.porter">The file download process was aborted.</entry>
+    <entry key="yukon.web.error.code.323.description">The file download process was aborted.</entry>
+    <entry key="yukon.web.error.code.323.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.324.porter">The configuration file size is greater than the space available.</entry>
+    <entry key="yukon.web.error.code.324.description">The configuration file size is greater than the space available.</entry>
+    <entry key="yukon.web.error.code.324.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.325.porter">A configuration is in progress in the node.</entry>
+    <entry key="yukon.web.error.code.325.description">A configuration is in progress in the node.</entry>
+    <entry key="yukon.web.error.code.325.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.326.porter">The node is unable to get the file.</entry>
+    <entry key="yukon.web.error.code.326.description">The node is unable to get the file.</entry>
+    <entry key="yukon.web.error.code.326.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.327.porter">The meter’s hardware or firmware version is insufficient to allow remote configuration.</entry>
+    <entry key="yukon.web.error.code.327.description">The meter’s hardware or firmware version is insufficient to allow remote configuration.</entry>
+    <entry key="yukon.web.error.code.327.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.328.porter">The Expiration Date/Time in the file is past the current date/time in the node.</entry>
+    <entry key="yukon.web.error.code.328.description">The Expiration Date/Time in the file is past the current date/time in the node.</entry>
+    <entry key="yukon.web.error.code.328.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.329.porter">The meter does not meet the requirements in the Meter Requirements field of the Configuration file.</entry>
+    <entry key="yukon.web.error.code.329.description">The meter does not meet the requirements in the Meter Requirements field of the Configuration file.</entry>
+    <entry key="yukon.web.error.code.329.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.330.porter">The configuration file has an error in format.</entry>
+    <entry key="yukon.web.error.code.330.description">The configuration file has an error in format.</entry>
+    <entry key="yukon.web.error.code.330.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.331.porter">A test in a Verification field failed.</entry>
+    <entry key="yukon.web.error.code.331.description">A test in a Verification field failed.</entry>
+    <entry key="yukon.web.error.code.331.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.332.porter">The configuration file contains a Write Key TLV, but the node is unable to write the key.</entry>
+    <entry key="yukon.web.error.code.332.description">The configuration file contains a Write Key TLV, but the node is unable to write the key.</entry>
+    <entry key="yukon.web.error.code.332.troubleshooting">No troubleshooting is available for this error.</entry>
+
+    <entry key="yukon.web.error.code.333.porter">If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.</entry>
+    <entry key="yukon.web.error.code.333.description">If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.</entry>
+    <entry key="yukon.web.error.code.333.troubleshooting">No troubleshooting is available for this error.</entry>
+
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
         currently associated with this device in Yukon.</entry>

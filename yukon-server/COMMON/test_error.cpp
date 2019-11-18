@@ -258,8 +258,33 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Aggregate response did not include an entry for the command.")
     ("Endpoint indicated a bad request.")
     ("Endpoint indicated command failure.")
+    //  310
     ("Endpoint returned an unmapped error.")
-    .repeat(38, UnknownErrorHelper(312));
+    ("Meter is bricked, it is not responding to the node.")
+    ("The meter rejected a message from the node, no specific reason was provided.")
+    ("The meter rejected a command message because request could not be honored.")
+    ("The security code used to log into the meter was insufficient for configuration.")
+    ("The node requested some action that is not possible.")
+    ("The node requested an inappropriate action.")
+    ("The node's request was not acted upon because the meter was busy.")
+    ("The node’s request was unsuccessful because the requested data is not ready to be accessed.")
+    ("The node’s request was unsuccessful because the data cannot be accessed.")
+    //  320
+    ("The meter wishes to return to Base State and renegotiate communication parameters.")
+    ("The node’s request is not accepted at the current service sequence state.")
+    ("The file download process was aborted.")
+    ("The configuration file size is greater than the space available.")
+    ("A configuration is in progress in the node.")
+    ("The node is unable to get the file.")
+    ("The meter’s hardware or firmware version is insufficient to allow remote configuration.")
+    ("The Expiration Date/Time in the file is past the current date/time in the node.")
+    ("The meter does not meet the requirements in the Meter Requirements field of the Configuration file.")
+    ("The configuration file has an error in format.")
+    //  330
+    ("A test in a Verification field failed.")
+    ("The configuration file contains a Write Key TLV, but the node is unable to write the key.")
+    ("If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.")
+    .repeat(16, UnknownErrorHelper(334));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {
