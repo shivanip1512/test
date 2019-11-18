@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "67072791-9616-4e7f-95d2-86518a0547f1",
+        "_postman_id": "7a049fa2-3451-4656-b166-8437275d1b84",
         "name": "YukonAPITest",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
@@ -1007,6 +1007,38 @@
                                         }
                                     },
                                     "response": []
+                                },
+                                {
+                                    "name": "Point",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "type": "text",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n     \r\n        \"name\": \"TestPoint\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceIdUsage\": 2,\r\n        \"pointIdUsage\": 1234,\r\n        \"startControlRawState\": -1\r\n    }\r\n}"
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "create"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
                                 }
                             ],
                             "description": "Create request for all load groups.",
@@ -1341,6 +1373,39 @@
                                         }
                                     },
                                     "response": []
+                                },
+                                {
+                                    "name": "Point",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"LM_GROUP_MCT\": {\n        \"name\": \"LmGroup_MCT_Test\",\n        \"type\": \"LM_GROUP_MCT\",\n        \"kWCapacity\": 78.32,\n        \"disableGroup\": true,\n        \"disableControl\": false,\n        \"routeId\": 730,\n        \"routeName\": \"CCU Parkwood\",\n        \"level\": \"BRONZE\",\n        \"address\": 12536,\n        \"mctDeviceId\": 0,\n        \"relayUsage\": [\n            \"RELAY_1\", \"RELAY_3\"\n        ]\n    }\n}"
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "update",
+                                                "151386"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
                                 }
                             ],
                             "description": "Update an existing load group.",
@@ -1565,6 +1630,39 @@
                                         "body": {
                                             "mode": "raw",
                                             "raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"MCTcopy\"\r\n     }\r\n}"
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "copy",
+                                                "151386"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Point",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "type": "text",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"Pointcopy\"\r\n     }\r\n}"
                                         },
                                         "url": {
                                             "raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",

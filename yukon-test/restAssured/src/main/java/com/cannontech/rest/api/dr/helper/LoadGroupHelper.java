@@ -26,6 +26,7 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupExpresscom;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupHoneywell;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupNest;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupPoint;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
 import com.cannontech.rest.api.loadgroup.request.MockLoads;
 import com.cannontech.rest.api.loadgroup.request.MockRelays;
@@ -217,6 +218,18 @@ public class LoadGroupHelper {
                     .kWCapacity(4.0)
                     .relayUsage(MockEmetconRelayUsage.RELAY_A)
                     .routeId(1)
+                    .build();
+            break;
+        case LM_GROUP_POINT:
+            loadGroup = MockLoadGroupPoint.builder()
+                    .name(getLoadGroupName(paoType))
+                    .type(paoType)
+                    .kWCapacity(4.0)
+                    .disableControl(false)
+                    .disableGroup(false)
+                    .deviceIdUsage(2)
+                    .pointIdUsage(1234)
+                    .startControlRawState(-1)
                     .build();
             break;
         }
