@@ -249,14 +249,12 @@
                         
                         <tags:nameValue2 nameKey=".regulators">
                             <tags:input path="minCommunicationPercentageSetting.regulatorReportingRatio" size="5" units="${percentSymbol}"/>
-                            
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".voltageMonitors">
                             <tags:input path="minCommunicationPercentageSetting.voltageMonitorReportingRatio" size="5" units="${percentSymbol}"/>
-                           
                         </tags:nameValue2>
-                        
+             
                         <tags:nameValue2 nameKey=".considerPhase">
                             <tags:switchButton path="minCommunicationPercentageSetting.considerPhase" offClasses="M0"
                                     color="${not viewMode}"/>
