@@ -139,6 +139,8 @@ public class LMModelFactory {
         switch (paoType) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_EMETCON:
+        case LM_GROUP_MCT:
+        case LM_GROUP_RIPPLE:
         case LM_GROUP_VERSACOM:
             loadGroup = new LoadGroupCopy();
             break;
