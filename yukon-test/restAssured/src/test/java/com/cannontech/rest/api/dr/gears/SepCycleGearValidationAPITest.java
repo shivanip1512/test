@@ -1,6 +1,5 @@
 package com.cannontech.rest.api.dr.gears;
 
-import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -35,7 +34,7 @@ public class SepCycleGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
                    "Expected Error not found:" + "Gear Name is required.");
@@ -51,7 +50,7 @@ public class SepCycleGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Charac");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Exceeds maximum length of 30."),
                    "Expected Error not found:" + "Exceeds maximum length of 30.");
@@ -67,7 +66,7 @@ public class SepCycleGearValidationAPITest {
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setControlPercent(4);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent", "Must be between 5 and 100."),
                    "Expected Error not found:" + "Must be between 5 and 100.");
@@ -83,7 +82,7 @@ public class SepCycleGearValidationAPITest {
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setControlPercent(101);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.controlPercent", "Must be between 5 and 100."),
                    "Expected Error not found:" + "Must be between 5 and 100.");
@@ -99,7 +98,7 @@ public class SepCycleGearValidationAPITest {
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setCriticality(0);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality", "Must be between 1 and 15."),
                    "Expected Error not found:" + "Must be between 1 and 15.");
@@ -115,7 +114,7 @@ public class SepCycleGearValidationAPITest {
         MockSepCycleGearFields mockSepCycleGearFields = (MockSepCycleGearFields) mockLoadProgram.getGears().get(0).getFields();
         mockSepCycleGearFields.setCriticality(16);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.criticality", "Must be between 1 and 15."),
                    "Expected Error not found:" + "Must be between 1 and 15.");

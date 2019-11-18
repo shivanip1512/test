@@ -3,7 +3,6 @@ package com.cannontech.rest.api.dr.gears;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
@@ -34,7 +33,7 @@ public class NoControlGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
                    "Expected Error not found:" + "Gear Name is required.");
@@ -50,7 +49,7 @@ public class NoControlGearValidationAPITest {
         mockLoadProgram.getGears().get(0).setGearName("GearNameLenghthMoreThan30Characters");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Exceeds maximum length of 30."),
                    "Expected Error not found:" + "Exceeds maximum length of 30.");
@@ -68,7 +67,7 @@ public class NoControlGearValidationAPITest {
         mockNoControlGearFields.setWhenToChangeFields(null);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
-        assertTrue("Status code should be 422", createResponse.statusCode() == 422);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"), "Expected message should be: Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.whenToChangeFields", "When To Change Fields is required."),
                    "Expected Error not found:" + "When To Change Fields is required.");
