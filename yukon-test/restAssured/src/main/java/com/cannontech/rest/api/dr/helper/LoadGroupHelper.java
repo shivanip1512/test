@@ -13,6 +13,7 @@ import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.loadgroup.request.MockAddressLevel;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockControlPriority;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconAddressUsage;
@@ -25,6 +26,7 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEmetcon;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupExpresscom;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupHoneywell;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupMCT;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupNest;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupPoint;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
@@ -230,6 +232,22 @@ public class LoadGroupHelper {
                     .deviceIdUsage(2)
                     .pointIdUsage(1234)
                     .startControlRawState(-1)
+                    .build();
+            break;
+        case LM_GROUP_MCT:
+            List<MockRelays> relay = new ArrayList<>();
+            relay.add(MockRelays.RELAY_1);
+            relay.add(MockRelays.RELAY_2);
+            loadGroup = MockLoadGroupMCT.builder()
+                    .name(getLoadGroupName(paoType))
+                    .type(MockPaoType.LM_GROUP_MCT)
+                    .routeId(1)
+                    .disableControl(false)
+                    .disableGroup(false)
+                    .kWCapacity(223.0)
+                    .level(MockAddressLevel.BRONZE)
+                    .address(123)
+                    .relayUsage(relay)
                     .build();
             break;
         }
