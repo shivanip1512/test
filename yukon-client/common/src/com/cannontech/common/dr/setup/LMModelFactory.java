@@ -64,6 +64,9 @@ public class LMModelFactory {
         case LM_GROUP_POINT:
             loadGroup = new LoadGroupPoint();
             break;
+        case LM_GROUP_RIPPLE:
+            loadGroup = new LoadGroupRipple();
+            break;
 
         }
         return loadGroup;
