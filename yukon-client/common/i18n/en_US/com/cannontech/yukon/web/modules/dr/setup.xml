@@ -155,6 +155,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.BRONZE">Bronze</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.LEAD">Lead</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.MCT_ADDRESS">MCT Address</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.mctDeviceId.doesNotExist">MCT device Id does not exist.</entry>
 
 <!-- Versacom -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage.title">Address Usage</entry>
