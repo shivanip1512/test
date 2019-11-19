@@ -10,6 +10,8 @@
 <cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
 <tags:setFormEditMode mode="${mode}"/>
 <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
+<cti:url var="editConfigUrl" value="/stars/operator/hardware/config/edit?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editMeterConfigUrl" value="/stars/operator/hardware/config/meterConfig?accountId=${accountId}&amp;meterId="/>
 
 <%@ include file="../inventory/shedRestoreLoadPopup.jsp" %>
 
@@ -284,11 +286,12 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                     </li>
                 </c:if>
                 <c:if test="${showMeterConfigAction}">
-                    <cti:url var="configUrl" value="/stars/operator/hardware/config/edit">
-                        <cti:param name="accountId" value="${accountId}"/>
-                        <cti:param name="inventoryId" value="${inventoryId}"/>
-                    </cti:url>
-                    <cm:dropdownOption key=".editConfig.label" href="${configUrl}" icon="icon-cog-edit"/>
+                    <c:if test="${hardware.getHardwareTypeEntryId() == 0}">
+                        <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}${hardware.deviceId}" />
+                    </c:if>
+                    <c:if test="${(hardware.hardwareType == 'YUKON_METER') and (hardware.getHardwareTypeEntryId() > 0)}">
+                        <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${hardware.inventoryId}" />
+                    </c:if>
                 </c:if>
                 <c:if test="${showMeterDetailAction}">
                     <cti:paoDetailUrl yukonPao="${hardware.yukonPao}" var="meterDetailUrl"/>
