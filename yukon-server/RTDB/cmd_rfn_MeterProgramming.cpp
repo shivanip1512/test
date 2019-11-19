@@ -143,27 +143,27 @@ namespace Cti::Devices::Commands {
         // We need at least 6 bytes - the length of the payload is in the 6th byte
 
         validate( Condition( response.size() >= 6, ClientErrors::InvalidData )
-                << "Invalid Response length (" << response.size() << ")" );
+                << "Invalid Response Length (" << response.size() << ") - minimum (6)" );
 
         // now we can validate our total length
 
         validate( Condition( response.size() == 6 + response[5], ClientErrors::InvalidData )
-                << "Invalid Response length (" << response.size() << ")" );
+                << "Invalid Response Length (" << response.size() << ") - expected (" << ( 6 + response[5] ) << ")" );
 
         // the response code
 
         validate( Condition( response[0] == Command::Response, ClientErrors::InvalidData )
-                << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ")" );
+                << "Invalid Response Command Code (" << CtiNumStr(response[0]).xhex(2) << ") - expected (" << CtiNumStr(Command::Response).xhex(2) << ")" );
 
         // the number of TLVs -- is always 1
 
         validate( Condition( response[3] == 1, ClientErrors::InvalidData )
-                << "Invalid TLV Count (" << std::to_string(response[3]) << ")" );
+                << "Invalid TLV Count (" << std::to_string(response[3]) << ") - expected (1)" );
 
         // the TLV type -- is always 3
 
         validate( Condition( response[4] == 3, ClientErrors::InvalidData )
-                << "Invalid TLV Count (" << std::to_string(response[4]) << ")" );
+                << "Invalid TLV Type (" << std::to_string(response[4]) << ") - expected (3)" );
 
         // the meter status code
 
@@ -198,12 +198,13 @@ namespace Cti::Devices::Commands {
         {
             _meterConfigurationID = { response.begin() + 6, response.end() };
 
-            auto guidPrefix = Cti::mapFind( validGuidPrefixes, _meterConfigurationID[0] );
+            using namespace std::string_literals;
 
-            validate( Condition( !! guidPrefix, ClientErrors::InvalidData )
-                      << "Invalid Meter Configuration ID Prefix (" << _meterConfigurationID[0] << ")" );
+            std::string guidPrefix =
+                Cti::mapFindOrDefault( validGuidPrefixes, _meterConfigurationID[0],
+                                       "Unmapped Prefix '"s + _meterConfigurationID[0] + "'"s );
 
-            description += "\nSource: " + *guidPrefix 
+            description += "\nSource: " + guidPrefix 
                         +  "\nMeter Configuration ID: " + _meterConfigurationID;
         }
 

@@ -1861,15 +1861,15 @@
 
     <error code="319" type="SYSTEM">
         <category>Network Manager</category>
-        <porter>The node’s request was unsuccessful because the requested data is not ready to be accessed.</porter>
-        <description>The node’s request was unsuccessful because the requested data is not ready to be accessed.</description>
+        <porter>The node's request was unsuccessful because the requested data is not ready to be accessed.</porter>
+        <description>The node's request was unsuccessful because the requested data is not ready to be accessed.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
 
     <error code="320" type="SYSTEM">
         <category>Network Manager</category>
-        <porter>The node’s request was unsuccessful because the data cannot be accessed.</porter>
-        <description>The node’s request was unsuccessful because the data cannot be accessed.</description>
+        <porter>The node's request was unsuccessful because the data cannot be accessed.</porter>
+        <description>The node's request was unsuccessful because the data cannot be accessed.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
 
@@ -1882,8 +1882,8 @@
 
     <error code="322" type="SYSTEM">
         <category>Network Manager</category>
-        <porter>The node’s request is not accepted at the current service sequence state.</porter>
-        <description>The node’s request is not accepted at the current service sequence state.</description>
+        <porter>The node's request is not accepted at the current service sequence state.</porter>
+        <description>The node's request is not accepted at the current service sequence state.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
 
@@ -1917,8 +1917,8 @@
 
     <error code="327" type="SYSTEM">
         <category>Network Manager</category>
-        <porter>The meter’s hardware or firmware version is insufficient to allow remote configuration.</porter>
-        <description>The meter’s hardware or firmware version is insufficient to allow remote configuration.</description>
+        <porter>The meter's hardware or firmware version is insufficient to allow remote configuration.</porter>
+        <description>The meter's hardware or firmware version is insufficient to allow remote configuration.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
 

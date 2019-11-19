@@ -1220,20 +1220,20 @@
     <entry key="yukon.web.error.code.318.description">The node's request was not acted upon because the meter was busy.</entry>
     <entry key="yukon.web.error.code.318.troubleshooting">No troubleshooting is available for this error.</entry>
 
-    <entry key="yukon.web.error.code.319.porter">The node’s request was unsuccessful because the requested data is not ready to be accessed.</entry>
-    <entry key="yukon.web.error.code.319.description">The node’s request was unsuccessful because the requested data is not ready to be accessed.</entry>
+    <entry key="yukon.web.error.code.319.porter">The node's request was unsuccessful because the requested data is not ready to be accessed.</entry>
+    <entry key="yukon.web.error.code.319.description">The node's request was unsuccessful because the requested data is not ready to be accessed.</entry>
     <entry key="yukon.web.error.code.319.troubleshooting">No troubleshooting is available for this error.</entry>
 
-    <entry key="yukon.web.error.code.320.porter">The node’s request was unsuccessful because the data cannot be accessed.</entry>
-    <entry key="yukon.web.error.code.320.description">The node’s request was unsuccessful because the data cannot be accessed.</entry>
+    <entry key="yukon.web.error.code.320.porter">The node's request was unsuccessful because the data cannot be accessed.</entry>
+    <entry key="yukon.web.error.code.320.description">The node's request was unsuccessful because the data cannot be accessed.</entry>
     <entry key="yukon.web.error.code.320.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.321.porter">The meter wishes to return to Base State and renegotiate communication parameters.</entry>
     <entry key="yukon.web.error.code.321.description">The meter wishes to return to Base State and renegotiate communication parameters.</entry>
     <entry key="yukon.web.error.code.321.troubleshooting">No troubleshooting is available for this error.</entry>
 
-    <entry key="yukon.web.error.code.322.porter">The node’s request is not accepted at the current service sequence state.</entry>
-    <entry key="yukon.web.error.code.322.description">The node’s request is not accepted at the current service sequence state.</entry>
+    <entry key="yukon.web.error.code.322.porter">The node's request is not accepted at the current service sequence state.</entry>
+    <entry key="yukon.web.error.code.322.description">The node's request is not accepted at the current service sequence state.</entry>
     <entry key="yukon.web.error.code.322.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.323.porter">The file download process was aborted.</entry>
@@ -1252,8 +1252,8 @@
     <entry key="yukon.web.error.code.326.description">The node is unable to get the file.</entry>
     <entry key="yukon.web.error.code.326.troubleshooting">No troubleshooting is available for this error.</entry>
 
-    <entry key="yukon.web.error.code.327.porter">The meter’s hardware or firmware version is insufficient to allow remote configuration.</entry>
-    <entry key="yukon.web.error.code.327.description">The meter’s hardware or firmware version is insufficient to allow remote configuration.</entry>
+    <entry key="yukon.web.error.code.327.porter">The meter's hardware or firmware version is insufficient to allow remote configuration.</entry>
+    <entry key="yukon.web.error.code.327.description">The meter's hardware or firmware version is insufficient to allow remote configuration.</entry>
     <entry key="yukon.web.error.code.327.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.328.porter">The Expiration Date/Time in the file is past the current date/time in the node.</entry>

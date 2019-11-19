@@ -5,6 +5,11 @@
 
 namespace Cti::Devices {
 
+namespace
+{
+    static const std::string meterProgrammingCmd { " meter programming" };
+}
+
 YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     if( containsString(parse.getCommandStr(), " freezeday reset") )
@@ -14,11 +19,11 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
         return ClientErrors::None;
     }
 
-    if( containsString(parse.getCommandStr(), " meter programming cancel") )
+    if( containsString(parse.getCommandStr(), meterProgrammingCmd + " cancel") )
     {
         //  cancel the thing
     }
-    else if( containsString(parse.getCommandStr(), " meter programming") )
+    else if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
     {
         rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>("7d444840-9dc0-11d1-b245-5ffdce74fad2", 11235));
 
@@ -30,7 +35,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
 
 YukonError_t RfnCommercialDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
-    if( containsString(parse.getCommandStr(), " meter programming") )
+    if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
     {
         rfnRequests.push_back( std::make_unique<Commands::RfnMeterProgrammingGetConfigurationCommand>() );
 
