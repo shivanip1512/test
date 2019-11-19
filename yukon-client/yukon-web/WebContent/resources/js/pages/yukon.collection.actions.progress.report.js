@@ -180,6 +180,13 @@ yukon.collection.actions.progress.report = (function () {
             }
             //show/hide cancel
             $('.js-cancel').toggleClass('dn', data.displayCancelButton);
+            /**
+             *  if ((data.status == 'COMPLETE' || data.status == 'CANCELLED' || data.status == 'FAILED' ||  data.status == 'CANCELING') &&  data.action.proccess == 'CRE') {
+            	$('.js-cancel').toggleClass('dn', true);
+            } else {
+            	$('.js-cancel').toggleClass('dn', false);
+            }
+             */
         }
     },
     
