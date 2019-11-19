@@ -116,7 +116,7 @@ public class MeterDisconnectProgramSetupApiControllerTest {
     @Test(dependsOnMethods = { "meterDisconnectAssignedLoadGroup_Create" })
     public void programConstraint_Create(ITestContext context) {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, constraintId);
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
