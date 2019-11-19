@@ -26,6 +26,7 @@ import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
@@ -149,6 +150,7 @@ public class LoadProgramSetupControllerHelper {
         if (CollectionUtils.isNotEmpty(selectedMemberIds)) {
             directMemberControls =
                 Lists.transform(selectedMemberIds, new Function<Integer, ProgramDirectMemberControl>() {
+                    @Override
                     public ProgramDirectMemberControl apply(Integer subordinateProgId) {
                         ProgramDirectMemberControl directMemberControl = new ProgramDirectMemberControl();
                         directMemberControl.setSubordinateProgId(subordinateProgId);
@@ -169,6 +171,7 @@ public class LoadProgramSetupControllerHelper {
         if (CollectionUtils.isNotEmpty(selectedNotificationGroupIds)) {
             notificationGroups =
                 Lists.transform(selectedNotificationGroupIds, new Function<Integer, NotificationGroup>() {
+                    @Override
                     public NotificationGroup apply(Integer notificationGrpID) {
                         NotificationGroup notificationGroup = new NotificationGroup();
                         notificationGroup.setNotificationGrpID(notificationGrpID);
@@ -235,6 +238,10 @@ public class LoadProgramSetupControllerHelper {
         case EcobeeCycle:
             EcobeeCycleGearFields ecobeeCycleGearFields = (EcobeeCycleGearFields) programGear.getFields();
             setEcobeeCycleGearFieldsDefaultValues(ecobeeCycleGearFields);
+            break;
+        case EcobeeSetpoint:
+            EcobeeSetpointGearFields ecobeeSetpointGearFields = (EcobeeSetpointGearFields) programGear.getFields();
+            setEcobeeSetpointGearFieldsDefaultValues(ecobeeSetpointGearFields);
             break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
@@ -334,6 +341,13 @@ public class LoadProgramSetupControllerHelper {
         ecobeeCycleGearFields.setRampOut(true);
         ecobeeCycleGearFields.setControlPercent(50);
         ecobeeCycleGearFields.setCapacityReduction(100);
+    }
+
+    private void setEcobeeSetpointGearFieldsDefaultValues(EcobeeSetpointGearFields ecobeeSetpointGearFields) {
+        ecobeeSetpointGearFields.setMandatory(false);
+        ecobeeSetpointGearFields.setSetpointOffset(0);
+        ecobeeSetpointGearFields.setMode(Mode.COOL);
+        ecobeeSetpointGearFields.setCapacityReduction(100);
     }
 
     private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
@@ -462,6 +476,11 @@ public class LoadProgramSetupControllerHelper {
             EcobeeCycleGearFields ecobeeCycleGearFields = (EcobeeCycleGearFields) programGear.getFields();
             ecobeeCycleGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(ecobeeCycleGearFields.getWhenToChangeFields()));
+            break;
+        case EcobeeSetpoint:
+            EcobeeSetpointGearFields ecobeeSetpointGearFields = (EcobeeSetpointGearFields) programGear.getFields();
+            ecobeeSetpointGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(ecobeeSetpointGearFields.getWhenToChangeFields()));
             break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();

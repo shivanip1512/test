@@ -90,6 +90,13 @@ public class GearValidatorHelper {
 
     }
 
+    public void checkSetpointOffset(Integer setpointOffset, Errors errors) {
+        lmValidatorHelper.checkIfFieldRequired("setpointOffset", errors, setpointOffset, "Setpoint Offset");
+        if (!errors.hasFieldErrors("setpointOffset")) {
+            YukonValidationUtils.checkRange(errors, "setpointOffset", setpointOffset, -10, 10, true);
+        }
+    }
+    
     /**
      * Check for When to Change
      */
