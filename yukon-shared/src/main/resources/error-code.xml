@@ -1810,6 +1810,160 @@
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
     
+    <error code="312" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>Meter is bricked, it is not responding to the node.</porter>
+        <description>Meter is bricked, it is not responding to the node.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="313" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The meter rejected a message from the node, no specific reason was provided.</porter>
+        <description>The meter rejected a message from the node, no specific reason was provided.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="314" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The meter rejected a command message because request could not be honored.</porter>
+        <description>The meter rejected a command message because request could not be honored.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="315" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The security code used to log into the meter was insufficient for configuration.</porter>
+        <description>The security code used to log into the meter was insufficient for configuration.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="316" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The node requested some action that is not possible.</porter>
+        <description>The node requested some action that is not possible.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="317" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The node requested an inappropriate action.</porter>
+        <description>The node requested an inappropriate action.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="318" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The node's request was not acted upon because the meter was busy.</porter>
+        <description>The node'srequest was not acted upon because the meter was busy.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="319" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The node's request was unsuccessful because the requested data is not ready to be accessed.</porter>
+        <description>The node's request was unsuccessful because the requested data is not ready to be accessed.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="320" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The node's request was unsuccessful because the data cannot be accessed.</porter>
+        <description>The node's request was unsuccessful because the data cannot be accessed.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="321" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The meter wishes to return to Base State and renegotiate communication parameters.</porter>
+        <description>The meter wishes to return to Base State and renegotiate communication parameters.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="322" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The node's request is not accepted at the current service sequence state.</porter>
+        <description>The node's request is not accepted at the current service sequence state.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="323" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The file download process was aborted.</porter>
+        <description>The file download process was aborted.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="324" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The configuration file size is greater than the space available.</porter>
+        <description>The configuration file size is greater than the space available.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="325" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>A configuration is in progress in the node.</porter>
+        <description>A configuration is in progress in the node.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="326" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The node is unable to get the file.</porter>
+        <description>The node is unable to get the file.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="327" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The meter's hardware or firmware version is insufficient to allow remote configuration.</porter>
+        <description>The meter's hardware or firmware version is insufficient to allow remote configuration.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="328" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The Expiration Date/Time in the file is past the current date/time in the node.</porter>
+        <description>The Expiration Date/Time in the file is past the current date/time in the node.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="329" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The meter does not meet the requirements in the Meter Requirements field of the Configuration file.</porter>
+        <description>The meter does not meet the requirements in the Meter Requirements field of the Configuration file.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="330" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The configuration file has an error in format.</porter>
+        <description>The configuration file has an error in format.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="331" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>A test in a Verification field failed.</porter>
+        <description>A test in a Verification field failed.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="332" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>The configuration file contains a Write Key TLV, but the node is unable to write the key.</porter>
+        <description>The configuration file contains a Write Key TLV, but the node is unable to write the key.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+    <error code="333" type="SYSTEM">
+        <category>Network Manager</category>
+        <porter>If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.</porter>
+        <description>If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
     <error code="1024" type="NONE">
         <category>Network Manager</category>
         <porter>No node in Network Manager.</porter>
