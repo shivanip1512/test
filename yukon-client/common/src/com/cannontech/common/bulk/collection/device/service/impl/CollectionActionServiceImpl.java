@@ -163,6 +163,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             addUnsupportedToResult(CANCELED, result, result.getCancelableDevices());
         }
         result.setStopTime(new Instant(stopTime));
+        log.debug("Cache key:" + result.getCacheKey() + " updated result status to " + result.getStatus());
         eventLogHelper.log(result);
     } 
 
