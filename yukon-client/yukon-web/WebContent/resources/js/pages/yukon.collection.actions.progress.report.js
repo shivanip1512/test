@@ -163,7 +163,7 @@ yukon.collection.actions.progress.report = (function () {
             
             $('.js-set-routes').attr('disabled', true);
             //update stop time and stop updating page when complete
-            if (data.status == 'COMPLETE' || data.status == 'CANCELED') {
+            if (data.status == 'COMPLETE' || data.status == 'CANCELLED') {
                 clearTimeout(_updateTimeout);
                 if (data.stopTime) {
                     var timeText = moment(data.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
@@ -179,14 +179,7 @@ yukon.collection.actions.progress.report = (function () {
                 $('.js-progress-info').html(data.infoText).removeClass('dn');
             }
             //show/hide cancel
-            $('.js-cancel').toggleClass('dn', data.displayCancelButton);
-            /**
-             *  if ((data.status == 'COMPLETE' || data.status == 'CANCELLED' || data.status == 'FAILED' ||  data.status == 'CANCELING') &&  data.action.proccess == 'CRE') {
-            	$('.js-cancel').toggleClass('dn', true);
-            } else {
-            	$('.js-cancel').toggleClass('dn', false);
-            }
-             */
+            $('.js-cancel').toggleClass('dn', !data.cancelActionAllowed);
         }
     },
     

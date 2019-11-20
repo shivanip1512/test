@@ -132,7 +132,7 @@ public class CollectionActionResult {
         return !isComplete();
     }
     
-    public boolean displayCancelButton() {
+    public boolean isCancelActionAllowed() {
         return status == STARTED && action.isCancelable();
     }
     
