@@ -57,14 +57,15 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_01_BlankGearName() {
 
+        String errorMsg = "Gear Name is required.";
         mockLoadProgram.getGears().get(0).setGearName("");
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", "Gear Name is required."),
-                "Expected Error not found: Gear Name is required.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].gearName", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -75,17 +76,15 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_02_InvalidRefreshShedType() {
 
-        // mockLoadProgram.getGears().get(0).setGearName("");
+        String errorMsg = "Invalid Refresh Shed Time value.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.CountDown);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.refreshShedTime",
-                        "Invalid Refresh Shed Time value."),
-                "Expected Error not found: Gear Name is required.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.refreshShedTime", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -95,7 +94,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_03_InvalidShedTime() {
 
-        // mockLoadProgram.getGears().get(0).setGearName("");
+        String errorMsg = "Invalid Shed Time value.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setShedTime(50);
 
@@ -103,8 +102,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.shedTime", "Invalid Shed Time value."),
-                "Expected Error not found: Gear Name is required.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.shedTime", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -114,6 +113,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_04_InvalidCommandResendRate() {
 
+        String errorMsg = "Invalid Command Resend Rate value.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setSendRate(130);
 
@@ -121,10 +121,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.sendRate",
-                        "Invalid Command Resend Rate value."),
-                "Expected Error not found: Invalid Command Resend Rate value.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.sendRate", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -134,6 +132,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_05_InvalidNumberOfGroups() {
 
+        String errorMsg = "Must be between 0 and 25.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setNumberOfGroups(26);
 
@@ -141,10 +140,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.numberOfGroups",
-                        "Must be between 0 and 25."),
-                "Expected Error not found: Must be between 0 and 25.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.numberOfGroups", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -154,6 +151,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_06_InvalidGroupSelectionMethod() {
 
+        String errorMsg = "Group Selection Method is required.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setGroupSelectionMethod(null);
 
@@ -161,10 +159,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.groupSelectionMethod",
-                        "Group Selection Method is required."),
-                "Expected Error not found: Group Selection Method is required.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.groupSelectionMethod", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -174,6 +170,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_07_RampInPercentageGreaterThanMaxValue() {
 
+        String errorMsg = "Must be between 0 and 100.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(101);
 
@@ -181,10 +178,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInPercent",
-                        "Must be between 0 and 100."),
-                "Expected Error not found: Must be between 0 and 100.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInPercent", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -194,6 +189,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_08_RampInPercentageLessThanMinValue() {
 
+        String errorMsg = "Must be between 0 and 100.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(-1);
 
@@ -201,10 +197,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInPercent",
-                        "Must be between 0 and 100."),
-                "Expected Error not found: Must be between 0 and 100.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInPercent", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -214,6 +208,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_09_RampIntervalGreaterThanMaxValue() {
 
+        String errorMsg = "Must be between -99,999 and 99,999.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(100000);
@@ -222,10 +217,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds",
-                        "Must be between -99,999 and 99,999."),
-                "Expected Error not found: Must be between -99,999 and 99,999.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -235,6 +228,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_10_RampIntervalLessThanMinValue() {
 
+        String errorMsg = "Must be between -99,999 and 99,999.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(-100000);
@@ -243,10 +237,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds",
-                        "Must be between -99,999 and 99,999."),
-                "Expected Error not found: Must be between -99,999 and 99,999.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -256,6 +248,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_11_StopCommandGreaterThanMaxValue() {
 
+        String errorMsg = "Must be between 0 and 5.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setStopCommandRepeat(6);
 
@@ -263,10 +256,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.stopCommandRepeat",
-                        "Must be between 0 and 5."),
-                "Expected Error not found: Must be between 0 and 5.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.stopCommandRepeat", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -276,6 +267,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_12_StopCommandLessThanMinValue() {
 
+        String errorMsg = "Must be between 0 and 5.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setStopCommandRepeat(-1);
 
@@ -283,10 +275,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.stopCommandRepeat",
-                        "Must be between 0 and 5."),
-                "Expected Error not found: Must be between 0 and 5.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.stopCommandRepeat", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -296,6 +286,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_13_RampOutPercentLessThanMinValue() {
 
+        String errorMsg = "Must be between 0 and 100.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(-1);
@@ -304,10 +295,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampOutPercent",
-                        "Must be between 0 and 100."),
-                "Expected Error not found: Must be between 0 and 100.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampOutPercent", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -317,6 +306,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_14_RampOutPercentGreaterThanMaxValue() {
 
+        String errorMsg = "Must be between 0 and 100.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(101);
@@ -325,10 +315,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampOutPercent",
-                        "Must be between 0 and 100."),
-                "Expected Error not found: Must be between 0 and 100.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampOutPercent", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -338,6 +326,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_15_RampOutIntervalGreaterThanMaxValue() {
 
+        String errorMsg = "Must be between -99,999 and 99,999.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(10);
@@ -347,10 +336,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds",
-                        "Must be between -99,999 and 99,999."),
-                "Expected Error not found: Must be between -99,999 and 99,999.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
     /**
@@ -360,6 +347,7 @@ public class TimeRefreshGearValidationApiTest {
     @Test
     public void timeRefreshGear_16_RampOutIntervalLessThanMinValue() {
 
+        String errorMsg = "Must be between -99,999 and 99,999.";
         mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(10);
@@ -369,10 +357,8 @@ public class TimeRefreshGearValidationApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be: Validation error");
-        assertTrue(
-                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds",
-                        "Must be between -99,999 and 99,999."),
-                "Expected Error not found: Must be between -99,999 and 99,999.");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "gears[0].fields.rampInIntervalInSeconds", errorMsg),
+                "Expected Error not found: " + errorMsg);
     }
 
 }
