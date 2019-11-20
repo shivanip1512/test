@@ -1855,7 +1855,7 @@
     <error code="318" type="SYSTEM">
         <category>Network Manager</category>
         <porter>The node's request was not acted upon because the meter was busy.</porter>
-        <description>The node'srequest was not acted upon because the meter was busy.</description>
+        <description>The node's request was not acted upon because the meter was busy.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
 
