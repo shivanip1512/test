@@ -1,5 +1,8 @@
 package com.cannontech.database.data.lite;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.cannontech.database.data.command.YukonCommand;
 
 public class LiteCommand extends LiteBase implements YukonCommand {
@@ -53,8 +56,45 @@ public class LiteCommand extends LiteBase implements YukonCommand {
         this.category = category;
     }
     
-    public String toString() {
-        return getLabel() + " : " + getCommand();
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = super.hashCode();
+        result = prime * result + ((category == null) ? 0 : category.hashCode());
+        result = prime * result + ((command == null) ? 0 : command.hashCode());
+        result = prime * result + ((label == null) ? 0 : label.hashCode());
+        return result;
     }
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!super.equals(obj))
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        LiteCommand other = (LiteCommand) obj;
+        if (category == null) {
+            if (other.category != null)
+                return false;
+        } else if (!category.equals(other.category))
+            return false;
+        if (command == null) {
+            if (other.command != null)
+                return false;
+        } else if (!command.equals(other.command))
+            return false;
+        if (label == null) {
+            if (other.label != null)
+                return false;
+        } else if (!label.equals(other.label))
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

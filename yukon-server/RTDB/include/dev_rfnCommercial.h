@@ -16,9 +16,13 @@ protected:
 
     YukonError_t executePutConfig            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
 
+    YukonError_t executeGetConfig            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
+
     YukonError_t executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
     YukonError_t executeReadDemandFreezeInfo (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
+
+    void handleCommandResult( const Commands::RfnMeterProgrammingGetConfigurationCommand & cmd ) override;
 
 public:
     RfnCommercialDevice() {};

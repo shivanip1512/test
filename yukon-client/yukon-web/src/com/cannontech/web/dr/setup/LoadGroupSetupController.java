@@ -60,6 +60,7 @@ public class LoadGroupSetupController {
     
     private static final String baseKey = "yukon.web.modules.dr.setup.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
+    private static final String bindingResultKey = "org.springframework.validation.BindingResult.loadGroup";
     private static final String setupRedirectLink = "/dr/setup/filter?filterByType=" + LmSetupFilterType.LOAD_GROUP;
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupController.class);
     private static final List<PaoType> switchTypes =
@@ -82,7 +83,7 @@ public class LoadGroupSetupController {
         if (model.containsAttribute("loadGroup")) {
             loadGroup = (LoadGroupBase) model.get("loadGroup");
             if (loadGroup.getType() != null) {
-                controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
+                controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext, bindingResultKey);
             }
         }
         model.addAttribute("selectedSwitchType", loadGroup.getType());
@@ -107,7 +108,7 @@ public class LoadGroupSetupController {
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("switchTypes", switchTypes);
         model.addAttribute("selectedSwitchType", type);
-        controllerHelper.buildModelMap(PaoType.valueOf(type), model, request, userContext);
+        controllerHelper.buildModelMap(PaoType.valueOf(type), model, request, userContext, bindingResultKey);
         return "dr/setup/loadGroup/view.jsp";
     }
 
@@ -123,7 +124,7 @@ public class LoadGroupSetupController {
             }
             model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("loadGroup", loadGroup);
-            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
+            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext, bindingResultKey);
             model.addAttribute("isLoadGroupSupportRoute", loadGroup.getType().isLoadGroupSupportRoute());
             return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
@@ -153,7 +154,7 @@ public class LoadGroupSetupController {
             model.addAttribute("loadGroup", loadGroup);
             model.addAttribute("selectedSwitchType", loadGroup.getType());
             model.addAttribute("switchTypes", switchTypes);
-            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext);
+            controllerHelper.buildModelMap(loadGroup.getType(), model, request, userContext, bindingResultKey);
             return "dr/setup/loadGroup/loadGroupView.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -355,7 +356,7 @@ public class LoadGroupSetupController {
 
     private String bindAndForward(LoadGroupBase loadGroup, BindingResult result, RedirectAttributes attrs) {
         attrs.addFlashAttribute("loadGroup", loadGroup);
-        attrs.addFlashAttribute("org.springframework.validation.BindingResult.loadGroup", result);
+        attrs.addFlashAttribute(bindingResultKey, result);
         if (loadGroup.getId() == null) {
             return "redirect:/dr/setup/loadGroup/create";
         }

@@ -19,7 +19,7 @@ public enum DatabaseVendor {
     ORACLE10G("Oracle", 10),
     ORACLE11G("Oracle", 11),
     ORACLE12C("Oracle", 12),
-    ORACLE18C("Oracle", 13),
+    ORACLE18C("Oracle", 18),
     ORACLE_UNKNOWN("Oracle"),
     UNKNOWN("");
 

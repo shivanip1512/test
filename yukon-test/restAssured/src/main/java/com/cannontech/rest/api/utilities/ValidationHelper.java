@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.rest.api.common.model.MockApiError;
 import com.cannontech.rest.api.common.model.MockApiFieldError;
+import com.cannontech.rest.api.common.model.MockApiGlobalError;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -48,5 +49,20 @@ public class ValidationHelper {
         } else {
             return false;
         }
+    }
+    
+
+    /**
+     * This function validates validateErrMessage and returns boolean in Macro Load Group Error Response
+     */
+    public static boolean validateGlobalErrors(ExtractableResponse<?> response, String validateErrMessage) {
+        MockApiError mockApiError = response.as(MockApiError.class);
+        List<MockApiGlobalError> mockApiGlobalError = mockApiError.getGlobalErrors();
+        for (MockApiGlobalError err : mockApiGlobalError) {
+            if (err.getCode().contains(validateErrMessage)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

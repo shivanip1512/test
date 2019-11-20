@@ -14,6 +14,7 @@ yukon.dr.setup.list = (function() {
     _initialized = false,
     
     _filterResults = function (isFilterByTypeChanged) {
+        yukon.ui.blockPage();
         if (isFilterByTypeChanged) {
             var selectedFilterByType = $("#js-filter-by-type option:selected").val();
             $("#js-name").val('');
@@ -49,7 +50,7 @@ yukon.dr.setup.list = (function() {
                 $("#js-gear-types").chosen({width: "250px"});
             }
             
-            $('#setupFilter :input').change(function (event) {
+            $(document).on('change', '#setupFilter :input', function (event) {
                 var isFilterByTypeChanged = event.currentTarget.id === 'js-filter-by-type';
                 _filterResults(isFilterByTypeChanged);
             });

@@ -242,22 +242,19 @@
                 
                 <tags:sectionContainer2 nameKey="commPercentage" styleClass="stacked-lg js-ivvc-only">
                     <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
-                        
-                         <tags:nameValue2 nameKey=".banks" valueClass="tar">
-                            <tags:input path="minCommunicationPercentageSetting.banksReportingRatio" size="5"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>
+                         <cti:msg key="yukon.common.units.PERCENT" var="percentSymbol"/>
+                         <tags:nameValue2 nameKey=".banks">
+                            <tags:input path="minCommunicationPercentageSetting.banksReportingRatio" size="5" units="${percentSymbol}"/>
                         </tags:nameValue2>
                         
-                        <tags:nameValue2 nameKey=".regulators" valueClass="tar">
-                            <tags:input path="minCommunicationPercentageSetting.regulatorReportingRatio" size="5"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>
+                        <tags:nameValue2 nameKey=".regulators">
+                            <tags:input path="minCommunicationPercentageSetting.regulatorReportingRatio" size="5" units="${percentSymbol}"/>
                         </tags:nameValue2>
                         
-                        <tags:nameValue2 nameKey=".voltageMonitors" valueClass="tar">
-                            <tags:input path="minCommunicationPercentageSetting.voltageMonitorReportingRatio" size="5"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>
+                        <tags:nameValue2 nameKey=".voltageMonitors">
+                            <tags:input path="minCommunicationPercentageSetting.voltageMonitorReportingRatio" size="5" units="${percentSymbol}"/>
                         </tags:nameValue2>
-                        
+             
                         <tags:nameValue2 nameKey=".considerPhase">
                             <tags:switchButton path="minCommunicationPercentageSetting.considerPhase" offClasses="M0"
                                     color="${not viewMode}"/>

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,11 +23,15 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -59,6 +64,7 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.command.CommandCategory;
+import com.cannontech.database.db.command.CommandCategoryUtil;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
@@ -98,6 +104,7 @@ public class CommanderController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    @Autowired private CustomCommandBeanValidator customCommandValidator;
     
     private static final Logger log = YukonLogManager.getLogger(CommanderController.class);
     
@@ -453,6 +460,128 @@ public class CommanderController {
                 + " To see the correct recent targets, please make correction in user preference for recent targets");
         }
         return result;
+    }
+    
+    
+    @GetMapping("/commander/customCommands")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_CUSTOM_COMMANDS, level = HierarchyPermissionLevel.VIEW)
+    public String customCommandsPopup(ModelMap model, @RequestParam(value="paoId", required=false) Integer paoId, 
+                                      @RequestParam(value="category", required=false) String category, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        //get command categories and paotypes
+        Set<CommandCategory> categories = CommandCategoryUtil.getAllCategories();
+        List<CommandCategory> categoryList = new ArrayList<CommandCategory>();
+        categoryList.addAll(categories);
+        categoryList.add(CommandCategory.DEVICE_GROUP);
+        categoryList.add(CommandCategory.EXPRESSCOM_SERIAL);
+        categoryList.add(CommandCategory.SERIALNUMBER);
+        categoryList.add(CommandCategory.VERSACOM_SERIAL);
+        model.addAttribute("categories", categoryList);
+        List<PaoType> existingPaoTypes = paoDao.getExistingPaoTypes();
+        model.addAttribute("paoTypes", existingPaoTypes);
+        
+        List<DeviceCommandDetail> typeCommands = new ArrayList<>();
+        CustomCommandBean formBean = new CustomCommandBean();
+
+        if (paoId != null) {
+            YukonPao pao = cache.getAllPaosMap().get(paoId);
+            String type = pao.getPaoIdentifier().getPaoType().getDbString();
+            typeCommands = getCommandsByCategory(type, model, accessor);
+            formBean.setSelectedCategory(type);
+        } else if (category != null) {
+            CommandCategory cmdCategory = CommandCategory.valueOf(category);
+            typeCommands = getCommandsByCategory(cmdCategory.getDbString(), model, accessor);
+            formBean.setSelectedCategory(cmdCategory.getDbString());
+        }
+        
+        formBean.setDetail(typeCommands);
+        model.addAttribute("formBean", formBean);
+        return "commander/customCommands.jsp";
+    }
+    
+    @PostMapping("/commander/customCommands")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_CUSTOM_COMMANDS, level = HierarchyPermissionLevel.UPDATE)
+    public String saveCustomCommands(@ModelAttribute("formBean") CustomCommandBean formBean, BindingResult result, ModelMap model, 
+                                     YukonUserContext userContext, HttpServletResponse resp) {
+        //validate commands
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+
+        customCommandValidator.validate(formBean, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            String errorMsg = accessor.getMessage("yukon.web.modules.tools.commander.customCommands.validationErrors");
+            model.addAttribute("errorMsg", errorMsg);
+            return "commander/customCommandsTable.jsp";
+        }
+        
+        commanderService.save(formBean.getSelectedCategory(), formBean.getDetail());
+        String successMsg = accessor.getMessage("yukon.web.modules.tools.commander.customCommands.saveSuccessful");
+        model.addAttribute("successMsg", successMsg);
+        List<DeviceCommandDetail> detail = getCommandsByCategory(formBean.getSelectedCategory(), model, accessor);
+        CustomCommandBean savedForm = new CustomCommandBean();
+        savedForm.setDetail(detail);
+        savedForm.setSelectedCategory(formBean.getSelectedCategory());
+        model.addAttribute("formBean", savedForm);
+        return "commander/customCommandsTable.jsp";
+    }
+    
+    private List<DeviceCommandDetail> getCommandsByCategory(String category, ModelMap model, MessageSourceAccessor accessor) {
+        List<DeviceCommandDetail> cmdDetail = new ArrayList<>();
+
+        //check if Command Category
+        boolean commandCategory = CommandCategoryUtil.isCommandCategory(category);
+        if (commandCategory || CommandCategoryUtil.isExpressComOrVersaCom(category)) {
+            CommandCategory cat = CommandCategory.getForDbString(category);
+            String displayableCategory = accessor.getMessage(cat.getFormatKey());
+            model.addAttribute("isCategory", true);
+            List<LiteCommand> cmds = commandDao.getAllCommandsByCategory(category);
+            for (LiteCommand cmd : cmds) {
+                DeviceCommandDetail detail = new DeviceCommandDetail(null, cmd.getCommandId(), category, displayableCategory, 0, true, cmd.getLabel(), cmd.getCommand());
+                cmdDetail.add(detail);
+            }
+        } else {
+            Map<Integer, LiteCommand> commands = cache.getAllCommands();
+            List<LiteDeviceTypeCommand> typeCommands = commandDao.getAllDevTypeCommands(category); 
+            for (LiteDeviceTypeCommand typeCommand : typeCommands) {
+                LiteCommand cmd = commands.get(typeCommand.getCommandId());
+                String dbCategory = cmd.getCategory();
+                String displayableCategory = dbCategory;
+                CommandCategory cat = CommandCategoryUtil.getCommandCategory(dbCategory);
+                if (cat != null) {
+                    displayableCategory = accessor.getMessage(cat.getFormatKey());
+                } else {
+                    try {
+                        PaoType pao = PaoType.getForDbString(dbCategory);
+                        if (pao != null) {
+                            displayableCategory = accessor.getMessage(pao.getFormatKey());
+                        }
+                    } catch (Exception e) {
+                        //category or pao type not found so just display db string
+                        log.info("Command not found for " + category, e);
+                    }
+                }
+                DeviceCommandDetail detail = new DeviceCommandDetail(typeCommand.getDeviceCommandId(), cmd.getCommandId(), dbCategory, displayableCategory,
+                                                                     typeCommand.getDisplayOrder(), typeCommand.isVisible(), cmd.getLabel(), cmd.getCommand());
+                cmdDetail.add(detail);
+            }
+
+        }
+        
+        return cmdDetail;
+    }
+    
+    @GetMapping("/commander/customCommandsByCategory")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_CUSTOM_COMMANDS, level = HierarchyPermissionLevel.VIEW)
+    public String customCommandsByCategory(ModelMap model, String category, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        List<DeviceCommandDetail> typeCommands = getCommandsByCategory(category, model, accessor);
+        
+        CustomCommandBean formBean = new CustomCommandBean();
+        formBean.setDetail(typeCommands);
+        formBean.setSelectedCategory(category);
+        model.addAttribute("formBean", formBean);
+        
+        return "commander/customCommandsTable.jsp";
     }
     
     /** Get commands for a particular pao. */

@@ -1444,5 +1444,9 @@
     <bean id="simpleThermostatRampingGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SimpleThermostatRampingGearFieldsValidator"/>
     <bean id="sepCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepCycleGearFieldsValidator"/>
     <bean id="sepTemperatureOffsetGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SepTemperatureOffsetGearFieldsValidator"/>
+    
+    <bean class="com.cannontech.web.collectionActions.service.StartupCancelationService"/>
+
+    <bean class="com.cannontech.web.tools.commander.CustomCommandBeanValidator"/>
 
 </beans>

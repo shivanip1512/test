@@ -49,6 +49,11 @@ public interface CollectionActionService {
     void cancel(int key, LiteYukonUser user);
     
     /**
+     * Attempts to cancel execution.
+     */
+    void cancel(CollectionActionResult result, LiteYukonUser user);
+    
+    /**
      * Updates result's status.
      */
     void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status);

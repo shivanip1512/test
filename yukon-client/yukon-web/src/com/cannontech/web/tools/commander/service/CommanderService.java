@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.commander.DeviceCommandDetail;
 import com.cannontech.web.tools.commander.model.CommandParams;
 import com.cannontech.web.tools.commander.model.CommandRequest;
 import com.cannontech.web.tools.commander.model.CommandRequestException;
@@ -50,5 +51,8 @@ public interface CommanderService {
      * it will form the map entry as {command_name , 1}.
      */
     Map<String, Integer> parseCommand(CommandParams params, YukonUserContext userContext);
+
+    void save(String deviceTypeOrCategory, List<DeviceCommandDetail> details);
+
     
 }
