@@ -12,6 +12,9 @@
 
 <cti:standardPage module="dr" page="setup.controlArea.${mode}">
     <tags:setFormEditMode mode="${mode}" />
+    <c:if test="${isViewMode}">
+        <input type="hidden" id="js-is-view-mode" value="${isViewMode}"/>
+    </c:if>
     
     <input id="js-form-edit-mode" value="${mode}" type="hidden"/>
     <!-- Actions drop-down -->
@@ -88,27 +91,14 @@
                                         id="delete-trigger-${triggerId}" data-ok-event="yukon:trigger:delete" data-id="${triggerId}"/>
                                     <d:confirm on="#delete-trigger-${triggerId}" nameKey="confirmRemove"
                                         argument="${triggerName}"/>
-                                    <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
-                                        id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">
+                                    <a href="${triggerUrl}" class="js-trigger-link" id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">
                                             ${fn:escapeXml(triggerName)}
                                     </a>
-                                </div>
-                                <div data-dialog 
-                                    id="js-trigger-dialog-${triggerId}"
-                                    data-url="${triggerUrl}"
-                                    data-target="#js-trigger-link-${triggerId}"
-                                    data-event="yukon:dr:setup:controlArea:saveTrigger"
-                                    data-width="600"
-                                    data-height="auto"
-                                    data-title="${fn:escapeXml(triggerName)}"
-                                    data-ok-text="<cti:msg2 key="yukon.common.save"/>">
                                 </div>
                             </c:forEach>
                         </div>
                         <br />
                         <div class="action-area">
-                            <cti:url var="triggerPopupUrl" value="/dr/setup/controlArea/renderTrigger"/>
-                            <cti:msg2 var="triggerTitle" key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title"/>
                             <cti:button nameKey="create" icon="icon-plus-green" classes="fr js-create-trigger" data-popup="#js-add-triggers"/>
                         </div>
                     </cti:displayForPageEditModes>
@@ -132,23 +122,13 @@
                                                     <c:set var="triggerId" value="${triggerIds[status.index]}"/>
                                                     <cti:url var="triggerUrl" value="/dr/setup/controlArea/renderTrigger/${triggerId}?mode=${mode}"/>
                                                     <cti:triggerName pointId="${trigger.triggerPointId}" type="${trigger.triggerType}" var="triggerName"/>
-                                                    <a href="${triggerUrl}" class="js-trigger-link" data-popup="#js-trigger-dialog-${triggerId}"
-                                                        id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">
+                                                    <a href="${triggerUrl}" class="js-trigger-link" id="js-trigger-link-${triggerId}" data-trigger-id="${triggerId}">
                                                             ${fn:escapeXml(triggerName)}
                                                     </a>
                                                 </td>
                                                 <td>
                                                     <i:inline key="yukon.web.modules.dr.setup.controlArea.trigger.${trigger.triggerType}"/>
                                                 </td>
-                                                <div 
-                                                    id="js-trigger-dialog-${triggerId}"
-                                                    data-url="${triggerUrl}"
-                                                    data-target="#js-trigger-link-${triggerId}"
-                                                    data-event="yukon:dr:setup:controlArea:saveTrigger"
-                                                    data-width="600"
-                                                    data-height="auto"
-                                                    data-title="${fn:escapeXml(triggerName)}">
-                                                </div>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -156,21 +136,16 @@
                             </c:otherwise>
                         </c:choose>
                     </cti:displayForPageEditModes>
+                    <cti:url var="triggerPopupUrl" value="/dr/setup/controlArea/renderTrigger"/>
                     <div data-dialog
-                        id="js-add-triggers"
-                        data-url="${triggerPopupUrl}"
-                        data-event="yukon:dr:setup:controlArea:saveTrigger"
-                        data-width="600"
-                        data-height="auto"
-                        data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>" class="dn"
-                        data-ok-text="<cti:msg2 key="yukon.common.save"/>">
-                    </div>
-                    <div data-dialog
-                        data-event="yukon:dr:setup:controlArea:saveTrigger"
-                        data-width="600" data-height="auto"
-                        data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.trigger.title"/>"
-                        class="dn js-trigger-dialog-template"
-                        data-ok-text="<cti:msg2 key="yukon.common.save"/>">  
+                             id="js-add-triggers"
+                             data-url="${triggerPopupUrl}"
+                             data-event="yukon:dr:setup:controlArea:saveTrigger"
+                             data-width="600"
+                             data-height="auto"
+                             data-title="<cti:msg2 key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title"/>"
+                             class="dn"
+                             data-ok-text="<cti:msg2 key="yukon.common.save"/>">
                     </div>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="controlWindow">

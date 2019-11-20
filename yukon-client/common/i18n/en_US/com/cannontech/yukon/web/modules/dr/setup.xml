@@ -511,7 +511,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.dailyDefaultState.Disabled">Disable / Waived</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.requireAllTriggers">Require All Triggers Active</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.programAssignments.title">Program Assignments</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.title">Trigger</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title">Create Trigger</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.noTriggersAssigned">No triggers were found for this Control Area.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.noProgramsAssigned">No programs were found for this Control Area.</entry>

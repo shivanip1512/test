@@ -202,6 +202,7 @@ yukon.dr.setup.controlArea = (function() {
             });
 
             $(document).on("yukon:dr:setup:controlArea:saveTrigger", function (event) {
+                debugger;
                 _clearErrors();
                 var dialog = $(event.target),
                     container = $("div.ui-dialog:visible"),
@@ -252,34 +253,37 @@ yukon.dr.setup.controlArea = (function() {
 
                             clonedRow.find(".select-box-item-remove").attr("id", "delete-trigger-" + triggerId);
                             clonedRow.find(".select-box-item-remove").attr("data-id", triggerId);
-
-                            var clonedDialog = $(".js-trigger-dialog-template").clone();
-                            clonedDialog.attr("id", "js-trigger-dialog-" + triggerId);
-                            clonedDialog.attr("data-target","#js-trigger-link-" + triggerId)
-                            clonedDialog.attr("data-url", url);
-                            clonedDialog.attr("data-title", triggerName);
-                            clonedDialog.removeClass("js-trigger-dialog-template");
-                            $(".js-trigger-container").append(clonedDialog);
-
-                            anchorTag.attr("data-popup", "#js-trigger-dialog-" + triggerId);
                         } else {
                             $("#js-trigger-link-" + data.triggerId).text(data.triggerName);
                         }
                         _renderConfirmDeletePopup(data.triggerId, data.triggerName);
                         if(!newTrigger){
-                            $("#js-trigger-dialog-" + data.triggerId).dialog('close');
-                            $("#js-trigger-dialog-" + data.triggerId).empty()
+                            $("#js-trigger-dialog-" + data.triggerId).dialog('destroy').remove();
                         }
                     }
                 });
                 if(newTrigger){
-                    dialog.dialog('close');
+                    dialog.dialog('destroy').remove();
                     dialog.empty();
                 }
             });
             $(document).on('click', '.js-trigger-link', function(event) {
-                $('#js-controlArea-trigger-form').html('');
                 event.preventDefault();
+                var triggerId = $(this).data("trigger-id"),
+                       diaogDivJson = {
+                           "id" : "js-trigger-dialog-" + triggerId,
+                           "data-url" : $(this).attr('href'),
+                           "data-target" : "#js-trigger-link-" + triggerId,
+                           "data-event" : "yukon:dr:setup:controlArea:saveTrigger",
+                           "data-width" : "600",
+                           "data-height" : "auto",
+                           "data-title" : $(this).text(),
+                           "data-ok-text" : yg.text.save
+                       };
+                if (!$("#js-is-view-mode").exists()) {
+                    diaogDivJson['data-dialog'] = '';
+                }
+                yukon.ui.dialog($("<div/>").attr(diaogDivJson));
             });
             _initialized = true;
         }
