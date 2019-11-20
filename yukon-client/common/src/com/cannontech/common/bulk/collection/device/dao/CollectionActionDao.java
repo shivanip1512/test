@@ -61,4 +61,9 @@ public interface CollectionActionDao {
      * @returns List of collectionIds which are older than retentionDate
      */
     List<Integer> getAllOldCollectionActionIds(DateTime retentionDate);
+
+    /**
+     * Loads collection actions from db that didn't complete
+     */
+    List<CollectionActionResult> loadIncompeteResultsFromDb();
 }

@@ -149,6 +149,8 @@ class IVVCAlgorithm
 
         std::string handleReverseFlow( CtiCCSubstationBusPtr subbus );
 
+        bool isAnyRegulatorInBadPowerFlow( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );
+
         bool regulatorsReadyForDmvTest( IVVCStatePtr state, CtiCCSubstationBusPtr subbus );
 
         bool executeBusVerification( IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy * strategy );

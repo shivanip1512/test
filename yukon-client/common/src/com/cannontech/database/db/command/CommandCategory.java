@@ -2,10 +2,11 @@ package com.cannontech.database.db.command;
 
 import java.util.Map;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum CommandCategory {
+public enum CommandCategory implements DisplayableEnum {
     
     ALPHA_BASE("All Alpha Meters"),
     CBC_BASE("All CBCs"),
@@ -60,5 +61,10 @@ public enum CommandCategory {
     
     public static CommandCategory getForDbString(String dbString) {
         return lookupByDbString.get(dbString);
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.web.modules.tools.commander.category." + name();
     }
 }

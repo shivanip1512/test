@@ -20,6 +20,24 @@ namespace Cti::Simulator {
 namespace {
 RandomGenerator<unsigned> idGenerator;
 std::map<RfnIdentifier, std::map<unsigned, std::string>> meterProgrammingRequests;
+
+std::vector<std::string> randomGuids {
+    //low-mid-high-and-version (final nibble)
+    //1b21dd213814000 - 100-ns counts between Gregorian epoch and Unix epoch
+    // 1 ms = 10,000 100ns increments
+    // 1 s = 10,000,000 100 ns increments
+    "d952eb22-0a3e-11ea-8d71-362b9e155667",
+    "d952ee74-0a4e-11ea-8d71-362b9e155667",
+    "d952efdc-0a5e-11ea-8d71-362b9e155667",
+    "d952f112-0a6e-11ea-8d71-362b9e155667",
+    "d952f23e-0a7e-11ea-8d71-362b9e155667",
+    "d952f36a-0a8e-11ea-8d71-362b9e155667",
+    "d952f68a-0a9e-11ea-8d71-362b9e155667",
+    "d952f7d4-0aae-11ea-8d71-362b9e155667",
+    "d952f90a-0abe-11ea-8d71-362b9e155667",
+    "d952fa40-0ace-11ea-8d71-362b9e155667",
+};
+
 }
 
 namespace streaming_metrics {
@@ -153,6 +171,7 @@ RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
 
 std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
 std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
+std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId);
 
 auto RfnMeter::doChannelManagerRequest(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> Bytes
 {
@@ -167,6 +186,10 @@ auto RfnMeter::doChannelManagerRequest(const std::vector<unsigned char>& request
             case 0x86:
             {
                 return DataStreamingWrite(request, rfnId);
+            }
+            case 0x91:
+            {
+                return GetMeterProgrammingConfiguration(rfnId);
             }
         }
     }
@@ -213,26 +236,30 @@ auto RfnMeter::processChannelManagerPost(const e2edt_request_packet& post_reques
                 request->confirmable = true;
                 request->method = Protocols::Coap::RequestMethod::Get;
                         
-                const auto meterProgramInfo = ParseSetMeterProgram(post_request.payload, rfnId);
-                        
-                request->path = meterProgramInfo.path;
-                request->token = idGenerator();
+                if( const auto meterProgramInfo = ParseSetMeterProgram(post_request.payload, rfnId);
+                    meterProgramInfo )
+                {
+                    request->path = meterProgramInfo->path;
+                    request->token = idGenerator();
 
-                meterProgrammingRequests[rfnId][request->token] = request->path;
-                        
-                return request;
+                    meterProgrammingRequests[rfnId][request->token] = request->path;
+
+                    return request;
+                }
         }
     }
+
+    return nullptr;
 }
 
-auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> path_size
+auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> std::optional<path_size>
 {
     auto pos = 1;
     const auto end = request.size();
 
     if( request[pos++] != 2 )
     {
-        return {};  //  error, must have two TLVs
+        return std::nullopt;  //  error, must have two TLVs
     }
     
     std::optional<int> size;
@@ -242,7 +269,7 @@ auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, c
     {
         if( end - pos < 3 )
         {
-            return {};  //  error, TLV header too small
+            return std::nullopt;  //  error, TLV header too small
         }
         auto type = request[pos];
         auto len = ntohs(*reinterpret_cast<const unsigned short *>(request.data() + pos + 1));
@@ -251,7 +278,7 @@ auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, c
 
         if( pos + len >= end )
         {
-            return {};  //  error, buffer too small
+            return std::nullopt;  //  error, buffer too small
         }
 
         switch( type )
@@ -259,7 +286,7 @@ auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, c
         case 0x01:
             if( len != 4 )
             {
-                return {};  //  error, size must be 4 bytes
+                return std::nullopt;  //  error, size must be 4 bytes
             }
             size = ntohl(*reinterpret_cast<const u_long*>(request.data() + pos));
             break;
@@ -272,10 +299,10 @@ auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, c
 
     if( ! size || ! uri )
     {
-        return {};  //  error, missing one of the two required parameters
+        return std::nullopt;  //  error, missing one of the two required parameters
     }
 
-    return { *uri, *size };
+    return path_size { *uri, *size };
 }
 
 struct metric_response
@@ -341,6 +368,22 @@ metric_response mangleResponse(metric_response contents, double mangleFactor)
 
 extern std::mt19937_64 rd;
 extern std::uniform_real_distribution<double> dist;
+
+std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId)
+{
+    //  TODO - cache the meter program that was last sent to the meter
+    const std::string configurationId = "R7d444840-9dc0-11d1-b245-5ffdce74fad2";
+
+    //  Success response
+    //  TODO - add support for failure responses
+    //  TODO - track individual meter state
+    std::vector<unsigned char> response { 0x92, 0x00, 0x00, 0x01, 0x03 };
+
+    response.push_back(configurationId.length());
+    response.insert(response.end(), configurationId.begin(), configurationId.end());
+
+    return response;
+}
 
 std::vector<unsigned char> makeDataStreamingResponse(const unsigned char responseCode, const metric_response& original)
 {

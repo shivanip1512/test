@@ -61,6 +61,10 @@ public class LMModelFactory {
         case LM_GROUP_MCT:
             loadGroup = new LoadGroupMCT();
             break;
+        case LM_GROUP_POINT:
+            loadGroup = new LoadGroupPoint();
+            break;
+
         }
         return loadGroup;
     }
@@ -135,6 +139,8 @@ public class LMModelFactory {
         switch (paoType) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_EMETCON:
+        case LM_GROUP_MCT:
+        case LM_GROUP_RIPPLE:
         case LM_GROUP_VERSACOM:
             loadGroup = new LoadGroupCopy();
             break;

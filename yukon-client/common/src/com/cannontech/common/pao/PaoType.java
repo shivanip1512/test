@@ -768,7 +768,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_GROUP_EXPRESSCOMM,
             LM_GROUP_RFN_EXPRESSCOMM,
             LM_GROUP_VERSACOM,
-            LM_GROUP_METER_DISCONNECT
+            LM_GROUP_METER_DISCONNECT,
+            LM_GROUP_MCT
           );
         
         batteryAnalysisTypes = ImmutableSet.of(

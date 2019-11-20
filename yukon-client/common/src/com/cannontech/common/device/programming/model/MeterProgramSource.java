@@ -48,7 +48,7 @@ public enum MeterProgramSource implements DisplayableEnum, DatabaseRepresentatio
     public boolean isFailure() {
         return isOldFirmware() || this == UNPROGRAMMED;
     }
-
+    
     @Override
     public String getFormatKey() {
         return "yukon.web.modules.amr.meterProgramming.source." + name();

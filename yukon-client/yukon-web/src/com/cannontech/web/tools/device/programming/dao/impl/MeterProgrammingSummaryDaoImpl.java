@@ -181,7 +181,6 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     @Override
     public List<MeterProgramInfo> getMeterProgramInfos(YukonUserContext context) {
         return getProgramStatistics(context).stream()
-                .filter(program -> !program.isUnused())
                 .map(MeterProgramStatistics::getProgramInfo)
                 .collect(Collectors.toList());
     }

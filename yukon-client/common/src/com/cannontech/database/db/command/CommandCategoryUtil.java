@@ -70,6 +70,37 @@ public class CommandCategoryUtil {
         return false;
     }
     
+    
+    /**
+     * Return category if category is one from ALL_CATEGORIES
+     * 
+     */
+    public static CommandCategory getCommandCategory(String category) {
+        
+        for (CommandCategory commandCategory :  CommandCategory.values()) {
+            if (commandCategory.getDbString().equalsIgnoreCase(category)) return commandCategory;
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Return true if category is either ExpressCom or VersaCom
+     * false if not.
+     */
+    public static boolean isExpressComOrVersaCom(String category) {
+        return CommandCategory.EXPRESSCOM_SERIAL.getDbString().equals(category) || CommandCategory.VERSACOM_SERIAL.getDbString().equals(category);
+    }
+    
+    /**
+     * Return true if category is either SerialNumber or DeviceGroup
+     * false if not.
+     */
+    public static boolean isSerialNumberOrDeviceGroup(String category) {
+        return CommandCategory.SERIALNUMBER.getDbString().equals(category) || CommandCategory.DEVICE_GROUP.getDbString().equals(category);
+    }
+    
+    
     public static List<PaoType> getAllTypesForCategory(CommandCategory category) {
         
         if (category == CommandCategory.ALPHA_BASE) {

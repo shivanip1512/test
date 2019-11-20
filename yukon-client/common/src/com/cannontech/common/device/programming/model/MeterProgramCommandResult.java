@@ -6,6 +6,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class MeterProgramCommandResult {
     private boolean isSuccess;
     private String errorText;
+    
+    public MeterProgramCommandResult(String errorText) {
+        this.errorText = errorText;
+    }
+    
+    public MeterProgramCommandResult(boolean isSuccess) {
+        this.isSuccess = isSuccess;
+    }
+
+    public MeterProgramCommandResult() {
+
+    }
 
     public String getErrorText() {
         return errorText;

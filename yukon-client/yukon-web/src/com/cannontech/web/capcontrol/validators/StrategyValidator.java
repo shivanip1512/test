@@ -47,18 +47,9 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         validatePeakTimes(strategy, errors);
         
         if (strategy.isIvvc()) {
-
-            YukonValidationUtils.checkRange(errors, "minCommunicationPercentageSetting.banksReportingRatio", 
-                strategy.getMinCommunicationPercentageSetting().getBanksReportingRatio(), 0.0, 100.0, true);
-            YukonValidationUtils.checkRange(errors, "minCommunicationPercentageSetting.regulatorReportingRatio", 
-                strategy.getMinCommunicationPercentageSetting().getRegulatorReportingRatio(), 0.0, 100.0, true);
-            YukonValidationUtils.checkRange(errors, "minCommunicationPercentageSetting.voltageMonitorReportingRatio", 
-                strategy.getMinCommunicationPercentageSetting().getVoltageMonitorReportingRatio(), 0.0, 100.0, true);
-
             validateVoltageViolationSettings(strategy, errors);
             validatePowerFactorCorrectionSetting(strategy, errors);
             validateMinCommunicationPercentageSetting(strategy, errors);
-            
         }
         
         if (strategy.isIvvc() || strategy.isMultiVolt() || strategy.isMultiVoltVar()) {

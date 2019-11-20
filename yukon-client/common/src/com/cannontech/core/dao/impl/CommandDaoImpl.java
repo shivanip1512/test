@@ -1,43 +1,39 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.command.Command;
 import com.cannontech.yukon.IDatabaseCache;
 
 public final class CommandDaoImpl implements CommandDao {
-    
+
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthService;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    
-    private static final Logger log = YukonLogManager.getLogger(CommandDaoImpl.class);
-    
+    @Autowired protected DBPersistentDao dbPersistentDao;
+        
     public static final YukonRowMapper<LiteDeviceTypeCommand> DEVICE_TYPE_COMMAND_MAPPER = new YukonRowMapper<LiteDeviceTypeCommand>() {
         @Override
         public LiteDeviceTypeCommand mapRow(YukonResultSet rs) throws SQLException {
@@ -66,6 +62,51 @@ public final class CommandDaoImpl implements CommandDao {
             return command;
         }
     };
+    
+    @Override
+    public void updateCommand(LiteCommand command) {
+        dbPersistentDao.performDBChange(LiteFactory.createDBPersistent(command), TransactionType.UPDATE);
+    }
+    
+    @Override
+    public void deleteDeviceTypeCommand(LiteDeviceTypeCommand typeCommand) {
+        dbPersistentDao.performDBChange(LiteFactory.createDBPersistent(typeCommand), TransactionType.DELETE);
+    }
+    
+    @Override
+    public void deleteCommand(LiteCommand command) {
+        dbPersistentDao.performDBChange(LiteFactory.createDBPersistent(command), TransactionType.DELETE);
+    }
+      
+      
+    @Override
+    public int createCommand(String commandString, String label, String commandCategory) {
+        Command command = new Command();
+        command.setLabel(label);
+        command.setCommand(commandString);
+        command.setCategory(commandCategory);
+ 
+        dbPersistentDao.performDBChange(command, TransactionType.INSERT);
+        return command.getCommandID();
+    }
+    
+    @Override
+    public void createDeviceTypeCommand(int commandId, String deviceType, int displayOrder, boolean isVisible) {
+                        
+        com.cannontech.database.db.command.DeviceTypeCommand dbCommand = new  com.cannontech.database.db.command.DeviceTypeCommand();
+        dbCommand.setDeviceCommandID(com.cannontech.database.db.command.DeviceTypeCommand.getNextID(CtiUtilities.getDatabaseAlias()));
+        dbCommand.setCommandID(commandId);
+        dbCommand.setDeviceType(deviceType);
+        dbCommand.setDisplayOrder(displayOrder);
+        dbCommand.setVisibleFlag(isVisible ? 'Y' : 'N');
+
+        dbPersistentDao.performDBChange(dbCommand, TransactionType.INSERT);
+    }
+        
+    @Override
+    public void updateDeviceTypeCommand(LiteDeviceTypeCommand command) {
+        dbPersistentDao.performDBChange(LiteFactory.createDBPersistent(command), TransactionType.UPDATE);
+    }
     
     @Override
     public List<LiteDeviceTypeCommand> getAllDevTypeCommands(String type) {
@@ -175,6 +216,20 @@ public final class CommandDaoImpl implements CommandDao {
             }
         });
         
+        return commands;
+    }
+    
+    @Override
+    public List<LiteCommand> deleteUnusedCommands() {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CommandId, Command, Label, Category");
+        sql.append("FROM Command");
+        sql.append("WHERE CommandId > 0");
+        sql.append("AND CommandId NOT IN (SELECT CommandId FROM DeviceTypeCommand WHERE DeviceTypeCommandId > 0)");
+        
+        List<LiteCommand> commands = jdbcTemplate.query(sql, COMMAND_MAPPER);
+        commands.forEach(command -> deleteCommand(command));
         return commands;
     }
     

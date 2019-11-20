@@ -189,9 +189,11 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
                 return;
             }
 
-            const auto replyPacket = buildResponse(*e2edtRequest, requestMsg.applicationServiceId, requestMsg.rfnIdentifier);
-
-            sendE2eDataIndication(requestMsg, replyPacket);
+            if( const auto replyPacket = buildResponse(*e2edtRequest, requestMsg.applicationServiceId, requestMsg.rfnIdentifier); 
+                ! replyPacket.empty() )
+            {
+                sendE2eDataIndication(requestMsg, replyPacket);
+            }
         }
         else if( auto e2edtReply = dynamic_cast<const e2edt_reply_packet*>(msgPtr.get()) )
         {

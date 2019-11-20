@@ -12,15 +12,13 @@ import org.apache.logging.log4j.Logger;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockLMDto;
-import com.cannontech.rest.api.common.model.MockLMPaoDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
-import com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest;
+import com.cannontech.rest.api.loadgroup.request.MockAddressLevel;
 import com.cannontech.rest.api.loadgroup.request.MockAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockControlPriority;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconAddressUsage;
 import com.cannontech.rest.api.loadgroup.request.MockEmetconRelayUsage;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
-import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupDigiSep;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupDisconnect;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEcobee;
@@ -28,10 +26,11 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEmetcon;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupExpresscom;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupHoneywell;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupMCT;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupNest;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupPoint;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
 import com.cannontech.rest.api.loadgroup.request.MockLoads;
-import com.cannontech.rest.api.loadgroup.request.MockMacroLoadGroup;
 import com.cannontech.rest.api.loadgroup.request.MockRelays;
 import com.cannontech.rest.api.loadgroup.request.MockSepDeviceClass;
 import com.cannontech.rest.api.loadgroup.request.MockVersacomAddressUsage;
@@ -121,7 +120,38 @@ public class LoadGroupHelper {
                     .build();
 
         case LM_GROUP_RFN_EXPRESSCOMM:
-            // loadGroup = LoadGroupExpresscom.builder().build()
+            List<MockAddressUsage> rfnAddressUsage = new ArrayList<>();
+            rfnAddressUsage.add(MockAddressUsage.LOAD);
+            rfnAddressUsage.add(MockAddressUsage.ZIP);
+            rfnAddressUsage.add(MockAddressUsage.FEEDER);
+            rfnAddressUsage.add(MockAddressUsage.GEO);
+            rfnAddressUsage.add(MockAddressUsage.SUBSTATION);
+            rfnAddressUsage.add(MockAddressUsage.USER);
+            rfnAddressUsage.add(MockAddressUsage.PROGRAM);
+            rfnAddressUsage.add(MockAddressUsage.SPLINTER);
+
+            List<MockLoads> rfnRelayUsage = new ArrayList<>();
+            rfnRelayUsage.add(MockLoads.Load_1);
+            rfnRelayUsage.add(MockLoads.Load_2);
+
+            loadGroup = MockLoadGroupExpresscom.builder()
+                    .name(getLoadGroupName(paoType))
+                    .type(MockPaoType.LM_GROUP_RFN_EXPRESSCOMM)
+                    .disableControl(false)
+                    .disableGroup(false)
+                    .kWCapacity(153.0)
+                    .addressUsage(rfnAddressUsage)
+                    .relayUsage(rfnRelayUsage)
+                    .feeder("1000000000000000")
+                    .serviceProvider(100)
+                    .geo(223)
+                    .user(6)
+                    .substation(3)
+                    .zip(334)
+                    .splinter(43)
+                    .program(12)
+                    .protocolPriority(MockControlPriority.DEFAULT)
+                    .build();
             break;
         case LM_GROUP_VERSACOM:
 
@@ -192,6 +222,34 @@ public class LoadGroupHelper {
                     .routeId(1)
                     .build();
             break;
+        case LM_GROUP_POINT:
+            loadGroup = MockLoadGroupPoint.builder()
+                    .name(getLoadGroupName(paoType))
+                    .type(paoType)
+                    .kWCapacity(4.0)
+                    .disableControl(false)
+                    .disableGroup(false)
+                    .deviceIdUsage(2)
+                    .pointIdUsage(1234)
+                    .startControlRawState(-1)
+                    .build();
+            break;
+        case LM_GROUP_MCT:
+            List<MockRelays> relay = new ArrayList<>();
+            relay.add(MockRelays.RELAY_1);
+            relay.add(MockRelays.RELAY_2);
+            loadGroup = MockLoadGroupMCT.builder()
+                    .name(getLoadGroupName(paoType))
+                    .type(MockPaoType.LM_GROUP_MCT)
+                    .routeId(1)
+                    .disableControl(false)
+                    .disableGroup(false)
+                    .kWCapacity(223.0)
+                    .level(MockAddressLevel.BRONZE)
+                    .address(123)
+                    .relayUsage(relay)
+                    .build();
+            break;
         }
 
         return loadGroup;
@@ -231,73 +289,6 @@ public class LoadGroupHelper {
         loadGroup.setId(createResponse.path("groupId"));
 
         return loadGroup;
-    }
-
-    public static MockMacroLoadGroup createMacroLoadGroup(String groupName, List<MockLMPaoDto> assignedLoadGroups) {
-        MockMacroLoadGroup macroLoadGroup = buildMacroLoadGroup(groupName, assignedLoadGroups);
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
-        Integer macroGroupId = createResponse.path(MacroLoadGroupSetupApiControllerTest.CONTEXT_MACRO_GROUP_ID);
-        log.info("macroGroupId:" + macroGroupId);
-        log.info("Name:" + createResponse.path("name"));
-        assertTrue("Status code should be 200", createResponse.statusCode() == 200);
-        assertTrue("Macro Group Id(paoId) should not be Null", macroGroupId != null);
-        macroLoadGroup.setId(macroGroupId);
-        return macroLoadGroup;
-    }
-
-    public static MockMacroLoadGroup updateMacroLoadGroup(String loadGroupIDtoUpdate, String updatedName,
-        List<MockLMPaoDto> assignedLoadGroupsUpdated) {
-        MockMacroLoadGroup macroLoadGroup =  buildMacroLoadGroup(updatedName, assignedLoadGroupsUpdated);
-        ExtractableResponse<?> updateResponse = ApiCallHelper.post("updateMacroLoadGroup", macroLoadGroup, loadGroupIDtoUpdate);
-        Integer macroGroupId = updateResponse.path(MacroLoadGroupSetupApiControllerTest.CONTEXT_MACRO_GROUP_ID);
-        assertTrue("Status code should be 200", updateResponse.statusCode() == 200);
-        assertTrue("Macro Group Id(paoId) should not be Null", macroGroupId != null);
-        assertTrue("Updated Macro Load group Id(paoId) should be same ", Integer.parseInt(loadGroupIDtoUpdate) == macroGroupId);
-        macroLoadGroup.setId(macroGroupId);
-        return macroLoadGroup;
-    }
-
-    public static Integer getMacroLoadGroup(String macroLoadGroupId) {
-        ExtractableResponse<?> getResponse = ApiCallHelper.get("getMacroloadgroup", macroLoadGroupId);
-        Integer macroGroupId = getResponse.path("id");
-        assertTrue("Status code should be 200", getResponse.statusCode() == 200);
-        assertTrue("Macro Load Group Id(paoId) should not be Null", macroGroupId != null);
-        assertTrue("Macro Load Group name should not be Null", getResponse.path("name") != null);
-        return macroGroupId;
-    }
-
-    public static Integer copyMacroLoadGroup(String newMacroLoadGroupName, String macroLoadGroupIdToBeCopied) {
-        MockLoadGroupCopy macroloadGroupCopy = MockLoadGroupCopy.builder().name(newMacroLoadGroupName).build();
-        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyMacroLoadGroup", macroloadGroupCopy,
-                macroLoadGroupIdToBeCopied);
-        Integer copiedMacroLoadGroupId = copyResponse.path(MacroLoadGroupSetupApiControllerTest.CONTEXT_MACRO_GROUP_ID);
-        assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
-        assertTrue("Macro Load Group Id(paoId) should not be Null", copiedMacroLoadGroupId != null);
-        assertTrue("Copied Macro Load group Id(paoId) should be differect ",
-                copiedMacroLoadGroupId != Integer.parseInt(macroLoadGroupIdToBeCopied));
-        return copiedMacroLoadGroupId;
-    }
-
-    public static boolean deleteMacroLoadGroup(String macroLoadGroupName, String macroLoadGroupId) {
-        MockLMDto macroloadGroupDelete = MockLMDto.builder().name(macroLoadGroupName).build();
-        ExtractableResponse<?> deleteResponse = ApiCallHelper.delete("deleteMacroLoadGroup", macroloadGroupDelete,
-                macroLoadGroupId);
-        assertTrue("Status code should be 200", deleteResponse.statusCode() == 200);
-        return true;
-    }
-
-    public static MockMacroLoadGroup buildMacroLoadGroup(String macroLoadGroupName, List<MockLMPaoDto> assignedLoadGroups) {
-        MockMacroLoadGroup macroLoadGroup = MockMacroLoadGroup.builder()
-                .name(macroLoadGroupName)
-                .type(MockPaoType.MACRO_GROUP)
-                .assignedLoadGroups(assignedLoadGroups)
-                .build();
-        return macroLoadGroup;
-    }
-    public static MockLMPaoDto getMockLMPaoDtoObject(MockLoadGroupBase loadGroup) {
-
-        return MockLMPaoDto.builder().id(loadGroup.getId()).name(loadGroup.getName()).type(loadGroup.getType()).build();
-
     }
 
 }

@@ -1,5 +1,6 @@
 package com.cannontech.common.bulk.collection.device.model;
 
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.ALREADY_CONFIGURED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.ARMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CANCELED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.CONFIRMED;
@@ -10,14 +11,14 @@ import static com.cannontech.common.bulk.collection.device.model.CollectionActio
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.SUCCESS;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNCONFIRMED;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.UNSUPPORTED;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionDetail.ALREADY_CONFIGURED;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
-import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_TYPE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.CONFIG_NAME;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.DEVICE_TYPE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.LAST_VALUE;
+import static com.cannontech.common.bulk.collection.device.model.CollectionActionOptionalLogEntry.POINT_DATA;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.CRE;
 import static com.cannontech.common.bulk.collection.device.model.CollectionActionProcess.DB;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +61,11 @@ public enum CollectionAction implements DisplayableEnum {
     ASSIGN_CONFIG(DB, null, SUCCESS, FAILURE),
     UNASSIGN_CONFIG(DB, null, SUCCESS, FAILURE);
 	
+    private static List<CollectionAction> actionsWithCre = Arrays.asList(CollectionAction.values()).stream()
+            .filter(action -> action.getProcess() == CollectionActionProcess.CRE)
+            .collect(Collectors.toList());
+   
+    
     private CollectionActionProcess process;
 
     private List<CollectionActionDetail> details;
@@ -104,6 +110,10 @@ public enum CollectionAction implements DisplayableEnum {
 
     public CollectionActionDetail getDetail(CommandRequestUnsupportedType unsupportedType) {
         return this.getDetails().stream().filter(d -> d.getCreUnsupportedType() == unsupportedType).findFirst().get();
+    }
+    
+    public static  List<CollectionAction> getActionsWithCre() {
+        return actionsWithCre;
     }
 
     @Override
