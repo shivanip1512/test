@@ -10,6 +10,7 @@ public enum MockGearControlMethod {
     SmartCycle(MockPaoType.LM_DIRECT_PROGRAM),
     SepCycle(MockPaoType.LM_SEP_PROGRAM),
     EcobeeCycle(MockPaoType.LM_ECOBEE_PROGRAM),
+    EcobeeSetpoint(MockPaoType.LM_ECOBEE_PROGRAM),
     HoneywellCycle(MockPaoType.LM_HONEYWELL_PROGRAM),
     ItronCycle(MockPaoType.LM_ITRON_PROGRAM),
     NestCriticalCycle(MockPaoType.LM_NEST_PROGRAM),
