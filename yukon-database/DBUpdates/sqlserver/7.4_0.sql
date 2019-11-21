@@ -223,14 +223,14 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-20919', '7.4.0', GETDATE());
 /* @end YUK-20919 */
 
-/* @start YUK-21004-1 */
+/* @start YUK-21004 */
 UPDATE GlobalSetting 
 SET Value = NULL
 WHERE Name = 'HTTP_PROXY'
-AND (Value = 'none' OR Value = 'NULL');
+AND Value = 'none';
 
-INSERT INTO DBUpdates VALUES ('YUK-21004-1', '7.4.0', GETDATE());
-/* @end YUK-21004-1 */
+INSERT INTO DBUpdates VALUES ('YUK-21004', '7.4.0', GETDATE());
+/* @end YUK-21004 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
