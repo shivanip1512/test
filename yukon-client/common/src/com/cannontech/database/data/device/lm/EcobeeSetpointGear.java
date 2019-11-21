@@ -117,8 +117,8 @@ public class EcobeeSetpointGear extends LMProgramDirectGear {
         super.retrieve();
         Object[] constraintValues = {getGearID()};    
         Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
-        setSetpointOffset((int) results[3]);
-        setHeatCool(HeatCool.of(results[1]));
+        setSetpointOffset((int) results[2]);
+        setHeatCool(HeatCool.of(results[0]));
     }
     
     /**

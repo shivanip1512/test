@@ -11,6 +11,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
+import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
 import com.cannontech.database.data.device.lm.ItronCycleGear;
 import com.cannontech.database.db.NestedDBPersistent;
 
@@ -217,7 +218,7 @@ public abstract class LMProgramDirectGear
 				
 				//need to make sure we get the Thermostat/Beat the Peak/Itron specific information from its separate table
 				if (gear instanceof LMThermostatGear || gear instanceof BeatThePeakGear || gear instanceof LMNestGear || 
-				        gear instanceof ItronCycleGear) {
+				        gear instanceof ItronCycleGear|| gear instanceof EcobeeSetpointGear) {
 					gear.retrieve();
                 } else {
 					gear.setGearName(name);
