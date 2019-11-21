@@ -28,7 +28,7 @@ public class MockProgramGear {
     @JsonSubTypes({
         @JsonSubTypes.Type(value = MockBeatThePeakGearFields.class, name = "BeatThePeak"),
         @JsonSubTypes.Type(value = MockEcobeeCycleGearFields.class, name = "EcobeeCycle"),
-        @JsonSubTypes.Type(value = MockSetpointGearFields.class, name = "EcobeeSetpoint"),
+        @JsonSubTypes.Type(value = MockEcobeeSetpointGearFields.class, name = "EcobeeSetpoint"),
         @JsonSubTypes.Type(value = MockHoneywellCycleGearFields.class, name = "HoneywellCycle"),
         @JsonSubTypes.Type(value = MockItronCycleGearFields.class, name = "ItronCycle"),
         @JsonSubTypes.Type(value = MockLatchingGearFields.class, name = "Latching"),

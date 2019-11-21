@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 @JsonInclude(Include.NON_NULL)
-public class MockSetpointGearFields implements MockProgramGearFields {
+public class MockEcobeeSetpointGearFields implements MockProgramGearFields {
 
     private Boolean mandatory;
     private Integer setpointOffset;
