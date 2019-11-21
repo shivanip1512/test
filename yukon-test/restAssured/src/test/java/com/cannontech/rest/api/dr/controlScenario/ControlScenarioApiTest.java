@@ -112,11 +112,10 @@ public class ControlScenarioApiTest {
         MockControlScenario updatedControlScenarioResponse = getupdatedResponse.as(MockControlScenario.class);
         assertTrue(controlScenarioName.equals(updatedControlScenarioResponse.getName()),
                 "Name Should be : " + updatedControlScenarioResponse.getName());
-        assertTrue(
-                controlScenario.getAllPrograms().get(0).getStartOffsetInMinutes()
+        assertTrue(controlScenario.getAllPrograms().get(0).getStartOffsetInMinutes()
                         .equals(updatedControlScenarioResponse.getAllPrograms().get(0).getStartOffsetInMinutes()),
                 "Start Offset In Minutes Should be : "
-                        + updatedControlScenarioResponse.getAllPrograms().get(0).getStartOffsetInMinutes());
+                        + controlScenario.getAllPrograms().get(0).getStartOffsetInMinutes());
         Log.endTestCase("controlScenario_03_Update");
     }
 
