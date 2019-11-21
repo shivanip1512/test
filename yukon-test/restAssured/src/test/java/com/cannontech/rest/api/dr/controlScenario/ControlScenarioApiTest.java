@@ -219,7 +219,10 @@ public class ControlScenarioApiTest {
     }
 
     /**
-     * This test case deletes Control Scenario created in controlScenario_01_CreateWithProgramAssignedToControlArea
+     * This test case deletes
+     * Control Scenario created in controlScenario_01_CreateWithProgramAssignedToControlArea,
+     * controlScenario_06_CreateWithAlreadyAssignedProgramToControlScenario
+     * Control Area, Load Program and Load Group used for above mentioned Control Scenario's
      */
     @Test(dependsOnMethods = "controlScenario_19_UnassigningProgramFromControlScenario")
     public void controlScenario_07_Delete(ITestContext context) {
@@ -232,7 +235,7 @@ public class ControlScenarioApiTest {
             deleteObject.setName(map.getValue().toString());
             ExtractableResponse<?> response = ApiCallHelper.delete("deleteControlScenario", deleteObject,
                     map.getKey().toString());
-            softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200. Delete copied LoadProgram failed.");
+            softAssert.assertTrue(response.statusCode() == 200, "Status code should be 200, delete Control Scenario failed.");
         }
 
         // Get request to validate Control Scenario's is deleted
@@ -251,7 +254,7 @@ public class ControlScenarioApiTest {
         ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
                 deleteObject,
                 context.getAttribute("controlAreaId").toString());
-        softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
+        softAssert.assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200, delete Control Area failed.");
 
         // Delete Load Program
         deleteObject = MockLMDto.builder().name(loadProgram.getName()).build();
@@ -259,14 +262,15 @@ public class ControlScenarioApiTest {
         ExtractableResponse<?> deleteProgramResponse = ApiCallHelper.delete("deleteLoadProgram",
                 deleteObject,
                 loadProgram.getProgramId().toString());
-        softAssert.assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
+        softAssert.assertTrue(deleteProgramResponse.statusCode() == 200,
+                "Status code should be 200, delete Load Program failed.");
 
         // Delete Load Group
         deleteObject = MockLMDto.builder().name(loadProgram.getAssignedGroups().get(0).getGroupName()).build();
         ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("deleteloadgroup",
                 deleteObject,
                 loadProgram.getAssignedGroups().get(0).getGroupId().toString());
-        softAssert.assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200");
+        softAssert.assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200, delete Load Group failed.");
         softAssert.assertAll();
     }
 
@@ -457,6 +461,10 @@ public class ControlScenarioApiTest {
                 "Expected code in response is not correct");
     }
 
+    /**
+     * This deletes
+     * Control Area, Load Program and Load Group used for Negative Validation of Control Scenario's
+     */
     @AfterClass
     public void deleteCreatedProgramAndControlAreaInNegativeValidation(ITestContext context) {
         SoftAssert softAssert = new SoftAssert();
@@ -477,6 +485,13 @@ public class ControlScenarioApiTest {
                 deleteObject,
                 loadProgram.getProgramId().toString());
         softAssert.assertTrue(deleteProgramResponse.statusCode() == 200, "Status code should be 200");
+
+        // Delete Load Group
+        deleteObject = MockLMDto.builder().name(loadProgram.getAssignedGroups().get(0).getGroupName()).build();
+        ExtractableResponse<?> deleteGroupResponse = ApiCallHelper.delete("deleteloadgroup",
+                deleteObject,
+                loadProgram.getAssignedGroups().get(0).getGroupId().toString());
+        softAssert.assertTrue(deleteGroupResponse.statusCode() == 200, "Status code should be 200, delete Load Group failed.");
         softAssert.assertAll();
     }
 
