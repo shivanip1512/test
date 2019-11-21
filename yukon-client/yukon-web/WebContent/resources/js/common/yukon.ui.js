@@ -792,6 +792,7 @@ yukon.ui = (function () {
                 tabbed = popup.is('[data-dialog-tabbed]'),
                 bigContent = popup.is('[data-big-content]'),
                 loadEvent = popup.data('loadEvent'),
+                destroyDialogOnClose = popup.is('[data-destroy-dialog-on-close]'),
                 options = {
                     modal: true,
                     minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
@@ -807,6 +808,11 @@ yukon.ui = (function () {
                         }
                         // Check for a focus element
                         mod.autofocus(popup);
+                    },
+                    close: function () {
+                        if (destroyDialogOnClose) {
+                            popup.dialog("destroy");
+                        }
                     }
                 },
                 buttonOptions = {},

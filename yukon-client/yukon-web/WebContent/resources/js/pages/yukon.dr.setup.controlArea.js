@@ -257,13 +257,12 @@ yukon.dr.setup.controlArea = (function() {
                         }
                         _renderConfirmDeletePopup(data.triggerId, data.triggerName);
                         if(!newTrigger){
-                            $("#js-trigger-dialog-" + data.triggerId).dialog('destroy').remove();
+                            $("#js-trigger-dialog-" + data.triggerId).dialog('close');
                         }
                     }
                 });
                 if(newTrigger){
-                    dialog.dialog('destroy').remove();
-                    dialog.empty();
+                    dialog.dialog('close');
                 }
             });
             $(document).on('click', '.js-trigger-link', function(event) {
@@ -277,7 +276,8 @@ yukon.dr.setup.controlArea = (function() {
                            "data-width" : "600",
                            "data-height" : "auto",
                            "data-title" : $(this).text(),
-                           "data-ok-text" : yg.text.save
+                           "data-ok-text" : yg.text.save,
+                           "data-destroy-dialog-on-close" : ""
                        };
                 if (!$("#js-is-view-mode").exists()) {
                     dialogDivJson['data-dialog'] = '';

@@ -75,6 +75,11 @@
             Default Value: window object when not present<br>
             See <a href="#positioning-example">Example below</a> for usage
         </tags:nameValue>
+        <tags:nameValue name="data-destroy-dialog-on-close">
+            If present the dialog will be destroyed after the dialog is closed. <br>
+            See jQuery UI dialog <a href="https://api.jqueryui.com/dialog/#method-destroy">destroy method</a>
+            documentation.
+        </tags:nameValue>
     </tags:nameValueContainer>
     <br><br>
     <h2>Popup/Dialog Trigger Options</h2>

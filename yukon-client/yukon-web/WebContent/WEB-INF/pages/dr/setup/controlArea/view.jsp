@@ -138,6 +138,7 @@
                     </cti:displayForPageEditModes>
                     <cti:url var="triggerPopupUrl" value="/dr/setup/controlArea/renderTrigger"/>
                     <div data-dialog
+                             data-destroy-dialog-on-close
                              id="js-add-triggers"
                              data-url="${triggerPopupUrl}"
                              data-event="yukon:dr:setup:controlArea:saveTrigger"
