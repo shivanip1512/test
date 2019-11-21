@@ -284,11 +284,20 @@ function getEndpointCommissionConfirmationCallback(deviceId) {
                     </li>
                 </c:if>
                 <c:if test="${showMeterConfigAction}">
-                    <cti:url var="configUrl" value="/stars/operator/hardware/config/edit">
-                        <cti:param name="accountId" value="${accountId}"/>
-                        <cti:param name="inventoryId" value="${inventoryId}"/>
-                    </cti:url>
-                    <cm:dropdownOption key=".editConfig.label" href="${configUrl}" icon="icon-cog-edit"/>
+                    <c:if test="${hardware.getHardwareTypeEntryId() == 0}">
+                        <cti:url var="editMeterConfigUrl" value="/stars/operator/hardware/config/meterConfig">
+                            <cti:param name="accountId" value="${accountId}"/>
+                            <cti:param name="meterId" value="${hardware.deviceId}"/>
+                        </cti:url>
+                        <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editMeterConfigUrl}" />
+                    </c:if>
+                    <c:if test="${(hardware.hardwareType == 'YUKON_METER') and (hardware.getHardwareTypeEntryId() > 0)}">
+                        <cti:url var="editConfigUrl" value="/stars/operator/hardware/config/edit">
+                            <cti:param name="accountId" value="${accountId}"/>
+                            <cti:param name="inventoryId" value="${hardware.inventoryId}"/>
+                        </cti:url>
+                        <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}" />
+                    </c:if>
                 </c:if>
                 <c:if test="${showMeterDetailAction}">
                     <cti:paoDetailUrl yukonPao="${hardware.yukonPao}" var="meterDetailUrl"/>
