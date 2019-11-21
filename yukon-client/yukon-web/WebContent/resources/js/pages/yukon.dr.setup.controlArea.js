@@ -202,7 +202,6 @@ yukon.dr.setup.controlArea = (function() {
             });
 
             $(document).on("yukon:dr:setup:controlArea:saveTrigger", function (event) {
-                debugger;
                 _clearErrors();
                 var dialog = $(event.target),
                     container = $("div.ui-dialog:visible"),
@@ -270,7 +269,7 @@ yukon.dr.setup.controlArea = (function() {
             $(document).on('click', '.js-trigger-link', function(event) {
                 event.preventDefault();
                 var triggerId = $(this).data("trigger-id"),
-                       diaogDivJson = {
+                       dialogDivJson = {
                            "id" : "js-trigger-dialog-" + triggerId,
                            "data-url" : $(this).attr('href'),
                            "data-target" : "#js-trigger-link-" + triggerId,
@@ -281,9 +280,9 @@ yukon.dr.setup.controlArea = (function() {
                            "data-ok-text" : yg.text.save
                        };
                 if (!$("#js-is-view-mode").exists()) {
-                    diaogDivJson['data-dialog'] = '';
+                    dialogDivJson['data-dialog'] = '';
                 }
-                yukon.ui.dialog($("<div/>").attr(diaogDivJson));
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
             });
             _initialized = true;
         }
