@@ -210,14 +210,14 @@ END;
 INSERT INTO DBUpdates VALUES ('YUK-20919', '7.4.0', SYSDATE);
 /* @end YUK-20919 */
 
-/* @start YUK-21004 */
+/* @start YUK-21004-1 */
 UPDATE GlobalSetting 
-SET Value = 'NULL'
+SET Value = NULL
 WHERE Name = 'HTTP_PROXY'
-AND Value = 'none';
+AND (Value = 'none' OR Value = 'NULL');
 
-INSERT INTO DBUpdates VALUES ('YUK-21004', '7.4.0', SYSDATE);
-/* @end YUK-21004 */
+INSERT INTO DBUpdates VALUES ('YUK-21004-1', '7.4.0', SYSDATE);
+/* @end YUK-21004-1 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
