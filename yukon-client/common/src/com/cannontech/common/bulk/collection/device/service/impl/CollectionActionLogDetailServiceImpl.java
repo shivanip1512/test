@@ -115,6 +115,13 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
 
     @Override
     public void appendToLog(CollectionActionResult result, List<CollectionActionLogDetail> details) {
+        /**
+         * If the result is loaded from the database we are not going to modify the log file even if we just terminated the
+         * collection actions
+         */
+        if(result.isLoadedFromDatabase()) {
+            return;
+        }
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(result.getContext());
         // Delete old Collection Action logs. Cleanup should not be done more than once a day.
         if (cleanupTime == null || cleanupTime.isBefore(new DateTime().minusDays(1))) {
