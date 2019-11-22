@@ -1531,9 +1531,6 @@ RFN-500 Node in L & G Focus AX and RX (with Advanced Metrology):
     - Current Phase A:                      { Unit: *A,      Modifiers: [ *PhA, *milli                     ], Models: *AX-RX-23 }
     - Current Phase B:                      { Unit: *A,      Modifiers: [ *PhB, *milli                     ], Models: *AX-RX-_3 }
     - Current Phase C:                      { Unit: *A,      Modifiers: [ *PhC, *milli                     ], Models: *AX-RX-_3 }
-    - Current Angle Phase A:                { Unit: *A_deg,  Modifiers: [ *PhA, *milli                     ], Models: *AX-RX-23 }
-    - Current Angle Phase B:                { Unit: *A_deg,  Modifiers: [ *PhB, *milli                     ], Models: *AX-RX-_3 }
-    - Current Angle Phase C:                { Unit: *A_deg,  Modifiers: [ *PhC, *milli                     ], Models: *AX-RX-_3 }
     - Power Factor Angle Phase A:           { Unit: *PF_deg, Modifiers: [ *PhA                             ], Models: *AX-RX-23 }
     - Power Factor Angle Phase B:           { Unit: *PF_deg, Modifiers: [ *PhB                             ], Models: *AX-RX-_3 }
     - Power Factor Angle Phase C:           { Unit: *PF_deg, Modifiers: [ *PhC                             ], Models: *AX-RX-_3 }
