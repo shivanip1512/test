@@ -85,12 +85,19 @@ public class TrendDataServiceImpl implements TrendDataService {
     public  List<Object[]> yesterdayGraphDataProvider(List<PointValueHolder> data) {
         log.debug("YesterdayGraphDataProvider Called");
         List<Object[]> values = new ArrayList<>();
+        DateTime startOfTomorrow = new DateTime().withTimeAtStartOfDay().plusDays(1).plusMillis(1);
         for (PointValueHolder pvh : data) {
             Object[] value;
             DateTime timestamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
             timestamp = timestamp.plusDays(1);
-            value = new Object[] { timestamp.getMillis(), pvh.getValue() };
-            values.add(value);
+            // only include timestamps from yesterday that do not exceed "today".
+            if (timestamp.isBefore(startOfTomorrow)) {
+                value = new Object[] { timestamp.getMillis(), pvh.getValue() };
+                values.add(value);
+            } else {
+                log.debug("Skipping: Timestamp={} Value={}", timestamp.toString(), pvh.getValue());
+            }
+        }
         }
         log.debug("YesterdayGraphDataProvider:Amount Returned:" + values.size());
         return values;
