@@ -5,11 +5,7 @@
 
 #include "boost_test_helpers.h"
 
-using Cti::Test::byte_str;
-
 BOOST_AUTO_TEST_SUITE( test_prot_e2eDataTransfer )
-
-const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
 
 struct test_E2eDataTransferProtocol : Cti::Protocols::E2eDataTransferProtocol
 {
@@ -21,26 +17,6 @@ struct test_E2eDataTransferProtocol : Cti::Protocols::E2eDataTransferProtocol
     }
 };
 
-BOOST_AUTO_TEST_CASE(test_handleIndication_request)
-{
-    test_E2eDataTransferProtocol e2e;
-
-    const byte_str inbound =
-        "42 01 9b b3 b0 c6 bd 00 6d 65 "
-        "74 65 72 50 72 6f 67 72 61 6d "
-        "73 0d 17 37 64 34 34 34 38 34 "
-        "30 2d 39 64 63 30 2d 31 31 64 "
-        "31 2d 62 32 34 35 2d 35 66 66 "
-        "64 63 65 37 34 66 61 64 32";
-
-    const auto request = e2e.handleIndication(inbound.bytes, endpointId);
-
-    BOOST_CHECK_EQUAL(request.nodeOriginated, true);
-    BOOST_CHECK_EQUAL(request.confirmable, true);
-    BOOST_CHECK_EQUAL(request.path, "/meterPrograms/7d444840-9dc0-11d1-b245-5ffdce74fad2");
-    BOOST_CHECK_EQUAL(request.code, 1);
-}
-
 BOOST_AUTO_TEST_CASE( test_handleIndication )
 {
     test_E2eDataTransferProtocol e2e;
@@ -50,6 +26,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -60,7 +37,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
 
     BOOST_CHECK_EQUAL_RANGES(expected, msg);
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "62 45 02 73 5a d6 ff 79 02 00 "
         "01 02 00 a5 29 00 02 00 00 00 "
         "03 00 00 00 04 00 00 00 05 00 "
@@ -80,7 +57,9 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
         "a4 00 00 0f a7 00 00 10 a0 00 "
         "08 0f a9 00 00 10 a0 00 08";
 
-    const auto er = e2e.handleIndication(inbound.bytes, endpointId);
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
+
+    const auto er = e2e.handleIndication(inbound, endpointId);
 
     BOOST_CHECK_EQUAL(er.confirmable, false);
     BOOST_CHECK_EQUAL(er.block.has_value(), false);
@@ -120,6 +99,7 @@ BOOST_AUTO_TEST_CASE(test_handleIndication_repeat)
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
+    const Cti::RfnIdentifier endpointId{ "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -130,14 +110,16 @@ BOOST_AUTO_TEST_CASE(test_handleIndication_repeat)
 
     BOOST_CHECK_EQUAL_RANGES(expected, msg);
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "62 45 02 73 5a d6 ff 79 02";
 
-    const auto er = e2e.handleIndication(inbound.bytes, endpointId);
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
+
+    const auto er = e2e.handleIndication(inbound, endpointId);
 
     try
     {
-        e2e.handleIndication(inbound.bytes, endpointId);
+        e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
     catch( Cti::Protocols::E2e::RequestInactive &ex )
@@ -155,6 +137,7 @@ BOOST_AUTO_TEST_CASE( test_handleTimeout )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -167,7 +150,7 @@ BOOST_AUTO_TEST_CASE( test_handleTimeout )
 
     e2e.handleTimeout(endpointId);
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "62 45 02 73 5a d6 ff 79 02 00 "
         "01 02 00 a5 29 00 02 00 00 00 "
         "03 00 00 00 04 00 00 00 05 00 "
@@ -187,9 +170,11 @@ BOOST_AUTO_TEST_CASE( test_handleTimeout )
         "a4 00 00 0f a7 00 00 10 a0 00 "
         "08 0f a9 00 00 10 a0 00 08";
 
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
+
     try
     {
-        e2e.handleIndication(inbound.bytes, endpointId);
+        e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
     catch( Cti::Protocols::E2e::RequestInactive &ex )
@@ -204,12 +189,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
 
     e2e.id = 0x4567;
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "52 01 02 73 5a d6 ff";
 
-    const auto er = e2e.handleIndication(inbound.bytes, endpointId);
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
+
+    const auto er = e2e.handleIndication(inbound, endpointId);
 
     BOOST_CHECK_EQUAL(er.confirmable, false);
     BOOST_CHECK_EQUAL(er.block.has_value(), false);
@@ -218,7 +206,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
 
     try
     {
-        e2e.handleIndication(inbound.bytes, endpointId);
+        e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
     catch( Cti::Protocols::E2e::DuplicatePacket &ex )
@@ -236,6 +224,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -253,14 +242,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )
 
     BOOST_CHECK_EQUAL_RANGES(expected, msg);
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "62 "  //  ack response, token length 2
         "86 "  //  response code 406  (code / 100 << 6 | code % 100)
         "02 73 "  //  e2e unique ID
         "5a d6 "  //  app token
         "ff";
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    auto message = e2e.handleIndication(inbound.bytes, endpointId);
+    auto message = e2e.handleIndication(inbound, endpointId);
 
     auto message_status = test_E2eDataTransferProtocol::translateIndicationCode(message.code, endpointId);
 
@@ -276,6 +266,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -286,14 +277,15 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
 
     BOOST_CHECK_EQUAL_RANGES(expected, msg);
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "62 "  //  ack response, token length 2
         "87 "  //  response code 407  (code / 100 << 6 | code % 100)
         "02 73 "  //  e2e unique ID
         "5a d6 "  //  app token
         "ff";
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
-    auto message = e2e.handleIndication(inbound.bytes, endpointId);
+    auto message = e2e.handleIndication(inbound, endpointId);
 
     auto message_status = test_E2eDataTransferProtocol::translateIndicationCode(message.code, endpointId);
 
@@ -309,6 +301,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )
     Cti::Test::byte_str outboundPayload =
         "78 02";
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
@@ -319,16 +312,17 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )
 
     BOOST_CHECK_EQUAL_RANGES(expected, msg);
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "62 "  //  ack response, token length 2
         "40 "  //  response code 200
         "01 73 "  //  e2e unique ID (0x7301 instead of 0x7302)
         "5a d6 "  //  app token
         "ff";
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
     try
     {
-        e2e.handleIndication(inbound.bytes, endpointId);
+        e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
     catch( Cti::Protocols::E2e::UnexpectedAck &ex )
@@ -341,18 +335,20 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_noRequest )
 {
     test_E2eDataTransferProtocol e2e;
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "62 "  //  ack response, token length 2
         "40 "  //  response code 200  (code / 100 << 6 | code % 100)
         "02 73 "  //  e2e unique ID
         "5a d6 "  //  app token
         "ff";
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
     try
     {
-        e2e.handleIndication(inbound.bytes, endpointId);
+        e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
     catch( Cti::Protocols::E2e::UnexpectedAck &ex )
@@ -365,18 +361,20 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_resetReceived )
 {
     test_E2eDataTransferProtocol e2e;
 
+    const Cti::RfnIdentifier endpointId { "FOO", "BAR", "BAZ" };
     const unsigned long token = 0x5ad6;
 
-    const byte_str inbound =
+    Cti::Test::byte_str inboundBytes =
         "72 "  //  reset, token length 2
         "40 "  //  response code 200  (code / 100 << 6 | code % 100)
         "02 73 "  //  e2e unique ID
         "5a d6 "  //  app token
         "ff";
+    const std::vector<unsigned char> inbound(inboundBytes.begin(), inboundBytes.end());
 
     try
     {
-        e2e.handleIndication(inbound.bytes, endpointId);
+        e2e.handleIndication(inbound, endpointId);
         BOOST_FAIL("Did not throw");
     }
     catch( Cti::Protocols::E2e::ResetReceived &ex )
