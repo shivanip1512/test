@@ -82,7 +82,7 @@
                     <%@ include file="ecobeeCycle.jsp" %>
                 </c:if>
                 <c:if test="${selectedGearType == 'EcobeeSetpoint' }">
-                    <%@ include file="ecobeeSetpoint.jsp" %>
+                    <!-- TODO: include ecobeeSetpoint.jsp -->
                 </c:if>
                 <c:if test="${selectedGearType == 'HoneywellCycle'}">
                     <%@ include file="honeywellCycle.jsp" %>
