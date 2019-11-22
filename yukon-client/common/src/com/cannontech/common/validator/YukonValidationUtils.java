@@ -59,10 +59,13 @@ public class YukonValidationUtils extends ValidationUtils {
     }
 
     public static boolean checkBlacklistedCharacter(Errors errors, String field, String fieldValue) {
-        Matcher hasBlacklistedChar = Pattern.compile(BASIC_BLACKLISTED_CHAR_LIST).matcher(fieldValue);
-        if (fieldValue != null && hasBlacklistedChar.find()) {
-            errors.rejectValue(field, "yukon.web.error.isBlacklistedCharacter");
-            return true;
+
+        if (fieldValue != null) {
+            Matcher hasBlacklistedChar = Pattern.compile(BASIC_BLACKLISTED_CHAR_LIST).matcher(fieldValue);
+            if (hasBlacklistedChar.find()) {
+                errors.rejectValue(field, "yukon.web.error.isBlacklistedCharacter");
+                return true;
+            }
         }
         return false;
     }
