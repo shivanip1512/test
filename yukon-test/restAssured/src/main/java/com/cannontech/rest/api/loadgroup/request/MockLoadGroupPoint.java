@@ -13,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 public class MockLoadGroupPoint extends MockLoadGroupBase {
     private Integer deviceIdUsage;
     private Integer pointIdUsage;
-    private Integer startControlRawState;
+    private Integer startControlRawStateId;
+    private String startControlRawStateName;
 
 }
