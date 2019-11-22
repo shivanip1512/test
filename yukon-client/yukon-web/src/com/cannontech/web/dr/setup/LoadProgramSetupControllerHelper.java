@@ -602,6 +602,11 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
+        case EcobeeSetpoint:
+            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
+            break;
         case HoneywellCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
