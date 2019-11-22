@@ -11,6 +11,8 @@
 #include "std_helper.h"
 #include "random_generator.h"
 
+#include <boost/serialization/map.hpp>
+
 #include <map>
 #include <random>
 #include <time.h>
@@ -21,22 +23,38 @@ namespace {
 RandomGenerator<unsigned> idGenerator;
 std::map<RfnIdentifier, std::map<unsigned, std::string>> meterProgrammingRequests;
 
-std::vector<std::string> randomGuids {
+std::map<RfnIdentifier, std::string> configurationIds;
+
+const std::vector<std::string> remoteGuids {
     //low-mid-high-and-version (final nibble)
     //1b21dd213814000 - 100-ns counts between Gregorian epoch and Unix epoch
+    //719,528 days between Gregorian epoch and Unix epoch
     // 1 ms = 10,000 100ns increments
     // 1 s = 10,000,000 100 ns increments
-    "d952eb22-0a3e-11ea-8d71-362b9e155667",
-    "d952ee74-0a4e-11ea-8d71-362b9e155667",
-    "d952efdc-0a5e-11ea-8d71-362b9e155667",
-    "d952f112-0a6e-11ea-8d71-362b9e155667",
-    "d952f23e-0a7e-11ea-8d71-362b9e155667",
-    "d952f36a-0a8e-11ea-8d71-362b9e155667",
-    "d952f68a-0a9e-11ea-8d71-362b9e155667",
-    "d952f7d4-0aae-11ea-8d71-362b9e155667",
-    "d952f90a-0abe-11ea-8d71-362b9e155667",
-    "d952fa40-0ace-11ea-8d71-362b9e155667",
+    //  d952eb22-0a3e-11ea = 1ea0a3ed952eb22 - epoch = 37EC6CC5D1AB22 = 1574107563 856 1570 = 2019-11-18 20:06:03
+    "d952eb22-0a3e-11ea-8d71-362b9e155667",  //  1574107563 856 1570 = 2019-11-18 20:06:03
+    "d952ee74-0a4e-11ea-8d71-362b9e155667",  //  1574114435 803 8306 = 2019-11-18 22:00:35
+    "d952efdc-0a5e-11ea-8d71-362b9e155667",  //  1574121307 751 5042 = 2019-11-18 23:55:07
+    "d952f112-0a6e-11ea-8d71-362b9e155667",  //  1574128179 699 1778 = 2019-11-19 01:49:39
+    "d952f23e-0a7e-11ea-8d71-362b9e155667",  //  1574135051 646 8514 = 2019-11-19 03:44:11
+    "d952f36a-0a8e-11ea-8d71-362b9e155667",  //  1574141923 594 5250 = 2019-11-19 05:38:43
+    "d952f68a-0a9e-11ea-8d71-362b9e155667",  //  1574148795 542 1986 = 2019-11-19 07:33:15
+    "d952f7d4-0aae-11ea-8d71-362b9e155667",  //  1574155667 489 8722 = 2019-11-19 09:27:47
+    "d952f90a-0abe-11ea-8d71-362b9e155667",  //  1574162539 437 5458 = 2019-11-19 11:22:19
+    "d952fa40-0ace-11ea-8d71-362b9e155667",  //  1574169411 385 2194 = 2019-11-19 13:16:51
 };
+
+const std::vector<std::string> yukonGuids{
+    "EE8358B0-92B7-4603-A148-A06E5489D4C7",
+    "70A9331E-BA48-4F7A-ADDD-525CAD8FD578",
+    "0474477D-1D69-459D-A8E8-65F71EC46923",
+    "B9D7E497-5907-42E3-980B-D3F8A47F8D11",
+    "770E5A24-A3AF-4985-B15F-F40718A4F183",
+};
+
+constexpr char Source_Yukon { 'R' };
+
+const std::vector<char> sources { Source_Yukon, 'P', 'N', 'U', 'X' };
 
 }
 
@@ -217,6 +235,10 @@ auto RfnMeter::processReply(const e2edt_reply_packet& reply, const RfnIdentifier
 
                 return request;
             }
+            else
+            {
+                
+            }
         }
     }
 
@@ -366,13 +388,24 @@ metric_response mangleResponse(metric_response contents, double mangleFactor)
 }
 
 
-extern std::mt19937_64 rd;
+extern std::mt19937_64 gen;
 extern std::uniform_real_distribution<double> dist;
+std::uniform_int_distribution<unsigned> selector;
+
+std::string GenerateConfigurationId(const RfnIdentifier & rfnId)
+{
+    const auto index = selector(gen);
+
+    auto source = sources[index % sources.size()];
+
+    return source + (source == Source_Yukon
+                         ? yukonGuids [index % yukonGuids.size()]
+                         : remoteGuids[index % remoteGuids.size()]);
+}
 
 std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId)
 {
-    //  TODO - cache the meter program that was last sent to the meter
-    const std::string configurationId = "R7d444840-9dc0-11d1-b245-5ffdce74fad2";
+    auto configurationId = mapFindOrCompute(configurationIds, rfnId, GenerateConfigurationId);
 
     //  Success response
     //  TODO - add support for failure responses
@@ -408,7 +441,7 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
     std::vector<unsigned char> response { responseCode };
 
     const auto mangleChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CONFIG_MANGLE_CHANCE");
-    const auto mangleHappen = dist(rd);
+    const auto mangleHappen = dist(gen);
 
     const auto& contents = 
             (mangleChance && mangleHappen < mangleChance) 
@@ -416,13 +449,13 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
                 : original;
 
     const auto disableChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_DISABLE_CHANCE");
-    const auto disableHappen = dist(rd) < disableChance;
+    const auto disableHappen = dist(gen) < disableChance;
 
     response.push_back(contents.metrics.size());
     response.push_back(contents.enabled && ! disableHappen);
 
     const auto channelErrorChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CHANNEL_ERROR_CHANCE");
-    const auto channelErrorHappen = dist(rd) < channelErrorChance;
+    const auto channelErrorHappen = dist(gen) < channelErrorChance;
 
     for( const auto channel : contents.metrics )
     {

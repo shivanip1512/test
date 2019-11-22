@@ -26,7 +26,7 @@ public:
 
     enum
     {
-        MaxOutboundPayload = 1000
+        MaxOutboundPayload = 1024
     };
 
     E2eDataTransferProtocol();

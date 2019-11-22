@@ -106,6 +106,19 @@ typename Map::mapped_type mapFindOrDefault( const Map &m, const typename Map::ke
     return defaultValue;
 }
 
+template <class Map, typename ValueMapper>
+typename Map::mapped_type mapFindOrCompute(Map &m, const typename Map::key_type &key, const ValueMapper valueProducer)
+{
+    auto itr = m.find(key);
+
+    if( itr == m.end() )
+    {
+        itr = m.emplace(key, valueProducer(key)).first;
+    }
+
+    return itr->second;
+}
+
 // This needs a comment saying that it can be removed when we upgrade to Boost 1.50+.
 template<typename MappedType, class MapViewType, typename KeyType>
 boost::optional<MappedType> bimapFind( const MapViewType &mapView, KeyType key )

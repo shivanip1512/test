@@ -4318,6 +4318,13 @@
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
+        <point name="Current Angle">
+            <uom>A degree</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
         <point name="Power Factor Degrees">
             <uom>PF degree</uom>
             <multiplier value="0.1"/>
@@ -4452,7 +4459,7 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Current Angle Phase A" icdExcludedTypes="RFN530FAX,RFN530FRX">
+        <point name="Current Angle Phase A">
             <uom>A degree</uom>
             <multiplier value="0.1"/>
             <parseSiPrefix/>
@@ -4460,7 +4467,7 @@
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
-        <point name="Current Angle Phase B" icdExcludedTypes="RFN530FAX,RFN530FRX">
+        <point name="Current Angle Phase B">
             <uom>A degree</uom>
             <multiplier value="0.1"/>
             <parseSiPrefix/>
@@ -4468,7 +4475,7 @@
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
-        <point name="Current Angle Phase C" icdExcludedTypes="RFN530FAX,RFN530FRX">
+        <point name="Current Angle Phase C">
             <uom>A degree</uom>
             <multiplier value="0.1"/>
             <parseSiPrefix/>
