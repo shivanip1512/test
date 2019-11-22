@@ -238,7 +238,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.feederAddressRequired">At least one feeder must be selected in Feeder Address when Address Usage of Feeder checked.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidDeviceType">Invalid device type.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.notAllowedGroupAndAreaCode">Group and Area Code fields are not allowed in Ripple load group request.</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.error.ripple.invalidValue">Invalid {0} value, must contains 1 and 0 only.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.ripple.invalidValue">Invalid {0} value, must be binary value.</entry>
 
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>

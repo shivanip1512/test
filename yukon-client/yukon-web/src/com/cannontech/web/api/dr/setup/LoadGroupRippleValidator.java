@@ -6,7 +6,6 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.LoadGroupRipple;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -16,14 +15,12 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 @Service
 public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupRipple> {
 
-    @Autowired
-    private LMValidatorHelper lmValidatorHelper;
+    @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private RolePropertyDao rolePropertyDao;
     private final static String key = "yukon.web.modules.dr.setup.loadGroup.error.";
     private final static String invalidKey = "yukon.web.modules.dr.setup.error.invalid";
     private final static String zeroOnePattern = "^[01]+$";
     public static final Integer SHOW_SPECIAL_RIPPLE = 0x10000000;
-    @Autowired
-    private RolePropertyDao rolePropertyDao;
 
     public LoadGroupRippleValidator() {
         super(LoadGroupRipple.class);
@@ -40,9 +37,7 @@ public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupR
         LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
         long SPECIAL_RIPPLE = Long.parseLong(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV, user), 16);
         // Route ID is mandatory for Ripple Load Group and should exists
-        if (loadGroup.getType() == PaoType.LM_GROUP_RIPPLE) {
-            lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
-        }
+        lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
         lmValidatorHelper.checkIfFieldRequired("shedTime", errors, loadGroup.getShedTime(), "Shed Time");
 
@@ -51,10 +46,10 @@ public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupR
         lmValidatorHelper.checkIfFieldRequired("restore", errors, loadGroup.getRestore(), "Restore");
 
         if (!errors.hasFieldErrors("shedTime")) {
-            if (TimeIntervals.getRippleShedtime().contains(loadGroup.getShedTime())) {
+            TimeIntervals shedTime = TimeIntervals.fromSeconds(loadGroup.getShedTime());
+            if (!TimeIntervals.getRippleShedtime().contains(shedTime)) {
                 errors.rejectValue("shedTime", invalidKey, new Object[] { "Shed Time" }, "");
             }
-
         }
 
         if (!errors.hasFieldErrors("control")) {

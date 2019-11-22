@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableSet;
 
 public enum TimeIntervals {
     NONE(Duration.ZERO),
-    CONTINUOUS_LATCH(Duration.ZERO),
     RESTORE(Duration.ZERO),
     SECONDS_1(Duration.standardSeconds(1)),
     SECONDS_2(Duration.standardSeconds(2)),
@@ -427,7 +426,7 @@ public enum TimeIntervals {
     }
     
     private static final Set<TimeIntervals> rippleShedTime = ImmutableSet.of(
-       CONTINUOUS_LATCH,
+       NONE,
        MINUTES_7_SECONDS_30,
        MINUTES_15,
        MINUTES_30,
@@ -438,7 +437,7 @@ public enum TimeIntervals {
      * Used for Shed Time for ripple load group.
      */
     public static Set<TimeIntervals> getRippleShedtime() {
-        return shedTime;
+        return rippleShedTime;
     }
 
 }

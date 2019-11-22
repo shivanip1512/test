@@ -1,19 +1,21 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.common.api.token.ApiRequestContext;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonIgnoreProperties(value={ "routeName"}, allowGetters= true, ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
-public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> {
+public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> implements LoadGroupRoute {
     private Integer routeId;
-    private TimeIntervals shedTime;
+    private String routeName;
+    private Integer shedTime;
     private String control;
     private String restore;
 
@@ -29,11 +31,19 @@ public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> {
         this.routeId = routeId;
     }
 
-    public TimeIntervals getShedTime() {
+    public String getRouteName() {
+        return routeName;
+    }
+
+    public void setRouteName(String routeName) {
+        this.routeName = routeName;
+    }
+
+    public Integer getShedTime() {
         return shedTime;
     }
 
-    public void setShedTime(TimeIntervals shedTime) {
+    public void setShedTime(Integer shedTime) {
         this.shedTime = shedTime;
     }
 
@@ -76,11 +86,7 @@ public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> {
 
         // Set Ripple fields
         setRouteId(lmGroupRipple.getRouteID());
-        if (lmGroupRipple.getLmGroupRipple().getShedTime() == 0) {
-            setShedTime(TimeIntervals.CONTINUOUS_LATCH);
-        } else {
-            setShedTime(TimeIntervals.fromSeconds(lmGroupRipple.getLmGroupRipple().getShedTime()));
-        }
+        setShedTime(lmGroupRipple.getLmGroupRipple().getShedTime());
         setControl(lmGroupRipple.getLmGroupRipple().getControl());
         setRestore(lmGroupRipple.getLmGroupRipple().getRestore());
     }
@@ -97,7 +103,7 @@ public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> {
 
         com.cannontech.database.db.device.lm.LMGroupRipple lmGroupRipple = group.getLmGroupRipple();
         lmGroupRipple.setRouteID(getRouteId());
-        lmGroupRipple.setShedTime(getShedTime().getSeconds());
+        lmGroupRipple.setShedTime(getShedTime());
         if ((SPECIAL_RIPPLE & SHOW_SPECIAL_RIPPLE) != 0 && (getGroup() != null && getAreaCode() != null)) {
             String rippleGroup = (String) getGroup().getDatabaseRepresentation();
             String rippleGroupAreaCode = (String) getAreaCode().getDatabaseRepresentation();
