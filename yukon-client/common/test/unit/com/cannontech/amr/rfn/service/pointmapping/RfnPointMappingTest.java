@@ -1,6 +1,5 @@
 package com.cannontech.amr.rfn.service.pointmapping;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.io.IOException;
@@ -279,6 +278,8 @@ public class RfnPointMappingTest {
         }
     }
     
+    //  Tell SonarLint to ignore the duplicated strings
+    @SuppressWarnings("squid:S1192")
     private static Multimap<PaoType, String> getMissingRfnPointMappingPoints() {
         var missing = ArrayListMultimap.<PaoType, String>create();
         
