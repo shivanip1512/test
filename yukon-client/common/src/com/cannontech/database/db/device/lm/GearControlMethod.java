@@ -1,23 +1,26 @@
 package com.cannontech.database.db.device.lm;
 
+import org.apache.logging.log4j.Logger;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
+import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
 import com.cannontech.database.data.device.lm.HoneywellCycleGear;
 import com.cannontech.database.data.device.lm.ItronCycleGear;
 import com.cannontech.database.data.device.lm.LatchingGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
 import com.cannontech.database.data.device.lm.MasterCycleGear;
+import com.cannontech.database.data.device.lm.MeterDisconnectGear;
 import com.cannontech.database.data.device.lm.NestCriticalCycleGear;
 import com.cannontech.database.data.device.lm.NestStandardCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.RotationGear;
 import com.cannontech.database.data.device.lm.SepCycleGear;
 import com.cannontech.database.data.device.lm.SepTemperatureOffsetGear;
-import com.cannontech.database.data.device.lm.MeterDisconnectGear;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
@@ -26,13 +29,13 @@ import com.cannontech.database.data.device.lm.TimeRefreshGear;
 import com.cannontech.database.data.device.lm.TrueCycleGear;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
-import org.apache.logging.log4j.Logger;
 
 public enum GearControlMethod implements DatabaseRepresentationSource, DisplayableEnum {
     TimeRefresh(TimeRefreshGear.class, "Time Refresh", PaoType.LM_DIRECT_PROGRAM),
     SmartCycle(SmartCycleGear.class, "Smart Cycle", PaoType.LM_DIRECT_PROGRAM),
     SepCycle(SepCycleGear.class, "SEP Cycle", PaoType.LM_SEP_PROGRAM),
     EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle", PaoType.LM_ECOBEE_PROGRAM),
+    EcobeeSetpoint(EcobeeSetpointGear.class, "ecobee Setpoint", PaoType.LM_ECOBEE_PROGRAM),
     HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle", PaoType.LM_HONEYWELL_PROGRAM),
     ItronCycle(ItronCycleGear.class, "Itron Cycle", PaoType.LM_ITRON_PROGRAM),
     NestCriticalCycle(NestCriticalCycleGear.class, "Nest Critical Cycle", PaoType.LM_NEST_PROGRAM),
@@ -74,7 +77,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     private String baseKey = "yukon.web.modules.dr.gearControlMethod.";
 
     private GearControlMethod(Class<?> gear, String displayName, PaoType... programTypes) {
-        this.gearClass = gear;
+        gearClass = gear;
         this.displayName = displayName;
         this.programTypes = ImmutableSet.copyOf(programTypes);
     }

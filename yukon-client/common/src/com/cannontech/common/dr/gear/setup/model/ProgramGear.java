@@ -2,6 +2,7 @@ package com.cannontech.common.dr.gear.setup.model;
 
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
@@ -41,6 +42,7 @@ public class ProgramGear {
     @JsonSubTypes({
         @JsonSubTypes.Type(value = BeatThePeakGearFields.class, name = "BeatThePeak"),
         @JsonSubTypes.Type(value = EcobeeCycleGearFields.class, name = "EcobeeCycle"),
+        @JsonSubTypes.Type(value = EcobeeSetpointGearFields.class, name = "EcobeeSetpoint"),
         @JsonSubTypes.Type(value = HoneywellCycleGearFields.class, name = "HoneywellCycle"),
         @JsonSubTypes.Type(value = ItronCycleGearFields.class, name = "ItronCycle"),
         @JsonSubTypes.Type(value = LatchingGearFields.class, name = "Latching"),
