@@ -53,10 +53,10 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                                 .getLitePointsByPaObjectId(liteYukonPAObject.get().getYukonID()).stream()
                                 .filter(litePoint -> litePoint.getLiteID() == loadGroup.getPointIdUsage()).findFirst();
 
-                        if (point.isPresent() && point.get().getPointTypeEnum() == PointType.Status) {
+                        if (point.isPresent()) {
 
                             StatusPoint dbPoint = (StatusPoint) pointDao.get(point.get().getLiteID());
-                            if (dbPoint.getPointStatusControl().hasControl()) {
+                            if (point.get().getPointTypeEnum() == PointType.Status && dbPoint.getPointStatusControl().hasControl()) {
                                 
                                 // Validate control start state (startControlRawState)
                                 lmValidatorHelper.checkIfFieldRequired("startControlRawStateId", errors,
@@ -72,7 +72,7 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                                     }
                                 }
                             } else {
-                                errors.rejectValue("pointIdUsage", key + "invalidValue");
+                                errors.rejectValue("pointIdUsage", key + "invalidPoint");
                             }
                         } else {
                             errors.rejectValue("pointIdUsage", key + "invalidValue");
