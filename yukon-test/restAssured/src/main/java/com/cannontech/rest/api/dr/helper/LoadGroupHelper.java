@@ -231,7 +231,7 @@ public class LoadGroupHelper {
                     .disableGroup(false)
                     .deviceIdUsage(2)
                     .pointIdUsage(1234)
-                    .startControlRawState(-1)
+                    .startControlRawStateId(0)
                     .build();
             break;
         case LM_GROUP_MCT:

@@ -59,16 +59,16 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                             if (dbPoint.getPointStatusControl().hasControl()) {
                                 
                                 // Validate control start state (startControlRawState)
-                                lmValidatorHelper.checkIfFieldRequired("startControlRawState", errors,
-                                        loadGroup.getStartControlRawState(), "Control Start State ");
-                                if (!errors.hasFieldErrors("startControlRawState")) {
+                                lmValidatorHelper.checkIfFieldRequired("startControlRawStateId", errors,
+                                        loadGroup.getStartControlRawStateId(), "Control Start State ");
+                                if (!errors.hasFieldErrors("startControlRawStateId")) {
                                     Optional<LiteState> liteState = stateGroupDao.getStateGroup(point.get().getStateGroupID())
                                             .getStatesList()
                                             .stream()
-                                            .filter(state -> state.getStateRawState() == loadGroup.getStartControlRawState())
+                                            .filter(state -> state.getStateRawState() == loadGroup.getStartControlRawStateId() && (state.getLiteID() == 0 || state.getLiteID() == 1))
                                             .findFirst();
                                     if (liteState.isEmpty()) {
-                                        errors.rejectValue("startControlRawState", key + "invalidValue");
+                                        errors.rejectValue("startControlRawStateId", key + "invalidValue");
                                     }
                                 }
                             } else {

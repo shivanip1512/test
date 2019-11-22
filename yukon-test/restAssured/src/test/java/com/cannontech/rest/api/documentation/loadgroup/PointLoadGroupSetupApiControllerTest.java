@@ -59,8 +59,10 @@ public class PointLoadGroupSetupApiControllerTest {
                         .description("Control device id used in Point Group"),
                 fieldWithPath("LM_GROUP_POINT.pointIdUsage").type(JsonFieldType.NUMBER)
                         .description("Point id of available control device"),
-                fieldWithPath("LM_GROUP_POINT.startControlRawState").type(JsonFieldType.NUMBER)
-                        .description("Control start state id of available control Point ")
+                fieldWithPath("LM_GROUP_POINT.startControlRawStateId").type(JsonFieldType.NUMBER)
+                        .description("Control start state id of available control Point "),
+                fieldWithPath("LM_GROUP_POINT.startControlRawStateName").type(JsonFieldType.STRING).optional()
+                        .description("Control start state name of available control Point. This field is optional")
         };
         loadGroup = (MockLoadGroupPoint) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_POINT);
     }
