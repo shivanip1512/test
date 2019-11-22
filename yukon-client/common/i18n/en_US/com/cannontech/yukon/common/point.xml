@@ -441,6 +441,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_B">Received Peak kVA Rate B</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_C">Received Peak kVA Rate C</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_RATE_D">Received Peak kVA Rate D</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_FROZEN">Received Peak kVA Frozen</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_FROZEN_RATE_A">Received Peak kVA Frozen Rate A</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_FROZEN_RATE_B">Received Peak kVA Frozen Rate B</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_FROZEN_RATE_C">Received Peak kVA Frozen Rate C</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_PEAK_KVA_FROZEN_RATE_D">Received Peak kVA Frozen Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVA">Sum Peak kVA</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVA_RATE_A">Sum Peak kVA Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_KVA_RATE_B">Sum Peak kVA Rate B</entry>

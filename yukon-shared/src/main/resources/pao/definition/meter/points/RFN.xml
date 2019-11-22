@@ -10,7 +10,7 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="388"/>
+        <analog offset="393"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="101"/>
@@ -1740,6 +1740,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVARH"/>
         <decimalplaces value="3"/>
     </point>
+    <!-- START non-contiguous points 387 and 388 -->
     <point offset="387" type="Analog">
         <name>Net kW</name>
         <multiplier value="1"/>
@@ -1752,6 +1753,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVAR"/>
         <decimalplaces value="3"/>
     </point>
+    <!-- END non-contiguous points 387 and 388 -->
     <point offset="364" type="Analog">
         <name>kVAr (Quadrants 2 4)</name>
         <multiplier value="1"/>
@@ -1886,6 +1888,37 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="386" type="Analog">
         <name>Delivered Peak kVA Frozen (Rate D kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!-- Offsets 387-388 used above -->
+    <point offset="389" type="Analog">
+        <name>Received Peak kVA Frozen</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="390" type="Analog">
+        <name>Received Peak kVA Frozen (Rate A kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="391" type="Analog">
+        <name>Received Peak kVA Frozen (Rate B kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="392" type="Analog">
+        <name>Received Peak kVA Frozen (Rate C kVA)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="393" type="Analog">
+        <name>Received Peak kVA Frozen (Rate D kVA)</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>

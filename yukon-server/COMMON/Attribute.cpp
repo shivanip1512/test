@@ -156,6 +156,11 @@ INIT_ATTRIBUTE( ReceivedPeakkVARateA,                               "RECEIVED_PE
 INIT_ATTRIBUTE( ReceivedPeakkVARateB,                               "RECEIVED_PEAK_KVA_RATE_B" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateC,                               "RECEIVED_PEAK_KVA_RATE_C" );
 INIT_ATTRIBUTE( ReceivedPeakkVARateD,                               "RECEIVED_PEAK_KVA_RATE_D" );
+INIT_ATTRIBUTE( ReceivedPeakkVAFrozen,                              "RECEIVED_PEAK_KVA_FROZEN" );
+INIT_ATTRIBUTE( ReceivedPeakkVAFrozenRateA,                         "RECEIVED_PEAK_KVA_FROZEN_RATE_A" );
+INIT_ATTRIBUTE( ReceivedPeakkVAFrozenRateB,                         "RECEIVED_PEAK_KVA_FROZEN_RATE_B" );
+INIT_ATTRIBUTE( ReceivedPeakkVAFrozenRateC,                         "RECEIVED_PEAK_KVA_FROZEN_RATE_C" );
+INIT_ATTRIBUTE( ReceivedPeakkVAFrozenRateD,                         "RECEIVED_PEAK_KVA_FROZEN_RATE_D" );
 INIT_ATTRIBUTE( SumPeakkVA,                                         "SUM_PEAK_KVA" );
 INIT_ATTRIBUTE( SumPeakkVARateA,                                    "SUM_PEAK_KVA_RATE_A" );
 INIT_ATTRIBUTE( SumPeakkVARateB,                                    "SUM_PEAK_KVA_RATE_B" );
