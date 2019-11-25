@@ -40,7 +40,7 @@ public class ControlAreaSetupControllerHelper {
             model.addAttribute("dailyStopTime", dailyStop);
         }
         
-        if(model.containsAttribute("mode")) {
+        if (model.containsAttribute("mode")) {
             PageEditMode mode = (PageEditMode) model.get("mode");
             model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
         }
