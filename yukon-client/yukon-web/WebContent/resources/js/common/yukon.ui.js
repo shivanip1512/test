@@ -778,6 +778,10 @@ yukon.ui = (function () {
          *                      Requires data-width and data-height attributes.
          *                      Inspired by
          *                      http://johnculviner.com/a-jquery-ui-dialog-open-performance-issue-and-how-to-fix-it/
+         *                      
+         * data-destroy-dialog-on-close - If present the dialog will be destroyed after the dialog is closed.
+         *                     See jQuery UI dialog destroy method documentation.
+         *                     https://api.jqueryui.com/dialog/#method-destroy
          *
          * Positioning options: see http://api.jqueryui.com/position/
          * data-position-my   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
