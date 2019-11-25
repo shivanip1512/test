@@ -80,6 +80,7 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ pao: pao });
             
+        icon.setId(feature.id);
         icon.setStyle(style);
         _deviceOriginalStyle = style;
             
@@ -123,6 +124,7 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ parent: parent, pao: pao });
         
+        icon.setId(feature.id);
         icon.setStyle(style);
     
         if (src_projection === _destProjection) {
@@ -257,6 +259,7 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ neighbor: neighbor, pao: pao });
             
+            icon.setId(feature.id);
             icon.setStyle(style);
             
             if (src_projection === _destProjection) {
@@ -363,6 +366,7 @@ yukon.map.network = (function () {
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
                 icon = new ol.Feature({ routeInfo: route, pao: pao });
             
+            icon.setId(feature.id);
             icon.setStyle(style);
             
             //the first device in the route will be the focus device
@@ -457,6 +461,7 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
             icon = new ol.Feature({ nearby: nearby, pao: pao });
             
+            icon.setId(feature.id);
             icon.setStyle(style);
             
             if (src_projection === _destProjection) {
@@ -540,6 +545,16 @@ yukon.map.network = (function () {
         _checkToGoBackToDeviceOriginalStyle();
     },
     
+    _removeFeatureFromLayer = function(layer, paoId) {
+        if (layer) {
+            var source = layer.getSource(),
+                feature = source.getFeatureById(paoId);
+            if (feature) {
+                source.removeFeature(feature);
+            }
+        }
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -617,19 +632,23 @@ yukon.map.network = (function () {
                         type: 'POST',
                         data: {_method: 'DELETE'},
                         success: function(results) {
-                            $('#confirm-delete').dialog('destroy');
-                            yukon.ui.removeAlerts();
-                            var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-                                features = source.getFeatures();
-                            if (features != null && features.length > 0) {
-                                for (x in features) {
-                                   var properties = features[x].getProperties(),
-                                       id = properties.pao.paoId;
-                                   if (id == paoId) {
-                                       source.removeFeature(features[x]);
-                                       break;
-                                   }
-                                }
+                            //if device deleted is the main device, reload page 
+                            if (_deviceIcon.get('pao').paoId === paoId) {
+                                window.location.reload();
+                            } else {
+                                $('#confirm-delete').dialog('destroy');
+                                yukon.ui.removeAlerts();
+                                //remove feature from all layers
+                                _removeFeatureFromLayer(_map.getLayers().getArray()[_tiles.length], paoId);
+                                _removeFeatureFromLayer(_nearbyIconLayer, paoId);
+                                _removeFeatureFromLayer(_neighborIconLayer, paoId);
+                                _removeFeatureFromLayer(_primaryRouteIconLayer, paoId);
+                                _removeFeatureFromLayer(_parentIconLayer, paoId);
+
+                                var successMsg = $('#coordinatesDeletedMsg').val();
+                                yukon.ui.alertSuccess(successMsg);
+                                
+                                $('#marker-info').hide();
                             }
                         },
                         error: function(xhr, status, error) {
