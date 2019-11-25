@@ -35,7 +35,7 @@ public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupR
     protected void doValidation(LoadGroupRipple loadGroup, Errors errors) {
 
         LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-        long SPECIAL_RIPPLE = Long.parseLong(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV, user), 16);
+        long specialRipple = Long.parseLong(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV, user), 16);
         // Route ID is mandatory for Ripple Load Group and should exists
         lmValidatorHelper.validateRoute(errors, loadGroup.getRouteId());
 
@@ -66,7 +66,7 @@ public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupR
 
         if (!errors.hasFieldErrors("control")) {
 
-            if ((SPECIAL_RIPPLE & SHOW_SPECIAL_RIPPLE) != 0) {
+            if ((specialRipple & SHOW_SPECIAL_RIPPLE) != 0) {
                 YukonValidationUtils.checkExactLength("control", errors, loadGroup.getControl(), "Control", 34);
             } else {
                 YukonValidationUtils.checkExactLength("control", errors, loadGroup.getControl(), "Control", 50);
@@ -75,14 +75,14 @@ public class LoadGroupRippleValidator extends LoadGroupSetupValidator<LoadGroupR
 
         if (!errors.hasFieldErrors("restore")) {
 
-            if ((SPECIAL_RIPPLE & SHOW_SPECIAL_RIPPLE) != 0) {
+            if ((specialRipple & SHOW_SPECIAL_RIPPLE) != 0) {
                 YukonValidationUtils.checkExactLength("restore", errors, loadGroup.getRestore(), "Restore", 34);
             } else {
                 YukonValidationUtils.checkExactLength("restore", errors, loadGroup.getRestore(), "Restore", 50);
             }
         }
 
-        if ((SPECIAL_RIPPLE & SHOW_SPECIAL_RIPPLE) != 0) {
+        if ((specialRipple & SHOW_SPECIAL_RIPPLE) != 0) {
             lmValidatorHelper.checkIfFieldRequired("group", errors, loadGroup.getGroup(), "Group");
             lmValidatorHelper.checkIfFieldRequired("areaCode", errors, loadGroup.getAreaCode(), "Area Code");
         } else if (loadGroup.getGroup() != null || loadGroup.getAreaCode() != null) {
