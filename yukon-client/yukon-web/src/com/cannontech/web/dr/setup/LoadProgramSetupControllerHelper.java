@@ -280,7 +280,7 @@ public class LoadProgramSetupControllerHelper {
 
     private void setDefaultRotationGearFields(RotationGearFields rotationGearFields) {
         rotationGearFields.setShedTime(5);
-        rotationGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
+        rotationGearFields.setSendRate(TimeIntervals.NONE.getSeconds());
         rotationGearFields.setCapacityReduction(100);
     }
 
@@ -295,7 +295,7 @@ public class LoadProgramSetupControllerHelper {
         smartCycleGearFields.setCyclePeriodInMinutes(30);
         smartCycleGearFields.setCycleCountSendType(CycleCountSendType.FixedCount);
         smartCycleGearFields.setStartingPeriodCount(8);
-        smartCycleGearFields.setSendRate(TimeIntervals.HOURS_1.getSeconds());
+        smartCycleGearFields.setSendRate(TimeIntervals.NONE.getSeconds());
         smartCycleGearFields.setHowToStopControl(HowToStopControl.StopCycle);
         smartCycleGearFields.setStopCommandRepeat(0);
         smartCycleGearFields.setCapacityReduction(100);
@@ -326,7 +326,7 @@ public class LoadProgramSetupControllerHelper {
 
     private void setTimeRefreshGearFieldsDefaultValues(TimeRefreshGearFields timeRefreshGearFields) {
         timeRefreshGearFields.setShedTime(TimeIntervals.HOURS_1.getSeconds());
-        timeRefreshGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
+        timeRefreshGearFields.setSendRate(TimeIntervals.NONE.getSeconds());
         timeRefreshGearFields.setGroupSelectionMethod(GroupSelectionMethod.LastControlled);
         timeRefreshGearFields.setHowToStopControl(HowToStopControl.TimeIn);
         timeRefreshGearFields.setStopOrder(StopOrder.RANDOM);
