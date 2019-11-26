@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
-    const std::vector<unsigned char> msg = e2e.sendRequest(outboundPayloadVector, endpointId, token);
+    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
 
     Cti::Test::byte_str expected =
         "42 01 02 73 5a d6 ff 78 02";
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_handleIndication_repeat)
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
-    const std::vector<unsigned char> msg = e2e.sendRequest(outboundPayloadVector, endpointId, token);
+    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
 
     Cti::Test::byte_str expected =
         "42 01 02 73 5a d6 ff 78 02";
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE( test_handleTimeout )
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
-    const std::vector<unsigned char> msg = e2e.sendRequest(outboundPayloadVector, endpointId, token);
+    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
 
     Cti::Test::byte_str expected =
         "42 01 02 73 5a d6 ff 78 02";
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_requestNotAcceptable )
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
-    const std::vector<unsigned char> msg = e2e.sendRequest(outboundPayloadVector, endpointId, token);
+    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
 
     // unsigned short  token_length    :4; /* length of Token */
     // unsigned short  type            :2; /* type flag */
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_badRequest )
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
-    const std::vector<unsigned char> msg = e2e.sendRequest(outboundPayloadVector, endpointId, token);
+    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
 
     Cti::Test::byte_str expected =
         "42 01 02 73 5a d6 ff 78 02";
@@ -312,7 +312,7 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_unexpectedAck_mismatch )
     const unsigned long token = 0x5ad6;
 
     const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
-    const std::vector<unsigned char> msg = e2e.sendRequest(outboundPayloadVector, endpointId, token);
+    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
 
     Cti::Test::byte_str expected =
         "42 01 02 73 5a d6 ff 78 02";

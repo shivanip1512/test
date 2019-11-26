@@ -182,37 +182,58 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            if( ! message.block && program.size() < E2EDT_DEFAULT_BLOCK_SIZE.getSize() )
+            Bytes payload;
+            std::optional<Block> block;
+            size_t totalSent;
+
+            if( ! message.block && program.size() <= E2EDT_DEFAULT_BLOCK_SIZE.getSize() )
             {
-                _e2edt.sendReply(program, rfnIdentifier, message.token);
+                CTILOG_INFO(dout, "Sending meter programming reply, fits in a single packet: "
+                    << FormattedList::of("Device", rfnIdentifier,
+                        "GUID", guid,
+                        "Program size", program.size()));
+
+                payload = program;
+                totalSent = program.size();
+            }
+            else
+            {
+                block = message.block
+                               .value_or(Block { 0, true, E2EDT_DEFAULT_BLOCK_SIZE });
+
+                if( program.size() < block->start() )
+                {
+                    sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+
+                    CTILOG_WARN(dout, "Meter program request block beyond end of program for device " << rfnIdentifier);
+
+                    return;
+                }
+
+                block->more = program.size() > block->end();
+
+                auto begin = program.begin() + block->start();
+                auto end = block->more
+                    ? program.begin() + block->end()
+                    : program.end();
+                totalSent = block->more
+                    ? block->end()
+                    : program.size();
+
+                CTILOG_INFO(dout, "Sending meter programming block reply: "
+                    << FormattedList::of("Device", rfnIdentifier,
+                        "GUID", guid,
+                        "Program size", program.size(),
+                        "Block number", block->num,
+                        "Block size", block->blockSize.getSize(),
+                        "Last block", ! block->more));
+
+                payload.assign(begin, end);
             }
 
-            auto block = message.block
-                                .value_or(Block { 0, true, E2EDT_DEFAULT_BLOCK_SIZE });
+            sendE2eDataReply(message.id, payload, asid, rfnIdentifier, message.token, block);
 
-            if( program.size() < block.start() )
-            {
-                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
-
-                CTILOG_WARN(dout, "Meter program request received for idle device " << rfnIdentifier);
-
-                return;
-            }
-            if( program.size() <= block.end() )
-            {
-                block.more = false;
-            }
-
-            _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, block.end());
-
-            auto begin = program.begin() + block.start();
-            auto end = program.size() < block.end()
-                ? program.end()
-                : program.begin() + block.end();
-
-            Bytes chunk { begin, end };
-
-            sendE2eDtBlockReply(program, rfnIdentifier, message.token, block);
+            _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, totalSent);
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
         {
@@ -280,7 +301,7 @@ void RfnRequestManager::handleBlockContinuation(const CtiTime Now, const RfnIden
 
     activeRequest.currentPacket =
         sendE2eDataRequestPacket(
-            sendE2eDtBlockContinuation(block.blockSize, block.num + 1, rfnIdentifier, token),
+            createE2eDtBlockContinuation(block.blockSize, block.num + 1, rfnIdentifier, token),
             activeRequest.request.command->getApplicationServiceId(),
             activeRequest.request.parameters.rfnIdentifier,
             activeRequest.request.parameters.priority,
@@ -540,29 +561,29 @@ void RfnRequestManager::handleNewRequests(const RfnIdentifierSet &recentCompleti
 }
 
 
-auto RfnRequestManager::sendE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
+auto RfnRequestManager::createE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
 {
-    return _e2edt.sendRequest(payload, endpointId, token);
+    return _e2edt.createRequest(payload, endpointId, token);
 }
 
-auto RfnRequestManager::sendE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
+auto RfnRequestManager::createE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
 {
-    return _e2edt.sendPost(payload, endpointId, token);
+    return _e2edt.createPost(payload, endpointId, token);
 }
 
-auto RfnRequestManager::sendE2eDtReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
+auto RfnRequestManager::createE2eDtReply(const unsigned short id, const Bytes& payload, const unsigned long token) -> Bytes
 {
-    return _e2edt.sendReply(payload, endpointId, token);
+    return _e2edt.createReply(id, payload, token);
 }
 
-auto RfnRequestManager::sendE2eDtBlockContinuation(const BlockSize blockSize, int blockNum, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
+auto RfnRequestManager::createE2eDtBlockContinuation(const BlockSize blockSize, int blockNum, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
 {
-    return _e2edt.sendBlockContinuation(blockSize, blockNum, endpointId, token);
+    return _e2edt.createBlockContinuation(blockSize, blockNum, endpointId, token);
 }
 
-auto RfnRequestManager::sendE2eDtBlockReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token, Block block) -> Bytes
+auto RfnRequestManager::createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const unsigned long token, Block block) -> Bytes
 {
-    return _e2edt.sendBlockReply(payload, endpointId, token, block);
+    return _e2edt.createBlockReply(id, payload, token, block);
 }
 
 
@@ -604,8 +625,8 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             {
                 e2ePacket = 
                     request.command->isPost()
-                        ? sendE2eDtPost(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId)
-                        : sendE2eDtRequest(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId);
+                        ? createE2eDtPost(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId)
+                        : createE2eDtRequest(rfnRequest, request.parameters.rfnIdentifier, request.rfnRequestId);
             }
             catch( Protocols::E2e::PayloadTooLarge )
             {
@@ -852,8 +873,8 @@ void RfnRequestManager::sendE2eDataAck(
     E2eMessenger::Request msg;
 
     const Bytes ackMessage = ackType == AckType::Success
-        ? _e2edt.sendAck(id)
-        : _e2edt.sendBadRequest(id);
+        ? _e2edt.createAck(id)
+        : _e2edt.createBadRequestAck(id);
 
     msg.rfnIdentifier = rfnIdentifier;
     msg.payload       = ackMessage;
@@ -870,6 +891,38 @@ void RfnRequestManager::sendE2eDataAck(
             {
                 CTILOG_DEBUG(dout, "Timeout occurred for E2EDT ack for device " << rfnIdentifier << " with status " << error);
             });
+}
+
+
+void RfnRequestManager::sendE2eDataReply(
+    const unsigned short id,
+    const Bytes data,
+    const ApplicationServiceIdentifiers &asid,
+    const RfnIdentifier &rfnIdentifier,
+    const unsigned long token,
+    std::optional<Block> block)
+{
+    E2eMessenger::Request msg;
+
+    const Bytes dataMessage = block
+        ? createE2eDtBlockReply(id, data, token, *block)
+        : createE2eDtReply(id, data, token);
+
+    msg.rfnIdentifier = rfnIdentifier;
+    msg.payload = dataMessage;
+    msg.priority = E2EDT_ACK_PRIORITY;
+    msg.expiration = CtiTime::now() + E2EDT_CON_RETX_TIMEOUT;
+
+    //  ignore the confirm and timeout callbacks - this is fire and forget, even if we don't hear back from NM
+    E2eMessenger::sendE2eDt(msg, asid,
+        [=](const E2eMessenger::Confirm &msg)
+    {
+        CTILOG_DEBUG(dout, "Confirm received for E2EDT ack for device " << rfnIdentifier << " with status " << msg.error);
+    },
+        [=](const YukonError_t error)
+    {
+        CTILOG_DEBUG(dout, "Timeout occurred for E2EDT ack for device " << rfnIdentifier << " with status " << error);
+    });
 }
 
 
