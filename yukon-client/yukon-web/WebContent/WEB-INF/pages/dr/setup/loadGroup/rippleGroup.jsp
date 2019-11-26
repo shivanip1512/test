@@ -17,26 +17,26 @@
             </tags:nameValue2>
         </c:if>
         <c:if test="${isViewMode}">
-                <tags:nameValue2 nameKey=".control">
-                    <c:choose>
-                        <c:when test="${empty loadGroup. control}">
-                            <i:inline key="yukon.common.none.choice"/>
-                        </c:when>
-                        <c:otherwise>
-                            ${loadGroup. control}
-                        </c:otherwise>
-                    </c:choose>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".restore">
-                    <c:choose>
-                        <c:when test="${empty loadGroup. restore}">
-                            <i:inline key="yukon.common.none.choice"/>
-                        </c:when>
-                        <c:otherwise>
-                            ${loadGroup. restore}
-                        </c:otherwise>
-                    </c:choose>
-                </tags:nameValue2>
+            <tags:nameValue2 nameKey=".control">
+                <c:choose>
+                    <c:when test="${empty loadGroup. control}">
+                        <i:inline key="yukon.common.none.choice"/>
+                    </c:when>
+                    <c:otherwise>
+                        ${loadGroup. control}
+                    </c:otherwise>
+                </c:choose>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".restore">
+                <c:choose>
+                    <c:when test="${empty loadGroup. restore}">
+                        <i:inline key="yukon.common.none.choice"/>
+                    </c:when>
+                    <c:otherwise>
+                        ${loadGroup. restore}
+                    </c:otherwise>
+                </c:choose>
+            </tags:nameValue2>
         </c:if>
         <c:if test="${not isViewMode &&  not isSpecialRippleEnabled}">
             <dr:renderControlAndRestoreBits controlBitsLength="${controlBitsLength}" restoreBitsLength="${restoreBitsLength}"/>
