@@ -3,7 +3,6 @@ package com.cannontech.common.dr.setup;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(value={ "startControlRawStateName"}, allowGetters = true, ignoreUnknown = true)
 public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
 
     private Integer deviceIdUsage;
