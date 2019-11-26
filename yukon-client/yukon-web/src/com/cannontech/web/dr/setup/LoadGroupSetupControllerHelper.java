@@ -270,7 +270,7 @@ public class LoadGroupSetupControllerHelper {
                 loadGroupRipple.setGroup(RippleGroup.TST);
                 loadGroupRipple.setShedTime(TimeIntervals.MINUTES_7_SECONDS_30.getSeconds());
             } else {
-                loadGroupRipple.setShedTime(TimeIntervals.CONTINUOUS_LATCH.getSeconds());
+                loadGroupRipple.setShedTime(TimeIntervals.NONE.getSeconds());
             }
         }
         // Set default value for common field.
