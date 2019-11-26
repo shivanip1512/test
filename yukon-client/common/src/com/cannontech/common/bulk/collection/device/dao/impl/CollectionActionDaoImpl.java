@@ -434,7 +434,7 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             sql.append("WHERE CommandRequestExecId").eq(creId);
             return jdbcTemplate.queryForInt(sql);
         } catch (EmptyResultDataAccessException e) {
-            log.debug("No CollectionActionId corresponds to CommandRequestExecutionId", e);
+            log.debug("No CollectionActionId corresponds to CommandRequestExecutionId");
             return null;
         }
     }

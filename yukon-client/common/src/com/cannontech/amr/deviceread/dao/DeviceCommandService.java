@@ -20,5 +20,5 @@ public interface DeviceCommandService {
      */
     CompletionCallback execute(Set<SimpleDevice> devices, Set<? extends Attribute> attributes, String command,
             DeviceRequestType type, LiteYukonUser user, RetryParameters retryParameters,
-            CommandCompletionCallback<CommandRequestDevice> callback, String scheduleName);
+            CommandCompletionCallback<CommandRequestDevice> callback, String scheduleName, Integer jobId);
 }
