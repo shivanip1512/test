@@ -244,6 +244,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.ripple.invalidValue">Invalid {0} value, must be binary value.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidDeviceType">Invalid device type : should belong to MCT/RTU/CBC/ION.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidPoint">Invalid Point type : should be of Status type and has control enabled.</entry>
+
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.notificationGrpID.doesNotExist">Notification Group Id does not exist.</entry>
