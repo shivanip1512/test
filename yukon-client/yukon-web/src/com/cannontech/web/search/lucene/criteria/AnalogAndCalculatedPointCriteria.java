@@ -1,12 +1,12 @@
 package com.cannontech.web.search.lucene.criteria;
 
-import org.apache.lucene.search.BooleanClause;
+import com.cannontech.database.data.point.PointType;
 
 public class AnalogAndCalculatedPointCriteria extends YukonObjectCriteriaHelper {
     
     public AnalogAndCalculatedPointCriteria() {
         super();
-        addCriteria("pointtype", "Analog", BooleanClause.Occur.SHOULD);
-        addCriteria("pointtype", "CalcAnalog", BooleanClause.Occur.SHOULD);
+        typeShouldOccur(PointType.Analog);
+        typeShouldOccur(PointType.CalcAnalog);
     }
 }
