@@ -27,6 +27,8 @@ using namespace std::chrono_literals;
 
 namespace Cti::Pil {
 
+namespace {
+
 enum
 {
     E2EDT_CON_RETX_TIMEOUT     = 60,
@@ -35,9 +37,11 @@ enum
     E2EDT_STATS_REPORTING_INTERVAL = 86400,
     E2EDT_ACK_PRIORITY         = 15,  //  high priority - we want these to get out so the node doesn't retransmit
     E2EDT_RETRANSMIT_PRIORITY  = 15,  //  If the first one got out, we need the retransmits to get out as well
-
-    E2EDT_DEFAULT_BLOCK_SIZE   = 1024,
 };
+
+const auto E2EDT_DEFAULT_BLOCK_SIZE = RfnRequestManager::BlockSize::ofSize<1024>();
+
+}
 
 Rfn::E2eStatistics stats;
 unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTING_INTERVAL", E2EDT_STATS_REPORTING_INTERVAL);
@@ -178,7 +182,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            if( ! message.block && program.size() < E2EDT_DEFAULT_BLOCK_SIZE )
+            if( ! message.block && program.size() < E2EDT_DEFAULT_BLOCK_SIZE.getSize() )
             {
                 _e2edt.sendReply(program, rfnIdentifier, message.token);
             }
@@ -276,7 +280,7 @@ void RfnRequestManager::handleBlockContinuation(const CtiTime Now, const RfnIden
 
     activeRequest.currentPacket =
         sendE2eDataRequestPacket(
-            sendE2eDtBlockContinuation(block.size, block.num + 1, rfnIdentifier, token),
+            sendE2eDtBlockContinuation(block.blockSize, block.num + 1, rfnIdentifier, token),
             activeRequest.request.command->getApplicationServiceId(),
             activeRequest.request.parameters.rfnIdentifier,
             activeRequest.request.parameters.priority,

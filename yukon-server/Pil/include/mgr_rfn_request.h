@@ -70,8 +70,8 @@ public:
 
     using ConfigNotificationPtr = std::unique_ptr<Devices::Commands::RfnConfigNotificationCommand>;
     using Bytes = std::vector<unsigned char>;
-    using Block = Protocols::E2e::Block;
-    using BlockSize = Protocols::E2e::BlockSize;
+    using Block = Protocols::Coap::Block;
+    using BlockSize = Protocols::Coap::BlockSize;
     using EndpointMessage = Protocols::E2e::EndpointMessage;
 
     struct UnsolicitedReport

@@ -102,14 +102,14 @@ auto E2eDataTransferProtocol::sendReply(const Bytes& payload, const RfnIdentifie
 }
 
 
-auto E2eDataTransferProtocol::sendBlockReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token, Block block) -> Bytes
+auto E2eDataTransferProtocol::sendBlockReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token, Coap::Block block) -> Bytes
 {
     if( payload.size() > MaxOutboundPayload )
     {
         throw PayloadTooLarge();
     }
 
-    auto ack_pdu = Coap::scoped_pdu_ptr::make_block_ack(token, getOutboundIdForEndpoint(endpointId), payload, block.size.szx, block.num, block.more);
+    auto ack_pdu = Coap::scoped_pdu_ptr::make_block_ack(token, getOutboundIdForEndpoint(endpointId), payload, block);
 
     return ack_pdu.as_bytes();
 }
@@ -236,16 +236,23 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
     //  Look for any block option
     if( coap_block_t block; coap_get_block(indication_pdu, COAP_OPTION_BLOCK2, &block) )
     {
-        message.block = { block.num, !! block.m, block.szx };
+        if( const auto blockSize = Coap::BlockSize::ofSzx(block.szx) )
+        {
+            message.block = { block.num, !! block.m, *blockSize };
+        }
+        else
+        {
+            throw new InvalidBlockSize(block.szx);
+        }
     }
 
     return message;
 }
 
 
-auto E2eDataTransferProtocol::sendBlockContinuation(const BlockSize blockSize, const unsigned num, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
+auto E2eDataTransferProtocol::sendBlockContinuation(const Coap::BlockSize blockSize, const unsigned num, const RfnIdentifier endpointId, const unsigned long token) -> Bytes
 {
-    auto continuation_pdu = Coap::scoped_pdu_ptr::make_get_continuation(token, getOutboundIdForEndpoint(endpointId), blockSize.szx, num);
+    auto continuation_pdu = Coap::scoped_pdu_ptr::make_get_continuation(token, getOutboundIdForEndpoint(endpointId), blockSize, num);
 
     return continuation_pdu.as_bytes();
 }

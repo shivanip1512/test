@@ -74,7 +74,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_confirmable_request(RequestMethod method, un
     return pdu;
 }
 
-scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsigned short id, const unsigned size, const unsigned num)
+scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsigned short id, const BlockSize size, const unsigned num)
 {
     scoped_pdu_ptr pdu { coap_pdu_init(COAP_MESSAGE_CON, static_cast<unsigned char>(RequestMethod::Get), id, COAP_MAX_PDU_SIZE) };
 
@@ -82,7 +82,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_get_continuation(unsigned long token, unsign
 
     unsigned char buf[4];
 
-    unsigned len = coap_encode_var_bytes(buf, (num << 4) | size);
+    unsigned len = coap_encode_var_bytes(buf, (num << 4) | size.getSzx());
 
     coap_add_option(pdu, COAP_OPTION_BLOCK2, len, buf);
 
@@ -125,7 +125,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_data_ack(unsigned long token, unsigned short
     return pdu;
 }
 
-scoped_pdu_ptr scoped_pdu_ptr::make_block_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data, const unsigned szx, const unsigned num, const bool more)
+scoped_pdu_ptr scoped_pdu_ptr::make_block_ack(unsigned long token, unsigned short id, std::vector<unsigned char> data, const Block block)
 {
     scoped_pdu_ptr pdu(coap_pdu_init(COAP_MESSAGE_ACK, static_cast<unsigned char>(ResponseCode::Content), id, COAP_MAX_PDU_SIZE));
 
@@ -133,7 +133,7 @@ scoped_pdu_ptr scoped_pdu_ptr::make_block_ack(unsigned long token, unsigned shor
 
     unsigned char buf[4];
 
-    unsigned len = coap_encode_var_bytes(buf, (num << 4) | (more << 3) | szx);
+    unsigned len = coap_encode_var_bytes(buf, (block.num << 4) | (block.more << 3) | block.blockSize.getSzx());
 
     coap_add_option(pdu, COAP_OPTION_BLOCK2, len, buf);
 

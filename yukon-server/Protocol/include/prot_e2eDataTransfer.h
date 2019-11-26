@@ -26,7 +26,7 @@ public:
 
     enum
     {
-        MaxOutboundPayload = 1000
+        MaxOutboundPayload = 1024
     };
 
     E2eDataTransferProtocol();
@@ -41,12 +41,12 @@ public:
     Bytes sendReply  (const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws PayloadTooLarge
-    Bytes sendBlockReply(const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token, const E2e::Block block);
+    Bytes sendBlockReply(const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token, const Coap::Block block);
 
     Bytes sendAck(const unsigned short id);
     Bytes sendBadRequest(const unsigned short id);
 
-    Bytes sendBlockContinuation(const E2e::BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
+    Bytes sendBlockContinuation(const Coap::BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws E2eException
     E2e::EndpointMessage handleIndication(const Bytes &payload, const RfnIdentifier endpointId);
