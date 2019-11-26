@@ -26,27 +26,27 @@ public:
 
     enum
     {
-        MaxOutboundPayload = 1000
+        MaxOutboundPayload = 1024
     };
 
     E2eDataTransferProtocol();
 
     //  throws PayloadTooLarge
-    Bytes sendRequest(const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
+    Bytes createRequest(const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws PayloadTooLarge
-    Bytes sendPost   (const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
+    Bytes createPost   (const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws PayloadTooLarge
-    Bytes sendReply  (const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token);
+    Bytes createReply  (const unsigned short id, const Bytes &payload, const unsigned long token);
 
     //  throws PayloadTooLarge
-    Bytes sendBlockReply(const Bytes &payload, const RfnIdentifier endpointId, const unsigned long token, const E2e::Block block);
+    Bytes createBlockReply(const unsigned short id, const Bytes &payload, const unsigned long token, const Coap::Block block);
 
-    Bytes sendAck(const unsigned short id);
-    Bytes sendBadRequest(const unsigned short id);
+    Bytes createAck(const unsigned short id);
+    Bytes createBadRequestAck(const unsigned short id);
 
-    Bytes sendBlockContinuation(const E2e::BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
+    Bytes createBlockContinuation(const Coap::BlockSize size, const unsigned num, const RfnIdentifier endpointId, const unsigned long token);
 
     //  throws E2eException
     E2e::EndpointMessage handleIndication(const Bytes &payload, const RfnIdentifier endpointId);

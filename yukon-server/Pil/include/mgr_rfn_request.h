@@ -70,8 +70,8 @@ public:
 
     using ConfigNotificationPtr = std::unique_ptr<Devices::Commands::RfnConfigNotificationCommand>;
     using Bytes = std::vector<unsigned char>;
-    using Block = Protocols::E2e::Block;
-    using BlockSize = Protocols::E2e::BlockSize;
+    using Block = Protocols::Coap::Block;
+    using BlockSize = Protocols::Coap::BlockSize;
     using EndpointMessage = Protocols::E2e::EndpointMessage;
 
     struct UnsolicitedReport
@@ -104,11 +104,11 @@ public:
 protected:
 
     virtual EndpointMessage handleE2eDtIndication(const Bytes& payload, const RfnIdentifier endpointId);
-    virtual Bytes sendE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
-    virtual Bytes sendE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
-    virtual Bytes sendE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const unsigned long token);
-    virtual Bytes sendE2eDtReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
-    virtual Bytes sendE2eDtBlockReply(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token, Block block);
+    virtual Bytes createE2eDtRequest(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes createE2eDtPost(const Bytes& payload, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const RfnIdentifier endpointId, const unsigned long token);
+    virtual Bytes createE2eDtReply(const unsigned short id, const Bytes& payload, const unsigned long token);
+    virtual Bytes createE2eDtBlockReply(const unsigned short id, const Bytes& payload, const unsigned long token, Block block);
 
 private:
 
@@ -140,7 +140,8 @@ private:
     };
 
     PacketInfo sendE2eDataRequestPacket(const Bytes& e2ePacket, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned priority, const long groupMessageId, const CtiTime timeout);
-    void sendE2eDataAck(const unsigned short id, const AckType ackType, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier);
+    void sendE2eDataAck  (const unsigned short id, const AckType ackType, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier);
+    void sendE2eDataReply(const unsigned short id, const Bytes data, const ApplicationServiceIdentifiers &asid, const RfnIdentifier &rfnIdentifier, const unsigned long token, std::optional<Block> block);
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 

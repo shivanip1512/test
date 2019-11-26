@@ -61,17 +61,17 @@ struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
     {
         return e2e.handleIndication(payload, endpointId);
     }
-    Bytes sendE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    Bytes createE2eDtRequest(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
     {
-        return e2e.sendRequest(payload, endpointId, token);
+        return e2e.createRequest(payload, endpointId, token);
     }
-    Bytes sendE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    Bytes createE2eDtBlockContinuation(const BlockSize blockSize, const int blockNum, const Cti::RfnIdentifier endpointId, const unsigned long token) override
     {
-        return e2e.sendBlockContinuation(blockSize, blockNum, endpointId, token);
+        return e2e.createBlockContinuation(blockSize, blockNum, endpointId, token);
     }
-    Bytes sendE2eDtPost(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
+    Bytes createE2eDtPost(const std::vector<unsigned char> &payload, const Cti::RfnIdentifier endpointId, const unsigned long token) override
     {
-        return e2e.sendPost(payload, endpointId, token);
+        return e2e.createPost(payload, endpointId, token);
     }
 };
 

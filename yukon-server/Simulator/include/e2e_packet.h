@@ -14,7 +14,7 @@ struct e2edt_packet
     std::vector<unsigned char> payload;
     unsigned token;
     unsigned id;
-    std::optional<Protocols::E2e::Block> block;
+    std::optional<Protocols::Coap::Block> block;
     std::string path;
 };
 

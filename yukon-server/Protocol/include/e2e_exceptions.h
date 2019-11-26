@@ -4,16 +4,9 @@
 
 namespace Cti::Protocols::E2e {
 
-    struct E2eException : std::exception
+    struct E2eException : std::runtime_error
     {
-        const std::string reason;
-
-        E2eException(std::string reason_) : reason(reason_) {}
-
-        const char * what() const override
-        {
-            return reason.c_str();
-        }
+        using std::runtime_error::runtime_error;
     };
     struct UnexpectedAck : E2eException
     {
@@ -30,10 +23,9 @@ namespace Cti::Protocols::E2e {
             E2eException("Unknown request method " + std::to_string(method) + " for packet id " + std::to_string(id))
         {}
     };
-    struct ResetReceived   : E2eException { ResetReceived()                      : E2eException("Reset packet received") {} };
-    struct PayloadTooLarge : E2eException { PayloadTooLarge()                    : E2eException("Payload too large")     {} };
-    struct DuplicatePacket : E2eException { DuplicatePacket(int id)              : E2eException("Duplicate packet, id: " + std::to_string(id)) {} };
-    struct RequestInactive : E2eException { RequestInactive(unsigned long token) : E2eException("Response received for inactive token " + std::to_string(token)) {} };
-
-
+    struct ResetReceived    : E2eException { ResetReceived()                      : E2eException("Reset packet received") {} };
+    struct PayloadTooLarge  : E2eException { PayloadTooLarge()                    : E2eException("Payload too large")     {} };
+    struct DuplicatePacket  : E2eException { DuplicatePacket(int id)              : E2eException("Duplicate packet, id: " + std::to_string(id)) {} };
+    struct RequestInactive  : E2eException { RequestInactive(unsigned long token) : E2eException("Response received for inactive token " + std::to_string(token)) {} };
+    struct InvalidBlockSize : E2eException { InvalidBlockSize(uint8_t szx)        : E2eException("Invalid block size: " + std::to_string(szx)) {} };
 }
