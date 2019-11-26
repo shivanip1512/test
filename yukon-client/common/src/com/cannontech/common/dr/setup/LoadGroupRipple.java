@@ -78,17 +78,36 @@ public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> implements Loa
     public void setAreaCode(RippleGroupAreaCode areaCode) {
         this.areaCode = areaCode;
     }
+    
+    public boolean isSpecialRippleEnabled(LiteYukonUser user) {
+        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        long specialRipple = Long.parseLong(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV, user), 16);
+        return (specialRipple & SHOW_SPECIAL_RIPPLE) != 0;
+    }
 
     @Override
     public void buildModel(LMGroupRipple lmGroupRipple) {
         // Set parent fields
         super.buildModel(lmGroupRipple);
+        
+        LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
+        if (isSpecialRippleEnabled(user)) {
+            RippleGroup rippleGroup = RippleGroup
+                    .getRippleGroupValue(lmGroupRipple.getLmGroupRipple().getControl().subSequence(0, 10).toString());
+            RippleGroupAreaCode rippleGroupAreaCode = RippleGroupAreaCode
+                    .getRippleAreaCodeValue(lmGroupRipple.getLmGroupRipple().getControl().subSequence(10, 16).toString());
+            setGroup(rippleGroup);
+            setAreaCode(rippleGroupAreaCode);
+            setControl(lmGroupRipple.getLmGroupRipple().getControl().subSequence(16, 50).toString());
+            setRestore(lmGroupRipple.getLmGroupRipple().getRestore().substring(16, 50).toString());
+        } else {
+            setControl(lmGroupRipple.getLmGroupRipple().getControl());
+            setRestore(lmGroupRipple.getLmGroupRipple().getRestore());
+        }
 
         // Set Ripple fields
         setRouteId(lmGroupRipple.getRouteID());
         setShedTime(lmGroupRipple.getLmGroupRipple().getShedTime());
-        setControl(lmGroupRipple.getLmGroupRipple().getControl());
-        setRestore(lmGroupRipple.getLmGroupRipple().getRestore());
     }
 
     @Override
@@ -98,13 +117,11 @@ public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> implements Loa
 
         // Set LMGroupRipple fields.
         LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-        RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
-        long specialRipple = Long.parseLong(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV, user), 16);
 
         com.cannontech.database.db.device.lm.LMGroupRipple lmGroupRipple = group.getLmGroupRipple();
         lmGroupRipple.setRouteID(getRouteId());
         lmGroupRipple.setShedTime(getShedTime());
-        if ((specialRipple & SHOW_SPECIAL_RIPPLE) != 0 && (getGroup() != null && getAreaCode() != null)) {
+        if (isSpecialRippleEnabled(user) && (getGroup() != null && getAreaCode() != null)) {
             String rippleGroup = (String) getGroup().getDatabaseRepresentation();
             String rippleGroupAreaCode = (String) getAreaCode().getDatabaseRepresentation();
             lmGroupRipple.setControl(new StringBuffer(rippleGroup).append(rippleGroupAreaCode).append(getControl()).toString());

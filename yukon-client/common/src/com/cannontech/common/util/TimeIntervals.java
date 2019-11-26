@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableSet;
 public enum TimeIntervals {
     NONE(Duration.ZERO),
     RESTORE(Duration.ZERO),
+    CONTINUOUS_LATCH(Duration.ZERO),
     SECONDS_1(Duration.standardSeconds(1)),
     SECONDS_2(Duration.standardSeconds(2)),
     SECONDS_5(Duration.standardSeconds(5)),

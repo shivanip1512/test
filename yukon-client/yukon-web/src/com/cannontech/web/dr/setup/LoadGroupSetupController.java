@@ -103,7 +103,7 @@ public class LoadGroupSetupController {
         } else {
             loadGroup.setName(name);
             loadGroup.setType(PaoType.valueOf(type));
-            controllerHelper.setDefaultValues(loadGroup);
+            controllerHelper.setDefaultValues(loadGroup, userContext.getYukonUser());
         }
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("switchTypes", switchTypes);
