@@ -93,7 +93,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
                 };
             Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
             completionCallback = commandService.execute(devices, attributes, command, deviceRequestType, user,
-                retryParameters, callback, name);
+                retryParameters, callback, name, getJob().getId());
 
             // create ScheduledGroupRequestExecutionResult record
             ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
