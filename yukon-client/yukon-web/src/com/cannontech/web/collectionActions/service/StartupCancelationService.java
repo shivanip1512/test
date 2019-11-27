@@ -33,7 +33,10 @@ public class StartupCancelationService {
             try {
                 List<CollectionActionResult> results =  collectionActionDao.loadIncompeteResultsFromDb();
                 log.info("Attempting to terminate {} Collection Actions", results.size());
-                results.forEach(result -> collectionActionService.cancel(result, YukonUserContext.system.getYukonUser()));
+                results.forEach(result -> {
+                    collectionActionService.cancel(result, YukonUserContext.system.getYukonUser());
+                    collectionActionService.removeResultFromCache(result.getCacheKey());
+                });
                 log.info("Terminated {} Collection Actions", results.size());
             } catch (Exception e) {
                 log.error("Failed to cancel started collection actions", e);
