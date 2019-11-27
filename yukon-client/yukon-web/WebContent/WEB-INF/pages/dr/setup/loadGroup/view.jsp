@@ -108,6 +108,8 @@
             <c:if test="${isRippleGroupSelected}">
                 <input type="hidden" class="js-ripple-group-selected">
                 <%@ include file="rippleGroup.jsp" %>
+            <c:if test="${isPointGroupSelected}">
+                <%@ include file="pointGroup.jsp" %>
             </c:if>
             <c:if test="${not empty selectedSwitchType}">
                 <%@ include file="loadGroupOptional.jsp" %>
