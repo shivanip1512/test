@@ -90,7 +90,7 @@ void E2eSimulator::stop()
     conn.reset();
 }
 
-std::mt19937_64 rd { static_cast<unsigned long long>(std::time(nullptr)) };
+std::mt19937_64 gen { static_cast<unsigned long long>(std::time(nullptr)) };
 std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
 
 void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
@@ -121,7 +121,7 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
             }
 
             //  NM timeout
-            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_TIMEOUT_CHANCE") )
+            if( dist(gen) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_TIMEOUT_CHANCE") )
             {
                 CTILOG_INFO(dout, "Not sending NM acknowledgement for " << requestMsg->rfnIdentifier);
                 return;
@@ -130,13 +130,13 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
             sendNetworkManagerRequestAck(requestMsg->header, msg->getCMSReplyTo());
 
             //  NM queue timeout
-            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_TIMEOUT_CHANCE") )
+            if( dist(gen) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_TIMEOUT_CHANCE") )
             {
                 CTILOG_INFO(dout, "Not sending E2E confirm for " << requestMsg->rfnIdentifier);
                 return;
             }
 
-            float delay = dist(rd) * gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_DELAY_SECONDS", 3);
+            float delay = dist(gen) * gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_DELAY_SECONDS", 3);
 
             std::thread { &E2eSimulator::delayProcessing, this, delay, *requestMsg }.detach();
         }
@@ -152,7 +152,7 @@ void E2eSimulator::delayProcessing(float delay, const E2eDataRequestMsg requestM
     sendE2eDataConfirm(requestMsg);
 
     //  E2E timeout
-    if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
+    if( dist(gen) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
     {
         CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg.rfnIdentifier);
         return;
@@ -170,7 +170,7 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
         if( auto e2edtRequest = dynamic_cast<const e2edt_request_packet*>(msgPtr.get()) )
         {
             //  Request Unacceptable
-            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
+            if( dist(gen) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_REQUEST_NOT_ACCEPTABLE_CHANCE") )
             {
                 CTILOG_INFO(dout, "Sending E2E Request Not Acceptable for " << requestMsg.rfnIdentifier);
 
@@ -323,7 +323,10 @@ auto E2eSimulator::parseE2eDtRequestPayload(const Bytes& payload, const RfnIdent
 
     if( coap_block_t block; coap_get_block(request_pdu, COAP_OPTION_BLOCK2, &block) )
     {
-        packet->block = { block.num, !! block.m, block.szx };
+        if( auto blockSize = Protocols::Coap::BlockSize::ofSzx(block.szx) )
+        {
+            packet->block = { block.num, !!block.m, *blockSize };
+        }
     }
 
     //  Extract the data from the packet
@@ -375,7 +378,7 @@ auto E2eSimulator::buildE2eDtRequest(const e2edt_request_packet& request) const 
     {
         unsigned char buf[4];
 
-        unsigned len = coap_encode_var_bytes(buf, (request.block->num << 4) | request.block->size.szx);
+        unsigned len = coap_encode_var_bytes(buf, (request.block->num << 4) | request.block->blockSize.getSzx());
 
         coap_add_option(request_pdu, COAP_OPTION_BLOCK2, len, buf);
     }

@@ -12,6 +12,7 @@ import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.DailyDefaultState;
 import com.cannontech.common.util.TimeIntervals;
+import com.cannontech.web.PageEditMode;
 
 @Service
 public class ControlAreaSetupControllerHelper {
@@ -37,6 +38,11 @@ public class ControlAreaSetupControllerHelper {
         if (stopTimeMinutes != null) {
             LocalTime dailyStop = LocalTime.fromMillisOfDay(stopTimeMinutes * 60000);
             model.addAttribute("dailyStopTime", dailyStop);
+        }
+        
+        if (model.containsAttribute("mode")) {
+            PageEditMode mode = (PageEditMode) model.get("mode");
+            model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
         }
     }
 
