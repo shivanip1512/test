@@ -1039,6 +1039,43 @@
                                         }
                                     },
                                     "response": []
+                                },
+                                {
+                                    "name": "Ripple",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"LM_GROUP_RIPPLE\": {\r\n        \"name\": \"TestRippleLoadsGroupCreate\",\r\n        \"type\": \"LM_GROUP_RIPPLE\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"routeId\": 3611,\r\n        \"control\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"restore\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"shedTime\": 450,\r\n        \"kWCapacity\": 4.0\r\n    }\r\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/create",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "create"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
                                 }
                             ],
                             "description": "Create request for all load groups.",
@@ -1406,6 +1443,44 @@
                                         }
                                     },
                                     "response": []
+                                },
+                                {
+                                    "name": "Ripple",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"LM_GROUP_RIPPLE\": {\r\n        \"name\": \"TestRippleLoadGroupUpdate\",\r\n        \"type\": \"LM_GROUP_RIPPLE\",\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"routeId\": 3611,\r\n        \"control\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"restore\": \"00000000000000000000000011111110111010101010101010\",\r\n        \"shedTime\": 455,\r\n        \"kWCapacity\": 4.0\r\n    }\r\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "update",
+                                                "151386"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
                                 }
                             ],
                             "description": "Update an existing load group.",
@@ -1663,6 +1738,44 @@
                                         "body": {
                                             "mode": "raw",
                                             "raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"Pointcopy\"\r\n     }\r\n}"
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadGroup",
+                                                "copy",
+                                                "151386"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Ripple",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "value": "application/json",
+                                                "type": "text"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{ \r\n\t\"LOAD_GROUP_COPY\":\r\n\t{ \r\n\t\t\"name\": \"Ripplecopy\"\r\n     }\r\n}",
+                                            "options": {
+                                                "raw": {
+                                                    "language": "json"
+                                                }
+                                            }
                                         },
                                         "url": {
                                             "raw": "{{api-url}}/api/dr/setup/loadGroup/copy/151386",

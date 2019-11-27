@@ -41,7 +41,6 @@ public enum TimeIntervals {
     MINUTES_45(Duration.standardMinutes(45)),
     MINUTES_50(Duration.standardMinutes(50)),
     MINUTES_55(Duration.standardMinutes(55)),
-    MINUTES_60(Duration.standardMinutes(60)),
     HOURS_1(Duration.standardHours(1)),
     HOURS_2(Duration.standardHours(2)),
     HOURS_3(Duration.standardHours(3)),
@@ -430,7 +429,7 @@ public enum TimeIntervals {
        MINUTES_7_SECONDS_30,
        MINUTES_15,
        MINUTES_30,
-       MINUTES_60
+       HOURS_1
       );
     
     /**

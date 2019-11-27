@@ -29,6 +29,7 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupItron;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupMCT;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupNest;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupPoint;
+import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRipple;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupVersacom;
 import com.cannontech.rest.api.loadgroup.request.MockLoads;
 import com.cannontech.rest.api.loadgroup.request.MockRelays;
@@ -249,6 +250,19 @@ public class LoadGroupHelper {
                     .address(123)
                     .relayUsage(relay)
                     .build();
+            break;
+        case LM_GROUP_RIPPLE:
+            loadGroup = MockLoadGroupRipple.builder()
+                     .name(getLoadGroupName(paoType))
+                     .type(paoType)
+                     .kWCapacity(4.0)
+                     .disableControl(false)
+                     .disableGroup(false)
+                     .routeId(3611)
+                     .shedTime(450)
+                     .control("00001111111111111111000011111111111111111111111111")
+                     .restore("00001111111111111111000011111111111111111111111111")
+                     .build();
             break;
         }
 
