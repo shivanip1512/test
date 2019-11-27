@@ -2,23 +2,16 @@ package com.cannontech.amr.rfn.service.pointmapping;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
@@ -46,11 +39,9 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.stream.Try;
 import com.cannontech.database.data.point.PointType;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
@@ -164,67 +155,50 @@ public class RfnPointMappingTest {
     }
 
     public void confirmDevicePointsHaveMappings() throws JDOMException, IOException {
-        Map<PaoType, Set<String>> rfnPointMappingNames =
-                getRfnPointMapping().entrySet().stream()
-                    .collect(Collectors.toMap(
-                             Entry::getKey,
-                             paoTypeMapping -> 
-                                 paoTypeMapping.getValue().entrySet().stream()
-                                      .filter(e -> e.getKey().isMappedFor(paoTypeMapping.getKey()))
-                                      .map(e -> e.getValue().getName())
-                                      .collect(Collectors.toSet())));
+        Multimap<PaoType, String> rfnPointMappingNames = HashMultimap.create();
 
-        //  Confirm that all known unmapped points really are missing from rfnPointMapping
-        Map<PaoType, Collection<String>> unexpectedlyMapped =
-                Maps.filterValues(
-                    Maps.transformEntries(
-                        knownUnmappedPoints.asMap(),
-                        (paoType, unmappedPoints) -> 
-                            Optional.ofNullable(rfnPointMappingNames.get(paoType))
-                                .map(mappedPoints -> CollectionUtils.intersection(mappedPoints, unmappedPoints))
-                                .filter(CollectionUtils::isNotEmpty)
-                                .orElse(null)),
-                Objects::nonNull);
-                
+        getRfnPointMapping().forEach((paoType, pointMappings) -> rfnPointMappingNames.putAll(paoType,
+                pointMappings.entrySet().stream()
+                        .filter(e -> e.getKey().isMappedFor(paoType))
+                        .map(e -> e.getValue().getName())
+                        .collect(Collectors.toList())));
+
+        // Confirm that all known unmapped points really are missing from rfnPointMapping
+        Multimap<PaoType, String> unexpectedlyMapped = Multimaps.filterEntries(knownUnmappedPoints,
+                e -> rfnPointMappingNames.containsEntry(e.getKey(), e.getValue()));
+
         assertTrue("Points declared as \"unmapped\" actually found in rfnPointMapping:" + unexpectedlyMapped, unexpectedlyMapped.isEmpty());
 
-        //  These are points created by the system
+        // These are points created by the system
         Predicate<String> ignoredPointNames = pointName ->
-                //  Populated by Calc
-                pointName.equals("Outages")
-                //  Populated by the Outage and Restore event processors
+        // Populated by Calc
+        pointName.equals("Outages")
+                // Populated by the Outage and Restore event processors
                 || pointName.equals("Outage Count")
                 || pointName.equals("Outage Restore Count")
                 || pointName.equals("Blink Count")
                 || pointName.equals("Blink Restore Count")
-                //  Populated by PerIntervalAndLoadProfileCalculator
+                // Populated by PerIntervalAndLoadProfileCalculator
                 || pointName.endsWith("per Interval")
                 || pointName.endsWith("Profile");
-        
-        Map<PaoType, Set<String>> paoDefinitionPointNames =
-                //  Look at the points on the PaoTypes with at least one entry in rfnPointMapping 
-                rfnPointMappingNames.keySet().stream()
-                    .collect(Collectors.toMap(
-                            Function.identity(), 
-                            paoType -> paoDefinitionDao.getAllPointTemplates(paoType).stream()
-                                .filter(pt -> pt.getPointType() == PointType.Analog)
-                                .map(PointTemplate::getName)
-                                .filter(ignoredPointNames.negate())
-                                .filter(pointName -> !knownUnmappedPoints.containsEntry(paoType, pointName))
-                                .collect(Collectors.toSet())));
 
-        Map<PaoType, Collection<String>> unmappedAnalogPoints =
-                Maps.filterValues(
-                    Maps.transformEntries(
-                        paoDefinitionPointNames,
-                        (paoType, paoDefinitionPoints) ->
-                            Optional.ofNullable(rfnPointMappingNames.get(paoType))
-                                .map(mappedPoints -> CollectionUtils.subtract(paoDefinitionPoints, mappedPoints))
-                                .filter(CollectionUtils::isNotEmpty)
-                                .orElse(null)),
-                Objects::nonNull);
-        
-        assertTrue("Analog points in PaoDefinition missing mappings in rfnPointMapping.xml:" + unmappedAnalogPoints, unmappedAnalogPoints.isEmpty());
+        Multimap<PaoType, String> paoDefinitionPointNames = HashMultimap.create();
+
+        // Look at the points on the PaoTypes with at least one entry in rfnPointMapping
+        rfnPointMappingNames.keySet().forEach(paoType -> paoDefinitionPointNames.putAll(paoType,
+                paoDefinitionDao.getAllPointTemplates(paoType).stream()
+                        .filter(pt -> pt.getPointType() == PointType.Analog)
+                        .map(PointTemplate::getName)
+                        .filter(ignoredPointNames.negate())
+                        .filter(pointName -> !knownUnmappedPoints.containsEntry(paoType, pointName))
+                        .collect(Collectors.toList())));
+
+        Multimap<PaoType, String> unmappedAnalogPoints = Multimaps.filterEntries(
+                paoDefinitionPointNames,
+                e -> !rfnPointMappingNames.containsEntry(e.getKey(), e.getValue()));
+
+        assertTrue("Analog points in PaoDefinition missing mappings in rfnPointMapping.xml:" + unmappedAnalogPoints,
+                unmappedAnalogPoints.isEmpty());
     }
 
     public void compareToYukonPointMappingIcd() throws IOException, JDOMException {
