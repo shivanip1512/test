@@ -24,9 +24,11 @@ exit
 
 Import-Module $PSScriptRoot\YukonDeploy
  
+Stop-Services
 Uninstall-EIMAndSimulator
+Uninstall-Yukon
 Expand-Installer
-Upgrade-Yukon
+Install-Yukon
 Update-YukonDatabase
 Start-YukonServices
 Start-EIM
