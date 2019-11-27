@@ -3826,7 +3826,7 @@
     <pointGroup>
         <paoType value="RFN430SL4"/>
         
-        <point name="Net Delivered kVARh"> 
+        <point name="Net Delivered kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3836,7 +3836,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Net Received kVARh"> 
+        <point name="Net Received kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3857,7 +3857,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Rate A Net Received kVARh"> 
+        <point name="Rate A Net Received kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3879,7 +3879,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Rate B Net Received kVARh"> 
+        <point name="Rate B Net Received kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3901,7 +3901,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Rate C Net Received kVARh"> 
+        <point name="Rate C Net Received kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3923,7 +3923,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Rate D Net Received kVARh"> 
+        <point name="Rate D Net Received kVArh"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

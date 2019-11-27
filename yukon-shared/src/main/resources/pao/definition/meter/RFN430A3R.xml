@@ -54,7 +54,7 @@
         <pointInfo name="Delivered kVAh" attributes="KVAH"/>
         <pointInfo name="Delivered kVAr Load Profile" attributes="DELIVERED_KVAR_LOAD_PROFILE"/>
         <pointInfo name="Delivered kVArh" init="true" attributes="KVARH"/>
-        <pointInfo name="Delivered kVArh Per Interval" attributes="DELIVERED_KVARH_PER_INTERVAL"/>
+        <pointInfo name="Delivered kVArh per Interval" attributes="DELIVERED_KVARH_PER_INTERVAL"/>
         <pointInfo name="Delivered kVArh (Rate A kVArh)" init="true" attributes="KVARH_RATE_A"/>
         <pointInfo name="Delivered kVArh (Rate B kVArh)" init="true" attributes="KVARH_RATE_B"/>
         <pointInfo name="Delivered kVArh (Rate C kVArh)" init="true" attributes="KVARH_RATE_C"/>
