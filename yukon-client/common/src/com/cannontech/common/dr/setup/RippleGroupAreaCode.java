@@ -49,7 +49,6 @@ public enum RippleGroupAreaCode implements DisplayableEnum, DatabaseRepresentati
 
     public static RippleGroupAreaCode getRippleAreaCodeValue(String value) {
         RippleGroupAreaCode rippleGroupAreaCodeType = lookupByRippleGroupAreaCode.get(value);
-        checkArgument(rippleGroupAreaCodeType != null, rippleGroupAreaCodeType);
         return rippleGroupAreaCodeType;
     }
 

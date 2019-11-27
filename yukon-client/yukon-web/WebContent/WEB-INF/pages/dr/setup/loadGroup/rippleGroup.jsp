@@ -9,31 +9,52 @@
             <tags:intervalDropdown intervals="${shedTimeIntervals}" path="shedTime" noneKey=".continuousLatch" id="js-shed-time"/>
         </tags:nameValue2>
         <c:if test="${isSpecialRippleEnabled}">
+            <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
             <tags:nameValue2 nameKey=".group">
-                <tags:selectWithItems items="${groups}" path="group"/>
+                 <c:choose>
+                    <c:when test="${empty loadGroup.group && isViewMode}">
+                        <i:inline key="yukon.common.none.choice"/>
+                    </c:when>
+                    <c:when test="${empty loadGroup.group && not isViewMode}">
+                        <tags:selectWithItems items="${groups}" path="group" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:msg2 key=".lg"/>&nbsp;<tags:selectWithItems items="${groups}" path="group" />
+                    </c:otherwise>
+                 </c:choose>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".areaCode">
-                <tags:selectWithItems items="${areaCodes}" path="areaCode"/>
+                <c:choose>
+                    <c:when test="${empty loadGroup.areaCode && isViewMode}">
+                        <i:inline key="yukon.common.none.choice"/>
+                    </c:when>
+                    <c:when test="${empty loadGroup.areaCode && not isViewMode}">
+                        <tags:selectWithItems items="${areaCodes}" path="areaCode" defaultItemLabel="${selectLbl}" defaultItemValue=""/>
+                    </c:when>
+                    <c:otherwise>
+                        <tags:selectWithItems items="${areaCodes}" path="areaCode"/>
+                    </c:otherwise>
+                </c:choose>
             </tags:nameValue2>
         </c:if>
         <c:if test="${isViewMode}">
             <tags:nameValue2 nameKey=".control">
                 <c:choose>
-                    <c:when test="${empty loadGroup. control}">
+                    <c:when test="${empty loadGroup.control}">
                         <i:inline key="yukon.common.none.choice"/>
                     </c:when>
                     <c:otherwise>
-                        ${loadGroup. control}
+                        ${loadGroup.control}
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".restore">
                 <c:choose>
-                    <c:when test="${empty loadGroup. restore}">
+                    <c:when test="${empty loadGroup.restore}">
                         <i:inline key="yukon.common.none.choice"/>
                     </c:when>
                     <c:otherwise>
-                        ${loadGroup. restore}
+                        ${loadGroup.restore}
                     </c:otherwise>
                 </c:choose>
             </tags:nameValue2>

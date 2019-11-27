@@ -50,7 +50,7 @@
                 </c:when>
                 <c:otherwise>
                     <c:choose>
-                        <c:when test="${fn:length(relayUsageList) < 1}">
+                        <c:when test="${fn:length(loadGroup.relayUsage) < 1}">
                             <i:inline key="yukon.common.none.choice"/>
                         </c:when>
                         <c:otherwise>

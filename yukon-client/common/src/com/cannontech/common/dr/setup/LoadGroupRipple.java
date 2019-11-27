@@ -79,7 +79,7 @@ public class LoadGroupRipple extends LoadGroupBase<LMGroupRipple> implements Loa
         this.areaCode = areaCode;
     }
     
-    public boolean isSpecialRippleEnabled(LiteYukonUser user) {
+    public static boolean isSpecialRippleEnabled(LiteYukonUser user) {
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
         long specialRipple = Long.parseLong(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV, user), 16);
         return (specialRipple & SHOW_SPECIAL_RIPPLE) != 0;
