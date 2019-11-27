@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
@@ -29,9 +29,7 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
@@ -113,8 +111,11 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         }
         if (loadGroupBase instanceof LoadGroupPoint) {
             LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroupBase;
-            loadGroupPoint.setStartControlRawStateName(
-                    getRawStateName(loadGroupPoint.getPointIdUsage(), loadGroupPoint.getStartControlRawStateId()));
+            loadGroupPoint.getDeviceUsage().setName((dbCache.getAllPaosMap().get(loadGroupPoint.getDeviceUsage().getId())).getPaoName());
+            loadGroupPoint.getPointUsage().setName(pointDao.getPointName(loadGroupPoint.getPointUsage().getId()));
+            loadGroupPoint.getStartControlRawState().setStateText(
+                    stateGroupDao.getRawStateName(loadGroupPoint.getPointUsage().getId(),
+                            loadGroupPoint.getStartControlRawState().getRawState()));
         }
         return loadGroupBase;
     }
@@ -211,37 +212,12 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
-    public List<LMDto> getStartState(int pointId) {
-        List<LiteState> stateList = getStateList(pointId);
+    public List<ControlRawState> getStartState(int pointId) {
+        List<LiteState> stateList = stateGroupDao.getStateList(pointId);
         return stateList.stream()
-                        .filter(state -> state.getLiteID() == 0 || state.getLiteID() == 1)
-                        .map(state -> buildControlState(state))
+                        .filter(state -> state.isValidRawState())
+                        .map(state -> new ControlRawState(state.getStateRawState(), state.getStateText()))
                         .collect(Collectors.toList());
     }
 
-    private LMDto buildControlState(LiteState liteState) {
-        return new LMDto(liteState.getLiteID(), liteState.getStateText());
-    }
-
-    private String getRawStateName(Integer pointId, Integer rawStateId) {
-        List<LiteState> stateList = getStateList(pointId);
-        return stateList.stream()
-                        .filter(state -> state.getLiteID() == rawStateId)
-                        .findFirst()
-                        .get()
-                        .getStateText();
-
-    }
-
-    private List<LiteState> getStateList(Integer pointId) {
-
-        // Getting state list corresponding to pointId its stateGroupId
-        LitePoint litePoint = pointDao.getLitePoint(pointId);
-        if (litePoint == null) {
-            throw new NotFoundException("Invalid point Id" + pointId);
-        }
-        LiteStateGroup stateGroup = stateGroupDao.getStateGroup(litePoint.getStateGroupID());
-        return stateGroup.getStatesList();
-    }
-    
 }

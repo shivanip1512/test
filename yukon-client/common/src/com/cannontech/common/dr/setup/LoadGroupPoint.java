@@ -1,45 +1,35 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.database.data.device.lm.LMGroupPoint;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
 
-    private Integer deviceIdUsage;
-    private Integer pointIdUsage;
-    private Integer startControlRawStateId;
-    private String startControlRawStateName;
+    private LMDto deviceUsage;
+    private LMDto pointUsage;
+    private ControlRawState startControlRawState;
 
-    public Integer getDeviceIdUsage() {
-        return deviceIdUsage;
+    public LMDto getDeviceUsage() {
+        return deviceUsage;
     }
 
-    public void setDeviceIdUsage(Integer deviceIdUsage) {
-        this.deviceIdUsage = deviceIdUsage;
+    public void setDeviceUsage(LMDto deviceUsage) {
+        this.deviceUsage = deviceUsage;
     }
 
-    public Integer getPointIdUsage() {
-        return pointIdUsage;
+    public LMDto getPointUsage() {
+        return pointUsage;
     }
 
-    public void setPointIdUsage(Integer pointIdUsage) {
-        this.pointIdUsage = pointIdUsage;
+    public void setPointUsage(LMDto pointUsage) {
+        this.pointUsage = pointUsage;
     }
 
-    public Integer getStartControlRawStateId() {
-        return startControlRawStateId;
+    public ControlRawState getStartControlRawState() {
+        return startControlRawState;
     }
 
-    public void setStartControlRawStateId(Integer startControlRawStateId) {
-        this.startControlRawStateId = startControlRawStateId;
-    }
-
-    public String getStartControlRawStateName() {
-        return startControlRawStateName;
-    }
-
-    public void setStartControlRawStateName(String startControlRawStateName) {
-        this.startControlRawStateName = startControlRawStateName;
+    public void setStartControlRawState(ControlRawState startControlRawState) {
+        this.startControlRawState = startControlRawState;
     }
 
     @Override
@@ -48,9 +38,9 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
         super.buildModel(lmGroupPoint);
 
         // Set from LMGroupPoint fields
-        setDeviceIdUsage(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage());
-        setPointIdUsage(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
-        setStartControlRawStateId(lmGroupPoint.getLMGroupPoint().getStartControlRawState());
+        setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), ""));
+        setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), ""));
+        setStartControlRawState(new ControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), ""));
 
     }
 
@@ -61,10 +51,9 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
 
         // Set LMGroupPoint fields
         com.cannontech.database.db.device.lm.LMGroupPoint lmGroupPoint = group.getLMGroupPoint();
-        lmGroupPoint.setDeviceIDUsage(getDeviceIdUsage());
-        lmGroupPoint.setPointIDUsage(getPointIdUsage());
-        lmGroupPoint.setStartControlRawState(getStartControlRawStateId());
-
+        lmGroupPoint.setDeviceIDUsage(getDeviceUsage().getId());
+        lmGroupPoint.setPointIDUsage(getPointUsage().getId());
+        lmGroupPoint.setStartControlRawState(getStartControlRawState().getRawState());
     }
 
 }

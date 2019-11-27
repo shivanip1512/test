@@ -2,8 +2,8 @@ package com.cannontech.dr.loadgroup.service;
 
 import java.util.List;
 
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.dr.setup.service.LMSetupService;
@@ -16,7 +16,7 @@ public interface LoadGroupSetupService extends LMSetupService<LoadGroupBase, LMC
     List<LMPaoDto> retrieveAvailableLoadGroup();
 
     /**
-     * Retrieve available Control start states with (2 states:with liteId 0 and 1) with the specified pointId.
+     * Retrieve available control start states with rawState of 0 or 1 for the specified pointId.
      */
-    List<LMDto> getStartState(int pointId);
+    List<ControlRawState> getStartState(int pointId);
 }

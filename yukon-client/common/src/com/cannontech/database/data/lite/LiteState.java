@@ -60,4 +60,9 @@ public class LiteState extends LiteBase {
     public String toString() {
         return stateText;
     }
+
+    public boolean isValidRawState() {
+        return (getStateRawState() == 0 || getStateRawState() == 1);
+    }
+
 }
