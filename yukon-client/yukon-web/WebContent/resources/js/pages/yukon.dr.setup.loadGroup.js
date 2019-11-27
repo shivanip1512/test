@@ -54,6 +54,24 @@ yukon.dr.setup.loadGroup = (function() {
         }
     }, 
     
+    _retrievePointState = function() {
+        var pointId = $("#js-control-point-selected").val();
+        var container = $("#js-loadgroup-container");
+        if (!$.isEmptyObject(pointId) && pointId.length !== 0){
+            container.find("#js-start-state").removeClass("dn");
+            $.ajax({
+                url: yukon.url('/dr/setup/loadGroup/getStartState/' + pointId),
+                type: 'get'
+            }).done(function (data) {
+                $("#js-loadgroup-container").find("#js-control-start-state").empty();
+                data.startStates.forEach(function (field){
+                    var option = $('<option value=' + field.id + '>' + field.name + '</option>');
+                    container.find("#js-control-start-state").append(option);
+                });
+            });
+        }
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -63,6 +81,15 @@ yukon.dr.setup.loadGroup = (function() {
             
             _initCheckboxes();
              
+            if ($('.js-create-mode').val() == 'true' && $('.js-group-type').val() == 'true' && $('.js-device-error').val() == 'false') {
+                _retrievePointState();
+            }
+            
+            if ($('.js-edit-mode').val() == 'true' && $('.js-group-type').val() == 'true') {
+                var container = $("#js-loadgroup-container");
+                container.find("#js-start-state").removeClass("dn");
+            }
+            
             $(document).on("yukon:loadGroup:delete", function () {
                 yukon.ui.blockPage();
                 $('#delete-loadGroup-form').submit();
@@ -106,6 +133,19 @@ yukon.dr.setup.loadGroup = (function() {
             $(document).on('change', '#type', function (event) {
                 _loadGroup();
             });
+            
+            $(document).on('yukon:pointGroup:point:selected', function (event, items, picker) {
+            	debugger;
+                if (!$.isEmptyObject(items)){
+                    $('#js-control-device-selected').val(items[0].paObjectId);
+                    var pointId = items[0].pointId;
+                    $("#js-control-point-selected").val(pointId);
+                    if (!$.isEmptyObject(pointId)){
+                        _retrievePointState();
+                    }
+                }
+            });
+            
             _initialized = true;
         }
     };

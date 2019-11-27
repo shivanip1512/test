@@ -21,11 +21,13 @@ import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.EmetconRelayUsage;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
+import com.cannontech.common.dr.setup.LoadGroupPoint;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.dr.setup.Loads;
 import com.cannontech.common.dr.setup.Relays;
@@ -175,6 +177,26 @@ public class LoadGroupSetupControllerHelper {
                 }
             }
             break;
+        case LM_GROUP_POINT:
+            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) model.get("loadGroup");
+            model.addAttribute("isPointGroupSelected", true);
+            model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
+            model.addAttribute("isCreateMode", mode == PageEditMode.CREATE);
+            model.addAttribute("isEditMode", mode == PageEditMode.EDIT);
+            // This will be updated in YUK-21025
+            if (loadGroupPoint.getPointIdUsage() != null) {
+                model.addAttribute("startState", loadGroupPoint.getStartControlRawStateName());
+                setControlStartState(loadGroupPoint, model, request, userContext);
+            }
+            if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
+                BindingResult result = (BindingResult) model.get(bindingResultKey);
+                if (result.hasFieldErrors("deviceIdUsage")) {
+                    model.addAttribute("deviceIdUsageHasError", true);
+                } else {
+                    model.addAttribute("deviceIdUsageHasError", false);
+                }
+            }
+            break;
         }
     }
 
@@ -192,6 +214,24 @@ public class LoadGroupSetupControllerHelper {
             routes = (List<LiteYukonPAObject>) response.getBody();
         }
         model.addAttribute("routes", routes);
+    }
+
+    /**
+     * Sets the control start state
+     */
+    private void setControlStartState(LoadGroupPoint loadGroupPoint, ModelMap model, HttpServletRequest request,
+            YukonUserContext userContext) {
+        // Give API call to get all control state
+        List<LMDto> startStates = new ArrayList<>();
+        // This will be updated in YUK-21025
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + loadGroupPoint.getPointIdUsage());
+        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
+                LMDto.class, HttpMethod.GET, LMDto.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            startStates = (List<LMDto>) response.getBody();
+        }
+        model.addAttribute("startStates", startStates);
     }
 
     /**

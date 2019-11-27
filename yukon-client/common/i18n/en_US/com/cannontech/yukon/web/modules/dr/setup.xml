@@ -157,6 +157,11 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.MCT_ADDRESS">MCT Address</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.mctDeviceId.doesNotExist">MCT device Id does not exist.</entry>
 
+<!-- Point -->
+<entry key="yukon.web.modules.dr.setup.loadGroup.pointGroup.title">Point Group</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.controlDevice">Control Device Point</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.controlStartState">Control Start State</entry>
+
 <!-- Versacom -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage.title">Address Usage</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.usage">Usage</entry>

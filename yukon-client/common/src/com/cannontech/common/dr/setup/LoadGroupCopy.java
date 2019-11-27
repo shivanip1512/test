@@ -2,6 +2,7 @@ package com.cannontech.common.dr.setup;
 
 import com.cannontech.database.data.device.lm.LMGroup;
 import com.cannontech.database.data.device.lm.LMGroupExpressCom;
+import com.cannontech.database.data.device.lm.LMGroupMCT;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
 
@@ -51,7 +52,8 @@ public class LoadGroupCopy extends LMCopy {
                 // TODO Implement Copy for Ripple
                 break;
             case LM_GROUP_MCT:
-                // TODO Implement Copy for MCT
+                com.cannontech.database.db.device.lm.LMGroupMCT lmGroupMCT = ((LMGroupMCT) group).getLmGroupMCT();
+                lmGroupMCT.setRouteID(getRouteId());
                 break;
             case LM_GROUP_GOLAY:
                 // TODO Implement Copy for Golay

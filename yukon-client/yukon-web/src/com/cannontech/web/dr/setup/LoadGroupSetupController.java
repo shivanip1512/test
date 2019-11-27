@@ -1,6 +1,8 @@
 package com.cannontech.web.dr.setup;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +27,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
@@ -375,6 +379,26 @@ public class LoadGroupSetupController {
         model.addAttribute("loadGroupId", id);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return "dr/setup/copyLoadGroup.jsp";
+    }
+
+    @GetMapping("/getStartState/{pointId}")
+    public @ResponseBody Map<String, List<LMDto>> getStartState(@PathVariable int pointId,
+            YukonUserContext userContext, HttpServletRequest request) {
+        List<LMDto> startStates = retrieveStartState(pointId, userContext, request);
+        return Collections.singletonMap("startStates", startStates);
+    }
+
+    private List<LMDto> retrieveStartState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
+        // Give API call to get all control state
+        List<LMDto> startStates = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + pointId);
+        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
+                LMDto.class, HttpMethod.GET, LMDto.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            startStates = (List<LMDto>) response.getBody();
+        }
+        return startStates;
     }
 
     /**
