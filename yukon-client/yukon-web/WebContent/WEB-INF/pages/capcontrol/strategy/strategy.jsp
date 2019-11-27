@@ -72,14 +72,13 @@
                         <tags:nameValue2 nameKey=".minResponseTime">
                             <tags:intervalDropdown path="minResponseTime" intervals="${analysisIntervals}" />
                         </tags:nameValue2>
+                        <cti:msg key="yukon.common.units.PERCENT" var="percentSymbol"/>
                         <tags:nameValue2 nameKey=".minConfirmPercent">
-                            <tags:input path="minConfirmPercent" size="3"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>
+                            <tags:input path="minConfirmPercent" size="3" units="${percentSymbol}"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".failurePercent">
-                            <tags:input path="failurePercent" size="3"/>
-                            <i:inline key="yukon.common.units.PERCENT"/>
+                            <tags:input path="failurePercent" size="3" units="${percentSymbol}"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".controlSendRetries" >
