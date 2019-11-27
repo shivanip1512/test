@@ -13,6 +13,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
@@ -28,6 +29,7 @@ import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -110,12 +112,18 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             setRouteName((LoadGroupRoute)loadGroupBase);
         }
         if (loadGroupBase instanceof LoadGroupPoint) {
+
+            LMGroupPoint lmGroupPoint = (LMGroupPoint) loadGroup;
             LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroupBase;
-            loadGroupPoint.getDeviceUsage().setName((dbCache.getAllPaosMap().get(loadGroupPoint.getDeviceUsage().getId())).getPaoName());
-            loadGroupPoint.getPointUsage().setName(pointDao.getPointName(loadGroupPoint.getPointUsage().getId()));
-            loadGroupPoint.getStartControlRawState().setStateText(
-                    stateGroupDao.getRawStateName(loadGroupPoint.getPointUsage().getId(),
-                            loadGroupPoint.getStartControlRawState().getRawState()));
+            String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
+            String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
+            String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
+                    lmGroupPoint.getLMGroupPoint().getStartControlRawState());
+            loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
+            loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
+            loadGroupPoint.setStartControlRawState(
+                    new ControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
+
         }
         return loadGroupBase;
     }

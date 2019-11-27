@@ -36,12 +36,6 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
     public void buildModel(LMGroupPoint lmGroupPoint) {
         // Set parent fields
         super.buildModel(lmGroupPoint);
-
-        // Set from LMGroupPoint fields
-        setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), ""));
-        setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), ""));
-        setStartControlRawState(new ControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), ""));
-
     }
 
     @Override
