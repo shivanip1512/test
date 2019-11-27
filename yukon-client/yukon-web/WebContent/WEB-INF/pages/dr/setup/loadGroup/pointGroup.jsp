@@ -44,6 +44,7 @@
         <cti:displayForPageEditModes modes="VIEW">
             <tags:nameValue2 nameKey=".controlStartState">
                 <%-- To DO - This will be updated in YUK-21025 --%>
+                <cti:pointStatus pointId="${loadGroup.pointIdUsage}" rawState="${loadGroup.startControlRawState}"/>&nbsp
                 ${loadGroup.startControlRawState}
             </tags:nameValue2>
         </cti:displayForPageEditModes>

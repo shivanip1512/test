@@ -135,7 +135,6 @@ yukon.dr.setup.loadGroup = (function() {
             });
             
             $(document).on('yukon:pointGroup:point:selected', function (event, items, picker) {
-            	debugger;
                 if (!$.isEmptyObject(items)){
                     $('#js-control-device-selected').val(items[0].paObjectId);
                     var pointId = items[0].pointId;
