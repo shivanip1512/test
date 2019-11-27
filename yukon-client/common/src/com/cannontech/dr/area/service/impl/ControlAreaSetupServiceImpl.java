@@ -1,6 +1,8 @@
 package com.cannontech.dr.area.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,12 +58,23 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
      */
     @Override
     public ControlArea retrieve(int areaId) {
-        LiteYukonPAObject liteControlArea = dbCache.getAllLMControlAreas().stream()
-                                                                          .filter(controlArea -> controlArea.getLiteID() == areaId)
-                                                                          .findFirst().orElseThrow(() -> new NotFoundException("Control area Id not found " + areaId));
+        LiteYukonPAObject liteControlArea = dbCache.getAllLMControlAreas()
+                                                                 .stream()
+                                                                 .filter(controlArea -> controlArea.getLiteID() == areaId)
+                                                                 .findFirst()
+                                                                 .orElseThrow(() -> new NotFoundException("Control area Id not found " + areaId));
 
         LMControlArea lmControlArea = (LMControlArea) dbPersistentDao.retrieveDBPersistent(liteControlArea);
-        return buildControlAreaModel(lmControlArea);
+        ControlArea controlArea = buildControlAreaModel(lmControlArea);
+        List<ControlAreaProgramAssignment> assignedProgramList = controlArea.getProgramAssignment();
+        if (assignedProgramList != null) {
+            Comparator<ControlAreaProgramAssignment> comparator = (o1, o2) -> {
+                return o1.getStartPriority().compareTo(o2.getStartPriority());
+            };
+            Collections.sort(assignedProgramList, comparator);
+            controlArea.setProgramAssignment(assignedProgramList);
+        }
+        return controlArea;
     }
 
     @Override
@@ -161,6 +174,10 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
             controlAreaProgramAssignment.setProgramId(program.getLmProgramDeviceID());
             controlAreaProgramAssignment.setStartPriority(program.getStartPriority());
             controlAreaProgramAssignment.setStopPriority(program.getStopPriority());
+
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(program.getLmProgramDeviceID());
+            controlAreaProgramAssignment.setProgramName(pao.getPaoName());
+
             programAssignment.add(controlAreaProgramAssignment);
         });
 

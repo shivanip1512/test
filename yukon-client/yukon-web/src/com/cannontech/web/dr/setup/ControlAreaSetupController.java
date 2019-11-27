@@ -2,6 +2,7 @@ package com.cannontech.web.dr.setup;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +40,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.ControlArea;
+import com.cannontech.common.dr.setup.ControlAreaProgramAssignment;
 import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
+import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -54,6 +62,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -72,6 +81,7 @@ public class ControlAreaSetupController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private ControlAreaSetupControllerHelper controllerHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @GetMapping("/create")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.CREATE)
@@ -87,7 +97,8 @@ public class ControlAreaSetupController {
     }
     
     @GetMapping("/{id}")
-    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
+    public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
+            HttpServletRequest request, @DefaultSort(dir = Direction.asc, sort = "startPriority") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.VIEW);
@@ -96,6 +107,18 @@ public class ControlAreaSetupController {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "controlArea.retrieve.error"));
                 return "redirect:" + setupRedirectLink;
             }
+
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            ControlAreaSortBy sortBy = ControlAreaSortBy.valueOf(sorting.getSort());
+            Direction dir = sorting.getDirection();
+            List<SortableColumn> columns = new ArrayList<>();
+            for (ControlAreaSortBy column : ControlAreaSortBy.values()) {
+                String text = accessor.getMessage(column);
+                SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+                columns.add(col);
+                model.addAttribute(column.name(), col);
+            }
+
             model.addAttribute("controlArea", controlArea);
             controllerHelper.buildModelMap(model, controlArea);
             populateTriggerCache(controlArea, model);
@@ -107,10 +130,11 @@ public class ControlAreaSetupController {
         }
 
     }
-    
+
     @GetMapping("/{id}/edit")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
-    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash, HttpServletRequest request) {
+    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
+            HttpServletRequest request, @DefaultSort(dir = Direction.asc, sort = "startPriority") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.EDIT);
@@ -395,4 +419,82 @@ public class ControlAreaSetupController {
             triggerErrorCache.put(triggerId, bindingResult);
         });
     }
+
+    @GetMapping("/sortProgram/{id}")
+    public String sortAssignedProgram(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
+            HttpServletRequest request, @DefaultSort(dir = Direction.asc, sort = "startPriority") SortingParameters sorting) {
+        try {
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
+            model.addAttribute("mode", PageEditMode.VIEW);
+            ControlArea controlArea = retrieveControlArea(userContext, request, id, url);
+            if (controlArea == null) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "controlArea.retrieve.error"));
+                return "redirect:" + setupRedirectLink;
+            }
+            sortAssignedProgramForControlArea(controlArea, userContext, sorting, model);
+            controllerHelper.buildModelMap(model, controlArea);
+            populateTriggerCache(controlArea, model);
+            return "dr/setup/controlArea/sortedAssignedPrograms.jsp";
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return "redirect:" + setupRedirectLink;
+        }
+    }
+
+    /**
+     * Sorts the assigned program within Control Area
+     */
+    private void sortAssignedProgramForControlArea(ControlArea controlArea, YukonUserContext userContext,
+            SortingParameters sorting, ModelMap model) {
+        List<ControlAreaProgramAssignment> assignedProgramList = controlArea.getProgramAssignment();
+
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        ControlAreaSortBy sortBy = ControlAreaSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+
+        if (assignedProgramList != null) {
+            Comparator<ControlAreaProgramAssignment> comparator = (o1, o2) -> {
+                return o1.getProgramName().compareToIgnoreCase(o2.getProgramName());
+            };
+            if (sortBy == ControlAreaSortBy.startPriority) {
+                comparator = (o1, o2) -> {
+                    return o1.getStartPriority().compareTo(o2.getStartPriority());
+                };
+            }
+            if (sortBy == ControlAreaSortBy.stopPriority) {
+                comparator = (o1, o2) -> {
+                    return o1.getStopPriority().compareTo(o2.getStopPriority());
+                };
+            }
+            if (sorting.getDirection() == Direction.desc) {
+                comparator = Collections.reverseOrder(comparator);
+            }
+            Collections.sort(assignedProgramList, comparator);
+            controlArea.setProgramAssignment(assignedProgramList);
+        }
+
+        List<SortableColumn> columns = new ArrayList<>();
+        for (ControlAreaSortBy column : ControlAreaSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            columns.add(col);
+            model.addAttribute(column.name(), col);
+        }
+
+        model.addAttribute("controlArea", controlArea);
+    }
+
+    public enum ControlAreaSortBy implements DisplayableEnum {
+
+        name,
+        startPriority,
+        stopPriority;
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + "controlArea." + name();
+        }
+    }
+    
 }
