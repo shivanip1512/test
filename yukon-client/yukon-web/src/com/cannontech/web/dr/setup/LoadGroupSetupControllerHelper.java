@@ -185,7 +185,8 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("isEditMode", mode == PageEditMode.EDIT);
             // This will be updated in YUK-21025
             if (loadGroupPoint.getPointIdUsage() != null) {
-                model.addAttribute("startState", loadGroupPoint.getStartControlRawStateName());
+                // We should set the state name here
+                model.addAttribute("startState", loadGroupPoint.getStartControlRawState());
                 setControlStartState(loadGroupPoint, model, request, userContext);
             }
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
