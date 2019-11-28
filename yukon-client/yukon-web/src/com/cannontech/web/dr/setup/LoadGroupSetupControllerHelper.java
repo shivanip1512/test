@@ -269,6 +269,24 @@ public class LoadGroupSetupControllerHelper {
 
     /**
      * Default values for object should be set here.
+     */
+    private void setControlStartState(LoadGroupPoint loadGroupPoint, ModelMap model, HttpServletRequest request,
+            YukonUserContext userContext) {
+        // Give API call to get all control state
+        List<LMDto> startStates = new ArrayList<>();
+        // This will be updated in YUK-21025
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + loadGroupPoint.getPointIdUsage());
+        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
+                LMDto.class, HttpMethod.GET, LMDto.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            startStates = (List<LMDto>) response.getBody();
+        }
+        model.addAttribute("startStates", startStates);
+    }
+
+    /**
+     * Default values for object should be set here.
      * @param liteYukonUser 
      */
     public void setDefaultValues(LoadGroupBase group, LiteYukonUser liteYukonUser) {
