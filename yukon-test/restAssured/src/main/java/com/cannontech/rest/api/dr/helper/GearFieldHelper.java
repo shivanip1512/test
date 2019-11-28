@@ -81,6 +81,16 @@ public class GearFieldHelper {
                                                   .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                   .build();
             break;
+        case EcobeeSetpoint:
+                gearFields = MockEcobeeSetpointGearFields.builder()
+                                                  .mandatory(true)
+                                                  .setpointOffset(7)
+                                                  .mode("HEAT")
+                                                  .howToStopControl(MockHowToStopControl.Restore)
+                                                  .capacityReduction(100)
+                                                  .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
+                                                  .build();
+            break;
         case HoneywellCycle:
                 gearFields = MockHoneywellCycleGearFields.builder()
                                                      .rampInOut(true)
