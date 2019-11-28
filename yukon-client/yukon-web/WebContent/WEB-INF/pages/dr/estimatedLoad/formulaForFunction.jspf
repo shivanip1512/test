@@ -114,7 +114,7 @@
 
     <!-- all 'pickers' on this page use this picker -->
     <div style="display:none">
-        <tags:pickerDialog id="pointPicker" type="analogPointPicker" linkType="selection"
+        <tags:pickerDialog id="pointPicker" type="analogAndCalcPointPicker" linkType="selection"
             selectionProperty="pointName" endAction="yukon.dr.formula.pointChosen" />
     </div>
 

@@ -151,7 +151,12 @@
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.AnalogPointCriteria"/>
         </property>
-    </bean> 
+    </bean>
+    <bean name="analogAndCalcPointPicker" parent="abstractPointPicker" class="com.cannontech.web.picker.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.AnalogAndCalculatedPointCriteria"/>
+        </property>
+    </bean>
     <bean name="statusPointPicker" parent="abstractPointPicker" class="com.cannontech.web.picker.PointPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.StatusPointCriteria"/>
