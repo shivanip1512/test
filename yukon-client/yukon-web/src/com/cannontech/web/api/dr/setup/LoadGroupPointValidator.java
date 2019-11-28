@@ -36,54 +36,83 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
 
     @Override
     protected void doValidation(LoadGroupPoint loadGroup, Errors errors) {
+        // Validate Control Device (deviceUsage)
+        lmValidatorHelper.checkIfFieldRequired("deviceUsage", errors, loadGroup.getDeviceUsage(), "Control Device");
 
-        lmValidatorHelper.checkIfFieldRequired("deviceIdUsage", errors, loadGroup.getDeviceIdUsage(), "Control Device ");
-        if (!errors.hasFieldErrors("deviceIdUsage")) {
-            java.util.Optional<LiteYukonPAObject> liteYukonPAObject = serverDatabaseCache.getAllYukonPAObjects().stream()
-                    .filter(paobject -> paobject.getLiteID() == loadGroup.getDeviceIdUsage()).findFirst();
-            // Validate Control device (deviceIdUsage)
-            if (liteYukonPAObject.isPresent()) {
-                if(liteYukonPAObject.get().getPaoType().isRtu() || liteYukonPAObject.get().getPaoType().isIon() ||
-                        liteYukonPAObject.get().getPaoType().isCbc() || liteYukonPAObject.get().getPaoType().isMct() ) {
-                    
-                    // validate control point (pointIdUsage)
-                    lmValidatorHelper.checkIfFieldRequired("pointIdUsage", errors, loadGroup.getPointIdUsage(), "Control Point ");
-                    if (!errors.hasFieldErrors("pointIdUsage")) {
-                        Optional<LitePoint> point = YukonSpringHook.getBean(PointDao.class)
-                                .getLitePointsByPaObjectId(liteYukonPAObject.get().getYukonID()).stream()
-                                .filter(litePoint -> litePoint.getLiteID() == loadGroup.getPointIdUsage()).findFirst();
+        if (!errors.hasFieldErrors("deviceUsage")) {
+            lmValidatorHelper.checkIfFieldRequired("deviceUsage.id", errors, loadGroup.getDeviceUsage().getId(),
+                    "Control Device id");
 
-                        if (point.isPresent() && point.get().getPointTypeEnum() == PointType.Status) {
+            if (!errors.hasFieldErrors("deviceUsage.id")) {
+                Optional<LiteYukonPAObject> liteYukonPAObject = serverDatabaseCache.getAllYukonPAObjects().stream()
+                        .filter(paobject -> paobject.getLiteID() == loadGroup.getDeviceUsage().getId()).findFirst();
 
-                            StatusPoint dbPoint = (StatusPoint) pointDao.get(point.get().getLiteID());
-                            if (dbPoint.getPointStatusControl().hasControl()) {
-                                
-                                // Validate control start state (startControlRawState)
-                                lmValidatorHelper.checkIfFieldRequired("startControlRawState", errors,
-                                        loadGroup.getStartControlRawState(), "Control Start State ");
-                                if (!errors.hasFieldErrors("startControlRawState")) {
-                                    Optional<LiteState> liteState = stateGroupDao.getStateGroup(point.get().getStateGroupID())
-                                            .getStatesList()
-                                            .stream()
-                                            .filter(state -> state.getStateRawState() == loadGroup.getStartControlRawState())
-                                            .findFirst();
-                                    if (liteState.isEmpty()) {
-                                        errors.rejectValue("startControlRawState", key + "invalidValue");
-                                    }
-                                }
-                            } else {
-                                errors.rejectValue("pointIdUsage", key + "invalidValue");
-                            }
-                        } else {
-                            errors.rejectValue("pointIdUsage", key + "invalidValue");
-                        }
+                // Validate Control device (deviceUsage type)
+                if (liteYukonPAObject.isPresent()) {
+                    if (liteYukonPAObject.get().getPaoType().isRtu() || liteYukonPAObject.get().getPaoType().isIon() ||
+                            liteYukonPAObject.get().getPaoType().isCbc() || liteYukonPAObject.get().getPaoType().isMct()) {
+
+                        validatePointUsage(loadGroup, errors, liteYukonPAObject);
+
+                    } else {
+                        errors.rejectValue("deviceUsage.id", key + "invalidDeviceType");
                     }
                 } else {
-                    errors.rejectValue("deviceIdUsage", key + "invalidDeviceType");
+                    errors.rejectValue("deviceUsage.id", key + "invalidValue");
                 }
-            } else {
-                errors.rejectValue("deviceIdUsage", key + "invalidValue");
             }
         }
     }
+
+    private void validatePointUsage(LoadGroupPoint loadGroup, Errors errors, Optional<LiteYukonPAObject> liteYukonPAObject) {
+        // Validate Control Point (pointUsage)
+        lmValidatorHelper.checkIfFieldRequired("pointUsage", errors, loadGroup.getPointUsage(), "Control Point");
+        if (!errors.hasFieldErrors("pointUsage")) {
+            lmValidatorHelper.checkIfFieldRequired("pointUsage.id", errors, loadGroup.getPointUsage().getId(),
+                    "Control Point id");
+
+            if (!errors.hasFieldErrors("pointUsage.id")) {
+                Optional<LitePoint> point = YukonSpringHook.getBean(PointDao.class)
+                        .getLitePointsByPaObjectId(liteYukonPAObject.get().getYukonID()).stream()
+                        .filter(litePoint -> litePoint.getLiteID() == loadGroup.getPointUsage().getId()).findFirst();
+
+                if (point.isPresent()) {
+                    StatusPoint dbPoint = (StatusPoint) pointDao.get(point.get().getLiteID());
+
+                    if (point.get().getPointTypeEnum() == PointType.Status && dbPoint.getPointStatusControl().hasControl()) {
+                        validateStartControlRawState(loadGroup, errors, point);
+                    } else {
+                        errors.rejectValue("pointUsage.id", key + "invalidPoint");
+                    }
+                } else {
+                    errors.rejectValue("pointUsage.id", key + "invalidValue");
+                }
+            }
+        }
+    }
+
+    private void validateStartControlRawState(LoadGroupPoint loadGroup, Errors errors, Optional<LitePoint> point) {
+        // Validate Control Start State (startControlRawState)
+        lmValidatorHelper.checkIfFieldRequired("startControlRawState", errors, loadGroup.getStartControlRawState(),
+                "Control Start State");
+
+        if (!errors.hasFieldErrors("startControlRawState")) {
+            lmValidatorHelper.checkIfFieldRequired("startControlRawState.rawState", errors,
+                    loadGroup.getStartControlRawState().getRawState(), "Control Start Raw State");
+
+            if (!errors.hasFieldErrors("startControlRawState.rawState")) {
+                Optional<LiteState> liteState = stateGroupDao.getStateGroup(point.get().getStateGroupID())
+                        .getStatesList()
+                        .stream()
+                        .filter(state -> state.getStateRawState() == loadGroup.getStartControlRawState().getRawState()
+                                && state.isValidRawState())
+                        .findFirst();
+
+                if (liteState.isEmpty()) {
+                    errors.rejectValue("startControlRawState.rawState", key + "invalidValue");
+                }
+            }
+        }
+    }
+
 }

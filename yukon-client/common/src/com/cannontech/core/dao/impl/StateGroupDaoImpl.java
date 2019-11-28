@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -21,6 +22,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -31,6 +33,7 @@ public class StateGroupDaoImpl implements StateGroupDao {
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PointDao pointDao;
     
     private static final Logger log = YukonLogManager.getLogger(StateGroupDaoImpl.class);
     private final Map<Integer, LiteStateGroup> stateGroupCache = new ConcurrentHashMap<>();
@@ -160,5 +163,27 @@ public class StateGroupDaoImpl implements StateGroupDao {
         }
  
         log.info("Initialized state group cache.");
+    }
+    
+   @Override
+    public List<LiteState> getStateList(Integer pointId) {
+
+        // Getting state list corresponding to pointId its stateGroupId
+        LitePoint litePoint = pointDao.getLitePoint(pointId);
+        if (litePoint == null) {
+            throw new NotFoundException("Invalid point Id" + pointId);
+        }
+        LiteStateGroup stateGroup = getStateGroup(litePoint.getStateGroupID());
+        return stateGroup.getStatesList();
+    }
+
+    @Override
+    public String getRawStateName(Integer pointId, Integer rawState) {
+        List<LiteState> stateList = getStateList(pointId);
+        return stateList.stream()
+                        .filter(state -> state.getStateRawState() == rawState)
+                        .findFirst()
+                        .get()
+                        .getStateText();
     }
 }

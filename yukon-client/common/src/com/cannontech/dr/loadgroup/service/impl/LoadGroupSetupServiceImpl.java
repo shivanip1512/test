@@ -11,10 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.common.dr.setup.LoadGroupPoint;
 import com.cannontech.common.dr.setup.LoadGroupRoute;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.pao.PaoType;
@@ -22,10 +25,13 @@ import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.lm.LMFactory;
 import com.cannontech.database.data.device.lm.LMGroup;
+import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
@@ -41,6 +47,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private PointDao pointDao;
+    @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DbChangeManager dbChangeManager;
     private static final Logger log = YukonLogManager.getLogger(LoadGroupSetupServiceImpl.class);
 
@@ -103,6 +110,20 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         loadGroupBase.buildModel(loadGroup);
         if (loadGroupBase instanceof LoadGroupRoute) {
             setRouteName((LoadGroupRoute)loadGroupBase);
+        }
+        if (loadGroupBase instanceof LoadGroupPoint) {
+
+            LMGroupPoint lmGroupPoint = (LMGroupPoint) loadGroup;
+            LoadGroupPoint loadGroupPoint = (LoadGroupPoint) loadGroupBase;
+            String deviceUsageName = (dbCache.getAllPaosMap().get(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage())).getPaoName();
+            String pointUsageName = pointDao.getPointName(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
+            String rawStateName = stateGroupDao.getRawStateName(lmGroupPoint.getLMGroupPoint().getPointIDUsage(),
+                    lmGroupPoint.getLMGroupPoint().getStartControlRawState());
+            loadGroupPoint.setDeviceUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage(), deviceUsageName));
+            loadGroupPoint.setPointUsage(new LMDto(lmGroupPoint.getLMGroupPoint().getPointIDUsage(), pointUsageName));
+            loadGroupPoint.setStartControlRawState(
+                    new ControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState(), rawStateName));
+
         }
         return loadGroupBase;
     }
@@ -197,4 +218,14 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
             throw new LMObjectDeletionFailureException(message);
         }
     }
+
+    @Override
+    public List<ControlRawState> getStartState(int pointId) {
+        List<LiteState> stateList = stateGroupDao.getStateList(pointId);
+        return stateList.stream()
+                        .filter(state -> state.isValidRawState())
+                        .map(state -> new ControlRawState(state.getStateRawState(), state.getStateText()))
+                        .collect(Collectors.toList());
+    }
+
 }
