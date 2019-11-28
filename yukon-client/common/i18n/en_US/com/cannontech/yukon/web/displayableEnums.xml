@@ -200,7 +200,7 @@
     
     <!-- GlobalSettings -->
     <entry key="yukon.common.setting.ITRON_WATCHDOG_ENABLED">Itron Watchdog</entry>
-    <entry key="yukon.common.setting.ITRON_WATCHDOG_ENABLED.description">Field to Enable or disable Watchdog for Itron.</entry>
+    <entry key="yukon.common.setting.ITRON_WATCHDOG_ENABLED.description">Field to enable or disable Watchdog for Itron.</entry>
     <entry key="yukon.common.setting.OPT_OUTS_COUNT">Opt Out Count</entry>
     <entry key="yukon.common.setting.OPT_OUTS_COUNT.description">Determines whether new opt outs count against the opt out limits.</entry>
     <entry key="yukon.common.setting.SYSTEM_TIMEZONE">System Time Zone</entry>

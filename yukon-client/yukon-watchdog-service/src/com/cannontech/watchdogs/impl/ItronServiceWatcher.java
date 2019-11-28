@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.WebServiceException;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -62,7 +63,7 @@ public class ItronServiceWatcher extends ServiceStatusWatchdogImpl {
 
             }
         } catch (Exception ex) {
-            if (ex instanceof WebServiceException) {
+            if (ex instanceof WebServiceException && ex instanceof SoapFaultClientException) {
                 log.error("Communication error:", ex);
                 return ServiceStatus.UNKNOWN;
             } else {
