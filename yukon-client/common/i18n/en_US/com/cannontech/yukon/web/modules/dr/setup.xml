@@ -115,7 +115,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.continuousLatch">Continuous Latch</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.control">Control</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.restore">Restore</entry>
-<entry key="yukon.web.modules.dr.setup.loadGroup.addressing.title">Addressing</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.group">Group</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.areaCode">Area Code</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.lg">LG</entry>

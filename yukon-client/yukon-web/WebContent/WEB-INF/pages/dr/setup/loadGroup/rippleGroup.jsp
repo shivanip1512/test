@@ -3,7 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<tags:sectionContainer2 nameKey="addressing">
+<tags:sectionContainer2 nameKey="address">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".shedTime">
             <tags:intervalDropdown intervals="${shedTimeIntervals}" path="shedTime" noneKey=".continuousLatch" id="js-shed-time"/>
