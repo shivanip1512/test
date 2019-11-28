@@ -54,7 +54,6 @@ public enum RippleGroup implements DisplayableEnum, DatabaseRepresentationSource
 
     public static RippleGroup getRippleGroupValue(String value) {
         RippleGroup rippleGroupType = lookupByRippleGroup.get(value);
-        checkArgument(rippleGroupType != null, rippleGroupType);
         return rippleGroupType;
     }
 

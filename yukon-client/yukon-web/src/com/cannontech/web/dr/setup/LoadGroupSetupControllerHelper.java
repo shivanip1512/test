@@ -26,13 +26,18 @@ import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
+import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.dr.setup.Loads;
 import com.cannontech.common.dr.setup.Relays;
+import com.cannontech.common.dr.setup.RippleGroup;
+import com.cannontech.common.dr.setup.RippleGroupAreaCode;
 import com.cannontech.common.dr.setup.VersacomAddressUsage;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.device.lm.SepDeviceClass;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -49,6 +54,11 @@ public class LoadGroupSetupControllerHelper {
     @Autowired ServerDatabaseCache cache;
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
+    
+    private static final int CONTROL_BITS_LENGTH = 50;
+    private static final int RESTORE_BITS_LENGTH = 50;
+    private static final int SPECIAL_RIPPLE_CONTROL_BITS_LENGTH = 34;
+    private static final int SPECIAL_RIPPLE_RESTORE_BITS_LENGTH = 34;
 
     /**
      * Each load group can set its model attributes here.
@@ -175,6 +185,28 @@ public class LoadGroupSetupControllerHelper {
                 }
             }
             break;
+        case LM_GROUP_RIPPLE:
+            model.addAttribute("isRippleGroupSelected", true);
+            model.addAttribute("shedTimeIntervals", TimeIntervals.getRippleShedtime());
+            LoadGroupRipple loadGroupRipple = (LoadGroupRipple) model.get("loadGroup");
+            boolean isSpecialRippleEnabled = loadGroupRipple.isSpecialRippleEnabled(userContext.getYukonUser());
+            model.addAttribute("isSpecialRippleEnabled", isSpecialRippleEnabled);
+            setCommunicationRoute(model, request, userContext);
+            if (mode == PageEditMode.VIEW) {
+                model.addAttribute("isViewMode", true);
+                loadGroupRipple.setControl(getFormattedAddress(loadGroupRipple.getControl()));
+                loadGroupRipple.setRestore(getFormattedAddress(loadGroupRipple.getRestore()));
+            }
+            if (isSpecialRippleEnabled) {
+                model.addAttribute("groups", RippleGroup.values());
+                model.addAttribute("areaCodes", RippleGroupAreaCode.values());
+                model.addAttribute("controlBitsLength", SPECIAL_RIPPLE_CONTROL_BITS_LENGTH);
+                model.addAttribute("restoreBitsLength", SPECIAL_RIPPLE_RESTORE_BITS_LENGTH);
+            } else {
+                model.addAttribute("controlBitsLength", CONTROL_BITS_LENGTH);
+                model.addAttribute("restoreBitsLength", RESTORE_BITS_LENGTH);
+            }
+            break;
         }
     }
 
@@ -196,8 +228,9 @@ public class LoadGroupSetupControllerHelper {
 
     /**
      * Default values for object should be set here.
+     * @param liteYukonUser 
      */
-    public void setDefaultValues(LoadGroupBase group) {
+    public void setDefaultValues(LoadGroupBase group, LiteYukonUser liteYukonUser) {
         switch (group.getType()) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_RFN_EXPRESSCOMM:
@@ -230,6 +263,15 @@ public class LoadGroupSetupControllerHelper {
             relayUsages.add(Relays.RELAY_1);
             loadGroupMCT.setRelayUsage(relayUsages);
             break;
+        case LM_GROUP_RIPPLE:
+            LoadGroupRipple loadGroupRipple = (LoadGroupRipple) group;
+            if (loadGroupRipple.isSpecialRippleEnabled(liteYukonUser)) {
+                loadGroupRipple.setAreaCode(RippleGroupAreaCode.BELTRAMI);
+                loadGroupRipple.setGroup(RippleGroup.TST);
+                loadGroupRipple.setShedTime(TimeIntervals.MINUTES_7_SECONDS_30.getSeconds());
+            } else {
+                loadGroupRipple.setShedTime(TimeIntervals.NONE.getSeconds());
+            }
         }
         // Set default value for common field.
         group.setkWCapacity(0.0);
