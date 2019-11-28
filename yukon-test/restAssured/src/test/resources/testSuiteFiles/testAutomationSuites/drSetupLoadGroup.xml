@@ -12,6 +12,8 @@
             <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupEcobeeAPITest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupHoneywellAPITest" />
             <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupVersacomAPITest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupPointAPITest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.LoadGroupMCTAPITest" />
         </classes>
 	</test>
 		<test name="Macro Load Group Test">
