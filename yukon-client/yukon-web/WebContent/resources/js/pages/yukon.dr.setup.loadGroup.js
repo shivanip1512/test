@@ -81,7 +81,7 @@ yukon.dr.setup.loadGroup = (function() {
             }).done(function (data) {
                 $("#js-loadgroup-container").find("#js-control-start-state").empty();
                 data.startStates.forEach(function (field){
-                    var option = $('<option value=' + field.id + '>' + field.name + '</option>');
+                    var option = $('<option value=' + field.rawState + '>' + field.stateText + '</option>');
                     container.find("#js-control-start-state").append(option);
                 });
             });
@@ -106,6 +106,7 @@ yukon.dr.setup.loadGroup = (function() {
                 _setAddressCheckboxes($(".js-control-value_row2"), controlAddress.substring((controlAddressLength / 2), controlAddressLength + 1));
                 _setAddressCheckboxes($(".js-restore-value_row1"), restoreAddress.substring(0, restoreAddressLength / 2));
                 _setAddressCheckboxes($(".js-restore-value_row2"), restoreAddress.substring((restoreAddressLength / 2), restoreAddressLength + 1));
+            }
              
             if ($('.js-create-mode').val() == 'true' && $('.js-group-type').val() == 'true' && $('.js-device-error').val() == 'false') {
                 _retrievePointState();

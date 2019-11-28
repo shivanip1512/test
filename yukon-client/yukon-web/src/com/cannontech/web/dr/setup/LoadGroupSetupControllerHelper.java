@@ -19,16 +19,16 @@ import org.springframework.validation.BindingResult;
 import com.cannontech.common.dr.setup.AddressLevel;
 import com.cannontech.common.dr.setup.AddressUsage;
 import com.cannontech.common.dr.setup.ControlPriority;
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.EmetconAddressUsage;
 import com.cannontech.common.dr.setup.EmetconRelayUsage;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupDigiSep;
 import com.cannontech.common.dr.setup.LoadGroupEmetcon;
 import com.cannontech.common.dr.setup.LoadGroupExpresscom;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
-import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
+import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.dr.setup.Loads;
 import com.cannontech.common.dr.setup.Relays;
@@ -215,15 +215,13 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
             model.addAttribute("isCreateMode", mode == PageEditMode.CREATE);
             model.addAttribute("isEditMode", mode == PageEditMode.EDIT);
-            // This will be updated in YUK-21025
-            if (loadGroupPoint.getPointIdUsage() != null) {
-                // We should set the state name here
-                model.addAttribute("startState", loadGroupPoint.getStartControlRawState());
+            if (loadGroupPoint.getPointUsage() != null && loadGroupPoint.getPointUsage().getId() != null ) {
+                model.addAttribute("startState", loadGroupPoint.getStartControlRawState().getStateText());
                 setControlStartState(loadGroupPoint, model, request, userContext);
             }
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
                 BindingResult result = (BindingResult) model.get(bindingResultKey);
-                if (result.hasFieldErrors("deviceIdUsage")) {
+                if (result.hasFieldErrors("deviceUsage.id")) {
                     model.addAttribute("deviceIdUsageHasError", true);
                 } else {
                     model.addAttribute("deviceIdUsageHasError", false);
@@ -250,37 +248,18 @@ public class LoadGroupSetupControllerHelper {
     }
 
     /**
-     * Sets the control start state
-     */
-    private void setControlStartState(LoadGroupPoint loadGroupPoint, ModelMap model, HttpServletRequest request,
-            YukonUserContext userContext) {
-        // Give API call to get all control state
-        List<LMDto> startStates = new ArrayList<>();
-        // This will be updated in YUK-21025
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + loadGroupPoint.getPointIdUsage());
-        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
-                LMDto.class, HttpMethod.GET, LMDto.class);
-
-        if (response.getStatusCode() == HttpStatus.OK) {
-            startStates = (List<LMDto>) response.getBody();
-        }
-        model.addAttribute("startStates", startStates);
-    }
-
-    /**
      * Default values for object should be set here.
      */
     private void setControlStartState(LoadGroupPoint loadGroupPoint, ModelMap model, HttpServletRequest request,
             YukonUserContext userContext) {
         // Give API call to get all control state
-        List<LMDto> startStates = new ArrayList<>();
-        // This will be updated in YUK-21025
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + loadGroupPoint.getPointIdUsage());
-        ResponseEntity<List<? extends Object>> response = apiRequestHelper.callAPIForList(userContext, request, url,
-                LMDto.class, HttpMethod.GET, LMDto.class);
+        List<ControlRawState> startStates = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + loadGroupPoint.getPointUsage().getId());
+        ResponseEntity<? extends Object> response =
+                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            startStates = (List<LMDto>) response.getBody();
+            startStates = (List<ControlRawState>) response.getBody();
         }
         model.addAttribute("startStates", startStates);
     }

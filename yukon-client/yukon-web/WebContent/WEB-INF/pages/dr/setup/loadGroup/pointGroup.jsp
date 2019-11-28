@@ -14,38 +14,35 @@
             <c:choose>
                 <c:when test="${not isViewMode}">
                     <div class="${deviceIdUsageHasError ? 'MT5 MB5' : ''}">
-                        <form:hidden id="js-control-device-selected" path="deviceIdUsage"/>
-                        <form:hidden id="js-control-point-selected" path="pointIdUsage"/>
+                        <form:hidden id="js-control-device-selected" path="deviceUsage.id"/>
+                        <form:hidden id="js-control-point-selected" path="pointUsage.id"/>
                         <tags:pickerDialog id="pointGroupControlDevicePicker" 
                                            type="pointGroupControlDevicePicker" 
                                            destinationFieldId="js-control-point-selected"
                                            linkType="selection" 
                                            selectionProperty="paoPoint"
                                            endEvent="yukon:pointGroup:point:selected"
-                                           initialId="${loadGroup.pointIdUsage}"/>
+                                           initialId="${loadGroup.pointUsage.id}"/>
                         <br>
-                        <form:errors path="deviceIdUsage" cssClass="error"/>
+                        <form:errors path="deviceUsage.id" cssClass="error"/>
                     </div>
                 </c:when>
                 <c:otherwise>
-                    <%-- To DO - This will be updated in YUK-21025 --%>
-                    ${loadGroup.deviceIdUsage}" : ${loadGroup.pointIdUsage}
+                    ${loadGroup.deviceUsage.name} : ${loadGroup.pointUsage.name}
                 </c:otherwise>
             </c:choose>
         </tags:nameValue2>
 
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <tags:nameValue2 nameKey=".controlStartState" id="js-start-state" rowClass="dn">
-                <tags:selectWithItems items="${startStates}" path="startControlRawStateId" 
+                <tags:selectWithItems items="${startStates}" path="startControlRawState.rawState" 
                                       defaultItemValue="0" id="js-control-start-state"
-                                      itemLabel="name" itemValue="id"/>
+                                      itemLabel="stateText" itemValue="rawState"/>
             </tags:nameValue2>
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
             <tags:nameValue2 nameKey=".controlStartState">
-                <%-- To DO - This will be updated in YUK-21025 --%>
-                <cti:pointStatus pointId="${loadGroup.pointIdUsage}" rawState="${loadGroup.startControlRawState}"/>&nbsp
-                ${loadGroup.startControlRawState}
+                ${loadGroup.startControlRawState.stateText}
             </tags:nameValue2>
         </cti:displayForPageEditModes>
 
