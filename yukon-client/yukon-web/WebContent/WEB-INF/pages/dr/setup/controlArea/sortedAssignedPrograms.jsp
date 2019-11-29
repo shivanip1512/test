@@ -2,7 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<table id="js-assigned-programs-table" class="compact-results-table dashed">
+<table id="js-sorted-assigned-programs-table" class="compact-results-table dashed">
     <thead>
         <tr>
             <tags:sort column="${name}" />
@@ -38,3 +38,7 @@
         </c:choose>
     </tbody>
 </table>
+
+<script>
+    $("#js-sorted-assigned-programs-table").scrollTableBody({rowsToDisplay: 20});
+</script>

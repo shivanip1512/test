@@ -108,18 +108,8 @@ public class ControlAreaSetupController {
                 return "redirect:" + setupRedirectLink;
             }
 
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            ControlAreaSortBy sortBy = ControlAreaSortBy.valueOf(sorting.getSort());
-            Direction dir = sorting.getDirection();
-            List<SortableColumn> columns = new ArrayList<>();
-            for (ControlAreaSortBy column : ControlAreaSortBy.values()) {
-                String text = accessor.getMessage(column);
-                SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
-                columns.add(col);
-                model.addAttribute(column.name(), col);
-            }
+            setSortingParamaters(model, userContext, sorting, controlArea);
 
-            model.addAttribute("controlArea", controlArea);
             controllerHelper.buildModelMap(model, controlArea);
             populateTriggerCache(controlArea, model);
             return "dr/setup/controlArea/view.jsp";
@@ -134,7 +124,7 @@ public class ControlAreaSetupController {
     @GetMapping("/{id}/edit")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
-            HttpServletRequest request, @DefaultSort(dir = Direction.asc, sort = "startPriority") SortingParameters sorting) {
+            HttpServletRequest request) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
             model.addAttribute("mode", PageEditMode.EDIT);
@@ -425,15 +415,35 @@ public class ControlAreaSetupController {
             HttpServletRequest request, @DefaultSort(dir = Direction.asc, sort = "startPriority") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.drControlAreaRetrieveUrl + id);
-            model.addAttribute("mode", PageEditMode.VIEW);
             ControlArea controlArea = retrieveControlArea(userContext, request, id, url);
             if (controlArea == null) {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "controlArea.retrieve.error"));
                 return "redirect:" + setupRedirectLink;
             }
-            sortAssignedProgramForControlArea(controlArea, userContext, sorting, model);
-            controllerHelper.buildModelMap(model, controlArea);
-            populateTriggerCache(controlArea, model);
+
+            List<ControlAreaProgramAssignment> assignedProgramList = controlArea.getProgramAssignment();
+            ControlAreaSortBy sortBy = ControlAreaSortBy.valueOf(sorting.getSort());
+
+            if (assignedProgramList != null) {
+                Comparator<ControlAreaProgramAssignment> comparator = controlArea.getNameComparator();
+
+                if (sortBy == ControlAreaSortBy.startPriority) {
+                    comparator = controlArea.getStartPriorityComparator();
+                }
+
+                if (sortBy == ControlAreaSortBy.stopPriority) {
+                    comparator = controlArea.getStopPriorityComparator();
+                }
+
+                if (sorting.getDirection() == Direction.desc) {
+                    comparator = Collections.reverseOrder(comparator);
+                }
+                Collections.sort(assignedProgramList, comparator);
+                controlArea.setProgramAssignment(assignedProgramList);
+            }
+
+            setSortingParamaters(model, userContext, sorting, controlArea);
+
             return "dr/setup/controlArea/sortedAssignedPrograms.jsp";
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
@@ -442,38 +452,10 @@ public class ControlAreaSetupController {
         }
     }
 
-    /**
-     * Sorts the assigned program within Control Area
-     */
-    private void sortAssignedProgramForControlArea(ControlArea controlArea, YukonUserContext userContext,
-            SortingParameters sorting, ModelMap model) {
-        List<ControlAreaProgramAssignment> assignedProgramList = controlArea.getProgramAssignment();
-
+    private void setSortingParamaters(ModelMap model, YukonUserContext userContext, SortingParameters sorting, ControlArea controlArea) {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         ControlAreaSortBy sortBy = ControlAreaSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-
-        if (assignedProgramList != null) {
-            Comparator<ControlAreaProgramAssignment> comparator = (o1, o2) -> {
-                return o1.getProgramName().compareToIgnoreCase(o2.getProgramName());
-            };
-            if (sortBy == ControlAreaSortBy.startPriority) {
-                comparator = (o1, o2) -> {
-                    return o1.getStartPriority().compareTo(o2.getStartPriority());
-                };
-            }
-            if (sortBy == ControlAreaSortBy.stopPriority) {
-                comparator = (o1, o2) -> {
-                    return o1.getStopPriority().compareTo(o2.getStopPriority());
-                };
-            }
-            if (sorting.getDirection() == Direction.desc) {
-                comparator = Collections.reverseOrder(comparator);
-            }
-            Collections.sort(assignedProgramList, comparator);
-            controlArea.setProgramAssignment(assignedProgramList);
-        }
-
         List<SortableColumn> columns = new ArrayList<>();
         for (ControlAreaSortBy column : ControlAreaSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -481,7 +463,6 @@ public class ControlAreaSetupController {
             columns.add(col);
             model.addAttribute(column.name(), col);
         }
-
         model.addAttribute("controlArea", controlArea);
     }
 

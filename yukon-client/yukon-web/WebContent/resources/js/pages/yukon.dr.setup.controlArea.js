@@ -104,8 +104,6 @@ yukon.dr.setup.controlArea = (function() {
             
             if ($("#js-inline-picker-container").is(":visible")) {
                 yukon.pickers['js-avaliable-programs-picker'].show();
-            } else {
-                $("#js-assigned-programs-table").scrollTableBody({rowsToDisplay: 20});
             }
             
             $(document).on('click', '.js-add-program', function () {

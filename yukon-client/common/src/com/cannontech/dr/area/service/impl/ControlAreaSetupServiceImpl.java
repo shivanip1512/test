@@ -68,9 +68,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         ControlArea controlArea = buildControlAreaModel(lmControlArea);
         List<ControlAreaProgramAssignment> assignedProgramList = controlArea.getProgramAssignment();
         if (assignedProgramList != null) {
-            Comparator<ControlAreaProgramAssignment> comparator = (o1, o2) -> {
-                return o1.getStartPriority().compareTo(o2.getStartPriority());
-            };
+            Comparator<ControlAreaProgramAssignment> comparator = controlArea.getStartPriorityComparator();
             Collections.sort(assignedProgramList, comparator);
             controlArea.setProgramAssignment(assignedProgramList);
         }
