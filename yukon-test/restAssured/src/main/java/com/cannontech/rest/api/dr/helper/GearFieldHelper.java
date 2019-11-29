@@ -6,6 +6,7 @@ import com.cannontech.rest.api.gear.fields.MockBtpLedIndicator;
 import com.cannontech.rest.api.gear.fields.MockControlStartState;
 import com.cannontech.rest.api.gear.fields.MockCycleCountSendType;
 import com.cannontech.rest.api.gear.fields.MockEcobeeCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockEcobeeSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.gear.fields.MockGroupSelectionMethod;
 import com.cannontech.rest.api.gear.fields.MockHoneywellCycleGearFields;
@@ -85,7 +86,7 @@ public class GearFieldHelper {
                 gearFields = MockEcobeeSetpointGearFields.builder()
                                                   .mandatory(true)
                                                   .setpointOffset(7)
-                                                  .mode("HEAT")
+                                                  .mode(MockMode.HEAT)
                                                   .howToStopControl(MockHowToStopControl.Restore)
                                                   .capacityReduction(100)
                                                   .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())

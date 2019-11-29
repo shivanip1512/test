@@ -49,7 +49,7 @@ public class ControlAreaHelper {
                                                .stopPriority(2)
                                                .build();
     }
-
+   // DirectProgramTest
     private static MockControlAreaProjection buildControlAreaProjection() {
         return MockControlAreaProjection.builder().projectionType(MockControlAreaProjectionType.LSF).projectionPoint(8).projectAheadDuration(2100).build();
     }
@@ -180,6 +180,7 @@ public class ControlAreaHelper {
                 fieldWithPath("triggers[].thresholdPointId").type(JsonFieldType.NUMBER).optional().description("Threshold Point Id"),
                 fieldWithPath("triggers[].triggerPointName").type(JsonFieldType.STRING).optional().description("Threshold Point Name"),
                 fieldWithPath("programAssignment[].programId").type(JsonFieldType.NUMBER).optional().description("Load Program Id"),
+                fieldWithPath("programAssignment[].programName").type(JsonFieldType.STRING).description("Load Program name"),
                 fieldWithPath("programAssignment[].startPriority").type(JsonFieldType.NUMBER).optional().description("Load Program start priority"),
                 fieldWithPath("programAssignment[].stopPriority").type(JsonFieldType.NUMBER).optional().description("Load Program stop priority") };
     }

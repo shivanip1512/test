@@ -18,6 +18,7 @@ import lombok.Setter;
 public class MockControlAreaProgramAssignment {
 
     private Integer programId;
+    private String programName;
     private Integer startPriority;
     private Integer stopPriority;
 
