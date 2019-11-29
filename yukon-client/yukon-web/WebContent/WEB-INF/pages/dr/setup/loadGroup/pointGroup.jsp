@@ -1,10 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<input type="hidden" class="js-point-group-page-mode" value="${mode}">
-<input type="hidden" class="js-group-type" value="${isPointGroupSelected}">
+<input type="hidden" class="js-is-point-group-selected" value="${isPointGroupSelected}">
 <input type="hidden" class="js-create-mode" value="${isCreateMode}">
 <input type="hidden" class="js-edit-mode" value="${isEditMode}">
 <input type="hidden" class="js-device-error" value="${deviceIdUsageHasError}">
@@ -28,7 +28,7 @@
                     </div>
                 </c:when>
                 <c:otherwise>
-                    ${loadGroup.deviceUsage.name} : ${loadGroup.pointUsage.name}
+                    ${fn:escapeXml(loadGroup.deviceUsage.name)}:&nbsp;${fn:escapeXml(loadGroup.pointUsage.name)}
                 </c:otherwise>
             </c:choose>
         </tags:nameValue2>
@@ -43,7 +43,7 @@
         <cti:displayForPageEditModes modes="VIEW">
             <tags:nameValue2 nameKey=".controlStartState">
                 <cti:pointStatus pointId="${loadGroup.pointUsage.id}" rawState="${loadGroup.startControlRawState.rawState}"/>&nbsp;
-                ${loadGroup.startControlRawState.stateText}
+                ${fn:escapeXml(loadGroup.startControlRawState.stateText)}
             </tags:nameValue2>
         </cti:displayForPageEditModes>
 

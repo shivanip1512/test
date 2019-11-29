@@ -80,9 +80,10 @@ yukon.dr.setup.loadGroup = (function() {
                 type: 'get'
             }).done(function (data) {
                 $("#js-loadgroup-container").find("#js-control-start-state").empty();
+                var controlStartState = container.find("#js-control-start-state");
                 data.startStates.forEach(function (field){
-                    var option = $('<option value=' + field.rawState + '>' + field.stateText + '</option>');
-                    container.find("#js-control-start-state").append(option);
+                    var option = $('<option value=' + field.rawState + '>' + yukon.escapeXml(field.stateText) + '</option>');
+                    controlStartState.append(option);
                 });
             });
         }
@@ -99,20 +100,20 @@ yukon.dr.setup.loadGroup = (function() {
             
             if ($("#js-shed-time").exists()) {
                 var controlAddress = $(".js-control-value").val(),
-                       restoreAddress = $(".js-restore-value").val(),
-                       controlAddressLength = controlAddress.length,
-                       restoreAddressLength = restoreAddress.length;
+                    restoreAddress = $(".js-restore-value").val(),
+                    controlAddressLength = controlAddress.length,
+                    restoreAddressLength = restoreAddress.length;
                 _setAddressCheckboxes($(".js-control-value_row1"), controlAddress.substring(0, controlAddressLength/2));
                 _setAddressCheckboxes($(".js-control-value_row2"), controlAddress.substring((controlAddressLength / 2), controlAddressLength + 1));
                 _setAddressCheckboxes($(".js-restore-value_row1"), restoreAddress.substring(0, restoreAddressLength / 2));
                 _setAddressCheckboxes($(".js-restore-value_row2"), restoreAddress.substring((restoreAddressLength / 2), restoreAddressLength + 1));
             }
              
-            if ($('.js-create-mode').val() == 'true' && $('.js-group-type').val() == 'true' && $('.js-device-error').val() == 'false') {
+            if ($('.js-create-mode').val() == 'true' && $('.js-is-point-group-selected').val() == 'true' && $('.js-device-error').val() == 'false') {
                 _retrievePointState();
             }
             
-            if ($('.js-edit-mode').val() == 'true' && $('.js-group-type').val() == 'true') {
+            if ($('.js-edit-mode').val() == 'true' && $('.js-is-point-group-selected').val() == 'true') {
                 var container = $("#js-loadgroup-container");
                 container.find("#js-start-state").removeClass("dn");
             }
