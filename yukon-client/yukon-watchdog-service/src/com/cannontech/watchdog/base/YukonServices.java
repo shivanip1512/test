@@ -13,5 +13,6 @@ public enum YukonServices {
     FDR,
     CAPCONTROL,
     CALCLOGIC,
-    NETWORKMANAGER;
+    NETWORKMANAGER,
+    ITRON;
 }

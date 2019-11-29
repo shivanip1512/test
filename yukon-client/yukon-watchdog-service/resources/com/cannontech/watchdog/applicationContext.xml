@@ -44,6 +44,7 @@
        <bean class="com.cannontech.watchdogs.impl.FDRServiceWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.CalcLogicServiceWatcher"/>
        <bean class="com.cannontech.watchdogs.impl.ScannerServiceWatcher"/>
+       <bean class="com.cannontech.watchdogs.impl.ItronServiceWatcher"/>
        
        <bean class="com.cannontech.watchdogs.util.WatchdogDispatchClientConnection"/>
        <bean class="com.cannontech.watchdogs.util.WatchdogLoadManagementClientConnection"/>
