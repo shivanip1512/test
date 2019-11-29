@@ -37,11 +37,11 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
     @Override
     protected void doValidation(LoadGroupPoint loadGroup, Errors errors) {
         // Validate Control Device (deviceUsage)
-        lmValidatorHelper.checkIfFieldRequired("deviceUsage", errors, loadGroup.getDeviceUsage(), "Control Device");
+        lmValidatorHelper.checkIfFieldRequired("deviceUsage", errors, loadGroup.getDeviceUsage(), "Control Device Point");
 
         if (!errors.hasFieldErrors("deviceUsage")) {
             lmValidatorHelper.checkIfFieldRequired("deviceUsage.id", errors, loadGroup.getDeviceUsage().getId(),
-                    "Control Device id");
+                    "Control Device Point");
 
             if (!errors.hasFieldErrors("deviceUsage.id")) {
                 Optional<LiteYukonPAObject> liteYukonPAObject = serverDatabaseCache.getAllYukonPAObjects().stream()
@@ -66,10 +66,10 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
 
     private void validatePointUsage(LoadGroupPoint loadGroup, Errors errors, Optional<LiteYukonPAObject> liteYukonPAObject) {
         // Validate Control Point (pointUsage)
-        lmValidatorHelper.checkIfFieldRequired("pointUsage", errors, loadGroup.getPointUsage(), "Control Point");
+        lmValidatorHelper.checkIfFieldRequired("pointUsage", errors, loadGroup.getPointUsage(), "Control Device Point");
         if (!errors.hasFieldErrors("pointUsage")) {
             lmValidatorHelper.checkIfFieldRequired("pointUsage.id", errors, loadGroup.getPointUsage().getId(),
-                    "Control Point id");
+                    "Control Device Point");
 
             if (!errors.hasFieldErrors("pointUsage.id")) {
                 Optional<LitePoint> point = YukonSpringHook.getBean(PointDao.class)
@@ -77,16 +77,22 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                         .filter(litePoint -> litePoint.getLiteID() == loadGroup.getPointUsage().getId()).findFirst();
 
                 if (point.isPresent()) {
-                    StatusPoint dbPoint = (StatusPoint) pointDao.get(point.get().getLiteID());
-
-                    if (point.get().getPointTypeEnum() == PointType.Status && dbPoint.getPointStatusControl().hasControl()) {
-                        validateStartControlRawState(loadGroup, errors, point);
+                    // Validates if the Point is Status Type
+                    if (point.get().getPointTypeEnum() == PointType.Status) {
+                        StatusPoint dbPoint = (StatusPoint) pointDao.get(point.get().getLiteID());
+                        // Validates if the Status Point has control
+                        if (dbPoint.getPointStatusControl().hasControl()) {
+                            validateStartControlRawState(loadGroup, errors, point);
+                        } else {
+                            errors.rejectValue("pointUsage.id", key + "invalidPoint");
+                        }
                     } else {
                         errors.rejectValue("pointUsage.id", key + "invalidPoint");
                     }
                 } else {
                     errors.rejectValue("pointUsage.id", key + "invalidValue");
                 }
+
             }
         }
     }
@@ -98,7 +104,7 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
 
         if (!errors.hasFieldErrors("startControlRawState")) {
             lmValidatorHelper.checkIfFieldRequired("startControlRawState.rawState", errors,
-                    loadGroup.getStartControlRawState().getRawState(), "Control Start Raw State");
+                    loadGroup.getStartControlRawState().getRawState(), "Control Start State");
 
             if (!errors.hasFieldErrors("startControlRawState.rawState")) {
                 Optional<LiteState> liteState = stateGroupDao.getStateGroup(point.get().getStateGroupID())

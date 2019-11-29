@@ -42,6 +42,7 @@
         </cti:displayForPageEditModes>
         <cti:displayForPageEditModes modes="VIEW">
             <tags:nameValue2 nameKey=".controlStartState">
+                <cti:pointStatus pointId="${loadGroup.pointUsage.id}" rawState="${loadGroup.startControlRawState.rawState}"/>&nbsp;
                 ${loadGroup.startControlRawState.stateText}
             </tags:nameValue2>
         </cti:displayForPageEditModes>
