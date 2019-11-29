@@ -466,7 +466,7 @@ public class ControlAreaSetupController {
         model.addAttribute("controlArea", controlArea);
     }
 
-    public enum ControlAreaSortBy implements DisplayableEnum {
+    private enum ControlAreaSortBy implements DisplayableEnum {
 
         name,
         startPriority,
