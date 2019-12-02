@@ -98,7 +98,6 @@ public class TrendDataServiceImpl implements TrendDataService {
                 log.debug("Skipping: Timestamp={} Value={}", timestamp.toString(), pvh.getValue());
             }
         }
-        }
         log.debug("YesterdayGraphDataProvider:Amount Returned:" + values.size());
         return values;
     }
