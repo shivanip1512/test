@@ -198,7 +198,7 @@
         </div>
         
         <%-- COLLECTION ACTIONS --%>
-        <c:set var="cssClass" value="${isRootGroup ? 'disabled' : ''}"/>
+        <c:set var="cssClass" value="${isGroupActionable ? '' : 'disabled'}"/>
         <h3><cti:msg2 key=".collectionActionLabel"/></h3>
         <div class="groupEditorContentDetail">
             <c:choose>

@@ -227,7 +227,7 @@ public class GroupEditorController {
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
         model.addAttribute("deviceCollection", deviceCollection);
 
-        model.addAttribute("isRootGroup", SystemGroupEnum.ROOT == group.getSystemGroupEnum());
+        model.addAttribute("isGroupActionable", !(SystemGroupEnum.ROOT == group.getSystemGroupEnum()));
     }
     
     @GetMapping("selectedDeviceGroup")
