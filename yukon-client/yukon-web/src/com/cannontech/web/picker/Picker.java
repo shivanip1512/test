@@ -65,6 +65,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
     @JsonSubTypes.Type(value = UserPicker.class, name = "USER_PICKER"),
     @JsonSubTypes.Type(value = DatabasePaoPicker.class, name = "DATABASE_PAO_PICKER"),
     @JsonSubTypes.Type(value = CategoryAndClassFilteredPaoPicker.class, name = "CATEGORY_AND_CLASS_FILTERED_PAO_PICKER"),
+    @JsonSubTypes.Type(value = PointGroupControlDevicePicker.class, name = "POINT_GROUP_PICKER")
     })
 public interface Picker<T> {
 

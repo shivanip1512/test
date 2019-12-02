@@ -70,6 +70,25 @@ yukon.dr.setup.loadGroup = (function() {
         }
     }, 
     
+    _retrievePointState = function() {
+        var pointId = $("#js-control-point-selected").val();
+        var container = $("#js-loadgroup-container");
+        if (!$.isEmptyObject(pointId) && pointId.length !== 0){
+            container.find("#js-start-state").removeClass("dn");
+            $.ajax({
+                url: yukon.url('/dr/setup/loadGroup/getStartState/' + pointId),
+                type: 'get'
+            }).done(function (data) {
+                $("#js-loadgroup-container").find("#js-control-start-state").empty();
+                var controlStartState = container.find("#js-control-start-state");
+                data.startStates.forEach(function (field){
+                    var option = $('<option value=' + field.rawState + '>' + yukon.escapeXml(field.stateText) + '</option>');
+                    controlStartState.append(option);
+                });
+            });
+        }
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -81,13 +100,22 @@ yukon.dr.setup.loadGroup = (function() {
             
             if ($("#js-shed-time").exists()) {
                 var controlAddress = $(".js-control-value").val(),
-                       restoreAddress = $(".js-restore-value").val(),
-                       controlAddressLength = controlAddress.length,
-                       restoreAddressLength = restoreAddress.length;
+                    restoreAddress = $(".js-restore-value").val(),
+                    controlAddressLength = controlAddress.length,
+                    restoreAddressLength = restoreAddress.length;
                 _setAddressCheckboxes($(".js-control-value_row1"), controlAddress.substring(0, controlAddressLength/2));
                 _setAddressCheckboxes($(".js-control-value_row2"), controlAddress.substring((controlAddressLength / 2), controlAddressLength + 1));
                 _setAddressCheckboxes($(".js-restore-value_row1"), restoreAddress.substring(0, restoreAddressLength / 2));
                 _setAddressCheckboxes($(".js-restore-value_row2"), restoreAddress.substring((restoreAddressLength / 2), restoreAddressLength + 1));
+            }
+             
+            if ($('.js-create-mode').val() == 'true' && $('.js-is-point-group-selected').val() == 'true' && $('.js-device-error').val() == 'false') {
+                _retrievePointState();
+            }
+            
+            if ($('.js-edit-mode').val() == 'true' && $('.js-is-point-group-selected').val() == 'true') {
+                var container = $("#js-loadgroup-container");
+                container.find("#js-start-state").removeClass("dn");
             }
             
             $(document).on("yukon:loadGroup:delete", function () {
@@ -144,6 +172,17 @@ yukon.dr.setup.loadGroup = (function() {
                     restoreAddress = restoreAddress + _buildAddressString($(".js-restore-value_row2"));
                     $(".js-restore-value").val(restoreAddress);
                 } 
+            });
+            
+            $(document).on('yukon:pointGroup:point:selected', function (event, items, picker) {
+                if (!$.isEmptyObject(items)){
+                    $('#js-control-device-selected').val(items[0].paObjectId);
+                    var pointId = items[0].pointId;
+                    $("#js-control-point-selected").val(pointId);
+                    if (!$.isEmptyObject(pointId)){
+                        _retrievePointState();
+                    }
+                }
             });
             
             _initialized = true;
