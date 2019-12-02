@@ -321,6 +321,7 @@
     <entry key="yukon.web.modules.support.batteryNodeAnalysisController.unableToReadFile">The file {0} was unable to be read, please check the data and try again.</entry>
     <entry key="yukon.web.modules.support.batteryNodeAnalysisController.badEndIntervalSelected">Bad Interval End date, uploaded file has a date range of {0}, please select an appropriate Interval End date.</entry>
     <entry key="yukon.web.modules.support.batteryNodeAnalysisController.fileParsingError">Error parsing file: {0} unexpected added or missing columns present, please verify uploaded file and try again.</entry>
+    <entry key="yukon.web.modules.support.batteryNodeAnalysisController.badTimestampData">The file {0} was unable to be processed due to bad timestamps, please check the data and try again.</entry>
     
     <!-- deviceDefinition/deviceDefinitionViewer.jsp -->
     <entry key="yukon.web.modules.support.deviceDef.pageName">Device Definitions</entry>

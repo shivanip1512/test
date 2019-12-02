@@ -43,6 +43,7 @@ import com.cannontech.web.support.waterNode.details.WaterNodeDetails;
 import com.cannontech.web.support.waterNode.fileUploadDao.impl.BatteryNodeBadIntervalEndException;
 import com.cannontech.web.support.waterNode.fileUploadDao.impl.BatteryNodeFileParsingException;
 import com.cannontech.web.support.waterNode.fileUploadDao.impl.BatteryNodeUnableToReadFileException;
+import com.cannontech.web.support.waterNode.fileUploadDao.impl.BatteryNodeUnableToReadTimestampsException;
 import com.cannontech.web.support.waterNode.model.BatteryAnalysisModel;
 import com.cannontech.web.support.waterNode.service.WaterNodeService;
 import com.cannontech.web.util.WebFileUtils;
@@ -137,6 +138,12 @@ public class BatteryNodeAnalysisController {
                             "yukon.web.modules.support.batteryNodeAnalysisController.unableToReadFile",
                             uploadedFile.getOriginalFilename()));
                     log.warn("Unable to read file ", uploadedFile.getOriginalFilename());
+                    return "redirect:view";
+                } catch (BatteryNodeUnableToReadTimestampsException e) {
+                    flash.setError(new YukonMessageSourceResolvable(
+                            "yukon.web.modules.support.batteryNodeAnalysisController.badTimestampData",
+                            uploadedFile.getOriginalFilename()));
+                    log.warn("Unable to read file ", uploadedFile.getOriginalFilename() + " due to bad timestamps");
                     return "redirect:view";
                 }
             } else {

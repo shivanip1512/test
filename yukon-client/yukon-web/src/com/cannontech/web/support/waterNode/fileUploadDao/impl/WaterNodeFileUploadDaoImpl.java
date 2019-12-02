@@ -88,6 +88,10 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
             }
             resultsList.add(waterNodeDetails);// add final meter to resultsList
             reader.close();
+            // If Interval is null, throw
+            if (intervalStart == null || intervalEnd == null) {
+                throw new BatteryNodeUnableToReadTimestampsException();
+            }
             // If file is outside of range, throw
             if (intervalEnd.isBefore(startTime) || !intervalStart.isBefore(stopTime)) {
                 String intervalStartDate = intervalStart.toDateTime().toLocalDate().toString();
