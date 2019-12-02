@@ -1,4 +1,4 @@
-package com.cannontech.services.iot.yaml.model;
+package com.cannontech.services.systemDataPublisher.yaml.model;
 
 public class DictionariesField {
 

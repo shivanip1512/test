@@ -1,4 +1,4 @@
-package com.cannontech.services.iot.yaml.impl;
+package com.cannontech.services.systemDataPublisher.yaml.impl;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.services.iot.service.IOTPublisher;
-import com.cannontech.services.iot.yaml.YamlConfigManager;
-import com.cannontech.services.iot.yaml.model.DictionariesField;
-import com.cannontech.services.iot.yaml.model.ScalarField;
+import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
+import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
+import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.ScalarField;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,9 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class YamlConfigManagerImpl implements YamlConfigManager {
 
-    private final String IOT_YAML_METADATA = "iotMetadata.yaml";
+    private final String SYSTEM_PUBLISHER_METADATA = "systemPublisherMetadata.yaml";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
-    private final Map<IOTPublisher, List<DictionariesField>> mapOfPublisherToDictionaries = new ConcurrentHashMap<>();
+    private final Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDictionaries = new ConcurrentHashMap<>();
 
     @PostConstruct
     private void init() {
@@ -42,13 +42,13 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     private void loadConfig() {
         // Currently we are reading the Yaml file from shared resource classpath. In future this file can
         // be read from file system like we read logging configuration file. Doing so will help in reloading
-        // when file is changed. For reload we can write a watcher will watch for any change and when something
+        // when file is changed. For reload we can write a watcher which will watch for any change and when something
         // gets changed reload the configuration.
         ScalarField scalars = null;
         try {
-            ClassPathResource iotYamlMetadata = new ClassPathResource(IOT_YAML_METADATA);
+            ClassPathResource systemPublisherYamlMetadata = new ClassPathResource(SYSTEM_PUBLISHER_METADATA);
             Yaml yaml = new Yaml();
-            Object yamlObject = yaml.load(iotYamlMetadata.getInputStream());
+            Object yamlObject = yaml.load(systemPublisherYamlMetadata.getInputStream());
 
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,10 +56,10 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
             log.debug("YAML configuration " + yamlObject);
             scalars = objectMapper.readValue(jsonBytes, ScalarField.class);
             if (scalars.getYukonDictionaries() != null) {
-                mapOfPublisherToDictionaries.put(IOTPublisher.YUKON, scalars.getYukonDictionaries());
+                mapOfPublisherToDictionaries.put(SystemDataPublisher.YUKON, scalars.getYukonDictionaries());
             }
             if (scalars.getNmDictionaries() != null) {
-                mapOfPublisherToDictionaries.put(IOTPublisher.NETWORK_MANAGER, scalars.getNmDictionaries());
+                mapOfPublisherToDictionaries.put(SystemDataPublisher.NETWORK_MANAGER, scalars.getNmDictionaries());
             }
         } catch (JsonParseException | JsonMappingException e) {
             log.error("Error while parsing the YAML file fields.", e);
@@ -70,7 +70,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     }
 
     @Override
-    public Map<IOTPublisher, List<DictionariesField>> getMapOfPublisherToDictionaries() {
+    public Map<SystemDataPublisher, List<DictionariesField>> getMapOfPublisherToDictionaries() {
         return mapOfPublisherToDictionaries;
     }
 
