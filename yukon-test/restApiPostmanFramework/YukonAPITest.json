@@ -1022,7 +1022,7 @@
                                         ],
                                         "body": {
                                             "mode": "raw",
-                                            "raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n     \r\n        \"name\": \"TestPoint\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceIdUsage\": 2,\r\n        \"pointIdUsage\": 1234,\r\n        \"startControlRawState\": -1\r\n    }\r\n}"
+                                            "raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
                                         },
                                         "url": {
                                             "raw": "{{api-url}}/api/dr/setup/loadGroup/create",
@@ -1425,7 +1425,7 @@
                                         ],
                                         "body": {
                                             "mode": "raw",
-                                            "raw": "{\n    \"LM_GROUP_MCT\": {\n        \"name\": \"LmGroup_MCT_Test\",\n        \"type\": \"LM_GROUP_MCT\",\n        \"kWCapacity\": 78.32,\n        \"disableGroup\": true,\n        \"disableControl\": false,\n        \"routeId\": 730,\n        \"routeName\": \"CCU Parkwood\",\n        \"level\": \"BRONZE\",\n        \"address\": 12536,\n        \"mctDeviceId\": 0,\n        \"relayUsage\": [\n            \"RELAY_1\", \"RELAY_3\"\n        ]\n    }\n}"
+                                            "raw": "{\r\n    \"LM_GROUP_POINT\": {\r\n        \r\n        \"name\": \"pointGrp_3\",\r\n        \"type\": \"LM_GROUP_POINT\",\r\n        \"kWCapacity\": 0.0,\r\n        \"disableGroup\": false,\r\n        \"disableControl\": false,\r\n        \"deviceUsage\": {\r\n            \"id\": 2\r\n        },\r\n        \"pointUsage\": {\r\n            \"id\": 1234\r\n        },\r\n        \"startControlRawState\": {\r\n            \"rawState\": 0\r\n        }\r\n    }\r\n}"
                                         },
                                         "url": {
                                             "raw": "{{api-url}}/api/dr/setup/loadGroup/update/151386",
@@ -1838,6 +1838,17 @@
                             ],
                             "description": "Delete an existing load group.",
                             "_postman_isSubFolder": true
+                        },
+                        {
+                            "name": "getStartState",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
                         }
                     ],
                     "event": [

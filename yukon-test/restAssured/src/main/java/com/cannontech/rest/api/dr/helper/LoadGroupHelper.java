@@ -120,6 +120,7 @@ public class LoadGroupHelper {
                     .program(12)
                     .protocolPriority(MockControlPriority.DEFAULT)
                     .build();
+            break;
 
         case LM_GROUP_RFN_EXPRESSCOMM:
             List<MockAddressUsage> rfnAddressUsage = new ArrayList<>();
