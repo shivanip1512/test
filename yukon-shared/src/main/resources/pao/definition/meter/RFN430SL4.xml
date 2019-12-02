@@ -136,6 +136,21 @@
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Rate D Net Received kVArh" attributes="NET_RECEIVED_KVARH_RATE_D"/>
         <pointInfo name="Rate D Peak kVAr" attributes="PEAK_KVAR_RATE_D"/>
+        <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
+        <pointInfo name="Received kVAh (Rate A kVAh)" attributes="RECEIVED_KVAH_RATE_A"/>
+        <pointInfo name="Received kVAh (Rate B kVAh)" attributes="RECEIVED_KVAH_RATE_B"/>
+        <pointInfo name="Received kVAh (Rate C kVAh)" attributes="RECEIVED_KVAH_RATE_C"/>
+        <pointInfo name="Received kVAh (Rate D kVAh)" attributes="RECEIVED_KVAH_RATE_D"/>
+        <pointInfo name="Received Peak kVA" attributes="RECEIVED_PEAK_KVA"/>
+        <pointInfo name="Received Peak kVA (Rate A kVA)" attributes="RECEIVED_PEAK_KVA_RATE_A"/>
+        <pointInfo name="Received Peak kVA (Rate B kVA)" attributes="RECEIVED_PEAK_KVA_RATE_B"/>
+        <pointInfo name="Received Peak kVA (Rate C kVA)" attributes="RECEIVED_PEAK_KVA_RATE_C"/>
+        <pointInfo name="Received Peak kVA (Rate D kVA)" attributes="RECEIVED_PEAK_KVA_RATE_D"/>
+        <pointInfo name="Received Peak kVA Frozen" attributes="RECEIVED_PEAK_KVA_FROZEN"/>
+        <pointInfo name="Received Peak kVA Frozen (Rate A kVA)" attributes="RECEIVED_PEAK_KVA_FROZEN_RATE_A"/>
+        <pointInfo name="Received Peak kVA Frozen (Rate B kVA)" attributes="RECEIVED_PEAK_KVA_FROZEN_RATE_B"/>
+        <pointInfo name="Received Peak kVA Frozen (Rate C kVA)" attributes="RECEIVED_PEAK_KVA_FROZEN_RATE_C"/>
+        <pointInfo name="Received Peak kVA Frozen (Rate D kVA)" attributes="RECEIVED_PEAK_KVA_FROZEN_RATE_D"/>
         <pointInfo name="Received kVArh" init="true" attributes="RECEIVED_KVARH"/>
         <pointInfo name="Received kVArh (Rate A kVArh)" init="true" attributes="RECEIVED_KVARH_RATE_A"/>
         <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>

@@ -151,7 +151,12 @@
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.AnalogPointCriteria"/>
         </property>
-    </bean> 
+    </bean>
+    <bean name="analogAndCalcPointPicker" parent="abstractPointPicker" class="com.cannontech.web.picker.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.web.search.lucene.criteria.AnalogAndCalculatedPointCriteria"/>
+        </property>
+    </bean>
     <bean name="statusPointPicker" parent="abstractPointPicker" class="com.cannontech.web.picker.PointPicker">
         <property name="criteria">
             <bean class="com.cannontech.web.search.lucene.criteria.StatusPointCriteria"/>
@@ -172,6 +177,7 @@
     <bean name="capControlSubstationBusPicker" class="com.cannontech.web.picker.CapControlSubstationBusPicker"/>
     <bean name="capControlCBCOrphanPicker" class="com.cannontech.web.picker.CapControlCBCOrphanPicker"/>
     <bean name="unassignedProgramPicker" class="com.cannontech.web.picker.UnassignedProgramPicker"/>
+    <bean name="pointGroupControlDevicePicker" class="com.cannontech.web.picker.PointGroupControlDevicePicker"/>
     
     <bean name="userPicker" class="com.cannontech.web.picker.UserPicker">
         <property name="searcher" ref="userSearcherLucene"/>

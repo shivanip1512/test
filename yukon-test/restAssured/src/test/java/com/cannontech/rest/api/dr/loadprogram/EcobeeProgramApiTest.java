@@ -38,6 +38,7 @@ public class EcobeeProgramApiTest {
         context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.EcobeeCycle);
+        gearTypes.add(MockGearControlMethod.EcobeeSetpoint);
 
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                      loadGroups,
@@ -222,6 +223,7 @@ public class EcobeeProgramApiTest {
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.EcobeeCycle);
+        gearTypes.add(MockGearControlMethod.EcobeeSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                      loadGroups,
                                                                                      gearTypes,

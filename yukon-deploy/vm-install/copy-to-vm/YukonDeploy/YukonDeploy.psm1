@@ -122,27 +122,69 @@ Function Install-Yukon() {
     Write-Host "Copying master.cfg"
     Copy-Item -Path "C:\master.cfg" -Destination "C:\Yukon\Server\Config\" -ErrorAction SilentlyContinue
 
-    RunSetupExe
-}
-
-Function RunSetupExe() {
     Write-Host "Running setup.exe"
     $result = Start-Process C:\Yukon\YukonInstall\setup.exe -ArgumentList "-s -f1C:\setup.iss -f2C:\Yukon\YukonInstall\installLog.log" -Wait -PassThru
+    # We seem to have issues with whatever runs after this, perhaps this sleep will fix it.
+    Start-Sleep -s 15
+}
 
+<# 
+.SYNOPSIS
+    Create master.cfg if it does not exist, then run the Yukon upgrade process
+.DESCRIPTION 
+    Create master.cfg if it does not exist, then run the Yukon upgrade process. This runs setup.exe with default values and does NOT start services.
+.EXAMPLE
+    Upgrade-Yukon
+#>
+Function Upgrade-Yukon() {
+    Write-Host "Creating \Yukon\server\config"
+    New-Item -ItemType "directory" -Path "C:\Yukon\Server\Config\" -ErrorAction SilentlyContinue
+
+    Write-Host "Copying master.cfg"
+    Copy-Item -Path "C:\master.cfg" -Destination "C:\Yukon\Server\Config\" -ErrorAction SilentlyContinue
+
+    Write-Host "Upgrading yukon"
+    $result = Start-Process C:\Yukon\YukonInstall\setup.exe -ArgumentList "-s -f1C:\upgrade.iss -f2C:\Yukon\YukonInstall\upgradeLog.log" -Wait -PassThru
+    Write-Host "Upgrade completed"
     # We seem to have issues with whatever runs after this, perhaps this sleep will fix it.
     Start-Sleep -s 15
 }
 
 <#
 .SYNOPSIS
-    Removes all installed Yukon features
+    Removes all installed Yukon features.
 .DESCRIPTION 
-    Removes simulators, EIM, and runs Yukon uninstaller.
+    Runs Yukon uninstaller
 .EXAMPLE
     Uninstall-Yukon
 #>
 Function Uninstall-Yukon() {
+    # Note that Start-Process is used here to ensure the script waits while the uninstall runs.
+    Write-Host "Uninstall Yukon"
+    $result = Start-Process C:\Yukon\YukonInstall\setup.exe -ArgumentList "-uninst -s -f1C:\uninstall.iss" -Wait -PassThru
+}
+
+<#
+.SYNOPSIS
+    Stop all services
+.DESCRIPTION 
+    Stop all services
+.EXAMPLE
+    Stop-Services
+#>
+Function Stop-Services() {
     StopAllServices
+}
+
+<#
+.SYNOPSIS
+    Uninstall EIM and Simulator service
+.DESCRIPTION 
+    Remove EIM and Simulator service
+.EXAMPLE
+    Stop-Services
+#>
+Function Uninstall-EIMAndSimulator() {
     Write-Host "Uninstall Java Simulator"
     C:\Yukon\Runtime\bin\java.exe -jar c:\Yukon\Client\bin\wrapper.jar -removeWait c:\Yukon\Client\bin\simulators.conf
 
@@ -151,10 +193,6 @@ Function Uninstall-Yukon() {
 
     Write-Host  "Uninstall EIM"
     Remove-Item -Path "C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina" -Recurse
-
-    # Note that Start-Process is used here to ensure the script waits while the uninstall runs.
-    Write-Host "Uninstall Yukon"
-    $result = Start-Process C:\Yukon\YukonInstall\setup.exe -ArgumentList "-uninst -s -f1C:\uninstall.iss" -Wait -PassThru
 }
 
 <#

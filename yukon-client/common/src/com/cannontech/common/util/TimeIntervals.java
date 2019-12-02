@@ -24,6 +24,7 @@ public enum TimeIntervals {
     MINUTES_5(Duration.standardMinutes(5)),
     MINUTES_6(Duration.standardMinutes(6)),
     MINUTES_7(Duration.standardMinutes(7)),
+    MINUTES_7_SECONDS_30(Duration.standardSeconds(450)),
     MINUTES_8(Duration.standardMinutes(8)),
     MINUTES_9(Duration.standardMinutes(9)),
     MINUTES_10(Duration.standardMinutes(10)),
@@ -421,6 +422,21 @@ public enum TimeIntervals {
      */
     public static Set<TimeIntervals> getShedtime() {
         return shedTime;
+    }
+    
+    private static final Set<TimeIntervals> rippleShedTime = ImmutableSet.of(
+       NONE,
+       MINUTES_7_SECONDS_30,
+       MINUTES_15,
+       MINUTES_30,
+       HOURS_1
+      );
+    
+    /**
+     * Used for Shed Time for ripple load group.
+     */
+    public static Set<TimeIntervals> getRippleShedtime() {
+        return rippleShedTime;
     }
 
 }

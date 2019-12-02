@@ -23,7 +23,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = LoadGroupNest.class, name = "LM_GROUP_NEST"),
     @JsonSubTypes.Type(value = LoadGroupDisconnect.class, name = "LM_GROUP_METER_DISCONNECT"),
     @JsonSubTypes.Type(value = LoadGroupMCT.class, name = "LM_GROUP_MCT"),
-    @JsonSubTypes.Type(value = LoadGroupPoint.class, name = "LM_GROUP_POINT")
+    @JsonSubTypes.Type(value = LoadGroupPoint.class, name = "LM_GROUP_POINT"),
+    @JsonSubTypes.Type(value = LoadGroupRipple.class, name = "LM_GROUP_RIPPLE")
     })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class LoadGroupBase<T extends LMGroup> implements LoadGroupSetupBase<T> {

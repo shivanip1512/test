@@ -104,7 +104,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sqla.append("SELECT DISTINCT TOP " + maxRows);
         sqla.append(  "rph.pointid, rph.timestamp, rph.value, rph.quality, p.pointtype");
         appendFromAndWhereClause(sqla, Collections.singleton(pointId), instantRange, excludeDisabledPaos);
-        appendOrderByClause(sqla, order);
+        appendOrderByClause(sqla, order, orderBy);
         
         SqlBuilder sqlb = builder.buildOther();
         sqlb.append("select * from (");

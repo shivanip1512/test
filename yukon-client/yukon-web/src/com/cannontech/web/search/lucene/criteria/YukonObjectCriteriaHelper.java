@@ -8,6 +8,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.point.PointType;
 
 
 public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
@@ -42,5 +43,9 @@ public class YukonObjectCriteriaHelper implements YukonObjectCriteria {
  
     protected void typeShouldOccur(PaoType type) {
         addCriteria("type", type.getDbString(), BooleanClause.Occur.SHOULD);
+    }
+
+    protected void typeShouldOccur(PointType pointType) {
+        addCriteria("pointtype", pointType.getPointTypeString(), BooleanClause.Occur.SHOULD);
     }
 }

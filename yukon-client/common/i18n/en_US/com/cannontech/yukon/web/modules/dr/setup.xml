@@ -111,6 +111,14 @@
 By including load in your address usage, you are requiring the load to be configured
 with the specified program address for it to respond to the request for control.
 Are you sure you want do this?</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.shedTime">Shed Time</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.continuousLatch">Continuous Latch</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.control">Control</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.restore">Restore</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.group">Group</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.areaCode">Area Code</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.lg">LG</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.doubleOrders.title">Double Orders</entry>
 
 <entry key="yukon.web.modules.dr.setup.loadProgram.CREATE.pageName">Create Load Program</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.CREATE.pageDescription">Create Load Program</entry>
@@ -156,6 +164,11 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.LEAD">Lead</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressLevel.MCT_ADDRESS">MCT Address</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.mctDeviceId.doesNotExist">MCT device Id does not exist.</entry>
+
+<!-- Point -->
+<entry key="yukon.web.modules.dr.setup.loadGroup.pointGroup.title">Point Group</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.controlDevice">Control Device Point</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.controlStartState">Control Start State</entry>
 
 <!-- Versacom -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.addressUsage.title">Address Usage</entry>
@@ -240,6 +253,10 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.loadAddressingRequired">At least 1 load group must be selected when LOAD usage is checked.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.feederAddressRequired">At least one feeder must be selected in Feeder Address when Address Usage of Feeder checked.</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidDeviceType">Invalid device type.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.notAllowedGroupAndAreaCode">Group and Area Code fields are not allowed in Ripple load group request.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.ripple.invalidValue">Invalid {0} value, must be binary value.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidDeviceType">Invalid device type, valid types include MCT, RTU, CBC, or ION.</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.error.invalidPoint">Invalid Point type, must be status point with control enabled.</entry>
 
 <!-- Load Program Validation -->
 <entry key="yukon.web.modules.dr.setup.loadProgram.error.constraintId.doesNotExist">Constraint does not exist.</entry>
@@ -514,7 +531,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.dailyDefaultState.Disabled">Disable / Waived</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.requireAllTriggers">Require All Triggers Active</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.programAssignments.title">Program Assignments</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.title">Trigger</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.triggerCreate.title">Create Trigger</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.noTriggersAssigned">No triggers were found for this Control Area.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.noProgramsAssigned">No programs were found for this Control Area.</entry>
@@ -548,4 +564,45 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.thresholdPointSettings.required">Threshold Point Settings is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.none">None</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.error">Please check trigger field errors in {0}.</entry>
+
+<!-- Ripple Load group -->
+<!-- Ripple Group Area Code -->
+<entry key="yukon.web.modules.dr.setup.loadGroup.UNIVERSAL">Universal</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.MINNKOTA">Minnkota</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.BELTRAMI">Beltrami</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.CASS_COUNTY">Cass County</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.CAVALIER_RURAL">Cavalier Rural</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.CLEARWATER_POLK">Clearwater-Polk</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.NODAK_RURAL">NoDak Rural</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.NORTH_STAR">North Star</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.PKM_ELECTRIC">PKM Electric</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.RED_LAKE">Red Lake</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.RED_RIVER_VALLEY">Red River Valley</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.ROSEAU_ELECTRIC">Roseau Electric</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SHEYENNE_VALLEY">Sheyenne Valley</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.WILD_RICE">Wild Rice</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.NMPA">NMPA</entry>
+
+<!-- Ripple Group -->
+<entry key="yukon.web.modules.dr.setup.loadGroup.TST">TST</entry> 
+<entry key="yukon.web.modules.dr.setup.loadGroup.ONE_00">1.00</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.ONE_01">1.01</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.ONE_02">1.02</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.TWO_00">2.00</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.TWO_01">2.01</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.TWO_02">2.02</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.TWO_03">2.03</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.TWO_04">2.04</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.THREE_00">3.00</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.THREE_01">3.01</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.THREE_06">3.06</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.THREE_07">3.07</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.THREE_09">3.09</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.THREE_01_AND_THREE_09">3.01_3.09</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.FOUR_00">4.00</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.FOUR_01">4.01</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.FOUR_02">4.02</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SIX_00">6.00</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SIX_01">6.01</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.SIX_06">6.06</entry>
 </properties>

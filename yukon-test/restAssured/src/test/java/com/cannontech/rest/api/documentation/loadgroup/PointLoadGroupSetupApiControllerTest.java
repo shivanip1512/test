@@ -55,11 +55,11 @@ public class PointLoadGroupSetupApiControllerTest {
                 fieldWithPath("LM_GROUP_POINT.kWCapacity").type(JsonFieldType.NUMBER).description("KW Capacity"),
                 fieldWithPath("LM_GROUP_POINT.disableGroup").type(JsonFieldType.BOOLEAN).description("Flag to disable Group"),
                 fieldWithPath("LM_GROUP_POINT.disableControl").type(JsonFieldType.BOOLEAN).description("Flag to disable Control"),
-                fieldWithPath("LM_GROUP_POINT.deviceIdUsage").type(JsonFieldType.NUMBER)
-                        .description("Control device id used in Point Group"),
-                fieldWithPath("LM_GROUP_POINT.pointIdUsage").type(JsonFieldType.NUMBER)
+                fieldWithPath("LM_GROUP_POINT.deviceUsage.id").type(JsonFieldType.NUMBER)
+                        .description("Control device id"),
+                fieldWithPath("LM_GROUP_POINT.pointUsage.id").type(JsonFieldType.NUMBER)
                         .description("Point id of available control device"),
-                fieldWithPath("LM_GROUP_POINT.startControlRawState").type(JsonFieldType.NUMBER)
+                fieldWithPath("LM_GROUP_POINT.startControlRawState.rawState").type(JsonFieldType.NUMBER)
                         .description("Control start state id of available control Point ")
         };
         loadGroup = (MockLoadGroupPoint) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_POINT);
@@ -94,6 +94,12 @@ public class PointLoadGroupSetupApiControllerTest {
     public void Test_LmPointGroup_Get() {
         List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(pointGroupFieldDescriptor));
         list.add(0, fieldWithPath("LM_GROUP_POINT.id").type(JsonFieldType.NUMBER).description("Load Group Id"));
+        list.add(7, fieldWithPath("LM_GROUP_POINT.deviceUsage.name").type(JsonFieldType.STRING).optional()
+                .description("Control device usage name."));
+        list.add(9, fieldWithPath("LM_GROUP_POINT.pointUsage.name").type(JsonFieldType.STRING).optional()
+                .description("Point name of available control device."));
+        list.add(11, fieldWithPath("LM_GROUP_POINT.startControlRawState.stateText").type(JsonFieldType.STRING).optional()
+                .description("Control start state name of available control Point."));
         Response response = given(documentationSpec)
                 .filter(document("{ClassName}/{methodName}",
                         responseFields(list)))

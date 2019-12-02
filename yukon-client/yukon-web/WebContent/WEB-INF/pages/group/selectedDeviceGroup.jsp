@@ -198,29 +198,33 @@
         </div>
         
         <%-- COLLECTION ACTIONS --%>
+        <c:set var="cssClass" value="${isGroupActionable ? '' : 'disabled'}"/>
         <h3><cti:msg2 key=".collectionActionLabel"/></h3>
         <div class="groupEditorContentDetail">
-         <c:choose>
-             <c:when test="${deviceCount > 0}">
-                 <cti:checkRolesAndProperties value="GROUP_COMMANDER">
-                     <cti:link href="/group/commander/collectionProcessing" key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand">
-                         <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                     </cti:link>
-                     &nbsp;|&nbsp;
-                 </cti:checkRolesAndProperties>
-                
-                <cti:checkRolesAndProperties value="MASS_CHANGE">
-                     <cti:link href="/bulk/massChange/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
-                         <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                     </cti:link>
-                     &nbsp;|&nbsp;
-                 </cti:checkRolesAndProperties>
-                 <cti:link href="/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">
-                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
-                 </cti:link>
-             </c:when>
-             <c:otherwise><i:inline key=".noDevices"/></c:otherwise>
-         </c:choose>
+            <c:choose>
+                <c:when test="${deviceCount > 0}">
+                    <cti:checkRolesAndProperties value="GROUP_COMMANDER">
+                        <cti:link href="/group/commander/collectionProcessing" key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand" class="${cssClass}">
+                            <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                        </cti:link>
+                        &nbsp;|&nbsp;
+                    </cti:checkRolesAndProperties>
+
+                    <cti:checkRolesAndProperties value="MASS_CHANGE">
+                        <cti:link href="/bulk/massChange/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange" class="${cssClass}">
+                            <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                        </cti:link>
+                        &nbsp;|&nbsp;
+                    </cti:checkRolesAndProperties>
+
+                    <cti:link href="/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions" class="${cssClass}">
+                        <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                    </cti:link>
+                </c:when>
+                <c:otherwise>
+                    <i:inline key=".noDevices"/>
+                </c:otherwise>
+            </c:choose>
         </div>
         </jsp:body>
     </tags:boxContainer>

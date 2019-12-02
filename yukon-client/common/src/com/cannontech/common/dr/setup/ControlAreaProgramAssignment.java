@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ControlAreaProgramAssignment {
 
     private Integer programId;
+    private String programName;
     private Integer startPriority;
     private Integer stopPriority;
 
@@ -16,6 +17,14 @@ public class ControlAreaProgramAssignment {
 
     public void setProgramId(Integer programId) {
         this.programId = programId;
+    }
+
+    public String getProgramName() {
+        return programName;
+    }
+
+    public void setProgramName(String programName) {
+        this.programName = programName;
     }
 
     public Integer getStartPriority() {

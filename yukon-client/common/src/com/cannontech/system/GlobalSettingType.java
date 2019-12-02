@@ -103,6 +103,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "https://127.0.0.1:8443/updateserver/latest/", GlobalSettingTypeValidators.urlValidator),
     RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gateway"),
     RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gwupdate"),
+    ITRON_WATCHDOG_ENABLED(GlobalSettingSubCategory.YUKON_SERVICES, booleanType(), false),
 
     // DR
     BATCHED_SWITCH_COMMAND_TOGGLE(GlobalSettingSubCategory.DR, stringType(), "auto"),
