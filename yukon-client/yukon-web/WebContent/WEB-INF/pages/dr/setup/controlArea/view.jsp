@@ -256,34 +256,10 @@
                     </div>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="VIEW">
-                    <table id="js-assigned-programs-table" class="compact-results-table dashed">
-                        <thead>
-                            <tr>
-                                <th><i:inline key="yukon.common.name"/></th>
-                                <th><i:inline key=".startPriority"/></th>
-                                <th><i:inline key=".stopPriority"/></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="assignedProgram" items="${controlArea.programAssignment}">
-                                <tr>
-                                    <td>
-                                        <cti:url var="viewUrl" value="/dr/setup/loadProgram/${assignedProgram.programId}"/>
-                                        <a href="${viewUrl}"><cti:deviceName deviceId="${assignedProgram.programId}"/></a>
-                                    </td>
-                                    <td>
-                                        ${assignedProgram.startPriority}
-                                    </td>
-                                    <td>
-                                        ${assignedProgram.stopPriority}
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            <c:if test="${empty controlArea.programAssignment}">
-                                <tr><td><span class="empty-list"><i:inline key=".noProgramsAssigned"/></span></td></tr>
-                            </c:if>
-                        </tbody>
-                    </table>
+                    <cti:url var="sortingUrl" value="/dr/setup/controlArea/sortProgram/${controlArea.controlAreaId}"/>
+                    <div data-url="${sortingUrl}">
+                        <%@ include file="sortedAssignedPrograms.jsp" %>
+                    </div>
                 </cti:displayForPageEditModes>
             </tags:sectionContainer2>
         </div>
