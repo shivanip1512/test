@@ -90,6 +90,11 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         cancel(result, user);
     }
     
+    @Override
+    public void removeResultFromCache(int key) {
+        cache.invalidate(key);
+    }
+    
     @Transactional
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {

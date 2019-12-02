@@ -69,4 +69,9 @@ public interface CollectionActionService {
      */
     void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, int execId,
             List<? extends YukonPao> devices);
+
+    /**
+     * Removes cached result
+     */
+    void removeResultFromCache(int key);
 }
