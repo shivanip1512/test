@@ -25,8 +25,7 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.mode" value="${temperatureMode}" classes="${css}"
-                                            key=".${temperatureMode}" inputClass="js-temperature-mode"/>
+                                <tags:radio path="fields.mode" value="${temperatureMode}" classes="${css}" key=".${temperatureMode}"/>
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
@@ -57,5 +56,4 @@
             </tags:sectionContainer2>
         </div>
     </div>
-    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.programGear.js" />
 </cti:msgScope>
