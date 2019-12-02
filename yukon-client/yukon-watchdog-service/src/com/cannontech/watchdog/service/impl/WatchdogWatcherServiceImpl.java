@@ -32,6 +32,8 @@ public class WatchdogWatcherServiceImpl implements WatchdogWatcherService {
             return doPaoWithPaoTypeExists(Sets.newHashSet(PaoType.LM_CONTROL_AREA));
         } else if (serviceName == YukonServices.NETWORKMANAGER) {
             return doPaoWithPaoClassExists(PaoClass.RFMESH);
+        } else if (serviceName == YukonServices.ITRON) {
+            return doPaoWithPaoClassExists(PaoClass.ITRON);
         } else {
             log.info("Incorrect service name " + serviceName);
             return true;
