@@ -215,12 +215,12 @@ public class RfnPointMappingTest {
 
         compareMeterClassPoints(icd, rfnPointMapping, icd.lgyrFocusAxRfn420WithAdvancedMetrology, MeterClass.LGYR_FOCUS_AX);
 
-        // RFN-410 Focus AX models not mapped in yukonPointMapping
+        //  RFN-410 Focus AX models not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN410FX);
         rfnPointMapping.remove(PaoType.RFN410FD);
         rfnPointMapping.remove(PaoType.RFN410FD);
 
-        // RFN-420 Focus RX models not mapped in yukonPointMapping
+        //  RFN-420 Focus RX models not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN420FRX);
         rfnPointMapping.remove(PaoType.RFN420FRD);
 
@@ -329,8 +329,8 @@ public class RfnPointMappingTest {
             }
             complaint += "\n" + extraneous.stream()
                 .limit(MaxPointCount)
-                    .map(cp -> typePoints.get(cp).getName() + "\n        " + cp)
-                    .collect(Collectors.joining("\n"));
+                .map(cp -> typePoints.get(cp).getName() + "\n        " + cp)
+                .collect(Collectors.joining("\n"));
             Assert.fail(complaint);
         }
     }
