@@ -545,6 +545,8 @@ yukon.map.comprehensive = (function () {
                         }
                         var successMsg = $('#coordinatesDeletedMsg').val();
                         yukon.ui.alertSuccess(successMsg);
+                        
+                        $('#marker-info').hide();
                     },
                     error: function(xhr, status, error) {
                         var errorMsg = xhr.responseJSON.message;
