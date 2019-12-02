@@ -5,14 +5,14 @@ Yukon :
   - field: emcount
     description: Electic Meter Count
     details: 
-    source: select count(*) as ElectricMeterCount from yukonpaobject where (type like 'RFG%') and disableflag = 'N' and paoname not like '*%'
+    source: SELECT COUNT(*) AS ElectricMeterCount FROM YukonPaobject WHERE (TYPE LIKE 'RFN-4%' OR TYPE LIKE 'RFN-5%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Telemetry
     frequency : 30
 
   - field: wmcount
     description: Water Meter Count
     details: 
-    source: select count(*) as WaterReadRate from yukonpaobject where (type like 'RFW%') and disableflag = 'N' and paoname not like '*%'
+    source: SELECT COUNT(*) AS WaterMeterCount FROM YukonPaobject WHERE TYPE LIKE 'RFW%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Property
     frequency : 45
 
