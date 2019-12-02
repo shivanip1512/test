@@ -49,7 +49,7 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
 public class RfnPointMappingTest {
-
+    
     PaoDefinitionDao paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
     private static final String MAPPING = "com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml";
     private static final SetMultimap<PaoType, String> knownMissingPoints = getPointsKnownMissingFromPaoDefinition();
@@ -61,7 +61,7 @@ public class RfnPointMappingTest {
 
     private PointMappingIcd getPointMappingIcd() throws IOException {
         ClassPathResource yukonPointMappingIcdYaml = new ClassPathResource("yukonPointMappingIcd.yaml");
-
+        
         return YukonPointMappingIcdParser.parse(yukonPointMappingIcdYaml.getInputStream());
     }
 
@@ -69,7 +69,7 @@ public class RfnPointMappingTest {
         ClassPathResource rfnPointMappingXml = new ClassPathResource(MAPPING);
         return rfnPointMappingXml.getInputStream();
     }
-
+    
     @Test
     public void testOrdered() throws IOException, JDOMException {
         // Duplicate mappings will cause a parser error in RfnPointMappingParser's stream code, so detect those first
@@ -81,76 +81,80 @@ public class RfnPointMappingTest {
 
         compareToYukonPointMappingIcd();
     }
-
+    
     public void detectDuplicateMappings() throws IOException, JDOMException {
 
         SAXBuilder saxBuilder = new SAXBuilder();
-
+        
         Document configDoc = saxBuilder.build(getRfnXmlStream());
 
         configDoc.getRootElement().getChildren("pointGroup").stream()
-                // Flatten the point group structure from this:
-                // <pointMappings>
-                // <pointGroup>
-                // <paoType(s)>
-                // <point(s)>
-                // to this:
-                // Pair(paoType, pointMapper)
-                .flatMap(pointGroup -> {
-                    // First, get all of the paoTypes in the point group...
-                    Set<PaoType> paoTypes = pointGroup.getChildren("paoType").stream()
-                            .map(e -> e.getAttributeValue("value"))
-                            .map(PaoType::valueOf)
-                            .collect(Collectors.toSet());
+            //  Flatten the point group structure from this:
+            //    <pointMappings>
+            //        <pointGroup>
+            //            <paoType(s)>
+            //            <point(s)>
+            //  to this:
+            //    Pair(paoType, pointMapper)
+            .flatMap(pointGroup -> {
+                //  First, get all of the paoTypes in the point group...
+                Set<PaoType> paoTypes = 
+                    pointGroup.getChildren("paoType").stream()
+                        .map(e -> e.getAttributeValue("value"))
+                        .map(PaoType::valueOf)
+                        .collect(Collectors.toSet());
 
-                    // ... then take each point in the pointGroup..
-                    return pointGroup.getChildren("point").stream()
-                            // ... create a pointMapper out of it...
-                            .map(UnitOfMeasureToPointMappingParser::createPointMapper)
-                            // ... and create a stream of each paoType paired with each pointMapper.
-                            .flatMap(pointMapper -> paoTypes.stream().map(paoType -> Pair.of(paoType, pointMapper)));
-                })
-                // Collect all pairs, checking for duplicates.
-                .collect(Collectors.toMap(
-                        Function.identity(),
-                        Function.identity(),
-                        (l, r) -> {
-                            Assert.fail(String.join("\n",
-                                    "PaoType " + l.getKey() + " has conflicting entries:",
-                                    l.getValue().toString(),
-                                    r.getValue().toString()));
-                            return null;
-                        }));
+                //  ... then take each point in the pointGroup..
+                return pointGroup.getChildren("point").stream()
+                        //  ... create a pointMapper out of it...
+                        .map(UnitOfMeasureToPointMappingParser::createPointMapper)
+                        //  ... and create a stream of each paoType paired with each pointMapper.
+                        .flatMap(pointMapper -> paoTypes.stream().map(paoType -> Pair.of(paoType, pointMapper)));
+            })
+            //  Collect all pairs, checking for duplicates.
+            .collect(Collectors.toMap(
+                  Function.identity(), 
+                  Function.identity(),
+                  (l, r) -> {
+                        Assert.fail(String.join("\n", 
+                            "PaoType " + l.getKey() + " has conflicting entries:",
+                            l.getValue().toString(),
+                            r.getValue().toString()));
+                        return null;
+                  }));
     }
-
+    
     public void confirmPointsExistOnDevices() throws JDOMException, IOException {
-
+        
         Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping = getRfnPointMapping();
 
-        Map<Boolean, List<Pair<PaoType, String>>> pointLookupAttempts = rfnPointMapping.entrySet().stream()
-                .flatMap(e -> e.getValue().values().stream()
+        Map<Boolean, List<Pair<PaoType, String>>> pointLookupAttempts =
+            rfnPointMapping.entrySet().stream()
+                .flatMap(e -> 
+                    e.getValue().values().stream()
                         .map(nameScale -> Pair.of(e.getKey(), nameScale.getName())))
-                .collect(Collectors.partitioningBy(
-                        e -> Try.of(() -> paoDefinitionDao.getPointIdentifierByDefaultName(e.getKey(), e.getValue()))
-                                .isSuccess()));
-
+                .collect(Collectors.partitioningBy(e -> 
+                    Try.of(() -> paoDefinitionDao.getPointIdentifierByDefaultName(e.getKey(), e.getValue()))
+                        .isSuccess()));
+        
         Multimap<PaoType, String> successes = pointLookupAttempts.get(true).stream()
                 .collect(StreamUtils.toMultimap(Entry::getKey, Entry::getValue));
         Multimap<PaoType, String> failures = pointLookupAttempts.get(false).stream()
                 .collect(StreamUtils.toMultimap(Entry::getKey, Entry::getValue));
+        
+        String unexpectedSuccess =
+                successes.entries().stream()
+                    .filter(e -> knownMissingPoints.containsEntry(e.getKey(), e.getValue()))
+                    .map(e -> e.getKey() + "/" + e.getValue())
+                    .collect(Collectors.joining("\n"));
+        
+        String unexpectedFailure =
+                failures.entries().stream()
+                    .filter(e -> !knownMissingPoints.containsEntry(e.getKey(), e.getValue()))
+                    .map(e -> e.getKey() + "/" + e.getValue())
+                    .collect(Collectors.joining("\n"));
 
-        String unexpectedSuccess = successes.entries().stream()
-                .filter(e -> knownMissingPoints.containsEntry(e.getKey(), e.getValue()))
-                .map(e -> e.getKey() + "/" + e.getValue())
-                .collect(Collectors.joining("\n"));
-
-        String unexpectedFailure = failures.entries().stream()
-                .filter(e -> !knownMissingPoints.containsEntry(e.getKey(), e.getValue()))
-                .map(e -> e.getKey() + "/" + e.getValue())
-                .collect(Collectors.joining("\n"));
-
-        assertTrue("Points listed in knownMissingRfnPointMappingPoints but were successfully found:\n" + unexpectedSuccess,
-                unexpectedSuccess.isEmpty());
+        assertTrue("Points listed in knownMissingRfnPointMappingPoints but were successfully found:\n" + unexpectedSuccess, unexpectedSuccess.isEmpty());
         assertTrue("Points not found:\n" + unexpectedFailure, unexpectedFailure.isEmpty());
     }
 
@@ -223,41 +227,40 @@ public class RfnPointMappingTest {
         compareMeterClassModelPoints(icd, rfnPointMapping, icd.elsterA3, MeterClass.ELSTER_A3);
         compareMeterClassPoints(icd, rfnPointMapping, icd.lgyrFocusKwhWithAdvancedMetrology, MeterClass.LGYR_FOCUS_KWH);
 
-        // RFN-410FL (Focus kWh in RFN-410) not mapped in yukonPointMapping
+        //  RFN-410FL (Focus kWh in RFN-410) not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN410FL);
-
+        
         compareMeterClassModelPoints(icd, rfnPointMapping, icd.elo, MeterClass.ELO);
         compareMeterClassModelPoints(icd, rfnPointMapping, icd.itronSentinel, MeterClass.ITRON_SENTINEL);
         compareMeterClassModelPoints(icd, rfnPointMapping, icd.lgyrFocusAxRx_rfn500, MeterClass.LGYR_FOCUS_AX_RX_500);
         compareMeterClassModelPoints(icd, rfnPointMapping, icd.lgyrS4_rfn500, MeterClass.LGYR_S4);
 
         compareMeterClassPoints(icd, rfnPointMapping, icd.nextGenWaterNode, MeterClass.NEXT_GEN_WATER_NODE);
-
-        // 1st gen water meter not mapped in yukonPointMapping
+        
+        //  1st gen water meter not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFWMETER);
 
-        // Gas node not mapped in yukonPointMapping
+        //  Gas node not mapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFG201);
         rfnPointMapping.remove(PaoType.RFG301);
 
-        // RFN-430kV unmapped in yukonPointMapping
+        //  RFN-430kV unmapped in yukonPointMapping
         rfnPointMapping.remove(PaoType.RFN430KV);
 
+        
         rfnPointMapping.entrySet().stream()
-                .forEach(e -> Assert.fail(e.getKey() + " has " + e.getValue().size() + " unmapped points."
-                        + "\nFirst entry: " + Iterables.getFirst(e.getValue().entrySet(), null)));
+            .forEach(e -> Assert.fail(e.getKey() + " has " + e.getValue().size() + " unmapped points." 
+                                      + "\nFirst entry: " + Iterables.getFirst(e.getValue().entrySet(), null)));
     }
 
-    private <T extends ModelPointDefinition> void compareMeterClassModelPoints(PointMappingIcd icd,
-            Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping,
+    private <T extends ModelPointDefinition> void compareMeterClassModelPoints(PointMappingIcd icd, Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping,
             List<Named<T>> points, MeterClass meterClass) {
         for (PaoType type : getPaoTypesForMeterClass(icd, meterClass)) {
             compareModelPoints(points, rfnPointMapping, type);
         }
     }
 
-    private <T extends PointDefinition> void compareMeterClassPoints(PointMappingIcd icd,
-            Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping,
+    private <T extends PointDefinition> void compareMeterClassPoints(PointMappingIcd icd, Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping,
             List<Named<T>> points, MeterClass meterClass) {
         for (PaoType type : getPaoTypesForMeterClass(icd, meterClass)) {
             comparePoints(points, rfnPointMapping, type);
@@ -271,73 +274,67 @@ public class RfnPointMappingTest {
                 .collect(Collectors.toSet());
     }
 
-    private <T extends ModelPointDefinition> void compareModelPoints(List<Named<T>> points,
-            Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping, PaoType type) {
-        Map<PointMapping, NameScale> icdTypePoints = points.stream()
-                .filter(nmpd -> nmpd.value.getModels().stream()
-                        .map(ManufacturerModel::getManufacturerModel)
-                        .map(RfnManufacturerModel::getType)
-                        .anyMatch(type::equals))
-                .collect(new CoincidentGroupingCollector());
-
+    private <T extends ModelPointDefinition> void compareModelPoints(List<Named<T>> points, Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping, PaoType type) {
+        Map<PointMapping, NameScale> icdTypePoints = 
+                points.stream()
+                    .filter(nmpd -> nmpd.value.getModels().stream()
+                                .map(ManufacturerModel::getManufacturerModel)
+                                .map(RfnManufacturerModel::getType)
+                                .anyMatch(type::equals))
+                    .collect(new CoincidentGroupingCollector());
+        
         compare(rfnPointMapping, type, icdTypePoints);
     }
 
-    private <T extends PointDefinition> void comparePoints(List<Named<T>> points,
-            Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping, PaoType type) {
-
-        Map<PointMapping, NameScale> icdTypePoints = points.stream().collect(new CoincidentGroupingCollector());
-
+    private <T extends PointDefinition> void comparePoints(List<Named<T>> points, Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping, PaoType type) {
+        
+        Map<PointMapping, NameScale> icdTypePoints = 
+                points.stream().collect(new CoincidentGroupingCollector());
+        
         compare(rfnPointMapping, type, icdTypePoints);
     }
 
     private void compare(Map<PaoType, Map<PointMapping, NameScale>> rfnPointMapping, PaoType type,
             Map<PointMapping, NameScale> icdTypePoints) {
         Map<PointMapping, NameScale> rpmTypePoints = rfnPointMapping.get(type);
-
+        
         assertNotNull("No points found for type " + type, rpmTypePoints);
-
-        Map<Boolean, Set<PointMapping>> rpmMapped = rpmTypePoints.keySet().stream()
-                .collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
-        Map<Boolean, Set<PointMapping>> icdMapped = icdTypePoints.keySet().stream()
-                .collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
-
+        
+        Map<Boolean,Set<PointMapping>> rpmMapped = rpmTypePoints.keySet().stream().collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
+        Map<Boolean,Set<PointMapping>> icdMapped = icdTypePoints.keySet().stream().collect(Collectors.partitioningBy(p -> p.isMappedFor(type), Collectors.toSet()));
+        
         Set<PointMapping> rpmMappedPoints = rpmMapped.get(true);
         Set<PointMapping> icdMappedPoints = icdMapped.get(true);
         Set<PointMapping> rpmUnmappedPoints = rpmMapped.get(false);
         Set<PointMapping> icdUnmappedPoints = icdMapped.get(false);
+        
+        verifyEmpty(type, rpmTypePoints, Sets.intersection(rpmUnmappedPoints, icdMappedPoints), "marked as unmapped in rfnPointMapping.xml, but exist in yukonPointMapping.yaml");
+        verifyEmpty(type, icdTypePoints, Sets.intersection(rpmMappedPoints, icdUnmappedPoints), "marked as unmapped in yukonPointMapping.yaml, but exist in rfnPointMapping.xml");
 
-        verifyEmpty(type, rpmTypePoints, Sets.intersection(rpmUnmappedPoints, icdMappedPoints),
-                "marked as unmapped in rfnPointMapping.xml, but exist in yukonPointMapping.yaml");
-        verifyEmpty(type, icdTypePoints, Sets.intersection(rpmMappedPoints, icdUnmappedPoints),
-                "marked as unmapped in yukonPointMapping.yaml, but exist in rfnPointMapping.xml");
-
-        verifyEmpty(type, rpmTypePoints, Sets.intersection(rpmUnmappedPoints, icdUnmappedPoints),
-                "marked as unmapped in both rfnPointMapping.xml and yukonPointMapping.yaml");
+        verifyEmpty(type, rpmTypePoints, Sets.intersection(rpmUnmappedPoints, icdUnmappedPoints), "marked as unmapped in both rfnPointMapping.xml and yukonPointMapping.yaml");
 
         verifyEmpty(type, rpmTypePoints, Sets.difference(rpmMappedPoints, icdMappedPoints), "not in yukonPointMappingIcd.yaml");
         verifyEmpty(type, icdTypePoints, Sets.difference(icdMappedPoints, rpmMappedPoints), "not in rfnPointMapping.xml");
-
+        
         rfnPointMapping.remove(type);
     }
 
-    private void verifyEmpty(PaoType type, Map<PointMapping, NameScale> typePoints, SetView<PointMapping> extraneous,
-            String violation) {
+    private void verifyEmpty(PaoType type, Map<PointMapping, NameScale> typePoints, SetView<PointMapping> extraneous, String violation) {
         final int MaxPointCount = 10;
 
         if (!extraneous.isEmpty()) {
             String complaint = type + " has " + extraneous.size() + " point(s) " + violation;
             if (extraneous.size() > MaxPointCount) {
-                complaint += ", first " + MaxPointCount + " listed:";
+                complaint += ", first " + MaxPointCount + " listed:"; 
             }
             complaint += "\n" + extraneous.stream()
-                    .limit(MaxPointCount)
+                .limit(MaxPointCount)
                     .map(cp -> typePoints.get(cp).getName() + "\n        " + cp)
                     .collect(Collectors.joining("\n"));
             Assert.fail(complaint);
         }
     }
-
+    
     // Tell SonarLint to ignore the duplicated strings
     @SuppressWarnings("squid:S1192")
     private static SetMultimap<PaoType, String> getPointsKnownMissingFromPaoDefinition() {
@@ -360,7 +357,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN420FD, "Volt Degrees Phase C");
         missing.put(PaoType.RFN420FD, "Volts Phase B");
         missing.put(PaoType.RFN420FD, "Volts Phase C");
-
+        
         missing.put(PaoType.RFN420FRD, "Amps Phase B");
         missing.put(PaoType.RFN420FRD, "Amps Phase C");
         missing.put(PaoType.RFN420FRD, "Avg Volts Phase B");
@@ -375,7 +372,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN420FRD, "Volt Degrees Phase C");
         missing.put(PaoType.RFN420FRD, "Volts Phase B");
         missing.put(PaoType.RFN420FRD, "Volts Phase C");
-
+        
         missing.put(PaoType.RFN420FRX, "Amps Phase B");
         missing.put(PaoType.RFN420FRX, "Amps Phase C");
         missing.put(PaoType.RFN420FRX, "Avg Volts Phase B");
@@ -390,7 +387,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN420FRX, "Volt Degrees Phase C");
         missing.put(PaoType.RFN420FRX, "Volts Phase B");
         missing.put(PaoType.RFN420FRX, "Volts Phase C");
-
+        
         missing.put(PaoType.RFN420FX, "Amps Phase B");
         missing.put(PaoType.RFN420FX, "Amps Phase C");
         missing.put(PaoType.RFN420FX, "Avg Volts Phase B");
@@ -405,12 +402,12 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN420FX, "Volt Degrees Phase C");
         missing.put(PaoType.RFN420FX, "Volts Phase B");
         missing.put(PaoType.RFN420FX, "Volts Phase C");
-
+        
         missing.put(PaoType.RFN430A3D, "Peak Demand Daily");
         missing.put(PaoType.RFN430A3K, "Peak Demand Daily");
         missing.put(PaoType.RFN430A3R, "Peak Demand Daily");
         missing.put(PaoType.RFN430A3T, "Peak Demand Daily");
-
+        
         missing.put(PaoType.RFN430KV, "Average Delivered Power Factor");
         missing.put(PaoType.RFN430KV, "Average Received Power Factor");
         missing.put(PaoType.RFN430KV, "Delivered kVA");
@@ -419,21 +416,21 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN430KV, "Received kVA");
         missing.put(PaoType.RFN430KV, "Received kVAr");
         missing.put(PaoType.RFN430KV, "Received kW");
-
+        
         missing.put(PaoType.RFN430SL4, "Net Delivered kVARh");
         missing.put(PaoType.RFN430SL4, "Net Received kVARh");
         missing.put(PaoType.RFN430SL4, "Rate A Net Received kVARh");
         missing.put(PaoType.RFN430SL4, "Rate B Net Received kVARh");
         missing.put(PaoType.RFN430SL4, "Rate C Net Received kVARh");
         missing.put(PaoType.RFN430SL4, "Rate D Net Received kVARh");
-
+        
         missing.put(PaoType.RFN440_2131TD, "Forward Inductive kVARh");
         missing.put(PaoType.RFN440_2131TD, "Reverse Inductive kVARh");
         missing.put(PaoType.RFN440_2132TD, "Forward Inductive kVARh");
         missing.put(PaoType.RFN440_2132TD, "Reverse Inductive kVARh");
         missing.put(PaoType.RFN440_2133TD, "Forward Inductive kVARh");
         missing.put(PaoType.RFN440_2133TD, "Reverse Inductive kVARh");
-
+        
         missing.put(PaoType.RFN520FAX, "Delivered Peak kVA Frozen");
         missing.put(PaoType.RFN520FAX, "Delivered Peak kVA");
         missing.put(PaoType.RFN520FAX, "Delivered Peak kVAr Frozen");
@@ -451,7 +448,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAX, "Sum Peak kVAr");
         missing.put(PaoType.RFN520FAX, "Sum kVAh");
         missing.put(PaoType.RFN520FAX, "Sum kVArh");
-
+        
         missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA Frozen");
         missing.put(PaoType.RFN520FAXD, "Delivered Peak kVA");
         missing.put(PaoType.RFN520FAXD, "Delivered Peak kVAr Frozen");
@@ -469,19 +466,19 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN520FAXD, "Sum Peak kVAr");
         missing.put(PaoType.RFN520FAXD, "Sum kVAh");
         missing.put(PaoType.RFN520FAXD, "Sum kVArh");
-
+        
         missing.put(PaoType.RFN520FRX, "Delivered Peak kVA Frozen");
         missing.put(PaoType.RFN520FRX, "Delivered Peak kVAr Frozen");
         missing.put(PaoType.RFN520FRX, "Power Factor Degrees");
         missing.put(PaoType.RFN520FRX, "Sum Peak kVA Frozen");
         missing.put(PaoType.RFN520FRX, "Sum Peak kVAr Frozen");
-
+        
         missing.put(PaoType.RFN520FRXD, "Delivered Peak kVA Frozen");
         missing.put(PaoType.RFN520FRXD, "Delivered Peak kVAr Frozen");
         missing.put(PaoType.RFN520FRXD, "Power Factor Degrees");
         missing.put(PaoType.RFN520FRXD, "Sum Peak kVA Frozen");
         missing.put(PaoType.RFN520FRXD, "Sum Peak kVAr Frozen");
-
+        
         missing.put(PaoType.RFN530FAX, "Delivered Peak kVA Frozen");
         missing.put(PaoType.RFN530FAX, "Delivered Peak kVA");
         missing.put(PaoType.RFN530FAX, "Delivered Peak kVAr Frozen");
@@ -502,7 +499,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAX, "Sum Peak kVAr");
         missing.put(PaoType.RFN530FAX, "Sum kVAh");
         missing.put(PaoType.RFN530FAX, "Sum kVArh");
-
+        
         missing.put(PaoType.RFN530FRX, "Delivered Peak kVA Frozen");
         missing.put(PaoType.RFN530FRX, "Delivered Peak kVAr Frozen");
         missing.put(PaoType.RFN530FRX, "Peak Demand Daily");
@@ -511,7 +508,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase C");
         missing.put(PaoType.RFN530FRX, "Sum Peak kVA Frozen");
         missing.put(PaoType.RFN530FRX, "Sum Peak kVAr Frozen");
-
+        
         missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase B");
         missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase C");
@@ -642,7 +639,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAX, "Sum kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4EAX, "kVAh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAX, "kVArh Leading (Q1 + Q3)");
-
+        
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase B");
         missing.put(PaoType.RFN530S4EAXR, "Avg Voltage Phase C");
@@ -761,7 +758,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4EAXR, "Sum kW");
         missing.put(PaoType.RFN530S4EAXR, "kVAh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4EAXR, "kVArh Leading (Q1 + Q3)");
-
+        
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase B");
         missing.put(PaoType.RFN530S4ERX, "Avg Voltage Phase C");
@@ -888,7 +885,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERX, "Sum kWh (Rate D kWh)");
         missing.put(PaoType.RFN530S4ERX, "kVAh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4ERX, "kVArh Leading (Q1 + Q3)");
-
+        
         missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase B");
         missing.put(PaoType.RFN530S4ERXR, "Avg Voltage Phase C");
@@ -982,7 +979,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4ERXR, "Sum kW");
         missing.put(PaoType.RFN530S4ERXR, "kVAh Leading (Q1 + Q3)");
         missing.put(PaoType.RFN530S4ERXR, "kVArh Leading (Q1 + Q3)");
-
+        
         missing.put(PaoType.RFN530S4X, "Average Power Factor");
         missing.put(PaoType.RFN530S4X, "Coincident Power Factor");
         missing.put(PaoType.RFN530S4X, "Net kVA");
@@ -1011,7 +1008,7 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4X, "kVAr (Quadrants 2 3)");
         missing.put(PaoType.RFN530S4X, "kVAr (Quadrants 2 4)");
         missing.put(PaoType.RFN530S4X, "kVArh Leading (Q1 + Q3)");
-
+        
         return missing;
     }
 
