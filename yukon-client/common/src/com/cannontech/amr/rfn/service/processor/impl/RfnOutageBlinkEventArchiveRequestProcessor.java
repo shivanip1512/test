@@ -24,6 +24,9 @@ public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnEventConditio
                                                        instantOf(event), 
                                                        getLongEventData(event, RfnConditionDataType.COUNT),
                                                        now);
+
+        // The OUTAGE_BLINK event may contain RfnConditionDataType.EVENT_END_TIME (time outage ended), but we do not use it at present.
+        // The outage log for blinks is created by RfnRestoreBlinkEventArchiveRequestProcessor. 
     }
     
     @Override
