@@ -6,105 +6,71 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
-import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
-import com.cannontech.common.rfn.message.route.Route;
+import com.cannontech.common.rfn.message.route.RfnChildren;
+import com.cannontech.common.rfn.message.route.RfnRoute;
+import com.cannontech.common.rfn.message.route.RouteData;
 
 /**
- * Each constant can be used alone or combined.
- * Before you use a query, make sure you understand the constructor arguments
- *     specified in each constant. 
- * 
- * 1. Make sure the EntityType of your rfnIdentifiers is correct.
- * For example, you can query PRIMARY_GATEWAY_NODE_COMM for node/device but not for gateway.
- * On the other hand, you can query PRIMARY_GATEWAY_NODES for gateway but not for node/device. 
- * Basically you are not allowed to add gatewayRfnIdentifier and deviceRfnIdentifier
- *     in one request. You need to first specify the entityType when creating a request.
- * For example, you add PRIMARY_GATEWAY_NODE_COMM and PRIMARY_GATEWAY_NODES in one request
- * and also add gatewayRfnIdentifiers and deviceRfnIdentifiers into the request.
- * If your request's entityType is NODE, PRIMARY_GATEWAY_NODES will be ignored
- *     and all rfnIdentifiers will be treated as node/device.
- * If your request's entityType is Gateway, PRIMARY_GATEWAY_NODE_COMM will be ignored
- *     and all rfnIdentifiers will be treated as gateway.
- * Based on the above rule, you will find although NEIGHBOR can be queried
- *     for both node/device and gateway, you still need to separate your rfnIdentifiers
- *     into two requests, one request's EntityType is NODE and the other is GATEWAY.
- * 
- * 2. Make sure the max rfnIdentifiers you can query.
- * For example, you can query PRIMARY_GATEWAY_NODE_COMM for up to 1000 devices
- * If you query multiple constants, the minimum of their maxEntity(s) will be applied.
- * If the number of rfnIdentifiers in your request is beyond the limit,
- *     you will receive YUKON_INPUT_ERROR with error info in the responseMessage field.
+ * Query (constant) can be used alone or combined.
+ * The first parameter of a constant indicates its response type.
+ * Please look at each type so you know which query you are going to use.
+ * Second and third parameters are not supported yet so you can ignore them. 
  * 
  * @author lizhu2
  *
  */
 public enum RfnMetadataMulti implements Serializable {
 
-    // ------ First Part: replace metadata package ------
-    
-    // This covers RfnMetadata.PRIMARY_GATEWAY,
-    //             RfnMetadata.COMM_STATUS
-    //             RfnMetadata.COMM_STATUS_TIMESTAMP
-    // null indicates the primary gateway is unknown.
+    // Replace RfnMetadata.PRIMARY_GATEWAY,
+    //         RfnMetadata.COMM_STATUS
+    //         RfnMetadata.COMM_STATUS_TIMESTAMP
+    // Note: null indicates the primary gateway is unknown.
     PRIMARY_GATEWAY_NODE_COMM(NodeComm.class, 1000, EntityType.NODE), // ready for integration test
     
-    // Number of Hops to Primary Gateway:
-    // This replaces RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT
-    PRIMARY_GATEWAY_HOP_COUNT(Integer.class, 1000, EntityType.NODE),
-    
-    // This covers RfnMetadata.NODE_SERIAL_NUMBER
-    //             RfnMetadata.HARDWARE_VERSION
-    //             RfnMetadata.IN_NETWORK_TIMESTAMP
-    //             RfnMetadata.NODE_ADDRESS
-    //             RfnMetadata.NODE_FIRMWARE_VERSION
-    //             RfnMetadata.NODE_TYPE
+    // Replace RfnMetadata.NODE_SERIAL_NUMBER
+    //         RfnMetadata.HARDWARE_VERSION
+    //         RfnMetadata.IN_NETWORK_TIMESTAMP
+    //         RfnMetadata.NODE_ADDRESS
+    //         RfnMetadata.NODE_FIRMWARE_VERSION
+    //         RfnMetadata.NODE_TYPE
     NODE_DATA(NodeData.class, 1000, EntityType.NODE), // ready for integration test
 
-    // This replaces RfnMetadata.NUM_ASSOCIATIONS
-    // null indicates the meter doesn't support battery node association.
+    // Replace RfnMetadata.NUM_ASSOCIATIONS
+    // Note: null indicates the meter doesn't support battery node association.
     READY_BATTERY_NODE_COUNT(Integer.class, 1000, EntityType.NODE), // ready for integration test
     
-    // Current Number of Neighbors:
-    // This replaces RfnMetadata.NEIGHBOR_COUNT
+    // Replace RfnMetadata.NEIGHBOR_COUNT
     NEIGHBOR_COUNT(Integer.class, 1000, EntityType.GATEWAY, EntityType.NODE),
 
-    // Current Primary Forward Neighbor Data:
-    // This replaces RfnMetadata.PRIMARY_NEIGHBOR,
-    //               RfnMetadata.PRIMARY_NEIGHBOR_DATA_TIMESTAMP
-    //               RfnMetadata.PRIMARY_NEIGHBOR_LINK_COST
+    // Replace RfnMetadata.PRIMARY_NEIGHBOR,
+    //         RfnMetadata.PRIMARY_NEIGHBOR_DATA_TIMESTAMP
+    //         RfnMetadata.PRIMARY_NEIGHBOR_LINK_COST
     PRIMARY_FORWARD_NEIGHBOR_DATA(NeighborData.class, 1000, EntityType.NODE), // ready for integration test
+    
+    // Replace RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT
+    // RouteData provides totalCost and hopCount to calculate average link quality
+    // (YUK-19751, YUK-20063, YUK-20064)
+    PRIMARY_FORWARD_ROUTE_DATA(RouteData.class, 1000, EntityType.NODE), 
+    
+    // Support network tree query: descendant count (YUK-20089, YUK-20090) and primary route to Gateway
+    PRIMARY_FORWARD_DESCENDANT_COUNT(Integer.class, 1000, EntityType.NODE),
 
+    PRIMARY_FORWARD_ROUTE(RfnRoute.class, 1000, EntityType.NODE),
+    
+    PRIMARY_FORWARD_CHILDREN(RfnChildren.class, 1000, EntityType.NODE), // reserved for future use
+    
+    PRIMARY_FORWARD_GATEWAY(RfnIdentifier.class, 1000, EntityType.NODE),
         
-    // ------ Second part: replace network package ------
-    
-    // This will replace the legacy network.RfnNeighborDataRequest
-    NEIGHBOR(Neighbor.class, 1000, EntityType.GATEWAY, EntityType.NODE),
+    // The following query will replace the legacy network.RfnNeighborDataRequest eventually
+    // NEIGHBOR(Neighbor.class, 1000, EntityType.GATEWAY, EntityType.NODE),
 
-    // This replaces the legacy network.RfnPrimaryRouteDataRequest.
-    // Return all Primary Forward Routes from this node to a gateway.
-    // The destination must be a gateway (unique).
-    // One gateway can only have one (primary) forward route from this node.
-    GATEWAY_PRIMARY_FORWARD_ROUTE(Route.class, 1000, EntityType.NODE),
-        
-    
-    // ------ Third part: new features ------
-
-    // GATEWAY_NODES are all nodes on the gateway's node list.
-    // PRIMARY_GATEWAY_NODES use the gateway as their primary gateway while
-    //         GATEWAY_NODES may not since a node can associate with multiple gateways
-    // but can only have one primary gateway.
-    
-    // Return all nodes behind the gateway
-    GATEWAY_NODES(GatewayNodes.class, 1000, EntityType.GATEWAY), // not used now
-    
-    // Return only primary nodes behind the gateway
+    // Note: the following query use the primary (reverse) gateway, it will no longer be used for any Mapping query.
+    // Once Yukon replaces it with PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_ROUTE, I am going to remove it.
     PRIMARY_GATEWAY_NODES(GatewayNodes.class, 1000, EntityType.GATEWAY),
-    
-    // Return the (Primary Forward) Network Tree behind a gateway or node
-    PRIMARY_FORWARD_NODES(Route.class, 1000, EntityType.GATEWAY, EntityType.NODE), 
     ;
    
     private final Class<?> constantClass;
