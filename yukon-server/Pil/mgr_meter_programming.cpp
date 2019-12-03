@@ -151,13 +151,33 @@ bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, con
 
     if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
     {
-        return rfnDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+        std::string storedGuid;
+
+        if( rfnDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, storedGuid)
+                && storedGuid == guid )
+        {
+            return rfnDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+        }
     }
     return false;
 }
 
-void MeterProgrammingManager::updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size)
+void MeterProgrammingManager::updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size, size_t totalSize)
 {
+    //  update the programming progress percentage
+    if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+    {
+        std::string storedGuid;
+
+        if( rfnDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, storedGuid)
+                && storedGuid == guid )
+        {
+            const double percentage = 100.0 * size / totalSize;
+
+            rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, percentage);
+        }
+    }
+
     //  send a Cti::Messaging::Porter::MeterProgramArchiveStatusRequestMsg
 }
 

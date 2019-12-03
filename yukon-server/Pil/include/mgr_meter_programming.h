@@ -20,7 +20,7 @@ public:
 
     bool isUploading(const RfnIdentifier rfnIdentifier, const std::string guid);
 
-    void updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size);
+    void updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size, size_t totalSize);
 
 private:
 
