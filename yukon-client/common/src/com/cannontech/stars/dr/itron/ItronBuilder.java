@@ -91,8 +91,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void updateDevice(Hardware hardware) {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(hardware.getDeviceId());
-        //deviceDao.updateSecondaryMacAddress(pao.getPaoType(), hardware.getDeviceId(), hardware.getSecondaryMacAddress());
-        itronCommunicationService.saveSecondaryMacAddress(pao.getPaoType(), hardware.getDeviceId(), hardware.getSecondaryMacAddress());
+        deviceDao.updateSecondaryMacAddress(pao.getPaoType(), hardware.getDeviceId(), hardware.getSecondaryMacAddress());
     }
 
     @Override
