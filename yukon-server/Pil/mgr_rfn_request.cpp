@@ -233,7 +233,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             sendE2eDataReply(message.id, payload, asid, rfnIdentifier, message.token, block);
 
-            _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, totalSent, program.size());
+            _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, totalSent);
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
         {

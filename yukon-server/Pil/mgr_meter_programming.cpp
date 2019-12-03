@@ -144,38 +144,49 @@ Etiam viverra tincidunt gravida. Curabitur felis eros, ullamcorper in volutpat a
     return buf;
 }
 
+boost::shared_ptr<Cti::Devices::RfnDevice> MeterProgrammingManager::getReportedDevice(const Cti::RfnIdentifier& rfnIdentifier, const std::string reportedGuid)
+{
+    if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+    {
+        std::string assignedGuid;
+
+        if( rfnDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, assignedGuid)
+                && assignedGuid == reportedGuid )
+        {
+            return rfnDevice;
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Configuration ID mismatch" << FormattedList::of(
+                                "Assigned", assignedGuid,
+                                "Reported", reportedGuid));
+        }
+    }
+
+    return nullptr;
+}
+
 bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, const std::string guid)
 {
     //  TODO - remove after initial E2E block transfer integration test
     return true;
 
-    if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+    if( auto rfnDevice = getReportedDevice(rfnIdentifier, guid) )
     {
-        std::string storedGuid;
-
-        if( rfnDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, storedGuid)
-                && storedGuid == guid )
-        {
-            return rfnDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
-        }
+        return rfnDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
     }
     return false;
 }
 
-void MeterProgrammingManager::updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size, size_t totalSize)
+void MeterProgrammingManager::updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size)
 {
     //  update the programming progress percentage
-    if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+    if( auto rfnDevice = getReportedDevice(rfnIdentifier, guid) )
     {
-        std::string storedGuid;
+        const size_t totalSize  = getProgram(guid).size();
+        const double percentage = 100.0 * size / totalSize;
 
-        if( rfnDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, storedGuid)
-                && storedGuid == guid )
-        {
-            const double percentage = 100.0 * size / totalSize;
-
-            rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, percentage);
-        }
+        rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, percentage);
     }
 
     //  send a Cti::Messaging::Porter::MeterProgramArchiveStatusRequestMsg

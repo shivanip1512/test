@@ -2,6 +2,7 @@
 
 #include "dlldefs.h"
 #include "rfn_identifier.h"
+#include "dev_rfn.h"
 
 #include <vector>
 
@@ -20,9 +21,11 @@ public:
 
     bool isUploading(const RfnIdentifier rfnIdentifier, const std::string guid);
 
-    void updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size, size_t totalSize);
+    void updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size);
 
 private:
+
+    boost::shared_ptr<Cti::Devices::RfnDevice> getReportedDevice(const Cti::RfnIdentifier& rfnIdentifier, const std::string reportedGuid);
 
     std::map<std::string, Bytes> _programs;
     CtiDeviceManager& _deviceManager;
