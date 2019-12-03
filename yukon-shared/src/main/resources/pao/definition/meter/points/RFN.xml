@@ -1735,7 +1735,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="361" type="Analog">
-        <name>Delivered kVArh Per Interval</name>
+        <name>Delivered kVArh per Interval</name>
         <multiplier value="1"/>
         <unitofmeasure value="KVARH"/>
         <decimalplaces value="3"/>
