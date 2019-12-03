@@ -105,7 +105,7 @@ public class ApiControllerHelper {
             if (responseCode != HttpStatus.OK) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
-            log.info("Web server url for API connection " + webServerUrl);
+            log.info("Connection with Api successful with URL: " + webServerUrl);
         }
         return webServerUrl;
     }
