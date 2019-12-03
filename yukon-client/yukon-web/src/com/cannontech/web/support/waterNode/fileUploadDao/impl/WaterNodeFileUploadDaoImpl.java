@@ -35,7 +35,6 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
             // headers
             row = reader.readNext();
             String oldSN = StringUtils.EMPTY;
-            int rowLengthErrors = 0;
 
             while ((row = reader.readNext()) != null) {
                 if (row.length == 6) {
@@ -83,23 +82,17 @@ public class WaterNodeFileUploadDaoImpl implements WaterNodeFileUploadDao {
                         intervalEnd = currentTimestamp;
                     }
                 } else {
-                    rowLengthErrors++;
+                    reader.close();
+                    throw new BatteryNodeFileParsingException();
                 }
             }
             resultsList.add(waterNodeDetails);// add final meter to resultsList
             reader.close();
-            // If Interval is null, throw
-            if (intervalStart == null || intervalEnd == null) {
-                throw new BatteryNodeUnableToReadTimestampsException();
-            }
             // If file is outside of range, throw
             if (intervalEnd.isBefore(startTime) || !intervalStart.isBefore(stopTime)) {
                 String intervalStartDate = intervalStart.toDateTime().toLocalDate().toString();
                 String intervalEndDate = intervalEnd.toDateTime().toLocalDate().toString();
                 throw new BatteryNodeBadIntervalEndException(intervalStartDate, intervalEndDate);
-            }
-            if (rowLengthErrors > 0) {
-                throw new BatteryNodeFileParsingException(rowLengthErrors);
             }
         } catch (IOException | NumberFormatException e) {
             throw new BatteryNodeUnableToReadFileException();
