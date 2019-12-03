@@ -1845,7 +1845,18 @@
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": ""
+									"raw": "{{api-url}}/api/dr/setup/loadGroup/getStartState/1234",
+									"host": [
+										"{{api-url}}"
+									],
+									"path": [
+										"api",
+										"dr",
+										"setup",
+										"loadGroup",
+										"getStartState",
+										"1234"
+									]
                                 }
                             },
                             "response": []
