@@ -16,6 +16,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -26,6 +27,7 @@ import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvid
 import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.Validator;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
@@ -43,6 +45,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
     @Autowired private ItronCommunicationService itronCommunicationService;
     @Autowired private AccountService accountService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private IDatabaseCache cache;
     
     @Override
     public void createDevice(Hardware hardware) {
@@ -87,11 +90,9 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(Hardware hardware) {
-
-    }
-
-    public void updateDevice(int inventoryId, String macAddress, int deviceId, Integer deviceVendorUserId, YukonPao pao) {
-
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(hardware.getDeviceId());
+        //deviceDao.updateSecondaryMacAddress(pao.getPaoType(), hardware.getDeviceId(), hardware.getSecondaryMacAddress());
+        itronCommunicationService.saveSecondaryMacAddress(pao.getPaoType(), hardware.getDeviceId(), hardware.getSecondaryMacAddress());
     }
 
     @Override
@@ -102,7 +103,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void retrieveDevice(Hardware hardware) {
-     
+        hardware.setSecondaryMacAddress(deviceDao.getSecondaryMacAddressForDevice(hardware.getDeviceId()));
     }
 
     @Override
@@ -112,6 +113,11 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
         } else if (!Validator.isMacAddress(macAddress, true)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui64");
+        }
+        
+        String secondaryMacAddress = hardware.getSecondaryMacAddress();
+        if (!StringUtils.isBlank(secondaryMacAddress) && !Validator.isMacAddress(secondaryMacAddress, true)) {
+            errors.rejectValue("secondaryMacAddress", "yukon.web.modules.operator.hardware.error.format.eui64");
         }
     }
 }

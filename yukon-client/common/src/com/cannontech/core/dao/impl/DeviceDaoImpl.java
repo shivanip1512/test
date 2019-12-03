@@ -96,9 +96,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     }
     
     @Override
-    public void updateSecondaryMacAddress(PaoType type, int deviceId, String macAddress) {
-        validateMacAddress(type, macAddress);
-        
+    public void updateSecondaryMacAddress(PaoType type, int deviceId, String macAddress) {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.update("DeviceMacAddress");
         params.addValue("SecondaryMacAddress", macAddress);
@@ -108,8 +106,6 @@ public final class DeviceDaoImpl implements DeviceDao {
     
     @Override
     public void updateDeviceMacAddress(PaoType type, int deviceId, String macAddress) {
-        validateMacAddress(type, macAddress);
-
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId");
         sql.append("FROM DeviceMacAddress");
@@ -127,12 +123,6 @@ public final class DeviceDaoImpl implements DeviceDao {
             params.addValue("MacAddress", macAddress);
         }
         jdbcTemplate.update(updateCreateSql);
-    }
-    
-    private void validateMacAddress(PaoType type, String macAddress) {
-        if (!Validator.isMacAddress(macAddress, type.isLongMacAddressSupported())) {
-            throw new StarsInvalidArgumentException("MAC Address is invalid");
-        }
     }
     
     @Override
