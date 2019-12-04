@@ -5416,6 +5416,20 @@ C++ :
     jira : YUK-20287
     notes : Since transitioned to Apache 2.0 license
     
+  - project : Eaton Remote Meter Programming Converter
+    path : RMP_CONVERTER
+    version : 1.0
+    project URL : none
+    license : Eaton-owned
+    license URLs : none
+    md5 : 527502acff61b311fae2e106188ef4cb
+    sha1 : 092ef220812fa1ef10742efe49154bca02277697
+    fileCount : 3
+    totalSize : 52694
+    updated : 2019-12-03
+    jira : YUK-20872
+    notes : 
+    
   - project : SQLAPI 
     path : SQLAPI
     version : 5.0.2

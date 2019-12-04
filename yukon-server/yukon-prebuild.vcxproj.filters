@@ -9,5 +9,6 @@
     <None Include="common\include\version.h">
       <Filter>Version Files</Filter>
     </None>
+    <None Include="libraries.mak" />
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include "ThirdPartyLibraries.h"
 
 #include "std_helper.h"
+#include "string_util.h"
 
 #include <openssl/md5.h>
 #include <openssl/sha.h>
@@ -17,37 +18,60 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
     namespace fs = std::filesystem;
 
     const auto libraries = Cti::ThirdPartyLibraries().getLibraries();
-    const auto libraryPaths = Cti::ThirdPartyLibraries().getKnownLibraryPaths();
+    auto libraryPaths = Cti::ThirdPartyLibraries().getKnownLibraryPaths();
 
     for( const auto library : libraries )
     {
         BOOST_TEST_CONTEXT(library.project)
         {
-            auto libraryPath = Cti::mapFind(libraryPaths, library.path);
+            auto libraryPath = libraryPaths.find(library.path);
             
-            if( ! libraryPath )
+            if( libraryPath == libraryPaths.end() )
             {
                 BOOST_ERROR("No entry for " << library.path << " in Cti::ThirdPartyLibraries::getKnownLibraryPaths");
-
-                continue;
             }
-
-            uint64_t totalSize = 0;
-            uint32_t fileCount = 0;
-
-            for( auto p : fs::recursive_directory_iterator{ *libraryPath } )
+            else
             {
-                if( p.is_regular_file() )
-                {
-                    ++fileCount;
+                uint64_t totalSize = 0;
+                uint32_t fileCount = 0;
 
-                    totalSize += p.file_size();
+                try
+                {
+                    for( auto p : fs::recursive_directory_iterator{ libraryPath->second } )
+                    {
+                        if( p.is_regular_file() )
+                        {
+                            ++fileCount;
+
+                            totalSize += p.file_size();
+                        }
+                    }
+
+                    BOOST_CHECK_EQUAL(fileCount, library.fileCount);
+                    BOOST_CHECK_EQUAL(totalSize, library.totalSize);
+                }
+                catch( fs::filesystem_error& e )
+                {
+                    BOOST_ERROR("Filesystem error:" << Cti::FormattedList::of(
+                        "Code value", e.code().value(),
+                        "Code message", e.code().message(),
+                        "Path1", e.path1().string(),
+                        "Path2", e.path2().string(),
+                        "What", e.what()));
                 }
             }
 
-            BOOST_CHECK_EQUAL(fileCount, library.fileCount);
-            BOOST_CHECK_EQUAL(totalSize, library.totalSize);
+            libraryPaths.erase(libraryPath);
         }
+    }
+
+    if( ! libraryPaths.empty() )
+    {
+        const auto path = libraryPaths.begin();
+
+        BOOST_ERROR("Known library path had no entry in thirdPartyLibraries.yaml: " << Cti::FormattedList::of(
+            "Library name", path->first, 
+            "Library path", path->second));
     }
 }
 

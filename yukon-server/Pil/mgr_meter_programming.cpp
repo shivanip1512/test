@@ -10,40 +10,10 @@
 #include "encryption.h"
 #include "std_helper.h"
 
+#include <meterProgramConverter/exports.h>
+
 namespace {
     
-typedef void(*func)(void *pData, size_t dataSize);
-
-typedef struct _fileInfo_s
-{
-    char        *pFile;
-    uint16_t    fileSize;
-    char        *pPassword;
-    uint8_t     pwdLength;
-}FILEINFO_t;
-
-int conProcessBlob(const FILEINFO_t *pData)
-{
-    //  unused, writes to a file.
-
-    return 0;
-}
-int conProcessBlob(const FILEINFO_t *pData, func callback)
-{
-    std::vector<char> buf {
-        pData->pPassword,
-        pData->pPassword + pData->pwdLength };
-
-    //  just concatenate the two for testing purposes
-    buf.insert(buf.end(),
-        pData->pFile, 
-        pData->pFile + pData->fileSize);
-
-    callback(buf.data(), buf.size());
-
-    return 0;
-}
-
 std::mutex programMux;
 Cti::Pil::MeterProgrammingManager::Bytes globalBuffer;
 
