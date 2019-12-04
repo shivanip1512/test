@@ -92,6 +92,8 @@ public class ItronServiceWatcher extends ServiceStatusWatchdogImpl {
 
     @Override
     public boolean shouldRun() {
-        return watcherService.isServiceRequired(getServiceName()) && settingDao.getBoolean(GlobalSettingType.ITRON_WATCHDOG_ENABLED);
+        String itronApiURL = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
+        String itronUserName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
+         return (!(itronApiURL.isBlank() || itronUserName.isBlank())) && watcherService.isServiceRequired(getServiceName());
     }
 }
