@@ -96,18 +96,19 @@ Class-Path: ./
  annotation-detector-3.0.4.jar 
  applicationinsights-core-1.0.2.jar 
  applicationisights-web-1.0.2.jar 
- azure-core-0.9.7.jar 
- azure-media-0.9.0.jar 
- azure-servicebus-0.9.7.jar 
- azure-serviceruntime-0.9.0.jar 
- azure-storage-4.0.0.jar 
- azure-svc-mgmt-media-0.9.0.jar 
- azure-svc-mgmt-network-0.9.0.jar 
- azure-svc-mgmt-scheduler-0.9.0.jar 
- azure-svc-mgmt-sql-0.9.0.jar 
- azure-svc-mgmt-storage-0.9.0.jar 
- azure-svc-mgmt-websites-0.9.0.jar 
- azure-tracing-util-0.9.0.jar 
+ accessors-smart-1.2.jar
+ activation-1.1.jar
+ adal4j-1.6.2.jar
+ adapter-rxjava-2.4.0.jar
+ asm-5.0.4.jar
+ async-http-client-2.5.2.jar
+ async-http-client-netty-utils-2.5.2.jar
+ azure-annotations-1.7.0.jar
+ azure-client-authentication-1.6.7.jar
+ azure-client-runtime-1.6.7.jar
+ azure-servicebus-3.1.3.jar 
+ client-runtime-1.6.7.jar
+ converter-jackson-2.5.0.jar
  commons-codec-1.10.jar 
  commons-lang3-3.4.jar 
  gson-1.7.2.jar 
@@ -116,23 +117,43 @@ Class-Path: ./
  httpcore-4.4.10.jar 
  jackson-annotations-2.9.6.jar 
  jackson-core-2.9.8.jar 
- jackson-core-asl-1.9.2.jar 
  jackson-databind-2.9.8.jar 
  jackson-dataformat-csv-2.9.6.jar 
+ jackson-datatype-joda-2.9.8.jar
+ javax.activation-1.2.0.jar
+ javax.mail-1.6.1.jar
+ jcip-annotations-1.0-1.jar
+ json-smart-2.3.jar
+ lang-tag-1.4.4.jar
+ logging-interceptor-3.11.0.jar
+ netty-buffer-4.1.27.Final.jar
+ netty-codec-4.1.27.Final.jar
+ netty-codec-dns-4.1.27.Final.jar
+ netty-codec-http-4.1.27.Final.jar
+ netty-codec-socks-4.1.27.Final.jar
+ netty-common-4.1.27.Final.jar
+ netty-handler-4.1.27.Final.jar
+ netty-handler-proxy-4.1.27.Final.jar
+ netty-reactive-streams-2.0.0.jar
+ netty-resolver-4.1.27.Final.jar
+ netty-resolver-dns-4.1.27.Final.jar
+ netty-transport-4.1.27.Final.jar
+ netty-transport-native-epoll-4.1.27.Final-linux-x86_64.jar
+ netty-transport-native-unix-common-4.1.27.Final.jar
+ nimbus-jose-jwt-8.2.1.jar
+ oauth2-oidc-sdk-5.64.4.jar
+ okhttp-3.12.0.jar
+ okhttp-urlconnection-3.11.0.jar
+ okio-1.15.0.jar
+ proton-j-0.31.0.jar
+ qpid-proton-j-extensions-1.2.1.jar
+ retrofit-2.5.0.jar
+ rxjava-1.3.8.jar
+ slf4j-api-1.8.0-alpha2.jar
  snakeyaml-1.18.2.jar 
- jackson-jaxrs-1.9.2.jar 
- jackson-mapper-asl-1.9.2.jar 
- jackson-xc-1.9.2.jar 
- javax.inject-1.jar 
- jaxb-impl-2.2.3-1.jar 
- jersey-client-1.13.jar 
- jersey-core-1.13.jar 
- jersey-json-1.13.jar 
- jettison-1.1.jar 
  jjwt-api-0.10.6.jar 
  jjwt-impl-0.10.6.jar 
- jjwt-jackson-0.10.6.jar 
- jsr305-1.3.9.jar 
+ jjwt-jackson-0.10.6.jar  
  mail-1.4.5.jar 
  jaxws-api.jar 
  javax.annotation-api-1.3.2.jar 

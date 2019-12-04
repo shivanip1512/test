@@ -511,18 +511,6 @@
 	<classpathentry kind="lib" path="/third-party/annotation-detector-3.0.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/applicationinsights-core-1.0.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/applicationinsights-web-1.0.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-media-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-serviceruntime-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-storage-4.0.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-compute-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-media-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-network-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-scheduler-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-sql-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-storage-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-svc-mgmt-websites-0.9.0.jar"/>
-	<classpathentry kind="lib" path="/third-party/azure-tracing-util-0.9.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-lang-2.6.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-validator-1.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/gson-1.7.2.jar">
@@ -530,20 +518,50 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/jackson-core-asl-1.9.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/jackson-jaxrs-1.9.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/jackson-mapper-asl-1.9.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/jackson-xc-1.9.2.jar"/>
-	<classpathentry kind="lib" path="/third-party/javax.inject-1.jar"/>
-	<classpathentry kind="lib" path="/third-party/jersey-client-1.13.jar"/>
-	<classpathentry kind="lib" path="/third-party/jersey-core-1.13.jar"/>
-	<classpathentry kind="lib" path="/third-party/jersey-json-1.13.jar"/>
-	<classpathentry kind="lib" path="/third-party/jettison-1.1.jar"/>
-	<classpathentry kind="lib" path="/third-party/jsr305-1.3.9.jar"/>
-	<classpathentry kind="lib" path="/third-party/mail-1.4.5-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail-1.4.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-core-0.9.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-servicebus-0.9.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-servicebus-3.1.3.jar" sourcepath="C:/Yukon jars/sevice bus Sources.zip"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/accessors-smart-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/activation-1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/adal4j-1.6.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/adapter-rxjava-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/asm-5.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/async-http-client-2.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/async-http-client-netty-utils-2.5.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-annotations-1.7.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-client-authentication-1.6.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-client-runtime-1.6.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/client-runtime-1.6.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/converter-jackson-2.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-datatype-joda-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/javax.activation-1.2.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/javax.mail-1.6.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/jcip-annotations-1.0-1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/json-smart-2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/lang-tag-1.4.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/logging-interceptor-3.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-buffer-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-dns-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-http-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-codec-socks-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-common-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-handler-proxy-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-reactive-streams-2.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-resolver-dns-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-epoll-4.1.27.Final-linux-x86_64.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/netty-transport-native-unix-common-4.1.27.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/nimbus-jose-jwt-8.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/oauth2-oidc-sdk-5.64.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/okhttp-3.12.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/okhttp-urlconnection-3.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/okio-1.15.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/proton-j-0.31.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/qpid-proton-j-extensions-1.2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/retrofit-2.5.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/rxjava-1.3.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/commons-configuration2-2.1.1.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

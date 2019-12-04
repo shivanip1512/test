@@ -48,7 +48,7 @@
         <Logger name="com.cannontech.amr.rfn.service.RfnMeterEventService" level = "trace"/>
 
         <Logger name="org.springframework" level = "warn"/>
-
+        <Logger name="com.microsoft.azure.servicebus.primitives.CoreMessageReceiver" level = "error"/>
         <Logger name="org.springframework.ws.soap.server.endpoint.interceptor" level = "debug"/>
 
         <!-- Controls rfn comms logging to the Yukon\Server\Log directory -->
