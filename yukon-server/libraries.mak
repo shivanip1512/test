@@ -62,12 +62,14 @@ MICROSOFT_VCP_DLL = msvcp140.dll
 MICROSOFT_RT_DLL  = vcruntime140.dll
 !ENDIF
 
-SQLAPI_BIN      = $(SQLAPI)\bin
 MICROSOFT_SQL_DLL = ntwdblib.dll
 
 OPENSSL_BIN     = $(OPENSSL)\$(CONFIGURATION)\bin
 OPENSSL_DLL_1   = libcrypto-1_1.dll
 OPENSSL_DLL_2   = libssl-1_1.dll
+
+RMP_CONVERTER_BIN = $(RMP_CONVERTER)\bin
+RMP_CONVERTER_DLL = dante.dll
 
 TCL_BIN         = $(TCL)\$(CONFIGURATION)\bin
 !IF "$(CONFIGURATION)"=="DEBUG"
@@ -103,6 +105,7 @@ ALL: $(BIN) $(LIB) $(PDB) \
   $(BIN)\$(MICROSOFT_VCP_DLL) \
   $(BIN)\$(OPENSSL_DLL_1) \
   $(BIN)\$(OPENSSL_DLL_2) \
+  $(BIN)\$(RMP_CONVERTER_DLL) \
   $(BIN)\$(SQLAPI_DLL) \
   $(BIN)\$(TCL_DLL) \
   $(BIN)\$(XERCES_DLL)
@@ -136,6 +139,8 @@ $(BIN)\$(MICROSOFT_SQL_DLL):$(MICROSOFT_SQL)\$(MICROSOFT_SQL_DLL); copy $? $@
 
 $(BIN)\$(OPENSSL_DLL_1):$(OPENSSL_BIN)\$(OPENSSL_DLL_1); copy $? $@
 $(BIN)\$(OPENSSL_DLL_2):$(OPENSSL_BIN)\$(OPENSSL_DLL_2); copy $? $@
+
+$(BIN)\$(RMP_CONVERTER_DLL):$(RMP_CONVERTER_BIN)\$(RMP_CONVERTER_DLL); copy $? $@
 
 $(BIN)\$(SQLAPI_DLL):$(SQLAPI_BIN)\$(SQLAPI_DLL); copy $? $@
 
