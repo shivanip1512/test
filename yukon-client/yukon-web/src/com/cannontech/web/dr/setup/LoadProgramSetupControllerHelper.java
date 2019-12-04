@@ -591,7 +591,7 @@ public class LoadProgramSetupControllerHelper {
         case ItronCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("cycleType", ItronCycleType.values());
-            model.addAttribute("dutyCyclePeriod", ImmutableList.of(30, 60));
+            model.addAttribute("dutyCyclePeriod", ImmutableList.of(15, 30, 60));
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         case NestStandardCycle:
