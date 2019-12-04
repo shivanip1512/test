@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 
                                 std::ifstream fileContents{ p.path(), std::ios::binary };
 
-                                while( !fileContents.eof() )
+                                while( ! fileContents.eof() )
                                 {
                                     std::array<char, 4096> block;
 
@@ -102,12 +102,12 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 
                                     fileSizes += blockSize;
 
-                                    MD5_Update(&md5Context, block.data(), blockSize);
+                                    MD5_Update (&md5Context,  block.data(), blockSize);
                                     SHA1_Update(&sha1Context, block.data(), blockSize);
                                 }
 
                                 //  Print updates if there are more than 1000 files to process (Boost has 14,000+)
-                                if( !(files % 1000) )
+                                if( ! (files % 1000) )
                                 {
                                     std::cout << "\t" << files << "/" << fileList.size() << std::endl;
                                 }
@@ -119,13 +119,13 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
                             std::array<unsigned char, MD5_DIGEST_LENGTH> md5Digest;
                             std::array<unsigned char, SHA_DIGEST_LENGTH> sha1Digest;
 
-                            MD5_Final(md5Digest.data(), &md5Context);
+                            MD5_Final (md5Digest.data(),  &md5Context);
                             SHA1_Final(sha1Digest.data(), &sha1Context);
 
                             const auto md5Actual = arrayToHexString(md5Digest);
                             const auto sha1Actual = arrayToHexString(sha1Digest);
 
-                            BOOST_CHECK_EQUAL(md5Actual, library.md5);
+                            BOOST_CHECK_EQUAL(md5Actual,  library.md5);
                             BOOST_CHECK_EQUAL(sha1Actual, library.sha1);
                         }
                     }
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
         }
     }
 
-    if( !libraryPaths.empty() )
+    if( ! libraryPaths.empty() )
     {
         const auto path = libraryPaths.begin();
 

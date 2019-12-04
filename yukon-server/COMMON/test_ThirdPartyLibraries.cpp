@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
         }
     }
 
-    if( !libraryPaths.empty() )
+    if( ! libraryPaths.empty() )
     {
         const auto path = libraryPaths.begin();
 
