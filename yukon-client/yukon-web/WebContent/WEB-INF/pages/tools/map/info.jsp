@@ -92,8 +92,8 @@
 <div class="dn" 
     data-dialog 
     id="confirm-delete" 
-    data-title="<cti:msg2 key=".deleteCoordinates.title"/>" 
-    data-ok-text="<cti:msg2 key=".deleteCoordinates.delete"/>" 
+    data-title="<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmDelete.title"/>" 
+    data-ok-text="<cti:msg2 key="yukon.web.components.ajaxConfirm.confirmDelete.ok"/>" 
     data-event="yukon:tools:map:delete-coordinates" 
     data-cancel-class="cancel-delete">
     

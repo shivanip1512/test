@@ -85,7 +85,10 @@
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
         <pointInfo name="Voltage Loss" attributes="VOLTAGE_LOSS"/>
         <pointInfo name="Volts Phase A" init="true" attributes="VOLTAGE_PHASE_A"/>
+        <pointInfo name="Voltage Phase A Out" attributes="VOLTAGE_PHASE_A_OUT"/>
         <pointInfo name="Volts Phase B" init="true" attributes="VOLTAGE_PHASE_B"/>
+        <pointInfo name="Voltage Phase B Out" attributes="VOLTAGE_PHASE_B_OUT"/>
         <pointInfo name="Volts Phase C" init="true" attributes="VOLTAGE_PHASE_C"/>
+        <pointInfo name="Voltage Phase C Out" attributes="VOLTAGE_PHASE_C_OUT"/>
     </pointInfos>
 </pao>

@@ -24,7 +24,8 @@ import lombok.experimental.SuperBuilder;
     @JsonSubTypes.Type(value = MockLoadGroupNest.class, name = "LM_GROUP_NEST"),
     @JsonSubTypes.Type(value = MockLoadGroupDisconnect.class, name = "LM_GROUP_METER_DISCONNECT"),
     @JsonSubTypes.Type(value = MockLoadGroupPoint.class, name = "LM_GROUP_POINT"),
-    @JsonSubTypes.Type(value = MockLoadGroupMCT.class, name = "LM_GROUP_MCT")
+    @JsonSubTypes.Type(value = MockLoadGroupMCT.class, name = "LM_GROUP_MCT"),
+    @JsonSubTypes.Type(value = MockLoadGroupRipple.class, name = "LM_GROUP_RIPPLE")
     })
 @JsonInclude(Include.NON_NULL)
 @SuperBuilder

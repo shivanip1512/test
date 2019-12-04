@@ -1,36 +1,34 @@
 package com.cannontech.common.dr.setup;
 
 import com.cannontech.database.data.device.lm.LMGroupPoint;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(allowGetters = true, ignoreUnknown = true)
 public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
 
-    private Integer deviceIdUsage;
-    private Integer pointIdUsage;
-    private Integer startControlRawState;
+    private LMDto deviceUsage;
+    private LMDto pointUsage;
+    private ControlRawState startControlRawState;
 
-    public Integer getDeviceIdUsage() {
-        return deviceIdUsage;
+    public LMDto getDeviceUsage() {
+        return deviceUsage;
     }
 
-    public void setDeviceIdUsage(Integer deviceIdUsage) {
-        this.deviceIdUsage = deviceIdUsage;
+    public void setDeviceUsage(LMDto deviceUsage) {
+        this.deviceUsage = deviceUsage;
     }
 
-    public Integer getPointIdUsage() {
-        return pointIdUsage;
+    public LMDto getPointUsage() {
+        return pointUsage;
     }
 
-    public void setPointIdUsage(Integer pointIdUsage) {
-        this.pointIdUsage = pointIdUsage;
+    public void setPointUsage(LMDto pointUsage) {
+        this.pointUsage = pointUsage;
     }
 
-    public Integer getStartControlRawState() {
+    public ControlRawState getStartControlRawState() {
         return startControlRawState;
     }
 
-    public void setStartControlRawState(Integer startControlRawState) {
+    public void setStartControlRawState(ControlRawState startControlRawState) {
         this.startControlRawState = startControlRawState;
     }
 
@@ -38,12 +36,6 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
     public void buildModel(LMGroupPoint lmGroupPoint) {
         // Set parent fields
         super.buildModel(lmGroupPoint);
-
-        // Set from LMGroupPoint fields
-        setDeviceIdUsage(lmGroupPoint.getLMGroupPoint().getDeviceIDUsage());
-        setPointIdUsage(lmGroupPoint.getLMGroupPoint().getPointIDUsage());
-        setStartControlRawState(lmGroupPoint.getLMGroupPoint().getStartControlRawState());
-
     }
 
     @Override
@@ -53,10 +45,9 @@ public class LoadGroupPoint extends LoadGroupBase<LMGroupPoint> {
 
         // Set LMGroupPoint fields
         com.cannontech.database.db.device.lm.LMGroupPoint lmGroupPoint = group.getLMGroupPoint();
-        lmGroupPoint.setDeviceIDUsage(getDeviceIdUsage());
-        lmGroupPoint.setPointIDUsage(getPointIdUsage());
-        lmGroupPoint.setStartControlRawState(getStartControlRawState());
-
+        lmGroupPoint.setDeviceIDUsage(getDeviceUsage().getId());
+        lmGroupPoint.setPointIDUsage(getPointUsage().getId());
+        lmGroupPoint.setStartControlRawState(getStartControlRawState().getRawState());
     }
 
 }

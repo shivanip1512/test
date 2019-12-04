@@ -103,6 +103,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "https://127.0.0.1:8443/updateserver/latest/", GlobalSettingTypeValidators.urlValidator),
     RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gateway"),
     RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gwupdate"),
+    ITRON_WATCHDOG_ENABLED(GlobalSettingSubCategory.YUKON_SERVICES, booleanType(), false),
 
     // DR
     BATCHED_SWITCH_COMMAND_TOGGLE(GlobalSettingSubCategory.DR, stringType(), "auto"),
@@ -167,7 +168,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     ALERT_TIMEOUT_HOURS(GlobalSettingSubCategory.MISC, integerType(), 168),
     DATABASE_MIGRATION_FILE_LOCATION(GlobalSettingSubCategory.MISC, stringType(), "/Server/Export/"),
     TEMP_DEVICE_GROUP_DELETION_IN_DAYS(GlobalSettingSubCategory.MISC, integerType(), 7),
-    HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), "none", GlobalSettingTypeValidators.urlWithPortValidator),
+    HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), null, GlobalSettingTypeValidators.urlWithPortValidator),
     CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com", GlobalSettingTypeValidators.emailValidator),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
     SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),

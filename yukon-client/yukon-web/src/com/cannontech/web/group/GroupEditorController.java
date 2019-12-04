@@ -36,6 +36,7 @@ import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupComposed;
@@ -226,6 +227,7 @@ public class GroupEditorController {
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
         model.addAttribute("deviceCollection", deviceCollection);
 
+        model.addAttribute("isGroupActionable", !(SystemGroupEnum.ROOT == group.getSystemGroupEnum()));
     }
     
     @GetMapping("selectedDeviceGroup")

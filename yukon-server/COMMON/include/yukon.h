@@ -397,6 +397,30 @@ struct ClientErrors
         E2eBadRequest,
         E2eCommandFailed,
         E2eErrorUnmapped,
+
+        // Meter Programming related error codes
+        MeterBricked,
+        ReasonUnknown,
+        ServiceUnsupported,
+        InsufficientSecurityClearance,
+        OperationNotPossible,
+        InappropriateActionRequested,
+        DeviceBusy,
+        DataNotReady,
+        DataLocked,
+        RenegotiateRequest,
+        InvalidServiceSequence,
+        DownloadAborted,
+        FileTooLarge,
+        ConfigurationInProgress,
+        UnableToGETFile,
+        InsufficientMeterVersion,
+        FileExpired,
+        FailedRequirements,
+        MalformedConfigFileRecord,
+        VerificationFailed,
+        WriteKeyFailed,
+        CatastrophicFailure,
     };
 };
 

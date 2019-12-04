@@ -74,7 +74,7 @@ namespace Cti::Devices::Commands {
     {
     public:
 
-        //RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
+        RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
         std::string getCommandName() override;
 
@@ -82,11 +82,16 @@ namespace Cti::Devices::Commands {
 
         std::string getFile();
 
+        std::string getMeterConfigurationID() const;
+
     private:
+
+        std::string _meterConfigurationID;
 
         enum Command
         {
-            Request = 0x91
+            Request = 0x91,
+            Response = 0x92
         };
 
         Bytes getCommandHeader() override;

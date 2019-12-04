@@ -778,6 +778,10 @@ yukon.ui = (function () {
          *                      Requires data-width and data-height attributes.
          *                      Inspired by
          *                      http://johnculviner.com/a-jquery-ui-dialog-open-performance-issue-and-how-to-fix-it/
+         *                      
+         * data-destroy-dialog-on-close - If present the dialog will be destroyed after the dialog is closed.
+         *                     See jQuery UI dialog destroy method documentation.
+         *                     https://api.jqueryui.com/dialog/#method-destroy
          *
          * Positioning options: see http://api.jqueryui.com/position/
          * data-position-my   - 'left|center|right top|center|bottom', Order matters. Default is 'center'
@@ -792,6 +796,7 @@ yukon.ui = (function () {
                 tabbed = popup.is('[data-dialog-tabbed]'),
                 bigContent = popup.is('[data-big-content]'),
                 loadEvent = popup.data('loadEvent'),
+                destroyDialogOnClose = popup.is('[data-destroy-dialog-on-close]'),
                 options = {
                     modal: true,
                     minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
@@ -807,6 +812,11 @@ yukon.ui = (function () {
                         }
                         // Check for a focus element
                         mod.autofocus(popup);
+                    },
+                    close: function () {
+                        if (destroyDialogOnClose) {
+                            popup.dialog("destroy");
+                        }
                     }
                 },
                 buttonOptions = {},

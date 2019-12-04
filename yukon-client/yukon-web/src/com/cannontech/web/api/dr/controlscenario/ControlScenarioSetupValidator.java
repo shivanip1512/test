@@ -1,5 +1,9 @@
 package com.cannontech.web.api.dr.controlscenario;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -45,6 +49,14 @@ public class ControlScenarioSetupValidator extends SimpleValidator<ControlScenar
                     lmValidatorHelper.checkIfFieldRequired("gears[0].id", errors, program.getGears().get(0).getId(), "Gear");
                 }
                 errors.popNestedPath();
+            }
+        }
+        if (CollectionUtils.isNotEmpty(scenario.getAllPrograms())) {
+            List<Integer> programIds = new ArrayList<>();
+            scenario.getAllPrograms().forEach(p -> programIds.add(p.getProgramId()));
+            Set<Integer> duplicateProgramsIds = lmValidatorHelper.findDuplicates(programIds);
+            if (CollectionUtils.isNotEmpty(duplicateProgramsIds)) {
+                errors.reject(key + "assignedLoadPrograms.duplicate.notAllowed", new Object[] { duplicateProgramsIds }, "");
             }
         }
     }

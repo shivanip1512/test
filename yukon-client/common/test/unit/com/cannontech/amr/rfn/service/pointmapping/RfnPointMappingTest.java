@@ -1,6 +1,5 @@
 package com.cannontech.amr.rfn.service.pointmapping;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.io.IOException;
@@ -10,7 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.jdom2.Document;
 import org.jdom2.JDOMException;
@@ -33,12 +34,17 @@ import com.cannontech.amr.rfn.service.pointmapping.icd.YukonPointMappingIcdParse
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
+import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.stream.Try;
-import com.google.common.collect.ArrayListMultimap;
+import com.cannontech.database.data.point.PointType;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.common.collect.Sets.SetView;
 
@@ -46,8 +52,9 @@ public class RfnPointMappingTest {
     
     PaoDefinitionDao paoDefinitionDao = PaoDefinitionDaoImplTest.getTestPaoDefinitionDao();
     private static final String MAPPING = "com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml";
-    private static final Multimap<PaoType, String> knownMissingRfnPointMappingPoints = getMissingRfnPointMappingPoints(); 
-    
+    private static final SetMultimap<PaoType, String> knownMissingPoints = getPointsKnownMissingFromPaoDefinition();
+    private static final SetMultimap<PaoType, String> knownUnmappedPoints = getPointsKnownMissingFromRfnPointMapping();
+
     private Map<PaoType, Map<PointMapping, NameScale>> getRfnPointMapping() throws JDOMException, IOException {
         return RfnPointMappingParser.getPaoTypePoints(getRfnXmlStream());
     }
@@ -65,11 +72,13 @@ public class RfnPointMappingTest {
     
     @Test
     public void testOrdered() throws IOException, JDOMException {
-        //  Duplicate mappings will cause a parser error in RfnPointMappingParser's stream code, so detect those first
+        // Duplicate mappings will cause a parser error in RfnPointMappingParser's stream code, so detect those first
         detectDuplicateMappings();
-        
+
         confirmPointsExistOnDevices();
-        
+
+        confirmDevicePointsHaveMappings();
+
         compareToYukonPointMappingIcd();
     }
     
@@ -135,20 +144,67 @@ public class RfnPointMappingTest {
         
         String unexpectedSuccess =
                 successes.entries().stream()
-                    .filter(e -> knownMissingRfnPointMappingPoints.containsEntry(e.getKey(), e.getValue()))
+                    .filter(e -> knownMissingPoints.containsEntry(e.getKey(), e.getValue()))
                     .map(e -> e.getKey() + "/" + e.getValue())
                     .collect(Collectors.joining("\n"));
         
         String unexpectedFailure =
                 failures.entries().stream()
-                    .filter(e -> !knownMissingRfnPointMappingPoints.containsEntry(e.getKey(), e.getValue()))
+                    .filter(e -> !knownMissingPoints.containsEntry(e.getKey(), e.getValue()))
                     .map(e -> e.getKey() + "/" + e.getValue())
                     .collect(Collectors.joining("\n"));
 
         assertTrue("Points listed in knownMissingRfnPointMappingPoints but were successfully found:\n" + unexpectedSuccess, unexpectedSuccess.isEmpty());
         assertTrue("Points not found:\n" + unexpectedFailure, unexpectedFailure.isEmpty());
     }
-    
+
+    public void confirmDevicePointsHaveMappings() throws JDOMException, IOException {
+        Multimap<PaoType, String> rfnPointMappingNames = HashMultimap.create();
+
+        getRfnPointMapping().forEach((paoType, pointMappings) -> rfnPointMappingNames.putAll(paoType,
+                pointMappings.entrySet().stream()
+                        .filter(e -> e.getKey().isMappedFor(paoType))
+                        .map(e -> e.getValue().getName())
+                        .collect(Collectors.toList())));
+
+        // Confirm that all known unmapped points really are missing from rfnPointMapping
+        Multimap<PaoType, String> unexpectedlyMapped = Multimaps.filterEntries(knownUnmappedPoints,
+                e -> rfnPointMappingNames.containsEntry(e.getKey(), e.getValue()));
+
+        assertTrue("Points declared as \"unmapped\" actually found in rfnPointMapping:" + unexpectedlyMapped, unexpectedlyMapped.isEmpty());
+
+        // These are points created by the system
+        Predicate<String> ignoredPointNames = pointName ->
+        // Populated by Calc
+        pointName.equals("Outages")
+                // Populated by the Outage and Restore event processors
+                || pointName.equals("Outage Count")
+                || pointName.equals("Outage Restore Count")
+                || pointName.equals("Blink Count")
+                || pointName.equals("Blink Restore Count")
+                // Populated by PerIntervalAndLoadProfileCalculator
+                || pointName.endsWith("per Interval")
+                || pointName.endsWith("Profile");
+
+        Multimap<PaoType, String> paoDefinitionPointNames = HashMultimap.create();
+
+        // Look at the points on the PaoTypes with at least one entry in rfnPointMapping
+        rfnPointMappingNames.keySet().forEach(paoType -> paoDefinitionPointNames.putAll(paoType,
+                paoDefinitionDao.getAllPointTemplates(paoType).stream()
+                        .filter(pt -> pt.getPointType() == PointType.Analog)
+                        .map(PointTemplate::getName)
+                        .filter(ignoredPointNames.negate())
+                        .filter(pointName -> !knownUnmappedPoints.containsEntry(paoType, pointName))
+                        .collect(Collectors.toList())));
+
+        Multimap<PaoType, String> unmappedAnalogPoints = Multimaps.filterEntries(
+                paoDefinitionPointNames,
+                e -> !rfnPointMappingNames.containsEntry(e.getKey(), e.getValue()));
+
+        assertTrue("Analog points in PaoDefinition missing mappings in rfnPointMapping.xml:" + unmappedAnalogPoints,
+                unmappedAnalogPoints.isEmpty());
+    }
+
     public void compareToYukonPointMappingIcd() throws IOException, JDOMException {
 
         PointMappingIcd icd = getPointMappingIcd();
@@ -279,9 +335,14 @@ public class RfnPointMappingTest {
         }
     }
     
-    private static Multimap<PaoType, String> getMissingRfnPointMappingPoints() {
-        var missing = ArrayListMultimap.<PaoType, String>create();
-        
+    // Tell SonarLint to ignore the duplicated strings
+    @SuppressWarnings("squid:S1192")
+    private static SetMultimap<PaoType, String> getPointsKnownMissingFromPaoDefinition() {
+        // These are all points that are defined in rfnPointMapping for a given PaoType that have no point in paoDefinition.
+        // This can be due to a pointGroup that contains definitions that should not be applied to one or more of their PaoTypes.
+        // For example, the Amps Phase B point on the single-phase RFN420FD below.
+        var missing = HashMultimap.<PaoType, String>create();
+
         missing.put(PaoType.RFN420FD, "Amps Phase B");
         missing.put(PaoType.RFN420FD, "Amps Phase C");
         missing.put(PaoType.RFN420FD, "Avg Volts Phase B");
@@ -949,5 +1010,167 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530S4X, "kVArh Leading (Q1 + Q3)");
         
         return missing;
+    }
+
+    // Tell SonarLint to ignore the duplicated strings
+    @SuppressWarnings("squid:S1192")
+    private static SetMultimap<PaoType, String> getPointsKnownMissingFromRfnPointMapping() {
+        return ImmutableSetMultimap.<PaoType, String>builder()
+                .putAll(PaoType.RFN410CL,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN410FD,
+                        "Net kWh (Rate E kWh)",
+                        "Peak Demand Daily",
+                        "Peak kW (Rate E kW)",
+                        "Rate E kWh",
+                        "Received kWh (Rate E kWh)")
+                .putAll(PaoType.RFN410FL,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN410FX,
+                        "Net kWh (Rate E kWh)",
+                        "Peak Demand Daily",
+                        "Peak kW (Rate E kW)",
+                        "Rate E kWh",
+                        "Received kWh (Rate E kWh)")
+                .putAll(PaoType.RFN420CD,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN420CDW,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN420CL,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN420CLW,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN420FD,
+                        "Net kWh (Rate E kWh)",
+                        "Peak Demand Daily",
+                        "Peak kW (Rate E kW)",
+                        "Rate E kWh",
+                        "Received kWh (Rate E kWh)")
+                .putAll(PaoType.RFN420FL,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN420FRD,
+                        "Net kWh (Rate E kWh)",
+                        "Peak Demand Daily",
+                        "Peak kW (Rate E kW)",
+                        "Rate E kWh",
+                        "Received kWh (Rate E kWh)")
+                .putAll(PaoType.RFN420FRX,
+                        "Net kWh (Rate E kWh)",
+                        "Peak Demand Daily",
+                        "Peak kW (Rate E kW)",
+                        "Rate E kWh",
+                        "Received kWh (Rate E kWh)")
+                .putAll(PaoType.RFN420FX,
+                        "Net kWh (Rate E kWh)",
+                        "Peak Demand Daily",
+                        "Peak kW (Rate E kW)",
+                        "Rate E kWh",
+                        "Received kWh (Rate E kWh)")
+                .putAll(PaoType.RFN430A3K,
+                        "Average Delivered Power Factor",
+                        "Average Received Power Factor",
+                        "Coincident Peak kW",
+                        "Coincident Power Factor",
+                        "Coincident kVA",
+                        "Net kWh (Rate A kWh)",
+                        "Net kWh (Rate B kWh)",
+                        "Net kWh (Rate C kWh)",
+                        "Net kWh (Rate D kWh)",
+                        "Rate A Coincident Peak kW",
+                        "Rate A Coincident kVA",
+                        "Rate B Coincident Peak kW",
+                        "Rate B Coincident kVA",
+                        "Rate C Coincident Peak kW",
+                        "Rate C Coincident kVA",
+                        "Rate D Coincident Peak kW",
+                        "Rate D Coincident kVA")
+                .putAll(PaoType.RFN430A3R,
+                        "Average Delivered Power Factor",
+                        "Average Received Power Factor",
+                        "Coincident Peak kW",
+                        "Coincident Power Factor",
+                        "Coincident kVA",
+                        "Net kWh (Rate A kWh)",
+                        "Net kWh (Rate B kWh)",
+                        "Net kWh (Rate C kWh)",
+                        "Net kWh (Rate D kWh)",
+                        "Rate A Coincident Peak kW",
+                        "Rate A Coincident kVA",
+                        "Rate B Coincident Peak kW",
+                        "Rate B Coincident kVA",
+                        "Rate C Coincident Peak kW",
+                        "Rate C Coincident kVA",
+                        "Rate D Coincident Peak kW",
+                        "Rate D Coincident kVA")
+                .putAll(PaoType.RFN430A3T,
+                        "Net kWh (Rate A kWh)",
+                        "Net kWh (Rate B kWh)",
+                        "Net kWh (Rate C kWh)",
+                        "Net kWh (Rate D kWh)")
+                .putAll(PaoType.RFN430KV,
+                        "Coincident Peak kW",
+                        "Coincident Power Factor",
+                        "Coincident kVA",
+                        "Rate A Coincident Peak kW",
+                        "Rate A Coincident kVA",
+                        "Rate B Coincident Peak kW",
+                        "Rate B Coincident kVA",
+                        "Rate C Coincident Peak kW",
+                        "Rate C Coincident kVA",
+                        "Rate D Coincident Peak kW",
+                        "Rate D Coincident kVA")
+                .putAll(PaoType.RFN430SL1,
+                        "Coincident Cumulative Peak kVAr",
+                        "Demand at Peak kVa Coincidental",
+                        "kVA at Peak kW Coincidental",
+                        "Peak kVAr")
+                .putAll(PaoType.RFN430SL2,
+                        "Demand at Peak kVa Coincidental",
+                        "kVA at Peak kW Coincidental")
+                .putAll(PaoType.RFN430SL3,
+                        "Demand at Peak kVa Coincidental",
+                        "kVA at Peak kW Coincidental")
+                .putAll(PaoType.RFN430SL4,
+                        "Demand at Peak kVa Coincidental",
+                        "kVA at Peak kW Coincidental")
+                .putAll(PaoType.RFN440_2131TD,
+                        "Device Temperature",
+                        "Forward Inductive kVArh",
+                        "Reverse Inductive kVArh")
+                .putAll(PaoType.RFN440_2132TD,
+                        "Device Temperature",
+                        "Forward Inductive kVArh",
+                        "Reverse Inductive kVArh")
+                .putAll(PaoType.RFN440_2133TD,
+                        "Device Temperature",
+                        "Forward Inductive kVArh",
+                        "Reverse Inductive kVArh")
+                .putAll(PaoType.RFN510FL,
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN520FAX,
+                        "Current Angle",
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN520FAXD,
+                        "Current Angle",
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN520FRX,
+                        "Current Angle",
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN520FRXD,
+                        "Current Angle",
+                        "Peak Demand Daily")
+                .putAll(PaoType.RFN530S4X,
+                        "Received kVAh",
+                        "Net kWh",
+                        "Delivered kVAh")
+                .putAll(PaoType.RFN530FAX,
+                        "Current Angle Phase A",
+                        "Current Angle Phase B",
+                        "Current Angle Phase C")
+                .putAll(PaoType.RFN530FRX,
+                        "Current Angle Phase A",
+                        "Current Angle Phase B",
+                        "Current Angle Phase C")
+                .build();
     }
 }

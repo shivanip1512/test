@@ -14,6 +14,8 @@ import com.cannontech.common.dr.setup.LoadGroupHoneywell;
 import com.cannontech.common.dr.setup.LoadGroupItron;
 import com.cannontech.common.dr.setup.LoadGroupMCT;
 import com.cannontech.common.dr.setup.LoadGroupNest;
+import com.cannontech.common.dr.setup.LoadGroupPoint;
+import com.cannontech.common.dr.setup.LoadGroupRipple;
 import com.cannontech.common.dr.setup.LoadGroupVersacom;
 import com.cannontech.common.pao.PaoType;
 
@@ -65,6 +67,12 @@ public class LoadGroupBaseConverter implements Converter<String, LoadGroupBase> 
             break;
         case LM_GROUP_MCT:
             loadGroup = new LoadGroupMCT();
+            break;
+        case LM_GROUP_RIPPLE:
+            loadGroup = new LoadGroupRipple();
+            break;
+        case LM_GROUP_POINT:
+            loadGroup = new LoadGroupPoint();
             break;
         }
         return loadGroup;

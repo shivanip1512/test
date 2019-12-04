@@ -2,6 +2,7 @@ package com.cannontech.common.dr.setup;
 
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
@@ -64,6 +65,9 @@ public class LMModelFactory {
         case LM_GROUP_POINT:
             loadGroup = new LoadGroupPoint();
             break;
+        case LM_GROUP_RIPPLE:
+            loadGroup = new LoadGroupRipple();
+            break;
 
         }
         return loadGroup;
@@ -84,6 +88,9 @@ public class LMModelFactory {
             break;
         case EcobeeCycle:
             gearFields = new EcobeeCycleGearFields();
+            break;
+        case EcobeeSetpoint:
+            gearFields = new EcobeeSetpointGearFields();
             break;
         case HoneywellCycle:
             gearFields = new HoneywellCycleGearFields();

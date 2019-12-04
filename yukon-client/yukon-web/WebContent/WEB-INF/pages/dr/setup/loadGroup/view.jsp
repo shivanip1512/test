@@ -52,7 +52,7 @@
     </cti:displayForPageEditModes>
 
     <cti:url var="action" value="/dr/setup/loadGroup/save" />
-    <form:form modelAttribute="loadGroup" action="${action}" method="post">
+    <form:form modelAttribute="loadGroup" action="${action}" method="post" cssClass="js-load-group-form">
         <cti:csrfToken />
         <form:hidden path="id"/>
         <input type="hidden" name="loadGroup" value="${selectedSwitchType}"> 
@@ -104,6 +104,13 @@
             </c:if>
             <c:if test="${isMctGroupSelected}">
                 <%@ include file="mctGroup.jsp" %>
+            </c:if>
+            <c:if test="${isRippleGroupSelected}">
+                <input type="hidden" class="js-ripple-group-selected">
+                <%@ include file="rippleGroup.jsp" %>
+            </c:if>
+            <c:if test="${isPointGroupSelected}">
+                <%@ include file="pointGroup.jsp" %>
             </c:if>
             <c:if test="${not empty selectedSwitchType}">
                 <%@ include file="loadGroupOptional.jsp" %>

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMPaoDto;
@@ -104,6 +105,11 @@ public class LoadGroupSetupApiController {
     @InitBinder("LMCopy")
     public void setupBinderCopy(WebDataBinder binder) {
         binder.addValidators(lmCopyValidator);
+    }
+
+    @GetMapping("/getStartState/{pointId}")
+    public ResponseEntity<List<ControlRawState>> getStartState(@PathVariable int pointId) {
+        return new ResponseEntity<>(loadGroupService.getStartState(pointId), HttpStatus.OK);
     }
 
     @Autowired

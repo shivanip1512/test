@@ -81,7 +81,7 @@ public class ProgramConstraintHelper {
         MockProgramConstraint programConstraint = ProgramConstraintHelper.buildProgramConstraint();
         programConstraint.setName(name);
 
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
         constraintId = createResponse.path(CONTEXT_PROGRAM_CONSTRAINT_ID);
         assertTrue("Constraint Id should not be Null", constraintId != null);
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);

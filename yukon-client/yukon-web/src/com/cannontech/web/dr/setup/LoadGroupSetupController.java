@@ -1,6 +1,8 @@
 package com.cannontech.web.dr.setup;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +27,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
@@ -103,7 +107,7 @@ public class LoadGroupSetupController {
         } else {
             loadGroup.setName(name);
             loadGroup.setType(PaoType.valueOf(type));
-            controllerHelper.setDefaultValues(loadGroup);
+            controllerHelper.setDefaultValues(loadGroup, userContext.getYukonUser());
         }
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("switchTypes", switchTypes);
@@ -375,6 +379,26 @@ public class LoadGroupSetupController {
         model.addAttribute("loadGroupId", id);
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return "dr/setup/copyLoadGroup.jsp";
+    }
+
+    @GetMapping("/getStartState/{pointId}")
+    public @ResponseBody Map<String, List<ControlRawState>> getStartState(@PathVariable int pointId,
+            YukonUserContext userContext, HttpServletRequest request) {
+        List<ControlRawState> startStates = retrieveStartState(pointId, userContext, request);
+        return Collections.singletonMap("startStates", startStates);
+    }
+
+    private List<ControlRawState> retrieveStartState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
+        // Give API call to get all control state
+        List<ControlRawState> startStates = new ArrayList<>();
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + pointId);
+        ResponseEntity<? extends Object> response =
+                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            startStates = (List<ControlRawState>) response.getBody();
+        }
+        return startStates;
     }
 
     /**

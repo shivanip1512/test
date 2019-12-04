@@ -34,4 +34,15 @@ public interface StateGroupDao {
      * for rawState
      */
     LiteState findLiteState(int stateGroupId, int rawState);
+
+    /**
+     * Retrieves the list of Raw State for the specified pointId.
+     */
+    List<LiteState> getStateList(Integer pointId);
+
+    /**
+     * Retrieves the name of Raw State for the specified pointId.
+     */
+    String getRawStateName(Integer pointId, Integer rawState);
+
 }

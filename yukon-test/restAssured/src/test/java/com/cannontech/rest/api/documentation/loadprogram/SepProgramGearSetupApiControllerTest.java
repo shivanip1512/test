@@ -98,7 +98,7 @@ public class SepProgramGearSetupApiControllerTest {
      */
     public void programConstraint_Create() {
         programConstraint = ProgramConstraintHelper.buildProgramConstraint();
-        ExtractableResponse<?> createResponse = ApiCallHelper.post("createProgramConstraint", programConstraint);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveProgramConstraint", programConstraint);
         Integer constraintId = createResponse.path(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID);
         programConstraint.setId(constraintId);
         assertTrue("Constraint Id should not be Null", constraintId != null);

@@ -17,6 +17,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.search.result.SearchResults;
@@ -50,6 +51,8 @@ public class ApiRequestHelper {
         paramTypeRefMap.put(LMDto.class, new ParameterizedTypeReference<List<LMDto>>() {
         });
         paramTypeRefMap.put(LiteGear.class, new ParameterizedTypeReference<List<LiteGear>>() {
+        });
+        paramTypeRefMap.put(ControlRawState.class, new ParameterizedTypeReference<List<ControlRawState>>() {
         });
     }
     

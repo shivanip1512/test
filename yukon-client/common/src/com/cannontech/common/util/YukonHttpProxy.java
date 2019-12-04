@@ -6,6 +6,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.logging.log4j.Logger;
 
@@ -70,7 +71,7 @@ public class YukonHttpProxy {
         
         Optional<YukonHttpProxy> oProxy = Optional.ofNullable(null);
         
-        if (!proxySetting.equals("none")) {
+        if (StringUtils.isNotBlank(proxySetting)) {
             try {
                 YukonHttpProxy proxy = new YukonHttpProxy(proxySetting);
                 oProxy = Optional.of(proxy);

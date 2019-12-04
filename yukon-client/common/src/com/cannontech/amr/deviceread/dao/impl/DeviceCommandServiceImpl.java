@@ -1,13 +1,12 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -59,13 +58,12 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
 
     private ScheduledExecutorService scheduledExecutorService = null;
 
-    private final Set<CompletionCallback> callbacksAwaitingCompletion =
-        Collections.synchronizedSet(new HashSet<CompletionCallback>());
+    private final CopyOnWriteArraySet<CompletionCallback> callbacksAwaitingCompletion = new CopyOnWriteArraySet<CompletionCallback>();
 
     @Override
-    public CompletionCallback execute(Set<SimpleDevice> devices, Set<? extends Attribute> attributes,
-            final String command, DeviceRequestType type, LiteYukonUser user, RetryParameters retryParameters,
-            CommandCompletionCallback<CommandRequestDevice> taskCallback, String scheduleName) {
+    public CompletionCallback execute(Set<SimpleDevice> devices, Set<? extends Attribute> attributes, String command,
+            DeviceRequestType type, LiteYukonUser user, RetryParameters retryParameters,
+            CommandCompletionCallback<CommandRequestDevice> taskCallback, String scheduleName, Integer jobId) {
 
         setupTimeoutCheck();
 
@@ -79,12 +77,10 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
             CommandRequestUnsupportedType.UNSUPPORTED);
 
         if (log.isDebugEnabled()) {
-            log.debug("Read started type= " + type + " Context id=" + execution.getContextId());
-            log.debug("Context id=" + execution.getContextId() + " Unsupported devices:" + unsupported);
-            log.debug("Context id=" + execution.getContextId() + " Commands:" + commands);
+            log.debug("Job id {} context id {} type {} unsupported {} commands {}", jobId, execution.getContextId(), type, unsupported, commands);
         }
 
-        return new CompletionCallback(execution, retryParameters, taskCallback, commands, scheduleName, user);
+        return new CompletionCallback(execution, retryParameters, taskCallback, commands, scheduleName, user, jobId);
     }
 
     public class CompletionCallback extends CommandCompletionCallback<CommandRequestDevice> {
@@ -103,10 +99,12 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         //Name used for event log
         private String deviceRequestTypeName;
         private LiteYukonUser user;
+        private int jobId;
 
         public CompletionCallback(CommandRequestExecution execution, RetryParameters retryParameters,
                 CommandCompletionCallback<CommandRequestDevice> scheduledTaskCallback,
-                Set<CommandRequestDevice> commands, String scheduleName, LiteYukonUser user) {
+                Set<CommandRequestDevice> commands, String scheduleName, LiteYukonUser user, int jobId) {
+            this.jobId = jobId;
             this.scheduleName = scheduleName;
             this.taskCallback = scheduledTaskCallback;
             this.contextId = execution.getContextId();
@@ -119,7 +117,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
                 eventLogService.readStarted(deviceRequestTypeName, scheduleName, creationTime, timeoutTime,
                     commands.size(), contextId);
                 // first execution starts with tryNumber=0;
-                currentCallback = new TryCallback(0, this, execution, commands, scheduleName);
+                currentCallback = new TryCallback(0, this, execution, commands, scheduleName, jobId);
                 executionService.execute(new ArrayList<>(commands), currentCallback, execution, true, user);
             } else {
                 eventLogService.readAttempted(deviceRequestTypeName, scheduleName, creationTime, contextId);
@@ -128,8 +126,8 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
                 execution.setStopTime(new Date());
                 commandRequestExecutionDao.saveOrUpdate(execution);
                 if (log.isDebugEnabled()) {
-                    log.debug(
-                        "Context id=" + execution.getContextId() + " No commands to send. Devices are unsupported.");
+                    log.debug("Job id {} context id {} No commands to send. Devices are unsupported.", jobId,
+                            contextId);
                 }
                 taskCallback.complete();
             }
@@ -145,7 +143,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
                     eventLogService.readCompleted(deviceRequestTypeName, scheduleName, contextId);
                     // CommandResultMessageListener will mark execution as complete
                     if (log.isDebugEnabled()) {
-                        log.debug("Context id=" + contextId + " Execution is complete.");
+                        log.debug("Job id {} context id {} Execution is complete.", jobId, contextId);
                     }
                     taskCallback.complete();
                 }
@@ -216,8 +214,8 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
             retryExecution.setStartTime(new Date());
             retryExecution.setUserName(currentCallback.tryExecution.getUserName());
             commandRequestExecutionDao.saveOrUpdate(retryExecution);
-            currentCallback = new TryCallback(retry.getKey(), this, retryExecution, failedCommands, scheduleName);
-            log.debug(currentCallback.getLogDetails() + " try[try number, queued?]=" + retry);
+            currentCallback = new TryCallback(retry.getKey(), this, retryExecution, failedCommands, scheduleName, jobId);
+            log.debug("{} try[try number, queued?] {}", currentCallback.getLogDetails(), retry);
             // CommandResultMessageListener will mark retry as complete
             executionService.execute(new ArrayList<>(failedCommands), currentCallback, retryExecution, true, retry.getValue(), user);
             // log.debug("*>>>>>>>>>>>>TEST CANCEL/TIMEOUT/PORTER CRASH NOW*");
@@ -256,9 +254,9 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
                 }
             }
             if (log.isDebugEnabled()) {
-                log.debug("Context id=" + contextId + " created on "
-                    + creationTime.toDateTime().toString(dateFormatDebugPattern) + ". Timeout set to "
-                    + timeoutTime.toDateTime().toString(dateFormatDebugPattern));
+                log.debug("Job id {} context id {} created on {}. Timeout set to ", jobId, contextId,
+                        creationTime.toDateTime().toString(dateFormatDebugPattern),
+                        timeoutTime.toDateTime().toString(dateFormatDebugPattern));
             }
         }
 
@@ -281,7 +279,7 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
                 retries.put(counter++, false);
             }
             if (log.isDebugEnabled()) {
-                log.debug("Context id=" + contextId + " Retries[try number, queued]=" + retries);
+                log.debug("Job id {} context id {} retries[try number, queued] {}.", jobId, contextId, retries);
             }
         }
 
@@ -318,13 +316,15 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         private final Set<CommandRequestDevice> notResponded = new HashSet<>();
         private final Set<CommandRequestDevice> commandsToSend = new HashSet<>();
         private final int tryNumber;
+        private final int jobId;
         private final String scheduleName;
         private boolean processingExceptionOccurred= false;
 
         private final Set<CommandRequestDevice> failedCommands = new HashSet<>();
 
         public TryCallback(int tryNumber, CompletionCallback callback, CommandRequestExecution tryExecution,
-                Set<CommandRequestDevice> commands, String scheduleName) {
+                Set<CommandRequestDevice> commands, String scheduleName, int jobId) {
+            this.jobId = jobId;
             this.callback = callback;
             this.tryExecution = tryExecution;
             commandsToSend.addAll(commands);
@@ -408,8 +408,8 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
         }
 
         public String getLogDetails() {
-            String details = "Context id=" + tryExecution.getContextId() + " Execution id=" + tryExecution.getId()
-                + " Try number=" + tryNumber + " Execution Status=" + tryExecution.getCommandRequestExecutionStatus();
+            String details = "Job id " + jobId +" Context id " + tryExecution.getContextId() + " Execution id " + tryExecution.getId()
+                + " Try #" + tryNumber + " Status=" + tryExecution.getCommandRequestExecutionStatus();
             return details;
         }
 
@@ -426,24 +426,16 @@ public class DeviceCommandServiceImpl implements DeviceCommandService {
     private final class TimeoutChecker implements Runnable {
         @Override
         public void run() {
-            synchronized (callbacksAwaitingCompletion) {
-                try {
-                    Iterator<CompletionCallback> iterator = callbacksAwaitingCompletion.iterator();
-                    while (iterator.hasNext()) {
-                        CompletionCallback callback = iterator.next();
-                        callback.checkTimeout();
-                        if (callback.isComplete) {
-                            iterator.remove();
-                            if (log.isDebugEnabled()) {
-                                log.debug(" Context id=" + callback.getContextId() + " Callback created on "
-                                    + callback.creationTime.toDateTime().toString(
-                                        CompletionCallback.dateFormatDebugPattern)
-                                    + " is removed from retryCallbacksAwaitingCompletion list");
-                            }
-                        }
+            for(CompletionCallback callback:callbacksAwaitingCompletion) {
+                callback.checkTimeout();
+                if (callback.isComplete) {
+                    callbacksAwaitingCompletion.remove(callback);
+                    if (log.isDebugEnabled()) {
+                        log.debug(" Context id=" + callback.getContextId() + " Callback created on "
+                            + callback.creationTime.toDateTime().toString(
+                                CompletionCallback.dateFormatDebugPattern)
+                            + " is removed from retryCallbacksAwaitingCompletion list");
                     }
-                } catch (Exception e) {
-                    log.error(e);
                 }
             }
         }

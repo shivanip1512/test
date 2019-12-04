@@ -90,6 +90,11 @@ public class CollectionActionServiceImpl implements CollectionActionService {
         cancel(result, user);
     }
     
+    @Override
+    public void removeResultFromCache(int key) {
+        cache.invalidate(key);
+    }
+    
     @Transactional
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
@@ -163,6 +168,7 @@ public class CollectionActionServiceImpl implements CollectionActionService {
             addUnsupportedToResult(CANCELED, result, result.getCancelableDevices());
         }
         result.setStopTime(new Instant(stopTime));
+        log.debug("Cache key:" + result.getCacheKey() + " updated result status to " + result.getStatus());
         eventLogHelper.log(result);
     } 
 

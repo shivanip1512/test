@@ -26,6 +26,7 @@ import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.common.dr.gear.setup.WhenToChange;
 import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
@@ -149,6 +150,7 @@ public class LoadProgramSetupControllerHelper {
         if (CollectionUtils.isNotEmpty(selectedMemberIds)) {
             directMemberControls =
                 Lists.transform(selectedMemberIds, new Function<Integer, ProgramDirectMemberControl>() {
+                    @Override
                     public ProgramDirectMemberControl apply(Integer subordinateProgId) {
                         ProgramDirectMemberControl directMemberControl = new ProgramDirectMemberControl();
                         directMemberControl.setSubordinateProgId(subordinateProgId);
@@ -169,6 +171,7 @@ public class LoadProgramSetupControllerHelper {
         if (CollectionUtils.isNotEmpty(selectedNotificationGroupIds)) {
             notificationGroups =
                 Lists.transform(selectedNotificationGroupIds, new Function<Integer, NotificationGroup>() {
+                    @Override
                     public NotificationGroup apply(Integer notificationGrpID) {
                         NotificationGroup notificationGroup = new NotificationGroup();
                         notificationGroup.setNotificationGrpID(notificationGrpID);
@@ -236,6 +239,10 @@ public class LoadProgramSetupControllerHelper {
             EcobeeCycleGearFields ecobeeCycleGearFields = (EcobeeCycleGearFields) programGear.getFields();
             setEcobeeCycleGearFieldsDefaultValues(ecobeeCycleGearFields);
             break;
+        case EcobeeSetpoint:
+            EcobeeSetpointGearFields ecobeeSetpointGearFields = (EcobeeSetpointGearFields) programGear.getFields();
+            setEcobeeSetpointGearFieldsDefaultValues(ecobeeSetpointGearFields);
+            break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             setHoneywellCycleGearFieldsDefaultValues(honeywellCycleGearFields);
@@ -273,7 +280,7 @@ public class LoadProgramSetupControllerHelper {
 
     private void setDefaultRotationGearFields(RotationGearFields rotationGearFields) {
         rotationGearFields.setShedTime(5);
-        rotationGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
+        rotationGearFields.setSendRate(TimeIntervals.NONE.getSeconds());
         rotationGearFields.setCapacityReduction(100);
     }
 
@@ -288,7 +295,7 @@ public class LoadProgramSetupControllerHelper {
         smartCycleGearFields.setCyclePeriodInMinutes(30);
         smartCycleGearFields.setCycleCountSendType(CycleCountSendType.FixedCount);
         smartCycleGearFields.setStartingPeriodCount(8);
-        smartCycleGearFields.setSendRate(TimeIntervals.HOURS_1.getSeconds());
+        smartCycleGearFields.setSendRate(TimeIntervals.NONE.getSeconds());
         smartCycleGearFields.setHowToStopControl(HowToStopControl.StopCycle);
         smartCycleGearFields.setStopCommandRepeat(0);
         smartCycleGearFields.setCapacityReduction(100);
@@ -319,7 +326,7 @@ public class LoadProgramSetupControllerHelper {
 
     private void setTimeRefreshGearFieldsDefaultValues(TimeRefreshGearFields timeRefreshGearFields) {
         timeRefreshGearFields.setShedTime(TimeIntervals.HOURS_1.getSeconds());
-        timeRefreshGearFields.setSendRate(TimeIntervals.MINUTES_30.getSeconds());
+        timeRefreshGearFields.setSendRate(TimeIntervals.NONE.getSeconds());
         timeRefreshGearFields.setGroupSelectionMethod(GroupSelectionMethod.LastControlled);
         timeRefreshGearFields.setHowToStopControl(HowToStopControl.TimeIn);
         timeRefreshGearFields.setStopOrder(StopOrder.RANDOM);
@@ -334,6 +341,13 @@ public class LoadProgramSetupControllerHelper {
         ecobeeCycleGearFields.setRampOut(true);
         ecobeeCycleGearFields.setControlPercent(50);
         ecobeeCycleGearFields.setCapacityReduction(100);
+    }
+
+    private void setEcobeeSetpointGearFieldsDefaultValues(EcobeeSetpointGearFields ecobeeSetpointGearFields) {
+        ecobeeSetpointGearFields.setMandatory(false);
+        ecobeeSetpointGearFields.setSetpointOffset(0);
+        ecobeeSetpointGearFields.setMode(Mode.COOL);
+        ecobeeSetpointGearFields.setCapacityReduction(100);
     }
 
     private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
@@ -463,6 +477,11 @@ public class LoadProgramSetupControllerHelper {
             ecobeeCycleGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(ecobeeCycleGearFields.getWhenToChangeFields()));
             break;
+        case EcobeeSetpoint:
+            EcobeeSetpointGearFields ecobeeSetpointGearFields = (EcobeeSetpointGearFields) programGear.getFields();
+            ecobeeSetpointGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(ecobeeSetpointGearFields.getWhenToChangeFields()));
+            break;
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             honeywellCycleGearFields.setWhenToChangeFields(
@@ -583,6 +602,11 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
+        case EcobeeSetpoint:
+            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
+            break;
         case HoneywellCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
@@ -591,7 +615,7 @@ public class LoadProgramSetupControllerHelper {
         case ItronCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("cycleType", ItronCycleType.values());
-            model.addAttribute("dutyCyclePeriod", ImmutableList.of(30, 60));
+            model.addAttribute("dutyCyclePeriod", ImmutableList.of(15, 30, 60));
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         case NestStandardCycle:

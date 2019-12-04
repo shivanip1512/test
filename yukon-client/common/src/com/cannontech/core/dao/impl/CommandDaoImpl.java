@@ -226,7 +226,7 @@ public final class CommandDaoImpl implements CommandDao {
         sql.append("SELECT CommandId, Command, Label, Category");
         sql.append("FROM Command");
         sql.append("WHERE CommandId > 0");
-        sql.append("AND CommandId NOT IN (SELECT CommandId FROM DeviceTypeCommand WHERE DeviceTypeCommandId > 0)");
+        sql.append("AND CommandId NOT IN (SELECT CommandId FROM DeviceTypeCommand WHERE DeviceCommandId > 0)");
         
         List<LiteCommand> commands = jdbcTemplate.query(sql, COMMAND_MAPPER);
         commands.forEach(command -> deleteCommand(command));

@@ -107,6 +107,16 @@
         <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
         <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
+        <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
+        <pointInfo name="Received kVAh (Rate A kVAh)" attributes="RECEIVED_KVAH_RATE_A"/>
+        <pointInfo name="Received kVAh (Rate B kVAh)" attributes="RECEIVED_KVAH_RATE_B"/>
+        <pointInfo name="Received kVAh (Rate C kVAh)" attributes="RECEIVED_KVAH_RATE_C"/>
+        <pointInfo name="Received kVAh (Rate D kVAh)" attributes="RECEIVED_KVAH_RATE_D"/>
+        <pointInfo name="Received Peak kVA" attributes="RECEIVED_PEAK_KVA"/>
+        <pointInfo name="Received Peak kVA (Rate A kVA)" attributes="RECEIVED_PEAK_KVA_RATE_A"/>
+        <pointInfo name="Received Peak kVA (Rate B kVA)" attributes="RECEIVED_PEAK_KVA_RATE_B"/>
+        <pointInfo name="Received Peak kVA (Rate C kVA)" attributes="RECEIVED_PEAK_KVA_RATE_C"/>
+        <pointInfo name="Received Peak kVA (Rate D kVA)" attributes="RECEIVED_PEAK_KVA_RATE_D"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" init="true" attributes="RECEIVED_KWH"/>
         <pointInfo name="Received kWh (Rate A kWh)" attributes="RECEIVED_KWH_RATE_A"/>
