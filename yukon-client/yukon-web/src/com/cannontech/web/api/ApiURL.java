@@ -7,7 +7,7 @@ public class ApiURL {
     public static final String drLoadGroupDeleteUrl = "/dr/setup/loadGroup/delete/";
     public static final String drLoadGroupCopyUrl = "/dr/setup/loadGroup/copy/";
     public static final String drLoadGroupUpdateUrl = "/dr/setup/loadGroup/update/";
-    public static final String drRetrieveAvaliableLoadGroupsUrl = "/dr/setup/loadGroup/availableLoadGroup";
+    public static final String drRetrieveAvailableLoadGroupsUrl = "/dr/setup/loadGroup/availableLoadGroup";
     public static final String drStartStateUrl = "/dr/setup/loadGroup/getStartState/";
 
     public static final String drSetupFilterUrl = "/dr/setup/filter";

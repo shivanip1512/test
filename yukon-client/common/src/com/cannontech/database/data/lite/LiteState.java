@@ -62,9 +62,9 @@ public class LiteState extends LiteBase {
     }
 
     /**
-     * Returns true in case the raw state is either 0 or 1 in case of load group point
+     * Returns true in case the raw state is either 0 or 1 in case of Point Load Group
      */
-    public boolean isValidRawState() {
+    public boolean isValidPointGroupRawState() {
         return (getStateRawState() == 0 || getStateRawState() == 1);
     }
 

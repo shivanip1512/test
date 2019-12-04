@@ -111,7 +111,7 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                         .getStatesList()
                         .stream()
                         .filter(state -> state.getStateRawState() == loadGroup.getStartControlRawState().getRawState()
-                                && state.isValidRawState())
+                                && state.isValidPointGroupRawState())
                         .findFirst();
 
                 if (liteState.isEmpty()) {

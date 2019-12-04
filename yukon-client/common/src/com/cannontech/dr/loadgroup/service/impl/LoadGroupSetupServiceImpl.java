@@ -223,7 +223,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     public List<ControlRawState> getStartState(int pointId) {
         List<LiteState> stateList = stateGroupDao.getStateList(pointId);
         return stateList.stream()
-                        .filter(state -> state.isValidRawState())
+                        .filter(state -> state.isValidPointGroupRawState())
                         .map(state -> new ControlRawState(state.getStateRawState(), state.getStateText()))
                         .collect(Collectors.toList());
     }
