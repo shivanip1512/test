@@ -732,6 +732,8 @@ public class OperatorHardwareController {
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
         model.addAttribute("showMacAddress", type.isSupportsMacAddress());
+        model.addAttribute("showSecondaryMacAddress", type.isItron());
+        
         if (type.isZigbee()) {
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);

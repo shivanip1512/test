@@ -57,6 +57,9 @@ public class Hardware {
     /* Honeywell field */
     private Integer deviceVendorUserId;
     
+    /* Itron field */
+    private String secondaryMacAddress;
+    
     public int getAccountId() {
         return accountId;
     }
@@ -344,6 +347,14 @@ public class Hardware {
 
     public void setDeviceVendorUserId(Integer deviceVendorUserId) {
         this.deviceVendorUserId = deviceVendorUserId;
+    }
+
+    public String getSecondaryMacAddress() {
+        return secondaryMacAddress;
+    }
+
+    public void setSecondaryMacAddress(String secondaryMacAddress) {
+        this.secondaryMacAddress = secondaryMacAddress;
     }
 
 }
