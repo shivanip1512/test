@@ -129,8 +129,8 @@ public class BatteryNodeAnalysisController {
                     return "redirect:view";
                 } catch (BatteryNodeFileParsingException e) {
                     flash.setWarning(new YukonMessageSourceResolvable(
-                            "yukon.web.modules.support.batteryNodeAnalysisController.fileParsingError", e.getMessage()));
-                    log.warn("Error in file parsing: " + e.getMessage() + " unexpected added or missing columns present");
+                            "yukon.web.modules.support.batteryNodeAnalysisController.fileParsingError", uploadedFile.getOriginalFilename()));
+                    log.warn("The file " + uploadedFile.getOriginalFilename() + " was unable to be processed due to an incorrect number of columns being present");
                     return "redirect:view";
                 } catch (BatteryNodeUnableToReadFileException e) {
                     flash.setError(new YukonMessageSourceResolvable(
