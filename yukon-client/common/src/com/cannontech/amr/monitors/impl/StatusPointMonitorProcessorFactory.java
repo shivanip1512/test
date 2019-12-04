@@ -256,8 +256,13 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
             recentStatusPoints.put(pointId, nextValue);
         }
         PointValueHolder returnValue = returnCachedValue ? cachedValue : rphValue;
-        log.debug("Next point value: {} for pointId: {}", nextValue.getValue(), nextValue.getId());
-        log.debug("Previous point value: {} for pointId: {} cached: {}", returnValue.getValue(), returnValue.getId(), returnCachedValue);
+        if (log.isDebugEnabled()) {
+            log.debug("Next point value: {} timestamp: {} for pointId: {}  -  Previous point value: {} timestamp: {} cached: {}",
+                      nextValue.getValue(), nextValue.getPointDataTimeStamp(), nextValue.getId(),
+                      (returnValue == null ? null : returnValue.getValue()),
+                      (returnValue == null ? null : returnValue.getPointDataTimeStamp()),
+                      returnCachedValue);
+        }
         
         return returnValue;
     }
