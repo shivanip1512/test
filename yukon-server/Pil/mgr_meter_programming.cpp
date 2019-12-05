@@ -144,14 +144,14 @@ Etiam viverra tincidunt gravida. Curabitur felis eros, ullamcorper in volutpat a
     return buf;
 }
 
-boost::shared_ptr<Cti::Devices::RfnDevice> MeterProgrammingManager::getReportedDevice(const Cti::RfnIdentifier& rfnIdentifier, const std::string reportedGuid)
+boost::shared_ptr<Cti::Devices::RfnDevice> MeterProgrammingManager::validateDeviceForGuid(const Cti::RfnIdentifier& rfnIdentifier, const std::string & requestedGuid)
 {
     if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
     {
         std::string assignedGuid;
 
         if( rfnDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, assignedGuid)
-                && assignedGuid == reportedGuid )
+                && assignedGuid == requestedGuid )
         {
             return rfnDevice;
         }
@@ -159,7 +159,7 @@ boost::shared_ptr<Cti::Devices::RfnDevice> MeterProgrammingManager::getReportedD
         {
             CTILOG_ERROR(dout, "Configuration ID mismatch" << FormattedList::of(
                                 "Assigned", assignedGuid,
-                                "Reported", reportedGuid));
+                                "Requested", requestedGuid));
         }
     }
 
@@ -171,7 +171,7 @@ bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, con
     //  TODO - remove after initial E2E block transfer integration test
     return true;
 
-    if( auto rfnDevice = getReportedDevice(rfnIdentifier, guid) )
+    if( auto rfnDevice = validateDeviceForGuid(rfnIdentifier, guid) )
     {
         return rfnDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
     }
@@ -181,7 +181,7 @@ bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, con
 void MeterProgrammingManager::updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size)
 {
     //  update the programming progress percentage
-    if( auto rfnDevice = getReportedDevice(rfnIdentifier, guid) )
+    if( auto rfnDevice = validateDeviceForGuid(rfnIdentifier, guid) )
     {
         const size_t totalSize  = getProgram(guid).size();
         const double percentage = 100.0 * size / totalSize;

@@ -25,7 +25,7 @@ public:
 
 private:
 
-    boost::shared_ptr<Cti::Devices::RfnDevice> getReportedDevice(const Cti::RfnIdentifier& rfnIdentifier, const std::string reportedGuid);
+    boost::shared_ptr<Cti::Devices::RfnDevice> validateDeviceForGuid(const Cti::RfnIdentifier& rfnIdentifier, const std::string & requestedGuid);
 
     std::map<std::string, Bytes> _programs;
     CtiDeviceManager& _deviceManager;
