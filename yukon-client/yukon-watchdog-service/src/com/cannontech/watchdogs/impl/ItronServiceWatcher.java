@@ -16,7 +16,6 @@ import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceGroupTyp
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRequestType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ObjectFactory;
 import com.cannontech.dr.itron.service.impl.ItronEndpointManager;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
@@ -92,8 +91,6 @@ public class ItronServiceWatcher extends ServiceStatusWatchdogImpl {
 
     @Override
     public boolean shouldRun() {
-        String itronApiURL = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
-        String itronUserName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
-         return (!(itronApiURL.isBlank() || itronUserName.isBlank())) && watcherService.isServiceRequired(getServiceName());
+        return watcherService.isServiceRequired(getServiceName());
     }
 }
