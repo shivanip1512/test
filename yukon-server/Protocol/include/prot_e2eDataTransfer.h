@@ -52,8 +52,6 @@ public:
     E2e::EndpointMessage handleIndication(const Bytes &payload, const RfnIdentifier endpointId);
     static YukonError_t translateIndicationCode(const unsigned short code, const RfnIdentifier endpointId);
 
-    void handleTimeout(const RfnIdentifier endpointId);
-
 protected:
 
     virtual unsigned short getOutboundId();
