@@ -57,6 +57,10 @@
                     <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
                 </cm:dropdown>
             </span>
+            
+            <span class="fr">
+                <cti:button label="All Primary Routes" classes="js-all-routes"/>
+            </span>
         </div>
         
         <div id="comprehensive-map" class="map"></div>
