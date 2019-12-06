@@ -519,7 +519,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/mail-1.4.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/azure-servicebus-3.1.3.jar" sourcepath="C:/Yukon jars/sevice bus Sources.zip"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/azure-servicebus-3.1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/accessors-smart-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/activation-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/adal4j-1.6.2.jar"/>

@@ -17,7 +17,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/net.minidev/accessors-smart/1.2"
     md5 : c28b871d258b4d347559d2eb7ecec4a3
     sha1 : c592b500269bfde36096641b01238a8350f8aa31
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -31,7 +31,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/javax.activation/activation/1.1"
     md5 : 8ae38e87cd4f86059c0294a8fe3e0b18
     sha1 : e6cb541461c2834bdea3eb920f1884d1eb508b50
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -129,7 +129,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/adal4j/1.6.2"
     md5 : a8d7588c33a07e9cb1990449d3519009
     sha1 : 339bafd008c94e9a272d414489976f282df5a9c7
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -143,7 +143,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.squareup.retrofit2/adapter-rxjava/2.4.0"
     md5 : 24fa4d82492dffe5cece7aca06a9ee49
     sha1 : 6c6372338fca45a6c2e0f7a5dda4b0a4b9159e58
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
 
@@ -255,7 +255,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.ow2.asm/asm/5.0.4"
     md5 : c8a73cdfdf802ab0220c860d590d0f84
     sha1 : 0da08b8cce7bbf903602a25a3a163ae252435795
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -283,7 +283,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client/2.5.2"
     md5 : aab1d2574de2ea5ae6f0fedeead79966
     sha1 : bb626d1a6502e3fea3eb7335d3cc87a9e3ff7e8d
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -297,7 +297,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client-netty-utils/2.5.2"
     md5 : 0e854123d11863c8db8a714d9c736877
     sha1 : 6b08eb7386992012e373751d870abd0dec3b354d
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -339,7 +339,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/azure-annotations/1.7.0"
     md5 : 713072d0a43152dbd8952140458c7084
     sha1 : a3ce6c40e90b0082254815ebda54f3e071f156b0
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -353,7 +353,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/azure-client-authentication/1.6.7"
     md5 : 25b4c7c7a6925863addcf78a2584bceb
     sha1 : a7a6bc514099a7b59b8eb2901bbb65f240c343f0
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -367,7 +367,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.microsoft.azure/azure-client-runtime/1.6.7"
     md5 : 9392f7e6c774811907157ce9d0913f90
     sha1 : 7f91ea283ef4ecfa3c3ed4cb20c9bb6da6ac696f
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :    
   
@@ -549,7 +549,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.microsoft.rest/client-runtime/1.6.7"
     md5 : 2902e5aa181c07225dbf572176c99ea4
     sha1 : 830cfb3b9ebe890ef136e1f1cf8c7b090c64bcca
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :    
   
@@ -801,7 +801,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.squareup.retrofit2/converter-jackson/2.5.0"
     md5 : f4f732f2da8360fe061a62d712d2b0bd
     sha1 : 2fb02f5ce597f3ba04c3530908a8a9c7458b40a1
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :    
   
@@ -1109,7 +1109,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-joda/2.9.8"
     md5 : bbeb928a30cacb612a6dc7d17010b905
     sha1 : e96674179c8b8683afa8a17c9300aa5882a9e9c3
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :    
   
@@ -1179,7 +1179,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/javax.activation/javax.activation-api/1.2.0"
     md5 : be7c430df50b330cffc4848a3abedbfb
     sha1 : bf744c1e2776ed1de3c55c8dac1057ec331ef744
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :    
   
@@ -1221,7 +1221,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.sun.mail/javax.mail/1.6.1"
     md5 : 95b39bf7494bbd3725861297206878a4
     sha1 : 757ba4630692bb2a1ec2d9d57a616b63f15e947e
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -1361,7 +1361,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.github.stephenc.jcip/jcip-annotations/1.0-1"
     md5 : d62dbfa8789378457ada685e2f614846
     sha1 : ef31541dd28ae2cefdd17c7ebf352d93e9058c63
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -1585,7 +1585,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/net.minidev/json-smart/2.3"
     md5 : f2a921d4baaa7308de04eed4d8d72715
     sha1 : 007396407491352ce4fa30de92efb158adb76b5b
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -1655,7 +1655,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.nimbusds/lang-tag/1.4.4"
     md5 : 4eac3f24cee18edaae2cdd8b87f25b73
     sha1 : 1db9a709239ae473a69b5424c7e78d0b7108229d
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -1767,7 +1767,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.squareup.okhttp3/logging-interceptor/3.11.0"
     md5 : a3e2991b47b539c678777ee60a90b498
     sha1 : f24576b8fd39d34149654df9702f070042083b65
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -1907,7 +1907,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-buffer/4.1.27.Final"
     md5 : fe2aed3c4995cb37fc8dd699ce173fe7
     sha1 : aafe2b9fb0d8f3b200cf10b9fd6486c6a722d7a1
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -1921,7 +1921,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec/4.1.27.Final"
     md5 : 48ca1cda10f79167d3091a04e30c9438
     sha1 : d2653d78ebaa650064768fb26b10051f5c8efb2c
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -1935,7 +1935,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-dns/4.1.27.Final"
     md5 : 9a2efc47930de938879d4234a61e1496
     sha1 : 860d46858b46706d96e562dbb53d13457a935872
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -1949,7 +1949,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.27.Final"
     md5 : 67549c8105d3888977f38604ca81cb5c
     sha1 : a1722d6bcbbef1c4c7877e8bf38b07a3db5ed07f
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -1963,7 +1963,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-codec-http/4.1.27.Final"
     md5 : 44ec14adc10533a567b81431a37acbbf
     sha1 : 285b09af98764cf02e4b77b3d95af188469a7133
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -1977,7 +1977,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-common/4.1.27.Final"
     md5 : d110a7b2b53cde4e5722d0673d1a9e71
     sha1 : 6a12a969c27fb37b230c4bde5a67bd822fa6b7a4
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -1991,7 +1991,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler/4.1.27.Final"
     md5 : 891b4050e57b54a68e747c8a9a115e92
     sha1 : 21bd9cf565390a8d72579b8664303e3c175dfc6a
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2005,7 +2005,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-handler-proxy/4.1.27.Final"
     md5 : 2cf7af80c414f0e4796af64be7fce8ef
     sha1 : 1a822ce7760bc6eb4937b7e448c9e081fedcc807
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2019,7 +2019,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.typesafe.netty/netty-reactive-streams/2.0.0"
     md5 : 928c55b271314a38e0cc2f0784bff350
     sha1 : 84ede759015e7480ca8e6ec2af6e2f596aa92dec
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2033,7 +2033,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver/4.1.27.Final"
     md5 : 72d65d783e0f4ff347a96ff078ff8c4f
     sha1 : 2536447ef9605ccb2b5203aa22392c6514484ea9
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2047,7 +2047,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-resolver-dns/4.1.27.Final"
     md5 : f66d5ea5f21e582c4d07c394c3d15732
     sha1 : 5e4892a62464f294be10dbc2f136bdeac390440c
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2061,7 +2061,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport/4.1.27.Final"
     md5 : 3de02aae41e1dfec94ec3bbe7e61eb27
     sha1 : b5c2da3ea89dd67320925f1504c9eb3615241b7c
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -2075,7 +2075,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-epoll/4.1.27.Final"
     md5 : d23c2eb0b4e35f742ea3cfa6ca8738e3
     sha1 : 8c3a61a7dd53eafe2f0fe31356f1379598f74517
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :      
 
@@ -2089,7 +2089,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.netty/netty-transport-native-unix-common/4.1.27.Final"
     md5 : fd0f00aa8e208a863221407c4917418a
     sha1 : 2b0667fe5c1df78c6cfbf9d53ad8b1fb533fb8e8
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
  
@@ -2103,7 +2103,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt/8.2.1"
     md5 : 939ded7caff2c99c24beca70ea2bf65b
     sha1 : 9e813ee56500f3269fa425eab610d17784905b71
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
  
@@ -2117,7 +2117,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk/5.64.4"
     md5 : 4adee16ef5e106ae3eb7015b1e317f46
     sha1 : 281c48f85ee175df533db2e5af881e4bbaca1097
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -2159,7 +2159,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp/3.12.0"
     md5 : 2a0ca42298238d76d9b7f4dcf750c01a
     sha1 : b36f4a04584c0fb0d9af2d3401cdff8dacb1ea54
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2173,7 +2173,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp-urlconnection/3.11.0"
     md5 : b4c089b9ad79960e6707d579001d4261
     sha1 : 54ec442e9c0fac51265110cf0cb44dfe5ad1ea05
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2187,7 +2187,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.squareup.okio/okio/1.15.0"
     md5 : e8ddbcb79210050527c2eda7562e63ce
     sha1 : bc28b5a964c8f5721eb58ee3f3c47a9bcbf4f4d8
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -2243,7 +2243,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/org.apache.qpid/proton-j/0.31.0"
     md5 : c77201f32834d48d1fbcd66c0f30ade5
     sha1 : 2716896d77d7be83d35b471069c90356ea450167
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :
   
@@ -2313,7 +2313,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit/2.5.0"
     md5 : 7cd48ac78a9295843db43416667c96dd
     sha1 : 713ce36037bf24a76a3974c05cb85c3f754b1cc3
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
 
@@ -2327,7 +2327,7 @@ Java :
     maven URL : "https://mvnrepository.com/artifact/io.reactivex/rxjava/1.3.8"
     md5 : 62b34782c8ce3462d5796da7c1e9a9b5
     sha1 : 8c192792ad2e65a90867ab418ac49703f44d2baf
-    updated : 2019-11-21
+    updated : 2019-12-04
     jira : YUK-20500
     notes :       
   
@@ -2409,10 +2409,10 @@ Java :
     project URL : "https://www.slf4j.org/"
     license : MIT
     license URLs : "http://www.opensource.org/licenses/mit-license.php"
-    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.7.25"
+    maven URL : "https://mvnrepository.com/artifact/org.slf4j/slf4j-api/1.8.0-alpha2"
     md5 : 1ae3f3fdc578c3947078d0bc7204167d
     sha1 : 34fa1d87256bbdb376ae7f6fa7e479610cd07dce
-    updated : 2018-11-29
+    updated : 2019-12-04
     jira : YUK-20994
     notes : 
   

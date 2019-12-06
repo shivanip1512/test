@@ -21,7 +21,9 @@ import javax.annotation.PreDestroy;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.joda.time.DateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +53,6 @@ import com.microsoft.azure.servicebus.primitives.TransportType;
  */
 public class HoneywellWifiDataListener {
     private static final Logger log = YukonLogManager.getLogger(HoneywellWifiDataListener.class);
-
     // Global settings
     private static String queueName;
     private static String connectionString;
@@ -59,30 +60,33 @@ public class HoneywellWifiDataListener {
     // Static configuration data
     private Map<HoneywellWifiDataType, HoneywellWifiDataProcessor> dataTypeToProcessingStrategy = new HashMap<>();
 
-    ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     // Autowired dependencies
-    @Autowired
-    private List<HoneywellWifiDataProcessor> dataProcessingStrategies;
-    @Autowired
-    private GlobalSettingDao settingDao;
+    @Autowired private List<HoneywellWifiDataProcessor> dataProcessingStrategies;
+    @Autowired private GlobalSettingDao settingDao;
 
     // For monitoring how up-to-date message processing is
     private volatile DateTime lastEmptyQueueTime;
     private volatile DateTime lastProcessedMessageTime;
 
-    QueueClient receiveClient;
+    private QueueClient receiveClient;
 
     @PostConstruct
     public void init() throws Exception {
         queueName = settingDao.getString(GlobalSettingType.HONEYWELL_WIFI_SERVICE_BUS_QUEUE);
         connectionString = settingDao.getString(GlobalSettingType.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING);
         log.info("Starting Honeywell wifi data listener.");
-        // Only start the thread if HoneyWell Azure service bus configuration parameters are present.
+        // Only start the thread if Honeywell Azure service bus configuration parameters are present.
         if (StringUtils.isBlank(queueName) || StringUtils.isBlank(connectionString)) {
             log.info("Honeywell queue name or connection string is blank. Honeywell wifi data listener disabled.");
             return;
         }
+        /* When queue is empty it prints info log i.e. "Eaton Dr queue is empty " on every 10 secs 
+         which will fills log memory very fast, this scenario will come when devices are not
+         connected to Internet and not pumping any data to queue. To prevent this situation 
+         logging level of this class is changed to error.*/
+        Configurator.setLevel("com.microsoft.azure.servicebus.primitives.CoreMessageReceiver", Level.ERROR);
         initProcessingStrategyMap();
         initQueueClient();
         // Using single thread executor as this thread can only process one message at a time
@@ -101,6 +105,7 @@ public class HoneywellWifiDataListener {
 
     @PreDestroy
     public void cleanup() throws InterruptedException {
+        log.info("Honeywell wifi data listener is stopping.");
         executorService.shutdown();
         log.info("Honeywell wifi data listener has stopped.");
     }
@@ -109,7 +114,6 @@ public class HoneywellWifiDataListener {
         dataProcessingStrategies.forEach(strategy -> dataTypeToProcessingStrategy.put(strategy.getSupportedType(), strategy));
     }
 
-    
     /**
      * Initializes the Queue Client that will receive messages from Azure Service bus.
      */
@@ -134,8 +138,8 @@ public class HoneywellWifiDataListener {
             @Override
             public void connectFailed(URI uri, SocketAddress sa, IOException ioe) {
                 if (uri == null || sa == null || ioe == null) {
-                    log.error("Arguments can't be null. "+ ioe);
-                    throw new IllegalArgumentException("Arguments can't be null."+ ioe);
+                    log.error("Arguments can't be null. " + ioe);
+                    throw new IllegalArgumentException("Arguments can't be null." + ioe);
                 }
                 systemDefaultSelector.connectFailed(uri, sa, ioe);
             }
@@ -152,8 +156,7 @@ public class HoneywellWifiDataListener {
         } catch (InterruptedException e) {
             log.error("Interrupted in  making connection to Azure service bus with exception: " + e);
         } catch (ServiceBusException e) {
-            log.error("Error making connection to Azure service bus to EndPoint URI " + connStrBuilder.getEndpoint() + 
-                      " with Queue Name: " + connStrBuilder.getEntityPath() + " with exception: " + e);
+            log.error("Error making connection to Azure service bus to EndPoint URI " + connStrBuilder.getEndpoint() + " with Queue Name: " + connStrBuilder.getEntityPath() + " with exception: " + e);
         }
     }
 
