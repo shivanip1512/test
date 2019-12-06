@@ -421,6 +421,74 @@ yukon.map.comprehensive = (function () {
                 });
             });
             
+            $(document).on('click', '.js-all-gateways', function () {
+                $.ajax({
+                    url: yukon.url('/stars/comprehensiveMap/allGateways'),
+                    type: 'get'
+                }).done( function(data) {
+                    var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                    for (var x in data.features) {
+                        var feature = data.features[x],
+                            pao = feature.properties.paoIdentifier,
+                            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                            icon = new ol.Feature({ pao: pao });
+                        icon.setId(feature.id);
+                        
+                        //check if device already exists on map
+                        var deviceFound = _findFocusDevice(pao.paoId, false);
+                        if (deviceFound) {
+                            icon = deviceFound;
+                        } else {
+                            icon.setStyle(style);
+                            _setScaleForDevice(icon);
+                            if (_srcProjection === _destProjection) {
+                                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                            } else {
+                                var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                                icon.setGeometry(new ol.geom.Point(coord));
+                            }
+                            
+                            //_allRoutesIcons.push(icon);
+                            source.addFeature(icon);
+                        }
+                    }
+                });
+            });
+            
+            $(document).on('click', '.js-all-relays', function () {
+                $.ajax({
+                    url: yukon.url('/stars/comprehensiveMap/allRelays'),
+                    type: 'get'
+                }).done( function(data) {
+                    var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                    for (var x in data.features) {
+                        var feature = data.features[x],
+                            pao = feature.properties.paoIdentifier,
+                            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                            icon = new ol.Feature({ pao: pao });
+                        icon.setId(feature.id);
+                        
+                        //check if device already exists on map
+                        var deviceFound = _findFocusDevice(pao.paoId, false);
+                        if (deviceFound) {
+                            icon = deviceFound;
+                        } else {
+                            icon.setStyle(style);
+                            _setScaleForDevice(icon);
+                            if (_srcProjection === _destProjection) {
+                                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                            } else {
+                                var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                                icon.setGeometry(new ol.geom.Point(coord));
+                            }
+                            
+                            //_allRoutesIcons.push(icon);
+                            source.addFeature(icon);
+                        }
+                    }
+                });
+            });
+            
             $(document).on('click', '.js-download', function () {
                 var collectionGroup = $('#collection-group').val();
                 window.location = yukon.url('/stars/comprehensiveMap/download?groupName=' + collectionGroup);

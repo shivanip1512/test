@@ -1,3 +1,5 @@
+
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -56,6 +58,14 @@
                     <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" linkId="collectionActionLink" newTab="true"/> 
                     <cm:dropdownOption icon="icon-csv" key="yukon.common.download" classes="js-download"/>  
                 </cm:dropdown>
+            </span>
+            
+            <span class="fr">
+                <cm:criteria label="Infrastructure">
+                    <cm:criteriaOption classes="js-all-gateways">All Gateways</cm:criteriaOption>
+                    <cm:criteriaOption classes="js-all-relays">All Relays</cm:criteriaOption>
+                    <cm:criteriaOption classes="js-all-routes">All Primary Routes</cm:criteriaOption>
+                </cm:criteria>
             </span>
         </div>
         
