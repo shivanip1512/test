@@ -104,12 +104,6 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
     }
 
     /**
-     * Attempts to publish point data for the device. If unable to lookup device in cache the exception will
-     * be thrown and acknowledgement
-     * will not be sent to NM.
-     */
-
-    /**
      * Sends acknowledgement to NM
      */
     private void sendAcknowledgement(Set<Long> referenceIds, String processor) {
