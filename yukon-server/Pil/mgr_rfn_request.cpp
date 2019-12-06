@@ -4,10 +4,14 @@
 #include "e2e_exceptions.h"
 #include "mgr_meter_programming.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "dev_rfn.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterProgramming.h"
 #include "rfn_statistics.h"
 #include "std_helper.h"
+#include "mgr_device.h"
+#include "MeterProgramStatusArchiveRequestMsg.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -22,6 +26,10 @@ using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnCommandResultList;
 using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Messaging::Rfn::E2eMessenger;
+
+using namespace Cti::Messaging;
+using namespace Cti::Messaging::Porter;
+using namespace Cti::Messaging::ActiveMQ::Queues;
 
 using namespace std::chrono_literals;
 
@@ -48,7 +56,8 @@ unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTIN
 CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
 
 RfnRequestManager::RfnRequestManager( CtiDeviceManager& DeviceManager )
-    :   _meterProgrammingMgr { DeviceManager }
+    :   _meterProgrammingMgr { DeviceManager },
+        _deviceManager { DeviceManager }
 {
 }
 
@@ -234,6 +243,37 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             sendE2eDataReply(message.id, payload, asid, rfnIdentifier, message.token, block);
 
             _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, totalSent);
+
+            auto message = 
+                std::make_unique<MeterProgramStatusArchiveRequestMsg>(
+                    rfnIdentifier,
+                    guid,
+                    ProgrammingStatus::Uploading,
+                    ClientErrors::None,
+                    std::chrono::system_clock::now() );
+
+//            ActiveMQConnectionManager::enqueueMessage(
+  //              OutboundQueue::MeterProgramStatusArchiveRequest,
+    //            message.release() );
+        }
+        else if( auto command = Devices::Commands::RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply(Now, message.data) )
+        {
+            if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+            {
+                rfnDevice->extractCommandResult(*command);
+
+                auto message = 
+                    std::make_unique<MeterProgramStatusArchiveRequestMsg>(
+                        rfnIdentifier,
+                        command->getMeterConfigurationID(),
+                        ProgrammingStatus::Idle,
+                        command->getStatusCode(),
+                        std::chrono::system_clock::now() );
+
+//                ActiveMQConnectionManager::enqueueMessage(
+  //                  OutboundQueue::MeterProgramStatusArchiveRequest,
+    //                message.release() );
+            }
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
         {

@@ -177,6 +177,8 @@ private:
 
     MeterProgrammingManager _meterProgrammingMgr;
 
+    CtiDeviceManager   & _deviceManager;
+
     struct RfnRequestIdentifier
     {
         RfnIdentifier rfnId;
