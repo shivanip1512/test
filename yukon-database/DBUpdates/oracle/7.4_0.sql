@@ -219,6 +219,14 @@ AND Value = 'none';
 INSERT INTO DBUpdates VALUES ('YUK-21004', '7.4.0', SYSDATE);
 /* @end YUK-21004 */
 
+/* @start YUK-20848 */
+INSERT INTO StateGroup VALUES(-29, 'WiFiCommStatus', 'Status');
+INSERT INTO State VALUES(-29, 0, 'Active', 0, 6, 0);
+INSERT INTO State VALUES(-29, 1, 'Not Active', 1, 6, 0);
+
+INSERT INTO DBUpdates VALUES ('YUK-20848', '7.4.0', SYSDATE);
+/* @end YUK-20848 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
