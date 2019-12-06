@@ -61,10 +61,10 @@
             </span>
             
             <span class="fr">
-                <cm:criteria label="Infrastructure">
-                    <cm:criteriaOption classes="js-all-gateways">All Gateways</cm:criteriaOption>
-                    <cm:criteriaOption classes="js-all-relays">All Relays</cm:criteriaOption>
-                    <cm:criteriaOption classes="js-all-routes">All Primary Routes</cm:criteriaOption>
+                <cm:criteria key=".infrastructure">
+                    <cm:criteriaOption classes="js-all-gateways" key=".infrastructure.allGateways"/>
+                    <cm:criteriaOption classes="js-all-relays" key=".infrastructure.allRelays"/>
+                    <cm:criteriaOption classes="js-all-routes" key=".infrastructure.allPrimaryRoutes"/>
                 </cm:criteria>
             </span>
         </div>
