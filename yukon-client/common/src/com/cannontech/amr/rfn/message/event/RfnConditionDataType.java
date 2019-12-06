@@ -20,6 +20,8 @@ public enum RfnConditionDataType {
     PORT_LOCKED_MINUTES(Long.class),
     METER_CONFIGURATION_ID(String.class),
     METER_CONFIGURATION_STATUS(MeterConfigurationStatus.class),
+    ERROR_CODE(Short.class),
+    EVENT_END_TIME(Long.class),  // milliseconds
     ;
     
     private final Class<?> objectType;

@@ -20,6 +20,7 @@
     <MICROSOFT_SQL>$(MICROSOFT)\sql-server-client-dll\2000.80.194.0</MICROSOFT_SQL>
     <DBGHELP>$(MICROSOFT)\dbghelp\6.12.2.633-vc140-1</DBGHELP>
     <YAML_CPP>$(CPP_LIBRARIES)\yaml-cpp\0.6.2-vc141</YAML_CPP>
+    <RMP_CONVERTER>$(CPP_LIBRARIES)\eaton\eas\rfn\meter-program-converter\1.0</RMP_CONVERTER>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
@@ -99,6 +100,10 @@
     </BuildMacro>
     <BuildMacro Include="YAML_CPP">
       <Value>$(YAML_CPP)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="RMP_CONVERTER">
+      <Value>$(RMP_CONVERTER)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

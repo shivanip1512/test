@@ -68,8 +68,7 @@ YukonError_t RfnCommercialDevice::executeReadDemandFreezeInfo( CtiRequestMsg    
 
 void RfnCommercialDevice::handleCommandResult( const Commands::RfnMeterProgrammingGetConfigurationCommand & cmd )
 {
-
-    CTILOG_DEBUG( dout, "Meter Configuration ID: " << cmd.getMeterConfigurationID() );
+    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, cmd.getMeterConfigurationID() );
 }
 
 }
