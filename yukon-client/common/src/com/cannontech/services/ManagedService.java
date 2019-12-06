@@ -15,6 +15,7 @@ public enum ManagedService {
     NM_ALARM_MESSAGE_LISTENER("NM Alarm Message Listener", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/rf/alarms/nmAlarmContext.xml"),
     ITRON_SERVICES("Itron Services", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/itronServices/itronServicesContext.xml"),
     DISCONNECT_METER_SERVICES("Disconnect Meter Services", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/disconnectMeter/disconnectMeterServicesContext.xml"),
+    SYSTEM_DATA_PUBLISHER("System Data Publisher", ServiceType.CONTEXT_FILE_TYPE, "classpath:com/cannontech/services/systemDataPublisher/context/systemDataPublisherContext.xml"),
     ;
     private final String name;
     private final ServiceType type;

@@ -51,7 +51,8 @@ public class ItronCycleGearFieldsValidator extends ProgramGearFieldsValidator<It
         lmValidatorHelper.checkIfFieldRequired("dutyCyclePeriodInMinutes", errors,
             itronCycleGear.getDutyCyclePeriodInMinutes(), "Duty Cycle Period");
         if (!errors.hasFieldErrors("dutyCyclePeriodInMinutes")) {
-            if (itronCycleGear.getDutyCyclePeriodInMinutes() != 30
+            if (itronCycleGear.getDutyCyclePeriodInMinutes() != 15 
+                && itronCycleGear.getDutyCyclePeriodInMinutes() != 30
                 && itronCycleGear.getDutyCyclePeriodInMinutes() != 60) {
                 errors.rejectValue("dutyCyclePeriodInMinutes", invalidKey,
                     new Object[] { "Duty Cycle Period In Minutes" }, "");

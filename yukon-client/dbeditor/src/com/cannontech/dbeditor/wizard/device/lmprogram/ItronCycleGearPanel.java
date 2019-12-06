@@ -133,11 +133,12 @@ public class ItronCycleGearPanel extends GenericGearPanel {
                 comboBoxCyclePeriod.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
                 comboBoxCyclePeriod.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
                 // user code begin {1}
+                comboBoxCyclePeriod.addItem(new Integer(15));
                 comboBoxCyclePeriod.addItem(new Integer(30));
                 comboBoxCyclePeriod.addItem(new Integer(60));
 
                 // default value
-                comboBoxCyclePeriod.setSelectedItem(new Integer(30));
+                comboBoxCyclePeriod.setSelectedItem(new Integer(15));
                 // user code end
             } catch (java.lang.Throwable ivjExc) {
                 // user code begin {2}

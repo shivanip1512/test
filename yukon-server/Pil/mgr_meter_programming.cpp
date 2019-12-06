@@ -10,40 +10,10 @@
 #include "encryption.h"
 #include "std_helper.h"
 
+#include <meterProgramConverter/exports.h>
+
 namespace {
     
-typedef void(*func)(void *pData, size_t dataSize);
-
-typedef struct _fileInfo_s
-{
-    char        *pFile;
-    uint16_t    fileSize;
-    char        *pPassword;
-    uint8_t     pwdLength;
-}FILEINFO_t;
-
-int conProcessBlob(const FILEINFO_t *pData)
-{
-    //  unused, writes to a file.
-
-    return 0;
-}
-int conProcessBlob(const FILEINFO_t *pData, func callback)
-{
-    std::vector<char> buf {
-        pData->pPassword,
-        pData->pPassword + pData->pwdLength };
-
-    //  just concatenate the two for testing purposes
-    buf.insert(buf.end(),
-        pData->pFile, 
-        pData->pFile + pData->fileSize);
-
-    callback(buf.data(), buf.size());
-
-    return 0;
-}
-
 std::mutex programMux;
 Cti::Pil::MeterProgrammingManager::Bytes globalBuffer;
 
@@ -144,12 +114,34 @@ Etiam viverra tincidunt gravida. Curabitur felis eros, ullamcorper in volutpat a
     return buf;
 }
 
+boost::shared_ptr<Cti::Devices::RfnDevice> MeterProgrammingManager::validateDeviceForGuid(const Cti::RfnIdentifier& rfnIdentifier, const std::string & requestedGuid)
+{
+    if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+    {
+        std::string assignedGuid;
+
+        if( rfnDevice->getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, assignedGuid)
+                && assignedGuid == requestedGuid )
+        {
+            return rfnDevice;
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Configuration ID mismatch" << FormattedList::of(
+                                "Assigned", assignedGuid,
+                                "Requested", requestedGuid));
+        }
+    }
+
+    return nullptr;
+}
+
 bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, const std::string guid)
 {
     //  TODO - remove after initial E2E block transfer integration test
     return true;
 
-    if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+    if( auto rfnDevice = validateDeviceForGuid(rfnIdentifier, guid) )
     {
         return rfnDevice->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
     }
@@ -158,6 +150,15 @@ bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, con
 
 void MeterProgrammingManager::updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size)
 {
+    //  update the programming progress percentage
+    if( auto rfnDevice = validateDeviceForGuid(rfnIdentifier, guid) )
+    {
+        const size_t totalSize  = getProgram(guid).size();
+        const double percentage = 100.0 * size / totalSize;
+
+        rfnDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, percentage);
+    }
+
     //  send a Cti::Messaging::Porter::MeterProgramArchiveStatusRequestMsg
 }
 
