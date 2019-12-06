@@ -232,6 +232,20 @@ AND Value = 'none';
 INSERT INTO DBUpdates VALUES ('YUK-21004', '7.4.0', GETDATE());
 /* @end YUK-21004 */
 
+/* @start YUK-21096 */
+ALTER TABLE MSPInterface
+DROP CONSTRAINT PK_MSPINTERFACE;
+GO
+
+ALTER TABLE MSPInterface
+ALTER COLUMN Interface VARCHAR(20) NOT NULL;
+
+ALTER TABLE MSPInterface
+ADD CONSTRAINT PK_MSPINTERFACE PRIMARY KEY (VendorID, Interface, Version);
+
+INSERT INTO DBUpdates VALUES ('YUK-21096', '7.4.0', GETDATE());
+/* @end YUK-21096 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
