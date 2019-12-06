@@ -115,7 +115,7 @@ public class LMProgramValidator extends SimpleValidator<LoadProgram> {
                 List<Integer> assignedGroupsDiff = (List<Integer>) CollectionUtils.disjunction(currentAssignedGroups, assignedGroups);
 
                 for (Integer groupId : assignedGroupsDiff) {
-                    if (loadGroupDao.isLoadGroupInUse(groupId)) {
+                    if (groupId != null && loadGroupDao.isLoadGroupInUse(groupId)) {
                         errors.reject(key + "groupEnrollmentConflict", new Object[] { cache.getAllPaosMap().get(groupId).getPaoName() }, "");
                     }
                 }
