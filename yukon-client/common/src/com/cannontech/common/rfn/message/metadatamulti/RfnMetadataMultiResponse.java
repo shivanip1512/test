@@ -34,12 +34,29 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     //     you specified in the request.
     // Note: some result may be an error type.
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResults;
+    
+    private long lastNetworkTreeUpdateTime;
 
     public RfnMetadataMultiResponse(String requestID, int totalSegments, int segmentNumber) {
         super();
         this.requestID = requestID;
         this.totalSegments = totalSegments;
         this.segmentNumber = segmentNumber;
+    }
+    
+    @Override
+    public String getRequestId() {
+        return requestID;
+    }
+    
+    @Override
+    public int getTotalSegments() {
+        return totalSegments;
+    }
+
+    @Override
+    public int getSegmentNumber() {
+        return segmentNumber;
     }
 
     public RfnMetadataMultiResponseType getResponseType() {
@@ -66,25 +83,24 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
         this.queryResults = queryResults;
     }
 
-    @Override
-    public String getRequestId() {
-        return requestID;
-    }
-    
-    @Override
-    public int getTotalSegments() {
-        return totalSegments;
+    public long getLastNetworkTreeUpdateTime() {
+        return lastNetworkTreeUpdateTime;
     }
 
-    @Override
-    public int getSegmentNumber() {
-        return segmentNumber;
+    public void setLastNetworkTreeUpdateTime(long lastNetworkTreeUpdateTime) {
+        this.lastNetworkTreeUpdateTime = lastNetworkTreeUpdateTime;
+    }
+
+    public String getRequestID() {
+        return requestID;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result =
+            prime * result + (int) (lastNetworkTreeUpdateTime ^ (lastNetworkTreeUpdateTime >>> 32));
         result = prime * result + ((queryResults == null) ? 0 : queryResults.hashCode());
         result = prime * result + ((requestID == null) ? 0 : requestID.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
@@ -96,58 +112,49 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         RfnMetadataMultiResponse other = (RfnMetadataMultiResponse) obj;
+        if (lastNetworkTreeUpdateTime != other.lastNetworkTreeUpdateTime)
+            return false;
         if (queryResults == null) {
-            if (other.queryResults != null) {
+            if (other.queryResults != null)
                 return false;
-            }
-        } else if (!queryResults.equals(other.queryResults)) {
+        } else if (!queryResults.equals(other.queryResults))
             return false;
-        }
         if (requestID == null) {
-            if (other.requestID != null) {
+            if (other.requestID != null)
                 return false;
-            }
-        } else if (!requestID.equals(other.requestID)) {
+        } else if (!requestID.equals(other.requestID))
             return false;
-        }
         if (responseMessage == null) {
-            if (other.responseMessage != null) {
+            if (other.responseMessage != null)
                 return false;
-            }
-        } else if (!responseMessage.equals(other.responseMessage)) {
+        } else if (!responseMessage.equals(other.responseMessage))
             return false;
-        }
-        if (responseType != other.responseType) {
+        if (responseType != other.responseType)
             return false;
-        }
-        if (segmentNumber != other.segmentNumber) {
+        if (segmentNumber != other.segmentNumber)
             return false;
-        }
-        if (totalSegments != other.totalSegments) {
+        if (totalSegments != other.totalSegments)
             return false;
-        }
         return true;
     }
 
     @Override
     public String toString() {
         return String
-            .format("RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s]",
+            .format("RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, lastNetworkTreeUpdateTime=%s]",
                     requestID,
                     totalSegments,
                     segmentNumber,
                     responseType,
                     responseMessage,
-                    queryResults);
+                    queryResults,
+                    lastNetworkTreeUpdateTime);
     }
 }
