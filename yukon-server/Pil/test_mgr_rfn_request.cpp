@@ -39,6 +39,13 @@ struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
 
 struct test_RfnRequestManager : Cti::Pil::RfnRequestManager
 {
+    Cti::Test::test_DeviceManager devMgr;
+
+    test_RfnRequestManager() 
+        :   RfnRequestManager { devMgr }
+    {
+    }
+
     struct test_E2eDataTransferProtocol : Cti::Protocols::E2eDataTransferProtocol
     {
         unsigned short id;

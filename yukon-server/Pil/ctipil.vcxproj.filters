@@ -18,6 +18,9 @@
     <ClCompile Include="exe_pcreq.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mgr_rfn_request.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="pil_exefct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,12 +39,12 @@
     <ClCompile Include="rf_data_streaming_processor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mgr_rfn_request.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mgr_rfn_request.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\pil_exefct.h">
@@ -57,9 +60,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\mgr_meter_programming.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\mgr_rfn_request.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

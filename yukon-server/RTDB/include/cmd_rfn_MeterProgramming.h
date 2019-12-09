@@ -41,8 +41,6 @@ namespace Cti::Devices::Commands {
 
         RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
-        static std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response);
-
         std::string getCommandName() override;
 
         bool isPost() const override;

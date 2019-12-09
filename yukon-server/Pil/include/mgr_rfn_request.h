@@ -175,6 +175,8 @@ private:
     Mutex                _pendingRequestsMux;
     RfnIdToRequestHeap   _pendingRequests;
 
+    CtiDeviceManager     _deviceManager;
+
     struct RfnRequestIdentifier
     {
         RfnIdentifier rfnId;
