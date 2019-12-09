@@ -33,7 +33,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
             return ClientErrors::None;
         }
 
-        return ClientErrors::MissingConfig;
+        return ClientErrors::NoMeterProgramAssigned;
     }
 
     return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, rfnRequests);
