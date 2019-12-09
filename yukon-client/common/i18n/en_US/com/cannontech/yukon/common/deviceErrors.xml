@@ -1279,6 +1279,10 @@
     <entry key="yukon.web.error.code.333.porter">If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.</entry>
     <entry key="yukon.web.error.code.333.description">If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.</entry>
     <entry key="yukon.web.error.code.333.troubleshooting">No troubleshooting is available for this error.</entry>
+    
+    <entry key="yukon.web.error.code.334.porter">No meter program assigned.</entry>
+    <entry key="yukon.web.error.code.334.description">There is no Meter Program assigned to this device in Yukon.</entry>
+    <entry key="yukon.web.error.code.334.troubleshooting">No troubleshooting is available for this error.</entry>
 
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is

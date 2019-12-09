@@ -1965,7 +1965,7 @@
     </error>
 
     <error code="334" type="SYSTEM">
-        <category>Yukon</category>
+        <category>Yukon System</category>
         <porter>No meter program assigned.</porter>
         <description>There is no Meter Program assigned to this device in Yukon.</description>
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
