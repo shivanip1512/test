@@ -353,7 +353,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="exe_pcreq.cpp">
     </ClCompile>
-    <ClCompile Include="mgr_meter_programming.cpp" />
+    <ClCompile Include="mgr_rfn_request.cpp" />
     <ClCompile Include="pil_exefct.cpp">
     </ClCompile>
     <ClCompile Include="pilglob.cpp">

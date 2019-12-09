@@ -36,7 +36,7 @@
     <ClCompile Include="rf_data_streaming_processor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mgr_meter_programming.cpp">
+    <ClCompile Include="mgr_rfn_request.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
