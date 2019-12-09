@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "dev_rfnCommercial.h"
+#include "mgr_meter_programming.h"
 #include "cmd_rfn_MeterProgramming.h"
 
 namespace Cti::Devices {
@@ -25,9 +26,14 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
     }
     else if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
     {
-        rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>("7d444840-9dc0-11d1-b245-5ffdce74fad2", 11235));
+        if( auto programDescriptor = MeterProgramming::gMeterProgrammingManager->describeAssignedProgram(getRfnIdentifier()) )
+        {
+            rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>(programDescriptor->guid, programDescriptor->length));
 
-        return ClientErrors::None;
+            return ClientErrors::None;
+        }
+
+        return ClientErrors::MissingConfig;
     }
 
     return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, rfnRequests);

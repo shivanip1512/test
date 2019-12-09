@@ -2,33 +2,50 @@
 
 #include "dlldefs.h"
 #include "rfn_identifier.h"
-#include "dev_rfn.h"
 
 #include <vector>
 
-class CtiDeviceManager;
+namespace Cti::MeterProgramming {
 
-namespace Cti::Pil {
-
-class IM_EX_CTIPIL MeterProgrammingManager
+struct ProgramDescriptor;
+    
+class IM_EX_CONFIG MeterProgrammingManager
 {
 public:
-    MeterProgrammingManager(CtiDeviceManager& deviceManager);
-
     using Bytes = std::vector<unsigned char>;
 
     Bytes getProgram(const std::string guid);
 
+    std::optional<ProgramDescriptor> describeAssignedProgram(const RfnIdentifier rfnIdentifier);
+
     bool isUploading(const RfnIdentifier rfnIdentifier, const std::string guid);
 
-    void updateMeterProgrammingStatus(RfnIdentifier rfnIdentifier, std::string guid, size_t size);
+    double calculateMeterProgrammingProgress(RfnIdentifier rfnIdentifier, std::string guid, size_t size);
+
+protected:
+
+    struct RawProgram
+    {
+        Bytes program;
+        Bytes password;
+    };
+    virtual RawProgram loadRawProgram(const std::string guid);
 
 private:
 
-    boost::shared_ptr<Cti::Devices::RfnDevice> validateDeviceForGuid(const Cti::RfnIdentifier& rfnIdentifier, const std::string & requestedGuid);
+    Bytes loadProgram(const std::string guid);
+    size_t getProgramSize(const std::string guid);
+    Bytes convertAndCache(const std::string guid, const Bytes program, const Bytes password);
 
     std::map<std::string, Bytes> _programs;
-    CtiDeviceManager& _deviceManager;
 };
+
+struct ProgramDescriptor
+{
+    std::string guid;
+    std::size_t length;
+};
+
+extern IM_EX_CONFIG std::unique_ptr<MeterProgrammingManager> gMeterProgrammingManager;
 
 }

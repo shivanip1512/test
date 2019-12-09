@@ -175,8 +175,6 @@ private:
     Mutex                _pendingRequestsMux;
     RfnIdToRequestHeap   _pendingRequests;
 
-    MeterProgrammingManager _meterProgrammingMgr;
-
     struct RfnRequestIdentifier
     {
         RfnIdentifier rfnId;

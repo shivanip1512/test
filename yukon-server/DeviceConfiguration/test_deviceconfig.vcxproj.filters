@@ -32,5 +32,8 @@
     <ClCompile Include="test_behavior_device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_mgr_meter_programming.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

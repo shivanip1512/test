@@ -284,7 +284,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("A test in a Verification field failed.")
     ("The configuration file contains a Write Key TLV, but the node is unable to write the key.")
     ("If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.")
-    .repeat(16, UnknownErrorHelper(334));
+    ("No meter program assigned.")
+    .repeat(15, UnknownErrorHelper(335));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {

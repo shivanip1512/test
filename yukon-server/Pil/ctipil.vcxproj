@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;$(RMP_CONVERTER)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\pil\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\pil\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_DLL_CTIPIL;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctipil;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -151,7 +151,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\lib-debug\rfn-e2e.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(RMP_CONVERTER)\lib\dante.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\lib-debug\rfn-e2e.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -181,7 +181,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;$(RMP_CONVERTER)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\pil\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\pil\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;NDEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DLL_CTIPIL;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctipil;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -199,7 +199,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\lib\rfn-e2e.lib;..\lib\ctiprot.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\ctidevdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;$(RMP_CONVERTER)\lib\dante.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\lib\rfn-e2e.lib;..\lib\ctiprot.lib;..\lib\ctithriftmsg.lib;..\lib\ctidbsrc.lib;..\lib\ctipntdb.lib;..\lib\ctidevdb.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-x32-1_67.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -354,8 +354,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="exe_pcreq.cpp">
     </ClCompile>
     <ClCompile Include="mgr_meter_programming.cpp" />
-    <ClCompile Include="mgr_rfn_request.cpp">
-    </ClCompile>
     <ClCompile Include="pil_exefct.cpp">
     </ClCompile>
     <ClCompile Include="pilglob.cpp">

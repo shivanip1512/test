@@ -6,8 +6,10 @@
 #include "amq_connection.h"
 #include "dev_rfn.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterProgramming.h"
 #include "rfn_statistics.h"
 #include "std_helper.h"
+#include "mgr_device.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -48,7 +50,7 @@ unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTIN
 CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
 
 RfnRequestManager::RfnRequestManager( CtiDeviceManager& DeviceManager )
-    :   _meterProgrammingMgr { DeviceManager }
+    :   _deviceManager { DeviceManager }
 {
 }
 
@@ -173,7 +175,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             auto guid = message.path.substr(meterProgramsPrefix.size());
 
-            if( ! _meterProgrammingMgr.isUploading(rfnIdentifier, guid) )
+            if( ! MeterProgramming::gMeterProgrammingMgr->isUploading(rfnIdentifier, guid) )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
@@ -182,7 +184,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            auto program = _meterProgrammingMgr.getProgram(guid);
+            auto program = MeterProgramming::gMeterProgrammingMgr->getProgram(guid);
 
             if( program.empty() )
             {
@@ -244,7 +246,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             sendE2eDataReply(message.id, payload, asid, rfnIdentifier, *message.token, block);
 
-            _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, totalSent);
+            MeterProgramming::gMeterProgrammingMgr->calupdateMeterProgrammingStatus(rfnIdentifier, guid, totalSent);
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
         {
