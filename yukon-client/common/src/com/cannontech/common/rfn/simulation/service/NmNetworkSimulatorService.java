@@ -6,7 +6,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
 import com.cannontech.amr.rfn.message.status.type.MeterInfo;
-import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.simulators.AutoStartableSimulator;

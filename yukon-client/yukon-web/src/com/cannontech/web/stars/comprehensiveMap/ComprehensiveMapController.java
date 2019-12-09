@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.comprehensiveMap;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +51,7 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.tree.Node;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -70,7 +72,7 @@ import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
+import org.apache.commons.lang3.tuple.Pair;
 
 @RequestMapping("/comprehensiveMap/*")
 @Controller
@@ -268,11 +270,15 @@ public class ComprehensiveMapController {
     @GetMapping("allPrimaryRoutes")
     public @ResponseBody List<FeatureCollection> primaryRoutes(String groupName) {
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
-        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        
-        List<List<SimpleDevice>> chunks = Lists.partition(collection.getDeviceList(), 10);
-        List<FeatureCollection> features = chunks.stream().map(chunk -> paoLocationService.getLocationsAsGeoJson(chunk)).collect(Collectors.toList());
-        return features;
+        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);        
+        List<List<SimpleDevice>> chunks = Lists.partition(collection.getDeviceList(), 65);
+        try {
+            Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(chunks.get(0));
+        } catch (NmNetworkException | NmCommunicationException e) {
+            e.printStackTrace();
+        }
+     
+        return new ArrayList<>();
     }
     
 }
