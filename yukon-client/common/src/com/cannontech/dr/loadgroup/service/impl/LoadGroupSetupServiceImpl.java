@@ -228,8 +228,10 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
                         .collect(Collectors.toList());
     }
 
-    @Override
-    public boolean isValidPointGroupRawState(LiteState liteState) {
+    /**
+     * Returns true in case the raw state is either 0 or 1 in case of Point Load Group
+     */
+    public static boolean isValidPointGroupRawState(LiteState liteState) {
         return (liteState.getStateRawState() == 0 || liteState.getStateRawState() == 1);
     }
 }
