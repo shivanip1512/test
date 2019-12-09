@@ -6,7 +6,7 @@
 #include "cmd_rfn.h"
 #include "rfn_asid.h"
 #include "rfn_e2e_messenger.h"
-#include "mgr_meter_programming.h"
+#include "mgr_device.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 
@@ -175,7 +175,7 @@ private:
     Mutex                _pendingRequestsMux;
     RfnIdToRequestHeap   _pendingRequests;
 
-    CtiDeviceManager     _deviceManager;
+    CtiDeviceManager   & _deviceManager;
 
     struct RfnRequestIdentifier
     {

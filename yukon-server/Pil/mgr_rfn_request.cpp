@@ -175,7 +175,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             auto guid = message.path.substr(meterProgramsPrefix.size());
 
-            if( ! MeterProgramming::gMeterProgrammingMgr->isUploading(rfnIdentifier, guid) )
+            if( ! MeterProgramming::gMeterProgrammingManager->isUploading(rfnIdentifier, guid) )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
@@ -184,7 +184,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            auto program = MeterProgramming::gMeterProgrammingMgr->getProgram(guid);
+            auto program = MeterProgramming::gMeterProgrammingManager->getProgram(guid);
 
             if( program.empty() )
             {
@@ -246,7 +246,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             sendE2eDataReply(message.id, payload, asid, rfnIdentifier, *message.token, block);
 
-            MeterProgramming::gMeterProgrammingMgr->calupdateMeterProgrammingStatus(rfnIdentifier, guid, totalSent);
+            double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnIdentifier, guid, totalSent);
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
         {
