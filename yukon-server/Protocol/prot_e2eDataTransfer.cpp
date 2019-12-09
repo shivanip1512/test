@@ -149,8 +149,11 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
 
     message.id = indication_pdu->hdr->id;
     
-    //  Decode the token
-    message.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
+    //  Decode the token, if any
+    if( indication_pdu->hdr->token_length )
+    {
+        message.token = coap_decode_var_bytes(indication_pdu->hdr->token, indication_pdu->hdr->token_length);
+    }
     
     message.code = indication_pdu->hdr->code;
 
@@ -173,7 +176,7 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
             }
             if( ! existingId->active )
             {
-                throw RequestInactive(message.token);
+                throw RequestInactive(existingId->id);
             }
 
             existingId->active = false;
@@ -268,13 +271,5 @@ auto E2eDataTransferProtocol::createBadRequestAck(const unsigned short id) -> By
     return Coap::scoped_pdu_ptr::make_ack(id, Coap::ResponseCode::BadRequest).as_bytes();
 }
 
-
-void E2eDataTransferProtocol::handleTimeout(const RfnIdentifier endpointId)
-{
-    if( auto existingId = mapFindRef(_outboundIds, endpointId) )
-    {
-        existingId->active = false;  //  timed out, ignore any late replies
-    }
-}
 
 }

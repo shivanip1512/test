@@ -23,6 +23,7 @@ public class ActiveMQHelper {
     private static final List<String> SERVER_WEB_BIN = ImmutableList.of(CtiUtilities.getYukonBase(), "Server", "web", "bin");
     private static final String KAHA_DB = "KahaDB";
     private static final String ACTIVEMQ_DATA = "activemq-data";
+    private static final String TMP_STORAGE = "tmp_storage";
     
     private ActiveMQHelper() {
         //  hide implicit public constructor
@@ -67,5 +68,15 @@ public class ActiveMQHelper {
         return (applicationId == ApplicationId.WEBSERVER) 
                 ? SERVER_WEB_BIN 
                 : CLIENT_BIN;
+    }
+
+    public static File getTmpDataDirectory(ApplicationId applicationId) {
+        var fullPath = String.join(File.separator, Iterables.concat(getBasePath(applicationId),
+                getTempChildPath(applicationId)));
+        return new File(fullPath);
+    }
+
+    private static List<String> getTempChildPath(ApplicationId applicationId) {
+        return ImmutableList.of(ACTIVEMQ_DATA, resolveBrokerName(applicationId), TMP_STORAGE);
     }
 }

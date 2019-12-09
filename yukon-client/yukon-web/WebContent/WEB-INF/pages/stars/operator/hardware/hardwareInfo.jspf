@@ -130,6 +130,10 @@ $(function() { updateServiceCompanyInfo();});
                    </c:otherwise>
                 </c:choose>
            </c:if>
+           
+           <c:if test="${showSecondaryMacAddress}">
+               <tags:inputNameValue nameKey=".macAddressSecondary" path="secondaryMacAddress" maxlength="23" size="25"/>
+           </c:if>
             
             <c:if test="${showDeviceVendorUserId}">
                 <c:choose>

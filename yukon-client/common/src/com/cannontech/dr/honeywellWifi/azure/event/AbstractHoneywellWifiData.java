@@ -1,18 +1,19 @@
 package com.cannontech.dr.honeywellWifi.azure.event;
 
-import com.microsoft.windowsazure.services.servicebus.models.BrokeredMessage;
+import com.microsoft.azure.servicebus.IMessage;
+
 
 public abstract class AbstractHoneywellWifiData implements HoneywellWifiData {
-    private BrokeredMessage originalMessage;
+    private IMessage originalMessage;
     private HoneywellWifiMessageWrapper messageWrapper;
     
     @Override
-    public BrokeredMessage getOriginalMessage() {
+    public IMessage getOriginalMessage() {
         return originalMessage;
     }
 
     @Override
-    public void setOriginalMessage(BrokeredMessage message) {
+    public void setOriginalMessage(IMessage message) {
         originalMessage = message;
     }
     

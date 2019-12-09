@@ -45,6 +45,7 @@ public class Broker {
     public void start() {
         try {
             BrokerService broker = new BrokerService();
+            broker.setTmpDataDirectory(ActiveMQHelper.getTmpDataDirectory(applicationId));
             broker.getPersistenceAdapter().setDirectory(ActiveMQHelper.getKahaDbDirectory(applicationId));
             broker.setBrokerName(ActiveMQHelper.resolveBrokerName(applicationId));
 
