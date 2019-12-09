@@ -8,8 +8,8 @@ import java.util.List;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import com.cannontech.rest.api.UIComponent.request.MockPickerIdSearchCriteria;
-import com.cannontech.rest.api.UIComponent.request.MockPickerSearchCriteria;
+import com.cannontech.rest.api.uicomponent.request.MockPickerIdSearchCriteria;
+import com.cannontech.rest.api.uicomponent.request.MockPickerSearchCriteria;
 
 public class PointPickerHelper {
 

@@ -1,6 +1,4 @@
-package com.cannontech.rest.api.UIComponent.request;
-
-import java.util.List;
+package com.cannontech.rest.api.uicomponent.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -18,9 +16,11 @@ import lombok.Setter;
 @Builder
 @JsonInclude(Include.NON_NULL)
 
-public class MockPickerIdSearchCriteria {
-
+public class MockPickerSearchCriteria {
     private String type;
-    private List<Integer> initialIds;
+    private String queryString;
+    private Integer startCount;
+    private Integer count;
     private String extraArgs;
+    
 }
