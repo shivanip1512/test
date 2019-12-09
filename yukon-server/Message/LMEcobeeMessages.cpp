@@ -41,6 +41,34 @@ void LMEcobeeCyclingControlMessage::streamInto( cms::StreamMessage & message ) c
 
 ///
 
+LMEcobeeSetpointControlMessage::LMEcobeeSetpointControlMessage( int  groupId,
+                                                                long long startTime,
+                                                                int  controlDuration,
+                                                                bool temperatureOption,
+                                                                bool mandatory,
+                                                                int  temperatureOffset )
+    :   _groupId( groupId ),
+        _startTime( startTime ),
+        _stopTime( startTime + controlDuration ),
+        _temperatureOption( temperatureOption ),
+        _mandatory( mandatory ),
+        _temperatureOffset( temperatureOffset )
+{
+    // empty
+}
+
+void LMEcobeeSetpointControlMessage::streamInto( cms::StreamMessage & message ) const
+{
+    message.writeInt( _groupId );
+    message.writeByte( _temperatureOption );
+    message.writeByte( _mandatory );
+    message.writeInt( _temperatureOffset );
+    message.writeLong( _startTime );
+    message.writeLong( _stopTime );
+}
+
+///
+
 LMEcobeeRestoreMessage::LMEcobeeRestoreMessage( int groupId,
                                                 int restoreTime )
     :   _groupId( groupId ),

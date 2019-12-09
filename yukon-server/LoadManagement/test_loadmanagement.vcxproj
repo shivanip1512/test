@@ -340,6 +340,7 @@
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\ecobeeSetpointGear.h" />
     <ClInclude Include="include\ItronControlInterface.h" />
     <ClInclude Include="include\ItronCycleGear.h" />
     <ClInclude Include="include\lmgroupitron.h" />
@@ -364,6 +365,7 @@
     </ClCompile>
     <ClCompile Include="ecobeeCycleGear.cpp">
     </ClCompile>
+    <ClCompile Include="ecobeeSetpointGear.cpp" />
     <ClCompile Include="executor.cpp">
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
