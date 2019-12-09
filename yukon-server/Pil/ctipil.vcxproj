@@ -131,7 +131,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\pil\include;..\porter\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DBGHELP)\include;$(BOOST)\include;$(SQLAPI)\include;$(THRIFT)\include;.;..\common\include;..\database\include;..\deviceconfiguration\include;..\message\Serialization;..\message\include;..\pil\include;..\protocol\include;..\rtdb\include;..\server\include;.\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USING_PCH;_DEBUG;WIN32;_WINDOWS;_CRT_NONSTDC_NO_WARNINGS;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;NOMINMAX;WIN32;WINDOWS;_CONSOLE;_DEBUG;_DLL_CTIPIL;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctipil;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -361,14 +361,17 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="pilserver.cpp">
     </ClCompile>
+    <ClCompile Include="pil_message_serialization.cpp" />
     <ClCompile Include="rf_data_streaming_processor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h" />
+    <ClInclude Include="include\MeterProgramStatusArchiveRequestMsg.h" />
     <ClInclude Include="include\mgr_meter_programming.h" />
     <ClInclude Include="include\mgr_rfn_request.h" />
     <ClInclude Include="include\pil_exefct.h" />
     <ClInclude Include="include\pilserver.h" />
+    <ClInclude Include="include\pil_message_serialization.h" />
     <ClInclude Include="include\rfn_statistics.h" />
     <ClInclude Include="include\rf_data_streaming_processor.h" />
   </ItemGroup>
