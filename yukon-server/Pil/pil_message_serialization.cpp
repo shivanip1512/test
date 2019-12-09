@@ -13,7 +13,7 @@ long long as_milliseconds(std::chrono::system_clock::time_point tp)
 
 }
 
-using MpsMsg = Porter::MeterProgramStatusArchiveRequestMsg;
+using MpsMsg = Pil::MeterProgramStatusArchiveRequestMsg;
 
 MessagePtr<Thrift::MeterProgramming::MeterProgramStatusArchiveRequest>::type populateThrift(const MpsMsg & imsg)
 {
@@ -33,7 +33,7 @@ MessagePtr<Thrift::MeterProgramming::MeterProgramStatusArchiveRequest>::type pop
     //  Hardcoded to Porter
     omsg->__set_source(Thrift::MeterProgramming::Source::PORTER);
 
-    using PPS = Porter::ProgrammingStatus;
+    using PPS = Pil::ProgrammingStatus;
     using TPS = Thrift::MeterProgramming::ProgrammingStatus::type;
 
     static const std::map<PPS, TPS> sourceMapping{

@@ -177,8 +177,6 @@ private:
 
     CtiDeviceManager   & _deviceManager;
 
-    CtiDeviceManager   & _deviceManager;
-
     struct RfnRequestIdentifier
     {
         RfnIdentifier rfnId;

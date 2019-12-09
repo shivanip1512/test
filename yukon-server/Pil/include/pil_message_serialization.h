@@ -11,6 +11,6 @@
 namespace Cti::Messaging::Serialization {
 
 template<>
-ActiveMQConnectionManager::SerializedMessage MessageSerializer<Porter::MeterProgramStatusArchiveRequestMsg>::serialize(const Porter::MeterProgramStatusArchiveRequestMsg &msg);
+ActiveMQConnectionManager::SerializedMessage MessageSerializer<Pil::MeterProgramStatusArchiveRequestMsg>::serialize(const Pil::MeterProgramStatusArchiveRequestMsg &msg);
 
 }
