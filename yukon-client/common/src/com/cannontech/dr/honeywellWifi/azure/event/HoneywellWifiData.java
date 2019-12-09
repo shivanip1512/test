@@ -1,7 +1,9 @@
 package com.cannontech.dr.honeywellWifi.azure.event;
 
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
-import com.microsoft.windowsazure.services.servicebus.models.BrokeredMessage;
+import com.microsoft.azure.servicebus.IMessage;
+import com.microsoft.azure.servicebus.Message;
+
 
 /**
  * Interface for all data messages Yukon can receive from the Honeywell Azure service bus.
@@ -11,9 +13,7 @@ public interface HoneywellWifiData {
     /**
      * @return The original message as received from Azure.
      */
-    BrokeredMessage getOriginalMessage();
-    
-    void setOriginalMessage(BrokeredMessage message);
+     IMessage getOriginalMessage();
     
     /**
      * @return The "wrapper" metadata that came with the message.
@@ -25,4 +25,6 @@ public interface HoneywellWifiData {
     HoneywellWifiDataType getType();
 
     String getMacId();
+
+    void setOriginalMessage(IMessage message);
 }
