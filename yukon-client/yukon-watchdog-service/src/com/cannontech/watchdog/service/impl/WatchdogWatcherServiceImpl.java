@@ -39,7 +39,7 @@ public class WatchdogWatcherServiceImpl implements WatchdogWatcherService {
         } else if (serviceName == YukonServices.ITRON) {
             String itronApiURL = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
             String itronUserName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
-            return (StringUtils.isNotBlank(itronApiURL) || StringUtils.isNotBlank(itronUserName)) && doPaoWithPaoClassExists(PaoClass.ITRON);
+            return (StringUtils.isNotBlank(itronApiURL) && StringUtils.isNotBlank(itronUserName)) && doPaoWithPaoClassExists(PaoClass.ITRON);
         } else {
             log.info("Incorrect service name " + serviceName);
             return true;
