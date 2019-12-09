@@ -349,6 +349,7 @@
     <ClCompile Include="test_behavior_rfnDataStreaming.cpp" />
     <ClCompile Include="test_device_config.cpp" />
     <ClCompile Include="test_main.cpp" />
+    <ClCompile Include="test_mgr_meter_programming.cpp" />
     <ClCompile Include="test_mgr_behavior.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

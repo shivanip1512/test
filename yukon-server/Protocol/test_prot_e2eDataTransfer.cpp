@@ -84,7 +84,8 @@ BOOST_AUTO_TEST_CASE( test_handleIndication )
 
     BOOST_CHECK_EQUAL(er.confirmable, false);
     BOOST_CHECK_EQUAL(er.block.has_value(), false);
-    BOOST_CHECK_EQUAL(er.token, token);
+    BOOST_REQUIRE(er.token);
+    BOOST_CHECK_EQUAL(*er.token, token);
 
     Cti::Test::byte_str payloadBytesExpected =
         "79 02 00 01 02 00 a5 29 00 02 "
@@ -142,59 +143,7 @@ BOOST_AUTO_TEST_CASE(test_handleIndication_repeat)
     }
     catch( Cti::Protocols::E2e::RequestInactive &ex )
     {
-        BOOST_CHECK_EQUAL(ex.what(), "Response received for inactive token 23254");
-    }
-}
-
-BOOST_AUTO_TEST_CASE( test_handleTimeout )
-{
-    test_E2eDataTransferProtocol e2e;
-
-    e2e.id = 0x7301;
-
-    Cti::Test::byte_str outboundPayload =
-        "78 02";
-
-    const unsigned long token = 0x5ad6;
-
-    const std::vector<unsigned char> outboundPayloadVector(outboundPayload.begin(), outboundPayload.end());
-    const std::vector<unsigned char> msg = e2e.createRequest(outboundPayloadVector, endpointId, token);
-
-    Cti::Test::byte_str expected =
-        "42 01 02 73 5a d6 ff 78 02";
-
-    BOOST_CHECK_EQUAL_RANGES(expected, msg);
-
-    e2e.handleTimeout(endpointId);
-
-    const byte_str inbound =
-        "62 45 02 73 5a d6 ff 79 02 00 "
-        "01 02 00 a5 29 00 02 00 00 00 "
-        "03 00 00 00 04 00 00 00 05 00 "
-        "00 00 07 00 00 01 00 00 08 00 "
-        "09 00 00 01 00 00 08 01 01 00 "
-        "00 03 e9 00 00 03 ea 00 00 03 "
-        "eb 00 00 03 ec 00 00 03 ef 00 "
-        "00 04 e8 00 08 03 f1 00 00 04 "
-        "e8 00 08 07 d1 00 00 07 d2 00 "
-        "00 07 d3 00 00 07 d4 00 00 07 "
-        "d7 00 00 08 d0 00 08 07 d9 00 "
-        "00 08 d0 00 08 0b b9 00 00 0b "
-        "ba 00 00 0b bb 00 00 0b bc 00 "
-        "00 0b bf 00 00 0c b8 00 08 0b "
-        "c1 00 00 0c b8 00 08 0f a1 00 "
-        "00 0f a2 00 00 0f a3 00 00 0f "
-        "a4 00 00 0f a7 00 00 10 a0 00 "
-        "08 0f a9 00 00 10 a0 00 08";
-
-    try
-    {
-        e2e.handleIndication(inbound.bytes, endpointId);
-        BOOST_FAIL("Did not throw");
-    }
-    catch( Cti::Protocols::E2e::RequestInactive &ex )
-    {
-        BOOST_CHECK_EQUAL(ex.what(), "Response received for inactive token 23254");
+        BOOST_CHECK_EQUAL(ex.what(), "Response received for inactive id 29442");
     }
 }
 
@@ -214,7 +163,8 @@ BOOST_AUTO_TEST_CASE( test_handleIndication_duplicatePacket )
     BOOST_CHECK_EQUAL(er.confirmable, false);
     BOOST_CHECK_EQUAL(er.block.has_value(), false);
     BOOST_CHECK(er.data.empty());
-    BOOST_CHECK_EQUAL(er.token, token);
+    BOOST_REQUIRE(er.token);
+    BOOST_CHECK_EQUAL(*er.token, token);
 
     try
     {

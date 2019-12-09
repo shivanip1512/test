@@ -6,8 +6,10 @@
 #include "amq_connection.h"
 #include "dev_rfn.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_MeterProgramming.h"
 #include "rfn_statistics.h"
 #include "std_helper.h"
+#include "mgr_device.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -48,7 +50,7 @@ unsigned statsReportFrequency = gConfigParms.getValueAsInt("E2EDT_STATS_REPORTIN
 CtiTime nextStatisticsReport = nextScheduledTimeAlignedOnRate(CtiTime::now(), statsReportFrequency);
 
 RfnRequestManager::RfnRequestManager( CtiDeviceManager& DeviceManager )
-    :   _meterProgrammingMgr { DeviceManager }
+    :   _deviceManager { DeviceManager }
 {
 }
 
@@ -132,7 +134,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                 }
                 else if( auto response = handleResponse(Now, indication.rfnIdentifier, message) )
                 {
-                    CTILOG_INFO(dout, "Results for device " << indication.rfnIdentifier << " token " << message.token << std::endl
+                    CTILOG_INFO(dout, "Results for device " << indication.rfnIdentifier << std::endl
                          << boost::join(response->commandResults
                               | boost::adaptors::transformed([](const RfnCommandResult & result) {
                                     return result.description + ", status " + std::to_string(result.status);  }),
@@ -162,9 +164,18 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
     {
         if( boost::algorithm::starts_with(message.path, meterProgramsPrefix) )
         {
+            if( ! message.token )
+            {
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+
+                CTILOG_ERROR(dout, "Meter programming request received with no token for device " << rfnIdentifier);
+
+                return;
+            }
+
             auto guid = message.path.substr(meterProgramsPrefix.size());
 
-            if( ! _meterProgrammingMgr.isUploading(rfnIdentifier, guid) )
+            if( ! MeterProgramming::gMeterProgrammingManager->isUploading(rfnIdentifier, guid) )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
@@ -173,10 +184,12 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            auto program = _meterProgrammingMgr.getProgram(guid);
+            auto program = MeterProgramming::gMeterProgrammingManager->getProgram(guid);
 
             if( program.empty() )
             {
+                CTILOG_WARN(dout, "Meter program request had no program for device " << rfnIdentifier);
+
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
                 return;
@@ -231,9 +244,9 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 payload.assign(begin, end);
             }
 
-            sendE2eDataReply(message.id, payload, asid, rfnIdentifier, message.token, block);
+            sendE2eDataReply(message.id, payload, asid, rfnIdentifier, *message.token, block);
 
-            _meterProgrammingMgr.updateMeterProgrammingStatus(rfnIdentifier, guid, totalSent);
+            double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnIdentifier, guid, totalSent);
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
         {
@@ -263,13 +276,17 @@ auto RfnRequestManager::handleResponse(const CtiTime Now, const RfnIdentifier rf
     {
         CTILOG_WARN(dout, "Indication message received for inactive device " << rfnIdentifier);
     }
+    else if( ! message.token )
+    {
+        CTILOG_DEBUG(dout, "Bare ACK received for device " << rfnIdentifier);
+    }
     else if( message.token != optRequest->request.rfnRequestId )
     {
-        CTILOG_WARN(dout, "Indication received for inactive request token " << message.token << " for device " << rfnIdentifier);
+        CTILOG_WARN(dout, "Indication received for inactive request token " << *message.token << " for device " << rfnIdentifier);
     }
     else if( message.block && message.block->more )
     {
-        handleBlockContinuation(Now, rfnIdentifier, *optRequest, message.token, message.data, *message.block);
+        handleBlockContinuation(Now, rfnIdentifier, *optRequest, *message.token, message.data, *message.block);
     }
     else
     {
@@ -277,7 +294,7 @@ auto RfnRequestManager::handleResponse(const CtiTime Now, const RfnIdentifier rf
 
         auto results = messageStatus
             ? handleCommandError   (Now, rfnIdentifier, *optRequest, messageStatus)
-            : handleCommandResponse(Now, rfnIdentifier, *optRequest, message.token, message.data);
+            : handleCommandResponse(Now, rfnIdentifier, *optRequest, *message.token, message.data);
 
         CTILOG_INFO(dout, "Erasing active request for device " << rfnIdentifier);
 

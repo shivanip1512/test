@@ -60,7 +60,7 @@ namespace Cti::Protocols::E2e {
 
         int code;  //  Either a ResponseCode or a RequestMethod.
 
-        unsigned long token;
+        std::optional<unsigned long> token;
 
         std::string path;
 
