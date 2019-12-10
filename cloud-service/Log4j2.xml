@@ -1,0 +1,265 @@
+2019-12-09 14:36:28.334  INFO 61368 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 61368 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 14:36:28.337  INFO 61368 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 14:36:28.746  WARN 61368 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'azureServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.azure.base.AzureCloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 14:36:28.752  INFO 61368 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 14:36:28.840 ERROR 61368 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field azureServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.azure.base.AzureCloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.azure.base.AzureCloudService' in your configuration.
+
+2019-12-09 15:02:56.127  INFO 137960 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 137960 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:02:56.133  INFO 137960 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:02:58.262  WARN 137960 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.cloud.service.CloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:02:58.269  INFO 137960 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:02:58.390 ERROR 137960 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.cloud.service.CloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.cloud.service.CloudService' in your configuration.
+
+2019-12-09 15:06:18.600  INFO 138704 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 138704 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:06:18.603  INFO 138704 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:06:19.130  INFO 138704 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.837 seconds (JVM running for 2.574)
+2019-12-09 15:06:19.131  INFO 138704 --- [main] c.c.b.BootStrapService                   : First Spring Boot Application
+2019-12-09 15:06:58.864  INFO 133540 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 133540 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:06:58.867  INFO 133540 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:06:59.242  WARN 133540 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.cloud.service.CloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:06:59.247  INFO 133540 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:06:59.328 ERROR 133540 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.cloud.service.CloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.cloud.service.CloudService' in your configuration.
+
+2019-12-09 15:09:03.057  INFO 133908 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 133908 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:09:03.060  INFO 133908 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:09:03.440  WARN 133908 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.cloud.service.CloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:09:03.445  INFO 133908 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:09:03.530 ERROR 133908 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.cloud.service.CloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.cloud.service.CloudService' in your configuration.
+
+2019-12-09 15:09:29.521  INFO 138276 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 138276 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:09:29.523  INFO 138276 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:09:29.896  WARN 138276 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.azure.service.IOTHubService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:09:29.901  INFO 138276 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:09:29.986 ERROR 138276 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.azure.service.IOTHubService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.azure.service.IOTHubService' in your configuration.
+
+2019-12-09 15:11:22.831  INFO 95012 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 95012 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:11:22.834  INFO 95012 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:11:23.249  WARN 95012 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.message.publisher.service.Publisher' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:11:23.255  INFO 95012 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:11:23.334 ERROR 95012 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field publisher in com.cannontech.data.holder.DataHolder required a bean of type 'com.cannontech.message.publisher.service.Publisher' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.message.publisher.service.Publisher' in your configuration.
+
+2019-12-09 15:19:08.514  INFO 137556 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 137556 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:19:08.517  INFO 137556 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:19:09.088  INFO 137556 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.88 seconds (JVM running for 2.62)
+2019-12-09 15:19:09.089  INFO 137556 --- [main] c.c.b.BootStrapService                   : First Spring Boot Application
+2019-12-09 15:24:36.977  INFO 139736 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 139736 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:24:36.980  INFO 139736 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:24:37.579  INFO 139736 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.909 seconds (JVM running for 2.79)
+2019-12-09 15:24:37.580  INFO 139736 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 15:24:37.580  INFO 139736 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 16:57:03.423  INFO 148808 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 148808 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 16:57:03.426  INFO 148808 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 16:57:04.006  INFO 148808 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.889 seconds (JVM running for 2.662)
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 16:57:04.008  INFO 148808 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:09:35.517  INFO 152992 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 152992 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:09:35.520  INFO 152992 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:09:36.115  INFO 152992 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.903 seconds (JVM running for 2.856)
+2019-12-09 17:09:36.115  INFO 152992 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 17:09:36.117  INFO 152992 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:10:52.648  INFO 158360 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 158360 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:10:52.652  INFO 158360 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:10:53.217  INFO 158360 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.882 seconds (JVM running for 2.638)
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 17:10:53.219  INFO 158360 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:11:41.299  INFO 158652 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 158652 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:11:41.303  INFO 158652 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:11:48.410  INFO 158652 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 7.555 seconds (JVM running for 9.734)
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 17:12:01.479  INFO 158652 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 17:12:13.619  INFO 158652 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:20:13.978  INFO 159476 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 159476 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:20:13.981  INFO 159476 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:20:14.405  WARN 159476 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'configurationDataPublisher': Unsatisfied dependency expressed through method 'setPublishers' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.List<com.cannontech.message.publisher.service.Publisher>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2019-12-09 17:20:14.412  INFO 159476 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 17:20:14.503 ERROR 159476 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method setPublishers in com.cannontech.message.publisher.service.PublisherBase required a bean of type 'java.util.List' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'java.util.List' in your configuration.
+
+2019-12-09 17:24:32.215  INFO 160900 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 160900 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:24:32.218  INFO 160900 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:24:32.658  WARN 160900 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'configurationDataPublisher': Unsatisfied dependency expressed through method 'setPublishers' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.List<com.cannontech.message.publisher.service.PublisherBase>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2019-12-09 17:24:32.665  INFO 160900 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 17:24:32.738 ERROR 160900 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method setPublishers in com.cannontech.message.publisher.service.PublisherBase required a bean of type 'java.util.List' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'java.util.List' in your configuration.
+
+2019-12-09 17:25:27.049  INFO 159300 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 159300 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:25:27.052  INFO 159300 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:25:27.474  WARN 159300 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'configurationDataPublisher': Unsatisfied dependency expressed through method 'setPublishers' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.List<com.cannontech.message.publisher.service.Publisher>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2019-12-09 17:25:27.482  INFO 159300 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 17:25:27.570 ERROR 159300 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method setPublishers in com.cannontech.message.publisher.service.PublisherBase required a bean of type 'java.util.List' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'java.util.List' in your configuration.
+
