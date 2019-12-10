@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusPoint;
+import com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -111,7 +112,7 @@ public class LoadGroupPointValidator extends LoadGroupSetupValidator<LoadGroupPo
                         .getStatesList()
                         .stream()
                         .filter(state -> state.getStateRawState() == loadGroup.getStartControlRawState().getRawState()
-                                && state.isValidRawState())
+                                && LoadGroupSetupServiceImpl.isValidPointGroupRawState(state))
                         .findFirst();
 
                 if (liteState.isEmpty()) {

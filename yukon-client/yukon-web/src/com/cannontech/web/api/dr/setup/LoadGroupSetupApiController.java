@@ -107,9 +107,9 @@ public class LoadGroupSetupApiController {
         binder.addValidators(lmCopyValidator);
     }
 
-    @GetMapping("/getStartState/{pointId}")
-    public ResponseEntity<List<ControlRawState>> getStartState(@PathVariable int pointId) {
-        return new ResponseEntity<>(loadGroupService.getStartState(pointId), HttpStatus.OK);
+    @GetMapping("/getPointGroupStartState/{pointId}")
+    public ResponseEntity<List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId) {
+        return new ResponseEntity<>(loadGroupService.getPointGroupStartState(pointId), HttpStatus.OK);
     }
 
     @Autowired
