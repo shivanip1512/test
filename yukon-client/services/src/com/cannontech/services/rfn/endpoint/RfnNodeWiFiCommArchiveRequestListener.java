@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.jms.ConnectionFactory;
@@ -21,6 +23,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.node.NodeWiFiComm;
+import com.cannontech.common.rfn.message.node.NodeWiFiCommStatus;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -28,6 +31,7 @@ import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
 import com.cannontech.services.rfn.RfnArchiveQueueHandler;
@@ -41,6 +45,11 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     private JmsTemplate jmsTemplate;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    
+    // map of RF WiFi Comm Status to Yukon CommStatusState state group
+    private static Map<NodeWiFiCommStatus, CommStatusState> commStatusMapping = 
+            Map.of(NodeWiFiCommStatus.NOT_ACTIVE, CommStatusState.DISCONNECTED,
+                   NodeWiFiCommStatus.ACTIVE, CommStatusState.CONNECTED);
 
     @Override
     public void process(Object obj, String processor) {
@@ -81,7 +90,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         BuiltInAttribute commStatus = BuiltInAttribute.COMM_STATUS;
         NodeWiFiComm wiFiComm = entry.getValue();
         RfnIdentifier rfnIdentifier = wiFiComm.getDeviceRfnIdentifier();
-        double commStatusValue = wiFiComm.getNodeWiFiCommStatus().getNodeWiFiCommStatusStateGroupState();
+        double commStatusValue = getForWifiCommStatus(wiFiComm.getNodeWiFiCommStatus()).getRawState();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             LitePoint point = attributeService.createAndFindPointForAttribute(rfnDevice, commStatus);
@@ -121,5 +130,13 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
+    }
+ 
+    /**
+     * Returns the CommStatusState for the corresponding NodeWiFiCommStatus.
+     * @throws NoSuchElementException
+     */
+    private static CommStatusState getForWifiCommStatus(NodeWiFiCommStatus nodeWiFiCommStatus) throws NoSuchElementException {
+        return Optional.ofNullable(commStatusMapping.get(nodeWiFiCommStatus)).orElseThrow();
     }
 }
