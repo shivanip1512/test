@@ -254,7 +254,7 @@ public class LoadGroupSetupControllerHelper {
             YukonUserContext userContext) {
         // Give API call to get all control state
         List<ControlRawState> startStates = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + loadGroupPoint.getPointUsage().getId());
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drPointGroupStartStateUrl + loadGroupPoint.getPointUsage().getId());
         ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
 

@@ -79,6 +79,9 @@ const IM_EX_MSG OutboundQueue
 const IM_EX_MSG OutboundQueue
     OutboundQueue::RfnDataStreamingUpdate
     {"com.eaton.eas.yukon.rfnDataStreamingUpdate"};
+const IM_EX_MSG OutboundQueue
+    OutboundQueue::MeterProgramStatusArchiveRequest
+    {"com.eaton.eas.yukon.MeterProgramStatusArchiveRequest"};
 
 const IM_EX_MSG InboundQueue
     InboundQueue::NetworkManagerResponse

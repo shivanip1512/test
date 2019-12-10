@@ -2,6 +2,7 @@ package com.cannontech.watchdog.service.impl;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +13,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.dao.WatchdogWatcherDao;
 import com.cannontech.watchdog.service.WatchdogWatcherService;
@@ -23,6 +26,7 @@ public class WatchdogWatcherServiceImpl implements WatchdogWatcherService {
     @Autowired WatchdogWatcherDao dao;
     @Autowired private PaoDao paoDao;
     @Autowired RfnDeviceDao rfnDeviceDao;
+    @Autowired private GlobalSettingDao settingDao;
 
     @Override
     public boolean isServiceRequired(YukonServices serviceName) {
@@ -33,7 +37,9 @@ public class WatchdogWatcherServiceImpl implements WatchdogWatcherService {
         } else if (serviceName == YukonServices.NETWORKMANAGER) {
             return doPaoWithPaoClassExists(PaoClass.RFMESH);
         } else if (serviceName == YukonServices.ITRON) {
-            return doPaoWithPaoClassExists(PaoClass.ITRON);
+            String itronApiURL = settingDao.getString(GlobalSettingType.ITRON_HCM_API_URL);
+            String itronUserName = settingDao.getString(GlobalSettingType.ITRON_HCM_USERNAME);
+            return (StringUtils.isNotBlank(itronApiURL) && StringUtils.isNotBlank(itronUserName)) && doPaoWithPaoClassExists(PaoClass.ITRON);
         } else {
             log.info("Incorrect service name " + serviceName);
             return true;

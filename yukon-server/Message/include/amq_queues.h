@@ -36,6 +36,7 @@ public:
     static const OutboundQueue SetBatteryNodeChannelConfigRequest;
     static const OutboundQueue DeviceCreationRequest;
     static const OutboundQueue RfnDataStreamingUpdate;
+    static const OutboundQueue MeterProgramStatusArchiveRequest;
 };
 
 

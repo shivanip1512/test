@@ -76,7 +76,7 @@ yukon.dr.setup.loadGroup = (function() {
         if (!$.isEmptyObject(pointId) && pointId.length !== 0){
             container.find("#js-start-state").removeClass("dn");
             $.ajax({
-                url: yukon.url('/dr/setup/loadGroup/getStartState/' + pointId),
+                url: yukon.url('/dr/setup/loadGroup/getPointGroupStartState/' + pointId),
                 type: 'get'
             }).done(function (data) {
                 $("#js-loadgroup-container").find("#js-control-start-state").empty();

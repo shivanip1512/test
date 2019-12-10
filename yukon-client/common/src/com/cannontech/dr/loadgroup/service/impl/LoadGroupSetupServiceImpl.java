@@ -220,12 +220,18 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
     }
 
     @Override
-    public List<ControlRawState> getStartState(int pointId) {
+    public List<ControlRawState> getPointGroupStartState(int pointId) {
         List<LiteState> stateList = stateGroupDao.getStateList(pointId);
         return stateList.stream()
-                        .filter(state -> state.isValidRawState())
+                        .filter(state -> isValidPointGroupRawState(state))
                         .map(state -> new ControlRawState(state.getStateRawState(), state.getStateText()))
                         .collect(Collectors.toList());
     }
 
+    /**
+     * Returns true in case the raw state is either 0 or 1 in case of Point Load Group
+     */
+    public static boolean isValidPointGroupRawState(LiteState liteState) {
+        return (liteState.getStateRawState() == 0 || liteState.getStateRawState() == 1);
+    }
 }
