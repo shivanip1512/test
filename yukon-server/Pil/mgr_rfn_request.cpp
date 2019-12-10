@@ -163,13 +163,27 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 }
 
 
-void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid)
+void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & msg)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::Pil;
     using namespace Cti::Messaging::Serialization;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
+    if( auto serializedMsg = MessageSerializer<MeterProgramStatusArchiveRequestMsg>::serialize(msg); 
+        serializedMsg.empty() )
+    {
+        CTILOG_ERROR(dout, "Could not serialize MeterProgramStatusArchiveRequestMsg for " << msg.rfnIdentifier);
+    }
+    else
+    {
+        ActiveMQConnectionManager::enqueueMessage(OutboundQueue::MeterProgramStatusArchiveRequest, serializedMsg);
+    }
+}
+
+
+void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid)
+{
     std::string meterProgramsPrefix = "/meterPrograms/";
 
     try
@@ -260,18 +274,12 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnIdentifier, guid, totalSent);
 
-            auto serializedMsg =
-                MessageSerializer<MeterProgramStatusArchiveRequestMsg>::serialize( {
+            sendMeterProgramStatusUpdate( {
                     rfnIdentifier,
                     guid,
                     ProgrammingStatus::Uploading,
                     ClientErrors::None,
                     std::chrono::system_clock::now() } );
-
-            if( ! serializedMsg.empty() )
-            {
-                ActiveMQConnectionManager::enqueueMessage( OutboundQueue::MeterProgramStatusArchiveRequest, serializedMsg );
-            }
         }
         else if( auto command = Devices::Commands::RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply(Now, message.data) )
         {
@@ -279,18 +287,12 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             {
                 rfnDevice->extractCommandResult(*command);
 
-                auto serializedMsg =
-                    MessageSerializer<MeterProgramStatusArchiveRequestMsg>::serialize( {
+                sendMeterProgramStatusUpdate( {
                         rfnIdentifier,
                         command->getMeterConfigurationID(),
                         ProgrammingStatus::Idle,
                         command->getStatusCode(),
                         std::chrono::system_clock::now() } );
-
-                if( ! serializedMsg.empty() )
-                {
-                    ActiveMQConnectionManager::enqueueMessage( OutboundQueue::MeterProgramStatusArchiveRequest, serializedMsg );
-                }
             }
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
