@@ -66,7 +66,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         Set<Long> referenceIds = new HashSet<>();
         Map<Long, NodeWiFiComm> wiFiComms = request.getNodeWiFiComms();
         for (Map.Entry<Long, NodeWiFiComm> entry : wiFiComms.entrySet()) {
-            referenceIds.add(publishPointData(entry, BuiltInAttribute.COMM_STATUS, processor));
+            referenceIds.add(publishPointData(entry, processor));
         }
         
         sendAcknowledgement(referenceIds, processor);
@@ -76,11 +76,12 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
      * Attempts to publish point data for the device. If unable to lookup device in cache the exception will
      * be thrown and it will continue processing entries.
      */
-    private Long publishPointData(Entry<Long, NodeWiFiComm> entry, BuiltInAttribute commStatus, String processor) {
+    private Long publishPointData(Entry<Long, NodeWiFiComm> entry, String processor) {
         PointData pointData = null;
+        BuiltInAttribute commStatus = BuiltInAttribute.COMM_STATUS;
         NodeWiFiComm wiFiComm = entry.getValue();
         RfnIdentifier rfnIdentifier = wiFiComm.getDeviceRfnIdentifier();
-        double commStatusValue = wiFiComm.getNodeWiFiCommStatus().getNodeWiFiCommStatusCodeID();
+        double commStatusValue = wiFiComm.getNodeWiFiCommStatus().getNodeWiFiCommStatusStateGroupState();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             LitePoint point = attributeService.createAndFindPointForAttribute(rfnDevice, commStatus);
