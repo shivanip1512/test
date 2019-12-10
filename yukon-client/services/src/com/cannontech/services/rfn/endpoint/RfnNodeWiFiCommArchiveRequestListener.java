@@ -44,7 +44,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
 
     @Override
     public void process(Object obj, String processor) {
-        // received message from NM on startup, persist gateway to device mapping to database, send
+        // received RfnNodeWiFiCommArchiveRequest message from NM, persist gateway to device mapping to database, send
         // acknowledgment to NM
         processRequest((RfnNodeWiFiCommArchiveRequest) obj, processor);
     }
@@ -66,7 +66,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         Set<Long> referenceIds = new HashSet<>();
         Map<Long, NodeWiFiComm> wiFiComms = request.getNodeWiFiComms();
         for (Map.Entry<Long, NodeWiFiComm> entry : wiFiComms.entrySet()) {
-            referenceIds.add(publishPointData(entry, BuiltInAttribute.WIFI_COMM_STATUS, processor));
+            referenceIds.add(publishPointData(entry, BuiltInAttribute.COMM_STATUS, processor));
         }
         
         sendAcknowledgement(referenceIds, processor);
@@ -76,28 +76,28 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
      * Attempts to publish point data for the device. If unable to lookup device in cache the exception will
      * be thrown and it will continue processing entries.
      */
-    private Long publishPointData(Entry<Long, NodeWiFiComm> entry, BuiltInAttribute wifiCommStatus, String processor) {
+    private Long publishPointData(Entry<Long, NodeWiFiComm> entry, BuiltInAttribute commStatus, String processor) {
         PointData pointData = null;
         NodeWiFiComm wiFiComm = entry.getValue();
         RfnIdentifier rfnIdentifier = wiFiComm.getDeviceRfnIdentifier();
-        double wiFiCommStatusValue = wiFiComm.getNodeWiFiCommStatus().getNodeWiFiCommStatusCodeID();
+        double commStatusValue = wiFiComm.getNodeWiFiCommStatus().getNodeWiFiCommStatusCodeID();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            LitePoint point = attributeService.createAndFindPointForAttribute(rfnDevice, wifiCommStatus);
+            LitePoint point = attributeService.createAndFindPointForAttribute(rfnDevice, commStatus);
             pointData = new PointData();
             pointData.setId(point.getLiteID());
             pointData.setPointQuality(PointQuality.Normal);
-            pointData.setValue(wiFiCommStatusValue);
+            pointData.setValue(commStatusValue);
             pointData.setTime(new Date(wiFiComm.getWiFiCommStatusTimestamp()));
             pointData.setType(point.getPointType());
             pointData.setTagsPointMustArchive(true);
 
             asyncDynamicDataSource.putValue(pointData);
 
-            log.debug("{} generated {} {} {}", processor, pointData, wifiCommStatus, rfnIdentifier);         
+            log.debug("{} generated {} {} {}", processor, pointData, commStatus, rfnIdentifier);         
         } catch (IllegalUseOfAttribute e) {
-            log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, wifiCommStatus,
-                    wiFiCommStatusValue, e);
+            log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, commStatus,
+                    commStatusValue, e);
         }
         
         return entry.getKey();

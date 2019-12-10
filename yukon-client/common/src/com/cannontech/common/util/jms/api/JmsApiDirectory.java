@@ -1064,7 +1064,6 @@ public final class JmsApiDirectory {
                   .requestMessage(RfnNodeWiFiCommArchiveRequest.class)
                   .responseMessage(RfnNodeWiFiCommArchiveResponse.class)
                   .sender(NETWORK_MANAGER)
-                  .sender(YUKON_WEBSERVER_DEV_PAGES)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     

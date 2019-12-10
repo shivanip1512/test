@@ -324,7 +324,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
     WIFI_AP_CONNECTION_FAILURE("Wi-Fi Connection Failure", AttributeGroup.RFN_OTHER_EVENT, false),
     WIFI_BSSID_CHANGE("Wi-Fi BSSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
-    WIFI_COMM_STATUS("WiFi Communication Status", AttributeGroup.RFN_OTHER_EVENT, false),   //WiFi Super Meters only
     WIFI_PASSPHRASE_CHANGE("Wi-Fi Passphrase Change", AttributeGroup.RFN_OTHER_EVENT, false),
     WIFI_SSID_CHANGE("Wi-Fi SSID Change", AttributeGroup.RFN_OTHER_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),

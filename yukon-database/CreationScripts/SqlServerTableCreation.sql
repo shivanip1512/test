@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/4/2019 4:43:29 PM                         */
+/* Created on:     11/8/2019 12:38:12 PM                        */
 /*==============================================================*/
 
 
@@ -9179,8 +9179,6 @@ create table State (
 )
 go
 
-INSERT INTO State VALUES(-29, 0, 'Active', 0, 6, 0);
-INSERT INTO State VALUES(-29, 1, 'Not Active', 1, 6, 0);
 INSERT INTO State VALUES(-28, 0, 'Heat', 1, 6, 0);
 INSERT INTO State VALUES(-28, 1, 'Cool', 4, 6, 0);
 INSERT INTO State VALUES(-28, 2, 'Off', 9, 6, 0);
@@ -9363,7 +9361,6 @@ create table StateGroup (
 )
 go
 
-INSERT INTO StateGroup VALUES(-29, 'WiFiCommStatus', 'Status');
 INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
 INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
 INSERT INTO StateGroup VALUES(-26, 'SCADA Override Type', 'Status');
