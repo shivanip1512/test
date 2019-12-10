@@ -281,7 +281,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SERVICE_STATUS("Service Status", AttributeGroup.STATUS),
     TAMPER_FLAG("Tamper Flag", AttributeGroup.STATUS),
     TEMPERATURE("Temperature", AttributeGroup.OTHER, false), //timer pulled data
-    TEMPERATURE_DEVICE("Temperature of Device", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    TEMPERATURE_DEVICE("Temperature of Device", AttributeGroup.OTHER, false),
     TOTAL_LUF_COUNT("Total LUF Event Count", AttributeGroup.OTHER),
     TOTAL_LUV_COUNT("Total LUV Event Count", AttributeGroup.OTHER),
     TOTAL_LOF_COUNT("Total LOF Event Count", AttributeGroup.OTHER),
@@ -682,7 +682,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     // These are informational sets not used for display group purposes.
     private static Set<BuiltInAttribute> rfnEventTypes;
-    private static Set<BuiltInAttribute> rfnEventAnalogTypes;
 
     // These are both informational and used for display group purposes.
     private static Set<BuiltInAttribute> readableProfileAttributes;
@@ -780,10 +779,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
      * indicates that some significant event has occurred on a device.
      */
     private static void buildRfnEventAttributeSets() {
-
-        // rfn "events" that are analog, not status
-        rfnEventAnalogTypes = ImmutableSet.of(
-                TEMPERATURE_DEVICE);
 
         nonIntervalAttributes = ImmutableSet.of(
                 MAXIMUM_VOLTAGE,
@@ -931,24 +926,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> allGroupedStatusTypeBuilder =
             ImmutableMap.builder();
 
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_CURRENT_EVENT,
-            lookupByGroup.get(AttributeGroup.RFN_CURRENT_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_VOLTAGE_EVENT,
-            lookupByGroup.get(AttributeGroup.RFN_VOLTAGE_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_DEMAND_EVENT,
-            lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_OTHER_EVENT,
-            lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_METERING_EVENT,
-            lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
+        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_CURRENT_EVENT, lookupByGroup.get(AttributeGroup.RFN_CURRENT_EVENT));
+        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_VOLTAGE_EVENT, lookupByGroup.get(AttributeGroup.RFN_VOLTAGE_EVENT));
+        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
+        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_OTHER_EVENT, lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
+        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_METERING_EVENT, lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
         allGroupedStatusTypeBuilder.put(AttributeGroup.STATUS, lookupByGroup.get(AttributeGroup.STATUS));
-
-        // All the rfn analog "events" are from the RFN_HARDWARE_EVENTS group. So removing from here
-        Set<BuiltInAttribute> rfnHardwareEventsExculdeAnalog =
-            Sets.difference(lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT), rfnEventAnalogTypes);
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareEventsExculdeAnalog);
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT,
-            lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
+        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
+        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
 
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
@@ -1002,15 +987,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
      * @return
      */
     public static Set<BuiltInAttribute> getAllStatusTypes() {
-        return Sets.union(lookupByGroup.get(AttributeGroup.STATUS), Sets.difference(getRfnEventTypes(), rfnEventAnalogTypes));
-    }
-    
-    /**
-     * Returns a set of analog event types.
-     * Most often, this method will be used to get a set of events to _exclude_ from some other set.
-     */
-    public static Set<BuiltInAttribute> getRfnEventAnalogTypes() {
-        return rfnEventAnalogTypes;
+        return Sets.union(lookupByGroup.get(AttributeGroup.STATUS), getRfnEventTypes());
     }
     
     /**
