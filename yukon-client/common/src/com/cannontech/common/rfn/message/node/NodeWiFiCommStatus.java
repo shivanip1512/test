@@ -3,8 +3,8 @@ package com.cannontech.common.rfn.message.node;
 import java.util.Arrays;
 
 public enum NodeWiFiCommStatus {
-    ACTIVE(2),
     NOT_ACTIVE(1),
+    ACTIVE(2),
     ;
 
     private final short nodeWiFiCommStatusCodeID;
