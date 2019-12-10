@@ -86,6 +86,15 @@ bool EcobeeSetpointGear::isMandatory() const
 
 int EcobeeSetpointGear::getSetpointOffset() const
 {
-    return std::clamp( getProfileSettings().maxValue, -10L, 10L );
+    const LONG  Minimum = -10L,
+                Maximum =  10L;
+
+    if ( getProfileSettings().maxValue > Maximum || getProfileSettings().maxValue < Minimum )
+    {
+        CTILOG_WARN( dout, "Setpoint Offset of: " << getProfileSettings().maxValue << " is outside the valid range of [" 
+                    << Minimum << ", " << Maximum << "]. Clamping to nearest value." );
+    }
+
+    return std::clamp( getProfileSettings().maxValue, Minimum, Maximum );
 }
 
