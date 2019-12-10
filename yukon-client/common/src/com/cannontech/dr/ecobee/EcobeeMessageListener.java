@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
@@ -61,6 +62,22 @@ public class EcobeeMessageListener {
             controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(), startTime, ControlType.ECOBEE, 
                                                                 null, controlDurationSeconds,
                                                                 controlCyclePercent);
+        }
+    }
+
+    public void handleSetpointControlMessage(Message message) {
+        log.debug("Received message on yukon.notif.stream.dr.EcobeeCyclingControlMessage queue.");
+
+        EcobeeSetpointDrParameters parameters;
+        if(message instanceof StreamMessage) {
+            try {
+                parameters = buildSetpointDrParameters((StreamMessage) message);
+            } catch (JMSException e) {
+                log.error("Exception parsing StreamMessage for duty cycle DR event.", e);
+                return;
+            }
+            System.out.println("Parameters built " + parameters + " Ready to send Ecobee Message");
+
         }
     }
 
@@ -131,5 +148,36 @@ public class EcobeeMessageListener {
                   + rampOut + "Optional: " + optional + "(" + mandatoryByte + ")");
         
         return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampIn, rampOut, optional, groupId);
+    }
+    
+    /**
+     * Takes the StreamMessage from Load Management and parses out the values into an EcobeeSetpointDrParameters object.
+     *
+     * Load Management sends
+     * 1.  Group ID        : signed int  (32 bits)
+     * 2.  Temp Option     : signed char (8 bits)  [0 == cool, 1 == heat]
+     * 3.  Mandatory       : signed char (8 bits)  [0 == optional, 1 == mandatory]
+     * 4.  Temp Offset     : signed int  (32 bits) [-10,10]
+     * 5.  Start time      : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     * 6.  End time        : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     */
+    private EcobeeSetpointDrParameters buildSetpointDrParameters(StreamMessage message) throws JMSException {
+        //Get the raw values
+        int groupId = message.readInt();
+        byte tempOptionByte = message.readByte();
+        byte mandatoryByte = message.readByte();
+        int tempOffset = message.readInt();
+        long utcStartTimeSeconds = message.readLong();
+        long utcEndTimeSeconds = message.readLong();
+
+        //Massage the data into the form we want
+        boolean tempOptionHeat = (tempOptionByte == 1);
+        Instant startTime = new Instant(utcStartTimeSeconds * 1000);
+        Instant endTime = new Instant(utcEndTimeSeconds * 1000);
+        boolean optional = (mandatoryByte == 0);
+        log.info("Parsed setpoint dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds 
+                  + ") End time: " + endTime + " (" + utcEndTimeSeconds + ") Optional: " + optional + "(" + mandatoryByte + ")");
+        
+        return new EcobeeSetpointDrParameters(groupId, tempOptionHeat, optional, tempOffset, startTime, endTime);
     }
 }
