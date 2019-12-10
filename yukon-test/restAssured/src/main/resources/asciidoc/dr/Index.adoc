@@ -172,3 +172,10 @@ include::ProgramConstraintUpdate.adoc[]
 
 === Delete
 include::ProgramConstraintDelete.adoc[]
+
+== UI Component
+=== Picker
+include::PickerSearchByType.adoc[]
+include::PickerSearchById.adoc[]
+include::PickerSearchByQuery.adoc[]
+
