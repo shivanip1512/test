@@ -10,13 +10,14 @@
 <%@ attribute name="label" description="Text representing the type of criteria, ie: 'Device Type:'" %>
 <%@ attribute name="value" description="Text representing the criteria currently chosen, ie: 'RFN-420fL, RFN-420fD'" %>
 <%@ attribute name="menuClasses" description="Class names applied to the menu container element." %>
+<%@ attribute name="labelWidth" description="Max width to apply to the label." %>
 
 <cti:msg2 key="yukon.common.all" var="allText"/>
 <cti:msg2 key="yukon.common.none.choice" var="noneText"/>
 
 <div class="dropdown-trigger usn ${pageScope.triggerClasses}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <button type="button" class="criteria-button" data-all-text="${allText}" data-none-text="${noneText}">
-        <div class="criteria-wrap">
+        <div class="criteria-wrap" style="max-width:${pageScope.labelWidth}">
             <span class="criteria-label">
                 <c:choose>
                     <c:when test="${not empty pageScope.label}">${fn:escapeXml(pageScope.label)}:&nbsp;</c:when>

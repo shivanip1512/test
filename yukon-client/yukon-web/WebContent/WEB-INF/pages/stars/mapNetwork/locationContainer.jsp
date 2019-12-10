@@ -13,6 +13,15 @@
 <cti:msg2 var="locationHelp" key=".mapNetwork.location.helpText"/>
 <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
     <%@ include file="locationInput.jspf"%>
+    <c:if test="${!empty coordinates.latitude}">
+        <span class="fr js-infrastructure">
+            <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="150px">
+                <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
+                <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
+                <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
+            </cm:criteria>
+        </span>
+    </c:if>
     <div style="height:400px;">
         <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}" style="height:100%;width:100%;">
             <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>

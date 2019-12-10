@@ -174,6 +174,14 @@
                     <cti:icon icon="icon-spinner" />
                     <i:inline key=".status.filtering" />
                 </div>
+                
+                <span class="fr PT10">
+                    <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="180px">
+                        <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
+                        <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
+                        <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
+                    </cm:criteria>
+                </span>
             </div>
 
         </div>

@@ -20,7 +20,7 @@ yukon.map.network = (function () {
     //grey
     _parentColor = "#808080",
     //dark blue
-    _routeColor = "#0000CC",
+    _routeColor = yukon.mapping.getRouteColor(),
     //grey
     _focusRouteColor = "#808080",
     _largerScale = 1.3,
@@ -576,6 +576,7 @@ yukon.map.network = (function () {
                     target: 'device-location',
                     view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], _srcProjection, _destProjection), zoom: 4 })
                 });
+                yukon.mapping.initializeMap(_map);
                 _destProjection = _map.getView().getProjection().getCode();
                 _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
                 /** Hide any cog dropdowns on zoom or map move **/
