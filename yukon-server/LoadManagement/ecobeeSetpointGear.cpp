@@ -86,8 +86,8 @@ bool EcobeeSetpointGear::isMandatory() const
 
 int EcobeeSetpointGear::getSetpointOffset() const
 {
-    const LONG  Minimum = -10L,
-                Maximum =  10L;
+    constexpr auto  Minimum = -10L,
+                    Maximum =  10L;
 
     if ( getProfileSettings().maxValue > Maximum || getProfileSettings().maxValue < Minimum )
     {
