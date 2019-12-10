@@ -45,6 +45,9 @@
     <ClCompile Include="behavior_rfnDataStreaming.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mgr_meter_programming.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\config_data_dnp.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\config_data_cbc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mgr_meter_programming.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

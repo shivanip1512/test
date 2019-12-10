@@ -84,6 +84,7 @@
         <include name="quartz-2.2.1.jar"/>
         <include name="saaj.jar"/>
         <include name="slf4j-api-1.7.25.jar"/>
+        <include name="slf4j-api-1.8.0-alpha2.jar"/>
         <include name="log4j-slf4j-impl-2.11.2.jar"/>
         <include name="spring-xml-3.0.7.RELEASE.jar"/>
         <include name="spring-ws-core-3.0.7.RELEASE.jar"/>
