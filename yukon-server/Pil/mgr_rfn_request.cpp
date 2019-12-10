@@ -4,12 +4,15 @@
 #include "e2e_exceptions.h"
 #include "mgr_meter_programming.h"
 #include "amq_connection.h"
+#include "amq_queues.h"
 #include "dev_rfn.h"
 #include "cmd_rfn_ConfigNotification.h"
 #include "cmd_rfn_MeterProgramming.h"
 #include "rfn_statistics.h"
 #include "std_helper.h"
 #include "mgr_device.h"
+#include "MeterProgramStatusArchiveRequestMsg.h"
+#include "pil_message_serialization.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -24,6 +27,10 @@ using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnCommandResultList;
 using Cti::Logging::Vector::Hex::operator<<;
 using Cti::Messaging::Rfn::E2eMessenger;
+
+using namespace Cti::Messaging;
+using namespace Cti::Messaging::Pil;
+using namespace Cti::Messaging::ActiveMQ::Queues;
 
 using namespace std::chrono_literals;
 
@@ -156,6 +163,25 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 }
 
 
+void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & msg)
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::Pil;
+    using namespace Cti::Messaging::Serialization;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+    if( auto serializedMsg = MessageSerializer<MeterProgramStatusArchiveRequestMsg>::serialize(msg); 
+        serializedMsg.empty() )
+    {
+        CTILOG_ERROR(dout, "Could not serialize MeterProgramStatusArchiveRequestMsg for " << msg.rfnIdentifier);
+    }
+    else
+    {
+        ActiveMQConnectionManager::enqueueMessage(OutboundQueue::MeterProgramStatusArchiveRequest, serializedMsg);
+    }
+}
+
+
 void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid)
 {
     std::string meterProgramsPrefix = "/meterPrograms/";
@@ -247,6 +273,27 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             sendE2eDataReply(message.id, payload, asid, rfnIdentifier, *message.token, block);
 
             double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnIdentifier, guid, totalSent);
+
+            sendMeterProgramStatusUpdate( {
+                    rfnIdentifier,
+                    guid,
+                    ProgrammingStatus::Uploading,
+                    ClientErrors::None,
+                    std::chrono::system_clock::now() } );
+        }
+        else if( auto command = Devices::Commands::RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply(Now, message.data) )
+        {
+            if( auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier) )
+            {
+                rfnDevice->extractCommandResult(*command);
+
+                sendMeterProgramStatusUpdate( {
+                        rfnIdentifier,
+                        command->getMeterConfigurationID(),
+                        ProgrammingStatus::Idle,
+                        command->getStatusCode(),
+                        std::chrono::system_clock::now() } );
+            }
         }
         else if( auto command = Devices::Commands::RfnCommand::handleUnsolicitedReport(Now, message.data) )
         {

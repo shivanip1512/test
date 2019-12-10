@@ -49,11 +49,32 @@ BOOST_AUTO_TEST_CASE( test_setConfigurationCommand )
 
     // decode -- success response
     {
-        const std::vector< unsigned char > response { 0x63, 0x00 };
+        const std::vector< unsigned char > response
+        { 
+            0x92,   // Configuration response
+            0,      // Success
+            0,      // Success
+            1,      // 1 TLV
+            3,      // TLV type 3, configuration ID
+            37,     // payload length
+            'R', '7', 'd', '4', '4', '4', '8', '4', '0', '-',       // payload - R7d444840-9dc0-11d1-b245-5ffdce74fad2
+            '9', 'd', 'c', '0', '-',
+            '1', '1', 'd', '1', '-',
+            'b', '2', '4', '5', '-',
+            '5', 'f', 'f', 'd', 'c', 'e', '7', '4', 'f', 'a', 'd', '2'
+        };
 
         auto rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "No response" );
+        BOOST_CHECK_EQUAL( rcv.status, ClientErrors::None );
+        BOOST_CHECK_EQUAL( rcv.description, 
+                           "Meter Status: Configured (0)"
+                           "\nDetailed Configuration Status: Success (0)"
+                           "\nSource: Yukon programmed"
+                           "\nMeter Configuration ID: R7d444840-9dc0-11d1-b245-5ffdce74fad2" );
+
+        BOOST_CHECK_EQUAL( command.getStatusCode(), ClientErrors::None );
+        BOOST_CHECK_EQUAL( command.getMeterConfigurationID(), "R7d444840-9dc0-11d1-b245-5ffdce74fad2" );
     }
 }
 
@@ -99,6 +120,7 @@ BOOST_AUTO_TEST_CASE( test_getConfigurationCommand_success )
                            "\nSource: Yukon programmed"
                            "\nMeter Configuration ID: R7d444840-9dc0-11d1-b245-5ffdce74fad2" );
 
+        BOOST_CHECK_EQUAL( command.getStatusCode(), ClientErrors::None );
         BOOST_CHECK_EQUAL( command.getMeterConfigurationID(), "R7d444840-9dc0-11d1-b245-5ffdce74fad2" );
     }
 }
@@ -124,6 +146,7 @@ BOOST_AUTO_TEST_CASE( test_getConfigurationCommand_error_decode_bricked )
                        "Meter Status: Bricked (3)"
                        "\nDetailed Configuration Status: Success (0)" );
 
+    BOOST_CHECK_EQUAL( command.getStatusCode(), ClientErrors::MeterBricked );
     BOOST_CHECK_EQUAL( command.getMeterConfigurationID(), "" );
 }
 
@@ -148,6 +171,7 @@ BOOST_AUTO_TEST_CASE( test_getConfigurationCommand_error_decode_device_busy )
                        "Meter Status: Unchanged (1)"
                        "\nDetailed Configuration Status: Device Busy (6)" );
 
+    BOOST_CHECK_EQUAL( command.getStatusCode(), ClientErrors::DeviceBusy );
     BOOST_CHECK_EQUAL( command.getMeterConfigurationID(), "" );
 }
 
@@ -179,6 +203,7 @@ BOOST_AUTO_TEST_CASE( test_getConfigurationCommand_success_with_unmapped_prefix 
                        "\nSource: Unmapped Prefix 'Q'"
                        "\nMeter Configuration ID: Q7d444840-9dc0-11d1-b245-5ffdce74fad2" );
 
+    BOOST_CHECK_EQUAL( command.getStatusCode(), ClientErrors::None );
     BOOST_CHECK_EQUAL( command.getMeterConfigurationID(), "Q7d444840-9dc0-11d1-b245-5ffdce74fad2" );
 }
 

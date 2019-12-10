@@ -30,22 +30,32 @@ namespace Cti::Devices::Commands {
         {
             Response = 0x92
         };
+
+        RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
+
+        std::string     getMeterConfigurationID() const;
+        YukonError_t    getStatusCode() const;
+
+    protected:
+
+        std::string     _meterConfigurationID;
+        YukonError_t    _returnCode;
     };
 
-    class IM_EX_DEVDB RfnMeterProgrammingSetConfigurationCommand : public RfnMeterProgrammingCommand,
+    class IM_EX_DEVDB RfnMeterProgrammingSetConfigurationCommand : public RfnMeterProgrammingConfigurationCommand,
         InvokerFor<RfnMeterProgrammingSetConfigurationCommand>
     {
     public:
 
         RfnMeterProgrammingSetConfigurationCommand(std::string guid, std::size_t length);
 
-        RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
-
         std::string getCommandName() override;
 
         bool isPost() const override;
 
         bool isOneWay() const override;
+
+        static std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response);
 
     private:
 
@@ -74,24 +84,13 @@ namespace Cti::Devices::Commands {
     {
     public:
 
-        RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
-
         std::string getCommandName() override;
-
-        std::string getStatus();
-
-        std::string getFile();
-
-        std::string getMeterConfigurationID() const;
 
     private:
 
-        std::string _meterConfigurationID;
-
         enum Command
         {
-            Request = 0x91,
-            Response = 0x92
+            Request = 0x91
         };
 
         Bytes getCommandHeader() override;

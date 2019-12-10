@@ -7,6 +7,8 @@
 
 namespace Cti::Devices::Commands {
 
+    using Logging::Vector::Hex::operator<<;
+
     namespace
     {
         struct MeterStatuses
@@ -67,76 +69,18 @@ namespace Cti::Devices::Commands {
     unsigned char RfnMeterProgrammingCommand::getOperation()   const { return {}; }
     unsigned char RfnMeterProgrammingCommand::getCommandCode() const { return {}; }
 
-    RfnMeterProgrammingSetConfigurationCommand::RfnMeterProgrammingSetConfigurationCommand(std::string guid, std::size_t length)
-        :   _guid(guid),
-            _length(length)
-    {
-    }
 
-    auto RfnMeterProgrammingSetConfigurationCommand::getCommandHeader() -> Bytes
-    {
-        return { static_cast<uint8_t>(Request) };
-    }
-
-    auto RfnMeterProgrammingSetConfigurationCommand::getCommandData() -> Bytes
-    {
-        std::string uri = "/meterPrograms/" + _guid;
-        std::vector<TypeLengthValue> tlvs;
-
-        auto tlv_size = TypeLengthValue::makeLongTlv(TlvType_ConfigurationSize);
-        auto tlv_uri  = TypeLengthValue::makeLongTlv(TlvType_ConfigurationURI);
-
-        setBits_bEndian(tlv_size.value, 0, 32, _length);
-        tlv_uri.value.assign(uri.begin(), uri.end());
-
-        tlvs.push_back(tlv_size);
-        tlvs.push_back(tlv_uri);
-
-        return getBytesFromTlvs(tlvs);
-    }
-
-
-    RfnCommandResult RfnMeterProgrammingSetConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
-    {
-        return { "No response", ClientErrors::E2eBadRequest };
-    }
-
-
-    std::string RfnMeterProgrammingSetConfigurationCommand::getCommandName()
-    {
-        return "Set Meter Programming Request";
-    }
-
-    bool RfnMeterProgrammingSetConfigurationCommand::isPost() const
-    {
-        return true;
-    }
-
-    bool RfnMeterProgrammingSetConfigurationCommand::isOneWay() const
-    {
-        return true;
-    }
-
-
-    auto RfnMeterProgrammingGetConfigurationCommand::getCommandHeader() -> Bytes
-    {
-        return { static_cast<uint8_t>(Command::Request) };
-    }
-
-
-    auto RfnMeterProgrammingGetConfigurationCommand::getCommandData() -> Bytes
-    {
-        return {};
-    }
-
-
-    std::string RfnMeterProgrammingGetConfigurationCommand::getMeterConfigurationID() const
+    std::string RfnMeterProgrammingConfigurationCommand::getMeterConfigurationID() const
     {
         return _meterConfigurationID;
     }
 
+    YukonError_t RfnMeterProgrammingConfigurationCommand::getStatusCode() const
+    {
+        return _returnCode;
+    }
 
-    RfnCommandResult RfnMeterProgrammingGetConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+    RfnCommandResult RfnMeterProgrammingConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
     {
         std::string description;
 
@@ -187,7 +131,7 @@ namespace Cti::Devices::Commands {
 
         description += "\nDetailed Configuration Status: " + detailedStatus->text + " (" + std::to_string(response[2]) + ")";
 
-        YukonError_t returnCode =
+        _returnCode =
             meterStatus->returnCode != ClientErrors::None 
                 ? meterStatus->returnCode
                 : detailedStatus->returnCode;
@@ -208,9 +152,84 @@ namespace Cti::Devices::Commands {
                         +  "\nMeter Configuration ID: " + _meterConfigurationID;
         }
 
-        return { description, returnCode };
+        return { description, _returnCode };
     }
 
+
+    RfnMeterProgrammingSetConfigurationCommand::RfnMeterProgrammingSetConfigurationCommand(std::string guid, std::size_t length)
+        :   _guid(guid),
+            _length(length)
+    {
+    }
+
+    auto RfnMeterProgrammingSetConfigurationCommand::getCommandHeader() -> Bytes
+    {
+        return { static_cast<uint8_t>(Request) };
+    }
+
+    auto RfnMeterProgrammingSetConfigurationCommand::getCommandData() -> Bytes
+    {
+        std::string uri = "/meterPrograms/" + _guid;
+        std::vector<TypeLengthValue> tlvs;
+
+        auto tlv_size = TypeLengthValue::makeLongTlv(TlvType_ConfigurationSize);
+        auto tlv_uri  = TypeLengthValue::makeLongTlv(TlvType_ConfigurationURI);
+
+        setBits_bEndian(tlv_size.value, 0, 32, _length);
+        tlv_uri.value.assign(uri.begin(), uri.end());
+
+        tlvs.push_back(tlv_size);
+        tlvs.push_back(tlv_uri);
+
+        return getBytesFromTlvs(tlvs);
+    }
+
+    std::string RfnMeterProgrammingSetConfigurationCommand::getCommandName()
+    {
+        return "Set Meter Programming Request";
+    }
+
+    bool RfnMeterProgrammingSetConfigurationCommand::isPost() const
+    {
+        return true;
+    }
+
+    bool RfnMeterProgrammingSetConfigurationCommand::isOneWay() const
+    {
+        return true;
+    }
+
+    std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response)
+    {
+        validate( Condition( ! response.empty(), ClientErrors::DataMissing ) << "Empty response payload");
+
+        CTILOG_INFO(dout, "Handling a meter programming set configuration response: " << response);
+
+        if( response[0] == RfnMeterProgrammingConfigurationCommand::Command::Response )
+        {
+            CTILOG_INFO(dout, "Creating a meter programming set configuration command");
+
+            auto command = std::make_unique<RfnMeterProgrammingSetConfigurationCommand>("", 0);
+
+            //  ignore command results
+            command->handleResponse(now, response);
+
+            return std::move(command);
+        }
+
+        return nullptr;
+    }
+
+
+    auto RfnMeterProgrammingGetConfigurationCommand::getCommandHeader() -> Bytes
+    {
+        return { static_cast<uint8_t>(Command::Request) };
+    }
+
+    auto RfnMeterProgrammingGetConfigurationCommand::getCommandData() -> Bytes
+    {
+        return {};
+    }
 
     std::string RfnMeterProgrammingGetConfigurationCommand::getCommandName()
     {
