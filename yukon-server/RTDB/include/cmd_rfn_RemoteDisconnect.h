@@ -11,7 +11,7 @@ namespace Commands   {
 //------------------------------------------------------------
 // Remote disconnect command base class
 //------------------------------------------------------------
-class IM_EX_DEVDB RfnRemoteDisconnectConfigurationCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnRemoteDisconnectConfigurationCommand : public RfnTwoWayCommand
 {
 public:
 

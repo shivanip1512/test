@@ -11,7 +11,7 @@ namespace Commands   {
 /**
  * Channel Configuration Command
  */
-class IM_EX_DEVDB RfnChannelConfigurationCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnChannelConfigurationCommand : public RfnTwoWayCommand
 {
     Bytes getCommandData();
 

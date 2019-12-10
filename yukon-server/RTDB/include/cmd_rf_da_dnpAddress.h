@@ -7,7 +7,7 @@ namespace Devices {
 namespace Commands {
 
 
-class IM_EX_DEVDB RfDaReadDnpSlaveAddressCommand : public RfnIndividualCommand,
+class IM_EX_DEVDB RfDaReadDnpSlaveAddressCommand : public RfnTwoWayCommand,
        InvokerFor<RfDaReadDnpSlaveAddressCommand>
 {
     unsigned short _dnp3SlaveAddress;

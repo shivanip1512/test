@@ -79,14 +79,4 @@ std::unique_ptr<RfnConfigNotificationCommand> RfnCommand::handleUnsolicitedRepor
 }
 
 
-std::unique_ptr<RfnMeterProgrammingGetFileCommand> RfnCommand::handleMeterProgramRequest(const CtiTime now, std::string uri)
-{
-    CTILOG_INFO(dout, "Handling meter program request: " << FormattedList::of(
-        "URI", uri,
-        "Block options", "<block options>"));
-
-    return nullptr;
-}
-
-
 }

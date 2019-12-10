@@ -2,14 +2,12 @@
 
 #include "cmd_rfn.h"
 
-namespace Cti {
-namespace Devices {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 class IM_EX_DEVDB RfnIndividualCommand : public RfnCommand
 {
 public:
-    RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override final;
+    RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override = 0;
     RfnCommandResultList handleError(const CtiTime now, const YukonError_t errorCode) override final;
 
     //  Single-command (non-aggregate) decode methods
@@ -163,7 +161,20 @@ protected:
 using RfnIndividualCommandPtr = std::unique_ptr<RfnIndividualCommand>;
 using RfnIndividualCommandList = std::vector<RfnIndividualCommandPtr>;
 
-}
-}
-}
+struct IM_EX_DEVDB RfnOneWayCommand : public RfnIndividualCommand, NoResultHandler
+{
+    RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override final;
+    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override final;
 
+    bool isOneWay() const override final;
+};
+    
+struct IM_EX_DEVDB RfnTwoWayCommand : public RfnIndividualCommand
+{
+    RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override final;
+
+    bool isOneWay() const override final;
+};
+
+
+}

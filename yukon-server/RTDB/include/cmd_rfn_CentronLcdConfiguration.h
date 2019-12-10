@@ -6,7 +6,7 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-class IM_EX_DEVDB RfnCentronLcdConfigurationCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnCentronLcdConfigurationCommand : public RfnTwoWayCommand
 {
 public:
 

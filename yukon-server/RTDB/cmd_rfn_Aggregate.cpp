@@ -9,9 +9,7 @@
 
 using namespace std;
 
-namespace Cti {
-namespace Devices {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 std::atomic_uint16_t RfnAggregateCommand::_globalContextId { static_cast<uint16_t>(std::time(nullptr)) };
 
@@ -176,12 +174,9 @@ try
         pos += length;
     }
 
-    for( const auto & kv : _commands )
+    for( const auto & [contextId, command] : _commands )
     {
-        const auto contextId = kv.first;
-        auto & command = kv.second;
-
-        if( ! _statuses.count(contextId) )
+        if( ! _statuses.count(contextId) && ! command->isOneWay() )
         {
             aggregateResults.emplace_back(
                 command->error(
@@ -236,6 +231,4 @@ void RfnAggregateCommand::invokeResultHandler(ResultHandler &rh) const
 }
 
 
-}
-}
 }

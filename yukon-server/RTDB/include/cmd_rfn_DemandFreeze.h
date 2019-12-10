@@ -11,7 +11,7 @@ namespace Commands   {
 
 
 
-class IM_EX_DEVDB RfnDemandFreezeCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnDemandFreezeCommand : public RfnTwoWayCommand
 {
 protected:
 
