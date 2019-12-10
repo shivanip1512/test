@@ -27,18 +27,5 @@ namespace Cti::Messaging::Pil {
         ProgrammingStatus status;
         YukonError_t error;
         std::chrono::system_clock::time_point timeStamp;
-
-        MeterProgramStatusArchiveRequestMsg( const RfnIdentifier & rfnId,
-                                             const std::string & configId,
-                                             ProgrammingStatus progStatus,
-                                             YukonError_t yukError,
-                                             std::chrono::system_clock::time_point t )
-            :   rfnIdentifier{ rfnId },
-                configurationId{ configId },
-                status{ progStatus },
-                error{ yukError },
-                timeStamp{ t }
-            {
-            }
     };
 }

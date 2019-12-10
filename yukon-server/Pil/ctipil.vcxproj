@@ -151,7 +151,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\lib-debug\rfn-e2e.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidevdb.lib;..\lib\cticonfig.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\lib-debug\rfn-e2e.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctithriftmsg.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\cticonfig.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_filesystem-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_regex-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_thread-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_date_time-vc141-mt-gd-x32-1_67.lib;$(BOOST)\lib\boost_chrono-vc141-mt-gd-x32-1_67.lib;$(THRIFT)\$(CONFIGURATION)\lib\libthrift.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
