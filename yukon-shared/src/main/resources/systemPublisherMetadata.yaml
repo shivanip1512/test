@@ -7,19 +7,246 @@ Yukon :
     details: 
     source: SELECT COUNT(*) AS ElectricMeterCount FROM YukonPaobject WHERE (TYPE LIKE 'RFN-4%' OR TYPE LIKE 'RFN-5%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Telemetry
-    frequency : 30
+    frequency : 360
 
   - field: wmcount
     description: Water Meter Count
     details: 
     source: SELECT COUNT(*) AS WaterMeterCount FROM YukonPaobject WHERE TYPE LIKE 'RFW%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Property
-    frequency : 45
+    frequency : 360
 
   - field: gatewaystatus
     description: Gateway Status
     details: 
     iotType: Telemetry
-    frequency : 30
+    frequency : 360
 
+  - field: dcelectric
+    description: Data Completeness Electric
+    details: 
+    source: >-
+        SELECT COUNT(*) AS Actual FROM (SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, Timestamp, Value, Quality FROM 
+        RawPointHistory rph JOIN Point p ON rph.PointId = p.PointIdAND PointType = 'Analog' AND PointOffset = 1 
+        WHERE TimeStamp > '+ timestamp_start +' AND TimeStamp <= '+ timestamp_stop +' AND FORMAT(TimeStamp, 'mm:ss') = '00:00') 
+        AS distinctRph JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId JOIN DeviceMeterGroup dmg 
+        ON pao.PaObjectId = dmg.DeviceId JOIN RfnAddress rfn ON  pao.PaObjectId = rfn.DeviceId WHERE Type LIKE 'RFN%' 
+        GROUP BY PaoName, Type, MeterNumber, SerialNumber, DisableFlag, PointName
+    iotType: Both
+    frequency : 360
 
+  - field: dcwater
+    description: Data Completeness Water
+    details:
+    source: >-
+        SELECT COUNT(*) AS Actual FROM (SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, TimeStamp, Value, Quality 
+        FROM RawPointHistory rph JOIN Point p ON rph.PointId = p.PointId AND PointType = 'Analog' AND PointOffset = 1 
+        WHERE TimeStamp > '+ timestamp_start +' AND TimeStamp <= '+ timestamp_stop +' AND FORMAT(TimeStamp, 'mm:ss') = '00:00') 
+        AS distinctRph JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId JOIN DeviceMeterGroup dmg 
+        ON pao.PaObjectId = dmg.DeviceId JOIN RfnAddress rfn ON pao.PaObjectId = rfn.DeviceId WHERE Type LIKE 'RFW%' GROUP BY
+        PaoName, Type, MeterNumber, SerialNumber, DisableFlag, PointName
+    iotType: Telemetry
+    frequency : 360
+
+  - field: electricmetercount/emcount
+    description: Electric Meter Count
+    details:
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE (type LIKE 'RFG%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Both
+    frequency : 360
+
+  - field: Electricreadrate
+    description: Electric Read Rate
+    details:
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE (Type LIKE 'RFN-4%' OR Type LIKE 'RFN-5%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Both
+    frequency : 360
+
+  - field: gasreadrate
+    description: Gas Read Rate
+    details:
+    source: 
+    iotType: Telemetry
+    frequency : 360
+
+  - field: watermetercount/wmcount
+    description: Water Meter Count
+    details:
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE (Type LIKE 'RFW%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Both
+    frequency : 360
+
+  - field: waterreadrate
+    description: Water Read Rate
+    details:
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE type LIKE 'RFW%'  AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Both
+    frequency : 360
+
+  - field: Yukonversion/yukversion
+    description: Yukon Version
+    details:
+    source: SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC
+    iotType: Property
+    frequency : 360
+
+  - field: rfrelays
+    description: Relays
+    details:
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'RFN R%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Property
+    frequency : 360
+
+  - field: drcount
+    description: RFN LCR
+    details:
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'LCR-6%RFN' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Property
+    frequency : 360
+
+Network Manager :
+  - field: batterynodecount
+    description: Battery Nodes
+    details:
+    source: SELECT COUNT(*) AS "Battery Node Count" FROM ekadb.Node n WHERE n.nodeType = 2 OR n.nodeType = 3
+    iotType: Telemetry
+    frequency : 360
+
+  - field: connectedgatewaycount
+    description: Connected Gateways
+    details:
+    source: SELECT COUNT(*) FROM ekadb.GW_CURR_CONN_STATUS WHERE gwConnStatusCodeId = 1
+    iotType: Both
+    frequency : 360
+
+  - field: duprtecolor
+    description: Duplicate Route Colors
+    details:
+    source: >-
+        SELECT COUNT(*) AS "Route Color Duplication Count" FROM ekadb.GATEWAY g1, ekadb.GATEWAY g2 WHERE g1.gwId != g2.gwId 
+        AND g1.gwRouteColor=g2.gwRouteColor
+    iotType: Both
+    frequency : 360
+
+  - field: Gapfillrequests
+    description: Gap Fill Requests (24 Hours)
+    details:
+    source: SELECT COUNT (*) FROM ekadb.GW_NODE_LOG_ENTRY nle WHERE nle.gatewayTimeStamp / 1000 > '+x+' AND nle.gwNodeLogCodeId=408
+    iotType: Both
+    frequency : 360
+
+  - field: gatewaycount/gwcount
+    description: Gateway Count
+    details:
+    source: SELECT COUNT(*) AS "Gateway Count" FROM ekadb.GATEWAY
+    iotType: Both
+    frequency : 360
+
+  - field: maxnodespergateway
+    description: Gateway Loading (Max)
+    details:
+    source: SELECT TOP 1 gwTotalnodes FROM ekadb.GATEWAY ORDER BY gwTotalnodes DESC
+    iotType: Both
+    frequency : 360
+
+  - field: Deviceunknown
+    description: Gateway Received Data Unknown Device
+    details:
+    source: >-
+        SELECT COUNT(*) AS "Received Data from Unknown Device (Last 7 Days)" FROM ekadb.GW_LOG_ENTRY gwle 
+        WHERE gwle.gatewayTimeStamp / 1000 > '+x+' AND gwle.gwLogCodeID=801
+    iotType: Both
+    frequency : 360
+
+  - field: Gatewayresetcount
+    description: Gateway Reset Count (7 Day)
+    details:
+    source: >-
+        SELECT COUNT(*) AS "Gateway Reset Count (Last 7 Days)" FROM ekadb.GW_LOG_ENTRY gwle 
+        WHERE gwle.gatewayTimeStamp / 1000 > '+x+' AND gwle.gwLogCodeId=1601
+    iotType: Both
+    frequency : 360
+
+  - field: Gwsocketcount
+    description: Gateway Socket Error Count
+    details:
+    source: >-
+        SELECT COUNT(*) AS "Gateway Socket Error Count (Last 7 Day)" FROM ekadb.GW_LOG_ENTRY gwle 
+        WHERE gwle.gatewayTimeStamp / 1000 > '1' AND (gwle.gwLogCodeId=1301 OR gwle.gwLogCodeId=1302)
+    iotType: Both
+    frequency : 360
+
+  - field: Gwsmissingtsync
+    description: Gateways Missing TSyncs (24 Hour)
+    details:
+    source: >-
+        SELECT COUNT(*) FROM (SELECT gw.gwId, COUNT(gwle.logEntryId) AS "Syncs" FROM ekadb.GATEWAY gw 
+        LEFT JOIN ekadb.GW_LOG_ENTRY gwle ON gw.gwId=gwle.gwIdAND gwle.gatewayTimeStamp / 1000 > '+x+' 
+        AND gwle.gwLogCodeId=2202 GROUP BY gw.gwId) AS gwsync WHERE Syncs=0
+    iotType: Both
+    frequency : 360
+    
+  - field: nodesmissingroutetables
+    description: Nodes Missing Route Table
+    details:
+    source: >-
+        SELECT COUNT(*) AS "Nodes Missing Route Tables (Last 24 Hours)" FROM (SELECT n.nodeId, COUNT(nle.logEntryId) AS "routeresps" 
+        FROM ekadb.NODE n LEFT JOIN ekadb.GW_NODE_LOG_ENTRY nle ON n.nodeId=nle.nodeId 
+        AND nle.gatewayTimeStamp / 1000 > '+x+' AND nle.gwNodeLogCodeId=502 GROUP BY n.nodeId) AS noderouteresps, ekadb.NODE nn 
+        WHERE routeresps=0 AND noderouteresps.nodeId=nn.nodeId AND nn.nodeType != 0 AND nn.nodeType != 2 AND nn.nodeType != 3
+    iotType: Both
+    frequency : 360
+    
+  - field: Powerednodecount
+    description: Powered Node Count
+    details:
+    source: SELECT COUNT(*) AS "Powered Node Count" FROM ekadb.NODE n WHERE n.nodeType != 0 AND n.nodeType != 2 AND n.nodeType != 3
+    iotType: Telemetry
+    frequency : 360
+    
+  - field: Routetablerequests
+    description: Route Table Requests
+    details:
+    source: >-
+        SELECT COUNT(*) AS "Route Table Requests (Last 24 Hours)" FROM ekadb.GW_NODE_LOG_ENTRY nle 
+        WHERE nle.gatewayTimeStamp / 1000 > '+x+' AND nle.gwNodeLogCodeId=506
+    iotType: Both
+    frequency : 360
+    
+  - field: Routetableresponse
+    description: Route Table Responses
+    details:
+    source: >-
+        SELECT COUNT(*) AS "Route Table Requests (Last 24 Hours)" FROM ekadb.GW_NODE_LOG_ENTRY nle 
+        WHERE nle.gatewayTimeStamp / 1000 > '+x+' AND nle.gwNodeLogCodeId=502
+    iotType: Both
+    frequency : 360
+    
+  - field: rfversion
+    description: RF Network Version
+    details:
+    source: SELECT TOP 1 gwReleaseRev FROM ekadb.GATEWAY ORDER BY gwReleaseRev DESC
+    iotType: Property
+    frequency : 360
+
+  - field: Gatewaystatus
+    description: Gateway Status
+    details: (connectedgatewaycount/gwcount) * 100
+    source:
+    iotType: Telemetry
+    frequency : 360
+    
+  - field: gasmetercount/gmcount
+    description: Gas Meter Count
+    details:
+    source: SELECT COUNT(*) AS "Gateway Count" FROM ekadb.GATEWAY
+    iotType: Telemetry
+    frequency : 360
+    
+Other :
+  - field: Dashboardiotcv
+    description: Remote Dashboard App version
+    details: 
+    source: Hardcoded_value
+    iotType: Property
+    frequency : 360
