@@ -5531,16 +5531,16 @@ Icons :
 C++ :
   - project : ActiveMQ-CPP 
     path : ACTIVEMQ
-    version : 3.9.4
+    version : 3.9.5
     project URL : "http://activemq.apache.org/cms/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : ddadc8681194b5e1f626e8a9ecf520cd
-    sha1 : ad0b7887fb9f3f5919281b89730dba1e124a191b 
-    fileCount : 806
-    totalSize : 37214610
-    updated : 2018-09-11  
-    jira : YUK-18778
+    md5 : f6024ae820400f1bcef26dc1bdc24134
+    sha1 : 3311d2e2d098953e48c56087ff37c532babcea09
+    fileCount : 691
+    totalSize : 37532260
+    updated : 2019-12-08  
+    jira : YUK-20694
     notes : 
 
   - project : Apache Portable Runtime

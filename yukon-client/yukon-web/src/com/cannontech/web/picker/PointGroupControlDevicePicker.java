@@ -44,7 +44,7 @@ public class PointGroupControlDevicePicker extends DatabasePicker<Map<String, Ob
 
     @Override
     protected String getDatabaseIdFieldName() {
-        return "point.pointId";
+        return "p.PointId";
     }
 
     @Override
@@ -65,13 +65,12 @@ public class PointGroupControlDevicePicker extends DatabasePicker<Map<String, Ob
             paoTypes.addAll(PaoType.getRtuTypes());
             paoTypes.addAll(PaoType.getMctTypes());
 
-            retVal.append(
-                    "SELECT point.pointId, point.pointName, yukonPAObject.paoName, yukonPAObject.type, yukonPAObject.paObjectId");
-            retVal.append("FROM point JOIN pointStatusControl");
-            retVal.append("ON point.pointId = pointStatusControl.pointId");
-            retVal.append("JOIN yukonPAObject");
-            retVal.append("ON point.paObjectId = yukonPAObject.paObjectId");
-            retVal.append("WHERE yukonPAObject.type").in(paoTypes);
+            retVal.append("SELECT p.PointId, p.PointName, pao.PaoName, pao.Type, pao.PaObjectId");
+            retVal.append("FROM Point p JOIN PointStatusControl psc");
+            retVal.append("ON p.PointId = psc.PointId");
+            retVal.append("JOIN YukonPAObject pao");
+            retVal.append("ON p.PaObjectId = pao.PaObjectId");
+            retVal.append("WHERE pao.Type").in(paoTypes);
             return retVal;
         }
 

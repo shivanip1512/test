@@ -381,8 +381,8 @@ public class LoadGroupSetupController {
         return "dr/setup/copyLoadGroup.jsp";
     }
 
-    @GetMapping("/getStartState/{pointId}")
-    public @ResponseBody Map<String, List<ControlRawState>> getStartState(@PathVariable int pointId,
+    @GetMapping("/getPointGroupStartState/{pointId}")
+    public @ResponseBody Map<String, List<ControlRawState>> getPointGroupStartState(@PathVariable int pointId,
             YukonUserContext userContext, HttpServletRequest request) {
         List<ControlRawState> startStates = retrieveStartState(pointId, userContext, request);
         return Collections.singletonMap("startStates", startStates);
@@ -391,7 +391,7 @@ public class LoadGroupSetupController {
     private List<ControlRawState> retrieveStartState(int pointId, YukonUserContext userContext, HttpServletRequest request) {
         // Give API call to get all control state
         List<ControlRawState> startStates = new ArrayList<>();
-        String url = helper.findWebServerUrl(request, userContext, ApiURL.drStartStateUrl + pointId);
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drPointGroupStartStateUrl + pointId);
         ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, List.class);
 
