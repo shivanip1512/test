@@ -66,7 +66,7 @@ public class EcobeeMessageListener {
     }
 
     public void handleSetpointControlMessage(Message message) {
-        log.debug("Received message on yukon.notif.stream.dr.EcobeeCyclingControlMessage queue.");
+        log.debug("Received message on yukon.notif.stream.dr.EcobeeSetpointControlMessage queue.");
 
         EcobeeSetpointDrParameters parameters;
         if(message instanceof StreamMessage) {
@@ -76,7 +76,7 @@ public class EcobeeMessageListener {
                 log.error("Exception parsing StreamMessage for duty cycle DR event.", e);
                 return;
             }
-            System.out.println("Parameters built " + parameters + " Ready to send Ecobee Message");
+            log.debug("Parameters built " + parameters + " Ready to send Ecobee Message");
 
         }
     }
@@ -143,9 +143,8 @@ public class EcobeeMessageListener {
         boolean rampIn = (rampingOptions & 2) == 2;
         boolean rampOut = (rampingOptions & 1) == 1;
         boolean optional = (mandatoryByte == 0);
-        log.trace("Parsed duty cycle dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds 
-                  + ") End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in: " + rampIn + " Ramp out: " 
-                  + rampOut + "Optional: " + optional + "(" + mandatoryByte + ")");
+        log.trace("Parsed duty cycle dr parameters. Start time: {} ({}) End time: {} ({}) Ramp in: {} Ramp out:: {} Optional: {}({})", 
+                startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, rampIn, rampOut, optional, mandatoryByte);
         
         return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampIn, rampOut, optional, groupId);
     }
@@ -175,8 +174,8 @@ public class EcobeeMessageListener {
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean optional = (mandatoryByte == 0);
-        log.info("Parsed setpoint dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds 
-                  + ") End time: " + endTime + " (" + utcEndTimeSeconds + ") Optional: " + optional + "(" + mandatoryByte + ")");
+        log.trace("Parsed setpoint dr parameters. GroupId: {} Start time: {} ({}) End time: {} ({}) Optional: {}({}) Heat: {}({}) Offset: {}", 
+                groupId, startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, optional, mandatoryByte, tempOptionHeat, tempOptionByte, tempOffset);
         
         return new EcobeeSetpointDrParameters(groupId, tempOptionHeat, optional, tempOffset, startTime, endTime);
     }
