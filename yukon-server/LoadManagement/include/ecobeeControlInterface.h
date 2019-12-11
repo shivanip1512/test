@@ -13,6 +13,11 @@ struct EcobeeControlInterface
                                    bool rampInOption,
                                    bool rampOutOption,
                                    bool mandatory ) = 0;
+
+    virtual bool sendSetpointControl( long controlDurationSeconds,
+                                      bool temperatureOption,
+                                      bool mandatory,
+                                      long temperatureOffset ) = 0;
 };
 
 typedef boost::shared_ptr<EcobeeControlInterface> EcobeeControlInterfacePtr;

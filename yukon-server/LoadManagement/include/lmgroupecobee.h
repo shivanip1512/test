@@ -20,25 +20,30 @@ public:
 
     virtual ~LMGroupEcobee();
 
-    virtual CtiLMGroupBase* replicate() const;
+    CtiLMGroupBase* replicate() const override;
 
-    virtual bool sendStopControl( bool stopImmediately );
-    virtual bool sendShedControl( long controlMinutes );
+    bool sendStopControl( bool stopImmediately ) override;
+    bool sendShedControl( long controlMinutes ) override;
 
-    virtual bool doesStopRequireCommandAt( const CtiTime & currentTime ) const;
+    bool doesStopRequireCommandAt( const CtiTime & currentTime ) const override;
 
-    virtual bool sendCycleControl( long dutyCycle,
-                                   long controlDurationSeconds,
-                                   bool rampInOption,
-                                   bool rampOutOption,
-                                   bool mandatory );
+    bool sendCycleControl( long dutyCycle,
+                           long controlDurationSeconds,
+                           bool rampInOption,
+                           bool rampOutOption,
+                           bool mandatory ) override;
+
+    bool sendSetpointControl( long controlDurationSeconds,
+                              bool temperatureOption,
+                              bool mandatory,
+                              long temperatureOffset ) override;
+
 
     //Unused
-    virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const;
-    virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const;
-    virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const;
-
+    CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const override;
+    CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const override;
+    CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const override;
+    CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const override;
 };
 
 typedef boost::shared_ptr<LMGroupEcobee> LMGroupEcobeePtr;
