@@ -5727,16 +5727,16 @@ C++ :
     
   - project : Apache Thrift 
     path : THRIFT
-    version : 0.11.0
+    version : 0.12.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : d5fdb4629cf49f79ab5cd3c923b83794
-    sha1 : 2b46e80b1b064b8a4db0eba313b22fea37b46ec9 
-    fileCount : 158
-    totalSize : 98314678
-    updated : 2018-06-29  
-    jira : YUK-18343
+    md5 : 1dafb0cf2b355121fb481c370360be33
+    sha1 : a2360aa77f0edbcfa1bf55a91388d66bc2dedb4c
+    fileCount : 98
+    totalSize : 101845469
+    updated : 2019-12-11  
+    jira : YUK-20693
     notes : 
     
   - project : Apache Xerces-C++ XML Parser 
