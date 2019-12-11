@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/8/2019 12:39:58 PM                        */
+/* Created on:     12/9/2019 2:50:12 AM                         */
 /*==============================================================*/
 
 
@@ -7171,7 +7171,7 @@ create table MCTConfigMapping  (
 /*==============================================================*/
 create table MSPInterface  (
    VendorID             NUMBER                          not null,
-   Interface            VARCHAR2(12)                    not null,
+   Interface            VARCHAR2(20)                    not null,
    Endpoint             VARCHAR2(255)                   not null,
    Version              VARCHAR2(12)                    not null,
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)

@@ -152,6 +152,13 @@
     <entry key="yukon.web.modules.adminSetup.vendor.incomingAuthentication">Incoming Authentication</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.outgoingAuthentication">Outgoing Authentication</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.validateCertificate">Validate Certificate</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.endpoint.CB_Server">CB_Server</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.endpoint.OA_Server">OA_Server</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.endpoint.EA_Server">EA_Server</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.endpoint.MDM_Server">MDM_Server</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.endpoint.CB_CD">CB_CD</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.endpoint.NOT_Server">NOT_Server</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.endpoint.NOT_Server_DR">NOT_Server (DR)</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.exception">Multispeak Vendor not inserted for Company Name {0}.</entry>
 
     <!-- device group sync pages -->
