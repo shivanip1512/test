@@ -22,8 +22,6 @@ protected:
 
     YukonError_t executeReadDemandFreezeInfo (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
 
-    void handleCommandResult( const Commands::RfnMeterProgrammingGetConfigurationCommand & cmd ) override;
-
 public:
     RfnCommercialDevice() {};
 };

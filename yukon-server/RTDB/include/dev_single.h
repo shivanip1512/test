@@ -24,10 +24,8 @@
 
 class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
 
-namespace Cti {
-namespace Protocols {
+namespace Cti::Protocols {
     class Interface;
-}
 }
 
 /*
@@ -110,6 +108,12 @@ protected:
 
     virtual std::string resolveStateName(long groupId, long rawValue) const;
     virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const std::string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
+
+    enum class ExpectMore
+    {
+        True,
+        False
+    };
 
     virtual YukonError_t SubmitRetry(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList);
 
