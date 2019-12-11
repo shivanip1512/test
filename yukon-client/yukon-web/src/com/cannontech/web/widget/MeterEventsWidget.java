@@ -22,7 +22,6 @@ import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -33,7 +32,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
-import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/meterEventsWidget/*")
@@ -90,7 +88,6 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     private List<MeterPointValue> getMeterPointValues(RfnDevice device, YukonUserContext userContext, boolean isDisabled) {
         Set<Attribute> availableEventAttributes =
             meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(device));
-        availableEventAttributes = Sets.difference(availableEventAttributes, BuiltInAttribute.getRfnEventAnalogTypes());
         
         Range<Instant> range = Range.unbounded();
         List<MeterPointValue> events = paoPointValueService.getMeterPointValues(Collections.singletonList(device),
