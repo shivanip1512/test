@@ -1,0 +1,24 @@
+package com.cannontech.services.systemDataPublisher.dao;
+
+import java.util.List;
+import java.util.Map;
+
+import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+
+public interface SystemDataPublisherDao {
+
+    /**
+     * This method is to execute query with no parameters. The return type of this method is kept as 
+     * List<Map<String, Object>> which will help in if the query will return different data type of object.
+     * 
+     */
+    List<Map<String, Object>> executeQuery(DictionariesField dictionariesField);
+
+    /**
+     * This method is to execute query with parameters. The parameters are decided based on the field value.
+     * The return type of this method is kept as List<Map<String, Object>> which will help in if the query will 
+     * return different data type of object.
+     * 
+     */
+    List<Map<String, Object>> executeParameterizedQuery(DictionariesField dictionariesField, List<Object> args);
+}

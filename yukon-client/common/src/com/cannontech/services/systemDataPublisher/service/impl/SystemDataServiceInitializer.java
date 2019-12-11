@@ -16,11 +16,11 @@ import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
 
 @Service
-public class SystemDataPublisherServiceImpl {
+public class SystemDataServiceInitializer {
 
     @Autowired private YamlConfigManager yamlConfigManager;
     @Autowired private SystemDataProcessorFactory systemDataProcessorFactory;
-    private static final Logger log = YukonLogManager.getLogger(SystemDataPublisherServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(SystemDataServiceInitializer.class);
 
     /**
      * The init method will read the systemDataMetadata.yaml file. Once the configuration is read 

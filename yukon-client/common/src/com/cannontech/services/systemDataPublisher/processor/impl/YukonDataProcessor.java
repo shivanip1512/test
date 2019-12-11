@@ -14,13 +14,17 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
+import com.cannontech.services.systemDataPublisher.dao.impl.QueryProcessorHelper;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
+import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
 
 @Service
 public class YukonDataProcessor implements SystemDataProcessor {
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+    @Autowired private SystemDataPublisherDao systemDataPublisherDao;
     private static final Logger log = YukonLogManager.getLogger(YukonDataProcessor.class);
     
     @Override
@@ -37,7 +41,8 @@ public class YukonDataProcessor implements SystemDataProcessor {
      */
     private Map<Integer, List<DictionariesField>> groupDictionariesByFrequency(List<DictionariesField> dictionaries) {
         return dictionaries.stream()
-                            .collect(Collectors.groupingBy(dict -> dict.getFrequency(),
+                            .filter(dict -> dict.getFrequency().getHours() != null)
+                            .collect(Collectors.groupingBy(dict -> dict.getFrequency().getHours(),
                                     LinkedHashMap::new, 
                                     Collectors.toCollection(ArrayList::new)));
     }
@@ -54,9 +59,44 @@ public class YukonDataProcessor implements SystemDataProcessor {
                                .forEach(entity -> {
                                    executor.scheduleAtFixedRate(() -> 
                                    {
-                                       // TODO - Changes for YUK-21022 to fetch data from database and prepare JSON.
-                                       log.info("Running Executors in every " + entity.getKey() + " minutes."); // Can be removed once DAO layer is implemented.
-                                       }, 0, entity.getKey(), TimeUnit.MINUTES); 
+                                      buildAndPublishSystemData(entity.getValue());
+                                   }, 0, entity.getKey(), TimeUnit.HOURS); 
                                });
+    }
+
+    /**
+     * Build SystemData by querying the database. Once the data is build we will publish the data to 
+     * message broker one by one.
+     */
+    private void buildAndPublishSystemData(List<DictionariesField> dictionariesByFrequency) {
+                                    dictionariesByFrequency.stream()
+                                                           .filter(dict -> dict.getSource() != null)
+                                                           .map(dict -> buildSystemData(dict))
+                                                           .filter(systemData -> systemData != null)
+                                                           .forEach(systemData -> {
+                                                               // Publish Data to Broker.
+                                                           });
+    }
+
+    /**
+     * Build SystemData by executing the queries from database. Based on field name we are building the arguments
+     * needed for the query. Process the query result to get the field value.
+     */
+    private SystemData buildSystemData(DictionariesField dictionariesField) {
+        List<Map<String, Object>> queryResult = null;
+        SystemData systemData = null;
+        try {
+            List<Object> queryArgs = QueryProcessorHelper.getQueryArguments(dictionariesField);
+            if (queryArgs.size() == 0) {
+                queryResult = systemDataPublisherDao.executeQuery(dictionariesField);
+            } else {
+                queryResult = systemDataPublisherDao.executeParameterizedQuery(dictionariesField, queryArgs);
+            }
+            systemData = QueryProcessorHelper.processQueryResult(dictionariesField, queryResult);
+            
+        } catch (Exception e) {
+            log.debug("Error while executing query." + e);
+        }
+        return systemData;
     }
 }

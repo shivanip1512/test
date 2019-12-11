@@ -6,8 +6,8 @@ public class DictionariesField {
     private String description;
     private String details;
     private String source;
-    private String iotType;
-    private Integer frequency;
+    private IOTDataType iotType;
+    private SystemDataPublisherFrequency frequency;
 
     public String getField() {
         return field;
@@ -41,19 +41,20 @@ public class DictionariesField {
         this.source = source;
     }
 
-    public String getIotType() {
-        return iotType;
-    }
-
-    public void setIotType(String iotType) {
-        this.iotType = iotType;
-    }
-
-    public Integer getFrequency() {
+    public SystemDataPublisherFrequency getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(Integer frequency) {
+    public void setFrequency(SystemDataPublisherFrequency frequency) {
         this.frequency = frequency;
     }
+
+    public IOTDataType getIotType() {
+        return iotType;
+    }
+
+    public void setIotType(IOTDataType iotType) {
+        this.iotType = iotType;
+    }
+
 }
