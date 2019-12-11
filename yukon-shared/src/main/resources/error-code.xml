@@ -1964,7 +1964,14 @@
         <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
     </error>
 
-    <error code="1024" type="NONE">
+    <error code="334" type="SYSTEM">
+        <category>Yukon System</category>
+        <porter>No meter program assigned.</porter>
+        <description>There is no Meter Program assigned to this device in Yukon.</description>
+        <troubleshooting>No troubleshooting is available for this error.</troubleshooting>
+    </error>
+
+  <error code="1024" type="NONE">
         <category>Network Manager</category>
         <porter>No node in Network Manager.</porter>
         <description>

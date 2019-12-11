@@ -44,6 +44,7 @@ public class MultispeakDefines {
 
     // CLIENT BUS Interfaces
     public static final String CB_Server_STR = "CB_Server";
+    public static final String NOT_Server_DR_STR = "NOT_Server_DR";
     public static final String EA_Server_STR = "EA_Server";
     public static final String OA_Server_STR = "OA_Server";
     public static final String MDM_Server_STR = "MDM_Server";
@@ -89,6 +90,7 @@ public class MultispeakDefines {
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_CD_STR, MultiSpeakVersion.V3));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_DR_STR, MultiSpeakVersion.V5));
     }
 
     public static List<Pair<String, MultiSpeakVersion>> getMSP_SERVER_INTERFACE_ARRAY() {

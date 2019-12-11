@@ -74,7 +74,6 @@
 #include "amq_connection.h"
 #include "amq_queues.h"
 #include "porter_message_serialization.h"
-#include "random_generator.h"
 
 #include "NetworkManagerMessaging.h"
 
@@ -1067,15 +1066,13 @@ void registerServices()
                 static const std::map<DynamicPaoInfoPercentageKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> percentageKeyLookup {
                     { DynamicPaoInfoPercentageKeys::MeterProgrammingProgress, CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress } };
 
-                Cti::RandomGenerator randomPercentage { 100 };
-
                 for( const auto key : req->percentageKeys )
                 {
                     if( const auto mappedKey = Cti::mapFind(percentageKeyLookup, key) )
                     {
-                        double percentage = randomPercentage();
+                        double percentage;
 
-                        //if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, percentage) )
+                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, percentage) )
                         {
                             rsp.percentageValues.emplace(key, percentage);
                         }

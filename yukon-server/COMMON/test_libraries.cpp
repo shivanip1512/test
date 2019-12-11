@@ -3,6 +3,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "ThirdPartyLibraries.h"
+
 #include "std_helper.h"
 
 #include <openssl/md5.h>
@@ -45,89 +46,107 @@ BOOST_AUTO_TEST_CASE(test_library_environments)
 
     int libraryIndex = 0;
 
-    auto libraries = Cti::ThirdPartyLibraries().getLibraries();
+    const auto libraries = Cti::ThirdPartyLibraries().getLibraries();
 
-    const auto libraryPaths = Cti::ThirdPartyLibraries().getKnownLibraryPaths();
+    auto libraryPaths = Cti::ThirdPartyLibraries().getKnownLibraryPaths();
 
     for( const auto library : libraries )
     {
         BOOST_TEST_CONTEXT(library.project)
         {
-            auto libraryPath = Cti::mapFind(libraryPaths, library.path);
-
-            if( !libraryPath )
+            auto libraryPath = libraryPaths.find(library.path);
+            
+            if( libraryPath == libraryPaths.end() )
             {
                 BOOST_ERROR("No entry for " << library.path << " in Cti::ThirdPartyLibraries::getKnownLibraryPaths");
-
-                continue;
             }
-
-            BOOST_TEST_CONTEXT(*libraryPath)
+            else
             {
-                BOOST_TEST_MESSAGE("Generating hashes for " + library.project);
-
-                MD5_CTX md5Context;
-                MD5_Init(&md5Context);
-
-                SHA_CTX sha1Context;
-                SHA1_Init(&sha1Context);
-
-                size_t files = 0;
-                uint64_t fileSizes = 0;
-
-                std::vector<fs::directory_entry> fileList;
-                
-                std::copy(fs::recursive_directory_iterator{ *libraryPath }, {}, std::back_inserter(fileList));
-                
-                //  Print status so users know why they're waiting
-                std::cout << "Generating hashes for " << ++libraryIndex << "/" << libraries.size() << ": " << library.project << std::endl;
-
-                for( auto p : fileList )
+                BOOST_TEST_CONTEXT(libraryPath->second)
                 {
-                    if( p.is_regular_file() )
+                    BOOST_TEST_MESSAGE("Generating hashes for " + library.project);
+
+                    try
                     {
-                        ++files;
+                        MD5_CTX md5Context;
+                        MD5_Init(&md5Context);
 
-                        std::ifstream fileContents { p.path(), std::ios::binary };
+                        SHA_CTX sha1Context;
+                        SHA1_Init(&sha1Context);
 
-                        while( ! fileContents.eof() )
+                        size_t files = 0;
+                        uint64_t fileSizes = 0;
+
+                        std::vector<fs::directory_entry> fileList;
+
+                        std::copy(fs::recursive_directory_iterator{ libraryPath->second }, {}, std::back_inserter(fileList));
+
+                        //  Print status so users know why they're waiting
+                        std::cout << "Generating hashes for " << ++libraryIndex << "/" << libraries.size() << ": " << library.project << std::endl;
+
+                        for( auto p : fileList )
                         {
-                            std::array<char, 4096> block;
+                            if( p.is_regular_file() )
+                            {
+                                ++files;
 
-                            fileContents.read(block.data(), block.size());
+                                std::ifstream fileContents{ p.path(), std::ios::binary };
 
-                            const auto blockSize = fileContents.gcount();
+                                while( ! fileContents.eof() )
+                                {
+                                    std::array<char, 4096> block;
 
-                            fileSizes += blockSize;
+                                    fileContents.read(block.data(), block.size());
 
-                            MD5_Update (&md5Context,  block.data(), blockSize);
-                            SHA1_Update(&sha1Context, block.data(), blockSize);
+                                    const auto blockSize = fileContents.gcount();
+
+                                    fileSizes += blockSize;
+
+                                    MD5_Update (&md5Context,  block.data(), blockSize);
+                                    SHA1_Update(&sha1Context, block.data(), blockSize);
+                                }
+
+                                //  Print updates if there are more than 1000 files to process (Boost has 14,000+)
+                                if( ! (files % 1000) )
+                                {
+                                    std::cout << "\t" << files << "/" << fileList.size() << std::endl;
+                                }
+                            }
                         }
 
-                        //  Print updates if there are more than 1000 files to process (Boost has 14,000+)
-                        if( ! (files % 1000) )
+                        BOOST_TEST_CONTEXT("Files: " + std::to_string(files) + " File sizes: " + std::to_string(fileSizes))
                         {
-                            std::cout << "\t" << files << "/" << fileList.size() << std::endl;
+                            std::array<unsigned char, MD5_DIGEST_LENGTH> md5Digest;
+                            std::array<unsigned char, SHA_DIGEST_LENGTH> sha1Digest;
+
+                            MD5_Final (md5Digest.data(),  &md5Context);
+                            SHA1_Final(sha1Digest.data(), &sha1Context);
+
+                            const auto md5Actual = arrayToHexString(md5Digest);
+                            const auto sha1Actual = arrayToHexString(sha1Digest);
+
+                            BOOST_CHECK_EQUAL(md5Actual,  library.md5);
+                            BOOST_CHECK_EQUAL(sha1Actual, library.sha1);
                         }
                     }
-                }
-
-                BOOST_TEST_CONTEXT("Files: " + std::to_string(files) + " File sizes: " + std::to_string(fileSizes))
-                {
-                    std::array<unsigned char, MD5_DIGEST_LENGTH> md5Digest;
-                    std::array<unsigned char, SHA_DIGEST_LENGTH> sha1Digest;
-
-                    MD5_Final (md5Digest.data(),  &md5Context);
-                    SHA1_Final(sha1Digest.data(), &sha1Context);
-
-                    const auto md5Actual = arrayToHexString(md5Digest);
-                    const auto sha1Actual = arrayToHexString(sha1Digest);
-
-                    BOOST_CHECK_EQUAL(md5Actual,  library.md5);
-                    BOOST_CHECK_EQUAL(sha1Actual, library.sha1);
+                    catch( fs::filesystem_error& e )
+                    {
+                        BOOST_ERROR("Filesystem error:" << e.what());
+                    }
                 }
             }
+
+            libraryPaths.erase(libraryPath);
         }
+    }
+
+    if( ! libraryPaths.empty() )
+    {
+        const auto path = libraryPaths.begin();
+
+        BOOST_ERROR("Known library path had no entry in thirdPartyLibraries.yaml: "
+            << "\nLibrary name: " << path->first
+            << "\nLibrary path: " << path->second);
     }
 }
 

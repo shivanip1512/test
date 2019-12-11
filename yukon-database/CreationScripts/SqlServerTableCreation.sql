@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/8/2019 12:38:12 PM                        */
+/* Created on:     12/9/2019 2:48:30 AM                         */
 /*==============================================================*/
 
 
@@ -7604,7 +7604,7 @@ go
 /*==============================================================*/
 create table MSPInterface (
    VendorID             numeric              not null,
-   Interface            varchar(12)          not null,
+   Interface            varchar(20)          not null,
    Endpoint             varchar(255)         not null,
    Version              varchar(12)          not null,
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)

@@ -180,27 +180,36 @@
                                                 </c:otherwise>
                                             </c:choose>
                                             <tr>
-                                                <td class="wsnw"><tags:checkbox
+                                                <td class="wsnw">
+                                                    <tags:checkbox
                                                         path="mspInterfaceList[${indexValue}].interfaceEnabled"
                                                         id="${currentInterface.mspInterface}"
                                                         onclick="yukon.admin.multispeak.enableEndpointValue(this.checked, '${currentInterface.version}', this.id)" />
-                                                    <span class="checkBoxLabel"> <spring:escapeBody
-                                                            htmlEscape="true">${currentInterface.mspInterface}</spring:escapeBody>
-                                                </span> <form:hidden path="mspInterfaceList[${indexValue}].vendorID" /> <form:hidden
-                                                        path="mspInterfaceList[${indexValue}].mspInterface" /></td>
-                                                <td class="wbba" style="max-width: 320px;"><tags:input
+                                                    <span class="checkBoxLabel">
+                                                        <cti:msg2 key=".vendor.endpoint.${currentInterface.mspInterface}"/>
+                                                    </span>
+                                                    <form:hidden path="mspInterfaceList[${indexValue}].vendorID" />
+                                                    <form:hidden path="mspInterfaceList[${indexValue}].mspInterface" />
+                                                </td>
+                                                <td class="wbba" style="max-width: 320px;">
+                                                    <tags:input
                                                         id="endpointURL_${currentInterface.version}_${currentInterface.mspInterface}"
                                                         path="mspInterfaceList[${indexValue}].mspEndpoint" size="35"
-                                                        disabled="${!currentInterface.interfaceEnabled}" /></td>
-                                                <td><c:set var="versionOptions" value="${mspVersionList}" /> <c:if
-                                                        test="${currentInterface.mspInterface=='NOT_Server'}">
+                                                        disabled="${!currentInterface.interfaceEnabled}" />
+                                                </td>
+                                                <td>
+                                                    <c:set var="versionOptions" value="${mspVersionList}" />
+                                                    <c:if test="${currentInterface.mspInterface =='NOT_Server' || currentInterface.mspInterface == 'NOT_Server_DR'}">
                                                         <c:set var="versionOptions" value="${mspVersion5}" />
-                                                    </c:if> <c:if test="${currentInterface.mspInterface=='CB_CD'}">
+                                                    </c:if>
+                                                    <c:if test="${currentInterface.mspInterface=='CB_CD'}">
                                                         <c:set var="versionOptions" value="${mspVersion3}" />
-                                                    </c:if> <tags:selectWithItems id="select${currentInterface.mspInterface}"
+                                                    </c:if>
+                                                    <tags:selectWithItems id="select${currentInterface.mspInterface}"
                                                         path="mspInterfaceList[${indexValue}].version"
                                                         disabled="${!currentInterface.interfaceEnabled}"
-                                                        items="${versionOptions}" inputClass="with-option-hiding" /></td>
+                                                        items="${versionOptions}" inputClass="with-option-hiding" />
+                                                </td>
                                                 <td style="width: 90px;">
                                                     <div class="button-group fr wsnw oh">
                                                         <cti:button icon="icon-ping"

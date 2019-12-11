@@ -65,6 +65,7 @@ import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
+import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -93,6 +94,8 @@ public class ComprehensiveMapController {
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private IDatabaseCache cache;
+    @Autowired private PaoLocationService paoLocationService;
+
     
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
     
@@ -261,5 +264,15 @@ public class ComprehensiveMapController {
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "ComprehensiveMapDownload_" + now + ".csv");
 
       }
+    
+    @GetMapping("allPrimaryRoutes")
+    public @ResponseBody List<FeatureCollection> primaryRoutes(String groupName) {
+        DeviceGroup group = deviceGroupService.findGroupName(groupName);
+        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+        
+        List<List<SimpleDevice>> chunks = Lists.partition(collection.getDeviceList(), 10);
+        List<FeatureCollection> features = chunks.stream().map(chunk -> paoLocationService.getLocationsAsGeoJson(chunk)).collect(Collectors.toList());
+        return features;
+    }
     
 }

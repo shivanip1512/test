@@ -7,7 +7,7 @@
     <TCL>$(CPP_LIBRARIES)\tcl\8.6.9-vc141-1</TCL>
     <BOOST>$(CPP_LIBRARIES)\boost\1.67.0-vc141</BOOST>
     <SQLAPI>$(CPP_LIBRARIES)\sqlapi\5.0.2-vc141-1</SQLAPI>
-    <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.4-vc141</ACTIVEMQ>
+    <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.5-vc141-1</ACTIVEMQ>
     <APR>$(CPP_LIBRARIES)\apache\apr\1.6.3-vc141</APR>
     <APR_UTIL>$(CPP_LIBRARIES)\apache\apr-util\1.6.1-vc141</APR_UTIL>
     <APR_ICONV>$(CPP_LIBRARIES)\apache\apr-iconv\1.2.2-vc141</APR_ICONV>
@@ -20,6 +20,7 @@
     <MICROSOFT_SQL>$(MICROSOFT)\sql-server-client-dll\2000.80.194.0</MICROSOFT_SQL>
     <DBGHELP>$(MICROSOFT)\dbghelp\6.12.2.633-vc140-1</DBGHELP>
     <YAML_CPP>$(CPP_LIBRARIES)\yaml-cpp\0.6.2-vc141</YAML_CPP>
+    <RMP_CONVERTER>$(CPP_LIBRARIES)\eaton\eas\rfn\meter-program-converter\1.0</RMP_CONVERTER>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
@@ -99,6 +100,10 @@
     </BuildMacro>
     <BuildMacro Include="YAML_CPP">
       <Value>$(YAML_CPP)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="RMP_CONVERTER">
+      <Value>$(RMP_CONVERTER)</Value>
       <EnvironmentVariable>true</EnvironmentVariable>
     </BuildMacro>
   </ItemGroup>

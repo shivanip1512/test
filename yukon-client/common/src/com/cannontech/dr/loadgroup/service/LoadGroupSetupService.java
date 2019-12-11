@@ -18,5 +18,6 @@ public interface LoadGroupSetupService extends LMSetupService<LoadGroupBase, LMC
     /**
      * Retrieve available control start states with rawState of 0 or 1 for the specified pointId.
      */
-    List<ControlRawState> getStartState(int pointId);
+    List<ControlRawState> getPointGroupStartState(int pointId);
+
 }

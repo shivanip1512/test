@@ -7,10 +7,6 @@
 
 ==== Point Group
 
-*Request Parameter* :
-
-include::{snippets}/PointLoadGroupSetupApiControllerTest/Test_LmPointGroup_Get/request-fields.adoc[]
-
 *Request JSON* :
 
 include::{snippets}/PointLoadGroupSetupApiControllerTest/Test_LmPointGroup_Get/http-request.adoc[]

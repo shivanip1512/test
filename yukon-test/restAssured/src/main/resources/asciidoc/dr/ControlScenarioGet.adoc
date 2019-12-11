@@ -8,10 +8,6 @@
 
 ==== Control Scenario
 
-*Request Properties* :
-
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Get/request-fields.adoc[]
-
 *Request JSON* :
 
 include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Get/http-request.adoc[]

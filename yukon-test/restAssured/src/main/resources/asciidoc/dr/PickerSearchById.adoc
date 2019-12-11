@@ -1,0 +1,24 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+==== Search Picker by Id
+
+*Request Parameter* :
+
+include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/http-request.adoc[]
+
+*Response Parameter* :
+
+include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/http-response.adoc[]

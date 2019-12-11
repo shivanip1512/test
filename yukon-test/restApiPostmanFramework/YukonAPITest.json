@@ -1840,12 +1840,23 @@
                             "_postman_isSubFolder": true
                         },
                         {
-                            "name": "getStartState",
+                            "name": "getPointGroupStartState",
                             "request": {
                                 "method": "GET",
                                 "header": [],
                                 "url": {
-                                    "raw": ""
+                                    "raw": "{{api-url}}/api/dr/setup/loadGroup/getPointGroupStartState/1234",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "dr",
+                                        "setup",
+                                        "loadGroup",
+                                        "getPointGroupStartState",
+                                        "1234"
+                                    ]
                                 }
                             },
                             "response": []
