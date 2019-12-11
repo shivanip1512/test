@@ -12,7 +12,7 @@ namespace Commands   {
 /**
  * Load Profile Command Base Class
  */
-class IM_EX_DEVDB RfnLoadProfileCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnLoadProfileCommand : public RfnTwoWayCommand
 {
 protected:
 

@@ -239,5 +239,8 @@
     <ClCompile Include="test_cmd_rfn_MeterProgramming.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_cmd_rfn_Wifi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -7,7 +7,7 @@ namespace Cti {
 namespace Devices {
 namespace Commands {
 
-class IM_EX_DEVDB RfnDataStreamingConfigurationCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnDataStreamingConfigurationCommand : public RfnTwoWayCommand
 {
 public:
     enum StreamingState

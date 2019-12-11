@@ -9,7 +9,7 @@ namespace Devices    {
 namespace Commands   {
 
 
-class IM_EX_DEVDB RfnOvUvConfigurationCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnOvUvConfigurationCommand : public RfnTwoWayCommand
 {
 protected:
 

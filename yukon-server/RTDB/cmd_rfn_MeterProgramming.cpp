@@ -65,10 +65,6 @@ namespace Cti::Devices::Commands {
         };
     }
 
-    //  unused
-    unsigned char RfnMeterProgrammingCommand::getOperation()   const { return {}; }
-    unsigned char RfnMeterProgrammingCommand::getCommandCode() const { return {}; }
-
 
     std::string RfnMeterProgrammingConfigurationCommand::getMeterConfigurationID() const
     {
@@ -80,7 +76,7 @@ namespace Cti::Devices::Commands {
         return _returnCode;
     }
 
-    RfnCommandResult RfnMeterProgrammingConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+    RfnCommandResult RfnMeterProgrammingConfigurationCommand::processResponse(const RfnCommand::RfnResponsePayload & response)
     {
         std::string description;
 
@@ -184,17 +180,16 @@ namespace Cti::Devices::Commands {
         return getBytesFromTlvs(tlvs);
     }
 
+    //  unused
+    unsigned char RfnMeterProgrammingSetConfigurationCommand::getOperation()   const { return {}; }
+    unsigned char RfnMeterProgrammingSetConfigurationCommand::getCommandCode() const { return {}; }
+
     std::string RfnMeterProgrammingSetConfigurationCommand::getCommandName()
     {
         return "Set Meter Programming Request";
     }
 
     bool RfnMeterProgrammingSetConfigurationCommand::isPost() const
-    {
-        return true;
-    }
-
-    bool RfnMeterProgrammingSetConfigurationCommand::isOneWay() const
     {
         return true;
     }
@@ -212,7 +207,7 @@ namespace Cti::Devices::Commands {
             auto command = std::make_unique<RfnMeterProgrammingSetConfigurationCommand>("", 0);
 
             //  ignore command results
-            command->handleResponse(now, response);
+            command->processResponse(response);
 
             return std::move(command);
         }
@@ -231,8 +226,17 @@ namespace Cti::Devices::Commands {
         return {};
     }
 
+    //  unused
+    unsigned char RfnMeterProgrammingGetConfigurationCommand::getOperation()   const { return {}; }
+    unsigned char RfnMeterProgrammingGetConfigurationCommand::getCommandCode() const { return {}; }
+
     std::string RfnMeterProgrammingGetConfigurationCommand::getCommandName()
     {
         return "Get Meter Programming Request";
+    }
+
+    RfnCommandResult RfnMeterProgrammingGetConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+    {
+        return processResponse(response);
     }
 }

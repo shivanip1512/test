@@ -387,11 +387,20 @@ YukonError_t RfnMeterDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandPar
     {
         return executeGetStatusTou(pReq, parse, returnMsgs, rfnRequests);
     }
+    if( containsString(parse.getCommandStr(), " wifi") )
+    {
+        return executeGetStatusWifi(pReq, parse, returnMsgs, rfnRequests);
+    }
 
     return ClientErrors::NoMethod;
 }
 
 YukonError_t RfnMeterDevice::executeGetStatusTou(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    return ClientErrors::NoMethod;
+}
+
+YukonError_t RfnMeterDevice::executeGetStatusWifi(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
 }

@@ -20,7 +20,7 @@ namespace Commands   {
 /**
  * Channel Configuration Command
  */
-class IM_EX_DEVDB RfnConfigNotificationCommand : public RfnIndividualCommand,
+class IM_EX_DEVDB RfnConfigNotificationCommand : public RfnTwoWayCommand,
        InvokerFor<RfnConfigNotificationCommand>
 {
     enum

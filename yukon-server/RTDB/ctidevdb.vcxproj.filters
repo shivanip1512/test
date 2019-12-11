@@ -465,6 +465,9 @@
     <ClCompile Include="cmd_rfn_MeterProgramming.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cmd_rfn_Wifi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\cmd_device.h">
@@ -1041,6 +1044,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\cmd_rfn_MeterProgramming.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cmd_rfn_Wifi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

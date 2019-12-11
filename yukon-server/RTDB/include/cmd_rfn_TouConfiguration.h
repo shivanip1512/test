@@ -12,7 +12,7 @@ namespace Commands {
 /**
  * RFN TOU configuration command base class
  */
-class IM_EX_DEVDB RfnTouConfigurationCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnTouConfigurationCommand : public RfnTwoWayCommand
 {
 public:
 

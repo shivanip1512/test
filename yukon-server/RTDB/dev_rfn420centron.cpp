@@ -2,6 +2,7 @@
 
 #include "dev_rfn420centron.h"
 #include "cmd_rfn_ConfigNotification.h"
+#include "cmd_rfn_Wifi.h"
 #include "config_data_rfn.h"
 #include "config_helpers.h"
 #include "std_helper.h"
@@ -96,6 +97,26 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
         return reportConfigErrorDetails( e, pReq, returnMsgs );
     }
 }
+
+
+YukonError_t Rfn420CentronDevice::executeGetStatusWifi(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+{
+    //  This code will probably need to move up to RfnMeter when this moves to more device types
+    switch( getDeviceType() )
+    {
+        //  ... and this will need to change to an isRfnWifiDevice() call
+        case TYPE_RFN420CDW:
+        case TYPE_RFN420CLW:
+        {
+            rfnRequests.emplace_back(std::make_unique<Commands::RfnWifiGetCommunicationStatusUpdateCommand>());
+
+            return ClientErrors::None;
+        }
+    }
+
+    return ClientErrors::NoMethod;
+}
+
 
 
 void Rfn420CentronDevice::handleCommandResult(const Commands::RfnConfigNotificationCommand &cmd)
