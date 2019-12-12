@@ -89,8 +89,10 @@ public:
     static const Attribute  LoadSideVoltageDetected;
     static const Attribute  MeterBoxCoverRemoval;
     static const Attribute  MaximumVoltage;
+    static const Attribute  MaximumVoltageDaily;
     static const Attribute  MaximumVoltageFrozen;
     static const Attribute  MinimumVoltage;
+    static const Attribute  MinimumVoltageDaily;
     static const Attribute  MinimumVoltageFrozen;
     static const Attribute  OutageLog;
     static const Attribute  OutageStatus;
