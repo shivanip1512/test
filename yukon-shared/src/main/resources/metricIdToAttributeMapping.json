@@ -81,8 +81,8 @@
                 
                 { "metricId" : 128, "attribute" : "NEUTRAL_CURRENT" },
 
-                { "metricId" : 129, "attribute" : "MINIMUM_VOLTAGE_DAILY" },
-                { "metricId" : 130, "attribute" : "MAXIMUM_VOLTAGE_DAILY" },
+                { "metricId" : 129, "attribute" : "MAXIMUM_VOLTAGE_DAILY" },
+                { "metricId" : 130, "attribute" : "MINIMUM_VOLTAGE_DAILY" },
 
                 { "metricId" : 159, "attributeMagnitude" : 1, "attribute" : "POWER_FACTOR_ANGLE_PHASE_A" },
                 { "metricId" : 160, "attributeMagnitude" : 1, "attribute" : "POWER_FACTOR_ANGLE_PHASE_B" },
