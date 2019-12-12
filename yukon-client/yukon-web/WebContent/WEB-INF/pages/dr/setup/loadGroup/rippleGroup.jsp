@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -60,7 +61,16 @@
             </tags:nameValue2>
         </c:if>
         <c:if test="${not isViewMode &&  not isSpecialRippleEnabled}">
-            <dr:renderControlAndRestoreBits controlBitsLength="${controlBitsLength}" restoreBitsLength="${restoreBitsLength}"/>
+            <tags:nameValue2 nameKey=".control">
+                <form:hidden path="control" cssClass="js-control-value"/>
+                <dr:renderCheckboxGroup startIndex="1" endIndex="${controlBitsLength/2}" addressContainerClass="js-control-value_row1"/>
+                <dr:renderCheckboxGroup startIndex="${(controlBitsLength/2) + 1}" endIndex="${controlBitsLength}" addressContainerClass="js-control-value_row2"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".restore">
+                <form:hidden path="restore" cssClass="js-restore-value"/>
+                <dr:renderCheckboxGroup startIndex="1" endIndex="${restoreBitsLength/2}" addressContainerClass="js-restore-value_row1"/>
+                <dr:renderCheckboxGroup startIndex="${(restoreBitsLength/2) + 1}" endIndex="${restoreBitsLength}" addressContainerClass="js-restore-value_row2"/>
+            </tags:nameValue2>
         </c:if>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>

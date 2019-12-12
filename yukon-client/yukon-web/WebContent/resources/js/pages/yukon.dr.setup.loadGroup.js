@@ -29,6 +29,22 @@ yukon.dr.setup.loadGroup = (function() {
         });
     },
     
+    _setAddressCheckboxesForSpecialRipple = function (container, value, checkboxSelectorStr) {
+        for (var index=0; index < 34; index++) {
+            if (value.charAt(index) === '1') {
+                container.find(checkboxSelectorStr + index).prop('checked', true);
+            }
+        }
+    },
+    
+    _buildSpecialRippleAddressString = function (container, checkboxSelectorStr) {
+        var addressStr ="";
+        for (var index=0; index < 34; index++) {
+            addressStr = addressStr.concat(container.find(checkboxSelectorStr + index).is(":checked") ? "1" : "0");
+        }
+        return addressStr;
+    },
+    
     _initCheckboxes = function () {
         if ($('.loadaddressing').exists()) {
             $('.loadaddressing').find("input:checkbox").addClass("js-loadaddress");
@@ -98,7 +114,7 @@ yukon.dr.setup.loadGroup = (function() {
             
             _initCheckboxes();
             
-            /* Check if the page is in edit mode and special ripple is not enabled */
+            /* Check if the page is in edit mode and Special Ripple is not enabled */
             if ($("#js-shed-time").exists() && !$(".js-area-code-row").exists()) {
                 var controlAddress = $(".js-control-value").val(),
                     restoreAddress = $(".js-restore-value").val(),
@@ -110,7 +126,7 @@ yukon.dr.setup.loadGroup = (function() {
                 _setAddressCheckboxes($(".js-restore-value_row2"), restoreAddress.substring((restoreAddressLength / 2), restoreAddressLength + 1));
             }
              
-            /* If Special Ripple is enabled set the control and restore checkboxes. */
+            /* If Special Ripple is enabled set the control and restore address checkboxes. */
             if ($(".js-area-code-row").exists()) {
                 _setAddressCheckboxesForSpecialRipple($(".js-control-address"), $(".js-control-value").val(), "#js-control-address-chkbx_");
                 _setAddressCheckboxesForSpecialRipple($(".js-restore-address"), $(".js-restore-value").val(), "#js-restore-address-chkbx_");
