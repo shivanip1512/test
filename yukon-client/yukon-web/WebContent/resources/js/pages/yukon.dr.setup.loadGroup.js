@@ -38,7 +38,7 @@ yukon.dr.setup.loadGroup = (function() {
     },
     
     _buildSpecialRippleAddressString = function (container, checkboxSelectorStr) {
-        var addressStr ="";
+        var addressStr = "";
         for (var index=0; index < 34; index++) {
             addressStr = addressStr.concat(container.find(checkboxSelectorStr + index).is(":checked") ? "1" : "0");
         }
@@ -186,9 +186,9 @@ yukon.dr.setup.loadGroup = (function() {
             });
             
             $(document).on('submit', '.js-load-group-form', function () {
-                /* check if Ripple Load Group is selected */
+                /* Check if Ripple Load Group is selected. */
                 if ($("#js-shed-time").exists()) {
-                    /* check if Special Ripple is enabled. */
+                    /* Check if Special Ripple is enabled. */
                     if ($(".js-area-code-row").exists()) {
                         var controlAddress = _buildSpecialRippleAddressString($(".js-control-address"), "#js-control-address-chkbx_");
                         $(".js-control-value").val(controlAddress);

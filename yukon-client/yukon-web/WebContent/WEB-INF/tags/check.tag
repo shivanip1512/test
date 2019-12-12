@@ -24,7 +24,7 @@
 <%@ attribute name="label" description="Text used for the button. Html escaped internally." %>
 
 <%@ attribute name="classes" description="CSS class names applied to the button element." %>
-<%@ attribute name="buttonStyle" description="styles applied to the button." %>
+<%@ attribute name="buttonStyle" description="Style applied to the button." %>
 <%@ attribute name="buttonTextClasses" description="CSS class names applied to the button text." %>
 <%@ attribute name="buttonTextStyle" description="styles applied to the button text." %>
 <%@ attribute name="id" description="The html id attribute of the radio input." %>
