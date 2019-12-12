@@ -32,8 +32,8 @@ std::string ConnectionManager::ConnectionDescriptor::toString() const
     return Cti::FormattedList::of(
         "Connection instance", info.instance,
         "Creation time", info.created,
-        "Last borrowed", lastBorrowed.isValid() ? lastBorrowed.asString() : "never"
-        "Last returned", lastReturned.isValid() ? lastReturned.asString() : "never"
+        "Last borrowed", lastBorrowed.isValid() ? lastBorrowed.asString() : "never",
+        "Last returned", lastReturned.isValid() ? lastReturned.asString() : "never",
         "Client major version", info.clientVersion >> 16,
         "Client minor version", info.clientVersion & 0xffff,
         "Server major version", info.serverVersion >> 16,
