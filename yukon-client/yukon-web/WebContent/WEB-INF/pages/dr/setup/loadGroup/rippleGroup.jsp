@@ -23,7 +23,7 @@
                     </c:otherwise>
                  </c:choose>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".areaCode">
+            <tags:nameValue2 nameKey=".areaCode" rowClass="js-area-code-row">
                 <c:choose>
                     <c:when test="${empty loadGroup.areaCode && isViewMode}">
                         <i:inline key="yukon.common.none.choice"/>
@@ -37,7 +37,7 @@
                 </c:choose>
             </tags:nameValue2>
         </c:if>
-        <c:if test="${isViewMode}">
+        <c:if test="${isViewMode &&  not isSpecialRippleEnabled}">
             <tags:nameValue2 nameKey=".control">
                 <c:choose>
                     <c:when test="${empty loadGroup.control}">
@@ -64,10 +64,17 @@
         </c:if>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
-<c:if test="${not isViewMode && isSpecialRippleEnabled}">
+<c:if test="${isSpecialRippleEnabled}">
     <tags:sectionContainer2 nameKey="doubleOrders">
         <tags:nameValueContainer2>
-            <dr:renderControlAndRestoreBits controlBitsLength="${controlBitsLength}" restoreBitsLength="${restoreBitsLength}"/>
+            <tags:nameValue2 nameKey=".control" nameClass="vam">
+                <form:hidden path="control" cssClass="js-control-value"/>
+                <dr:renderSpecialRippleBits containerCss="js-control-address" isDisabled="${isViewMode}"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".restore" nameClass="vam">
+                <form:hidden path="restore" cssClass="js-restore-value"/>
+                <dr:renderSpecialRippleBits containerCss="js-restore-address" isDisabled="${isViewMode}"/>
+            </tags:nameValue2>
         </tags:nameValueContainer2>
     </tags:sectionContainer2>
 </c:if>
