@@ -27,7 +27,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
      /** 
        * Point Name naming convention: 
-       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #]
+       * [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen|Daily] [Rate #|Phase X|Channel #]
        * Examples: 
        * Net kWh OR Net Delivered kWh 
        * Received kWh Rate A 
@@ -90,11 +90,13 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED("Load Side Voltage Detected", AttributeGroup.RFN_METERING_EVENT, false),   
     METER_BOX_COVER_REMOVAL_FLAG("Meter Box Cover Removal", AttributeGroup.STATUS, false),   //440 types only
     MAXIMUM_VOLTAGE("Maximum Voltage", AttributeGroup.VOLTAGE),
+    MAXIMUM_VOLTAGE_DAILY("Maximum Voltage Daily", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_FROZEN("Maximum Voltage Frozen", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_PHASE_A("Maximum Voltage (Phase A)", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_PHASE_B("Maximum Voltage (Phase B)", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_PHASE_C("Maximum Voltage (Phase C)", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE("Minimum Voltage", AttributeGroup.VOLTAGE),
+    MINIMUM_VOLTAGE_DAILY("Minimum Voltage Daily", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE_FROZEN("Minimum Voltage Frozen", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE_PHASE_A("Minimum Voltage (Phase A)", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE_PHASE_B("Minimum Voltage (Phase B)", AttributeGroup.VOLTAGE),
