@@ -722,14 +722,11 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
             if ( route )
             {
-                Cti::Encryption::Buffer encrypted,
-                                        decrypted;
-
-                convertHexStringToBytes( encryptedKey, encrypted );
+                const auto encrypted = convertHexStringToBytes( encryptedKey );
 
                 try
                 {
-                    decrypted = Cti::Encryption::decrypt( Cti::Encryption::SharedKeyfile, encrypted );
+                    const auto decrypted = Cti::Encryption::decrypt( Cti::Encryption::SharedKeyfile, encrypted );
                     route->setEncryptionKey( decrypted );
                 }
                 catch ( Cti::Encryption::Error e )

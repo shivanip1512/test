@@ -245,9 +245,7 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
     {
         std::string input;
 
-        std::vector< unsigned char >    result;
-
-        convertHexStringToBytes( input, result );
+        const auto result = convertHexStringToBytes( input );
 
         BOOST_CHECK_EQUAL(     0, result.size() );
     }
@@ -287,9 +285,7 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
             0x2d, 0xd2, 0x77, 0x4c, 0xfb, 0x27, 0x8d, 0x40
         };
 
-        std::vector< unsigned char >    result;
-
-        convertHexStringToBytes( input, result );
+        const auto result = convertHexStringToBytes( input );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( result.begin(),  result.end(),
                                        inputAsArray,    inputAsArray + sizeof(inputAsArray) );
@@ -307,9 +303,7 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
             0x13, 0xc6, 0x9f, 0x1e, 0xc5, 0xd9, 0x39, 0xcb
         };
 
-        std::vector< unsigned char >    result;
-
-        convertHexStringToBytes( input, result );
+        const auto result = convertHexStringToBytes( input );
 
         BOOST_CHECK_EQUAL_COLLECTIONS( result.begin(),  result.end(),
                                        inputAsArray,    inputAsArray + sizeof(inputAsArray) );
