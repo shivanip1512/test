@@ -215,6 +215,9 @@
     <ClCompile Include="MeterDisconnectGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ecobeeSetpointGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lmgroupnest.h">
@@ -242,6 +245,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MeterDisconnectGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ecobeeSetpointGear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -98,8 +98,10 @@ INIT_ATTRIBUTE( LoadProfile,                                        "LOAD_PROFIL
 INIT_ATTRIBUTE( LoadSideVoltageDetected,                            "LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED" );
 INIT_ATTRIBUTE( MeterBoxCoverRemoval,                               "METER_BOX_COVER_REMOVAL_FLAG" );
 INIT_ATTRIBUTE( MaximumVoltage,                                     "MAXIMUM_VOLTAGE" );
+INIT_ATTRIBUTE( MaximumVoltageDaily,                                "MAXIMUM_VOLTAGE_DAILY" );
 INIT_ATTRIBUTE( MaximumVoltageFrozen,                               "MAXIMUM_VOLTAGE_FROZEN" );
 INIT_ATTRIBUTE( MinimumVoltage,                                     "MINIMUM_VOLTAGE" );
+INIT_ATTRIBUTE( MinimumVoltageDaily,                                "MINIMUM_VOLTAGE_DAILY" );
 INIT_ATTRIBUTE( MinimumVoltageFrozen,                               "MINIMUM_VOLTAGE_FROZEN" );
 INIT_ATTRIBUTE( OutageLog,                                          "OUTAGE_LOG" );
 INIT_ATTRIBUTE( OutageStatus,                                       "OUTAGE_STATUS" );

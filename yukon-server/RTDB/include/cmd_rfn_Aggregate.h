@@ -3,9 +3,7 @@
 #include "cmd_rfn.h"
 #include "cmd_rfn_Individual.h"
 
-namespace Cti {
-namespace Devices {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 class IM_EX_DEVDB RfnAggregateCommand : public RfnCommand
 {
@@ -17,8 +15,8 @@ public:
 
     ASID getApplicationServiceId() const override;
 
-    RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override;
-    RfnCommandResultList handleError(const CtiTime now, const YukonError_t error) override;
+    RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override final;
+    RfnCommandResultList handleError(const CtiTime now, const YukonError_t error) override final;
 
     void invokeResultHandler(ResultHandler &rh) const override final;
 
@@ -61,6 +59,4 @@ private:
     size_t getPayloadLength() const;
 };
 
-}
-}
 }

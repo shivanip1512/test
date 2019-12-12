@@ -40,6 +40,31 @@ private:
 
 ///
 
+class IM_EX_MSG LMEcobeeSetpointControlMessage : public StreamableMessage
+{
+public:
+
+    LMEcobeeSetpointControlMessage( int  groupId,
+                                    long long startTime,
+                                    int  controlDuration,
+                                    bool temperatureOption,
+                                    bool mandatory,
+                                    int  temperatureOffset );
+
+    void streamInto( cms::StreamMessage & message ) const;
+
+private:
+
+    int  _groupId;
+    char _temperatureOption;
+    char _mandatory;
+    int  _temperatureOffset;
+    long long _startTime;
+    long long _stopTime;
+};
+
+/// 
+
 class IM_EX_MSG LMEcobeeRestoreMessage : public StreamableMessage
 {
 public:

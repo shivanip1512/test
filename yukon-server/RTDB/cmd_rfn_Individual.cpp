@@ -2,13 +2,11 @@
 
 #include "cmd_rfn_Individual.h"
 
-namespace Cti {
-namespace Devices {
-namespace Commands {
+namespace Cti::Devices::Commands {
 
 
 //  Delegate directly to the individual command decode method
-RfnCommandResultList RfnIndividualCommand::handleResponse(const CtiTime now, const RfnResponsePayload &response)
+RfnCommandResultList RfnTwoWayCommand::handleResponse(const CtiTime now, const RfnResponsePayload &response)
 {
     try
     {
@@ -22,6 +20,29 @@ RfnCommandResultList RfnIndividualCommand::handleResponse(const CtiTime now, con
         throw yee;
     }
 }
+
+bool RfnTwoWayCommand::isOneWay() const
+{
+    return false;
+}
+
+RfnCommandResultList RfnOneWayCommand::handleResponse(const CtiTime now, const RfnResponsePayload &response)
+{
+    CTILOG_WARN(dout, "handleResponse called for one-way command: " << getCommandName());
+    return {};
+}
+
+RfnCommandResult RfnOneWayCommand::decodeCommand(const CtiTime now, const RfnResponsePayload &response)
+{
+    CTILOG_WARN(dout, "decodeCommand called for one-way command: " << getCommandName());
+    return { "decodeCommand not valid for one-way command " + getCommandName(), ClientErrors::NoMethodForResultDecode };
+}
+
+bool RfnOneWayCommand::isOneWay() const
+{
+    return true;
+}
+
 
 //  Delegate directly to the individual command error method
 RfnCommandResultList RfnIndividualCommand::handleError(const CtiTime now, const YukonError_t errorCode)
@@ -164,6 +185,4 @@ std::vector<RfnIndividualCommand::TypeLengthValue> RfnIndividualCommand::getTlvs
 }
 
 
-}
-}
 }

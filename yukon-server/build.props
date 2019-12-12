@@ -7,11 +7,11 @@
     <TCL>$(CPP_LIBRARIES)\tcl\8.6.9-vc141-1</TCL>
     <BOOST>$(CPP_LIBRARIES)\boost\1.67.0-vc141</BOOST>
     <SQLAPI>$(CPP_LIBRARIES)\sqlapi\5.0.2-vc141-1</SQLAPI>
-    <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.4-vc141</ACTIVEMQ>
+    <ACTIVEMQ>$(CPP_LIBRARIES)\apache\activemq-cpp\3.9.5-vc141-1</ACTIVEMQ>
     <APR>$(CPP_LIBRARIES)\apache\apr\1.6.3-vc141</APR>
     <APR_UTIL>$(CPP_LIBRARIES)\apache\apr-util\1.6.1-vc141</APR_UTIL>
     <APR_ICONV>$(CPP_LIBRARIES)\apache\apr-iconv\1.2.2-vc141</APR_ICONV>
-    <THRIFT>$(CPP_LIBRARIES)\apache\thrift\0.11.0-vc141</THRIFT>
+    <THRIFT>$(CPP_LIBRARIES)\apache\thrift\0.12.0</THRIFT>
     <JSON>$(CPP_LIBRARIES)\nlohmann\3.1.2</JSON>
     <LOG4CXX>$(CPP_LIBRARIES)\apache\log4cxx\0.10.0-vc141</LOG4CXX>
     <OPENSSL>$(CPP_LIBRARIES)\openssl\1.1.1c-vc141-1</OPENSSL>

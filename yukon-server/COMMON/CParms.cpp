@@ -171,14 +171,11 @@ std::pair< bool, std::string > CtiConfigParameters::preprocessValue( char * chVa
 
     if ( ! retVal.compare( 0, autoEncrypted.length(), autoEncrypted ) ) // starts with "(AUTO_ENCRYPTED)"
     {
-        Cti::Encryption::Buffer encrypted,
-                                decrypted;
-
-        convertHexStringToBytes( retVal.substr( autoEncrypted.length() ), encrypted );
+        const auto encrypted = convertHexStringToBytes( retVal.substr( autoEncrypted.length() ) );
 
         try
         {
-            decrypted = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted );
+            const auto decrypted = Cti::Encryption::decrypt( Cti::Encryption::MasterCfg, encrypted );
             retVal.assign( decrypted.begin(), decrypted.end() );
         }
         catch ( Cti::Encryption::Error e )

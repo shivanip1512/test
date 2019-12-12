@@ -121,7 +121,7 @@ public class RfnStatusArchiveRequestListenerTest {
         
         // Verify the pointdata value
         expectedState.ifPresentOrElse(value -> {
-            assertFalse("No pointdata generated", pointdataCapture.getValues().isEmpty());
+            assertFalse("Point value expected, but no pointdata generated", pointdataCapture.getValues().isEmpty());
             assertEquals("Excess pointdata generated", 1, pointdataCapture.getValues().size());
             
             var pointData = pointdataCapture.getValue();
@@ -198,7 +198,12 @@ public class RfnStatusArchiveRequestListenerTest {
               ModeStateValue.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.ARMED, null),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.RESUMED, null),
               ModeStateValue.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.TERMINATED, 2),
-              ModeStateValue.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.UNKNOWN, null))
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.UNKNOWN, null),
+              
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.UNKNOWN, RfnMeterDisconnectStateType.ARMED, null),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.UNKNOWN, RfnMeterDisconnectStateType.RESUMED, null),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.UNKNOWN, RfnMeterDisconnectStateType.TERMINATED, null),
+              ModeStateValue.of(RfnMeterDisconnectMeterMode.UNKNOWN, RfnMeterDisconnectStateType.UNKNOWN, null))
                  .collect(Collectors.groupingBy(msv -> msv.mode, 
                           Collectors.toMap(msv -> msv.type, 
                                            msv -> Optional.ofNullable(msv.value))));

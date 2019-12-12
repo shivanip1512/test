@@ -369,6 +369,7 @@
     <ClCompile Include="test_cmd_rfn_DemandInterval.cpp" />
     <ClCompile Include="test_cmd_rfn_Individual.cpp" />
     <ClCompile Include="test_cmd_rfn_MeterProgramming.cpp" />
+    <ClCompile Include="test_cmd_rfn_Wifi.cpp" />
     <ClCompile Include="test_cmd_rf_da_dnpAddress.cpp">
     </ClCompile>
     <ClCompile Include="test_cmd_rfn_CentronLcdConfiguration.cpp">

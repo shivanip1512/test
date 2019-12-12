@@ -138,11 +138,13 @@
     <entry key="yukon.common.attribute.builtInAttribute.KVARH_RATE_D">kVArh Rate D</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_PROFILE">Load Profile</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE">Maximum Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_DAILY">Maximum Voltage Daily</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_FROZEN">Maximum Voltage Frozen</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_PHASE_A">Maximum Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_PHASE_B">Maximum Voltage (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_PHASE_C">Maximum Voltage (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE">Minimum Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE_DAILY">Minimum Voltage Daily</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE_FROZEN">Minimum Voltage Frozen</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE_PHASE_A">Minimum Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE_PHASE_B">Minimum Voltage (Phase B)</entry>

@@ -39,8 +39,8 @@
         <pointInfo name="Current Phase A" attributes="CURRENT_PHASE_A"/>
         <pointInfo name="Current Phase B" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
-        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE"/>
-        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE"/>
+        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>
+        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
         <pointInfo name="Delivered kVAh" attributes="KVAH"/>
         <pointInfo name="Delivered kVArh" attributes="KVARH"/>
         <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND,DEMAND"/>

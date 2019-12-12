@@ -213,4 +213,14 @@
         <jms:listener destination="com.eaton.eas.yukon.MeterProgramStatusArchiveRequest" ref="meterProgramStatusArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
     <bean class="com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer"/>
+    
+    <bean id="rfnNodeWiFiCommArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfnNodeWiFiCommArchiveRequestListener"/>
+    <jms:listener-container
+            connection-factory="connectionFactory"
+            destination-type="queue"
+            concurrency="2"
+            container-type="simple"
+            container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="com.eaton.eas.yukon.networkmanager.RfnNodeWiFiCommArchiveRequest" ref="rfnNodeWiFiCommArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
 </beans>

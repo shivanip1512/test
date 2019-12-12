@@ -59,10 +59,12 @@ auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> RawProgr
         return {};
     }
 
-    auto program = rdr["program"] .as<Bytes>();
-    auto encryptedPassword = rdr["password"].as<Bytes>();
+    const auto program = rdr["program"] .as<Bytes>();
+    const auto encryptedPasswordString = rdr["password"].as<std::string>();
 
-    auto password = Cti::Encryption::decrypt(Cti::Encryption::SharedKeyfile, encryptedPassword);
+    const auto encryptedPassword = convertHexStringToBytes(encryptedPasswordString);
+
+    const auto password = Cti::Encryption::decrypt(Cti::Encryption::SharedKeyfile, encryptedPassword);
 
     return { program, password };
 }

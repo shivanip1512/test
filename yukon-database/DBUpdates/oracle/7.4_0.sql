@@ -219,6 +219,13 @@ AND Value = 'none';
 INSERT INTO DBUpdates VALUES ('YUK-21004', '7.4.0', SYSDATE);
 /* @end YUK-21004 */
 
+/* @start YUK-21096 */
+ALTER TABLE MSPInterface
+MODIFY Interface VARCHAR2(20);
+
+INSERT INTO DBUpdates VALUES ('YUK-21096', '7.4.0', SYSDATE);
+/* @end YUK-21096 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

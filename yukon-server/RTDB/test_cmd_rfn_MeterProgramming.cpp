@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_SUITE( test_cmd_rfn_MeterProgramming )
 
 const CtiTime execute_time( CtiDate( 29, 7, 2013 ) , 11 );
 
-BOOST_AUTO_TEST_CASE( test_setConfigurationCommand )
+BOOST_AUTO_TEST_CASE( test_setConfigurationCommand_request )
 {
     RfnMeterProgrammingSetConfigurationCommand command{ "7d444840-9dc0-11d1-b245-5ffdce74fad2", 11235 };
 
@@ -46,7 +46,10 @@ BOOST_AUTO_TEST_CASE( test_setConfigurationCommand )
 
         BOOST_CHECK_EQUAL_RANGES( rcv, exp );
     }
+}
 
+BOOST_AUTO_TEST_CASE( test_setConfigurationCommand_unsolicitedReply )
+{
     // decode -- success response
     {
         const std::vector< unsigned char > response
@@ -64,17 +67,10 @@ BOOST_AUTO_TEST_CASE( test_setConfigurationCommand )
             '5', 'f', 'f', 'd', 'c', 'e', '7', '4', 'f', 'a', 'd', '2'
         };
 
-        auto rcv = command.decodeCommand( execute_time, response );
+        auto command = RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.status, ClientErrors::None );
-        BOOST_CHECK_EQUAL( rcv.description, 
-                           "Meter Status: Configured (0)"
-                           "\nDetailed Configuration Status: Success (0)"
-                           "\nSource: Yukon programmed"
-                           "\nMeter Configuration ID: R7d444840-9dc0-11d1-b245-5ffdce74fad2" );
-
-        BOOST_CHECK_EQUAL( command.getStatusCode(), ClientErrors::None );
-        BOOST_CHECK_EQUAL( command.getMeterConfigurationID(), "R7d444840-9dc0-11d1-b245-5ffdce74fad2" );
+        BOOST_CHECK_EQUAL( command->getStatusCode(), ClientErrors::None );
+        BOOST_CHECK_EQUAL( command->getMeterConfigurationID(), "R7d444840-9dc0-11d1-b245-5ffdce74fad2" );
     }
 }
 

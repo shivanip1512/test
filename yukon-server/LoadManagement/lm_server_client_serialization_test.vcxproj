@@ -357,6 +357,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="ecobeeCycleGear.cpp">
     </ClCompile>
+    <ClCompile Include="ecobeeSetpointGear.cpp" />
     <ClCompile Include="executor.cpp">
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
@@ -469,6 +470,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\ConstraintViolation.h" />
     <ClInclude Include="include\ecobeeControlInterface.h" />
     <ClInclude Include="include\ecobeeCycleGear.h" />
+    <ClInclude Include="include\ecobeeSetpointGear.h" />
     <ClInclude Include="include\executor.h" />
     <ClInclude Include="include\GroupControlInterface.h" />
     <ClInclude Include="include\honeywellControlInterface.h" />

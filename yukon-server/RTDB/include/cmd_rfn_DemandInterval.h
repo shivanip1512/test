@@ -5,7 +5,7 @@
 
 namespace Cti::Devices::Commands {
 
-class IM_EX_DEVDB RfnDemandIntervalCommand : public RfnIndividualCommand
+class IM_EX_DEVDB RfnDemandIntervalCommand : public RfnTwoWayCommand
 {
 protected:
 

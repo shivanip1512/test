@@ -5,25 +5,7 @@
 
 namespace Cti::Devices::Commands {
 
-    class IM_EX_DEVDB RfnMeterProgrammingCommand : public RfnIndividualCommand
-    {
-    protected:
-
-        RfnMeterProgrammingCommand() = default;
-
-        virtual Bytes getCommandHeader() override = 0;
-        virtual Bytes getCommandData()   override = 0;
-
-        //  unused
-        unsigned char getOperation()   const override;
-        unsigned char getCommandCode() const override;
-
-    public:
-
-        virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) = 0;
-    };
-
-    class IM_EX_DEVDB RfnMeterProgrammingConfigurationCommand : public RfnMeterProgrammingCommand
+    class IM_EX_DEVDB RfnMeterProgrammingConfigurationCommand
     {
     public:
         enum Command
@@ -31,19 +13,18 @@ namespace Cti::Devices::Commands {
             Response = 0x92
         };
 
-        RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
-
         std::string     getMeterConfigurationID() const;
         YukonError_t    getStatusCode() const;
 
     protected:
 
+        RfnCommandResult processResponse(const RfnCommand::RfnResponsePayload & response);
+
         std::string     _meterConfigurationID;
         YukonError_t    _returnCode;
     };
 
-    class IM_EX_DEVDB RfnMeterProgrammingSetConfigurationCommand : public RfnMeterProgrammingConfigurationCommand,
-        InvokerFor<RfnMeterProgrammingSetConfigurationCommand>
+    class IM_EX_DEVDB RfnMeterProgrammingSetConfigurationCommand : public RfnMeterProgrammingConfigurationCommand, public RfnOneWayCommand
     {
     public:
 
@@ -52,8 +33,6 @@ namespace Cti::Devices::Commands {
         std::string getCommandName() override;
 
         bool isPost() const override;
-
-        bool isOneWay() const override;
 
         static std::unique_ptr<RfnMeterProgrammingSetConfigurationCommand> handleUnsolicitedReply(const CtiTime now, const RfnResponsePayload & response);
 
@@ -67,6 +46,10 @@ namespace Cti::Devices::Commands {
         Bytes getCommandHeader() override;
         Bytes getCommandData()   override;
 
+        //  unused
+        unsigned char getOperation()   const override;
+        unsigned char getCommandCode() const override;
+
         const std::string _guid;
         const std::size_t _length;
 
@@ -79,12 +62,14 @@ namespace Cti::Devices::Commands {
         };
     };
 
-    class IM_EX_DEVDB RfnMeterProgrammingGetConfigurationCommand : public RfnMeterProgrammingConfigurationCommand,
+    class IM_EX_DEVDB RfnMeterProgrammingGetConfigurationCommand : public RfnMeterProgrammingConfigurationCommand, public RfnTwoWayCommand,
         InvokerFor<RfnMeterProgrammingGetConfigurationCommand>
     {
     public:
 
         std::string getCommandName() override;
+
+        RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
     private:
 
@@ -95,17 +80,9 @@ namespace Cti::Devices::Commands {
 
         Bytes getCommandHeader() override;
         Bytes getCommandData()   override;
-    };
 
-    class IM_EX_DEVDB RfnMeterProgrammingGetFileCommand : public RfnMeterProgrammingCommand,
-        InvokerFor<RfnMeterProgrammingGetFileCommand>
-    {
-    public:
-
-        RfnMeterProgrammingGetFileCommand(std::string guid, std::size_t blockSize);
-
-        RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
-
-        std::string getCommandName() override;
+        //  unused
+        unsigned char getOperation()   const override;
+        unsigned char getCommandCode() const override;
     };
 }

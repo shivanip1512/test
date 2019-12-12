@@ -5531,16 +5531,16 @@ Icons :
 C++ :
   - project : ActiveMQ-CPP 
     path : ACTIVEMQ
-    version : 3.9.4
+    version : 3.9.5
     project URL : "http://activemq.apache.org/cms/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : ddadc8681194b5e1f626e8a9ecf520cd
-    sha1 : ad0b7887fb9f3f5919281b89730dba1e124a191b 
-    fileCount : 806
-    totalSize : 37214610
-    updated : 2018-09-11  
-    jira : YUK-18778
+    md5 : f6024ae820400f1bcef26dc1bdc24134
+    sha1 : 3311d2e2d098953e48c56087ff37c532babcea09
+    fileCount : 691
+    totalSize : 37532260
+    updated : 2019-12-08  
+    jira : YUK-20694
     notes : 
 
   - project : Apache Portable Runtime
@@ -5689,11 +5689,11 @@ C++ :
     project URL : none
     license : Eaton-owned
     license URLs : none
-    md5 : 527502acff61b311fae2e106188ef4cb
-    sha1 : 092ef220812fa1ef10742efe49154bca02277697
+    md5 : 3b9ae627d4de22e8ace5b25831107917
+    sha1 : 82225db469c77d5d72c5be5bea713dbbd95007eb
     fileCount : 3
-    totalSize : 52694
-    updated : 2019-12-03
+    totalSize : 53206
+    updated : 2019-12-11
     jira : YUK-20872
     notes : 
     
@@ -5727,16 +5727,16 @@ C++ :
     
   - project : Apache Thrift 
     path : THRIFT
-    version : 0.11.0
+    version : 0.12.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : d5fdb4629cf49f79ab5cd3c923b83794
-    sha1 : 2b46e80b1b064b8a4db0eba313b22fea37b46ec9 
-    fileCount : 158
-    totalSize : 98314678
-    updated : 2018-06-29  
-    jira : YUK-18343
+    md5 : 1dafb0cf2b355121fb481c370360be33
+    sha1 : a2360aa77f0edbcfa1bf55a91388d66bc2dedb4c
+    fileCount : 98
+    totalSize : 101845469
+    updated : 2019-12-11  
+    jira : YUK-20693
     notes : 
     
   - project : Apache Xerces-C++ XML Parser 

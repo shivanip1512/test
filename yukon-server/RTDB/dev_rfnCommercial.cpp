@@ -22,12 +22,27 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
 
     if( containsString(parse.getCommandStr(), meterProgrammingCmd + " cancel") )
     {
-        //  cancel the thing
+        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress) )
+        {
+            purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+
+            returnMsgs.emplace_back(
+                makeReturnMsg(*pReq, "Meter programming canceled", ClientErrors::None));
+        }
+        else
+        {
+            returnMsgs.emplace_back(
+                makeReturnMsg(*pReq, "Meter programming not in progress", ClientErrors::None));
+        }
+
+        return ClientErrors::None;
     }
     else if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
     {
         if( auto programDescriptor = MeterProgramming::gMeterProgrammingManager->describeAssignedProgram(getRfnIdentifier()) )
         {
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
+
             rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>(programDescriptor->guid, programDescriptor->length));
 
             return ClientErrors::None;
@@ -70,11 +85,6 @@ YukonError_t RfnCommercialDevice::executeReadDemandFreezeInfo( CtiRequestMsg    
     rfnRequests.emplace_back( std::make_unique<Commands::RfnGetDemandFreezeInfoCommand>() );
 
     return ClientErrors::None;
-}
-
-void RfnCommercialDevice::handleCommandResult( const Commands::RfnMeterProgrammingGetConfigurationCommand & cmd )
-{
-    setDynamicInfo( CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigurationId, cmd.getMeterConfigurationID() );
 }
 
 }
