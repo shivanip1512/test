@@ -33,8 +33,8 @@
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
-        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE"/>
-        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE"/>
+        <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>
+        <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
         <pointInfo name="Delivered kW" init="true" attributes="DELIVERED_DEMAND,DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
