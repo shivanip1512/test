@@ -120,6 +120,8 @@ const MetricInfo metricInfos[] = {
         { 124,  TouRates,  "Voltage Max Phase C"                   },
 
         { 128,  TouRates,  "Current Neutral to Ground"             },
+        { 129,  TouRates,  "Voltage Max Daily"                     },
+        { 130,  TouRates,  "Voltage Min Daily"                     },
 
         { 150,  TouRates,  "Watts Phase A"                         },
         { 151,  TouRates,  "Watts Phase B"                         },
