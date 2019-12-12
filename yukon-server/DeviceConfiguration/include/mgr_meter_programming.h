@@ -35,7 +35,6 @@ private:
 
     Bytes loadProgram(const std::string guid);
     size_t getProgramSize(const std::string guid);
-    Bytes convertAndCache(const std::string guid, const Bytes program, const Bytes password);
 
     std::map<std::string, Bytes> _programs;
 };
