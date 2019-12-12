@@ -78,6 +78,21 @@ public class EcobeeMessageListener {
             }
             log.debug("Parameters built " + parameters + " Ready to send Ecobee Message");
 
+            //Send DR message to ecobee server
+            String drIdentifier = ecobeeCommunicationService.sendSetpointDR(parameters);
+            
+            //Store the most recent dr handle for each group, so we can cancel
+            groupToDrIdentifierMap.put(parameters.getGroupId(), drIdentifier);
+            
+            //Send control history message to dispatch
+            Duration controlDuration = new Duration(parameters.getStartTime(), parameters.getStopTime());
+            int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
+            Instant startTime = new Instant(DateTimeZone.getDefault().convertLocalToUTC(parameters.getStartTime().getMillis(), false));
+            
+            int controlCyclePercent = 100; 
+            controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(), startTime, ControlType.ECOBEE, 
+                                                                null, controlDurationSeconds,
+                                                                controlCyclePercent);
         }
     }
 
@@ -165,7 +180,8 @@ public class EcobeeMessageListener {
         int groupId = message.readInt();
         byte tempOptionByte = message.readByte();
         byte mandatoryByte = message.readByte();
-        int tempOffset = message.readInt();
+        // Temperatures are sent in 1/10's of a degree to Ecobee so the offset is multiplied by 10
+        int tempOffset = message.readInt() * 10;
         long utcStartTimeSeconds = message.readLong();
         long utcEndTimeSeconds = message.readLong();
 
