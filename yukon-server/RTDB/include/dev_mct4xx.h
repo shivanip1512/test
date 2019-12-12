@@ -259,12 +259,6 @@ protected:
 
     virtual ConfigPartsList getPartsList() = 0;
 
-    enum class ExpectMore
-    {
-        True,
-        False
-    };
-
     std::unique_ptr<CtiReturnMsg> makeReturnMsg(const std::string &message, const YukonError_t code, const PIL_ECHO &request) const;
     std::unique_ptr<CtiReturnMsg> makeReturnMsg(const std::string &message, const YukonError_t code, const PIL_ECHO &request, const ExpectMore e) const;
 

@@ -182,6 +182,33 @@ void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & ms
 }
 
 
+void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
+{
+    double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
+
+    rfnDevice.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, progress);
+
+    const ProgrammingStatus programmingStatus =
+        progress < 100
+            ? ProgrammingStatus::Uploading
+            : ProgrammingStatus::Confirming;
+
+    sendMeterProgramStatusUpdate({
+            rfnDevice.getRfnIdentifier(),
+            guid,
+            programmingStatus,
+            ClientErrors::None,
+            std::chrono::system_clock::now() });
+}
+
+
+bool isUploading(Devices::RfnDevice& rfnDevice, const std::string& guid)
+{
+    return rfnDevice.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress)
+        && MeterProgramming::gMeterProgrammingManager->isUploading(rfnDevice.getRfnIdentifier(), guid);
+}
+
+
 void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rfnIdentifier, const EndpointMessage & message, const ApplicationServiceIdentifiers asid)
 {
     std::string meterProgramsPrefix = "/meterPrograms/";
@@ -199,9 +226,20 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
+            auto rfnDevice = _deviceManager.getDeviceByRfnIdentifier(rfnIdentifier);
+
+            if( ! rfnDevice )
+            {
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+
+                CTILOG_ERROR(dout, "Meter programming request received for unknown device " << rfnIdentifier);
+
+                return;
+            }
+
             auto guid = message.path.substr(meterProgramsPrefix.size());
 
-            if( ! MeterProgramming::gMeterProgrammingManager->isUploading(rfnIdentifier, guid) )
+            if( ! isUploading(*rfnDevice, guid) )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
@@ -272,14 +310,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
 
             sendE2eDataReply(message.id, payload, asid, rfnIdentifier, *message.token, block);
 
-            double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnIdentifier, guid, totalSent);
-
-            sendMeterProgramStatusUpdate( {
-                    rfnIdentifier,
-                    guid,
-                    ProgrammingStatus::Uploading,
-                    ClientErrors::None,
-                    std::chrono::system_clock::now() } );
+            updateMeterProgrammingProgress(*rfnDevice, guid, totalSent);
         }
         else if( auto command = Devices::Commands::RfnMeterProgrammingSetConfigurationCommand::handleUnsolicitedReply(Now, message.data) )
         {

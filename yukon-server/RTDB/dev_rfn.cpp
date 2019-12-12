@@ -59,6 +59,21 @@ bool RfnDevice::areAggregateCommandsSupported() const
 }
 
 
+std::unique_ptr<CtiReturnMsg> RfnDevice::makeReturnMsg(const CtiRequestMsg& req, const std::string result, YukonError_t nRet)
+{
+    return std::make_unique<CtiReturnMsg>(
+        req.DeviceId(),
+        req.CommandString(),
+        result,
+        nRet,
+        0,
+        MacroOffset::none,
+        0,
+        req.GroupMessageId(),
+        req.UserMessageId());
+}
+
+
 YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     using RfnExecuteMethod = decltype(&RfnDevice::executeGetConfig);
@@ -104,16 +119,10 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         CTILOG_ERROR(dout, "Execute error for device " << getName() <<". Command: "<< pReq->CommandString());
 
         returnMsgs.emplace_back(
-                std::make_unique<CtiReturnMsg>(
-                        getID( ),
-                        pReq->CommandString(),
-                        errorDescription,
-                        errorCode,
-                        0,
-                        MacroOffset::none,
-                        0,
-                        pReq->GroupMessageId(),
-                        pReq->UserMessageId()));
+                makeReturnMsg(
+                    *pReq, 
+                    errorDescription,
+                    errorCode));
     }
 
     if( ! commands.empty() )
@@ -227,16 +236,10 @@ YukonError_t RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiComma
         }
 
         returnMsgs.emplace_back(
-                std::make_unique<CtiReturnMsg>(
-                        pReq->DeviceId(),
-                        pReq->CommandString(),
-                        result,
-                        nRet,
-                        0,
-                        MacroOffset::none,
-                        0,
-                        pReq->GroupMessageId(),
-                        pReq->UserMessageId()));
+            makeReturnMsg(
+                *pReq, 
+                result, 
+                nRet));
     }
 
     return nRet;
