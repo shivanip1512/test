@@ -84,6 +84,8 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveResponse;
+import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
+import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
@@ -1052,6 +1054,19 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static JmsApi<RfnNodeWiFiCommArchiveRequest,?,RfnNodeWiFiCommArchiveResponse> RFN_NODE_WIFI_COMM_ARCHIVE =
+            JmsApi.builder(RfnNodeWiFiCommArchiveRequest.class, RfnNodeWiFiCommArchiveResponse.class)
+                  .name("RFN Node WiFi Comm Archive")
+                  .description("A notification from Network Manager to Yukon to archive the Super Meter's Wi-Fi connection status.")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnNodeWiFiCommArchiveRequest"))
+                  .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnNodeWiFiCommArchiveResponse"))
+                  .requestMessage(RfnNodeWiFiCommArchiveRequest.class)
+                  .responseMessage(RfnNodeWiFiCommArchiveResponse.class)
+                  .sender(NETWORK_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1131,7 +1146,8 @@ public final class JmsApiDirectory {
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE,
                 RFN_STATUS_ARCHIVE,
-                RFN_NODE_COMM_ARCHIVE);
+                RFN_NODE_COMM_ARCHIVE,
+                RFN_NODE_WIFI_COMM_ARCHIVE);
         
         addApis(jmsApis, SMART_NOTIFICATION,
                 SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
