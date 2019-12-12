@@ -2,18 +2,21 @@ package com.cannontech.common.pao.attribute.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -76,9 +79,50 @@ public class BuiltInAttributeTest {
 
         var pointEntries = new Properties();
         pointEntries.loadFromXML(pointXml);
-        
+
         for (var attr : BuiltInAttribute.values()) {
-            assertNotNull("No key for " + attr, pointEntries.get(attr.getFormatKey()));
+            var pointEntry = pointEntries.get(attr.getFormatKey());
+            assertNotNull("No key for " + attr, pointEntry);
+            validateNamingConvention((String) pointEntry);
         }
+    }
+
+    private static void validateNamingConvention(String pointName) {
+        // Quoting from BuiltInAttribute.java:
+        // [Net|Sum] [Delivered|Received] [Coincident] [Cumulative] [Peak] [UOM] [(Quadrants # #)] [Frozen] [Rate #|Phase X|Channel #]
+
+        String[][] orderedExclusiveStrings = {
+                { "Net", "Sum" },
+                { "Delivered", "Received" },
+                { "Coincident " },
+                { "Cumulative" },
+                { "Peak" },
+                { "Demand", "kW", "kVA", "Volt" },  // TODO - add complete UOM list?
+                { "Quadrant" },
+                { "Frozen", "Daily" },
+                { "Rate", "Phase", "Channel" } };
+
+        Arrays.stream(pointName.split(" at "))  //  split for "X at Y" coincidental points
+            .forEach(subName ->
+                Arrays.stream(orderedExclusiveStrings)
+                    .map(Arrays::stream)
+                    .flatMap(exclusiveStrings -> exclusiveStrings.map(s -> Pair.of(s, subName.indexOf(s)))
+                            .filter(p -> p.getValue() >= 0)
+                            .reduce((p1, p2) -> {
+                                fail("Multiple exclusive strings found in point description for " + pointName + ": " + p1 + p2);
+                                return p1;  //  Will never return, since the failure will happen
+                            })
+                            .stream())
+                    .reduce((pos1, pos2) -> {
+                        assertTrue("Reversed tokens for " + pointName + ": " + pos1 + pos2, pos1.getValue() < pos2.getValue());
+                        return pos2;
+                    }));
+    }
+
+    @Test
+    public void testNamingConventions() {
+        Arrays.stream(BuiltInAttribute.values())
+                .map(BuiltInAttribute::getDescription)
+                .forEach(BuiltInAttributeTest::validateNamingConvention);
     }
 }
