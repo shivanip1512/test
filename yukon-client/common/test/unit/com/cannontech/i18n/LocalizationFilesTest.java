@@ -198,7 +198,6 @@ public class LocalizationFilesTest {
                         "yukon.web.modules.dr.loadGroupDetail.parents.noPermission"))
                 .put("web/modules/dr/setup.xml", Set.of(
                         "yukon.web.modules.dr.setup.controlArea.trigger.title",
-                        "yukon.web.modules.dr.setup.loadGroup.error.invalidDeviceType",
                         "yukon.web.modules.dr.setup.gear.trueCycle"))
                 .put("web/modules/operator/workOrder.xml", Set.of(
                         "yukon.web.modules.operator.workOrder.currentState"))
