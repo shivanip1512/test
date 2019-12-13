@@ -46,7 +46,7 @@ public class LocalizationFilesTest {
 
         var rootElement = document.getRootElement();
         
-        Optional<String> relativeFilename = Optional.of(resource.getURI().getPath())
+        Optional<String> relativeFilename = Optional.of(resource.getURI().toString())
                 .filter(f -> f.contains(pathPrefix))
                 .map(f -> f.substring(f.indexOf(pathPrefix) + pathPrefix.length()));
         
