@@ -12,11 +12,14 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.not_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.not_server.CDStatesChangedNotification;
+import com.cannontech.msp.beans.v5.not_server.DRProgramEnrollmentsNotification;
+import com.cannontech.msp.beans.v5.not_server.DRProgramUnenrollmentsNotification;
 import com.cannontech.msp.beans.v5.not_server.EndDeviceEventsNotification;
 import com.cannontech.msp.beans.v5.not_server.EndDeviceStatesNotification;
 import com.cannontech.msp.beans.v5.not_server.FormattedBlockNotification;
 import com.cannontech.msp.beans.v5.not_server.GetMethods;
 import com.cannontech.msp.beans.v5.not_server.GetMethodsResponse;
+import com.cannontech.msp.beans.v5.not_server.IntervalDataNotification;
 import com.cannontech.msp.beans.v5.not_server.MeterReadingsNotification;
 import com.cannontech.msp.beans.v5.not_server.PingURL;
 import com.cannontech.msp.beans.v5.not_server.PingURLResponse;
@@ -138,6 +141,43 @@ public class NOTClient implements INOTClient {
 
             webServiceTemplate.marshalSendAndReceive(uri, formattedBlockNotification,
                 customWebServiceMsgCallback.addRequestHeader(mspVendor));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void drProgramEnrollmentsNotification(MultispeakVendor mspVendor, String uri, DRProgramEnrollmentsNotification drProgramEnrollmentsNotification)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            webServiceTemplate.marshalSendAndReceive(uri, drProgramEnrollmentsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+
+    }
+
+    @Override
+    public void drProgramUnenrollmentsNotification(MultispeakVendor mspVendor, String uri,
+            DRProgramUnenrollmentsNotification drProgramUnenrollmentsNotification) throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            webServiceTemplate.marshalSendAndReceive(uri, drProgramUnenrollmentsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void intervalDataNotification(MultispeakVendor mspVendor, String uri, IntervalDataNotification intervalDataNotification)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            webServiceTemplate.marshalSendAndReceive(uri, intervalDataNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

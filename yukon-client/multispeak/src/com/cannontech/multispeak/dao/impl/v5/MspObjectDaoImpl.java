@@ -258,7 +258,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             mrClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
             oaClient.pingURL(mspVendor, endpointUrl);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.NOT_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.NOT_Server_STR) || service.equalsIgnoreCase(MultispeakDefines.NOT_Server_DR_STR)) {
             notClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
             odClient.pingURL(mspVendor, endpointUrl);
@@ -309,7 +309,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 methods = mdmClient.getMethods(mspVendor, endpointUrl);
             } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
                 methods = mrClient.getMethods(mspVendor, endpointUrl);
-            } else if (service.equalsIgnoreCase(MultispeakDefines.NOT_Server_STR)) {
+            } else if (service.equalsIgnoreCase(MultispeakDefines.NOT_Server_STR) || service.equalsIgnoreCase(MultispeakDefines.NOT_Server_DR_STR)) {
                 methods = notClient.getMethods(mspVendor, endpointUrl);
             } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
                 methods = oaClient.getMethods(mspVendor, endpointUrl);

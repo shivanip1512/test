@@ -16,6 +16,7 @@ public enum JmsApiCategory {
     RF_NETWORK("RF Network"),
     SMART_NOTIFICATION("Smart Notification"),
     WIDGET_REFRESH("Widget Refresh"),
+    DR_NOTIFICATION("DR Notification")
     ;
     
     private final String niceString;

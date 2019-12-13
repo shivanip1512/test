@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.common.util.OpenInterval;
@@ -22,7 +23,7 @@ public interface LMHardwareControlGroupDao {
     
     public void update(LMHardwareControlGroup hardwareControlGroup);
     
-    public void unenrollHardware(int inventoryId);
+    public void unenrollHardware(int inventoryId, Instant groupEnrollStop);
     
     /** 
      * This method stops any opt out that matches the inventoryId and accountId supplied.

@@ -215,4 +215,13 @@ public interface MultispeakEventLogService {
     public void invalidSubstationName(@Arg(ArgEnum.mspMethod) String mspMethod,
             @Arg(ArgEnum.message) String errorMessage, 
             @Arg(ArgEnum.mspVendor) String mspVendor);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "multispeak")
+    public void drNotificationReponse(@Arg(ArgEnum.mspMethod) String mspMethod, 
+            @Arg(ArgEnum.mspVendor) String mspVendor, 
+            @Arg(ArgEnum.serialNumber) String serialNumber,
+            String transactionID,
+            String additionalInfo, 
+            Integer numberErrors, 
+            String responseUrl);
 }

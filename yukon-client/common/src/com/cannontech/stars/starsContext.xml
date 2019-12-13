@@ -9,6 +9,8 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config/>
+    <bean class="com.cannontech.stars.dr.jms.notification.impl.DRNotificationMessagingServiceImpl"/>
+
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableProgramDaoImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableEnrollmentDaoImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryDaoImpl"/>
@@ -102,7 +104,7 @@
 	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
 		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
 	</bean>
-	
+
 	<bean id="lmHardwareControlGroupDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
@@ -293,5 +295,5 @@
     <bean class="com.cannontech.common.tag.service.impl.TagServiceImpl"/>   
     <bean class="com.cannontech.common.rtu.service.impl.RtuDnpServiceImpl"/>
     <bean class="com.cannontech.common.rtu.dao.impl.RtuDnpDaoImpl"/>
-    
+ 
 </beans>

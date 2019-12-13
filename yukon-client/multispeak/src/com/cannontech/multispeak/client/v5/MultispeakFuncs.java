@@ -18,6 +18,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +97,8 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         "objectsRemaining");
     private static final QName QNAME_RESULT = new QName("http://www.multispeak.org/V5.0/response", "Result");
     private static final QName QNAME_CALLER_RES = new QName("http://www.multispeak.org/V5.0/ws/response", "Caller");
+    
+    private String defaultObjectGUID = "00000000-0000-0000-0000-000000000000";
 
 
     public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
@@ -174,13 +177,19 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         appVersionElement.addTextNode(VersionTools.getYUKON_VERSION());
         SOAPElement companyElement = callerElement.addChildElement("Company", "com");
         companyElement.addTextNode("Cannon");
-        SOAPElement systemIDElement = callerElement.addChildElement("SystemID", "com");
-        systemIDElement.addTextNode(mspVendor.getOutUserName());
-        SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
-        passwordElement.addTextNode(mspVendor.getOutPassword());
+        if (StringUtils.isNotBlank(mspVendor.getOutUserName())) {
+            SOAPElement systemIDElement = callerElement.addChildElement("SystemID", "com");
+            systemIDElement.addTextNode(mspVendor.getOutUserName());
+        }
+        if (StringUtils.isNotBlank(mspVendor.getOutPassword())) {
+            SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
+            passwordElement.addTextNode(mspVendor.getOutPassword());
+        }
         SOAPElement coordSysInforElement = headElement.addChildElement("CoordinateSystemInformation", prefix);
         SOAPElement csUnit = coordSysInforElement.addChildElement("CSUnits", "com");
         csUnit.addTextNode(CSUnitsKind.FEET.value());
+        coordSysInforElement.addChildElement("CSAuthorities", "com");
+        
         SOAPElement multiSpeakVersionElement = headElement.addChildElement("MultiSpeakVersion", prefix);
         SOAPElement majorVersionElement = multiSpeakVersionElement.addChildElement("MajorVersion", "com");
         majorVersionElement.addTextNode("5");
@@ -604,4 +613,42 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
         return allPhoneNumbers;
     }
+
+    public String generateObjectGUID() {
+
+        char[] supportedChars = { 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+        List<Integer> sliceSizes = List.of(8, 4, 4, 4, 12);
+        StringBuilder objectGUID = new StringBuilder();
+
+        int index = 0;
+        for (Integer size : sliceSizes) {
+            if (index < sliceSizes.size() - 1) {
+                objectGUID.append(RandomStringUtils.random(size, supportedChars)).append("-");
+            } else {
+                objectGUID.append(RandomStringUtils.random(size, supportedChars));
+            }
+            index++;
+        }
+        return objectGUID.toString();
+
+    }
+
+    public String getObjectGUID(Integer id) {
+
+        String idValue = String.valueOf(id);
+
+        StringBuilder objectGUID = new StringBuilder(defaultObjectGUID);
+
+        int replaceStartIndex = (int) (objectGUID.length() - idValue.chars().count());
+
+        StringBuilder newObjectGUID = objectGUID.replace(replaceStartIndex, defaultObjectGUID.length(), idValue);
+        return newObjectGUID.toString();
+
+    }
+
+    public String getDefaultObjectGUID() {
+        return defaultObjectGUID;
+    }
+    
 }

@@ -106,6 +106,8 @@ import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
+import com.cannontech.stars.dr.jms.notification.message.EnrollmentNotificationMessage;
+import com.cannontech.stars.dr.jms.notification.message.OptOutInNotificationMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 
 /**
@@ -1067,6 +1069,29 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
+    public static final JmsApi<EnrollmentNotificationMessage,?,?> ENROLLMENT_NOTIFICATION = 
+            JmsApi.builder(EnrollmentNotificationMessage.class)
+                  .name("DR Enrollment/UnEnrollment Notification")
+                  .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(EnrollmentNotificationMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+    
+    public static final JmsApi<OptOutInNotificationMessage,?,?> OPTOUTIN_NOTIFICATION = 
+            JmsApi.builder(OptOutInNotificationMessage.class)
+                  .name("DR OptOut/OptIn Notification")
+                  .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(OptOutInNotificationMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+
+    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1164,6 +1189,10 @@ public final class JmsApiDirectory {
                 INFRASTRUCTURE_WARNINGS,
                 INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
         
+        addApis(jmsApis, DR_NOTIFICATION, 
+                         ENROLLMENT_NOTIFICATION, 
+                         OPTOUTIN_NOTIFICATION);
+
         return jmsApis;
     }
     

@@ -31,6 +31,7 @@ import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.StarsStaticLoadGroupMapping;
 import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder;
+import com.cannontech.stars.dr.jms.notification.DRNotificationMessagingService;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -168,6 +169,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             LiteAccountInfo liteAcctInfo = custAccountDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyId());
             //get zipCode
             LiteAddress address = YukonSpringHook.getBean(AddressDao.class).getByAddressId(liteAcctInfo.getAccountSite().getStreetAddressID());
+            DRNotificationMessagingService drNotificationMessagingService = YukonSpringHook.getBean(DRNotificationMessagingService.class);
+
             String zip = address.getZipCode();
             if (zip.length() > 5) {
                 zip = zip.substring(0, 5);
@@ -223,6 +226,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
                     if (existingEnrollment != null) {
                         existingEnrollment.setLmGroupId(groupMapping.getLoadGroupID());
                         lmHardwareControlGroupDao.update(existingEnrollment);
+                        
+                        drNotificationMessagingService.sendEnrollmentNotification(existingEnrollment);
                     } else {
                         configurationSet.add(hwsToAdjust.get(i));
                         numFailure++;
