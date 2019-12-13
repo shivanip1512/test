@@ -745,7 +745,7 @@
                             trust="true"
                             username="${guest_userid}"
                             password="${guest_password}"
-                            command="powershell c:/YukonSetup.ps1 -databaseType ${db.type}"/>
+                            command="powershell c:/YukonUpgrade.ps1 -databaseType ${db.type}"/>
     </target>
     <target name="remote_upgrade_restApi_powershell" depends="find_guestid">
         <sshexec host="${guest_address}"

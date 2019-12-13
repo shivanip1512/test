@@ -194,7 +194,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span><cti:msg2 key="${exportField.padSide}"/>&nbsp;&nbsp;${exportField.padChar}</span>
+                                <span><cti:msg2 key="${exportField.padSide}"/>&nbsp;&nbsp;${fn:escapeXml(exportField.padChar)}</span>
                             </td>
                             <td>
                                 <div class="button-group fr wsnw oh">

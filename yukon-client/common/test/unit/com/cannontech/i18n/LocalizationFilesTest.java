@@ -9,8 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -38,16 +38,15 @@ public class LocalizationFilesTest {
         return resolver.getResources("classpath*:" + pathPrefix + "**/*.xml");
     }
 
-    @Ignore  //  TODO - fix continuous builds
     @Test
-    public void testDuplicateEntries() throws Exception {
+    public void testDuplicateEntries() throws JDOMException, IOException {
         SAXBuilder builder = new SAXBuilder();
         builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         var document = builder.build(resource.getInputStream());
 
         var rootElement = document.getRootElement();
         
-        Optional<String> relativeFilename = Optional.of(resource.getFile().getAbsolutePath().replaceAll("\\\\", "/"))
+        Optional<String> relativeFilename = Optional.of(resource.getURI().toString())
                 .filter(f -> f.contains(pathPrefix))
                 .map(f -> f.substring(f.indexOf(pathPrefix) + pathPrefix.length()));
         
