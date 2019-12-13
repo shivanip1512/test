@@ -15,6 +15,7 @@ import javax.jms.ObjectMessage;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.namespace.QName;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -366,13 +367,109 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
     @Override
     public void optOutNotification(OptOutInNotificationMessage optOutNotificationMessage) {
-        // TODO
 
+        if (!isvendorsConfigured()) {
+            return;
+        }
+        vendorsToSendDRMsg.entrySet().forEach(entry -> {
+            boolean isMatched = isSupportedMethod(entry.getValue(), ENROLLMENT_METHOD);
+            if (isMatched) {
+                MultispeakVendor mspVendor = entry.getKey();
+                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
+
+                log.info("Sending " + ENROLLMENT_METHOD + "with type " + optOutNotificationMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+                DRProgramUnenrollmentsNotification drProgramUnEnrollmentsNotification = new DRProgramUnenrollmentsNotification();
+                String transactionId = String.valueOf(atomicLong.getAndIncrement());
+
+                ArrayOfDRProgramEnrollment arrayOfDRProgramEnrollment = buildArrayOfDROptInOut(optOutNotificationMessage);
+                drProgramUnEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDRProgramEnrollment);
+                drProgramUnEnrollmentsNotification.setTransactionID(transactionId);
+                try {
+                    notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, drProgramUnEnrollmentsNotification);
+
+                    String SerialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutNotificationMessage.getInventoryId());
+
+                    logDRNotificationResponse(SerialNumber, ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+
+                } catch (MultispeakWebServiceClientException e) {
+                    log.error("TargetService: " + endpointUrl + " -" + ENROLLMENT_METHOD + "with type " + optOutNotificationMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") ");
+                    log.error("MultispeakWebServiceClientException: " + e.getMessage());
+                }
+            }
+
+        });
     }
 
     @Override
     public void optInNotification(OptOutInNotificationMessage optOutNotificationMessage) {
-        // TODO
+        if (!isvendorsConfigured()) {
+            return;
+        }
+
+        vendorsToSendDRMsg.entrySet().forEach(entry -> {
+            boolean isMatched = isSupportedMethod(entry.getValue(), UNENROLLMENT_METHOD);
+            if (isMatched) {
+                MultispeakVendor mspVendor = entry.getKey();
+                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
+                log.info("Sending " + UNENROLLMENT_METHOD + "with type " + optOutNotificationMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+
+                DRProgramEnrollmentsNotification drProgramEnrollmentsNotification = new DRProgramEnrollmentsNotification();
+                String transactionId = String.valueOf(atomicLong.getAndIncrement());
+
+                ArrayOfDRProgramEnrollment arrayOfDRProgramEnrollment = buildArrayOfDROptInOut(optOutNotificationMessage);
+                drProgramEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDRProgramEnrollment);
+                drProgramEnrollmentsNotification.setTransactionID(transactionId);
+
+                try {
+                    notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, drProgramEnrollmentsNotification);
+
+                    String SerialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutNotificationMessage.getInventoryId());
+
+                    logDRNotificationResponse(SerialNumber, UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+
+                } catch (MultispeakWebServiceClientException e) {
+                    log.error("TargetService: " + endpointUrl + " -" + UNENROLLMENT_METHOD + "with type " + optOutNotificationMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+                    log.error("MultispeakWebServiceClientException: " + e.getMessage());
+                }
+            }
+
+        });
+
+    }
+
+    private ArrayOfDRProgramEnrollment buildArrayOfDROptInOut(OptOutInNotificationMessage optOutNotificationMessage) {
+
+        ArrayOfDRProgramEnrollment arrayOfDRProgramEnrollment = new ArrayOfDRProgramEnrollment();
+
+        List<DRProgramEnrollment> drProgramEnrollments = arrayOfDRProgramEnrollment.getDRProgramEnrollment();
+
+        String objectGUID = multispeakFuncs.generateObjectGUID();
+        DRProgramEnrollment programEnrollment = new DRProgramEnrollment();
+        programEnrollment.setObjectGUID(objectGUID);
+        if (optOutNotificationMessage.getMessageType() == DRNotificationMessageType.OPTOUT) {
+            programEnrollment.getOtherAttributes().put(new QName("beginTemporaryOptOut"), "true");
+        } else {
+            programEnrollment.getOtherAttributes().put(new QName("endTemporaryOptOut"), "true");
+        }
+
+        String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutNotificationMessage.getInventoryId());
+        SingleIdentifier lcrPrimaryIdentifier = buildSingleIdentifier(LCR_INDENTIFIER_NAME, LCR_INDENTIFIER_LABEL, serialNumber);
+        programEnrollment.setPrimaryIdentifier(lcrPrimaryIdentifier);
+
+        ObjectID drProgramID = buildDRProgramID(multispeakFuncs.getDefaultObjectGUID(), "N/A", "N/A", "N/A");
+        programEnrollment.setDRProgramID(drProgramID);
+
+        programEnrollment.setDRProgramName("N/A");
+
+        ServicePointID servicePointID = buildServicePointID();
+        programEnrollment.setServicePointID(servicePointID);
+
+        XMLGregorianCalendar xmlGregorianCalendar = getDRProgramEnrollmentDate(optOutNotificationMessage.getStopDate());
+        if (xmlGregorianCalendar != null) {
+            programEnrollment.setDRProgramParticStartDate(xmlGregorianCalendar);
+        }
+        drProgramEnrollments.add(programEnrollment);
+        return arrayOfDRProgramEnrollment;
 
     }
 
