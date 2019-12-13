@@ -45,6 +45,14 @@ public enum MasterConfigDeprecatedKey {
     CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO,  // see yuk-17611
     RECAPTCHA_PUBLIC_KEY, //public key used for CAPTCHA V1 , as we moved to reCAPTCHA V2 so no longer needed.
     RECAPTCHA_PRIVATE_KEY, //private key used for CAPTCHA V1 , as we moved to reCAPTCHA V2 so no longer needed.
+    CAP_CONTROL_AMFM_INTERFACE, // see yuk-20627
+    CAP_CONTROL_AMFM_RELOAD_RATE, // see yuk-20627
+    CAP_CONTROL_AMFM_DB_SQLSERVER, // see yuk-20627
+    CAP_CONTROL_AMFM_DB_TYPE, // see yuk-20627
+    CAP_CONTROL_AMFM_DB_USERNAME, // see yuk-20627
+    CAP_CONTROL_AMFM_DB_PASSWORD, // see yuk-20627
+    
+    
 
     LOG_FILE_RETENTION(GlobalSettingType.LOG_RETENTION_DAYS, UnaryOperator.identity()),
     
