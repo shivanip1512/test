@@ -617,6 +617,9 @@ public class DRNotificationServiceImpl implements DRNotificationService {
                 readingTypeCode.setValue(relayIntervalData.getRelayDataReadingTypeCodeString());
                 intervalChannel.setReadingTypeCode(readingTypeCode);
 
+                Extensions extensions = getRelayExtension(relayIntervalData.getRelayNumber());
+                intervalChannel.setExtensions(extensions);
+
                 channelList.add(intervalChannel);
             });
 
@@ -627,6 +630,17 @@ public class DRNotificationServiceImpl implements DRNotificationService {
         return profiles;
         
     }
+    
+    private Extensions getRelayExtension(Integer relayNumber) {
+        Extensions extensions = new Extensions();
+        List<Object> any = extensions.getAny();
+
+        Relay relay = new Relay();
+        relay.setRelayNumber(relayNumber);
+        any.add(relay);
+        return extensions;
+    }
+ 
     private Blocks getBlocks(DRNotificationDataMessage drNotificationDataMessage){
         
         Blocks blocks = new Blocks();
