@@ -6,8 +6,7 @@
 # description : Contains the name of the field displayed in IOT dashboard.
 # details : Contains the detail of that particular field.
 # source : Contains the SQL query to retrieve that field's data. To write any complex SQL query i.e. more than 1 line,
-#           the SQL will be followed by ">-" as given for some fields. Some SQL queries are parameterized queries whose parameters
-#           are denoted by "?".These parameters are processed from java side and passed to SQL query. The description of parameters will be given in the details of that field.
+#           the SQL will be followed by ">-" as given for some fields.
 # iotType : IOT type of field. Valid value will be Telemetry , Property or Both.
 # Frequency: Contains the frequency at which field value should be retrieved. Valid value will be ApplicationControl, Onchange,
 #            OnStartupOnly, Daily, EverySixHours.
@@ -23,13 +22,14 @@ Yukon :
 
   - field: dcelectric
     description: Data Completeness Electric
-    details: Find the data completeness of RFN electric meters for point type analog for the given time interval with parameters "timestamp_start" and "timestamp_stop".
+    details: Find the data completeness of RFN electric meters for point type analog for the given time interval of 7 days which is 3 days previus from current time.
     source: >-
         SELECT COUNT(*) AS Actual FROM (
         SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, Timestamp, Value, Quality FROM RawPointHistory rph
         JOIN Point p ON rph.PointId = p.PointId
         AND PointType = 'Analog' AND PointOffset = 1
-        WHERE TimeStamp > ? AND TimeStamp <= ? AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
+        WHERE TimeStamp >DATEADD(day,-10, SYSDATETIME())  AND TimeStamp <= DATEADD(day,-3, SYSDATETIME())  
+        AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
         JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
         JOIN RfnAddress rfn ON  pao.PaObjectId = rfn.DeviceId
@@ -40,13 +40,14 @@ Yukon :
 
   - field: dcwater
     description: Data Completeness Water
-    details:  Find the data completeness of RFN gas meters for point type analog for the given time interval with parameters "timestamp_start" and "timestamp_stop".
+    details:  Find the data completeness of RFN gas meters for point type analog for the given time interval of 7 days which is 3 days previus from current time.
     source: >-
         SELECT COUNT(*) AS Actual FROM (
         SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, TimeStamp, Value, Quality FROM RawPointHistory rph 
         JOIN Point p ON rph.PointId = p.PointId
         AND PointType = 'Analog' AND PointOffset = 1
-        WHERE TimeStamp > ? AND TimeStamp <= ? AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
+        WHERE TimeStamp > DATEADD(day,-10, SYSDATETIME()) AND TimeStamp <= DATEADD(day,-3, SYSDATETIME()) 
+        AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
         JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
         JOIN RfnAddress rfn ON pao.PaObjectId = rfn.DeviceId
@@ -64,7 +65,7 @@ Yukon :
 
   - field: electricreadrate
     description: Electric Read Rate
-    details: Contains the rate of reading electric meters for given parameter "timestamp" of 3 days
+    details: Contains the rate of reading electric meters for last 3 days
     source: >-
         DECLARE @totalRFNMeters INTEGER
         DECLARE @threeDayRFNMeters INTEGER
@@ -78,7 +79,7 @@ Yukon :
         JOIN RawPointHistory rph ON rph.PointId = p.PointId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
         JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
-        WHERE Type LIKE 'RFN%' AND rph.TimeStamp > ? AND DisableFlag = 'N' AND PointType IN ('Analog')
+        WHERE Type LIKE 'RFN%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME()) AND DisableFlag = 'N' AND PointType IN ('Analog')
         GROUP BY pao.PaObjectId) a)
         IF @threeDayRFNMeters > 0 SET @value = ROUND((@threeDayRFNMeters/@totalRFNMeters)*100, 2)
         ELSE SET @value = 0
@@ -88,7 +89,7 @@ Yukon :
 
   - field: gasreadrate
     description: Gas Read Rate
-    details: Contains the rate of reading gas meters for given parameter "timestamp" of 3 days
+    details: Contains the rate of reading gas meters for last 3 days
     source: >-
         DECLARE @totalRFGMeters INTEGER
         DECLARE @threeDayRFGMeters INTEGER
@@ -102,11 +103,11 @@ Yukon :
         JOIN RawPointHistory rph ON rph.PointId = p.PointId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
         JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
-        WHERE Type LIKE 'RFG%' AND rph.TimeStamp > ? AND DisableFlag = 'N' AND PointType IN ('Analog')
+        WHERE Type LIKE 'RFG%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME())  AND DisableFlag = 'N' AND PointType IN ('Analog')
         GROUP BY pao.PaObjectId) a )
         IF @threeDayRFGMeters > 0 SET @value = ROUND((@threeDayRFGMeters/@totalRFGMeters)*100, 2)
         ELSE SET @value = 0
-        SELECT @value AS gasreadrate
+        SELECT @value AS GasReadRate
     iotType: Telemetry
     frequency : EverySixHours
 
@@ -119,7 +120,7 @@ Yukon :
 
   - field: waterreadrate
     description: Water Read Rate
-    details: Contains the rate of reading water meters for given parameter "timestamp" of 3 days
+    details: Contains the rate of reading water meters for last 3 days
     source: >-
         DECLARE @totalRFWMeters INTEGER
         DECLARE @threeDayRFWMeters
@@ -133,7 +134,7 @@ Yukon :
         JOIN RawPointHistory rph ON rph.PointId = p.PointId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
         JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
-        WHERE Type LIKE 'RFW%' AND rph.TimeStamp > ? AND DisableFlag = 'N' AND PointType IN ('Analog') 
+        WHERE Type LIKE 'RFW%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME())  AND DisableFlag = 'N' AND PointType IN ('Analog') 
         GROUP BY pao.PaObjectId) a)
         IF @threeDayRFWMeters > 0 SET @value = ROUND((@threeDayRFWMeters/@totalRFWMeters)*100, 2)
         ELSE SET @value = 0
@@ -188,8 +189,10 @@ Network Manager :
 
   - field: gapfillrequests
     description: Gap Fill Requests (24 Hours)
-    details: Number of requests within 24 hours for Gap fill having the parameter "epoch_time" for time stamp
-    source: SELECT COUNT (*) FROM Gw_Node_Log_Entry nle WHERE nle.GatewayTimeStamp / 1000 > ? AND nle.GwNodeLogCodeId=408
+    details: Number of requests within 24 hours for Gap fill. 
+    source: >-
+        SELECT COUNT (*) FROM Gw_Node_Log_Entry nle 
+        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=408
     iotType: Both
     frequency : EverySixHours
 
@@ -207,55 +210,46 @@ Network Manager :
     iotType: Both
     frequency : EverySixHours
 
-  - field: deviceunknown
-    description: Gateway Received Data Unknown Device
-    details: Contains the count of unknown devices whose data received by gateway. The parameter "epoch_time" for time stamp is passed in the query.
-    source: >-
-        SELECT COUNT(*) AS "ReceivedDataFromUnknownDevice(Last7Days)" FROM Gw_Log_Entry gwle 
-        WHERE gwle.gatewayTimeStamp / 1000 > ? AND gwle.GwLogCodeId=801
-    iotType: Both
-    frequency : EverySixHours
-
   - field: gatewayresetcount
     description: Gateway Reset Count (7 Day)
-    details: Contains the frequency count of gateway reset within timestamp of 7 days. The parameter "epoch_time" for time stamp is passed in the query.
+    details: Contains the frequency count of gateway reset for last 7 days.
     source: >-
         SELECT COUNT(*) AS "GatewayResetCount(Last7Days)" FROM Gw_Log_Entry gwle
-        WHERE gwle.GatewayTimeStamp / 1000 > ? AND gwle.GwLogCodeId=1601
+        WHERE gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-7, SYSDATETIME())) AND gwle.GwLogCodeId=1601
     iotType: Both
     frequency : EverySixHours
 
   - field: gwsocketcount
     description: Gateway Socket Error Count
-    details: Contains the count of Socket error arises in gateway within timestamp of 7 days.The parameter "epoch_time" for time stamp is passed in the query.
+    details: Contains the count of Socket error arises in gateway for last 7 days.
     source: >-
         SELECT COUNT(*) AS "GatewaySocketErrorCount(Last7Day)" FROM Gw_Log_Entry gwle 
-        WHERE gwle.GatewayTimeStamp / 1000 > ? AND (gwle.GwLogCodeId=1301 OR gwle.GwLogCodeId=1302)
+        WHERE gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-7, SYSDATETIME())) 
+        AND (gwle.GwLogCodeId=1301 OR gwle.GwLogCodeId=1302)
     iotType: Both
     frequency : EverySixHours
 
   - field: gwsmissingtsync
     description: Gateways Missing TSyncs (24 Hour)
-    details: Gateway missing synchronous time within the time stamp of 24 hours. The parameter "epoch_time" for time stamp is passed in the query
+    details: Gateway missing synchronous time for last 24 hours.
     source: >-
         SELECT COUNT(*) FROM (
         SELECT gw.GwId, COUNT(gwle.LogEntryId) AS "Syncs" FROM Gateway gw 
         JOIN Gw_Log_Entry gwle ON gw.GwId=gwle.GwId 
-        AND gwle.GatewayTimeStamp / 1000 > ? 
+        AND gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) 
         AND gwle.GwLogCodeId=2202 GROUP BY gw.GwId) AS gwsync 
         WHERE Syncs=0
     iotType: Both
     frequency : EverySixHours
-    
 
   - field: nodesmissingroutetables
     description: Nodes Missing Route Table
-    details: Contains the count of missing node in the route table. The parameter "epoch_time" for time stamp is passed in the query
+    details: Contains the count of missing node in the route table for last 24 hours.
     source: >-
         SELECT COUNT(*) AS "NodesMissingRouteTables(Last24Hours)" FROM (
         SELECT n.NodeId, COUNT(nle.LogEntryId) AS "routeresps" FROM Node n 
         JOIN Gw_Node_Log_Entry nle ON n.NodeId=nle.NodeId 
-        AND nle.GatewayTimeStamp / 1000 > ? 
+        AND nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) 
         AND nle.GwNodeLogCodeId=502 GROUP BY n.NodeId) AS noderouteresps, Node nn 
         WHERE routeresps=0 AND noderouteresps.NodeId=nn.NodeId AND nn.NodeType != 0 AND nn.NodeType != 2 AND nn.NodeType != 3
     iotType: Both
@@ -270,19 +264,19 @@ Network Manager :
 
   - field: routetablerequests
     description: Route Table Requests
-    details: Contains the route table requests within the time stamp of last 24 hours. The parameter "epoch_time" for time stamp is passed in the query.
+    details: Contains the route table requests for last 24 hours.
     source: >-
         SELECT COUNT(*) AS "RouteTableRequests(Last24Hours)" FROM Gw_Node_Log_Entry nle 
-        WHERE nle.GatewayTimeStamp / 1000 > ? AND nle.GwNodeLogCodeId=506
+        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=506
     iotType: Both
     frequency : EverySixHours
 
   - field: routetableresponse
     description: Route Table Responses
-    details: Contains the route table responses within the time stamp of last 24 hours. The parameter "epoch_time" for time stamp is passed in the query.
+    details: Contains the route table responses for last 24 hours.
     source: >-
         SELECT COUNT(*) AS "RouteTableRequests(Last24Hours)" FROM Gw_Node_Log_Entry nle 
-        WHERE nle.GatewayTimeStamp / 1000 > ? AND nle.GwNodeLogCodeId=502
+        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=502
     iotType: Both
     frequency : EverySixHours
     
@@ -292,12 +286,6 @@ Network Manager :
     source: SELECT TOP 1 gwreleaserev FROM Gateway ORDER BY gwreleaserev DESC
     iotType: Property
     frequency : OnStartupOnly
-
-  - field: gatewaystatus
-    description: Gateway Status
-    details: (connectedgatewaycount/gwcount) * 100
-    iotType: Telemetry
-    frequency : EverySixHours
 
 Other :
   - field: dashboardiotcv
