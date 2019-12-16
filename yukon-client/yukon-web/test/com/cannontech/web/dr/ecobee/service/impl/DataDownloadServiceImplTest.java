@@ -145,7 +145,7 @@ public class DataDownloadServiceImplTest {
 
         @Override
         public String sendSetpointDR(EcobeeSetpointDrParameters parameters) {
-            return null;
+            throw new UnsupportedOperationException("Method not implemented.");
         }
 
         @Override
