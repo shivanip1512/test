@@ -36,6 +36,7 @@ yukon.mapping = (function () {
     _deviceScale = 0.8,
     _relayScale = 0.9,
     _gatewayScale = 1,
+    _largerScale = 1.3,
 
     _elevationLayer,
     _allGatewayIcons = [],
@@ -98,11 +99,11 @@ yukon.mapping = (function () {
                 window.location.href = yukon.url('/stars/mapNetwork/home') + '?deviceId=' + deviceId;
             });
             
-            $(document).on('click', '.js-all-gateways', function () {
+            $(document).on('change', '.js-all-gateways', function () {
                 yukon.mapping.showHideAllGateways();
             });
             
-            $(document).on('click', '.js-all-relays', function () {
+            $(document).on('change', '.js-all-relays', function () {
                 yukon.mapping.showHideAllRelays();
             });
             
@@ -152,6 +153,10 @@ yukon.mapping = (function () {
             return _routeColor;
         },
         
+        getLargerScale: function() {
+            return _largerScale;
+        },
+        
         getIconLayer: function() {
             var iconLayer;
             _map.getLayers().forEach(function (layer) {
@@ -167,9 +172,15 @@ yukon.mapping = (function () {
                 source = iconLayer.getSource(),
                 feature = source.getFeatureById(deviceId);
             if (feature && makeLarger) {
-                _makeDeviceIconLarger(feature);
+                yukon.mapping.makeDeviceIconLarger(feature);
             }
             return feature;
+        },
+        
+        makeDeviceIconLarger: function(icon) {
+            var largerStyle = icon.getStyle().clone();
+            largerStyle.getImage().setScale(_largerScale);
+            icon.setStyle(largerStyle);
         },
         
         setScaleForDevice: function(feature) {

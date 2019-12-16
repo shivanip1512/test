@@ -19,6 +19,7 @@ yukon.map.comprehensive = (function () {
     
     //dark blue
     _routeColor = yukon.mapping.getRouteColor(),
+    _largerScale = yukon.mapping.getLargerScale(),
     
     //lines should go beneath icons
     _lineLayerIndex = yukon.mapping.getLineLayerIndex(),
@@ -119,12 +120,6 @@ yukon.map.comprehensive = (function () {
         }
     },
     
-    _makeDeviceIconLarger = function(icon) {
-        var largerStyle = icon.getStyle().clone();
-        largerStyle.getImage().setScale(_largerScale);
-        icon.setStyle(largerStyle);
-    },
-    
     _addPrimaryRouteToMap = function(deviceId, routeInfo) {
         var iconLayer = yukon.mapping.getIconLayer(),
             source = iconLayer.getSource();
@@ -155,7 +150,7 @@ yukon.map.comprehensive = (function () {
                 icon.setStyle(style);
                 yukon.mapping.setScaleForDevice(icon);
                 if (x == 0) {
-                    _makeDeviceIconLarger(icon);
+                    yukon.mapping.makeDeviceIconLarger(icon);
                 }
                 if (_srcProjection === _destProjection) {
                     icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));

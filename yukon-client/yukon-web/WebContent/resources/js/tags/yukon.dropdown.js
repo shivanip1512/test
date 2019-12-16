@@ -164,12 +164,15 @@ $(function() {
     });
     
     /** Handle option selections for criteria buttons */
-    $(document).on('click', '.criteria-menu .criteria-option', function(e) {
+    $(document).on('change', '.criteria-menu .criteria-option', function(e) {
         
         var menu = $(this).closest('.criteria-menu'),
-            checkbox = $(this).find(':checkbox');
+            checkbox = $(this).find(':checkbox'),
+            targetElem = $(e.target);
         
-        checkbox.prop('checked', !checkbox.prop('checked'));
+        if (!targetElem.is(':checkbox')) {
+            checkbox.prop('checked', !checkbox.prop('checked'));
+        }
         updateCriteriaButton(menu);
         positionDropdownMenu(menu, menu.data('trigger'));
         
