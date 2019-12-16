@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.jms.annotation.EnableJms;
 
 import com.cannontech.cloud.service.CloudService;
 
@@ -15,6 +16,7 @@ import com.cannontech.cloud.service.CloudService;
  * JMS Listener and publishers will be started automatically.
  */
 @SpringBootApplication(scanBasePackages = "com.cannontech")
+@EnableJms
 public class BootstrapService implements CommandLineRunner {
 
     Logger log = (Logger) LogManager.getLogger(BootstrapService.class);

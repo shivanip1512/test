@@ -22,9 +22,7 @@ public class ConfigurationDataPublisher extends PublisherBase {
     @Override
     public void publishMessage() {
         log.info("Publish Configuration data");
-        // prepare request
-        // get broker connection
-        // publish data
+        // Prepare message, Autowire jmsTemplate and send message. 
     }
 
 }
