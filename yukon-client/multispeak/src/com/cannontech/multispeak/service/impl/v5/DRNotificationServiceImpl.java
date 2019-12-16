@@ -443,11 +443,14 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
         List<DRProgramEnrollment> drProgramEnrollments = arrayOfDRProgramEnrollment.getDRProgramEnrollment();
 
-        String objectGUID = multispeakFuncs.generateObjectGUID();
         DRProgramEnrollment programEnrollment = new DRProgramEnrollment();
-        programEnrollment.setObjectGUID(objectGUID);
+        programEnrollment.setObjectGUID(multispeakFuncs.getDefaultObjectGUID());
         if (optOutNotificationMessage.getMessageType() == DRNotificationMessageType.OPTOUT) {
             programEnrollment.getOtherAttributes().put(new QName("beginTemporaryOptOut"), "true");
+            XMLGregorianCalendar xmlGregorianCalendarStartDate = getDRProgramEnrollmentDate(optOutNotificationMessage.getStartDate());
+            if (xmlGregorianCalendarStartDate != null) {
+                programEnrollment.setDRProgramParticStartDate(xmlGregorianCalendarStartDate);
+            }
         } else {
             programEnrollment.getOtherAttributes().put(new QName("endTemporaryOptOut"), "true");
         }
@@ -464,9 +467,9 @@ public class DRNotificationServiceImpl implements DRNotificationService {
         ServicePointID servicePointID = buildServicePointID();
         programEnrollment.setServicePointID(servicePointID);
 
-        XMLGregorianCalendar xmlGregorianCalendar = getDRProgramEnrollmentDate(optOutNotificationMessage.getStopDate());
-        if (xmlGregorianCalendar != null) {
-            programEnrollment.setDRProgramParticStartDate(xmlGregorianCalendar);
+        XMLGregorianCalendar xmlGregorianCalendarStopDate = getDRProgramEnrollmentDate(optOutNotificationMessage.getStopDate());
+        if (xmlGregorianCalendarStopDate != null) {
+            programEnrollment.setDRProgramParticEndDate(xmlGregorianCalendarStopDate);
         }
         drProgramEnrollments.add(programEnrollment);
         return arrayOfDRProgramEnrollment;
