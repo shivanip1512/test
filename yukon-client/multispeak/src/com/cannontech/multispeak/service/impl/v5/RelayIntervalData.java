@@ -9,42 +9,42 @@ import com.google.common.collect.ImmutableSet;
 
 public enum RelayIntervalData {
 
-    RUNTIMERELAY_1("RunTimeRelay_1", 1, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_5_MIN,
+    RUNTIMERELAY_1("RunTime", 1, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_5_MIN,
                                         BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_15_MIN,
                                         BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG_30_MIN,
                                         BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG),
 
-    SHEDTIMERELAY_1("ShedTimeRelay_1", 1, BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG_5_MIN, 
+    SHEDTIMERELAY_1("ShedTime", 1, BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG_5_MIN, 
                                           BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG_15_MIN,
                                           BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG_30_MIN, 
                                           BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG),
 
-    RUNTIMERELAY_2("RunTimeRelay_2", 2, BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG_5_MIN, 
+    RUNTIMERELAY_2("RunTime", 2, BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG_5_MIN, 
                                         BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG_15_MIN,
                                         BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG_30_MIN, 
                                         BuiltInAttribute.RELAY_2_RUN_TIME_DATA_LOG),
 
-    SHEDTIMERELAY_2("ShedTimeRelay_2", 2, BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG_5_MIN, 
+    SHEDTIMERELAY_2("ShedTime", 2, BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG_5_MIN, 
                                           BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG_15_MIN,
                                           BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG_30_MIN, 
                                           BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG),
 
-    RUNTIMERELAY_3("RunTimeRelay_3", 3, BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG_5_MIN, 
+    RUNTIMERELAY_3("RunTime", 3, BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG_5_MIN, 
                                         BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG_15_MIN,
                                         BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG_30_MIN, 
                                         BuiltInAttribute.RELAY_3_RUN_TIME_DATA_LOG),
 
-    SHEDTIMERELAY_3("ShedTimeRelay_3", 3, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG_5_MIN, 
+    SHEDTIMERELAY_3("ShedTime", 3, BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG_5_MIN, 
                                           BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG_15_MIN,
                                           BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG_30_MIN, 
                                           BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG),
 
-    RUNTIMERELAY_4("RunTimeRelay_4", 4, BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG_5_MIN, 
+    RUNTIMERELAY_4("RunTime", 4, BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG_5_MIN, 
                                         BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG_15_MIN,
                                         BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG_30_MIN, 
                                         BuiltInAttribute.RELAY_4_RUN_TIME_DATA_LOG),
 
-    SHEDTIMERELAY_4("ShedTimeRelay_4", 4, BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG_5_MIN, 
+    SHEDTIMERELAY_4("ShedTime", 4, BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG_5_MIN, 
                                           BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG_15_MIN,
                                           BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG_30_MIN, 
                                           BuiltInAttribute.RELAY_4_SHED_TIME_DATA_LOG);
