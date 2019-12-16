@@ -1,0 +1,20 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+        mavenLocal()
+        mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter', version: '2.2.1.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: '2.2.1.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-activemq', version: '2.2.1.RELEASE'
+    api 'com.microsoft.azure.sdk.iot:iot-device-client:1.18.0'
+}
+
+configurations.compile {
+    // Ignore default logging provided by spring boot to use log4j
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+}
