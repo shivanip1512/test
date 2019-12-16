@@ -64,7 +64,7 @@ public class IOTHubService extends AzureCloudService {
 
     @Override
     public AzureServices getName() {
-        return AzureServices.IOT_SERVICE;
+        return AzureServices.IOT_HUB_SERVICE;
     }
 
 }
