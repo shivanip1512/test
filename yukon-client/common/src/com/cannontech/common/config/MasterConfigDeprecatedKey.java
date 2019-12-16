@@ -51,6 +51,7 @@ public enum MasterConfigDeprecatedKey {
     CAP_CONTROL_AMFM_DB_TYPE, // see yuk-20627
     CAP_CONTROL_AMFM_DB_USERNAME, // see yuk-20627
     CAP_CONTROL_AMFM_DB_PASSWORD, // see yuk-20627
+    CAP_CONTROL_AMFM_DB_RWDBDLL, // see yuk-20627
     
     
 

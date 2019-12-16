@@ -13,8 +13,6 @@ public class MasterConfigCryptoUtilsTest {
     private static Set<MasterConfigString> sensitiveData;
     static {
         sensitiveData = new HashSet<>();
-        sensitiveData.add(MasterConfigString.CAP_CONTROL_AMFM_DB_USERNAME);
-        sensitiveData.add(MasterConfigString.CAP_CONTROL_AMFM_DB_PASSWORD);
         sensitiveData.add(MasterConfigString.DB_USERNAME);
         sensitiveData.add(MasterConfigString.DB_PASSWORD);
         sensitiveData.add(MasterConfigString.DB_SQLSERVER);
