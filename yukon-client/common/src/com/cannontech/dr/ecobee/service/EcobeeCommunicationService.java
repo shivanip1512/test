@@ -13,6 +13,7 @@ import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -100,6 +101,13 @@ public interface EcobeeCommunicationService {
      */
     String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
     
+    /**
+     * Initiates a setpoint demand response event in Ecobee.
+     * @return the Ecobee identifier for this DR event. This identifier can be used to cancel an event in progress.
+     * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
+     */
+    String sendSetpointDR(EcobeeSetpointDrParameters parameters);
+
     /**
      * Initiates a 5-minute 0% duty cycle demand response event in ecobee.
      * This control will do no actual cycling. It's purpose is to override any events that are currently running.

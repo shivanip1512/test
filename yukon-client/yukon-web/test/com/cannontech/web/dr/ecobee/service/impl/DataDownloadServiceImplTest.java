@@ -23,6 +23,7 @@ import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 
 public class DataDownloadServiceImplTest {
@@ -139,6 +140,11 @@ public class DataDownloadServiceImplTest {
 
         @Override
         public String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters) {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
+
+        @Override
+        public String sendSetpointDR(EcobeeSetpointDrParameters parameters) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
 
