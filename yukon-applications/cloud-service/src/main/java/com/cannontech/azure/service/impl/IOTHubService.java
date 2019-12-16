@@ -1,5 +1,7 @@
 package com.cannontech.azure.service.impl;
 
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import com.cannontech.azure.model.AzureServices;
 import com.cannontech.azure.service.AzureCloudService;
 import com.cannontech.data.provider.DataProvider;
 import com.cannontech.message.model.ConfigurationSettings;
+import com.cannontech.message.model.SystemData;
 
 /**
  * This service connects to IOT hub and push data on it.
@@ -53,7 +56,7 @@ public class IOTHubService extends AzureCloudService {
 
     /* This will read data from cache and push it */
     private void prepareAndPushData() {
-        String data = dataProviderService.getSystemInformation();
+        Map<String, SystemData> data = dataProviderService.getSystemInformation();
         pushData();
     }
 

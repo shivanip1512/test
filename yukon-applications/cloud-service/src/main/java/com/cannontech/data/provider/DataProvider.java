@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.cannontech.azure.model.AzureServices;
 import com.cannontech.message.model.ConfigurationSettings;
 import com.cannontech.message.model.SupportedDataType;
+import com.cannontech.message.model.SystemData;
 import com.cannontech.message.publisher.service.Publisher;
 
 /**
@@ -28,8 +29,8 @@ public class DataProvider {
 
     // This is cache for holding system data for IOT azure service.
     // This cache will always hold the latest value
-    // Key will be map of fieldName and value will be IOTDataType and field value.
-    Map<String, Map<String, String>> systemData = new HashMap<>();
+    // Key will be map of fieldName and value will be object of type SystemData
+    Map<String, SystemData> systemData = new HashMap<>();
 
     /**
      * This method looks for configuration setting in cache.
@@ -50,16 +51,16 @@ public class DataProvider {
     /**
      * This method will get all the values from cache and will convert it to json and return.
      */
-    public String getSystemInformation() {
+    public Map<String, SystemData> getSystemInformation() {
         // Read the system information cache which have latest value and pass it as string
-        return "";
+        return new HashMap<String, SystemData>();
     }
 
     /**
      * ActiveMQ listener will call this method to pass the updated system information.
      * This will be updated in the cache.
      */
-    public void updateSystemInformation(String data) {
+    public void updateSystemInformation(SystemData data) {
         log.info("Updating system information");
 
     }
@@ -68,7 +69,8 @@ public class DataProvider {
      * ActiveMQ listener will call this method to pass the updated configuration information.
      * This will be updated in the cache.
      */
-    public void updateConfigurationInformation(String data) {
+    public void updateConfigurationInformation(ConfigurationSettings settings) {
+        // configuration settings should have for which cloud service these are
         log.info("Updating configuration information");
     }
 

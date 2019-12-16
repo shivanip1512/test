@@ -1,24 +1,32 @@
 package com.cannontech.message.listener.service;
 
 import javax.jms.Message;
-import javax.jms.MessageListener;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Service;
 
 import com.cannontech.data.provider.DataProvider;
+import com.cannontech.message.model.ConfigurationSettings;
 
 /**
  * Listen for configuration data on queue, once received will call method to update cache.
  */
-public class ConfigurationDataMessageListener implements MessageListener {
+@Service
+public class ConfigurationDataMessageListener {
+    Logger log = (Logger) LogManager.getLogger(ConfigurationDataMessageListener.class);
 
     @Autowired DataProvider dataProvider;
 
-    @Override
-    public void onMessage(Message message) {
-        // Process and update Cache
-        String data = "";
-        dataProvider.updateSystemInformation(data);
+    @JmsListener(destination = "com.eaton.eas.cloud.ConfigurationSettings")
+    public void receiveMessage(Message message) {
+        if (message instanceof ConfigurationSettings) {
+            ConfigurationSettings configurationSettings = (ConfigurationSettings) message;
+            log.debug("Received configuration data " + configurationSettings.toString());
+            dataProvider.updateConfigurationInformation(configurationSettings);
+        }
     }
 
 }
