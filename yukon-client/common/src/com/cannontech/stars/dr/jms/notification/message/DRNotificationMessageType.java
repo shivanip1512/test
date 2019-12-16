@@ -7,6 +7,8 @@ public enum DRNotificationMessageType {
     OPTOUT,
     STOPOPTOUT,
     EVENT,
-    PROGRAMSTATUS;
+    PROGRAMSTATUS,
+    VOLTAGEDATA,
+    RELAYDATA;
 
 }

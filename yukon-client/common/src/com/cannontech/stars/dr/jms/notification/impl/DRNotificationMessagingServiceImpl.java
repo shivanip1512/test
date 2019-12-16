@@ -11,6 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.jms.notification.DRNotificationMessagingService;
+import com.cannontech.stars.dr.jms.notification.message.DRNotificationDataMessage;
 import com.cannontech.stars.dr.jms.notification.message.DRNotificationMessageType;
 import com.cannontech.stars.dr.jms.notification.message.EnrollmentNotificationMessage;
 import com.cannontech.stars.dr.jms.notification.message.OptOutInNotificationMessage;
@@ -37,6 +38,7 @@ public class DRNotificationMessagingServiceImpl implements DRNotificationMessagi
         EnrollmentNotificationMessage message = new EnrollmentNotificationMessage();
 
         setEnrollmentNotificationMessageFields(message, controlInformation);
+        message.setEnrollmentStopTime(controlInformation.getGroupEnrollStop());
         message.setMessageType(DRNotificationMessageType.UNENROLLMENT);
 
         log.debug("Unenrollment message pushed to jms queue: " + message);
@@ -49,7 +51,7 @@ public class DRNotificationMessagingServiceImpl implements DRNotificationMessagi
         message.setProgramId(controlInformation.getProgramId());
         message.setLoadGroupId(controlInformation.getLmGroupId());
         message.setRelayNumber(controlInformation.getRelay());
-        message.setEnrollmentTime(controlInformation.getGroupEnrollStart());
+        message.setEnrollmentStartTime(controlInformation.getGroupEnrollStart());
 
     }
     @Override
@@ -81,6 +83,13 @@ public class DRNotificationMessagingServiceImpl implements DRNotificationMessagi
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
+    }
+
+    @Override
+    public void sendDataMessageNotification(DRNotificationDataMessage message) {
+        log.debug("Stop OptOut message pushed to jms queue: " + message);
+        jmsTemplate.convertAndSend(JmsApiDirectory.DATA_NOTIFICATION.getQueue().getName(), message);
+
     }
 
 }

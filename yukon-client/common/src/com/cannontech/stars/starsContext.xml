@@ -3,13 +3,25 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
 
     <context:annotation-config/>
     <bean class="com.cannontech.stars.dr.jms.notification.impl.DRNotificationMessagingServiceImpl"/>
+    <bean id="drNotificationListener" class="com.cannontech.stars.dr.jms.notification.listner.DRNotificationDataListener"/>
+
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        task-executor="globalTaskExecutor" 
+        destination-type="topic"
+        concurrency="1"
+        container-type="simple">
+        <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="drNotificationListener" method="pointDataReceived"/>
+    </jms:listener-container>
 
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableProgramDaoImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableEnrollmentDaoImpl"/>

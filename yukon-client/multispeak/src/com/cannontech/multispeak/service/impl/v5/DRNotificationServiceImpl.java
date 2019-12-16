@@ -1,12 +1,17 @@
 package com.cannontech.multispeak.service.impl.v5;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
@@ -25,25 +30,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.dr.service.RelayLogInterval;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfDRProgramEnrollment;
+import com.cannontech.msp.beans.v5.commonarrays.ArrayOfIntervalData;
+import com.cannontech.msp.beans.v5.commontypes.Duration;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.Extensions;
+import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
 import com.cannontech.msp.beans.v5.commontypes.ServicePointID;
 import com.cannontech.msp.beans.v5.commontypes.SingleIdentifier;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatus;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatusKind;
 import com.cannontech.msp.beans.v5.enumerations.ServiceKind;
+import com.cannontech.msp.beans.v5.enumerations.TimeUnits;
+import com.cannontech.msp.beans.v5.multispeak.Blocks;
+import com.cannontech.msp.beans.v5.multispeak.Channels;
+import com.cannontech.msp.beans.v5.multispeak.Chs;
+import com.cannontech.msp.beans.v5.multispeak.DB;
 import com.cannontech.msp.beans.v5.multispeak.DRProgramEnrollment;
+import com.cannontech.msp.beans.v5.multispeak.EndReading;
+import com.cannontech.msp.beans.v5.multispeak.EndReadings;
+import com.cannontech.msp.beans.v5.multispeak.IntervalBlock;
+import com.cannontech.msp.beans.v5.multispeak.IntervalChannel;
+import com.cannontech.msp.beans.v5.multispeak.IntervalData;
+import com.cannontech.msp.beans.v5.multispeak.IntervalProfile;
+import com.cannontech.msp.beans.v5.multispeak.Profiles;
+import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
 import com.cannontech.msp.beans.v5.not_server.DRProgramEnrollmentsNotification;
 import com.cannontech.msp.beans.v5.not_server.DRProgramUnenrollmentsNotification;
+import com.cannontech.msp.beans.v5.not_server.IntervalDataNotification;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.NOTClient;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
@@ -55,11 +81,14 @@ import com.cannontech.multispeak.service.DRNotificationService;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.jms.notification.message.DRNotificationDataMessage;
 import com.cannontech.stars.dr.jms.notification.message.DRNotificationMessageType;
 import com.cannontech.stars.dr.jms.notification.message.EnrollmentNotificationMessage;
 import com.cannontech.stars.dr.jms.notification.message.OptOutInNotificationMessage;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Multimap;
 
 public class DRNotificationServiceImpl implements DRNotificationService {
 
@@ -77,6 +106,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
     private static final String ENROLLMENT_METHOD = "DRProgramEnrollmentsNotification";
     private static final String UNENROLLMENT_METHOD = "DRProgramUnenrollmentsNotification";
+    private static final String INTERVALDATA_METHOD = "IntervalDataNotification";
     private static final String LCR_INDENTIFIER_NAME = "lcrSerial";
     private static final String LCR_INDENTIFIER_LABEL = "LCR Serial";
     
@@ -140,6 +170,13 @@ public class DRNotificationServiceImpl implements DRNotificationService {
                         optOutNotification(drOptOutInJmsMessage);
                     } else {
                         optInNotification(drOptOutInJmsMessage);
+                    }
+                } else if (object instanceof DRNotificationDataMessage) {
+                    DRNotificationDataMessage drNotificationDataMessage = (DRNotificationDataMessage) object;
+                    if (drNotificationDataMessage.getMessageType() == DRNotificationMessageType.RELAYDATA) {
+                        intervalDataNotification(drNotificationDataMessage);
+                    } else if (drNotificationDataMessage.getMessageType() == DRNotificationMessageType.VOLTAGEDATA) {
+                        voltageMeterReadingsNotification(drNotificationDataMessage);
                     }
                 }
             } catch (JMSException e) {
@@ -229,7 +266,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
         List<DRProgramEnrollment> drProgramEnrollments = arrayOfDRProgramEnrollment.getDRProgramEnrollment();
 
-        String objectGUID = multispeakFuncs.generateObjectGUID();
+        String objectGUID = multispeakFuncs.getDefaultObjectGUID();
         DRProgramEnrollment programEnrollment = new DRProgramEnrollment();
 
         programEnrollment.setObjectGUID(objectGUID);
@@ -258,15 +295,16 @@ public class DRNotificationServiceImpl implements DRNotificationService {
         }
         programEnrollment.setDRProgramEnrollmentStatus(status);
 
-        if (notificationMessage.getMessageType() == DRNotificationMessageType.ENROLLMENT) {
-            XMLGregorianCalendar xmlGregorianCalendar = getDRProgramEnrollmentDate(notificationMessage.getEnrollmentTime());
-            if (xmlGregorianCalendar != null) {
-                programEnrollment.setDRProgramParticStartDate(xmlGregorianCalendar);
-            }
-        } else {
-            XMLGregorianCalendar xmlGregorianCalendar = getDRProgramEnrollmentDate(notificationMessage.getEnrollmentTime());
-            if (xmlGregorianCalendar != null) {
-                programEnrollment.setDRProgramParticEndDate(xmlGregorianCalendar);
+        XMLGregorianCalendar xmlGregorianCalendarStartTime = getDRProgramEnrollmentDate(notificationMessage.getEnrollmentStartTime());
+        if (xmlGregorianCalendarStartTime != null) {
+            programEnrollment.setDRProgramParticStartDate(xmlGregorianCalendarStartTime);
+        }
+
+        if (notificationMessage.getMessageType() == DRNotificationMessageType.UNENROLLMENT) {
+
+            XMLGregorianCalendar  XmlGregorianCalendarStopTime = getDRProgramEnrollmentDate(notificationMessage.getEnrollmentStopTime());
+            if (XmlGregorianCalendarStopTime != null) {
+                programEnrollment.setDRProgramParticEndDate(XmlGregorianCalendarStopTime);
             }
         }
 
@@ -473,6 +511,182 @@ public class DRNotificationServiceImpl implements DRNotificationService {
         }
         drProgramEnrollments.add(programEnrollment);
         return arrayOfDRProgramEnrollment;
+
+    }
+
+    @Override
+    public void intervalDataNotification(DRNotificationDataMessage drNotificationDataMessage) {
+        if (!isvendorsConfigured()) {
+            return;
+        }
+
+        vendorsToSendDRMsg.entrySet().forEach(entry -> {
+            boolean isMatched = isSupportedMethod(entry.getValue(), INTERVALDATA_METHOD);
+            if (isMatched) {
+                MultispeakVendor mspVendor = entry.getKey();
+                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
+                log.info("Sending " + INTERVALDATA_METHOD + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+
+                IntervalDataNotification intervalDataNotification = new IntervalDataNotification();
+                String transactionId = String.valueOf(atomicLong.getAndIncrement());
+
+                ArrayOfIntervalData arrayOfIntervalData = buildArrayOfArrayOfIntervalData(drNotificationDataMessage);
+                intervalDataNotification.setArrayOfIntervalData(arrayOfIntervalData);
+                intervalDataNotification.setTransactionID(transactionId);
+
+                try {
+                    notClient.intervalDataNotification(mspVendor, endpointUrl, intervalDataNotification);
+                    
+                    PaoIdentifier paoIdentifier = drNotificationDataMessage.getPaoPointIdentifier().getPaoIdentifier();
+                    String SerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
+
+                    logDRNotificationResponse(SerialNumber, INTERVALDATA_METHOD, mspVendor, transactionId, endpointUrl);
+
+                } catch (MultispeakWebServiceClientException e) {
+                    log.error("TargetService: " + endpointUrl + " -" + INTERVALDATA_METHOD + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+                    log.error("MultispeakWebServiceClientException: " + e.getMessage());
+                }
+            }
+
+        });
+
+    }
+
+    private ArrayOfIntervalData buildArrayOfArrayOfIntervalData(DRNotificationDataMessage drNotificationDataMessage) {
+
+        Set<BuiltInAttribute> attributes = getBuiltInAttributesFromDRMessage(drNotificationDataMessage);
+
+        Multimap<RelayLogInterval, BuiltInAttribute> intervalAttributesMap = HashMultimap.create();
+
+        attributes.forEach(relayAttribute -> {
+            RelayIntervalData relayIntervalData = RelayIntervalData.getRelayIntervalData(relayAttribute);
+            RelayLogInterval logInterval = relayIntervalData.getRelayLogInterval(relayAttribute);
+            intervalAttributesMap.put(logInterval, relayAttribute);
+        });
+
+        ArrayOfIntervalData arrayOfIntervalData = new ArrayOfIntervalData();
+        List<IntervalData> intervalDataList = arrayOfIntervalData.getIntervalData();
+
+        IntervalData intervalData = new IntervalData();
+
+        Profiles profiles = getProfiles(intervalAttributesMap.asMap());
+        intervalData.setProfiles(profiles);
+
+        Blocks blocks = getBlocks(drNotificationDataMessage);
+        intervalData.setBlocks(blocks);
+ 
+      //  intervalData.setIntervalDelimiter(",");
+      //  intervalData.setStatusDelimiter("^");
+
+        intervalDataList.add(intervalData);
+        return arrayOfIntervalData;
+
+    }
+
+    private Set<BuiltInAttribute> getBuiltInAttributesFromDRMessage(DRNotificationDataMessage drNotificationDataMessage) {
+        Set<BuiltInAttribute> attributes = drNotificationDataMessage.getDataMessages()
+                                                                    .stream()
+                                                                    .map(message -> message.getAttribute())
+                                                                    .collect(Collectors.toSet());
+        return attributes;
+    }
+
+    private Profiles getProfiles(Map<RelayLogInterval, Collection<BuiltInAttribute>> intervalAttributesMap) {
+        Profiles profiles = new Profiles();
+        List<IntervalProfile> profileList = profiles.getProfile();
+
+        intervalAttributesMap.entrySet().forEach(entry -> {
+            RelayLogInterval logInterval = entry.getKey();
+
+            IntervalProfile intervalProfile = new IntervalProfile();
+
+            Duration duration = new Duration();
+            duration.setUnits(TimeUnits.MINUTES);
+            duration.setValue(logInterval.getDuration().getStandardMinutes());
+            intervalProfile.setIntervalLength(duration);
+
+            Channels channels = new Channels();
+            List<IntervalChannel> channelList = channels.getChannel();
+
+            entry.getValue().stream().forEach(attr -> {
+                RelayIntervalData relayIntervalData = RelayIntervalData.getRelayIntervalData(attr);
+
+                IntervalChannel intervalChannel = new IntervalChannel();
+                intervalChannel.setIndex(BigInteger.valueOf(relayIntervalData.getRelayNumber()));
+                ReadingTypeCode readingTypeCode = new ReadingTypeCode();
+                readingTypeCode.setValue(relayIntervalData.getRelayDataReadingTypeCodeString());
+                intervalChannel.setReadingTypeCode(readingTypeCode);
+
+                channelList.add(intervalChannel);
+            });
+
+            intervalProfile.setChannels(channels);
+            profileList.add(intervalProfile);
+        });
+
+        return profiles;
+        
+    }
+    private Blocks getBlocks(DRNotificationDataMessage drNotificationDataMessage){
+        
+        Blocks blocks = new Blocks();
+        List<IntervalBlock> blockList = blocks.getBlock();
+        IntervalBlock intervalBlock = new IntervalBlock();
+
+        EndReadings endReadings = getEndReadings(drNotificationDataMessage);
+        intervalBlock.setEndReadings(endReadings);
+
+        MeterID meterID = getDRMeterID(drNotificationDataMessage.getPaoPointIdentifier().getPaoIdentifier());
+        intervalBlock.setMeterID(meterID);
+
+        intervalBlock.setIntervalStart(MultispeakFuncsBase.toXMLGregorianCalendar(drNotificationDataMessage.getDataMessages().get(0).getTimeStamp()));
+        intervalBlock.setDB(getDB());
+
+        blockList.add(intervalBlock);
+        return blocks;
+    }
+
+    private MeterID getDRMeterID(PaoIdentifier paoIdentifier) {
+        String SerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
+        MeterID meterID = new MeterID();
+        meterID.setMeterName(SerialNumber);
+        meterID.setRegisteredName("");
+        meterID.setServiceType(ServiceKind.OTHER);
+        meterID.setSystemName("");
+        meterID.setUtility("");
+        meterID.setCommunicationsPort("");
+        meterID.setCommunicationAddress("");
+        meterID.setOtherServiceType("Load Control");
+        return meterID;
+    }
+
+    private DB getDB() {
+        DB db = new DB();
+        Chs chs = new Chs();
+        db.setChs(chs);
+        return db;
+    }
+
+    private EndReadings getEndReadings(DRNotificationDataMessage drNotificationDataMessage) {
+
+        EndReadings endReadings = new EndReadings();
+        List<EndReading> endReadingList = endReadings.getEndReading();
+
+        drNotificationDataMessage.getDataMessages().forEach(message -> {
+            RelayIntervalData relayIntervalData = RelayIntervalData.getRelayIntervalData(message.getAttribute());
+
+            EndReading endReading = new EndReading();
+            endReading.setChannelIndex(BigInteger.valueOf(relayIntervalData.getRelayNumber()));
+            endReading.setReading(String.valueOf(message.getValue()));
+            endReading.setReadingDate(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
+            endReadingList.add(endReading);
+        });
+        return endReadings;
+    }
+    
+    @Override
+    public void voltageMeterReadingsNotification(DRNotificationDataMessage drNotificationDataMessage) {
+        // TODO 
 
     }
 

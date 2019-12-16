@@ -13,15 +13,24 @@ public class EnrollmentNotificationMessage implements Serializable {
     private Integer loadGroupId;
     private Integer relayNumber;
     private Integer programId;
-    private Instant enrollmentTime;
+    private Instant enrollmentStartTime;
+    private Instant enrollmentStopTime;
     private DRNotificationMessageType messageType;
 
-    public Instant getEnrollmentTime() {
-        return enrollmentTime;
+    public Instant getEnrollmentStartTime() {
+        return enrollmentStartTime;
     }
 
-    public void setEnrollmentTime(Instant enrollmentTime) {
-        this.enrollmentTime = enrollmentTime;
+    public void setEnrollmentStartTime(Instant enrollmentStartTime) {
+        this.enrollmentStartTime = enrollmentStartTime;
+    }
+
+    public Instant getEnrollmentStopTime() {
+        return enrollmentStopTime;
+    }
+
+    public void setEnrollmentStopTime(Instant enrollmentStopTime) {
+        this.enrollmentStopTime = enrollmentStopTime;
     }
 
     public static long getSerialversionuid() {

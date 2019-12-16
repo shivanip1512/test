@@ -106,6 +106,7 @@ import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
+import com.cannontech.stars.dr.jms.notification.message.DRNotificationDataMessage;
 import com.cannontech.stars.dr.jms.notification.message.EnrollmentNotificationMessage;
 import com.cannontech.stars.dr.jms.notification.message.OptOutInNotificationMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
@@ -1090,6 +1091,17 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
+    
+    public static final JmsApi<DRNotificationDataMessage,?,?> DATA_NOTIFICATION = 
+            JmsApi.builder(DRNotificationDataMessage.class)
+                  .name("DR Data Notification")
+                  .description("Send Demand Response Notification related to runTime/ShedTime,max/min/avg voltage to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(DRNotificationDataMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
 
     
     /*
@@ -1191,7 +1203,8 @@ public final class JmsApiDirectory {
         
         addApis(jmsApis, DR_NOTIFICATION, 
                          ENROLLMENT_NOTIFICATION, 
-                         OPTOUTIN_NOTIFICATION);
+                         OPTOUTIN_NOTIFICATION,
+                         DATA_NOTIFICATION);
 
         return jmsApis;
     }

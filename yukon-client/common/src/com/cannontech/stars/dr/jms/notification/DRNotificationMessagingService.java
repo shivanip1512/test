@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.jms.notification;
 import org.joda.time.Instant;
 
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.jms.notification.message.DRNotificationDataMessage;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 
 public interface DRNotificationMessagingService {
@@ -26,5 +27,11 @@ public interface DRNotificationMessagingService {
      * Pushing stop optout messages to queue ("yukon.notif.obj.dr.DRNotificationMessage")
      */
     public void sendStopOptOutNotification(Integer inventoryId, Instant stopDate);
+    
+    /**
+     * Pushing data messages to queue ("yukon.notif.obj.dr.DRNotificationMessage")
+     */
+    public void sendDataMessageNotification(DRNotificationDataMessage drNotificationDataMessage);
+    
 
 }

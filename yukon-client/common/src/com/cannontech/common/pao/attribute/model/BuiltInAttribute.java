@@ -705,7 +705,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     private static Map<AttributeGroup, Set<BuiltInAttribute>> allGroupedValueAttributes;
     
+    private static Set<BuiltInAttribute> relayDataAttributes;
     
+    private static Set<BuiltInAttribute> voltageAttributes;
+
     static {
 
         ImmutableSetMultimap.Builder<AttributeGroup, BuiltInAttribute> builder = ImmutableSetMultimap.builder();
@@ -725,6 +728,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildRfnEventAttributeSets();
         buildAllAttributeGroups();
         buildAllStatusTypeAttributeGroups();
+        buildRelayDataAttributes();
+        buildVoltageAttributes();
     }
 
     /**
@@ -943,6 +948,64 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     }
 
+    /**
+     */
+    private static void buildRelayDataAttributes() {
+
+        relayDataAttributes = ImmutableSet.of(
+                RELAY_1_RUN_TIME_DATA_LOG,
+                RELAY_1_RUN_TIME_DATA_LOG_5_MIN,
+                RELAY_1_RUN_TIME_DATA_LOG_15_MIN,
+                RELAY_1_RUN_TIME_DATA_LOG_30_MIN,
+
+                RELAY_1_SHED_TIME_DATA_LOG,
+                RELAY_1_SHED_TIME_DATA_LOG_5_MIN,
+                RELAY_1_SHED_TIME_DATA_LOG_15_MIN,
+                RELAY_1_SHED_TIME_DATA_LOG_30_MIN,
+
+                RELAY_2_RUN_TIME_DATA_LOG,
+                RELAY_2_RUN_TIME_DATA_LOG,
+                RELAY_2_RUN_TIME_DATA_LOG_5_MIN,
+                RELAY_2_RUN_TIME_DATA_LOG_15_MIN,
+                RELAY_2_RUN_TIME_DATA_LOG_30_MIN,
+
+                RELAY_2_SHED_TIME_DATA_LOG,
+                RELAY_2_SHED_TIME_DATA_LOG_5_MIN,
+                RELAY_2_SHED_TIME_DATA_LOG_15_MIN,
+                RELAY_2_SHED_TIME_DATA_LOG_30_MIN,
+
+                RELAY_3_RUN_TIME_DATA_LOG,
+                RELAY_3_RUN_TIME_DATA_LOG_5_MIN,
+                RELAY_3_RUN_TIME_DATA_LOG_15_MIN,
+                RELAY_3_RUN_TIME_DATA_LOG_30_MIN,
+
+                RELAY_3_SHED_TIME_DATA_LOG,
+                RELAY_3_SHED_TIME_DATA_LOG_5_MIN,
+                RELAY_3_SHED_TIME_DATA_LOG_15_MIN,
+                RELAY_3_SHED_TIME_DATA_LOG_30_MIN,
+
+                RELAY_4_RUN_TIME_DATA_LOG,
+                RELAY_4_RUN_TIME_DATA_LOG_5_MIN,
+                RELAY_4_RUN_TIME_DATA_LOG_15_MIN,
+                RELAY_4_RUN_TIME_DATA_LOG_30_MIN,
+
+                RELAY_4_SHED_TIME_DATA_LOG,
+                RELAY_4_SHED_TIME_DATA_LOG_5_MIN,
+                RELAY_4_SHED_TIME_DATA_LOG_15_MIN,
+                RELAY_4_SHED_TIME_DATA_LOG_30_MIN,
+
+                MINIMUM_VOLTAGE,
+                MAXIMUM_VOLTAGE,
+                AVERAGE_VOLTAGE);
+    }
+
+    private static void buildVoltageAttributes() {
+
+        voltageAttributes = ImmutableSet.of(MINIMUM_VOLTAGE, 
+                                            MAXIMUM_VOLTAGE, 
+                                            AVERAGE_VOLTAGE);
+    }
+
     private String defaultDescription;
     private AttributeGroup attributeGroup;
     private boolean isOnDemandReadable;
@@ -1028,6 +1091,14 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     /** Readable attributes + readable profile attributes */
     public static Set<BuiltInAttribute> getAdvancedReadableAttributes() {
         return Sets.union(readableAttributes, readableProfileAttributes);
+    }
+
+    public static Set<BuiltInAttribute> getVoltageAttributes() {
+        return voltageAttributes;
+    }
+
+    public static Set<BuiltInAttribute> getRelayDataAttributes() {
+        return relayDataAttributes;
     }
 
     @Override
