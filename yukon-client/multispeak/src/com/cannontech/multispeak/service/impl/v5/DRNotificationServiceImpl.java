@@ -211,7 +211,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
                     String SerialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(notificationMessage.getInventoryId());
 
-                    logDRNotificationResponse(SerialNumber, ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+                    logDRNotificationResponse(SerialNumber, notificationMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
                 } catch (MultispeakWebServiceClientException e) {
                     log.error("TargetService: " + endpointUrl + " -" + ENROLLMENT_METHOD + "with type " + notificationMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") ");
                     log.error("MultispeakWebServiceClientException: " + e.getMessage());
@@ -248,7 +248,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
                     String SerialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(unEnrollmentMessage.getInventoryId());
                     
-                    logDRNotificationResponse(SerialNumber, UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+                    logDRNotificationResponse(SerialNumber, unEnrollmentMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
                 } catch (MultispeakWebServiceClientException e) {
                     log.error("TargetService: " + endpointUrl + " -" + UNENROLLMENT_METHOD + "with type " + unEnrollmentMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
@@ -319,7 +319,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
     }
 
-    public void logDRNotificationResponse(String serialNumber, String mspMethod, MultispeakVendor mspVendor, String transactionId, String endpointUrl)
+    public void logDRNotificationResponse(String serialNumber, String messageType, String mspMethod, MultispeakVendor mspVendor, String transactionId, String endpointUrl)
             throws MultispeakWebServiceClientException {
         List<ErrorObject> errObjects = new ArrayList<>();
         errObjects = multispeakFuncs.getErrorObjectsFromResponse();
@@ -328,7 +328,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
                                                         mspVendor.getCompanyName(),
                                                         serialNumber,
                                                         transactionId,
-                                                        "",
+                                                        messageType,
                                                         CollectionUtils.size(errObjects),
                                                         endpointUrl);
         if (CollectionUtils.isNotEmpty(errObjects)) {
@@ -427,7 +427,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
                     String SerialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutNotificationMessage.getInventoryId());
 
-                    logDRNotificationResponse(SerialNumber, ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+                    logDRNotificationResponse(SerialNumber, optOutNotificationMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
                 } catch (MultispeakWebServiceClientException e) {
                     log.error("TargetService: " + endpointUrl + " -" + ENROLLMENT_METHOD + "with type " + optOutNotificationMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") ");
@@ -463,7 +463,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
 
                     String SerialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutNotificationMessage.getInventoryId());
 
-                    logDRNotificationResponse(SerialNumber, UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+                    logDRNotificationResponse(SerialNumber, optOutNotificationMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
                 } catch (MultispeakWebServiceClientException e) {
                     log.error("TargetService: " + endpointUrl + " -" + UNENROLLMENT_METHOD + "with type " + optOutNotificationMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
@@ -540,7 +540,7 @@ public class DRNotificationServiceImpl implements DRNotificationService {
                     PaoIdentifier paoIdentifier = drNotificationDataMessage.getPaoPointIdentifier().getPaoIdentifier();
                     String SerialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
 
-                    logDRNotificationResponse(SerialNumber, INTERVALDATA_METHOD, mspVendor, transactionId, endpointUrl);
+                    logDRNotificationResponse(SerialNumber, "", INTERVALDATA_METHOD, mspVendor, transactionId, endpointUrl);
 
                 } catch (MultispeakWebServiceClientException e) {
                     log.error("TargetService: " + endpointUrl + " -" + INTERVALDATA_METHOD + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);

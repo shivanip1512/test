@@ -221,7 +221,7 @@ public interface MultispeakEventLogService {
             @Arg(ArgEnum.mspVendor) String mspVendor, 
             @Arg(ArgEnum.serialNumber) String serialNumber,
             String transactionID,
-            String additionalInfo, 
+            String messageType, 
             Integer numberErrors, 
             String responseUrl);
 }
