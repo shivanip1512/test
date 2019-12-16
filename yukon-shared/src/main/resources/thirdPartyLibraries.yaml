@@ -1687,18 +1687,18 @@ Java :
     jira : none
     notes : jfreereport libfonts
   
-  - filename : libthrift-0.12.0.jar
+  - filename : libthrift-0.13.0.jar
     yukon group : Thrift
     project : Thrift
-    version : 0.12.0
+    version : 0.13.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.12.0"
-    md5 : 6a4a3db3b6674e59e2ed386372e5f04b
-    sha1 : 300bfbee03c7afa77301fb0946115e400e28ae04
-    updated : 2019-09-24
-    jira : YUK-20322
+    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.13.0"
+    md5 : 31132a57eacc3e7cd2b7af626b5f1ff9
+    sha1 : 0e5af3b6dc164eb2c699b70bf67a0babef507faf
+    updated : 2019-12-16
+    jira : YUK-21105
     notes : 
   
   - filename : log4j-api-2.11.2.jar
