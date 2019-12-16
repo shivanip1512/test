@@ -992,11 +992,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 RELAY_4_SHED_TIME_DATA_LOG,
                 RELAY_4_SHED_TIME_DATA_LOG_5_MIN,
                 RELAY_4_SHED_TIME_DATA_LOG_15_MIN,
-                RELAY_4_SHED_TIME_DATA_LOG_30_MIN,
-
-                MINIMUM_VOLTAGE,
-                MAXIMUM_VOLTAGE,
-                AVERAGE_VOLTAGE);
+                RELAY_4_SHED_TIME_DATA_LOG_30_MIN);
     }
 
     private static void buildVoltageAttributes() {
