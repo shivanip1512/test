@@ -1,0 +1,573 @@
+2019-12-09 14:36:28.334  INFO 61368 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 61368 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 14:36:28.337  INFO 61368 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 14:36:28.746  WARN 61368 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'azureServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.azure.base.AzureCloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 14:36:28.752  INFO 61368 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 14:36:28.840 ERROR 61368 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field azureServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.azure.base.AzureCloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.azure.base.AzureCloudService' in your configuration.
+
+2019-12-09 15:02:56.127  INFO 137960 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 137960 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:02:56.133  INFO 137960 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:02:58.262  WARN 137960 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.cloud.service.CloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:02:58.269  INFO 137960 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:02:58.390 ERROR 137960 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.cloud.service.CloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.cloud.service.CloudService' in your configuration.
+
+2019-12-09 15:06:18.600  INFO 138704 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 138704 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:06:18.603  INFO 138704 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:06:19.130  INFO 138704 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.837 seconds (JVM running for 2.574)
+2019-12-09 15:06:19.131  INFO 138704 --- [main] c.c.b.BootStrapService                   : First Spring Boot Application
+2019-12-09 15:06:58.864  INFO 133540 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 133540 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:06:58.867  INFO 133540 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:06:59.242  WARN 133540 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.cloud.service.CloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:06:59.247  INFO 133540 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:06:59.328 ERROR 133540 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.cloud.service.CloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.cloud.service.CloudService' in your configuration.
+
+2019-12-09 15:09:03.057  INFO 133908 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 133908 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:09:03.060  INFO 133908 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:09:03.440  WARN 133908 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.cloud.service.CloudService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:09:03.445  INFO 133908 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:09:03.530 ERROR 133908 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.cloud.service.CloudService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.cloud.service.CloudService' in your configuration.
+
+2019-12-09 15:09:29.521  INFO 138276 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 138276 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:09:29.523  INFO 138276 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:09:29.896  WARN 138276 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.azure.service.IOTHubService' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:09:29.901  INFO 138276 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:09:29.986 ERROR 138276 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field cloudServices in com.cannontech.bootstrap.BootStrapService required a bean of type 'com.cannontech.azure.service.IOTHubService' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.azure.service.IOTHubService' in your configuration.
+
+2019-12-09 15:11:22.831  INFO 95012 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 95012 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:11:22.834  INFO 95012 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:11:23.249  WARN 95012 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'com.cannontech.message.publisher.service.Publisher' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-09 15:11:23.255  INFO 95012 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 15:11:23.334 ERROR 95012 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field publisher in com.cannontech.data.holder.DataHolder required a bean of type 'com.cannontech.message.publisher.service.Publisher' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'com.cannontech.message.publisher.service.Publisher' in your configuration.
+
+2019-12-09 15:19:08.514  INFO 137556 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 137556 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:19:08.517  INFO 137556 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:19:09.088  INFO 137556 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.88 seconds (JVM running for 2.62)
+2019-12-09 15:19:09.089  INFO 137556 --- [main] c.c.b.BootStrapService                   : First Spring Boot Application
+2019-12-09 15:24:36.977  INFO 139736 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 139736 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 15:24:36.980  INFO 139736 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 15:24:37.579  INFO 139736 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.909 seconds (JVM running for 2.79)
+2019-12-09 15:24:37.580  INFO 139736 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 15:24:37.580  INFO 139736 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 16:57:03.423  INFO 148808 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 148808 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 16:57:03.426  INFO 148808 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 16:57:04.006  INFO 148808 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.889 seconds (JVM running for 2.662)
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 16:57:04.007  INFO 148808 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 16:57:04.008  INFO 148808 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:09:35.517  INFO 152992 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 152992 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:09:35.520  INFO 152992 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:09:36.115  INFO 152992 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.903 seconds (JVM running for 2.856)
+2019-12-09 17:09:36.115  INFO 152992 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 17:09:36.116  INFO 152992 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 17:09:36.117  INFO 152992 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:10:52.648  INFO 158360 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 158360 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:10:52.652  INFO 158360 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:10:53.217  INFO 158360 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 0.882 seconds (JVM running for 2.638)
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 17:10:53.218  INFO 158360 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 17:10:53.219  INFO 158360 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:11:41.299  INFO 158652 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 158652 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:11:41.303  INFO 158652 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:11:48.410  INFO 158652 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 7.555 seconds (JVM running for 9.734)
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.a.s.IOTHubService                    : IOT service should be started
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.a.s.IOTHubService                    : Starting IOT Hub service
+2019-12-09 17:12:01.478  INFO 158652 --- [main] c.c.a.s.IOTHubService                    : Get Configuration setting for IOT Hub Service
+2019-12-09 17:12:01.479  INFO 158652 --- [main] c.c.d.h.DataHolder                       : Getting configuration information from cache
+2019-12-09 17:12:13.619  INFO 158652 --- [main] c.c.m.p.s.PublisherBase                  : In request data, finding publisher
+2019-12-09 17:20:13.978  INFO 159476 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 159476 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:20:13.981  INFO 159476 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:20:14.405  WARN 159476 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'configurationDataPublisher': Unsatisfied dependency expressed through method 'setPublishers' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.List<com.cannontech.message.publisher.service.Publisher>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2019-12-09 17:20:14.412  INFO 159476 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 17:20:14.503 ERROR 159476 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method setPublishers in com.cannontech.message.publisher.service.PublisherBase required a bean of type 'java.util.List' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'java.util.List' in your configuration.
+
+2019-12-09 17:24:32.215  INFO 160900 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 160900 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:24:32.218  INFO 160900 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:24:32.658  WARN 160900 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'configurationDataPublisher': Unsatisfied dependency expressed through method 'setPublishers' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.List<com.cannontech.message.publisher.service.PublisherBase>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2019-12-09 17:24:32.665  INFO 160900 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 17:24:32.738 ERROR 160900 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method setPublishers in com.cannontech.message.publisher.service.PublisherBase required a bean of type 'java.util.List' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'java.util.List' in your configuration.
+
+2019-12-09 17:25:27.049  INFO 159300 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 159300 (C:\dev\Workspace\GIT_NEW_1\cloud-service\bin\main started by E9919043 in C:\dev\Workspace\GIT_NEW_1\cloud-service)
+2019-12-09 17:25:27.052  INFO 159300 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-09 17:25:27.474  WARN 159300 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataHolder': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'configurationDataPublisher': Unsatisfied dependency expressed through method 'setPublishers' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.List<com.cannontech.message.publisher.service.Publisher>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2019-12-09 17:25:27.482  INFO 159300 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-09 17:25:27.570 ERROR 159300 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method setPublishers in com.cannontech.message.publisher.service.PublisherBase required a bean of type 'java.util.List' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'java.util.List' in your configuration.
+
+2019-12-10 14:54:55.740  INFO 270388 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 270388 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-10 14:54:55.742  INFO 270388 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-10 14:54:56.161  WARN 270388 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'bootStrapService': Unsatisfied dependency expressed through field 'cloudServices'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'IOTHubService': Unsatisfied dependency expressed through field 'dataProviderService'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataProvider': Unsatisfied dependency expressed through field 'publisher'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'configurationDataPublisher': Unsatisfied dependency expressed through method 'setPublishers' parameter 0; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'java.util.List<com.cannontech.message.publisher.service.Publisher>' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {}
+2019-12-10 14:54:56.167  INFO 270388 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-10 14:54:56.254 ERROR 270388 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of method setPublishers in com.cannontech.message.publisher.service.PublisherBase required a bean of type 'java.util.List' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'java.util.List' in your configuration.
+
+2019-12-10 14:55:43.119  INFO 272240 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 272240 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-10 14:55:43.123  INFO 272240 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-10 14:55:43.875  INFO 272240 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.054 seconds (JVM running for 2.716)
+2019-12-10 14:55:43.880  INFO 272240 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-10 14:55:43.881  INFO 272240 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-10 14:55:43.881  INFO 272240 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-10 14:55:43.881  INFO 272240 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-10 14:55:43.881  INFO 272240 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-10 14:55:43.881  INFO 272240 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:04:47.880  INFO 81788 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 81788 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:04:47.883  INFO 81788 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:04:48.649  INFO 81788 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.072 seconds (JVM running for 2.701)
+2019-12-12 10:04:48.654  INFO 81788 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:04:48.655  INFO 81788 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:04:48.655  INFO 81788 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:04:48.655  INFO 81788 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:04:48.655  INFO 81788 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:04:48.655  INFO 81788 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:07:37.453  INFO 49048 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 49048 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:07:37.458  INFO 49048 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:07:38.437  INFO 49048 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.418 seconds (JVM running for 3.453)
+2019-12-12 10:07:38.439  INFO 49048 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:07:38.439  INFO 49048 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:07:38.439  INFO 49048 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:07:38.439  INFO 49048 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:07:38.440  INFO 49048 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:07:38.440  INFO 49048 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:11:16.207  INFO 49048 --- [DefaultMessageListenerContainer-1] c.c.m.l.s.SystemDataMessageListener      : Received message ActiveMQTextMessage {commandId = 5, responseRequired = false, messageId = ID:INPU1WHP6101841-51810-1576125178775-16:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:INPU1WHP6101841-51810-1576125178775-16:1:1:1, destination = queue://com.eaton.eas.SystemData, transactionId = null, expiration = 0, timestamp = 1576125676197, arrival = 0, brokerInTime = 1576125676198, brokerOutTime = 1576125676198, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@198dfb1c, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = String}
+2019-12-12 10:11:26.926  INFO 49048 --- [DefaultMessageListenerContainer-1] c.c.d.p.DataProvider                     : Updating system information
+2019-12-12 10:28:23.037  INFO 82344 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 82344 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:28:23.041  INFO 82344 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:28:24.035  INFO 82344 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.294 seconds (JVM running for 2.921)
+2019-12-12 10:28:24.036  INFO 82344 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:28:24.036  INFO 82344 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:28:24.036  INFO 82344 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:28:24.036  INFO 82344 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:28:24.037  INFO 82344 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:28:24.037  INFO 82344 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:29:39.243  INFO 176032 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 176032 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:29:39.246  INFO 176032 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:29:40.042  INFO 176032 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.112 seconds (JVM running for 2.973)
+2019-12-12 10:29:40.047  INFO 176032 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:29:40.048  INFO 176032 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:29:40.048  INFO 176032 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:29:40.048  INFO 176032 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:29:40.049  INFO 176032 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:29:40.049  INFO 176032 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:29:40.070  INFO 176032 --- [DefaultMessageListenerContainer-1] c.c.m.l.s.SystemDataMessageListener      : Received message ActiveMQTextMessage {commandId = 5, responseRequired = false, messageId = ID:INPU1WHP6101841-51810-1576125178775-18:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:INPU1WHP6101841-51810-1576125178775-18:1:1:1, destination = queue://com.eaton.eas.SystemData, transactionId = null, expiration = 0, timestamp = 1576126715344, arrival = 0, brokerInTime = 1576126715344, brokerOutTime = 1576126780058, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@25c1bb3f, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = String}
+2019-12-12 10:29:40.071  INFO 176032 --- [DefaultMessageListenerContainer-1] c.c.d.p.DataProvider                     : Updating system information
+2019-12-12 10:29:40.082  INFO 176032 --- [DefaultMessageListenerContainer-1] c.c.m.l.s.SystemDataMessageListener      : Received message ActiveMQTextMessage {commandId = 5, responseRequired = false, messageId = ID:INPU1WHP6101841-51810-1576125178775-20:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:INPU1WHP6101841-51810-1576125178775-20:1:1:1, destination = queue://com.eaton.eas.SystemData, transactionId = null, expiration = 0, timestamp = 1576126745393, arrival = 0, brokerInTime = 1576126745393, brokerOutTime = 1576126780058, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@9ca2f11, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = String}
+2019-12-12 10:29:40.083  INFO 176032 --- [DefaultMessageListenerContainer-1] c.c.d.p.DataProvider                     : Updating system information
+2019-12-12 10:39:23.270  INFO 85372 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 85372 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:39:23.273  INFO 85372 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:39:23.691  WARN 85372 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'systemDataMessageListener' defined in file [C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main\com\cannontech\message\listener\service\SystemDataMessageListener.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanInitializationException: Could not register JMS listener endpoint on [public void com.cannontech.message.listener.service.SystemDataMessageListener.receiveMessage(javax.jms.Message)], no JmsListenerContainerFactory with id 'topicListenerFactory' was found in the application context; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'topicListenerFactory' available
+2019-12-12 10:39:23.697  INFO 85372 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-12 10:39:23.751 ERROR 85372 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+A component required a bean named 'topicListenerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'topicListenerFactory' in your configuration.
+
+2019-12-12 10:39:42.803  INFO 10452 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 10452 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:39:42.807  INFO 10452 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:39:43.224  WARN 10452 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'systemDataMessageListener' defined in file [C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main\com\cannontech\message\listener\service\SystemDataMessageListener.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanInitializationException: Could not register JMS listener endpoint on [public void com.cannontech.message.listener.service.SystemDataMessageListener.receiveMessage(javax.jms.Message)], no JmsListenerContainerFactory with id 'topicListenerFactory' was found in the application context; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'topicListenerFactory' available
+2019-12-12 10:39:43.230  INFO 10452 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-12 10:39:43.284 ERROR 10452 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+A component required a bean named 'topicListenerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'topicListenerFactory' in your configuration.
+
+2019-12-12 10:40:40.327  INFO 171248 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 171248 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:40:40.330  INFO 171248 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:40:40.736  WARN 171248 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'systemDataMessageListener' defined in file [C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main\com\cannontech\message\listener\service\SystemDataMessageListener.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanInitializationException: Could not register JMS listener endpoint on [public void com.cannontech.message.listener.service.SystemDataMessageListener.receiveMessage(javax.jms.Message)], no JmsListenerContainerFactory with id 'topicListenerFactory' was found in the application context; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No bean named 'topicListenerFactory' available
+2019-12-12 10:40:40.742  INFO 171248 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-12 10:40:40.799 ERROR 171248 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+A component required a bean named 'topicListenerFactory' that could not be found.
+
+
+Action:
+
+Consider defining a bean named 'topicListenerFactory' in your configuration.
+
+2019-12-12 10:41:25.488  INFO 177000 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 177000 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:41:25.491  INFO 177000 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:41:26.218  INFO 177000 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.032 seconds (JVM running for 2.662)
+2019-12-12 10:41:26.219  INFO 177000 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:41:26.219  INFO 177000 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:41:26.219  INFO 177000 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:41:26.220  INFO 177000 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:41:26.220  INFO 177000 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:41:26.220  INFO 177000 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:41:48.549  INFO 177000 --- [DefaultMessageListenerContainer-1] c.c.m.l.s.SystemDataMessageListener      : Received message ActiveMQTextMessage {commandId = 5, responseRequired = false, messageId = ID:INPU1WHP6101841-51810-1576125178775-22:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:INPU1WHP6101841-51810-1576125178775-22:1:1:1, destination = topic://com.eaton.eas.SystemData, transactionId = null, expiration = 0, timestamp = 1576127508542, arrival = 0, brokerInTime = 1576127508542, brokerOutTime = 1576127508542, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@57bfda6e, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = String}
+2019-12-12 10:41:48.550  INFO 177000 --- [DefaultMessageListenerContainer-1] c.c.d.p.DataProvider                     : Updating system information
+2019-12-12 10:45:28.706  INFO 175192 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 175192 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:45:28.709  INFO 175192 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:45:29.133  WARN 175192 --- [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'systemDataMessageListener' defined in file [C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main\com\cannontech\message\listener\service\SystemDataMessageListener.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'activeMQConnectionProvider': Unsatisfied dependency expressed through field 'activeMQConnectionfactory'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'org.apache.activemq.ActiveMQConnectionFactory' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2019-12-12 10:45:29.138  INFO 175192 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2019-12-12 10:45:29.222 ERROR 175192 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field activeMQConnectionfactory in com.cannontech.message.service.ActiveMQConnectionProvider required a bean of type 'org.apache.activemq.ActiveMQConnectionFactory' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+The following candidates were found but could not be injected:
+	- Bean method 'jmsConnectionFactory' in 'ActiveMQConnectionFactoryConfiguration.SimpleConnectionFactoryConfiguration' not loaded because @ConditionalOnProperty (spring.jms.cache.enabled=false) did not find property 'enabled'
+	- Bean method 'nonXaJmsConnectionFactory' in 'ActiveMQXAConnectionFactoryConfiguration' not loaded because @ConditionalOnClass did not find required class 'javax.transaction.TransactionManager'
+
+
+Action:
+
+Consider revisiting the entries above or defining a bean of type 'org.apache.activemq.ActiveMQConnectionFactory' in your configuration.
+
+2019-12-12 10:47:37.796  INFO 178632 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 178632 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:47:37.799  INFO 178632 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:47:38.555  INFO 178632 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.059 seconds (JVM running for 2.708)
+2019-12-12 10:47:38.562  INFO 178632 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:47:38.562  INFO 178632 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:47:38.562  INFO 178632 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:47:38.562  INFO 178632 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:47:38.563  INFO 178632 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:47:38.563  INFO 178632 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:47:43.882  INFO 178632 --- [DefaultMessageListenerContainer-1] c.c.m.l.s.SystemDataMessageListener      : Received message ActiveMQTextMessage {commandId = 5, responseRequired = false, messageId = ID:INPU1WHP6101841-51810-1576125178775-24:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:INPU1WHP6101841-51810-1576125178775-24:1:1:1, destination = topic://com.eaton.eas.SystemData, transactionId = null, expiration = 0, timestamp = 1576127863870, arrival = 0, brokerInTime = 1576127863870, brokerOutTime = 1576127863870, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@1af3c37f, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = String}
+2019-12-12 10:47:43.884  INFO 178632 --- [DefaultMessageListenerContainer-1] c.c.d.p.DataProvider                     : Updating system information
+2019-12-12 10:49:22.589  INFO 180600 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 180600 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:49:22.592  INFO 180600 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:49:23.415  INFO 180600 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.163 seconds (JVM running for 2.874)
+2019-12-12 10:49:23.421  INFO 180600 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:49:23.422  INFO 180600 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:49:23.422  INFO 180600 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:49:23.422  INFO 180600 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:49:23.422  INFO 180600 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:49:23.422  INFO 180600 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:49:27.916  INFO 180600 --- [DefaultMessageListenerContainer-1] c.c.m.l.s.SystemDataMessageListener      : Received message ActiveMQTextMessage {commandId = 5, responseRequired = false, messageId = ID:INPU1WHP6101841-51810-1576125178775-26:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:INPU1WHP6101841-51810-1576125178775-26:1:1:1, destination = topic://com.eaton.eas.SystemData, transactionId = null, expiration = 0, timestamp = 1576127967910, arrival = 0, brokerInTime = 1576127967910, brokerOutTime = 1576127967910, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@1a361bdc, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = String}
+2019-12-12 10:49:27.917  INFO 180600 --- [DefaultMessageListenerContainer-1] c.c.d.p.DataProvider                     : Updating system information
+2019-12-12 10:54:14.916  INFO 181608 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 181608 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:54:14.921  INFO 181608 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:54:15.960  INFO 181608 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.468 seconds (JVM running for 3.509)
+2019-12-12 10:54:15.961  INFO 181608 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:54:15.961  INFO 181608 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:54:15.961  INFO 181608 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:54:15.961  INFO 181608 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:54:15.961  INFO 181608 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:54:15.962  INFO 181608 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:54:34.198  INFO 181608 --- [DefaultMessageListenerContainer-1] c.m.l.s.ConfigurationDataMessageListener : Received message ActiveMQTextMessage {commandId = 5, responseRequired = false, messageId = ID:INPU1WHP6101841-51810-1576125178775-32:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:INPU1WHP6101841-51810-1576125178775-32:1:1:1, destination = queue://com.eaton.eas.cloud.ConfigurationSettings, transactionId = null, expiration = 0, timestamp = 1576128263485, arrival = 0, brokerInTime = 1576128263485, brokerOutTime = 1576128263486, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@bd8cd31, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = String}
+2019-12-12 10:55:25.314  INFO 181608 --- [ActiveMQ Connection Executor: tcp://localhost/127.0.0.1:61616@57333] o.s.j.c.CachingConnectionFactory         : Encountered a JMSException - resetting the underlying JMS Connection
+
+javax.jms.JMSException: Connection reset
+	at org.apache.activemq.util.JMSExceptionSupport.create(JMSExceptionSupport.java:54) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.ActiveMQConnection.onAsyncException(ActiveMQConnection.java:1960) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.ActiveMQConnection.onException(ActiveMQConnection.java:1979) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportFilter.onException(TransportFilter.java:114) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.ResponseCorrelator.onException(ResponseCorrelator.java:126) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportFilter.onException(TransportFilter.java:114) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportFilter.onException(TransportFilter.java:114) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.WireFormatNegotiator.onException(WireFormatNegotiator.java:173) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.AbstractInactivityMonitor.onException(AbstractInactivityMonitor.java:345) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportSupport.onException(TransportSupport.java:96) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:219) ~[activemq-client-5.15.10.jar:5.15.10]
+	at java.lang.Thread.run(Thread.java:834) [?:?]
+Caused by: java.net.SocketException: Connection reset
+	at java.net.SocketInputStream.read(SocketInputStream.java:186) ~[?:?]
+	at java.net.SocketInputStream.read(SocketInputStream.java:140) ~[?:?]
+	at org.apache.activemq.transport.tcp.TcpBufferedInputStream.fill(TcpBufferedInputStream.java:50) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport$2.fill(TcpTransport.java:634) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpBufferedInputStream.read(TcpBufferedInputStream.java:59) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport$2.read(TcpTransport.java:619) ~[activemq-client-5.15.10.jar:5.15.10]
+	at java.io.DataInputStream.readInt(DataInputStream.java:392) ~[?:?]
+	at org.apache.activemq.openwire.OpenWireFormat.unmarshal(OpenWireFormat.java:268) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.readCommand(TcpTransport.java:240) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:232) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:215) ~[activemq-client-5.15.10.jar:5.15.10]
+	... 1 more
+
+2019-12-12 10:55:25.338  WARN 181608 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Setup of JMS message listener invoker failed for destination 'com.eaton.eas.cloud.ConfigurationSettings' - trying to recover. Cause: The Consumer is closed
+2019-12-12 10:55:25.338  WARN 181608 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Setup of JMS message listener invoker failed for destination 'com.eaton.eas.SystemData' - trying to recover. Cause: The Consumer is closed
+2019-12-12 10:55:26.356 ERROR 181608 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.cloud.ConfigurationSettings' - retrying using FixedBackOff{interval=5000, currentAttempts=0, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 10:55:27.372 ERROR 181608 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.SystemData' - retrying using FixedBackOff{interval=5000, currentAttempts=0, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 10:55:32.371 ERROR 181608 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.cloud.ConfigurationSettings' - retrying using FixedBackOff{interval=5000, currentAttempts=1, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 10:57:17.585  INFO 181212 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 181212 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 10:57:17.589  INFO 181212 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 10:57:18.349  INFO 181212 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.064 seconds (JVM running for 2.679)
+2019-12-12 10:57:18.355  INFO 181212 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 10:57:18.355  INFO 181212 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 10:57:18.356  INFO 181212 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:57:18.356  INFO 181212 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 10:57:18.356  INFO 181212 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 10:57:18.356  INFO 181212 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 12:55:25.340  INFO 181212 --- [ActiveMQ Connection Executor: tcp://localhost/127.0.0.1:61616@57807] o.s.j.c.CachingConnectionFactory         : Encountered a JMSException - resetting the underlying JMS Connection
+
+javax.jms.JMSException: Connection reset
+	at org.apache.activemq.util.JMSExceptionSupport.create(JMSExceptionSupport.java:54) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.ActiveMQConnection.onAsyncException(ActiveMQConnection.java:1960) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.ActiveMQConnection.onException(ActiveMQConnection.java:1979) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportFilter.onException(TransportFilter.java:114) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.ResponseCorrelator.onException(ResponseCorrelator.java:126) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportFilter.onException(TransportFilter.java:114) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportFilter.onException(TransportFilter.java:114) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.WireFormatNegotiator.onException(WireFormatNegotiator.java:173) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.AbstractInactivityMonitor.onException(AbstractInactivityMonitor.java:345) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.TransportSupport.onException(TransportSupport.java:96) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:219) ~[activemq-client-5.15.10.jar:5.15.10]
+	at java.lang.Thread.run(Thread.java:834) [?:?]
+Caused by: java.net.SocketException: Connection reset
+	at java.net.SocketInputStream.read(SocketInputStream.java:186) ~[?:?]
+	at java.net.SocketInputStream.read(SocketInputStream.java:140) ~[?:?]
+	at org.apache.activemq.transport.tcp.TcpBufferedInputStream.fill(TcpBufferedInputStream.java:50) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport$2.fill(TcpTransport.java:634) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpBufferedInputStream.read(TcpBufferedInputStream.java:59) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport$2.read(TcpTransport.java:619) ~[activemq-client-5.15.10.jar:5.15.10]
+	at java.io.DataInputStream.readInt(DataInputStream.java:392) ~[?:?]
+	at org.apache.activemq.openwire.OpenWireFormat.unmarshal(OpenWireFormat.java:268) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.readCommand(TcpTransport.java:240) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.doRun(TcpTransport.java:232) ~[activemq-client-5.15.10.jar:5.15.10]
+	at org.apache.activemq.transport.tcp.TcpTransport.run(TcpTransport.java:215) ~[activemq-client-5.15.10.jar:5.15.10]
+	... 1 more
+
+2019-12-12 12:55:25.354  WARN 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Setup of JMS message listener invoker failed for destination 'com.eaton.eas.cloud.ConfigurationSettings' - trying to recover. Cause: The Consumer is closed
+2019-12-12 12:55:25.354  WARN 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Setup of JMS message listener invoker failed for destination 'com.eaton.eas.SystemData' - trying to recover. Cause: The Consumer is closed
+2019-12-12 12:55:26.375 ERROR 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.cloud.ConfigurationSettings' - retrying using FixedBackOff{interval=5000, currentAttempts=0, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 12:55:27.389 ERROR 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.SystemData' - retrying using FixedBackOff{interval=5000, currentAttempts=0, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 12:55:32.389 ERROR 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.cloud.ConfigurationSettings' - retrying using FixedBackOff{interval=5000, currentAttempts=1, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 12:55:33.401 ERROR 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.SystemData' - retrying using FixedBackOff{interval=5000, currentAttempts=1, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 12:55:38.402 ERROR 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.cloud.ConfigurationSettings' - retrying using FixedBackOff{interval=5000, currentAttempts=2, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 12:55:39.417 ERROR 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.SystemData' - retrying using FixedBackOff{interval=5000, currentAttempts=2, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 12:55:44.417 ERROR 181212 --- [DefaultMessageListenerContainer-1] o.s.j.l.DefaultMessageListenerContainer  : Could not refresh JMS Connection for destination 'com.eaton.eas.cloud.ConfigurationSettings' - retrying using FixedBackOff{interval=5000, currentAttempts=3, maxAttempts=unlimited}. Cause: Could not connect to broker URL: tcp://localhost:61616. Reason: java.net.ConnectException: Connection refused: connect
+2019-12-12 13:49:56.693  INFO 194684 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 194684 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 13:49:56.696  INFO 194684 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 13:49:57.458  INFO 194684 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.084 seconds (JVM running for 2.746)
+2019-12-12 13:49:57.458  INFO 194684 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 13:49:57.459  INFO 194684 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 13:49:57.459  INFO 194684 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 13:49:57.459  INFO 194684 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 13:49:57.459  INFO 194684 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 13:49:57.459  INFO 194684 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 13:52:12.603  INFO 191300 --- [main] c.c.b.BootStrapService                   : Starting BootStrapService on INPU1WHP6101841 with PID 191300 (C:\Users\E9919043\git\yukon_new1\cloud-service\bin\main started by E9919043 in C:\Users\E9919043\git\yukon_new1\cloud-service)
+2019-12-12 13:52:12.608  INFO 191300 --- [main] c.c.b.BootStrapService                   : No active profile set, falling back to default profiles: default
+2019-12-12 13:52:13.667  INFO 191300 --- [main] c.c.b.BootStrapService                   : Started BootStrapService in 1.53 seconds (JVM running for 3.595)
+2019-12-12 13:52:13.668  INFO 191300 --- [main] c.c.b.BootStrapService                   : Starting Cloud Service
+2019-12-12 13:52:13.668  INFO 191300 --- [main] c.c.a.s.i.IOTHubService                  : Starting IOT Hub service
+2019-12-12 13:52:13.669  INFO 191300 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 13:52:13.669  INFO 191300 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache
+2019-12-12 13:52:13.669  INFO 191300 --- [main] c.c.a.s.i.IOTHubService                  : Get Configuration setting for IOT Hub Service
+2019-12-12 13:52:13.670  INFO 191300 --- [main] c.c.d.p.DataProvider                     : Getting configuration information from cache

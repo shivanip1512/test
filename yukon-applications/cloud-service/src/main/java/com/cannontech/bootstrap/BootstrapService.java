@@ -15,13 +15,13 @@ import com.cannontech.cloud.service.CloudService;
  * JMS Listener and publishers will be started automatically.
  */
 @SpringBootApplication(scanBasePackages = "com.cannontech")
-public class BootStrapService implements CommandLineRunner {
+public class BootstrapService implements CommandLineRunner {
 
-    Logger log = (Logger) LogManager.getLogger(BootStrapService.class);
+    Logger log = (Logger) LogManager.getLogger(BootstrapService.class);
     @Autowired CloudService cloudServices;
 
     public static void main(String[] args) {
-        SpringApplication.run(BootStrapService.class, args);
+        SpringApplication.run(BootstrapService.class, args);
     }
 
     @Override
