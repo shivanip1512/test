@@ -237,12 +237,16 @@ DatabaseReader::operator float()
 
 DatabaseReader::operator CtiTime()
 {
-    return CtiTime{(struct tm*)&_command[_currentIndex].asDateTime()};
+    tm t = _command[_currentIndex].asDateTime();
+
+    return CtiTime { &t };
 }
 
 DatabaseReader::operator boost::posix_time::ptime()
 {
-    return boost::posix_time::from_time_t(mktime((struct tm*)&_command[_currentIndex].asDateTime()));
+    tm t = _command[_currentIndex].asDateTime();
+
+    return boost::posix_time::from_time_t(mktime(&t));
 }
 
 DatabaseReader::operator std::string()
