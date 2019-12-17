@@ -10,9 +10,9 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
-import com.cannontech.common.rfn.message.route.RfnChildren;
 import com.cannontech.common.rfn.message.route.RfnRoute;
 import com.cannontech.common.rfn.message.route.RouteData;
+import com.cannontech.common.rfn.message.tree.RfnVertex;
 
 /**
  * Query (constant) can be used alone or combined.
@@ -59,17 +59,24 @@ public enum RfnMetadataMulti implements Serializable {
     // Support network tree query: descendant count (YUK-20089, YUK-20090) and primary route to Gateway
     PRIMARY_FORWARD_DESCENDANT_COUNT(Integer.class, 1000, EntityType.NODE),
 
+    PRIMARY_FORWARD_TREE(RfnVertex.class, 1000, EntityType.NODE),
+    
+    // Same as above but requesting a refresh
+    PRIMARY_FORWARD_TREE_REFRESH(RfnVertex.class, 1000, EntityType.NODE),
+    
     PRIMARY_FORWARD_ROUTE(RfnRoute.class, 1000, EntityType.NODE),
     
-    PRIMARY_FORWARD_CHILDREN(RfnChildren.class, 1000, EntityType.NODE), // reserved for future use
+    // PRIMARY_FORWARD_CHILDREN(RfnChildren.class, 1000, EntityType.NODE), // reserved for future use
     
     PRIMARY_FORWARD_GATEWAY(RfnIdentifier.class, 1000, EntityType.NODE),
         
     // The following query will replace the legacy network.RfnNeighborDataRequest eventually
     // NEIGHBOR(Neighbor.class, 1000, EntityType.GATEWAY, EntityType.NODE),
 
-    // Note: the following query use the primary (reverse) gateway, it will no longer be used for any Mapping query.
-    // Once Yukon replaces it with PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_ROUTE, I am going to remove it.
+    // Note: the following query uses the legacy NM-decided primary gateway,
+    // Since it may be different from the primary forward route gateway, it should not be used for any RF-Mapping query.
+    // Once Yukon replaces it with PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_ROUTE and PRIMARY_FORWARD_TREE,
+    // I am going to remove this value.
     PRIMARY_GATEWAY_NODES(GatewayNodes.class, 1000, EntityType.GATEWAY),
     ;
    
