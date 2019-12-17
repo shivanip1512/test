@@ -53,7 +53,7 @@ public class DataProvider {
      */
     public Map<String, SystemData> getSystemInformation() {
         // Read the system information cache which have latest value and pass it as string
-        log.debug("Systems data: "+ systemData);
+        log.debug("Systems data: " + systemData);
         return systemData;
     }
 
@@ -63,7 +63,7 @@ public class DataProvider {
      */
     public void updateSystemInformation(SystemData data) {
         log.info("Updating system information");
-        systemData.put(data.getFieldName(),data);
+        systemData.put(data.getFieldName(), data);
     }
 
     /**
