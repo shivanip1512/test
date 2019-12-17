@@ -21,24 +21,21 @@ public class LoadGroupPointAPITest {
     @Test
     public void loadGroupPoint_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupPoint_01_Create");
-
         MockLoadGroupPoint loadGroup = (MockLoadGroupPoint) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_POINT);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
         context.setAttribute(LoadGroupHelper.CONTEXT_GROUP_ID, createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
-
         assertTrue(createResponse.statusCode() == 200, "Status code should be 200");
         assertTrue(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID) != null, "Group Id should not be Null");
         loadGroup.setId(createResponse.path(LoadGroupHelper.CONTEXT_GROUP_ID));
         context.setAttribute("expectedloadGroup", loadGroup);
-
         Log.endTestCase("loadGroupPoint_01_Create");
     }
 
     @Test(dependsOnMethods = "loadGroupPoint_01_Create")
     public void loadGroupPoint_02_Get(ITestContext context) {
         Log.startTestCase("loadGroupPoint_02_Get");
-
         Log.info("Group Id of LmGroupPoint created is : " + context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID));
+
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getloadgroup",
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
@@ -73,21 +70,22 @@ public class LoadGroupPointAPITest {
                 loadGroup,
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
+
         ExtractableResponse<?> getupdatedResponse = ApiCallHelper.get("getloadgroup",
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+
         MockLoadGroupPoint updatedLoadGroupResponse = getupdatedResponse.as(MockLoadGroupPoint.class);
         assertTrue(name.equals(updatedLoadGroupResponse.getName()), "Name Should be : " + name);
         assertTrue(loadGroup.getType().equals(updatedLoadGroupResponse.getType()), "Type Should be : " + loadGroup.getType());
         assertTrue(loadGroup.getKWCapacity().equals(updatedLoadGroupResponse.getKWCapacity()),
                 "kWCapacity Should be : " + loadGroup.getKWCapacity());
-
         Log.endTestCase("loadGroupPoint_03_Update");
     }
 
     @Test(dependsOnMethods = "loadGroupPoint_03_Update")
     public void loadGroupPoint_04_Copy(ITestContext context) {
-        Log.startTestCase("loadGroupPoint_04_Copy");
 
+        Log.startTestCase("loadGroupPoint_04_Copy");
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_POINT)).build();
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup",
@@ -102,7 +100,6 @@ public class LoadGroupPointAPITest {
         MockLoadGroupPoint loadGroupResponse = getResponse.as(MockLoadGroupPoint.class);
         context.setAttribute("Copied_Point_GrpName", loadGroupResponse.getName());
         context.setAttribute("Copied_Point_GrpId", loadGroupResponse.getId());
-
         Log.endTestCase("loadGroupPoint_04_Copy");
     }
 
