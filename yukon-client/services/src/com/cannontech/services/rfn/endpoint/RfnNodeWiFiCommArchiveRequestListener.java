@@ -87,7 +87,6 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
      */
     private Long publishPointData(Entry<Long, NodeWiFiComm> entry, String processor) {
         PointData pointData = null;
-        
         BuiltInAttribute commStatus = BuiltInAttribute.COMM_STATUS;
         BuiltInAttribute rSSI = BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR;
         NodeWiFiComm wiFiComm = entry.getValue();
@@ -113,7 +112,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
             log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, commStatus,
                     commStatusValue, e);
         }
-        
+
         // if the RSSI value is not null then archive it
         if (rSSIValue != null) {
             try {
@@ -135,7 +134,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
                         rSSIValue, e);
             }
         }
-        
+
         return entry.getKey();
     }
 
