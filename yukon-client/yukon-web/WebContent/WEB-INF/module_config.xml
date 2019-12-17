@@ -1730,6 +1730,7 @@
           <page name="bulkPointInjection" type="BASIC"/>
           <page name="highSpeedBulkPointInjection" type="BASIC"/>
           <page name="bulkImportFileGenerator" type="BASIC"/>
+          <page name="relayStateInjection" type="BASIC"/>
           <page name="setupDatabase" type="BASIC"/>
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="deviceGroupSimulator" type="BASIC"/>
