@@ -24,6 +24,7 @@
                 <ul class="simple-list">
                     <li><a href="<cti:url value="/dev/pointInjection/main"/>">Point Injection</a></li>
                     <li><a href="<cti:url value="/dev/bulkPointInjection/home"/>">Bulk Point Injection</a></li>
+                    <li><a href="<cti:url value="/dev/relayStateInjection/relayStateInjection"/>">Relay State Injection</a></li>
                     <li><a href="<cti:url value="/dev/setupDatabase/main"/>">Setup Development Database</a></li>
                     <li><a href="<cti:url value="/dev/miscellaneousMethod/main"/>">Miscellaneous Methods</a></li>
                     <li><a href="<cti:url value="/dev/db-change"/>">DbChange Messages</a></li>
