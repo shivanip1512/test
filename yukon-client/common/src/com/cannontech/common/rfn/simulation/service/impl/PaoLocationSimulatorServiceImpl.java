@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -35,6 +35,7 @@ import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -50,31 +51,22 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
     
     private static final int MAX_RADIUS_IN_METERS = 50000;
     private static final int MAX_DEVICE_COUNT = 250000;
-    // office
-    private static final double latitude = 44.985565;
-    private static final double longitude = -93.404157;
     
-    private static class CubFoods {
-        private double latitude;
-        private double longitude;
-        public CubFoods(double latitude, double longitude) {
-            this.latitude = latitude;
+    public static class Starbucks {
+        public double longitude;
+        public double latitude;
+        public Starbucks(double longitude, double latitude) {
             this.longitude = longitude;
+            this.latitude = latitude;
+        }
+        @Override
+        public String toString() {
+            return longitude+" "+latitude+"\n";
         }
     }
-    private static List<CubFoods> gatewayLocations = new ArrayList<>();
-    {
-        gatewayLocations.add(new CubFoods(45.021110, -93.479910));
-        gatewayLocations.add(new CubFoods(45.124490, -93.450420));
-        gatewayLocations.add(new CubFoods(45.035020, -93.409390));
-        gatewayLocations.add(new CubFoods(45.058660, -93.322500));
-        gatewayLocations.add(new CubFoods(44.985930, -93.445440));
-        gatewayLocations.add(new CubFoods(45.019370, -93.360530));
-        gatewayLocations.add(new CubFoods(44.993120, -93.150460));
-        gatewayLocations.add(new CubFoods(44.915640, -93.501860));
-        gatewayLocations.add(new CubFoods(44.951510, -93.235660));
-        gatewayLocations.add(new CubFoods(44.893320, -93.581530));
-    }
+    
+   private static String simulatedGateway = "Simulated Gateway";
+   private static int numberOfDevicesPerGateway = 5000;
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private PaoLocationDao paoLocationDao;
@@ -82,7 +74,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ConfigurationSource configurationSource;
-    private Executor executor = Executors.newScheduledThreadPool(1);
+    @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     
     private JmsTemplate jmsTemplate;
     
@@ -91,103 +83,145 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setReceiveTimeout(NmNetworkSimulatorServiceImpl.incomingMessageWaitMillis);
     }
-    
-    
+  
     @Override
     public void setupLocations() {
         String templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         log.info("Setting up locations");
+        log.info("Deleteing locations created by simulator");
         paoLocationDao.delete(Origin.SIMULATOR);
+        log.info("Deleting gateway to device mappings");
         rfnDeviceDao.clearDynamicRfnDeviceData();
-            
-        executor.execute(() -> {
-            Map<PaoIdentifier, PaoLocation> locations =
-                    Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
-            
-            log.info("Existing locations that are not simulated:" + locations.size());
-            
-            List<LiteYukonPAObject> devices = cache.getAllDevices().stream()
-                    .filter(device -> ! device.getPaoName().contains(templatePrefix) && !locations.containsKey(device.getPaoIdentifier()) && !device.getPaoType().isRfGateway())
-                    .collect(Collectors.toList());
-            
-            log.info("Device to simulate:" + devices.size());
-            
-            List<LiteYukonPAObject> rfnDevices = devices.stream().filter(device -> device.getPaoType()
+
+        List<Starbucks> starbucksLocations = SimulatedLocationParser.parseStarbucksLocations();
+        log.info("Parsed starbucks locations {}", starbucksLocations);
+        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
+
+        log.info("{} not sumulated locations", locations.size());
+
+        List<LiteYukonPAObject> devices = cache.getAllDevices().stream()
+                .filter(device -> !device.getPaoName().contains(templatePrefix)
+                        && !locations.containsKey(device.getPaoIdentifier()) && !device.getPaoType().isRfGateway())
+                .collect(Collectors.toList());
+
+        List<LiteYukonPAObject> allRfnDevices = devices.stream().filter(device -> device.getPaoType()
                 .isRfn()).collect(Collectors.toList());
-            
-            log.info("RF devices:" + rfnDevices.size());
-            
-            List<LiteYukonPAObject> nonRfnDevices = devices.stream().filter(device -> !device.getPaoType()
+
+        List<LiteYukonPAObject> nonRfnDevices = devices.stream().filter(device -> !device.getPaoType()
                 .isRfn()).collect(Collectors.toList());
-            
-            log.info("NON RF devices:" + nonRfnDevices.size());
-            
-            int estimatedRadius = getEstimatedRadius(nonRfnDevices.size());
-            // add locations for devices that are not RF
-            List<PaoLocation> newLocations = nonRfnDevices.stream()
-                    .map(device -> getLocation(device.getPaoIdentifier(), latitude, longitude, estimatedRadius))
-                    .collect(Collectors.toList());
-                    
-            log.info("Locations for NON RF devices:" + newLocations.size());
-            
-            createRfnIdentifiers(rfnDevices); 
-            
-            //Limit gateways in Yukon to 10 that will be mapped to devices. We will map those gateways to 10 Cub Foods.
-            List<RfnGateway> gateways = rfnGatewayService.getAllGateways().stream()
-                    .filter(gateway -> !locations.containsKey(gateway.getPaoIdentifier()))
-                    .limit(gatewayLocations.size())
-                    .collect(Collectors.toList());
-            
-            log.info("Gateways:" + gateways.size());
-            //split devices between gateways
-            List<List<LiteYukonPAObject>> rfnDevicesSplit = partition(rfnDevices, gateways.size());
-            
-            log.info("Partitioned devices into parts:" + rfnDevicesSplit.size());
-            
-            RfnNodeCommArchiveRequest request = new RfnNodeCommArchiveRequest();
-            request.setNodeComms(new HashMap<Long, NodeComm>());
-            AtomicLong ackId = new AtomicLong(1);
-            for(int i = 0; i < gateways.size(); i++) {
-                RfnGateway gateway = gateways.get(i);
-                CubFoods cub = gatewayLocations.get(i);                
-                List<LiteYukonPAObject> devicesForGateway = rfnDevicesSplit.get(i);
-                
-                log.info("Mapping gateway:" + gateway + " to Cub Foods:" + i + " devices:" + devicesForGateway.size());
-                
-                //radius around CubFoods
-                int radius = getEstimatedRadius(devicesForGateway.size());
-                //add gateway location
-                newLocations.add(new PaoLocation(gateway.getPaoIdentifier(), cub.latitude, cub.longitude,
-                    Origin.SIMULATOR, new Instant()));
-                //calculate device location within a certain radius around Cub Foods
-                newLocations.addAll(devicesForGateway.stream()
-                    .map(device -> getLocation(device.getPaoIdentifier(), cub.latitude, cub.longitude, radius))
-                    .collect(Collectors.toList()));
-                //map gateway to device
-                List<Integer> devicesIds = devicesForGateway.stream()
-                    .map(device -> device.getLiteID()).collect(Collectors.toList());
-                rfnDeviceDao.getDevicesByPaoIds(devicesIds).forEach(device ->{
-                    NodeComm nodeComm = new NodeComm();
-                    nodeComm.setDeviceRfnIdentifier(device.getRfnIdentifier());
-                    nodeComm.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
-                    nodeComm.setNodeCommStatus(NodeCommStatus.READY);
-                    nodeComm.setNodeCommStatusTimestamp(System.currentTimeMillis());
-                    request.getNodeComms().put(ackId.getAndIncrement(), nodeComm);
-                });
+
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        log.info("{} gateways {} devices rfn {} none rfn {}", gateways.size(), devices.size(), allRfnDevices.size(),
+                nonRfnDevices.size());
+
+        // If RFN identifiers do not exist creates identifiers
+        createRfnIdentifiers(allRfnDevices);
+
+        // split devices between gateways
+        List<List<LiteYukonPAObject>> rfnDevicesSplit = Lists.partition(allRfnDevices, numberOfDevicesPerGateway);
+        // we are going to add none rfn devices around the gateways as well
+        List<List<LiteYukonPAObject>> noneRfnDevicesSplit = partitionByChunks(nonRfnDevices, rfnDevicesSplit.size());
+
+        log.info("Partitioned device chunks: rfn devices {} none rfn devices {}", rfnDevicesSplit.size(),
+                noneRfnDevicesSplit.size());
+
+        int newGatewaysToCreate = rfnDevicesSplit.size() - gateways.size();
+        if (newGatewaysToCreate > 0) {
+            createNewGateways(gateways, newGatewaysToCreate);
+            gateways = rfnGatewayService.getAllGateways();
+        }
+
+        int starbucksCounter = 0;
+        int deviceChunkCounter = 0;
+
+        // radius around starbucks
+        int radius = getEstimatedRadius(numberOfDevicesPerGateway);
+
+        List<PaoLocation> newLocations = new ArrayList<>();
+
+        for (RfnGateway gateway : gateways) {
+            List<LiteYukonPAObject> rfnDevices = rfnDevicesSplit.get(deviceChunkCounter);
+            if (rfnDevices == null) {
+                break;
             }
-            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_COMM_ARCHIVE.getQueue().getName(), request);
-            log.info("Inserting " + newLocations.size() + " locations.");
-            paoLocationDao.save(newLocations);
-            log.info("Inserting " + newLocations.size() + " locations is done.");
+            PaoLocation gatewayLocation = locations.get(gateway.getPaoIdentifier());
+            if (gatewayLocation == null) {
+                log.info("mapping {} to the starbucks #{}", gateway.getName(), starbucksCounter);
+                Starbucks location = starbucksLocations.get(starbucksCounter++);
+                gatewayLocation = new PaoLocation(gateway.getPaoIdentifier(), location.latitude, location.longitude,
+                        Origin.SIMULATOR, new Instant());
+                newLocations.add(gatewayLocation);
+            }
+            addDeviceLocations(radius, newLocations, gatewayLocation, rfnDevices);
+            List<LiteYukonPAObject> noneRfnDevices = noneRfnDevicesSplit.get(deviceChunkCounter);
+            if (noneRfnDevices != null) {
+                log.info("creating  location for none rfn devices {}", noneRfnDevices.size());
+                addDeviceLocations(radius, newLocations, gatewayLocation, noneRfnDevices);
+            }
+            sendsNodeCommRequest(gateway, rfnDevices);
+            deviceChunkCounter++;
+        }
+        log.info("Inserting " + newLocations.size() + " locations.");
+        paoLocationDao.save(newLocations);
+        log.info("Inserting " + newLocations.size() + " locations is done.");
+    }
+
+    /**
+     * Sends request to map devices to gateway
+     */
+    private void sendsNodeCommRequest(RfnGateway gateway,
+            List<LiteYukonPAObject> devicesForGateway) {
+        RfnNodeCommArchiveRequest request = new RfnNodeCommArchiveRequest();
+        request.setNodeComms(new HashMap<Long, NodeComm>());         
+        
+        AtomicLong ackId = new AtomicLong(1);
+        List<Integer> devicesIds = devicesForGateway.stream()
+            .map(device -> device.getLiteID()).collect(Collectors.toList());
+        rfnDeviceDao.getDevicesByPaoIds(devicesIds).forEach(device ->{
+            NodeComm nodeComm = new NodeComm();
+            nodeComm.setDeviceRfnIdentifier(device.getRfnIdentifier());
+            nodeComm.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
+            nodeComm.setNodeCommStatus(NodeCommStatus.READY);
+            nodeComm.setNodeCommStatusTimestamp(System.currentTimeMillis());
+            request.getNodeComms().put(ackId.getAndIncrement(), nodeComm);
         });
+        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_COMM_ARCHIVE.getQueue().getName(), request);
+        log.info("Sending request to map {} devices to {} gateway", devicesForGateway.size(), gateway.getName());
+    }
+
+    /**
+     * Calculated device location within a certain radius
+     */
+    private void addDeviceLocations(int radius, List<PaoLocation> newLocations, PaoLocation gatewayLocation,
+            List<LiteYukonPAObject> devicesForGateway) {
+        newLocations.addAll(devicesForGateway.stream()
+            .map(device -> getLocation(device.getPaoIdentifier(), gatewayLocation.getLatitude(), gatewayLocation.getLongitude(), radius))
+            .collect(Collectors.toList()));
     }
     
-    private List<List<LiteYukonPAObject>> partition(List<LiteYukonPAObject> allDevices, int divisor) {
+    private void createNewGateways(Set<RfnGateway> existingGateways, int numberOfNewGateways) {
+        AtomicInteger counter = new AtomicInteger(0);
+        log.info("Creating {} gateways", numberOfNewGateways);
+        while (numberOfNewGateways != 0) {
+            int i = counter.incrementAndGet();
+            if (existingGateways.stream()
+                    .filter(gateway -> gateway.getName().equals(simulatedGateway + " " + i))
+                    .findFirst().isPresent()) {
+                continue;
+            }
+            RfnIdentifier identifier = new RfnIdentifier("CPS_RFGateway_" + i, "CPS", "RFGateway");
+            String name = simulatedGateway + " " + i;
+            log.info("Creating {} {}", name, identifier);
+            rfnDeviceCreationService.createGateway(name, identifier);
+            numberOfNewGateways--;
+        }
+    }
+
+    private List<List<LiteYukonPAObject>> partitionByChunks(List<LiteYukonPAObject> allDevices, int divisor) {
         int chunk = IntMath.divide(allDevices.size(), divisor, RoundingMode.CEILING);
         return Lists.partition(allDevices, chunk);
     }
     
-    //If RFN identifiers do not exist creates identifiers
     private void createRfnIdentifiers(List<LiteYukonPAObject> devices) {
         List<LiteYukonPAObject> rfnDevices =
             devices.stream().filter(d -> d.getPaoType().isRfn()).collect(Collectors.toList());
