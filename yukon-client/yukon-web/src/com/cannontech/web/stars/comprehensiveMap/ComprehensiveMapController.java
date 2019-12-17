@@ -38,6 +38,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -48,6 +49,7 @@ import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -98,7 +100,6 @@ public class ComprehensiveMapController {
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
 
-    
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
     
     @GetMapping("home")
@@ -265,7 +266,19 @@ public class ComprehensiveMapController {
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "ComprehensiveMapDownload_" + now + ".csv");
 
-      }
+    }
+    
+    @GetMapping("allGateways")
+    public @ResponseBody FeatureCollection allGateways() {
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        return paoLocationService.getLocationsAsGeoJson(gateways);
+    }
+    
+    @GetMapping("allRelays")
+    public @ResponseBody FeatureCollection allRelays() {
+        List<RfnDevice> relays = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfRelayTypes());
+        return paoLocationService.getLocationsAsGeoJson(relays);
+    }
     
     @GetMapping("allPrimaryRoutes")
     public @ResponseBody List<FeatureCollection> primaryRoutes(String groupName) {

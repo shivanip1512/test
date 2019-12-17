@@ -52,6 +52,7 @@ yukon.map.location = (function () {
             $(document).on('click', '.js-edit-coordinates', function() {
                 $('.js-view-display').addClass('dn');
                 $('.js-edit-display').removeClass('dn');
+                $('.js-infrastructure').addClass('dn');
             });
             
             $(document).on('click', '.js-cancel', function() {

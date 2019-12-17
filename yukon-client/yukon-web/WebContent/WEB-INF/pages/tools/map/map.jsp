@@ -38,46 +38,53 @@
     <c:if test="${not empty mappingColors}"><cti:toJson id="mappingColorJson" object="${mappingColors}"/></c:if>
     
     <div id="map-container" style="height:100%;width:100%;background:white;">
-        <c:if test="${empty dynamic}">
-            <div class="fr">
-                <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
-                <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
-            </div>
-            
-            <div id="map-popup" data-dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter"
-                data-width="500" data-height="250">
-                <cti:url value="/tools/map/filter" var="filterUrl"/>
-                <form:form modelAttribute="filter" id="filter-form" action="${filterUrl}">
-                    <cti:csrfToken/>
-                    <cti:deviceCollection deviceCollection="${deviceCollection}"/>
-                    <form:hidden path="tempDeviceGroupName"/>
-                    <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
-                        <cti:msg2 key=".chooseAttribute" var="chooseAttribute"/>
-                        <tags:selectNameValue nameKey=".attribute" path="attribute" items="${attributes}" itemLabel="message"
-                            itemValue="key" groupItems="true" id="attribute-select" defaultItemLabel="${chooseAttribute}"
-                            defaultItemValue="-1"/>
-                        <tags:nameValue2 nameKey=".states" valueClass="full-width">
-                            <div id="waiting-for-states" class="dn">
-                                <cti:icon icon="icon-spinner" style="margin-top:5px;"/>
-                                <i:inline key=".retrievingStates"/>
-                            </div>
-                            <div id="no-states-for-attribute" class="dn">
-                                <cti:icon icon="icon-error" style="margin-top:5px;"/>
-                                <i:inline key=".noStatesForAttribute"/>
-                            </div>
-                            <div id="filter-states"></div>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </form:form>
-            </div>
-            <div id="state-group-template" class="dn">
-                <input type="hidden" name="groups[?].id"> <select name="groups[?].state"></select>
-            </div>
-        </c:if>
 
-        <div class="column-18-6 clearfix stacked">
+        <div class="column-10-14 clearfix stacked">
             <div class="column one">
-
+            </div>
+            <div class="column two nogutter fr">
+                <c:if test="${empty dynamic}">
+                    <div class="fr">
+                        <cti:button id="filter-btn" icon="icon-filter" nameKey="filter" data-popup="#map-popup"/>
+                        <cti:button id="no-filter-btn" icon="icon-cross disabled cp" classes="right dn" renderMode="buttonImage"/>
+                    </div>
+                    
+                    <div id="map-popup" data-dialog class="dn" data-title="<cti:msg2 key=".filter.title"/>" data-event="yukon.map.filter"
+                        data-width="500" data-height="250">
+                        <cti:url value="/tools/map/filter" var="filterUrl"/>
+                        <form:form modelAttribute="filter" id="filter-form" action="${filterUrl}">
+                            <cti:csrfToken/>
+                            <cti:deviceCollection deviceCollection="${deviceCollection}"/>
+                            <form:hidden path="tempDeviceGroupName"/>
+                            <tags:nameValueContainer2 tableClass="with-form-controls" naturalWidth="false">
+                                <cti:msg2 key=".chooseAttribute" var="chooseAttribute"/>
+                                <tags:selectNameValue nameKey=".attribute" path="attribute" items="${attributes}" itemLabel="message"
+                                    itemValue="key" groupItems="true" id="attribute-select" defaultItemLabel="${chooseAttribute}"
+                                    defaultItemValue="-1"/>
+                                <tags:nameValue2 nameKey=".states" valueClass="full-width">
+                                    <div id="waiting-for-states" class="dn">
+                                        <cti:icon icon="icon-spinner" style="margin-top:5px;"/>
+                                        <i:inline key=".retrievingStates"/>
+                                    </div>
+                                    <div id="no-states-for-attribute" class="dn">
+                                        <cti:icon icon="icon-error" style="margin-top:5px;"/>
+                                        <i:inline key=".noStatesForAttribute"/>
+                                    </div>
+                                    <div id="filter-states"></div>
+                                </tags:nameValue2>
+                            </tags:nameValueContainer2>
+                        </form:form>
+                    </div>
+                    <div id="state-group-template" class="dn">
+                        <input type="hidden" name="groups[?].id"> <select name="groups[?].state"></select>
+                    </div>
+                </c:if>
+            </div>
+        </div>
+        
+        <div class="column-18-6 clearfix stacked">
+            <div class="column one fl">
+            
                 <c:set var="deviceCollectionKey" value="${!empty monitorId ? 'yukon.web.modules.tools.map.monitorDevices' : ''}" />
                 <tags:selectedDevices deviceCollection="${deviceCollection}" id="device-collection" labelKey="${deviceCollectionKey}" />
                 <cti:url var="downloadUrl" value="/tools/map/locations/download">
@@ -146,7 +153,7 @@
                     <i:inline key=".status.loading" />
                 </div>
             </div>
-            <div class="column two nogutter">
+            <div class="column two nogutter fr P0">
                 <c:if test="${!empty monitorId}">
                     <input type="hidden" id="monitorId" value="${monitorId}" />
                     <cti:url value="/tools/map/locations/${monitorType}/${monitorId}" var="monitorLocationsUrl" />
@@ -174,9 +181,17 @@
                     <cti:icon icon="icon-spinner" />
                     <i:inline key=".status.filtering" />
                 </div>
+                
+                <span class="fr PT10">
+                    <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="180px">
+                        <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
+                        <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
+<%--                         <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/> --%>
+                    </cm:criteria>
+                </span>
             </div>
-
         </div>
+        
         <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
         <div class="buffered">
             <div id="mouse-position" class="fl detail"></div>

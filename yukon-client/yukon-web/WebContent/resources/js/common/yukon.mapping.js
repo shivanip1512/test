@@ -17,12 +17,35 @@ yukon.mapping = (function () {
     
     //Line Color depends on ETX Band 1 - #006622(GREEN), 2 - #669900(LIGHT GREEN), 3 - #CCA300(YELLOW), 4 - #FF6600(ORANGE), 5 and up - #FF0000(RED)
     _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
+    //dark blue
+    _routeColor = "#0000CC",
+    
+    //lines should go beneath icons
+    _lineLayerIndex = 3,
     
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
     _srcProjection = 'EPSG:4326',
+    
+    //Gateways should always display on top, followed by relays and finally meters
+    _iconZIndex = 1,
+    _relayZIndex = 2,
+    _gatewayZIndex = 3,
+    
+    //gateways should be the largest icons, then relays, then meters
+    _deviceScale = 0.8,
+    _relayScale = 0.9,
+    _gatewayScale = 1,
+    _largerScale = 1.3,
 
     _elevationLayer,
+    _allGatewayIcons = [],
+    _allRelayIcons = [],
+    _allRoutesIcons = [],
+    _allRoutesLines = [],
+    
+    /** @type {ol.Map} - The openlayers map object. */
+    _map = {},
     
     /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
     _styles = { 
@@ -76,6 +99,19 @@ yukon.mapping = (function () {
                 window.location.href = yukon.url('/stars/mapNetwork/home') + '?deviceId=' + deviceId;
             });
             
+            $(document).on('change', '.js-all-gateways', function () {
+                yukon.mapping.showHideAllGateways();
+            });
+            
+            $(document).on('change', '.js-all-relays', function () {
+                yukon.mapping.showHideAllRelays();
+            });
+            
+            /** Add all primary routes to the map **/
+            $(document).on('change', '.js-all-routes', function() {
+                yukon.mapping.showHideAllRoutes();
+            });
+            
             $('#map-tiles button').click(function (ev) {
                 $(this).siblings().removeClass('on');
                 $(this).addClass('on');
@@ -87,6 +123,10 @@ yukon.mapping = (function () {
             });
             
             _initialized = true;
+        },
+        
+        initializeMap: function(map) {
+            _map = map;
         },
         
         getStyles: function() {
@@ -103,6 +143,61 @@ yukon.mapping = (function () {
         
         getSrcProjection: function() {
             return _srcProjection;
+        },
+        
+        getLineLayerIndex: function() {
+            return _lineLayerIndex;
+        },
+        
+        getRouteColor: function() {
+            return _routeColor;
+        },
+        
+        getLargerScale: function() {
+            return _largerScale;
+        },
+        
+        getIconLayer: function() {
+            var iconLayer;
+            _map.getLayers().forEach(function (layer) {
+                if (layer.get('name') === 'icons') {
+                    iconLayer = layer;
+                }
+            });
+            return iconLayer;
+        },
+        
+        findFocusDevice: function(deviceId, makeLarger) {
+            var iconLayer = yukon.mapping.getIconLayer(),
+                source = iconLayer.getSource(),
+                feature = source.getFeatureById(deviceId);
+            if (feature && makeLarger) {
+                yukon.mapping.makeDeviceIconLarger(feature);
+            }
+            return feature;
+        },
+        
+        makeDeviceIconLarger: function(icon) {
+            var largerStyle = icon.getStyle().clone();
+            largerStyle.getImage().setScale(_largerScale);
+            icon.setStyle(largerStyle);
+        },
+        
+        setScaleForDevice: function(feature) {
+            var currentStyle = feature.getStyle().clone(),
+                scale = _deviceScale,
+                pao = feature.get('pao');
+            currentStyle.setZIndex(_iconZIndex);
+            //make larger and put on top layer if relay or gateway
+            if (pao.paoType === 'RFN_RELAY') {
+                scale = _relayScale;
+                currentStyle.setZIndex(_relayZIndex);
+            } else if (pao.paoType === 'RFN_GATEWAY' || pao.paoType === 'GWY800' || pao.paoType === 'VIRTUAL_GATEWAY') {
+                scale = _gatewayScale;
+                currentStyle.setZIndex(_gatewayZIndex);
+            }
+            currentStyle.getImage().setScale(scale);
+            feature.setStyle(currentStyle);
         },
         
         displayCommonPopupProperties: function(pao) {
@@ -364,6 +459,151 @@ yukon.mapping = (function () {
                 button.addClass('on');
                 map.addLayer(_elevationLayer);
             }
+        },
+        
+        addFeatureToMapAndArray: function(feature, iconArray) {
+            var iconLayer = yukon.mapping.getIconLayer(),
+                source = iconLayer.getSource(),
+                pao = feature.properties.paoIdentifier,
+                style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                icon = new ol.Feature({ pao: pao });
+            icon.setId(feature.id);
+        
+            //check if device already exists on map
+            var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, false);
+            if (deviceFound) {
+                icon = deviceFound;
+            } else {
+                icon.setStyle(style);
+                yukon.mapping.setScaleForDevice(icon);
+                if (_srcProjection === _destProjection) {
+                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                } else {
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
+                }
+                
+                iconArray.push(icon);
+                source.addFeature(icon);
+            }
+            return icon;
+        },
+        
+        showHideAllGateways: function(map) {
+            var checked = $('.js-all-gateways').find(':checkbox').prop('checked');
+            if (!checked) {
+                yukon.mapping.removeAllGatewayIcons();
+            } else {
+                $.ajax({
+                    url: yukon.url('/stars/comprehensiveMap/allGateways'),
+                    type: 'get'
+                }).done( function(data) {
+                    for (var x in data.features) {
+                        var feature = data.features[x];
+                        yukon.mapping.addFeatureToMapAndArray(feature, _allGatewayIcons);
+                    }
+                });
+            }
+        },
+        
+        showHideAllRelays: function(map) {
+            var checked = $('.js-all-relays').find(':checkbox').prop('checked');
+            if (!checked) {
+                yukon.mapping.removeAllRelayIcons();
+            } else {
+                $.ajax({
+                    url: yukon.url('/stars/comprehensiveMap/allRelays'),
+                    type: 'get'
+                }).done( function(data) {
+                    for (var x in data.features) {
+                        var feature = data.features[x];
+                        yukon.mapping.addFeatureToMapAndArray(feature, _allRelayIcons);
+                    }
+                });
+            }
+        },
+        
+        
+        showHideAllRoutes: function() {
+            var checked = $('.js-all-routes').find(':checkbox').prop('checked');
+            if (!checked) {
+                yukon.mapping.removeAllRoutesLayers();
+            } else {
+                var mapContainer = $('#map-container'),
+                    collectionGroup = $('#collection-group').val(),
+                    primaryRoutePreviousPoints;
+
+                yukon.ui.block(mapContainer);
+                $.getJSON(yukon.url('/stars/comprehensiveMap/allPrimaryRoutes?groupName=' + collectionGroup))
+                .done(function (json) {
+                    for (var x in json) {
+                        var route = json[x],
+                            routeLineWidth = 2.5;
+
+                        for (var x in route.features) {
+                            var feature = route.features[x];
+                            icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
+                            
+                            //draw line
+                            if (primaryRoutePreviousPoints != null) {
+                                var points = [];
+                                points.push(icon.getGeometry().getCoordinates());
+                                points.push(primaryRoutePreviousPoints)
+                                
+                                var layerLines = new ol.layer.Vector({
+                                    source: new ol.source.Vector({
+                                        features: [new ol.Feature({
+                                            geometry: new ol.geom.LineString(points),
+                                            name: 'Line'
+                                        })]
+                                    }),
+                                    style: new ol.style.Style({
+                                        stroke: new ol.style.Stroke({ color: _routeColor, width: routeLineWidth })
+                                    })
+                                });
+                                
+                                _allRoutesLines.push(layerLines);
+                                _map.getLayers().insertAt(_lineLayerIndex, layerLines);
+                            }
+                            primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+
+                        }
+
+                    }
+                    yukon.ui.unblock(mapContainer);
+                });
+            }
+        },
+        
+        removeAllGatewayIcons: function() {
+            var iconLayer = yukon.mapping.getIconLayer(),
+                source = iconLayer.getSource();
+            _allGatewayIcons.forEach(function (icon) {
+                source.removeFeature(icon);
+            });
+            _allGatewayIcons = [];
+        },
+        
+        removeAllRelayIcons: function() {
+            var iconLayer = yukon.mapping.getIconLayer(),
+                source = iconLayer.getSource();
+            _allRelayIcons.forEach(function (icon) {
+                source.removeFeature(icon);
+            });
+            _allRelayIcons = [];
+        },
+        
+        removeAllRoutesLayers: function() {
+            var iconLayer = yukon.mapping.getIconLayer(),
+                source = iconLayer.getSource();
+            _allRoutesIcons.forEach(function (icon) {
+                source.removeFeature(icon);
+            });
+            _allRoutesLines.forEach(function (line) {
+                _map.removeLayer(line);
+            });
+            _allRoutesIcons = [];
+            _allRoutesLines = [];
         },
 
     };

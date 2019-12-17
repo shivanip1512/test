@@ -91,7 +91,7 @@ public class ControlScenarioApiTest {
     }
 
     /**
-     * This test case updates name of control Scenario created in controlScenario_01_CreateWithoutProgramAndTrigger
+     * This test case updates name of control Scenario created in controlScenario_01_CreateWithProgramAssignedToControlArea
      */
     @Test(dependsOnMethods = "controlScenario_02_Get")
     public void controlScenario_03_Update(ITestContext context) {
@@ -459,6 +459,55 @@ public class ControlScenarioApiTest {
         assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Exceeds maximum length of 60."),
                 "Expected code in response is not correct");
     }
+    
+    /**
+     * Negative validation when Control Scenario is created with duplicate load
+     * programs
+     */
+    @Test
+    public void controlScenario_20_CreateWithDuplicateProgramValidation(ITestContext context) {
+
+        String expectedErrorMsg = "Duplicate load programs are not allowed, duplicate program ids:";
+        MockControlScenario controlScenario = buildControlScenarioWithTwoPrograms(loadProgram, loadProgram);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveControlScenario", controlScenario);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message value is 'Validation error'");
+        assertTrue(ValidationHelper.validateGlobalErrors(createResponse, expectedErrorMsg),
+                "Expected Error not found:" + expectedErrorMsg);
+    }
+
+    /**
+     * Negative validation when control Scenario is assigned with same load program
+     * as used while creation in
+     * controlScenario_01_CreateWithProgramAssignedToControlArea
+     */
+    @Test(dependsOnMethods = "controlScenario_19_UnassigningProgramFromControlScenario")
+    public void controlScenario_21_UpdateWithAlreadyAssignedProgramId(ITestContext context) {
+
+        MockControlScenario controlScenario = (MockControlScenario) context.getAttribute("expectedControlScenario");
+        MockProgramDetails programDetails = new MockProgramDetails();
+        MockLMDto gear = MockLMDto.builder().id(loadProgram.getGears().get(0).getGearNumber()).build();
+        List<MockLMDto> gears = new ArrayList<>();
+        gears.add(gear);
+        programDetails.setProgramId(loadProgram.getProgramId());
+        programDetails.setStartOffsetInMinutes(600);
+        programDetails.setStartOffsetInMinutes(300);
+        programDetails.setGears(gears);
+        controlScenario.getAllPrograms().add(1, programDetails);
+
+        String expectedErrorMsg = "Duplicate load programs are not allowed, duplicate program ids:";
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlScenario", controlScenario,
+                context.getAttribute("controlScenarioId").toString());
+
+        assertTrue(updatedResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(updatedResponse, "Validation error"),
+                "Expected message value is 'Validation error'");
+        assertTrue(ValidationHelper.validateGlobalErrors(updatedResponse, expectedErrorMsg),
+                "Expected Error not found:" + expectedErrorMsg);
+    }
 
     /**
      * This deletes
@@ -516,6 +565,33 @@ public class ControlScenarioApiTest {
 
         return controlScenario;
 
+    }
+    
+    public MockControlScenario buildControlScenarioWithTwoPrograms(MockLoadProgram loadProgram1,
+            MockLoadProgram loadProgram2) {
+        MockLMDto gear = MockLMDto.builder().id(loadProgram.getGears().get(0).getGearNumber()).build();
+        List<MockLMDto> gears = new ArrayList<>();
+        gears.add(gear);
+
+        List<MockLoadProgram> loadProgram = new ArrayList<>();
+        loadProgram.add(loadProgram1);
+        loadProgram.add(loadProgram1);
+
+        List<MockProgramDetails> allPrograms = new ArrayList<>();
+        for (int i = 1; i <= 2; i++) {
+            MockProgramDetails program = MockProgramDetails.builder()
+                    .programId(loadProgram.get(i - 1).getProgramId())
+                    .startOffsetInMinutes(600)
+                    .stopOffsetInMinutes(300)
+                    .gears(gears)
+                    .build();
+            allPrograms.add(program);
+        }
+
+        MockControlScenario controlScenario = MockControlScenario.builder().name("ControlScenarioTestWithTwosProgram")
+                .allPrograms(allPrograms).build();
+
+        return controlScenario;
     }
 
     /**

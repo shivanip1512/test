@@ -1,3 +1,5 @@
+
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
@@ -59,7 +61,11 @@
             </span>
             
             <span class="fr">
-                <cti:button label="All Primary Routes" classes="js-all-routes"/>
+                <cm:criteria key=".infrastructure">
+                    <cm:criteriaOption classes="js-all-gateways" key=".infrastructure.allGateways"/>
+                    <cm:criteriaOption classes="js-all-relays" key=".infrastructure.allRelays"/>
+                    <cm:criteriaOption classes="js-all-routes" key=".infrastructure.allPrimaryRoutes"/>
+                </cm:criteria>
             </span>
         </div>
         

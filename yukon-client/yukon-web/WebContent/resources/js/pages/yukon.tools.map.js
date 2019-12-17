@@ -507,6 +507,7 @@ yukon.tools.map = (function() {
                 target: 'map',
                 view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], _srcProjection, _destProjection), zoom: 4 })
             });
+            yukon.mapping.initializeMap(_map);
             _destProjection = _map.getView().getProjection().getCode();
             _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
             _loadIcons();
