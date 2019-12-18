@@ -523,7 +523,38 @@ yukon.mapping = (function () {
             }
         },
         
-        
+        drawChildren: function(currentNode, primaryRoutePreviousPoints) {
+            var routeLineWidth = 2.5;
+            for (var x in currentNode.children) {
+                var child = currentNode.children[x],
+                    feature = Object.values(child.data)[0].features[0],
+                    icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
+                //draw line
+                if (primaryRoutePreviousPoints != null) {
+                    var points = [];
+                    points.push(icon.getGeometry().getCoordinates());
+                    points.push(primaryRoutePreviousPoints)
+                    
+                    var layerLines = new ol.layer.Vector({
+                        source: new ol.source.Vector({
+                            features: [new ol.Feature({
+                                geometry: new ol.geom.LineString(points),
+                                name: 'Line'
+                            })]
+                        }),
+                        style: new ol.style.Style({
+                            stroke: new ol.style.Stroke({ color: _routeColor, width: routeLineWidth })
+                        })
+                    });
+                    
+                    _allRoutesLines.push(layerLines);
+                    _map.getLayers().insertAt(_lineLayerIndex, layerLines);
+                }
+                primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                yukon.mapping.drawChildren(child, primaryRoutePreviousPoints);
+            }
+        },
+                
         showHideAllRoutes: function() {
             var checked = $('.js-all-routes').find(':checkbox').prop('checked');
             if (!checked) {
@@ -536,39 +567,16 @@ yukon.mapping = (function () {
                 yukon.ui.block(mapContainer);
                 $.getJSON(yukon.url('/stars/comprehensiveMap/allPrimaryRoutes?groupName=' + collectionGroup))
                 .done(function (json) {
-                    for (var x in json) {
-                        var route = json[x],
-                            routeLineWidth = 2.5;
-
-                        for (var x in route.features) {
-                            var feature = route.features[x];
+                    //check for error
+                    if (json.errorMsg) {
+                        yukon.ui.alertError(json.errorMsg);
+                    } else {
+                        //gateway is top node
+                        var currentNode = json.tree,
+                            paoId = Object.keys(currentNode.data)[0],
+                            feature = Object.values(currentNode.data)[0].features[0],
                             icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
-                            
-                            //draw line
-                            if (primaryRoutePreviousPoints != null) {
-                                var points = [];
-                                points.push(icon.getGeometry().getCoordinates());
-                                points.push(primaryRoutePreviousPoints)
-                                
-                                var layerLines = new ol.layer.Vector({
-                                    source: new ol.source.Vector({
-                                        features: [new ol.Feature({
-                                            geometry: new ol.geom.LineString(points),
-                                            name: 'Line'
-                                        })]
-                                    }),
-                                    style: new ol.style.Style({
-                                        stroke: new ol.style.Stroke({ color: _routeColor, width: routeLineWidth })
-                                    })
-                                });
-                                
-                                _allRoutesLines.push(layerLines);
-                                _map.getLayers().insertAt(_lineLayerIndex, layerLines);
-                            }
-                            primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-
-                        }
-
+                        yukon.mapping.drawChildren(currentNode, primaryRoutePreviousPoints);
                     }
                     yukon.ui.unblock(mapContainer);
                 });
