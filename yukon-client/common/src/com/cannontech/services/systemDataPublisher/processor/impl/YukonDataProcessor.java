@@ -15,6 +15,7 @@ import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
+import com.cannontech.services.systemDataPublisher.service.SystemDataPublisherService;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
 import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublisherFrequency;
@@ -24,6 +25,7 @@ public class YukonDataProcessor implements SystemDataProcessor {
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private SystemDataPublisherDao systemDataPublisherDao;
+    @Autowired private SystemDataPublisherService systemDataPublisherService;
     private static final Logger log = YukonLogManager.getLogger(YukonDataProcessor.class);
     
     @Override
@@ -94,6 +96,6 @@ public class YukonDataProcessor implements SystemDataProcessor {
         if (log.isDebugEnabled()) {
             log.debug("Publishing system data to topic " + systemData);
         }
-        // TODO Publish to topic changes will be done in YUK-21098
+        systemDataPublisherService.publish(systemData);
     }
 }
