@@ -194,11 +194,8 @@ public class LoadGroupSetupControllerHelper {
             boolean isSpecialRippleEnabled = loadGroupRipple.isSpecialRippleEnabled(userContext.getYukonUser());
             model.addAttribute("isSpecialRippleEnabled", isSpecialRippleEnabled);
             setCommunicationRoute(model, request, userContext);
-            if (mode == PageEditMode.VIEW) {
-                model.addAttribute("isViewMode", true);
-                loadGroupRipple.setControl(getFormattedAddress(loadGroupRipple.getControl()));
-                loadGroupRipple.setRestore(getFormattedAddress(loadGroupRipple.getRestore()));
-            }
+            boolean isViewMode = mode == PageEditMode.VIEW;
+            model.addAttribute("isViewMode", isViewMode);
             if (isSpecialRippleEnabled) {
                 model.addAttribute("groups", RippleGroup.values());
                 model.addAttribute("areaCodes", RippleGroupAreaCode.values());
@@ -207,6 +204,10 @@ public class LoadGroupSetupControllerHelper {
             } else {
                 model.addAttribute("controlBitsLength", CONTROL_BITS_LENGTH);
                 model.addAttribute("restoreBitsLength", RESTORE_BITS_LENGTH);
+                if (isViewMode) {
+                    loadGroupRipple.setControl(getFormattedAddress(loadGroupRipple.getControl()));
+                    loadGroupRipple.setRestore(getFormattedAddress(loadGroupRipple.getRestore()));
+                }
             }
             break;
         case LM_GROUP_POINT:

@@ -13,6 +13,7 @@
 
 <%@ attribute name="checked" type="java.lang.Boolean" description="If 'true' switch will be on.  Default: false." %>
 <%@ attribute name="disabled" type="java.lang.Boolean" description="If 'true' switch will be disabled.  Default: false." %>
+<%@ attribute name="forceDisplayCheckbox" type="java.lang.Boolean" description="If 'true' the button will be displayed in VIEW mode." %>
 
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group." %>
 
@@ -23,6 +24,7 @@
 <%@ attribute name="label" description="Text used for the button. Html escaped internally." %>
 
 <%@ attribute name="classes" description="CSS class names applied to the button element." %>
+<%@ attribute name="buttonStyle" description="Style applied to the button." %>
 <%@ attribute name="buttonTextClasses" description="CSS class names applied to the button text." %>
 <%@ attribute name="buttonTextStyle" description="styles applied to the button text." %>
 <%@ attribute name="id" description="The html id attribute of the radio input." %>
@@ -52,8 +54,7 @@
     
 </cti:displayForPageEditModes>
 
-<cti:displayForPageEditModes modes="CREATE,EDIT">
-
+<c:if test="${mode == 'EDIT' or mode == 'CREATE' or forceDisplayCheckbox}">
     <label class="switch-btn">
         <c:choose>
             <c:when test="${not empty name}">
@@ -67,7 +68,7 @@
                 <form:checkbox class="switch-btn-checkbox" path="${path}" value="${value}" id="${id}" onclick="${onclick}" disabled="${disabled}"/>
             </c:otherwise>
         </c:choose>
-        <span class="button ${pageScope.classes} yes">
+        <span class="button ${pageScope.classes} yes" style="${buttonStyle}">
             <span class="b-label ${pageScope.buttonTextClasses}" style="${pageScope.buttonTextStyle}">
                 <c:choose>
                     <c:when test="${not empty pageScope.key}">
@@ -81,4 +82,4 @@
             </span>
         </span>
     </label>
-</cti:displayForPageEditModes>
+</c:if>

@@ -29,6 +29,22 @@ yukon.dr.setup.loadGroup = (function() {
         });
     },
     
+    _setAddressCheckboxesForSpecialRipple = function (container, value, checkboxSelectorStr) {
+        for (var index=0; index < 34; index++) {
+            if (value.charAt(index) === '1') {
+                container.find(checkboxSelectorStr + index).prop('checked', true);
+            }
+        }
+    },
+    
+    _buildSpecialRippleAddressString = function (container, checkboxSelectorStr) {
+        var addressStr = "";
+        for (var index=0; index < 34; index++) {
+            addressStr = addressStr.concat(container.find(checkboxSelectorStr + index).is(":checked") ? "1" : "0");
+        }
+        return addressStr;
+    },
+    
     _initCheckboxes = function () {
         if ($('.loadaddressing').exists()) {
             $('.loadaddressing').find("input:checkbox").addClass("js-loadaddress");
@@ -98,7 +114,8 @@ yukon.dr.setup.loadGroup = (function() {
             
             _initCheckboxes();
             
-            if ($("#js-shed-time").exists()) {
+            /* Check if the page is in edit mode and Special Ripple is not enabled */
+            if ($("#js-shed-time").exists() && !$(".js-area-code-row").exists()) {
                 var controlAddress = $(".js-control-value").val(),
                     restoreAddress = $(".js-restore-value").val(),
                     controlAddressLength = controlAddress.length,
@@ -109,6 +126,12 @@ yukon.dr.setup.loadGroup = (function() {
                 _setAddressCheckboxes($(".js-restore-value_row2"), restoreAddress.substring((restoreAddressLength / 2), restoreAddressLength + 1));
             }
              
+            /* If Special Ripple is enabled set the control and restore address checkboxes. */
+            if ($(".js-area-code-row").exists()) {
+                _setAddressCheckboxesForSpecialRipple($(".js-control-address"), $(".js-control-value").val(), "#js-control-address-chkbx_");
+                _setAddressCheckboxesForSpecialRipple($(".js-restore-address"), $(".js-restore-value").val(), "#js-restore-address-chkbx_");
+            }
+            
             if ($('.js-create-mode').val() == 'true' && $('.js-is-point-group-selected').val() == 'true' && $('.js-device-error').val() == 'false') {
                 _retrievePointState();
             }
@@ -163,14 +186,22 @@ yukon.dr.setup.loadGroup = (function() {
             });
             
             $(document).on('submit', '.js-load-group-form', function () {
-                /* check if Ripple Load Group is selected */
+                /* Check if Ripple Load Group is selected. */
                 if ($("#js-shed-time").exists()) {
-                    var controlAddress = _buildAddressString($(".js-control-value_row1"));
-                    controlAddress = controlAddress + _buildAddressString($(".js-control-value_row2"));
-                    $(".js-control-value").val(controlAddress);
-                    var restoreAddress = _buildAddressString($(".js-restore-value_row1"));
-                    restoreAddress = restoreAddress + _buildAddressString($(".js-restore-value_row2"));
-                    $(".js-restore-value").val(restoreAddress);
+                    /* Check if Special Ripple is enabled. */
+                    if ($(".js-area-code-row").exists()) {
+                        var controlAddress = _buildSpecialRippleAddressString($(".js-control-address"), "#js-control-address-chkbx_");
+                        $(".js-control-value").val(controlAddress);
+                        var restoreAddress = _buildSpecialRippleAddressString($(".js-restore-address"), "#js-restore-address-chkbx_");
+                        $(".js-restore-value").val(restoreAddress);
+                    } else {
+                        var controlAddress = _buildAddressString($(".js-control-value_row1"));
+                        controlAddress = controlAddress + _buildAddressString($(".js-control-value_row2"));
+                        $(".js-control-value").val(controlAddress);
+                        var restoreAddress = _buildAddressString($(".js-restore-value_row1"));
+                        restoreAddress = restoreAddress + _buildAddressString($(".js-restore-value_row2"));
+                        $(".js-restore-value").val(restoreAddress);
+                    }
                 } 
             });
             
