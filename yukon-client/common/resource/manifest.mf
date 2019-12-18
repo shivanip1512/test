@@ -12,7 +12,7 @@ Class-Path: ./
  commons-dbcp2-2.0.jar 
  commons-pool2-2.2.jar 
  commons-codec-1.9.jar 
- commons-beanutils-1.9.3.jar 
+ commons-beanutils-1.9.4.jar 
  commons-discovery-0.5.jar 
  commons-configuration2-2.1.1.jar 
  xercesImpl-2.12.0.jar 
