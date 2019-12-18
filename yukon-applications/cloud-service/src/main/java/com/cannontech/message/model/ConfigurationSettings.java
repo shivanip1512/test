@@ -8,7 +8,7 @@ public class ConfigurationSettings {
 
     private String connectionString;
     private String proxySetting;
-    private String frequency;
+    private int frequency;
 
     public String getConnectionString() {
         return connectionString;
@@ -26,11 +26,11 @@ public class ConfigurationSettings {
         this.proxySetting = proxySetting;
     }
 
-    public String getFrequency() {
+    public int getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(String frequency) {
+    public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
 }
