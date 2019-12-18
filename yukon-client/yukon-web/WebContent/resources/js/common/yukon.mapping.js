@@ -561,11 +561,12 @@ yukon.mapping = (function () {
                 yukon.mapping.removeAllRoutesLayers();
             } else {
                 var mapContainer = $('#map-container'),
+                    primaryRoutePreviousPoints,
                     collectionGroup = $('#collection-group').val(),
-                    primaryRoutePreviousPoints;
+                    gatewayIds = $(".js-selected-gateways").chosen().val();
 
                 yukon.ui.block(mapContainer);
-                $.getJSON(yukon.url('/stars/comprehensiveMap/allPrimaryRoutes?groupName=' + collectionGroup))
+                $.getJSON(yukon.url('/stars/comprehensiveMap/allPrimaryRoutes?gatewayIds=' + gatewayIds + "&groupName=" + collectionGroup))
                 .done(function (json) {
                     //check for error
                     if (json.errorMsg) {
