@@ -358,10 +358,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
                     neighborData.setNumSamples(randomElement);
                     result.getMetadatas().put(multi, neighborData);
-                }else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA) {
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    List<RfnIdentifier> routeForDevice = new ArrayList<>(); 
-                    result.getMetadatas().put(multi, routeForDevice);
                 }
             }
         }

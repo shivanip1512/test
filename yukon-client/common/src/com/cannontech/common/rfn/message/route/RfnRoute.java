@@ -15,43 +15,34 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
  *              /  \ 
  *             /    \
  *            N1    N4
+ *           /  \
+ *          /    \
+ *         N5    N6
  * </pre>
  */
 public class RfnRoute extends LinkedList<RfnIdentifier> {
 
     private static final long serialVersionUID = 1L;
     
-    // The following shows an example to query PRIMARY_FORWARD_ROUTE using RfnMetadataMultiRequest
+    // The following shows examples to query PRIMARY_FORWARD_ROUTE using RfnMetadataMultiRequest
     public static void main(String[] args) {
 
         RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
-        
-        // You want to query primary-route-to-gateway
         request.setRfnMetadatas(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE);
-
-        // for each device for a Gateway.
-        request.setPrimaryForwardNodesForGatewayRfnIdentifiers(
-                                  new RfnIdentifier("7800000005", "CPS", "RFGateway2"));
-        // Or for an individual device.
-        request.setRfnIdentifiers(new RfnIdentifier("88638059", "ITRN", "C2SX"));
         
-        // In response, NM will assign a RfnRoute object (a link-list of RfnIdentifiers) for each device.
-        // Let's assume the following rfnRoute is for N4.
-        RfnIdentifier rfnIdentifier = (RfnIdentifier) new Object(); // map.entry.getKey();
-        RfnRoute      rfnRoute      = (RfnRoute)      new Object(); // map.entry.getValue(()
+        // You can query primary-route-to-gateway for any device.
+        // NM will respond with the primary forward route (i.e., the linked list) to gateway of the device
+        // For example, on the above tree,
+        //     the route of N6 will be [N1, N2, Gateway2];
+        //     the route of N1 will be [N2, Gateway2];
+        //     the route of N2 will be [Gateway2].
+        request.setRfnIdentifiers(new RfnIdentifier("N6", "ITRN", "C2SX"));
         
-        // To display the primary route to gateway for N4 shown on YUK-20021: 
-        //     Primary Route to Gateway: N4 > N2 > Gateway2. 
-        System.out.println("Primary Route to Gateway: ");
-        System.out.println(rfnIdentifier); // N4
-        if (rfnRoute != null) {
-            for (RfnIdentifier parent: rfnRoute) {
-                System.out.println(" > ");
-                System.out.println(parent);
-            }
-        }
-        
-        // You can also show a gateway network tree in the Comprehensive Map by displaying routes
-        // for all devices under the gateway   
+        // Note: although you can use setPrimaryForwardNodesForGatewayRfnIdentifiers()
+        //     to get primary routes for all devices where this gateway is their primary route path,
+        //     you will get a ton of path duplication.
+        // Instead, we suggest to use PRIMARY_FORWARD_TREE by setRfnIdentifiers() for
+        //     that primary route gateway rfnIdentifier where NM will respond with the root/gateway RfnVertex 
+        //     which will have all devices in it with their tree relationship to each other.
     }
 }
