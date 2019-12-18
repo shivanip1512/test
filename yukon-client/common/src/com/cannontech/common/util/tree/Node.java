@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 public class Node<T> {
 
     private T data = null;
 
+    @JsonManagedReference
     private List<Node<T>> children = new ArrayList<>();
 
+    @JsonBackReference
     private Node<T> parent = null;
 
     public Node(T data) {

@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.comprehensiveMap;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -281,17 +280,19 @@ public class ComprehensiveMapController {
     }
     
     @GetMapping("allPrimaryRoutes")
-    public @ResponseBody List<FeatureCollection> primaryRoutes(String groupName) {
+    public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds, String groupName) {
+        Map<String, Object> json = new HashMap<>();
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);        
         List<List<SimpleDevice>> chunks = Lists.partition(collection.getDeviceList(), 65);
         try {
             Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(chunks.get(0));
+            json.put("tree", root);
         } catch (NmNetworkException | NmCommunicationException e) {
-            e.printStackTrace();
+            json.put("errorMsg", e.getMessage());
         }
      
-        return new ArrayList<>();
+        return json;
     }
     
 }
