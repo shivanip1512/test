@@ -3,8 +3,6 @@ package com.cannontech.common.config;
 public enum MasterConfigString {
 
     AUTHENTICATION_TIMEOUT_STYLE,
-    CAP_CONTROL_AMFM_DB_USERNAME(Encryption.ENCRYPTED),
-    CAP_CONTROL_AMFM_DB_PASSWORD(Encryption.ENCRYPTED),
     CMEP_UNITS,
     CYME_DIST_BASE_URL,
     CYME_INTEGRATION_SUBBUS,
