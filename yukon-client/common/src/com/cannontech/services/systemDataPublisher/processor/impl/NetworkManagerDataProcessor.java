@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
+import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
 
 @Service
@@ -17,6 +18,18 @@ public class NetworkManagerDataProcessor implements SystemDataProcessor {
         // queries to NM using queue and based on response form JSON to be sent to interested consumers.
         // If we will follow the approach of having a Network manager publisher at NM side, then
         // we don't need this class.
+    }
+
+    @Override
+    public SystemData buildSystemData(DictionariesField dictionariesField) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void publishSystemData(SystemData systemData) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

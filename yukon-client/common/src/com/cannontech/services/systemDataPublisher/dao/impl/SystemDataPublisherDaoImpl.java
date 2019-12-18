@@ -23,7 +23,7 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
     private static final Logger log = YukonLogManager.getLogger(SystemDataPublisherDaoImpl.class);
 
     @Override
-    public List<Map<String, Object>> executeQuery(DictionariesField dictionariesField) {
+    public List<Map<String, Object>> getSystemData(DictionariesField dictionariesField) {
         List<Map<String, Object>> systemData = null;
         try {
             systemData = jdbcTemplate.query(dictionariesField.getSource(), columnMapRowMapper);
@@ -33,15 +33,4 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
         return systemData;
     }
 
-    @Override
-    public List<Map<String, Object>> executeParameterizedQuery(DictionariesField dictionariesField, List<Object> args) {
-        List<Map<String, Object>> systemData = null;
-        try {
-            systemData = jdbcTemplate.query(dictionariesField.getSource(),args.toArray(), columnMapRowMapper);
-        } catch (EmptyResultDataAccessException e) {
-            log.debug("No result found for field = " + dictionariesField.getField());
-        }
-
-        return systemData;
-    }
 }

@@ -57,4 +57,10 @@ public class DictionariesField {
         this.iotType = iotType;
     }
 
+    @Override
+    public String toString() {
+        return String
+                .format("DictionariesField [field=%s, description=%s, details=%s, source=%s, iotType=%s, frequency=%s]",
+                        field, description, details, source, iotType, frequency);
+    }
 }

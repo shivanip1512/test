@@ -28,7 +28,7 @@ Yukon :
         SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, Timestamp, Value, Quality FROM RawPointHistory rph
         JOIN Point p ON rph.PointId = p.PointId
         AND PointType = 'Analog' AND PointOffset = 1
-        WHERE TimeStamp >DATEADD(day,-10, SYSDATETIME())  AND TimeStamp <= DATEADD(day,-3, SYSDATETIME())  
+        WHERE TimeStamp > DATEADD(day,-10, SYSDATETIME())  AND TimeStamp <= DATEADD(day,-3, SYSDATETIME())  
         AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
         JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId

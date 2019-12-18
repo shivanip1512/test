@@ -6,11 +6,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum SystemDataPublisherFrequency {
 
-    ON_STARTUP_ONLY("OnStartupOnly", 0),
+    ON_STARTUP_ONLY("OnStartupOnly"),
     EVERY_SIX_HOURS("EverySixHours", 6),
-    DAILY("Daily", 24),
-    ONCHANGE("OnChange")
-    ;
+    DAILY("Daily", 24);
 
     @JsonValue private final String name;
 

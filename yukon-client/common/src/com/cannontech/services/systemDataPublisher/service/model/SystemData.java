@@ -45,4 +45,11 @@ public class SystemData {
     public void setIotDataType(IOTDataType iotDataType) {
         this.iotDataType = iotDataType;
     }
+
+    @Override
+    public String toString() {
+        return String
+                .format("SystemData [fieldName=%s, fieldValue=%s, timestamp=%s, iotDataType=%s]",
+                        fieldName, fieldValue, timestamp, iotDataType);
+    }
 }
