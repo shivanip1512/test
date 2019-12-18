@@ -93,7 +93,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         Date commStatusTimestamp = new Date(wiFiComm.getWiFiCommStatusTimestamp());
         RfnIdentifier rfnIdentifier = wiFiComm.getDeviceRfnIdentifier();
         double commStatusValue = getForWifiCommStatus(wiFiComm.getNodeWiFiCommStatus()).getRawState();
-        Integer rssiValue = wiFiComm.getRadioSignalStrengthIndicator();
+        Integer rssiValue = wiFiComm.getRssi();
         try {
             pointData = buildPointData(rfnIdentifier, commStatus, commStatusValue, commStatusTimestamp);
             asyncDynamicDataSource.putValue(pointData);

@@ -13,7 +13,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <analog offset="394"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
-        <status offset="2000"/>
+        <status offset="101"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -1924,7 +1924,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="394" type="Analog">
-        <name>Radio Signal Strength Indicator</name>
+        <name>RSSI</name>
         <multiplier value="1"/>
         <unitofmeasure value="UNDEF"/>
         <decimalplaces value="0"/>

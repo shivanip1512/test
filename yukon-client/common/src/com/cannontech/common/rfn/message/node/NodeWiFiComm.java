@@ -16,7 +16,7 @@ public class NodeWiFiComm implements Serializable{
     
     private long wiFiCommStatusTimestamp; // Node Communication Status obtained at
     
-    private Integer radioSignalStrengthIndicator; // nullable signed Integer containing the RSSI value
+    private Integer rssi; // nullable
 
     public RfnIdentifier getDeviceRfnIdentifier() {
         return deviceRfnIdentifier;
@@ -50,12 +50,12 @@ public class NodeWiFiComm implements Serializable{
         this.wiFiCommStatusTimestamp = wiFiCommStatusTimestamp;
     }
 
-    public Integer getRadioSignalStrengthIndicator() {
-        return radioSignalStrengthIndicator;
+    public Integer getRssi() {
+        return rssi;
     }
-
-    public void setRadioSignalStrengthIndicator(Integer radioSignalStrengthIndicator) {
-        this.radioSignalStrengthIndicator = radioSignalStrengthIndicator;
+    
+    public void setRssi(Integer rssi) {
+        this.rssi = rssi;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class NodeWiFiComm implements Serializable{
         result = prime * result + ((deviceRfnIdentifier == null) ? 0 : deviceRfnIdentifier.hashCode());
         result = prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
         result = prime * result + ((nodeWiFiCommStatus == null) ? 0 : nodeWiFiCommStatus.hashCode());
-        result = prime * result + radioSignalStrengthIndicator;
+        result = prime * result + rssi;
         result = prime * result + (int) (wiFiCommStatusTimestamp ^ (wiFiCommStatusTimestamp >>> 32));
         return result;
     }
@@ -91,7 +91,7 @@ public class NodeWiFiComm implements Serializable{
             return false;
         if (nodeWiFiCommStatus != other.nodeWiFiCommStatus)
             return false;
-        if (radioSignalStrengthIndicator != other.radioSignalStrengthIndicator)
+        if (rssi != other.rssi)
             return false;
         if (wiFiCommStatusTimestamp != other.wiFiCommStatusTimestamp)
             return false;
@@ -101,12 +101,12 @@ public class NodeWiFiComm implements Serializable{
     @Override
     public String toString() {
         return String
-                .format("NodeWiFiComm [deviceRfnIdentifier=%s, gatewayRfnIdentifier=%s, nodeWiFiCommStatus=%s, wiFiCommStatusTimestamp=%s, radioSignalStrengthIndicator=%s]",
+                .format("NodeWiFiComm [deviceRfnIdentifier=%s, gatewayRfnIdentifier=%s, nodeWiFiCommStatus=%s, wiFiCommStatusTimestamp=%s, rssi=%s]",
                         deviceRfnIdentifier,
                         gatewayRfnIdentifier,
                         nodeWiFiCommStatus,
                         wiFiCommStatusTimestamp,
-                        radioSignalStrengthIndicator);
+                        rssi);
     }
     
 }
