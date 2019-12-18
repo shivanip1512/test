@@ -15,6 +15,8 @@ public class NodeWiFiComm implements Serializable{
     private NodeWiFiCommStatus nodeWiFiCommStatus; // null indicates unknown Communication Status
     
     private long wiFiCommStatusTimestamp; // Node Communication Status obtained at
+    
+    private Integer rssi; // nullable
 
     public RfnIdentifier getDeviceRfnIdentifier() {
         return deviceRfnIdentifier;
@@ -48,6 +50,14 @@ public class NodeWiFiComm implements Serializable{
         this.wiFiCommStatusTimestamp = wiFiCommStatusTimestamp;
     }
 
+    public Integer getRssi() {
+        return rssi;
+    }
+    
+    public void setRssi(Integer rssi) {
+        this.rssi = rssi;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -55,6 +65,7 @@ public class NodeWiFiComm implements Serializable{
         result = prime * result + ((deviceRfnIdentifier == null) ? 0 : deviceRfnIdentifier.hashCode());
         result = prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
         result = prime * result + ((nodeWiFiCommStatus == null) ? 0 : nodeWiFiCommStatus.hashCode());
+        result = prime * result + rssi;
         result = prime * result + (int) (wiFiCommStatusTimestamp ^ (wiFiCommStatusTimestamp >>> 32));
         return result;
     }
@@ -80,6 +91,8 @@ public class NodeWiFiComm implements Serializable{
             return false;
         if (nodeWiFiCommStatus != other.nodeWiFiCommStatus)
             return false;
+        if (rssi != other.rssi)
+            return false;
         if (wiFiCommStatusTimestamp != other.wiFiCommStatusTimestamp)
             return false;
         return true;
@@ -88,11 +101,12 @@ public class NodeWiFiComm implements Serializable{
     @Override
     public String toString() {
         return String
-                .format("NodeWiFiComm [deviceRfnIdentifier=%s, gatewayRfnIdentifier=%s, nodeWiFiCommStatus=%s, wiFiCommStatusTimestamp=%s]",
+                .format("NodeWiFiComm [deviceRfnIdentifier=%s, gatewayRfnIdentifier=%s, nodeWiFiCommStatus=%s, wiFiCommStatusTimestamp=%s, rssi=%s]",
                         deviceRfnIdentifier,
                         gatewayRfnIdentifier,
                         nodeWiFiCommStatus,
-                        wiFiCommStatusTimestamp);
+                        wiFiCommStatusTimestamp,
+                        rssi);
     }
     
 }

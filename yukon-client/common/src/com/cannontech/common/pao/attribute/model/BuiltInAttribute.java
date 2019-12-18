@@ -629,7 +629,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     OPERATION_FAILED_NEUTRAL_CURRENT("Operation Failed Neutral Current", AttributeGroup.CAPCONTROL, false),
     OVER_UNDER_VOLTAGE_TRACKING_TIME("OvUv Tracking Time", AttributeGroup.CAPCONTROL, false),
     OVER_VOLTAGE_COUNT("Over Voltage Count", AttributeGroup.CAPCONTROL, false),
-    RADIO_SIGNAL_STRENGTH_INDICATOR("RSSI", AttributeGroup.CAPCONTROL, false),
+    RADIO_SIGNAL_STRENGTH_INDICATOR("RSSI", AttributeGroup.OTHER, false),
     RECLOSE_BLOCKED("Reclose Blocked", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_CLEAR("SCADA Override Clear", AttributeGroup.CAPCONTROL, false),
     SCADA_OVERRIDE_CONTROL_POINT("SCADA Override Control Point", AttributeGroup.CAPCONTROL, false),

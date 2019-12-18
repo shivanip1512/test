@@ -88,29 +88,51 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
     private Long publishPointData(Entry<Long, NodeWiFiComm> entry, String processor) {
         PointData pointData = null;
         BuiltInAttribute commStatus = BuiltInAttribute.COMM_STATUS;
+        BuiltInAttribute rssi = BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR;
         NodeWiFiComm wiFiComm = entry.getValue();
+        Date commStatusTimestamp = new Date(wiFiComm.getWiFiCommStatusTimestamp());
         RfnIdentifier rfnIdentifier = wiFiComm.getDeviceRfnIdentifier();
         double commStatusValue = getForWifiCommStatus(wiFiComm.getNodeWiFiCommStatus()).getRawState();
+        Integer rssiValue = wiFiComm.getRssi();
         try {
-            RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            LitePoint point = attributeService.createAndFindPointForAttribute(rfnDevice, commStatus);
-            pointData = new PointData();
-            pointData.setId(point.getLiteID());
-            pointData.setPointQuality(PointQuality.Normal);
-            pointData.setValue(commStatusValue);
-            pointData.setTime(new Date(wiFiComm.getWiFiCommStatusTimestamp()));
-            pointData.setType(point.getPointType());
-            pointData.setTagsPointMustArchive(true);
-
+            pointData = buildPointData(rfnIdentifier, commStatus, commStatusValue, commStatusTimestamp);
             asyncDynamicDataSource.putValue(pointData);
 
-            log.debug("{} generated {} {} {}", processor, pointData, commStatus, rfnIdentifier);         
+            log.debug("{} generated {} {} {}", processor, pointData, commStatus, rfnIdentifier);
+
+            // if the RSSI value is not null then archive it
+            if (rssiValue != null) {
+                pointData = buildPointData(rfnIdentifier, rssi, rssiValue, commStatusTimestamp);
+                asyncDynamicDataSource.putValue(pointData);
+
+                log.debug("{} generated {} {} {}", processor, pointData, rssi, rfnIdentifier);
+            }
         } catch (IllegalUseOfAttribute e) {
             log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, commStatus,
                     commStatusValue, e);
+
+            if (rssiValue != null) {
+                log.error("{} generation of point data for {} {} value {} failed", processor, rfnIdentifier, rssi,
+                        rssiValue, e);
+            }
         }
-        
+
         return entry.getKey();
+    }
+
+    // Build the point data for publishing
+    private PointData buildPointData(RfnIdentifier rfnIdentifier, BuiltInAttribute attribute, double value, Date timestamp)
+            throws IllegalArgumentException {
+        RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+        LitePoint point = attributeService.createAndFindPointForAttribute(rfnDevice, attribute);
+        PointData pointData = new PointData();
+        pointData.setId(point.getLiteID());
+        pointData.setPointQuality(PointQuality.Normal);
+        pointData.setValue(value);
+        pointData.setTime(timestamp);
+        pointData.setType(point.getPointType());
+        pointData.setTagsPointMustArchive(true);
+        return pointData;
     }
 
     /**

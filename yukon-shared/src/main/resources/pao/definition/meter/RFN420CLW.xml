@@ -33,6 +33,7 @@
         <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
         <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
         <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="CRC Failure Memory Corrupt" attributes="CRC_FAILURE_MEMORY_CORRUPT"/>
         <pointInfo name="Daily Max Volts" init="true" attributes="MAXIMUM_VOLTAGE_DAILY,MAXIMUM_VOLTAGE"/>
         <pointInfo name="Daily Min Volts" init="true" attributes="MINIMUM_VOLTAGE_DAILY,MINIMUM_VOLTAGE"/>
@@ -73,6 +74,7 @@
         <pointInfo name="Peak kW Frozen (Rate B kW)" attributes="PEAK_DEMAND_FROZEN_RATE_B"/>
         <pointInfo name="Peak kW Frozen (Rate C kW)" attributes="PEAK_DEMAND_FROZEN_RATE_C"/>
         <pointInfo name="Peak kW Frozen (Rate D kW)" attributes="PEAK_DEMAND_FROZEN_RATE_D"/>
+        <pointInfo name="RSSI" attributes="RADIO_SIGNAL_STRENGTH_INDICATOR"/>
         <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
         <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
         <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
