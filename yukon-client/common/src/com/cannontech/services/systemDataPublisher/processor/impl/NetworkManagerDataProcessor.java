@@ -22,13 +22,13 @@ public class NetworkManagerDataProcessor implements SystemDataProcessor {
 
     @Override
     public SystemData buildSystemData(DictionariesField dictionariesField) {
-        // TODO Auto-generated method stub
+        // TODO To be implemented in YUK-21147
         return null;
     }
 
     @Override
     public void publishSystemData(SystemData systemData) {
-        // TODO Auto-generated method stub
+        // TODO To be implemented in YUK-21147
         
     }
 
