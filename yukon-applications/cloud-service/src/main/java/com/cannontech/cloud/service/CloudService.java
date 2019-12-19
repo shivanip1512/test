@@ -1,8 +1,5 @@
 package com.cannontech.cloud.service;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * This is base interface, any cloud service should extend this.
  * Currently as only Azure is supported, so this has only one child
@@ -10,12 +7,10 @@ import java.net.URISyntaxException;
 public interface CloudService {
 
     /**
-     * Create connection to a cloud service
-     * @throws IOException 
-     * @throws URISyntaxException 
-     * @throws IllegalArgumentException 
+     * Create connection to a cloud service.
+     * @return true if connection is created successfully
      */
-    public abstract void createConnection() throws IllegalArgumentException, URISyntaxException, IOException;
+    public abstract boolean createConnection();
 
     /**
      * Checks if a service should be started or not.

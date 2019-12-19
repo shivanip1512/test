@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,31 +62,29 @@ public class IOTHubService extends AzureCloudService {
     }
 
     @Override
-    public void createConnection() throws IllegalArgumentException, URISyntaxException, IOException {
+    public boolean createConnection() {
         ConfigurationSettings config = getConfigurationSetting();
-        // Parse hostName and port from ProxySetting.
-        String hostName ;
-        Integer port ;
-        String[] hostPortArray = config.getProxySetting().split(":");
-        if(hostPortArray.length != 2) {
-            throw new IllegalArgumentException("Invalid proxy value: " + hostPortArray + ".Unable to setup proxy.");
-        } else {
-            hostName = hostPortArray[0];
-            try {
-                port = Integer.parseInt(hostPortArray[1]);
-            } catch(NumberFormatException e) {
-                throw new IllegalArgumentException("Invalid proxy value: " + hostPortArray + ".Unable to setup proxy.");
-            }
-        }
 
         if (client == null) {
-            // Create connection to IOT Hub
-            client = new DeviceClient(config.getConnectionString(), protocol);
-            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostName, port));
-            ProxySettings proxySettings = new ProxySettings(proxy);
-            client.setProxySettings(proxySettings);
-            client.open();
+            try {
+                // Create connection to IOT Hub
+                client = new DeviceClient(config.getConnectionString(), protocol);
+                String proxySetting = config.getProxySetting();
+                if (StringUtils.isNoneEmpty(proxySetting)) {
+                    // Parse hostName and port from Proxy configuration and build ProxySetting
+                    ProxySettings proxySettings = buildProxySettings(config.getProxySetting());
+                    client.setProxySettings(proxySettings);
+                } else {
+                    log.info("Proxy settings are blank. Connecting without proxy");
+                }
+                client.open();
+            } catch (IllegalArgumentException | URISyntaxException | IOException e) {
+                log.error("Unable to create connection with IOT hub. " + e);
+                return false;
+            }
         }
+        log.info("Successfully connected to IOT hub");
+        return true;
     }
 
     @Override
@@ -97,11 +96,12 @@ public class IOTHubService extends AzureCloudService {
     public void start() {
         log.info("Starting IOT Hub service");
         scheduledExecutorService.scheduleAtFixedRate(() -> {
-            try {
-                createConnection();
-                prepareAndPushData();
-            } catch (IllegalArgumentException | UnsupportedOperationException | IOException | URISyntaxException e) {
-                log.info("Unable to start IOT Hub service. " + e);
+            if (createConnection()) {
+                try {
+                    prepareAndPushData();
+                } catch (IllegalArgumentException | UnsupportedOperationException | IOException e) {
+                    log.error("Unable to push data to IOT hub. " + e);
+                }
             }
         }, 0, getConfigurationSetting().getFrequency(), TimeUnit.HOURS);
     }
@@ -165,6 +165,24 @@ public class IOTHubService extends AzureCloudService {
         public void execute(IotHubStatusCode status, Object context) {
             log.info("IoT Hub responded to device twin operation with status " + status.name());
         }
+    }
+
+    private ProxySettings buildProxySettings(String proxyConfigString) {
+        String hostName ;
+        Integer port ;
+        String[] hostPortArray = proxyConfigString.split(":");
+        if(hostPortArray.length != 2) {
+            throw new IllegalArgumentException("Invalid proxy value: " + hostPortArray + ".Unable to setup proxy.");
+        } else {
+            hostName = hostPortArray[0];
+            try {
+                port = Integer.parseInt(hostPortArray[1]);
+            } catch(NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid proxy value: " + hostPortArray + ".Unable to setup proxy.");
+            }
+        }
+        Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostName, port));
+        return new ProxySettings(proxy);
     }
 
     // TODO Remove this after actual ConfigurationSettings implementation (YUK-21163).
