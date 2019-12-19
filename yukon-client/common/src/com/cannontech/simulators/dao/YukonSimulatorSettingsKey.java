@@ -119,6 +119,9 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_PARENT_MAC_ADDR("17:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    
+    //NetworkTree Settings
+    RFN_NETWORK_SIMULATOR_NETWORK_TREE_NULL_PERCENT(0, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
 
     //IvvcSimulatorSettings
     IVVC_SIMULATOR_INCREASED_SPEED_MODE(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
