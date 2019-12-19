@@ -1105,11 +1105,11 @@ public final class JmsApiDirectory {
         addApis(jmsApis, OTHER, 
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
+                ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
                 RFN_DEVICE_CREATION_ALERT,
                 SIMULATORS,
-                ECOBEE_AUTH_TOKEN,
                 SYSTEM_DATA);
         
         addApis(jmsApis, RFN_LCR, 
