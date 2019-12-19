@@ -1,13 +1,10 @@
-package com.cannontech.stars.dr.jms.notification.message;
-
-import java.io.Serializable;
+package com.cannontech.stars.dr.jms.message;
 
 import org.joda.time.Instant;
 
-public class EnrollmentNotificationMessage implements Serializable {
+public class EnrollmentJmsMessage extends DrJmsMessage {
 
     private static final long serialVersionUID = 1L;
-    
     private Integer inventoryId;
     private Integer accountId;
     private Integer loadGroupId;
@@ -15,7 +12,6 @@ public class EnrollmentNotificationMessage implements Serializable {
     private Integer programId;
     private Instant enrollmentStartTime;
     private Instant enrollmentStopTime;
-    private DRNotificationMessageType messageType;
 
     public Instant getEnrollmentStartTime() {
         return enrollmentStartTime;
@@ -31,10 +27,6 @@ public class EnrollmentNotificationMessage implements Serializable {
 
     public void setEnrollmentStopTime(Instant enrollmentStopTime) {
         this.enrollmentStopTime = enrollmentStopTime;
-    }
-
-    public static long getSerialversionuid() {
-        return serialVersionUID;
     }
 
     public void setInventoryId(Integer inventoryId) {
@@ -77,12 +69,5 @@ public class EnrollmentNotificationMessage implements Serializable {
         return programId;
     }
 
-    public DRNotificationMessageType getMessageType() {
-        return messageType;
-    }
-
-    public void setMessageType(DRNotificationMessageType messageType) {
-        this.messageType = messageType;
-    }
 
 }

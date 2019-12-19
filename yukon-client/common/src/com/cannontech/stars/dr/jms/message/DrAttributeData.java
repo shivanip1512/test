@@ -1,11 +1,11 @@
-package com.cannontech.stars.dr.jms.notification.message;
+package com.cannontech.stars.dr.jms.message;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
-public class DRDataMessage implements Serializable {
+public class DrAttributeData implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Double value;

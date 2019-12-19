@@ -1,6 +1,6 @@
-package com.cannontech.stars.dr.jms.notification.message;
+package com.cannontech.stars.dr.jms.message;
 
-public enum DRNotificationMessageType {
+public enum DrJmsMessageType {
     
     ENROLLMENT,
     UNENROLLMENT,

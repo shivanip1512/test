@@ -89,7 +89,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
-import com.cannontech.stars.dr.jms.notification.DRNotificationMessagingService;
+import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
@@ -137,8 +137,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private NestService nestService;
     @Autowired private HardwareService hardwareService;
     @Autowired private UsersEventLogService usersEventLogService;
-    
-    @Autowired private DRNotificationMessagingService drNotificationMessagingService;
+    @Autowired private DrJmsMessagingService drJmsMessagingService;
     
     @Override
     @Transactional
@@ -457,10 +456,10 @@ public class AccountServiceImpl implements AccountService {
             List<LMHardwareControlGroup> controlGroups = lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(inventoryId, account.getAccountId());
             lmHardwareControlGroupDao.unenrollHardware(inventoryId, groupEnrollStop);
             
-            controlGroups.stream().forEach(controlGroup -> {
+            for (LMHardwareControlGroup controlGroup : controlGroups) {
                 controlGroup.setGroupEnrollStop(groupEnrollStop);
-                drNotificationMessagingService.sendUnenrollmentNotification(controlGroup);
-            });
+                drJmsMessagingService.publishUnEnrollmentNotice(controlGroup);
+            };
             InventoryIdentifier identifier = inventoryDao.getYukonInventory(inventoryId);
             if (identifier.getHardwareType().isNest()) {
                 try {

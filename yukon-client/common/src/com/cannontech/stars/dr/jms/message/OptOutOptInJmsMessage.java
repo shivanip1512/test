@@ -1,16 +1,13 @@
-package com.cannontech.stars.dr.jms.notification.message;
-
-import java.io.Serializable;
+package com.cannontech.stars.dr.jms.message;
 
 import org.joda.time.Instant;
 
-public class OptOutInNotificationMessage implements Serializable {
+public class OptOutOptInJmsMessage extends DrJmsMessage {
 
     private static final long serialVersionUID = 1L;
     private int inventoryId;
     private Instant stopDate;
     private Instant startDate;
-    private DRNotificationMessageType messageType;
 
     public int getInventoryId() {
         return inventoryId;
@@ -29,19 +26,11 @@ public class OptOutInNotificationMessage implements Serializable {
     }
 
     public Instant getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Instant startDate) {
-		this.startDate = startDate;
-	}
-
-	public DRNotificationMessageType getMessageType() {
-        return messageType;
+        return startDate;
     }
 
-    public void setMessageType(DRNotificationMessageType messageType) {
-        this.messageType = messageType;
+    public void setStartDate(Instant startDate) {
+        this.startDate = startDate;
     }
 
 }

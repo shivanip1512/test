@@ -106,9 +106,9 @@ import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
-import com.cannontech.stars.dr.jms.notification.message.DRNotificationDataMessage;
-import com.cannontech.stars.dr.jms.notification.message.EnrollmentNotificationMessage;
-import com.cannontech.stars.dr.jms.notification.message.OptOutInNotificationMessage;
+import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
+import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
+import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 
 /**
@@ -1070,35 +1070,35 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
     
-    public static final JmsApi<EnrollmentNotificationMessage,?,?> ENROLLMENT_NOTIFICATION = 
-            JmsApi.builder(EnrollmentNotificationMessage.class)
+    public static final JmsApi<EnrollmentJmsMessage,?,?> ENROLLMENT_NOTIFICATION = 
+            JmsApi.builder(EnrollmentJmsMessage.class)
                   .name("DR Enrollment/UnEnrollment Notification")
                   .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
-                  .requestMessage(EnrollmentNotificationMessage.class)
+                  .requestMessage(EnrollmentJmsMessage.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
     
-    public static final JmsApi<OptOutInNotificationMessage,?,?> OPTOUTIN_NOTIFICATION = 
-            JmsApi.builder(OptOutInNotificationMessage.class)
+    public static final JmsApi<OptOutOptInJmsMessage,?,?> OPTOUTIN_NOTIFICATION = 
+            JmsApi.builder(OptOutOptInJmsMessage.class)
                   .name("DR OptOut/OptIn Notification")
                   .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
-                  .requestMessage(OptOutInNotificationMessage.class)
+                  .requestMessage(OptOutOptInJmsMessage.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
     
-    public static final JmsApi<DRNotificationDataMessage,?,?> DATA_NOTIFICATION = 
-            JmsApi.builder(DRNotificationDataMessage.class)
+    public static final JmsApi<DrAttributeDataJmsMessage,?,?> DATA_NOTIFICATION = 
+            JmsApi.builder(DrAttributeDataJmsMessage.class)
                   .name("DR Data Notification")
                   .description("Send Demand Response Notification related to runTime/ShedTime,max/min/avg voltage to other Integrated systems")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
-                  .requestMessage(DRNotificationDataMessage.class)
+                  .requestMessage(DrAttributeDataJmsMessage.class)
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_WEBSERVER)
                   .build();

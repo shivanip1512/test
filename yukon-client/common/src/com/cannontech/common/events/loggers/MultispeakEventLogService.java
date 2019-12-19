@@ -220,8 +220,8 @@ public interface MultispeakEventLogService {
     public void drNotificationReponse(@Arg(ArgEnum.mspMethod) String mspMethod, 
             @Arg(ArgEnum.mspVendor) String mspVendor, 
             @Arg(ArgEnum.serialNumber) String serialNumber,
-            String transactionID,
+            @Arg(ArgEnum.mspTransactionId) String transactionID,
             String messageType, 
-            Integer numberErrors, 
+            Integer numberErrors,
             String responseUrl);
 }

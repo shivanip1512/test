@@ -64,7 +64,7 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
-import com.cannontech.stars.dr.jms.notification.DRNotificationMessagingService;
+import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
@@ -104,7 +104,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
-    @Autowired private DRNotificationMessagingService drNotificationMessagingService;
+    @Autowired private DrJmsMessagingService drJmsMessagingService;
 
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
     
@@ -154,7 +154,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                                                  user,
                                                                  now);
 
-                            drNotificationMessagingService.sendStopOptOutNotification(lmHardwareControlGroup.getInventoryId(), now);
+                            drJmsMessagingService.publishStopOptOutNotice(lmHardwareControlGroup.getInventoryId(), now);
                             
                         }
                     }

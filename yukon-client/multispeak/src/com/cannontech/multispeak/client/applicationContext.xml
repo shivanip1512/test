@@ -67,14 +67,14 @@
         <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
 
-    <bean id="drNotificationService" class="com.cannontech.multispeak.service.impl.v5.DRNotificationServiceImpl" />
+    <bean id="drMessageService" class="com.cannontech.multispeak.service.impl.v5.DrJmsMessageListener" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="destinationName" value="yukon.notif.obj.dr.DRNotificationMessage" />
         <property name="concurrentConsumers" value="1"/>
         <property name="pubSubDomain" value="false"/>
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="taskExecutor" ref="globalTaskExecutor"/>
-        <property name="messageListener" ref="drNotificationService"/>
+        <property name="messageListener" ref="drMessageService"/>
         <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
 
