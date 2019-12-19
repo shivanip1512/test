@@ -54,7 +54,6 @@ public enum LibraryGroup {
     TOMCAT("Tomcat"),
     UI("UI"),
     UNIT_TESTS("Unit Tests"),
-    WRAPPER("Wrapper"),
     XML_PARSING("XML parsing"),
     YET_ANOTHER_JAVA_SERVICE_WRAPPER("Yet Another Java Service Wrapper"),
     ZZZ_RETIRED("ZZZ Retired");
