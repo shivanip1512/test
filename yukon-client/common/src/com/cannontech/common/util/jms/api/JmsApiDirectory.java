@@ -1064,7 +1064,18 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
+
+    public static final JmsApi<OptOutOptInJmsMessage,?,?> OPTOUTIN_NOTIFICATION = 
+            JmsApi.builder(OptOutOptInJmsMessage.class)
+                  .name("DR OptOut/OptIn Notification")
+                  .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(OptOutOptInJmsMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+
     public static JmsApi<RfnNodeCommArchiveRequest,?,RfnNodeCommArchiveResponse> RFN_NODE_COMM_ARCHIVE =
             JmsApi.builder(RfnNodeCommArchiveRequest.class, RfnNodeCommArchiveResponse.class)
                   .name("RFN Node Comm Archive")
@@ -1092,16 +1103,6 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
-    public static final JmsApi<OptOutOptInJmsMessage,?,?> OPTOUTIN_NOTIFICATION = 
-            JmsApi.builder(OptOutOptInJmsMessage.class)
-                  .name("DR OptOut/OptIn Notification")
-                  .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
-                  .requestMessage(OptOutOptInJmsMessage.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(YUKON_WEBSERVER)
-                  .build();
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
