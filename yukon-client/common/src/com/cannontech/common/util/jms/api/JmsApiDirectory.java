@@ -294,6 +294,28 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
+    public static final JmsApi<DrAttributeDataJmsMessage,?,?> DATA_NOTIFICATION = 
+            JmsApi.builder(DrAttributeDataJmsMessage.class)
+                  .name("DR Data Notification")
+                  .description("Send Demand Response Notification related to runTime/ShedTime,max/min/avg voltage to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(DrAttributeDataJmsMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+    
+    public static final JmsApi<EnrollmentJmsMessage,?,?> ENROLLMENT_NOTIFICATION = 
+            JmsApi.builder(EnrollmentJmsMessage.class)
+                  .name("DR Enrollment/UnEnrollment Notification")
+                  .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(EnrollmentJmsMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+    
     public static final JmsApi<GatewayDataStreamingInfoRequest,?,GatewayDataStreamingInfoResponse> GATEWAY_DATA_STREAMING_INFO =
             JmsApi.builder(GatewayDataStreamingInfoRequest.class, GatewayDataStreamingInfoResponse.class)
                   .name("Gateway Data Streaming Info")
@@ -1069,18 +1091,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
-    public static final JmsApi<EnrollmentJmsMessage,?,?> ENROLLMENT_NOTIFICATION = 
-            JmsApi.builder(EnrollmentJmsMessage.class)
-                  .name("DR Enrollment/UnEnrollment Notification")
-                  .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
-                  .requestMessage(EnrollmentJmsMessage.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(YUKON_WEBSERVER)
-                  .build();
-    
+
     public static final JmsApi<OptOutOptInJmsMessage,?,?> OPTOUTIN_NOTIFICATION = 
             JmsApi.builder(OptOutOptInJmsMessage.class)
                   .name("DR OptOut/OptIn Notification")
@@ -1091,19 +1102,6 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
-    
-    public static final JmsApi<DrAttributeDataJmsMessage,?,?> DATA_NOTIFICATION = 
-            JmsApi.builder(DrAttributeDataJmsMessage.class)
-                  .name("DR Data Notification")
-                  .description("Send Demand Response Notification related to runTime/ShedTime,max/min/avg voltage to other Integrated systems")
-                  .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
-                  .requestMessage(DrAttributeDataJmsMessage.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(YUKON_WEBSERVER)
-                  .build();
-
-    
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
