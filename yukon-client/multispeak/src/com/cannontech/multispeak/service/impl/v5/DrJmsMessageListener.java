@@ -480,8 +480,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         Relay relay = new Relay(relayNumber);
         any.add(relay);
 
-        DRLoadGroupName group = new DRLoadGroupName();
-        group.setGroupName(loadGroupName);
+        DRLoadGroupName group = new DRLoadGroupName(loadGroupName);
         any.add(group);
         return extensions;
 
