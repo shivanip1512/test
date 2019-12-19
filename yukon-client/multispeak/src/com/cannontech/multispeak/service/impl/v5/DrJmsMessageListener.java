@@ -246,7 +246,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             DRProgramEnrollmentsNotification drProgramEnrollmentsNotification = new DRProgramEnrollmentsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
 
-            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrProgramEnrollment(enrollmentJmsMessage);
+            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrProgramEnrollment(enrollmentJmsMessage, serialNumber);
             drProgramEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramEnrollmentsNotification.setTransactionID(transactionId);
             try {
@@ -279,7 +279,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             DRProgramUnenrollmentsNotification drProgramUnenrollmentsNotification = new DRProgramUnenrollmentsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
 
-            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrProgramEnrollment(unEnrollmentMessage);
+            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrProgramEnrollment(unEnrollmentMessage, serialNumber);
             drProgramUnenrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramUnenrollmentsNotification.setTransactionID(transactionId);
 
@@ -312,7 +312,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             DRProgramUnenrollmentsNotification drProgramUnEnrollmentsNotification = new DRProgramUnenrollmentsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
 
-            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrOptInOut(optOutOptInJmsMessage);
+            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrOptInOut(optOutOptInJmsMessage, serialNumber);
             drProgramUnEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramUnEnrollmentsNotification.setTransactionID(transactionId);
             try {
@@ -344,7 +344,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             DRProgramEnrollmentsNotification drProgramEnrollmentsNotification = new DRProgramEnrollmentsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
 
-            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrOptInOut(optOutOptInJmsMessage);
+            ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = buildArrayOfDrOptInOut(optOutOptInJmsMessage, serialNumber);
             drProgramEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramEnrollmentsNotification.setTransactionID(transactionId);
 
@@ -381,7 +381,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             IntervalDataNotification intervalDataNotification = new IntervalDataNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
 
-            ArrayOfIntervalData arrayOfIntervalData = buildArrayOfIntervalData(drDataJmsMessage);
+            ArrayOfIntervalData arrayOfIntervalData = buildArrayOfIntervalData(drDataJmsMessage, serialNumber);
             intervalDataNotification.setArrayOfIntervalData(arrayOfIntervalData);
             intervalDataNotification.setTransactionID(transactionId);
 
@@ -411,7 +411,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     /**
      * Building ArrayOfDRProgramEnrollment that includes building of request fields from enrollmentJmsMessage.
      */
-    private ArrayOfDRProgramEnrollment buildArrayOfDrProgramEnrollment(EnrollmentJmsMessage enrollmentJmsMessage) {
+    private ArrayOfDRProgramEnrollment buildArrayOfDrProgramEnrollment(EnrollmentJmsMessage enrollmentJmsMessage, String serialNumber) {
 
         ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = new ArrayOfDRProgramEnrollment();
 
@@ -421,7 +421,6 @@ public class DrJmsMessageListener implements DrJmsMessageService {
 
         programEnrollment.setObjectGUID(MultispeakFuncs.DEFAULT_OBJECT_GUID);
 
-        String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(enrollmentJmsMessage.getInventoryId());
         SingleIdentifier lcrPrimaryIdentifier = MultispeakFuncs.buildSingleIdentifier(LCR_INDENTIFIER_NAME, LCR_INDENTIFIER_LABEL, serialNumber);
         programEnrollment.setPrimaryIdentifier(lcrPrimaryIdentifier);
 
@@ -490,7 +489,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     /**
      * Building ArrayOfDRProgramEnrollment that includes building of request fields from optOutOptInJmsMessage.
      */
-    private ArrayOfDRProgramEnrollment buildArrayOfDrOptInOut(OptOutOptInJmsMessage optOutOptInJmsMessage) {
+    private ArrayOfDRProgramEnrollment buildArrayOfDrOptInOut(OptOutOptInJmsMessage optOutOptInJmsMessage, String serialNumber) {
 
         ArrayOfDRProgramEnrollment arrayOfDrProgramEnrollment = new ArrayOfDRProgramEnrollment();
 
@@ -508,7 +507,6 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             programEnrollment.getOtherAttributes().put(QNAME_END_TEMPORARY_OPTOUT, "true");
         }
 
-        String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutOptInJmsMessage.getInventoryId());
         SingleIdentifier lcrPrimaryIdentifier = MultispeakFuncs.buildSingleIdentifier(LCR_INDENTIFIER_NAME, LCR_INDENTIFIER_LABEL, serialNumber);
         programEnrollment.setPrimaryIdentifier(lcrPrimaryIdentifier);
 
@@ -532,7 +530,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     /**
      * Building ArrayOfIntervalData that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private ArrayOfIntervalData buildArrayOfIntervalData(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
+    private ArrayOfIntervalData buildArrayOfIntervalData(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
 
         Set<BuiltInAttribute> attributes = getBuiltInAttributesFromDrMessage(drAttributeDataJmsMessage);
 
@@ -552,7 +550,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         Profiles profiles = getProfiles(intervalAttributesMap.asMap());
         intervalData.setProfiles(profiles);
 
-        Blocks blocks = getBlocks(drAttributeDataJmsMessage);
+        Blocks blocks = getBlocks(drAttributeDataJmsMessage, serialNumber);
         intervalData.setBlocks(blocks);
  
       //  intervalData.setIntervalDelimiter(",");
@@ -620,7 +618,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     /**
      * Creating Blocks object that contains request fields (EndReadings, MeterID and IntervalStart).
      */
-    private Blocks getBlocks(DrAttributeDataJmsMessage drAttributeDataJmsMessage){
+    private Blocks getBlocks(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber){
         
         Blocks blocks = new Blocks();
         List<IntervalBlock> blockList = blocks.getBlock();
@@ -629,7 +627,6 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         EndReadings endReadings = getEndReadings(drAttributeDataJmsMessage);
         intervalBlock.setEndReadings(endReadings);
 
-        String serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(drAttributeDataJmsMessage.getPaoPointIdentifier().getPaoIdentifier().getPaoId());
         MeterID meterId = MultispeakFuncs.getDrMeterID(serialNumber);
         intervalBlock.setMeterID(meterId);
 
