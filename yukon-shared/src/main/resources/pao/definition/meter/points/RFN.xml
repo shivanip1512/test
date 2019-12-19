@@ -14,6 +14,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="101"/>
+        <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
