@@ -49,7 +49,7 @@ public class EimJavaLibraryTest {
         "catalina.jar",
         "client-runtime-1.6.7.jar",
         "converter-jackson-2.5.0.jar",
-        "commons-beanutils-1.9.3.jar",
+        "commons-beanutils-1.9.4.jar",
         "commons-cli-1.3.1.jar",
         "commons-collections-3.2.2.jar",
         "commons-discovery-0.5.jar",

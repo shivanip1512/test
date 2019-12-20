@@ -10,9 +10,11 @@ import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
+import com.cannontech.rest.api.loadgroup.request.MockAddressLevel;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupMCT;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -122,5 +124,213 @@ public class LoadGroupMCTAPITest {
                 context.getAttribute("Copied_MCT_GrpId").toString());
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
         Log.startTestCase("loadGroupMCT_05_Delete");
+    }
+
+    /**
+     * Negative validation when Load Group is created with same name used while creation of Control Load Group in loadGroupMCT_01_Create
+     */
+    @Test(dependsOnMethods = "loadGroupMCT_01_Create")
+    public void loadGroupMCT_06_Name_Is_Same_Validation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setName(loadGroup.getName());
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name must be unique."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group name field is passed as blank while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_07_NameAsBlankValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setName("");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name is required."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group name is passed with special characters | , / while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_08_NameWithSpecialCharactersValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setName("Test\\,MCT");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "name",
+                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group name is passed with more than 60 characters while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_09_NameWithMoreThanSixtyCharactersValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setName("TestLoadGroupName_MoreThanSixtyCharacter_TestLoadGroupNames>60");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Exceeds maximum length of 60."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Invalid Route Id is passed while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_10_InvalidRouteIdValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setRouteId(2999999);
+        ;
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "routeId", "Route Id does not exist."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Kw Capacity field is passed as blank while creation of MCT load group
+     */
+    @Test
+    public void loadGroupMCT_11_KwCapacityAsBlankValidation() {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setKWCapacity(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "kWCapacity", "kW Capacity is required."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Kw Capacity field value is less than the minimum value allowed while creation of
+     * MCT load group
+     */
+    @Test
+    public void loadGroupMCT_12_KwCapacityLessThanMinValueValidation() {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setKWCapacity(-222.0);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "kWCapacity", "Must be between 0 and 99,999.999."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Kw Capacity field value is greater than the Maximum value allowed while creation of
+     * MCT load group
+     */
+    @Test
+    public void loadGroupMCT_13_KwCapacityGreaterThanMaxValueValidation() {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setKWCapacity(100000.0);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "kWCapacity", "Must be between 0 and 99,999.999."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group address field is passed as blank while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_14_AddressAsBlankValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setAddress(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "address", "Address is required."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group address field is passed as blank while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_15_AddressLessThanOneValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setAddress(-1);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "address", "Must be between 1 and 2,147,483,647."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group MCT Address field is passed as blank while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_16_MCTAddressAsBlankValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setLevel(MockAddressLevel.MCT_ADDRESS);
+        loadGroup.setMctDeviceId(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "mctDeviceId", "MCT Address is required."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group MCT Address field is passed as blank while creation of Load Group
+     */
+    @Test
+    public void loadGroupMCT_17_InvalidMCTAddressValidation(ITestContext context) {
+
+        MockLoadGroupMCT loadGroup = (MockLoadGroupMCT) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_MCT);
+        loadGroup.setLevel(MockAddressLevel.MCT_ADDRESS);
+        loadGroup.setMctDeviceId(2121212);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "mctDeviceId", "MCT device Id does not exist."),
+                "Expected code in response is not correct");
     }
 }

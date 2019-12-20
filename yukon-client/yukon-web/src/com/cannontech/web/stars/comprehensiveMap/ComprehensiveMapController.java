@@ -37,6 +37,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -47,9 +48,11 @@ import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.tree.Node;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -70,7 +73,7 @@ import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
+import org.apache.commons.lang3.tuple.Pair;
 
 @RequestMapping("/comprehensiveMap/*")
 @Controller
@@ -96,7 +99,6 @@ public class ComprehensiveMapController {
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
 
-    
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
     
     @GetMapping("home")
@@ -263,16 +265,34 @@ public class ComprehensiveMapController {
         String now = dateFormattingService.format(Instant.now(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "ComprehensiveMapDownload_" + now + ".csv");
 
-      }
+    }
+    
+    @GetMapping("allGateways")
+    public @ResponseBody FeatureCollection allGateways() {
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        return paoLocationService.getLocationsAsGeoJson(gateways);
+    }
+    
+    @GetMapping("allRelays")
+    public @ResponseBody FeatureCollection allRelays() {
+        List<RfnDevice> relays = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfRelayTypes());
+        return paoLocationService.getLocationsAsGeoJson(relays);
+    }
     
     @GetMapping("allPrimaryRoutes")
-    public @ResponseBody List<FeatureCollection> primaryRoutes(String groupName) {
+    public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds, String groupName) {
+        Map<String, Object> json = new HashMap<>();
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
-        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        
-        List<List<SimpleDevice>> chunks = Lists.partition(collection.getDeviceList(), 10);
-        List<FeatureCollection> features = chunks.stream().map(chunk -> paoLocationService.getLocationsAsGeoJson(chunk)).collect(Collectors.toList());
-        return features;
+        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);        
+        List<List<SimpleDevice>> chunks = Lists.partition(collection.getDeviceList(), 65);
+        try {
+            Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(chunks.get(0));
+            json.put("tree", root);
+        } catch (NmNetworkException | NmCommunicationException e) {
+            json.put("errorMsg", e.getMessage());
+        }
+     
+        return json;
     }
     
 }

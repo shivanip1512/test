@@ -1,25 +1,296 @@
 # -------
 # Contains licenses in this order, each with a heading:
 # -------
+#----------------- 
+# field :Contains the data field name.
+# description : Contains the name of the field displayed in IOT dashboard.
+# details : Contains the detail of that particular field.
+# source : Contains the SQL query to retrieve that field's data. To write any complex SQL query i.e. more than 1 line,
+#           the SQL will be followed by ">-" as given for some fields.
+# iotType : IOT type of field. Valid value will be Telemetry , Property or Both.
+# Frequency: Contains the frequency at which field value should be retrieved. Valid value will be ApplicationControl, Onchange,
+#            OnStartupOnly, Daily, EverySixHours.
+#------------
+
 Yukon :
-  - field: emcount
-    description: Electic Meter Count
-    details: 
-    source: SELECT COUNT(*) AS ElectricMeterCount FROM YukonPaobject WHERE (TYPE LIKE 'RFN-4%' OR TYPE LIKE 'RFN-5%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+  - field: gmcount
+    description: Gas Meter Count
+    details: Contains the count of gas meter.
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'RFG%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Telemetry
-    frequency : 30
+    frequency : EverySixHours
+
+  - field: dcelectric
+    description: Data Completeness Electric
+    details: Find the data completeness of RFN electric meters for point type analog for the given time interval of 7 days which is 3 days previus from current time.
+    source: >-
+        SELECT COUNT(*) AS Actual FROM (
+        SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, Timestamp, Value, Quality FROM RawPointHistory rph
+        JOIN Point p ON rph.PointId = p.PointId
+        AND PointType = 'Analog' AND PointOffset = 1
+        WHERE TimeStamp > DATEADD(day,-10, SYSDATETIME())  AND TimeStamp <= DATEADD(day,-3, SYSDATETIME())  
+        AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
+        JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
+        JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
+        JOIN RfnAddress rfn ON  pao.PaObjectId = rfn.DeviceId
+        WHERE Type LIKE 'RFN%'
+        GROUP BY PaoName, Type, MeterNumber, SerialNumber, DisableFlag, PointName
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: dcwater
+    description: Data Completeness Water
+    details:  Find the data completeness of RFN gas meters for point type analog for the given time interval of 7 days which is 3 days previus from current time.
+    source: >-
+        SELECT COUNT(*) AS Actual FROM (
+        SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, TimeStamp, Value, Quality FROM RawPointHistory rph 
+        JOIN Point p ON rph.PointId = p.PointId
+        AND PointType = 'Analog' AND PointOffset = 1
+        WHERE TimeStamp > DATEADD(day,-10, SYSDATETIME()) AND TimeStamp <= DATEADD(day,-3, SYSDATETIME()) 
+        AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
+        JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
+        JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
+        JOIN RfnAddress rfn ON pao.PaObjectId = rfn.DeviceId
+        WHERE Type LIKE 'RFW%'
+        GROUP BY PaoName, Type, MeterNumber, SerialNumber, DisableFlag, PointName
+    iotType: Telemetry
+    frequency : EverySixHours
+
+  - field: emcount
+    description: Electric Meter Count
+    details: Contains the number of enabled electric meter
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE (Type LIKE 'RFN-4%' OR Type LIKE 'RFN-5%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: electricreadrate
+    description: Electric Read Rate
+    details: Contains the rate of reading electric meters for last 3 days
+    source: >-
+        DECLARE @totalRFNMeters INTEGER
+        DECLARE @threeDayRFNMeters INTEGER
+        DECLARE @value FLOAT
+        SET @totalRFNMeters = (SELECT COUNT(*) FROM YukonPaObject
+        WHERE (Type LIKE 'RFN-4%' OR Type LIKE 'RFN-5%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%')
+        IF @totalRFNMeters < 1 SET @value = 0
+        ELSE SET @threeDayRFNMeters = (SELECT SUM(TotalVal) FROM (
+        SELECT COUNT(pao.PAObjectID) AS TotalVal FROM YukonPaObject pao
+        JOIN Point p ON pao.PaObjectId = p.PaObjectId
+        JOIN RawPointHistory rph ON rph.PointId = p.PointId
+        JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
+        JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
+        WHERE Type LIKE 'RFN%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME()) AND DisableFlag = 'N' AND PointType IN ('Analog')
+        GROUP BY pao.PaObjectId) a)
+        IF @threeDayRFNMeters > 0 SET @value = ROUND((@threeDayRFNMeters/@totalRFNMeters)*100, 2)
+        ELSE SET @value = 0
+        SELECT @value AS ElectricReadRate
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: gasreadrate
+    description: Gas Read Rate
+    details: Contains the rate of reading gas meters for last 3 days
+    source: >-
+        DECLARE @totalRFGMeters INTEGER
+        DECLARE @threeDayRFGMeters INTEGER
+        DECLARE @value FLOAT
+        SET @totalRFGMeters = (SELECT COUNT(*) FROM YukonPaObject
+        WHERE Type LIKE 'RFG%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%')
+        IF @totalRFGMeters < 1 SET @value = 0
+        ELSE SET @threeDayRFGMeters = (SELECT SUM(TotalVal) FROM (
+        SELECT COUNT(pao.PaObjectId) AS TotalVal FROM YukonPaObject pao
+        JOIN Point p ON pao.PaObjectId = p.PaObjectId
+        JOIN RawPointHistory rph ON rph.PointId = p.PointId
+        JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
+        JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
+        WHERE Type LIKE 'RFG%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME())  AND DisableFlag = 'N' AND PointType IN ('Analog')
+        GROUP BY pao.PaObjectId) a )
+        IF @threeDayRFGMeters > 0 SET @value = ROUND((@threeDayRFGMeters/@totalRFGMeters)*100, 2)
+        ELSE SET @value = 0
+        SELECT @value AS GasReadRate
+    iotType: Telemetry
+    frequency : EverySixHours
 
   - field: wmcount
     description: Water Meter Count
-    details: 
-    source: SELECT COUNT(*) AS WaterMeterCount FROM YukonPaobject WHERE TYPE LIKE 'RFW%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    details: Contains the number of enabled Water meter
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE (Type LIKE 'RFW%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: waterreadrate
+    description: Water Read Rate
+    details: Contains the rate of reading water meters for last 3 days
+    source: >-
+        DECLARE @totalRFWMeters INTEGER
+        DECLARE @threeDayRFWMeters
+        INTEGER DECLARE @value FLOAT
+        SET @totalRFWMeters = (SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'RFW%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%')
+        IF @totalRFWMeters < 1 SET @value = 0
+        ELSE SET @threeDayRFWMeters = (SELECT SUM(TotalRecord) FROM (
+        SELECT COUNT(pao.PaObjectId) as TotalRecord 
+        FROM YukonPaObject pao
+        JOIN Point p ON pao.PaObjectId = p.PaObjectId
+        JOIN RawPointHistory rph ON rph.PointId = p.PointId
+        JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
+        JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
+        WHERE Type LIKE 'RFW%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME())  AND DisableFlag = 'N' AND PointType IN ('Analog') 
+        GROUP BY pao.PaObjectId) a)
+        IF @threeDayRFWMeters > 0 SET @value = ROUND((@threeDayRFWMeters/@totalRFWMeters)*100, 2)
+        ELSE SET @value = 0
+        SELECT @value AS WaterReadRate
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: yukversion
+    description: Yukon Version
+    details: Contains the latest version of Yukon
+    source: SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC
     iotType: Property
-    frequency : 45
+    frequency : OnStartupOnly
 
-  - field: gatewaystatus
-    description: Gateway Status
-    details: 
+  - field: rfrelays
+    description: Relays
+    details: Contains the number of RF relays
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'RFN R%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Property
+    frequency : EverySixHours
+
+  - field: drcount
+    description: RFN LCR
+    details: Contains the number of RFN LCRs enabled
+    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'LCR-6%RFN' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
+    iotType: Property
+    frequency : EverySixHours
+
+Network Manager :
+  - field: batterynodecount
+    description: Battery Nodes
+    details: Contains the count of nodes which are battery enabled
+    source: SELECT COUNT(*) AS "BatteryNodeCount" FROM Node n WHERE n.NodeType = 2 OR n.NodeType = 3
     iotType: Telemetry
-    frequency : 30
+    frequency : EverySixHours
 
+  - field: connectedgatewaycount
+    description: Connected Gateways
+    details: Count the Gateway whose status id is connected
+    source: SELECT COUNT(*) FROM Gw_Curr_Conn_Status WHERE GwConnStatusCodeId = 1
+    iotType: Both
+    frequency : EverySixHours
 
+  - field: duprtecolor
+    description: Duplicate Route Colors
+    details: Contains the count of gateway which has duplicate route colors
+    source: >-
+        SELECT COUNT(*) AS "RouteColorDuplicationCount" FROM Gateway g1, Gateway g2
+        WHERE g1.GwId != g2.GwId AND g1.GwRouteColor=g2.GwRouteColor
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: gapfillrequests
+    description: Gap Fill Requests (24 Hours)
+    details: Number of requests within 24 hours for Gap fill. 
+    source: >-
+        SELECT COUNT (*) FROM Gw_Node_Log_Entry nle 
+        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=408
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: gwcount
+    description: Gateway Count
+    details: Contains count of gateway
+    source: SELECT COUNT(*) AS "GatewayCount" FROM Gateway
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: maxnodespergateway
+    description: Gateway Loading (Max)
+    details: Contains the Gateway with highest node count
+    source: SELECT TOP 1 GwTotalNodes FROM Gateway ORDER BY GwTotalNodes DESC
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: gatewayresetcount
+    description: Gateway Reset Count (7 Day)
+    details: Contains the frequency count of gateway reset for last 7 days.
+    source: >-
+        SELECT COUNT(*) AS "GatewayResetCount(Last7Days)" FROM Gw_Log_Entry gwle
+        WHERE gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-7, SYSDATETIME())) AND gwle.GwLogCodeId=1601
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: gwsocketcount
+    description: Gateway Socket Error Count
+    details: Contains the count of Socket error arises in gateway for last 7 days.
+    source: >-
+        SELECT COUNT(*) AS "GatewaySocketErrorCount(Last7Day)" FROM Gw_Log_Entry gwle 
+        WHERE gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-7, SYSDATETIME())) 
+        AND (gwle.GwLogCodeId=1301 OR gwle.GwLogCodeId=1302)
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: gwsmissingtsync
+    description: Gateways Missing TSyncs (24 Hour)
+    details: Gateway missing synchronous time for last 24 hours.
+    source: >-
+        SELECT COUNT(*) FROM (
+        SELECT gw.GwId, COUNT(gwle.LogEntryId) AS "Syncs" FROM Gateway gw 
+        JOIN Gw_Log_Entry gwle ON gw.GwId=gwle.GwId 
+        AND gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) 
+        AND gwle.GwLogCodeId=2202 GROUP BY gw.GwId) AS gwsync 
+        WHERE Syncs=0
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: nodesmissingroutetables
+    description: Nodes Missing Route Table
+    details: Contains the count of missing node in the route table for last 24 hours.
+    source: >-
+        SELECT COUNT(*) AS "NodesMissingRouteTables(Last24Hours)" FROM (
+        SELECT n.NodeId, COUNT(nle.LogEntryId) AS "routeresps" FROM Node n 
+        JOIN Gw_Node_Log_Entry nle ON n.NodeId=nle.NodeId 
+        AND nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) 
+        AND nle.GwNodeLogCodeId=502 GROUP BY n.NodeId) AS noderouteresps, Node nn 
+        WHERE routeresps=0 AND noderouteresps.NodeId=nn.NodeId AND nn.NodeType != 0 AND nn.NodeType != 2 AND nn.NodeType != 3
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: powerednodecount
+    description: Powered Node Count
+    details: Contains the count of nodes which are power enabled
+    source: SELECT COUNT(*) AS "PoweredNodeCount" FROM Node n WHERE n.NodeType != 0 AND n.NodeType != 2 AND n.NodeType != 3
+    iotType: Telemetry
+    frequency : EverySixHours
+
+  - field: routetablerequests
+    description: Route Table Requests
+    details: Contains the route table requests for last 24 hours.
+    source: >-
+        SELECT COUNT(*) AS "RouteTableRequests(Last24Hours)" FROM Gw_Node_Log_Entry nle 
+        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=506
+    iotType: Both
+    frequency : EverySixHours
+
+  - field: routetableresponse
+    description: Route Table Responses
+    details: Contains the route table responses for last 24 hours.
+    source: >-
+        SELECT COUNT(*) AS "RouteTableRequests(Last24Hours)" FROM Gw_Node_Log_Entry nle 
+        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=502
+    iotType: Both
+    frequency : EverySixHours
+    
+  - field: rfversion
+    description: RF Network Version
+    details: Contains the latest RF network version
+    source: SELECT TOP 1 gwreleaserev FROM Gateway ORDER BY gwreleaserev DESC
+    iotType: Property
+    frequency : OnStartupOnly
+
+Other :
+  - field: dashboardiotcv
+    description: Remote Dashboard App version
+    details: Contains the version of IOT dashboard
+    source: 1.1.3
+    iotType: Property
+    frequency : OnStartupOnly

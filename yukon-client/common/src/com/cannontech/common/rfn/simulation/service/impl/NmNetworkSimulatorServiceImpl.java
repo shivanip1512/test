@@ -1,6 +1,5 @@
 package com.cannontech.common.rfn.simulation.service.impl;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,13 +10,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,8 +39,6 @@ import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
 import com.cannontech.amr.rfn.message.status.type.MeterInfo;
 import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -67,7 +62,6 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResu
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.ParentData;
@@ -86,7 +80,6 @@ import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
-import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.WifiSecurityType;
 import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -95,6 +88,7 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
+import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
@@ -103,44 +97,14 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.math.IntMath;
 
 public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService {
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
     private static final String metaDataRequestQueue = "yukon.qr.obj.common.rfn.MetadataRequest";
-    private static final int incomingMessageWaitMillis = 1000;
+    public static final int incomingMessageWaitMillis = 1000;
     
     private final static Logger log = YukonLogManager.getLogger(NmNetworkSimulatorServiceImpl.class);
-    
-    private static final int MAX_RADIUS_IN_METERS = 50000;
-    private static final int MAX_DEVICE_COUNT = 250000;
-    // office
-    private static final double latitude = 44.985565;
-    private static final double longitude = -93.404157;
-    
-    private static class CubFoods {
-        private double latitude;
-        private double longitude;
-        public CubFoods(double latitude, double longitude) {
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
-    }
-    private static List<CubFoods> gatewayLocations = new ArrayList<>();
-    {
-        gatewayLocations.add(new CubFoods(45.021110, -93.479910));
-        gatewayLocations.add(new CubFoods(45.124490, -93.450420));
-        gatewayLocations.add(new CubFoods(45.035020, -93.409390));
-        gatewayLocations.add(new CubFoods(45.058660, -93.322500));
-        gatewayLocations.add(new CubFoods(44.985930, -93.445440));
-        gatewayLocations.add(new CubFoods(45.019370, -93.360530));
-        gatewayLocations.add(new CubFoods(44.993120, -93.150460));
-        gatewayLocations.add(new CubFoods(44.915640, -93.501860));
-        gatewayLocations.add(new CubFoods(44.951510, -93.235660));
-        gatewayLocations.add(new CubFoods(44.893320, -93.581530));
-    }
-    
+   
     private static final double DISTANCE_IN_MILES = 10;
                 
     private SimulatedNmMappingSettings settings;
@@ -149,141 +113,24 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private IDatabaseCache cache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private IDatabaseCache databaseCache;
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private AttributeService attributeService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private PaoLocationSimulatorService paoLocationSimulatorService;
     
     private JmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private Executor executor = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
     String templatePrefix;
     private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.RFN420CLW, PaoType.RFN420CDW);
     
     @PostConstruct
     public void init() {
-        templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
-    }
-    
-    @Override
-    public void setupLocations() {
-        log.info("Setting up locations");
-        paoLocationDao.delete(Origin.SIMULATOR);
-        rfnDeviceDao.clearDynamicRfnDeviceData();
-            
-        executor.execute(() -> {
-            Map<PaoIdentifier, PaoLocation> locations =
-                    Maps.uniqueIndex(paoLocationDao.getAllLocations(), c -> c.getPaoIdentifier());
-            
-            log.info("Existing locations that are not simulated:" + locations.size());
-            
-            List<LiteYukonPAObject> devices = cache.getAllDevices().stream()
-                    .filter(device -> ! device.getPaoName().contains(templatePrefix) && !locations.containsKey(device.getPaoIdentifier()) && !device.getPaoType().isRfGateway())
-                    .collect(Collectors.toList());
-            
-            log.info("Device to simulate:" + devices.size());
-            
-            List<LiteYukonPAObject> rfnDevices = devices.stream().filter(device -> device.getPaoType()
-                .isRfn()).collect(Collectors.toList());
-            
-            log.info("RF devices:" + rfnDevices.size());
-            
-            List<LiteYukonPAObject> nonRfnDevices = devices.stream().filter(device -> !device.getPaoType()
-                .isRfn()).collect(Collectors.toList());
-            
-            log.info("NON RF devices:" + nonRfnDevices.size());
-            
-            int estimatedRadius = getEstimatedRadius(nonRfnDevices.size());
-            // add locations for devices that are not RF
-            List<PaoLocation> newLocations = nonRfnDevices.stream()
-                    .map(device -> getLocation(device.getPaoIdentifier(), latitude, longitude, estimatedRadius))
-                    .collect(Collectors.toList());
-                    
-            log.info("Locations for NON RF devices:" + newLocations.size());
-            
-            createRfnIdentifiers(rfnDevices); 
-            
-            //Limit gateways in Yukon to 10 that will be mapped to devices. We will map those gateways to 10 Cub Foods.
-            List<RfnGateway> gateways = rfnGatewayService.getAllGateways().stream()
-                    .filter(gateway -> !locations.containsKey(gateway.getPaoIdentifier()))
-                    .limit(gatewayLocations.size())
-                    .collect(Collectors.toList());
-            
-            log.info("Gateways:" + gateways.size());
-            //split devices between gateways
-            List<List<LiteYukonPAObject>> rfnDevicesSplit = partition(rfnDevices, gateways.size());
-            
-            log.info("Partitioned devices into parts:" + rfnDevicesSplit.size());
-            
-            RfnNodeCommArchiveRequest request = new RfnNodeCommArchiveRequest();
-            request.setNodeComms(new HashMap<Long, NodeComm>());
-            AtomicLong ackId = new AtomicLong(1);
-            for(int i = 0; i < gateways.size(); i++) {
-                RfnGateway gateway = gateways.get(i);
-                CubFoods cub = gatewayLocations.get(i);                
-                List<LiteYukonPAObject> devicesForGateway = rfnDevicesSplit.get(i);
-                
-                log.info("Mapping gateway:" + gateway + " to Cub Foods:" + i + " devices:" + devicesForGateway.size());
-                
-                //radius around CubFoods
-                int radius = getEstimatedRadius(devicesForGateway.size());
-                //add gateway location
-                newLocations.add(new PaoLocation(gateway.getPaoIdentifier(), cub.latitude, cub.longitude,
-                    Origin.SIMULATOR, new Instant()));
-                //calculate device location within a certain radius around Cub Foods
-                newLocations.addAll(devicesForGateway.stream()
-                    .map(device -> getLocation(device.getPaoIdentifier(), cub.latitude, cub.longitude, radius))
-                    .collect(Collectors.toList()));
-                //map gateway to device
-                List<Integer> devicesIds = devicesForGateway.stream()
-                    .map(device -> device.getLiteID()).collect(Collectors.toList());
-                rfnDeviceDao.getDevicesByPaoIds(devicesIds).forEach(device ->{
-                    NodeComm nodeComm = new NodeComm();
-                    nodeComm.setDeviceRfnIdentifier(device.getRfnIdentifier());
-                    nodeComm.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
-                    nodeComm.setNodeCommStatus(NodeCommStatus.READY);
-                    nodeComm.setNodeCommStatusTimestamp(System.currentTimeMillis());
-                    request.getNodeComms().put(ackId.getAndIncrement(), nodeComm);
-                });
-            }
-            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_NODE_COMM_ARCHIVE.getQueue().getName(), request);
-            log.info("Inserting " + newLocations.size() + " locations.");
-            paoLocationDao.save(newLocations);
-            log.info("Inserting " + newLocations.size() + " locations is done.");
-        });
-    }
-    
-    private List<List<LiteYukonPAObject>> partition(List<LiteYukonPAObject> allDevices, int divisor) {
-        int chunk = IntMath.divide(allDevices.size(), divisor, RoundingMode.CEILING);
-        return Lists.partition(allDevices, chunk);
-    }
-    
-    //If RFN identifiers do not exist creates identifiers
-    private void createRfnIdentifiers(List<LiteYukonPAObject> devices) {
-        List<LiteYukonPAObject> rfnDevices =
-            devices.stream().filter(d -> d.getPaoType().isRfn()).collect(Collectors.toList());
-        Map<Integer, RfnDevice> rfnDevicesWithIdentifiers = rfnDeviceDao.getDevicesByPaoIds(
-            rfnDevices.stream().map(d -> d.getLiteID()).collect(Collectors.toList())).stream().collect(
-                Collectors.toMap(d -> d.getPaoIdentifier().getPaoId(), Function.identity()));
-        List<LiteYukonPAObject> devicesWithoutIdentifiers =
-            rfnDevices.stream().filter(d -> !rfnDevicesWithIdentifiers.containsKey(d.getLiteID())).collect(
-                Collectors.toList());
-        devicesWithoutIdentifiers.forEach(d -> {
-            RfnManufacturerModel template = RfnManufacturerModel.getForType(d.getPaoType()).get(0);
-            RfnIdentifier rfId = new RfnIdentifier(String.valueOf(d.getLiteID()), template.getManufacturer(), template.getModel());
-            try {
-                rfnDeviceDao.updateDevice(new RfnDevice(d.getPaoName(), d, rfId));
-            }catch(Exception e) {
-                log.error("Unable to update device {} with {}", d, rfId);
-            }
-        });
     }
     
     @Override
@@ -422,19 +269,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
 
         log.info("Started NM Network Simulator");
     }
-    
-    /**
-     * Returns generated metadata multi response
-     */
-    private RfnMetadataMultiResponse getMetadataMultiResponse(RfnMetadataMultiRequest request) {
-        RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID(), 1, 1);
-        response.setResponseType(settings.getMetadataResponseType());
-        response.setQueryResults(new HashMap<>());
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
-        response.getQueryResults().putAll(results);
-        return response;
-    }
-    
+        
 
     private List<RfnMetadataMultiResponse> getPartitionedMetadataMultiResponse(RfnMetadataMultiRequest request) {
         List<RfnMetadataMultiResponse> responses = new ArrayList<>();
@@ -566,24 +401,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         return result;
     }
     
-    private Neighbor getNeighborFromSettings(RfnIdentifier device) {
-        Neighbor neighbor = new Neighbor();
-       /* neighbor.setEtxBand(settings.getNeighborData().getEtxBand());
-        neighbor.setLastCommTime(settings.getNeighborData().getLastCommTime());
-        neighbor.setCurrentLinkPower(LinkPower.LINK_POWER_125_mW);
-        neighbor.setCurrentLinkRate(LinkRate.LINK_RATE_FOUR_X);
-        neighbor.setNeighborMacAddress(settings.getNeighborData().getNeighborAddress());
-        Set<NeighborFlag> flags = new HashSet<>();
-        flags.add(NeighborFlag.NEIGHBOR_FLAG_BATTERY);
-        neighbor.setNeighborFlags(flags);
-        neighbor.setNeighborLinkCost(settings.getNeighborData().getNeighborLinkCost());
-        neighbor.setNextCommTime(settings.getNeighborData().getNextCommTime());
-        neighbor.setNumSamples(settings.getNeighborData().getNumSamples());
-        neighbor.setMyRfnIdentifier(device);
-        neighbor.setNeighborSerialNumber(device.getSensorSerialNumber());*/
-        return neighbor;
-    }
-    
     private List<RfnIdentifier> getDevicesForGateway(RfnDevice gateway) {
         int connectedNodesWarningLimit = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD);
         return rfnDeviceDao.getRfnIdentifiersForGateway(gateway.getPaoIdentifier().getPaoId(), connectedNodesWarningLimit);
@@ -713,39 +530,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             settings = simulatedNmMappingSettings;
         }
         return settings;
-    }
-    
-    private int getEstimatedRadius(int deviceCount){
-        if(deviceCount >= MAX_DEVICE_COUNT){
-            return MAX_RADIUS_IN_METERS;
-        }
-        return deviceCount * MAX_RADIUS_IN_METERS / MAX_DEVICE_COUNT;
-    }
-    
-    /**
-     * Creates a random location within a radius
-     */
-    private PaoLocation getLocation(PaoIdentifier paoIdentifier, double x0, double y0, int radius) {
-        Random random = new Random();
-
-        // Convert radius from meters to degrees
-        double radiusInDegrees = radius / 111000f;
-
-        double u = random.nextDouble();
-        double v = random.nextDouble();
-        double w = radiusInDegrees * Math.sqrt(u);
-        double t = 2 * Math.PI * v;
-        double x = w * Math.cos(t);
-        double y = w * Math.sin(t);
-
-        // Adjust the x-coordinate for the shrinking of the east-west distances
-        double new_x = x / Math.cos(y0);
-
-        double latitude = new_x + x0;
-        double longitude = y + y0;
-
-        PaoLocation location = new PaoLocation(paoIdentifier, latitude, longitude, Origin.SIMULATOR, new Instant());
-        return location;
     }
     
     /**
@@ -981,5 +765,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Override
     public void startSimulatorWithCurrentSettings() {
         start(getSettings());
+    }
+
+    @Override
+    public void setupLocations() {
+      paoLocationSimulatorService.setupLocations();
     }
 }

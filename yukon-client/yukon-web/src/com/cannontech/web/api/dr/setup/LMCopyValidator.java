@@ -20,9 +20,11 @@ public class LMCopyValidator extends SimpleValidator<LMCopy> {
         // Group Name
         lmValidatorHelper.validateCopyPaoName(lmCopy.getName(), errors, "Name");
         // Validate routeId if present.
-        Integer routeId = ((LoadGroupCopy)lmCopy).getRouteId();
-        if (routeId != null) {
-            lmValidatorHelper.validateRoute(errors, routeId);
+        if (lmCopy instanceof LoadGroupCopy) {
+            Integer routeId = ((LoadGroupCopy) lmCopy).getRouteId();
+            if (routeId != null) {
+                lmValidatorHelper.validateRoute(errors, routeId);
+            }
         }
     }
 }

@@ -66,6 +66,7 @@ import com.cannontech.dr.ecobee.message.RuntimeReportJobRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobResponse;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportJobStatusResponse;
+import com.cannontech.dr.ecobee.message.SetpointDrRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.UnregisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.partial.DutyCycleDr;
@@ -74,6 +75,7 @@ import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
 import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
+import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
 import com.cannontech.dr.ecobee.service.EcobeeStatusCode;
 import com.cannontech.encryption.EcobeeSecurityService;
@@ -265,6 +267,46 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         if (log.isDebugEnabled()) {
             try {
                 log.debug("Sending ecobee duty cycle DR:");
+                log.debug("Headers: " + requestEntity.getHeaders());
+                log.debug("Body: " + JsonUtils.toJson(request));
+            } catch (JsonProcessingException e) {
+                log.warn("Error parsing json in debug.", e);
+            }
+        }
+        DrResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.DEMAND_RESPONSE, DrResponse.class);
+
+        return response.getDemandResponseRef();
+    }
+
+    @Override
+    public String sendSetpointDR(EcobeeSetpointDrParameters parameters) {
+        log.debug("Sending ecobee setpoint DR.");
+
+        String url = getUrlBase() + demandResponseUrlPart;
+
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        String eventDisplayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.eventDisplayMessage");
+
+        String groupIdString = Integer.toString(parameters.getGroupId());
+        // Required to be set to true to use RelativeTemp
+        boolean isTemperatureRelative = true;
+        // According to the API documentation both the cool and heat relative temp must be set in the message;
+        int coolRelativeTemp = 0;
+        int heatRelativeTemp = 0;
+        if (parameters.istempOptionHeat()) {
+            heatRelativeTemp = parameters.getTempOffset();
+        } else {
+            coolRelativeTemp = parameters.getTempOffset();
+        }
+        SetpointDrRequest request = new SetpointDrRequest(groupIdString, YUKON_CYCLE_EVENT_NAME, eventDisplayMessage,
+                parameters.getStartTime(), parameters.getStopTime(), parameters.isOptional(), isTemperatureRelative,
+                coolRelativeTemp, heatRelativeTemp, settingDao.getBoolean(GlobalSettingType.ECOBEE_SEND_NOTIFICATIONS));
+
+        HttpEntity<SetpointDrRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+
+        if (log.isDebugEnabled()) {
+            try {
+                log.debug("Sending ecobee setpoint DR:");
                 log.debug("Headers: " + requestEntity.getHeaders());
                 log.debug("Body: " + JsonUtils.toJson(request));
             } catch (JsonProcessingException e) {

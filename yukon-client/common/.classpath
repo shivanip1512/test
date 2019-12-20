@@ -179,7 +179,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-beanutils-1.9.3.jar" sourcepath="/third-party/linked-sources/commons-beanutils-1.9.3-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-beanutils-1.9.4.jar" sourcepath="/third-party/linked-sources/commons-beanutils-1.9.4-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -435,7 +435,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/libthrift-0.12.0.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/libthrift-0.13.0.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -629,7 +629,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-compress-1.18.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-compress-1.19.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

@@ -1,7 +1,11 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.*;
-import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.*;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODES;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA;
+import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.GATEWAY;
+import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.LINK_QUALITY;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,16 +13,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +35,7 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.creation.DeviceCreationException;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -52,6 +59,7 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
+import com.cannontech.common.rfn.message.route.RfnRoute;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -63,6 +71,7 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.tree.Node;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.tools.mapping.model.MappingInfo;
@@ -539,6 +548,129 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             this.distanceInKm = distanceInKm;
             this.distanceInMiles = distanceInMiles;
         }
+    }
+    
+    @Override
+    public Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<SimpleDevice> devices) throws NmNetworkException, NmCommunicationException { 
+        log.debug("Getting primary routes for gateways: {}", devices);
+        Set<RfnIdentifier> rfnIdentifiers = devices.stream()
+                .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
+                .collect(Collectors.toSet());
+       
+        Node<Pair<Integer, FeatureCollection>> root = createTree(devices);
+        log.debug(root.print());
+        
+      //  printTree(root, " ");
+        
+       /* List<PaoLocation> allLocations = paoLocationDao.getAllLocations();
+        
+        Map<Integer, PaoLocation> paoIdToLocation = Maps
+                .uniqueIndex(allLocations, location -> location.getPaoIdentifier().getPaoId());
+                
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
+                metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(PRIMARY_FORWARD_ROUTE_DATA));
+        log.debug("Received primary primary route from NM for {} devices", metaData.size());
+        
+        List<FeatureCollection> features = new ArrayList<>();
+        metaData.forEach((device, queryResult) -> {
+            if (queryResult.isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
+                RfnRoute route = (RfnRoute) queryResult.getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+                List<PaoLocation> routeForDevice = new ArrayList<>(); 
+                RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
+                routeForDevice.add(paoIdToLocation.get(rfnDevice.getPaoIdentifier().getPaoId()));
+                route.forEach(rfnIdentifier -> {
+                    RfnDevice nextDevice = rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);
+                    routeForDevice.add(paoIdToLocation.get(nextDevice.getPaoIdentifier().getPaoId()));
+                });
+                features.add(paoLocationService.getFeatureCollection(routeForDevice));
+            } else {
+                log.debug("Result {} is not valid for PRIMARY_FORWARD_ROUTE_DATA", queryResult);
+            }
+        });*/
+        
+        return  root;
+    }
+    
+    private Node<Pair<Integer, FeatureCollection>> createTree(List<SimpleDevice> devices) {
+        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices);
+        Map<Integer, PaoLocation> paoIdToLocation = Maps
+                .uniqueIndex(allLocations, location -> location.getPaoIdentifier().getPaoId());
+        
+        SimpleDevice gateway = devices.get(0);
+        devices.remove(gateway);
+        FeatureCollection featureCollection = paoLocationService.getFeatureCollection(Sets.newHashSet(paoIdToLocation.get(gateway.getDeviceId())));
+        Node<Pair<Integer, FeatureCollection>> root = new Node<>(Pair.of(gateway.getDeviceId(), featureCollection));
+        List<List<SimpleDevice>> chunks = Lists.partition(devices, 10);
+             
+        int chunkCount = 1;
+        log.debug("---- root device {} total devices {} generated chunks {}",  gateway.getPaoIdentifier().getPaoId(), devices.size(), chunks.size());
+        log.debug("\n");
+        for (List<SimpleDevice> chunk : chunks) {
+           int forkAfter = getBranchBeforeFork(chunk);
+           log.debug("--- processing chunk {} with total device count {} fork after {}", chunkCount, chunk.size(), forkAfter);
+           List<SimpleDevice> branchDevices = chunk.subList(0, forkAfter);
+           log.debug("-- branch of {} devices {}", branchDevices.size(), branchDevices);
+           Node<Pair<Integer,FeatureCollection>> lastDevice = addBranchChunkToRoot(paoIdToLocation,branchDevices, root);
+           int deviceIdOfLastDevice = ((Pair<Integer, FeatureCollection>) lastDevice.getData()).getLeft();
+           
+           if(chunk.size() == forkAfter) {
+               log.debug("--- processing chunk {} complete", chunkCount);
+               log.debug("\n");
+               continue;
+           }
+
+           List<SimpleDevice> remainingChunk = new ArrayList<>();
+           remainingChunk.addAll(chunk);
+           remainingChunk.removeAll(branchDevices);
+           
+                    
+           if(remainingChunk.size() <= 5) {
+               log.debug("-- branch# {} form {} device count {} devices {}", 1, deviceIdOfLastDevice , remainingChunk.size(), remainingChunk);  
+               addBranchChunkToRoot(paoIdToLocation, remainingChunk, lastDevice);
+           } else {
+               List<List<SimpleDevice>> twoForks = Lists.partition(remainingChunk, ((remainingChunk.size()+1) / 2));
+               addBranchChunkToRoot(paoIdToLocation, twoForks.get(0), lastDevice);
+               log.debug("-- branch# {} form {} device count {} devices {}", 1, deviceIdOfLastDevice , twoForks.get(0).size(), twoForks.get(0));  
+               if(twoForks.size() == 2) {
+                   log.debug("-- branch# {} form {} device count {} devices {}", 2, deviceIdOfLastDevice , twoForks.get(1).size(), twoForks.get(1));  
+                   addBranchChunkToRoot(paoIdToLocation, twoForks.get(1), lastDevice);
+               }
+           }
+           log.debug("--- processing chunk {} complete", chunkCount);
+           log.debug("\n");
+           chunkCount++;
+        }
+        
+        return root;
+    }
+    
+    private int getBranchBeforeFork(List<SimpleDevice> chunk) {
+        List<Integer> fork = Lists.newArrayList(2,3,4,5,6,7,8,9);        
+        Random rand = new Random(); 
+        int sizeOfFirstChunk = fork.get(rand.nextInt(fork.size()));
+           if(sizeOfFirstChunk > chunk.size()) {
+                sizeOfFirstChunk = chunk.size();
+           }
+        return sizeOfFirstChunk;
+    }
+
+ 
+    private Node<Pair<Integer, FeatureCollection>> addBranchChunkToRoot(Map<Integer, PaoLocation> paoIdToLocation,
+            List<SimpleDevice> chunk, Node<Pair<Integer, FeatureCollection>> root) {
+        
+        List<Node<Pair<Integer,FeatureCollection>>> jsonChunk = chunk.stream().map(device -> {
+               if(paoIdToLocation.containsKey(device.getDeviceId())) {
+                   FeatureCollection json = paoLocationService.getFeatureCollection(Sets.newHashSet(paoIdToLocation.get(device.getDeviceId())));
+                   return new Node<Pair<Integer,FeatureCollection>>(Pair.of(device.getDeviceId(), json));       
+               } else {
+                   return new Node<Pair<Integer,FeatureCollection>>(Pair.of(device.getDeviceId(), null));       
+               } 
+           }).collect(Collectors.toList());
+        Node<Pair<Integer, FeatureCollection>> newRoot = root;
+        for(Node<Pair<Integer,FeatureCollection>> node: jsonChunk) {
+            newRoot = newRoot.addChild(node);
+        }
+        return newRoot; 
     }
     
     @Override

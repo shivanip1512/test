@@ -553,18 +553,18 @@ Java :
     jira : YUK-20500
     notes :    
   
-  - filename : commons-beanutils-1.9.3.jar
+  - filename : commons-beanutils-1.9.4.jar
     yukon group : Apache Commons
     project : Apache Commons BeanUtils
-    version : 1.9.3
+    version : 1.9.4
     project URL : "https://commons.apache.org/proper/commons-beanutils/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils/1.9.3"
-    md5 : 4a105c9d029a7edc6f2b16567d37eab6
-    sha1 : c845703de334ddc6b4b3cd26835458cb1cba1f3d
-    updated : 2017-06-15
-    jira : YUK-16690
+    maven URL : "https://mvnrepository.com/artifact/commons-beanutils/commons-beanutils/1.9.4"
+    md5 : 07dc532ee316fe1f2f0323e9bd2f8df4
+    sha1 : d52b9abcd97f38c81342bb7e7ae1eee9b73cba51
+    updated : 2019-12-18
+    jira : YUK-21102
     notes : 
   
   - filename : commons-cli-1.3.1.jar
@@ -623,18 +623,18 @@ Java :
     jira : YUK-16390
     notes : 
     
-  - filename : commons-compress-1.18.jar
+  - filename : commons-compress-1.19.jar
     yukon group : Apache Commons
     project : Apache Commons Compress
-    version : 1.18
+    version : 1.19
     project URL : "https://commons.apache.org/proper/commons-compress/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-compress/1.18"
-    md5 : bcbecfff4bdb0d3d0cdead3d995da2ef
-    sha1 : 1191f9f2bc0c47a8cce69193feb1ff0a8bcb37d5
-    updated : 2019-02-08
-    jira : YUK-19279
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-compress/1.19"
+    md5 : fe897bced43468450b785b66c1cff455
+    sha1 : 7e65777fb451ddab6a9c054beb879e521b7eab78
+    updated : 2019-12-17
+    jira : YUK-21103
     notes : 
   
   - filename : commons-configuration2-2.1.1.jar
@@ -1687,18 +1687,18 @@ Java :
     jira : none
     notes : jfreereport libfonts
   
-  - filename : libthrift-0.12.0.jar
+  - filename : libthrift-0.13.0.jar
     yukon group : Thrift
     project : Thrift
-    version : 0.12.0
+    version : 0.13.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.12.0"
-    md5 : 6a4a3db3b6674e59e2ed386372e5f04b
-    sha1 : 300bfbee03c7afa77301fb0946115e400e28ae04
-    updated : 2019-09-24
-    jira : YUK-20322
+    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.13.0"
+    md5 : 31132a57eacc3e7cd2b7af626b5f1ff9
+    sha1 : 0e5af3b6dc164eb2c699b70bf67a0babef507faf
+    updated : 2019-12-16
+    jira : YUK-21105
     notes : 
   
   - filename : log4j-api-2.11.2.jar
