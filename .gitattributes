@@ -1,2 +1,5 @@
+# Make no line ending changes on any files.
+
+* -text
 yukon-install/JRE/lib/modules filter=lfs diff=lfs merge=lfs -text
 yukon-client/sensus-jms/sensus-jms-gpuff.zip filter=lfs diff=lfs merge=lfs -text
