@@ -38,7 +38,6 @@ public class ItronMessageListener {
                 Instant endTime = new Instant(utcEndTimeSeconds * 1000);
                 Duration controlDuration = new Duration(startTime, endTime);
                 int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
-                Instant startTimeUtc = new Instant(DateTimeZone.getDefault().convertLocalToUTC(startTime.getMillis(), false));
                 
                 boolean rampIn = msg.readByte() == 1 ? true : false;
                 boolean rampOut = msg.readByte() == 1 ? true : false;
@@ -58,7 +57,7 @@ public class ItronMessageListener {
                                                                          groupId,
                                                                          startTime, 
                                                                          endTime);
-                controlHistoryService.sendControlHistoryShedMessage(groupId, startTimeUtc, ControlType.ITRON, null,
+                controlHistoryService.sendControlHistoryShedMessage(groupId, startTime, ControlType.ITRON, null,
                     controlDurationSeconds, dutyCyclePercent);
             } catch (JMSException e) {
                 log.error("Error parsing Itron control message from LM", e);
