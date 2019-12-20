@@ -112,6 +112,14 @@
         </tags:nameValueContainer>
     </tags:sectionContainer>
     
+    <tags:sectionContainer title="Network Tree Settings">
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="% of Empty/Nulls">
+                <tags:input path="emptyNullPercent" size="5"/>%
+            </tags:nameValue>
+        </tags:nameValueContainer>
+    </tags:sectionContainer>
+    
     </div>
     </div>
 
@@ -121,6 +129,8 @@
     <c:if test="${simulatorRunning}">
         <cti:button id="updateSettings" busy="true" label="Update Settings"/>
     </c:if>
+    
+    <cti:button id="refreshNetworkTree" busy="true" label="Refresh Network Tree"/>
         
     <c:if test="${not simulatorRunning}">
         <cti:button label="Start Simulator" busy="true" type="submit"/>
