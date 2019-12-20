@@ -2,6 +2,7 @@ package com.cannontech.web.widget;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -13,14 +14,13 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.model.RfnInvalidValues;
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -42,7 +42,7 @@ import com.google.common.collect.ListMultimap;
 @RequestMapping("/rfnOutagesWidget/*")
 public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
 
-    @Autowired private MeterDao meterDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private AttributeService attributeService;
     
@@ -68,14 +68,17 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId) throws ServletRequestBindingException, NotFoundException {
 
-        RfnMeter meter = meterDao.getRfnMeterForId(deviceId);
-        model.addAttribute("meter", meter);
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        model.addAttribute("device", device);
         model.addAttribute("deviceId", deviceId);
         
-        model.addAttribute("attributes", attributes);
+        Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
+        availableAttributes.retainAll(attributes);
+        
+        model.addAttribute("attributes", availableAttributes);
         
         /* All rfn meters should have an Outage Log point, don't bother catching IllegalUseOfAttribute exception */
-        LitePoint logPoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.OUTAGE_LOG);
+        LitePoint logPoint = attributeService.getPointForAttribute(device, BuiltInAttribute.OUTAGE_LOG);
         model.addAttribute("outageLogPointId", logPoint.getPointID());
         
         return "rfnOutagesWidget/render.jsp";
@@ -84,16 +87,16 @@ public class RfnOutagesWidget extends AdvancedWidgetControllerBase {
     @RequestMapping(value = "outageData", method = RequestMethod.POST)
     public String outageData(ModelMap model, int deviceId) throws ServletRequestBindingException {
 
-        YukonMeter meter = meterDao.getForId(deviceId);
+        RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(deviceId);
         Date startDate = new Instant().minus(Duration.standardDays(100)).toDate();
         Date stopDate =  new Date();
         Range<Date> dateRange = new Range<Date>(startDate, true, stopDate, true);
         
         ListMultimap<PaoIdentifier, PointValueQualityHolder> data =
-            rphDao.getAttributeData(Collections.singleton(meter), BuiltInAttribute.OUTAGE_LOG, false,
+            rphDao.getAttributeData(Collections.singleton(rfnDevice), BuiltInAttribute.OUTAGE_LOG, false,
                 dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.REVERSE, null);
         
-        Iterable<RfnOutageLog> logs = Iterables.transform(data.get(meter.getPaoIdentifier()), new Function<PointValueQualityHolder, RfnOutageLog>() {
+        Iterable<RfnOutageLog> logs = Iterables.transform(data.get(rfnDevice.getPaoIdentifier()), new Function<PointValueQualityHolder, RfnOutageLog>() {
             @Override
             public RfnOutageLog apply(PointValueQualityHolder input) {
                 Instant end = new Instant(input.getPointDataTimeStamp()).plus(Duration.standardSeconds((long) input.getValue()));

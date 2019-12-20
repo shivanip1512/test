@@ -47,6 +47,7 @@
                 <tags:widget bean="relayInformationWidget"/>
                 <tags:widget bean="rfnDeviceMetadataWidget"/>
                 <tags:widget bean="paoNotesWidget"/>
+                <tags:widget bean="rfnOutagesWidget"/>
             </div>
             <div class="column two nogutter">
 
