@@ -623,18 +623,18 @@ Java :
     jira : YUK-16390
     notes : 
     
-  - filename : commons-compress-1.18.jar
+  - filename : commons-compress-1.19.jar
     yukon group : Apache Commons
     project : Apache Commons Compress
-    version : 1.18
+    version : 1.19
     project URL : "https://commons.apache.org/proper/commons-compress/"
     license : Apache 2.0
     license URLs : "https://www.apache.org/licenses/LICENSE-2.0.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-compress/1.18"
-    md5 : bcbecfff4bdb0d3d0cdead3d995da2ef
-    sha1 : 1191f9f2bc0c47a8cce69193feb1ff0a8bcb37d5
-    updated : 2019-02-08
-    jira : YUK-19279
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-compress/1.19"
+    md5 : fe897bced43468450b785b66c1cff455
+    sha1 : 7e65777fb451ddab6a9c054beb879e521b7eab78
+    updated : 2019-12-17
+    jira : YUK-21103
     notes : 
   
   - filename : commons-configuration2-2.1.1.jar
