@@ -419,7 +419,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             PaoIdentifier paoIdentifier = drAttributeDataJmsMessage.getPaoPointIdentifier().getPaoIdentifier();
             String serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
 
-            log.info("Sending " + INTERVALDATA_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + drAttributeDataJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+            log.info("Sending " + VOLTAGEREADINGS_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + drAttributeDataJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
 
             MeterReadingsNotification meterReadingsNotification = new MeterReadingsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
