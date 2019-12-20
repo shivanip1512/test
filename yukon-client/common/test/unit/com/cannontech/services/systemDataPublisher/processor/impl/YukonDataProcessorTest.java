@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
+import com.cannontech.services.systemDataPublisher.service.SystemDataPublisherService;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
 import com.cannontech.services.systemDataPublisher.yaml.model.IOTDataType;
@@ -29,6 +30,7 @@ public class YukonDataProcessorTest {
     private List<DictionariesField> dictionariesFields = Lists.newArrayList();
     private SystemDataPublisherDao systemDataPublisherDao = null;
     private ThreadCachingScheduledExecutorService executor = null;
+    private SystemDataPublisherService systemDataPublisherService = null;
 
     @Before
     public void setUp() throws Exception {
@@ -44,6 +46,7 @@ public class YukonDataProcessorTest {
         
         dictionariesFields.add(dictionariesFieldStartUp);
         systemDataPublisherDao = createNiceMock(SystemDataPublisherDao.class);
+        systemDataPublisherService = createNiceMock(SystemDataPublisherService.class);
         systemDataPublisherDao.getSystemData(anyObject());
         expectLastCall().andAnswer(new IAnswer<List<Map<String, Object>>>() {
             @Override
@@ -63,7 +66,8 @@ public class YukonDataProcessorTest {
         executor = createNiceMock(ThreadCachingScheduledExecutorService.class);
         ReflectionTestUtils.setField(yukonDataProcessor, "systemDataPublisherDao", systemDataPublisherDao);
         ReflectionTestUtils.setField(yukonDataProcessor, "executor", executor);
-        replay(systemDataPublisherDao, executor);
+        ReflectionTestUtils.setField(yukonDataProcessor, "systemDataPublisherService", systemDataPublisherService);
+        replay(systemDataPublisherDao, executor, systemDataPublisherService);
     }
 
     @Test
