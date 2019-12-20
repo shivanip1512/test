@@ -155,7 +155,15 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
                 throw new ItronAddDeviceException(response);
             }
         } catch (Exception e) {
-            handleException(e, ItronEndpointManager.DEVICE);
+            // Add Device failed. This may mean that the device already exists on the Itron side.
+            if (account == null) {
+                handleException(e, ItronEndpointManager.DEVICE);
+            } else {
+                // If the device is attached to an account, attempt to add to Itron service point with an edit instead.
+                log.debug("ITRON-addDevice encountered an error.", e);
+                log.info("Failed to add device to Itron. The device may already exist. Attempting to add device to service point.");
+                addDeviceToServicePoint(hardware.getMacAddress(), account);
+            }
         }
     }
     
