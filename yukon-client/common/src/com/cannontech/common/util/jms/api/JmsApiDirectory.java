@@ -104,6 +104,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
+import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
@@ -1103,6 +1104,17 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
+    public static final JmsApi<SystemData,?,?> SYSTEM_DATA =
+            JmsApi.builder(SystemData.class)
+                  .name("Yukon System Data")
+                  .description("Yukon Service Manager takes Yukon System Data and passes it to Yukon Message Broker on a topic.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.SystemData"))
+                  .requestMessage(SystemData.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1129,11 +1141,12 @@ public final class JmsApiDirectory {
         addApis(jmsApis, OTHER, 
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
+                ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
                 RFN_DEVICE_CREATION_ALERT,
                 SIMULATORS,
-                ECOBEE_AUTH_TOKEN);
+                SYSTEM_DATA);
         
         addApis(jmsApis, RFN_LCR, 
                 RFN_EXPRESSCOM_BROADCAST, 
