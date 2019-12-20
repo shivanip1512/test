@@ -13,6 +13,8 @@ import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRipple;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
+
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupRippleAPITest {
@@ -116,4 +118,22 @@ public class LoadGroupRippleAPITest {
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
         Log.startTestCase("loadGroupRipple_05_Delete");
     }
+
+	/**
+	 * Negative validation when Load Group is copied with invalid Route Id
+	 */
+	@Test(dependsOnMethods = "loadGroupRipple_01_Create")
+	public void loadGroupRipple_06_CopyWithInvalidRouteId(ITestContext context) {
+
+		MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+				.name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_RIPPLE)).build();
+		loadGroupCopy.setRouteId(2222222);
+		ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
+				context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+		assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
+		assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
+				"Expected message should be - Validation error");
+		assertTrue(ValidationHelper.validateFieldError(copyResponse, "routeId", "Route Id does not exist."),
+				"Expected code in response is not correct");
+	}
 }

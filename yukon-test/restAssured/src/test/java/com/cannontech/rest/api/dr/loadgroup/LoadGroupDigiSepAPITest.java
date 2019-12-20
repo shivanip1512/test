@@ -1,6 +1,7 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,8 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupDigiSep;
 import com.cannontech.rest.api.loadgroup.request.MockSepDeviceClass;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
+
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupDigiSepAPITest {
@@ -752,6 +755,24 @@ public class LoadGroupDigiSepAPITest {
 
         Log.startTestCase("loadGroupDigiSep_28_CreateWithAboveMaxValInRampOutMinutes");
     }
+
+	/**
+	 * Negative validation when Load Group is copied with invalid Route Id
+	 */
+	@Test(dependsOnMethods = "loadGroupDigiSep_01_Create")
+	public void loadGroupDigiSep_29_CopyWithInvalidRouteId(ITestContext context) {
+
+		MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+				.name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_DIGI_SEP)).build();
+		loadGroupCopy.setRouteId(2222222);
+		ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
+				context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+		assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
+		assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
+				"Expected message should be - Validation error");
+		assertTrue(ValidationHelper.validateFieldError(copyResponse, "routeId", "Route Id does not exist."),
+				"Expected code in response is not correct");
+	}
 
     /**
      * Delete all the test data and load programs created for Direct program test methods.

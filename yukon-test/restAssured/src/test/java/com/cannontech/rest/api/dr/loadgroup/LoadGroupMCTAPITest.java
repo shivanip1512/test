@@ -143,6 +143,24 @@ public class LoadGroupMCTAPITest {
                 "Expected code in response is not correct");
     }
 
+	/**
+	 * Negative validation when Load Group is copied with invalid Route Id
+	 */
+	@Test(dependsOnMethods = "loadGroupMCT_01_Create")
+	public void loadGroupMCT_18_CopyWithInvalidRouteId(ITestContext context) {
+
+		MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+				.name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_MCT)).build();
+		loadGroupCopy.setRouteId(2222222);
+		ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
+				context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+		assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
+		assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
+				"Expected message should be - Validation error");
+		assertTrue(ValidationHelper.validateFieldError(copyResponse, "routeId", "Route Id does not exist."),
+				"Expected code in response is not correct");
+	}
+
     /**
      * Negative validation when Load Group name field is passed as blank while creation of Load Group
      */
