@@ -7,6 +7,7 @@ package com.cannontech.common.util.jms.api;
 public enum JmsApiCategory {
     DATA_STREAMING("Data Streaming"),
     DIGI_ZIGBEE("Digi Zigbee"),
+    DR_NOTIFICATION("DR Notification"),
     MONITOR("Monitor"),
     OTHER("Other"), //use for misc single apis that don't fit in other existing categories
     RFN_LCR("RFN LCR"),

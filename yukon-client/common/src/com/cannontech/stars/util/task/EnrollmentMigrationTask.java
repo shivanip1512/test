@@ -16,6 +16,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
@@ -59,6 +60,9 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
             StarsCustAccountInformationDao starsCustAccountInformationDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
             InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean(InventoryBaseDao.class);
             EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+
+            DrJmsMessagingService drJmsMessagingService = YukonSpringHook.getBean(DrJmsMessagingService.class);
+
             boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
                                                                                energyCompany.getEnergyCompanyId());
 
@@ -96,6 +100,7 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                                                                                                                                                          app.getAccountID());
                         if (existingEnrollment == null) {
                             lmHardwareControlGroupDao.add(controlGroup);
+                            drJmsMessagingService.publishEnrollmentNotice(controlGroup);
                             numEnrolled++;
                         }
 

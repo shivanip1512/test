@@ -67,6 +67,17 @@
         <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
 
+    <bean id="drMessageService" class="com.cannontech.multispeak.service.impl.v5.DrJmsMessageListener" />
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.dr.DRNotificationMessage" />
+        <property name="concurrentConsumers" value="1"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="taskExecutor" ref="globalTaskExecutor"/>
+        <property name="messageListener" ref="drMessageService"/>
+        <property name="errorHandler" ref="yukonJmsErrorHandler"/>
+    </bean>
+
   <bean id="yukonJmsErrorHandler" class="com.cannontech.multispeak.util.YukonJmsErrorHandler"/>
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v3"/>
@@ -173,7 +184,8 @@
                    com.cannontech.msp.beans.v5.ws.request, 
                    com.cannontech.msp.beans.v5.ws.response, 
                    com.cannontech.msp.beans.v5.dr_server,
-                   com.cannontech.msp.beans.v5.mr_server" />
+                   com.cannontech.msp.beans.v5.mr_server,
+                   com.cannontech.multispeak.extension" />
         <property name="marshallerProperties">
             <map>
                 <entry key="jaxb.formatted.output"><value type="boolean">true</value></entry>

@@ -107,6 +107,9 @@ import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
+import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
+import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
+import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
 
 /**
@@ -290,6 +293,28 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
+                  .build();
+    
+    public static final JmsApi<DrAttributeDataJmsMessage,?,?> DATA_NOTIFICATION = 
+            JmsApi.builder(DrAttributeDataJmsMessage.class)
+                  .name("DR Data Notification")
+                  .description("Send Demand Response Notification related to runTime/ShedTime,max/min/avg voltage to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(DrAttributeDataJmsMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+    
+    public static final JmsApi<EnrollmentJmsMessage,?,?> ENROLLMENT_NOTIFICATION = 
+            JmsApi.builder(EnrollmentJmsMessage.class)
+                  .name("DR Enrollment/UnEnrollment Notification")
+                  .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(EnrollmentJmsMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
                   .build();
     
     public static final JmsApi<GatewayDataStreamingInfoRequest,?,GatewayDataStreamingInfoResponse> GATEWAY_DATA_STREAMING_INFO =
@@ -1040,7 +1065,18 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
+
+    public static final JmsApi<OptOutOptInJmsMessage,?,?> OPTOUTIN_NOTIFICATION = 
+            JmsApi.builder(OptOutOptInJmsMessage.class)
+                  .name("DR OptOut/OptIn Notification")
+                  .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(OptOutOptInJmsMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+
     public static JmsApi<RfnNodeCommArchiveRequest,?,RfnNodeCommArchiveResponse> RFN_NODE_COMM_ARCHIVE =
             JmsApi.builder(RfnNodeCommArchiveRequest.class, RfnNodeCommArchiveResponse.class)
                   .name("RFN Node Comm Archive")
@@ -1067,7 +1103,7 @@ public final class JmsApiDirectory {
                   .sender(NETWORK_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
-    
+
     public static final JmsApi<SystemData,?,?> SYSTEM_DATA =
             JmsApi.builder(SystemData.class)
                   .name("Yukon System Data")
@@ -1078,7 +1114,7 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
-    
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1177,6 +1213,11 @@ public final class JmsApiDirectory {
                 INFRASTRUCTURE_WARNINGS,
                 INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
         
+        addApis(jmsApis, DR_NOTIFICATION, 
+                         ENROLLMENT_NOTIFICATION, 
+                         OPTOUTIN_NOTIFICATION,
+                         DATA_NOTIFICATION);
+
         return jmsApis;
     }
     

@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -181,7 +182,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     
     @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void unenrollHardware(int inventoryId) {
+    public void unenrollHardware(int inventoryId, Instant groupEnrollStop) {
         
         SqlStatementBuilder unenrollHardwareSQL = new SqlStatementBuilder();
         unenrollHardwareSQL.append("UPDATE LMHardwareControlGroup");
@@ -189,8 +190,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         unenrollHardwareSQL.append("WHERE InventoryId = ?");
         unenrollHardwareSQL.append("AND NOT groupEnrollStart IS NULL");
         unenrollHardwareSQL.append("AND groupEnrollStop IS NULL");
-        Date now = new Date();
-        yukonJdbcTemplate.update(unenrollHardwareSQL.toString(), now, inventoryId);
+        yukonJdbcTemplate.update(unenrollHardwareSQL.toString(), groupEnrollStop.toDate(), inventoryId);
     }
     
     @Override

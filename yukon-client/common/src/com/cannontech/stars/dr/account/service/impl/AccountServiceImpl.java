@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +87,9 @@ import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
+import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
@@ -134,6 +137,7 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private NestService nestService;
     @Autowired private HardwareService hardwareService;
     @Autowired private UsersEventLogService usersEventLogService;
+    @Autowired private DrJmsMessagingService drJmsMessagingService;
     
     @Override
     @Transactional
@@ -448,7 +452,14 @@ public class AccountServiceImpl implements AccountService {
         for (Integer inventoryId : inventoryIds) {
             log.info("Clearing LMHardwareInfo and unenrolling hardware for inventory id# " + inventoryId);
             hardwareBaseDao.clearLMHardwareInfo(inventoryId);
-            lmHardwareControlGroupDao.unenrollHardware(inventoryId);
+            Instant groupEnrollStop = new Instant();
+            List<LMHardwareControlGroup> controlGroups = lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(inventoryId, account.getAccountId());
+            lmHardwareControlGroupDao.unenrollHardware(inventoryId, groupEnrollStop);
+            
+            for (LMHardwareControlGroup controlGroup : controlGroups) {
+                controlGroup.setGroupEnrollStop(groupEnrollStop);
+                drJmsMessagingService.publishUnEnrollmentNotice(controlGroup);
+            };
             InventoryIdentifier identifier = inventoryDao.getYukonInventory(inventoryId);
             if (identifier.getHardwareType().isNest()) {
                 try {
