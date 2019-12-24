@@ -483,11 +483,11 @@
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.description">The number of minutes to wait before data can be refreshed for a given Comm Channel Queue Counts Widget.</entry>
     
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME">Network Manager DB Host Name</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME.description">Host name to connect to Network manager Database </entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID">Network Manager Read Only DB User ID</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID.description">Read Only User ID for Network manager Database</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME.description">Host name to connect to Network Manager database </entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID">Network Manager DB User ID</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID.description">User ID for Network Manager database. This will be used as read only operation in database</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD">Network Manager DB Password</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD.description">Password for Network manager Database</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD.description">Password for Network Manager database</entry>
     
     <!-- global setting enums -->
     <entry key="yukon.common.multispeakPaoNameAlias.METER_NUMBER">Meter Number (Default)</entry>
