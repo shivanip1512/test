@@ -115,9 +115,9 @@ Class-Path: ./
  guava-18.0.jar 
  httpclient-4.5.6.jar 
  httpcore-4.4.10.jar 
- jackson-annotations-2.9.6.jar 
- jackson-core-2.9.8.jar 
- jackson-databind-2.9.8.jar 
+ jackson-annotations-2.10.1.jar 
+ jackson-core-2.10.1.jar 
+ jackson-databind-2.10.1.jar 
  jackson-dataformat-csv-2.9.6.jar 
  jackson-datatype-joda-2.9.8.jar 
  javax.activation-1.2.0.jar 

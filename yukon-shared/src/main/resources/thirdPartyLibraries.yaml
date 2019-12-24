@@ -1043,46 +1043,46 @@ Java :
     jira : none
     notes : Discontinued in 2012, should no longer to be used for legal reasons
   
-  - filename : jackson-annotations-2.9.6.jar
+  - filename : jackson-annotations-2.10.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.6
+    version : 2.10.1
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.9.6"
-    md5 : 6486a3fb86a14e04ac131c44f078b6dc
-    sha1 : 6a0f0f154edaba00067772ce02e24f8c0973d84c
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.10.1"
+    md5 : 49683a3cf8e92c00c24262e8fac64ee5
+    sha1 : 54d72475c0d6819f2d0e9a09d25c3ed876a4972f
     updated : 2018-06-22
     jira : YUK-18346
     notes : Jackson Annotations
   
-  - filename : jackson-core-2.9.8.jar
+  - filename : jackson-core-2.10.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.8
+    version : 2.10.1
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.9.8"
-    md5 : 65831e4f46f29db904708e4b9cc72843
-    sha1 : 0f5a654e4675769c716e5b387830d19b501ca191
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.10.1"
+    md5 : 5bc20efba282bb641e3b42de153e45bc
+    sha1 : 2c8b5e26ba40e5f91eb37a24075a2028b402c5f9
     updated : 2019-03-25
-    jira : YUK-19573
+    jira : YUK-21106
     notes : Jackson Core
   
-  - filename : jackson-databind-2.9.8.jar
+  - filename : jackson-databind-2.10.1.jar
     yukon group : Jackson
     project : Jackson
-    version : 2.9.8
+    version : 2.10.1
     project URL : "http://github.com/FasterXML/jackson"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.9.8"
-    md5 : 39271d9bb1cb7ec563925953b1fa9ff7
-    sha1 : 11283f21cc480aa86c4df7a0a3243ec508372ed2
-    updated : 2019-03-25
-    jira : YUK-19573
+    maven URL : "https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.10.1"
+    md5 : 5be002ede268ddc0a2ea1b9bc5baceb8
+    sha1 : 18eee15ffc662d27538d5b6ee84e4c92c0a9d03e
+    updated : 2019-12-22
+    jira : YUK-21106
     notes : Jackson Databind
   
   - filename : jackson-dataformat-csv-2.9.6.jar
