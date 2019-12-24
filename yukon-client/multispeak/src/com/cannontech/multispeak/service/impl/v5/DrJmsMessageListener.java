@@ -33,6 +33,7 @@ import com.cannontech.dr.service.RelayLogInterval;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfDRProgramEnrollment;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfIntervalData;
+import com.cannontech.msp.beans.v5.commonarrays.ArrayOfMeterReading;
 import com.cannontech.msp.beans.v5.commontypes.Duration;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.Extensions;
@@ -42,6 +43,7 @@ import com.cannontech.msp.beans.v5.commontypes.ServicePointID;
 import com.cannontech.msp.beans.v5.commontypes.SingleIdentifier;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatus;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatusKind;
+import com.cannontech.msp.beans.v5.enumerations.FieldNameKind;
 import com.cannontech.msp.beans.v5.enumerations.TimeUnits;
 import com.cannontech.msp.beans.v5.multispeak.Blocks;
 import com.cannontech.msp.beans.v5.multispeak.Channels;
@@ -54,11 +56,18 @@ import com.cannontech.msp.beans.v5.multispeak.IntervalBlock;
 import com.cannontech.msp.beans.v5.multispeak.IntervalChannel;
 import com.cannontech.msp.beans.v5.multispeak.IntervalData;
 import com.cannontech.msp.beans.v5.multispeak.IntervalProfile;
+import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.Profiles;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
+import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCodeItem;
+import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCodeItems;
+import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCodeOption;
+import com.cannontech.msp.beans.v5.multispeak.ReadingValue;
+import com.cannontech.msp.beans.v5.multispeak.ReadingValues;
 import com.cannontech.msp.beans.v5.not_server.DRProgramEnrollmentsNotification;
 import com.cannontech.msp.beans.v5.not_server.DRProgramUnenrollmentsNotification;
 import com.cannontech.msp.beans.v5.not_server.IntervalDataNotification;
+import com.cannontech.msp.beans.v5.not_server.MeterReadingsNotification;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
@@ -399,12 +408,35 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     }
 
     @Override
-    public void voltageMeterReadingsNotification(DrAttributeDataJmsMessage drNotificationDataMessage) {
+    public void voltageMeterReadingsNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
         if (!isVendorsConfigured(vendorsToSendVoltageDataMsg)) {
             return;
         }
-        
-        //TODO
+
+        vendorsToSendVoltageDataMsg.forEach(mspVendor -> {
+            String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
+
+            PaoIdentifier paoIdentifier = drAttributeDataJmsMessage.getPaoPointIdentifier().getPaoIdentifier();
+            String serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
+
+            log.info("Sending " + VOLTAGEREADINGS_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + drAttributeDataJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+
+            MeterReadingsNotification meterReadingsNotification = new MeterReadingsNotification();
+            String transactionId = String.valueOf(atomicLong.getAndIncrement());
+            meterReadingsNotification.setTransactionID(transactionId);
+
+            ArrayOfMeterReading arrayOfMeterReading = buildArrayOfMeterReadingsData(drAttributeDataJmsMessage, serialNumber);
+            meterReadingsNotification.setArrayOfMeterReading(arrayOfMeterReading);
+
+            try {
+                notClient.meterReadingsNotification(mspVendor, endpointUrl, meterReadingsNotification);
+
+                logEvent(serialNumber, drAttributeDataJmsMessage.getMessageType().toString(), VOLTAGEREADINGS_METHOD, mspVendor, transactionId, endpointUrl);
+            } catch (MultispeakWebServiceClientException e) {
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, VOLTAGEREADINGS_METHOD, drAttributeDataJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("Error sending voltageMeterReadingsNotification.", e);
+            }
+        });
 
     }
 
@@ -665,6 +697,96 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             endReadingList.add(endReading);
         });
         return endReadings;
+    }
+    
+    /**
+     * Building ArrayOfMeterReading that includes building of request fields from drAttributeDataJmsMessage.
+     */
+    private ArrayOfMeterReading buildArrayOfMeterReadingsData(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
+
+        ArrayOfMeterReading arrayOfMeterReading = new ArrayOfMeterReading();
+        List<MeterReading> meterReadingList = arrayOfMeterReading.getMeterReading();
+
+        MeterReading meterReading = new MeterReading();
+
+        MeterID meterId = MultispeakFuncs.getDrMeterID(serialNumber);
+        meterReading.setMeterID(meterId);
+
+        ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(drAttributeDataJmsMessage, meterReading);
+        meterReading.setReadingTypeCodeItems(readingTypeCodeItems);
+
+        ReadingValues readingValues = getReadingValues(drAttributeDataJmsMessage, meterReading);
+        meterReading.setReadingValues(readingValues);
+
+        meterReadingList.add(meterReading);
+
+        return arrayOfMeterReading;
+    }
+
+    /**
+     * Building ReadingValues for attributeDataJmsMessage.
+     */
+    private ReadingValues getReadingValues(DrAttributeDataJmsMessage attributeDataJmsMessage, MeterReading meterReading) {
+
+        ReadingValues readingValues = new ReadingValues();
+        List<ReadingValue> readingValue = readingValues.getReadingValue();
+
+        attributeDataJmsMessage.getAttributeDataList().forEach(message -> {
+
+            ReadingValue value = new ReadingValue();
+            value.setValue(String.valueOf(message.getValue()));
+            value.setTimeStamp(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
+
+            ReadingTypeCodeOption readingTypeCodeOption = new ReadingTypeCodeOption();
+            ReadingTypeCode readingTypeCode = getReadingTypeCode(message.getAttribute());
+            readingTypeCodeOption.setReadingTypeCode(readingTypeCode);
+            readingTypeCodeOption.setReadingTypeCodeRef("N/A");
+            value.setReadingTypeCodeOption(readingTypeCodeOption);
+
+            readingValue.add(value);
+        });
+
+        return readingValues;
+
+    }
+
+    /**
+     * Building ReadingTypeCodeItems for attributeDataJmsMessage.
+     */
+    private ReadingTypeCodeItems getReadingTypeCodeItems(DrAttributeDataJmsMessage attributeDataJmsMessage, MeterReading meterReading) {
+
+        ReadingTypeCodeItems readingTypeCodeItems = new ReadingTypeCodeItems();
+        List<ReadingTypeCodeItem> readingTypeCodeItemList = readingTypeCodeItems.getReadingTypeCodeItem();
+
+        attributeDataJmsMessage.getAttributeDataList().forEach(message -> {
+            ReadingTypeCodeItem readingTypeCodeItem = new ReadingTypeCodeItem();
+            ReadingTypeCode readingTypeCode = getReadingTypeCode(message.getAttribute());
+            readingTypeCodeItem.setReadingTypeCode(readingTypeCode);
+            readingTypeCodeItem.setReadingTypeCodeRef("N/A");
+            readingTypeCodeItemList.add(readingTypeCodeItem);
+        });
+
+        return readingTypeCodeItems;
+    }
+    
+
+    /**
+     * Building ReadingTypeCode for attributeDataJmsMessage.
+     */
+
+    private ReadingTypeCode getReadingTypeCode(BuiltInAttribute attribute) {
+
+        VoltageFieldKindName voltageFieldKindName = VoltageFieldKindName.getVoltageFieldKindNameData(attribute);
+        ReadingTypeCode readingTypeCode = new ReadingTypeCode();
+
+        if (FieldNameKind.OTHER != voltageFieldKindName.getfieldNameKind()) {
+            readingTypeCode.setFieldName(voltageFieldKindName.getfieldNameKind());
+        } else {
+            readingTypeCode.setOtherFieldName(voltageFieldKindName.getfieldName());
+        }
+
+        return readingTypeCode;
+
     }
 
 }
