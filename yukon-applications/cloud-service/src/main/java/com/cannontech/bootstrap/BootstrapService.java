@@ -19,6 +19,9 @@ import com.cannontech.cloud.service.CloudService;
 @EnableJms
 public class BootstrapService implements CommandLineRunner {
 
+    static {
+        System.setProperty("logPath", BootstrapServiceUtils.getPath());
+    }
     Logger log = (Logger) LogManager.getLogger(BootstrapService.class);
     @Autowired CloudService cloudServices;
 
@@ -30,6 +33,7 @@ public class BootstrapService implements CommandLineRunner {
     public void run(String... args) throws Exception {
         log.info("Starting Cloud Service");
         cloudServices.startServices();
+        log.info("Starting Cloud Service1");
     }
 
 }
