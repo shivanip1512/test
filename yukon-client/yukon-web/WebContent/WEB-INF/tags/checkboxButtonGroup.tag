@@ -6,7 +6,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <%@ attribute name="buttonGroupContainerCssClasses" type="java.lang.String" description="The css class to be applied to the button group container div." %>
-<%@ attribute name="items" type="java.util.Collection" description="Items to be rendered as button group." %>
+<%@ attribute name="items" type="java.util.Collection" description="Items to be rendered as button group." required="true"%>
 <%@ attribute name="path" description="Spring path." %> 
 
 <cti:displayForPageEditModes modes="CREATE,EDIT">
