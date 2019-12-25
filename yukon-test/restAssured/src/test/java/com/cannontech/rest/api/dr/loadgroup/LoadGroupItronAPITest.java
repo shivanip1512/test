@@ -1,7 +1,6 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
-
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 

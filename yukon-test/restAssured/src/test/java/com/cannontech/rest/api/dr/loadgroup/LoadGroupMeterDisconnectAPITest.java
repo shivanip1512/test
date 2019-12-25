@@ -13,7 +13,6 @@ import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.utilities.Log;
-
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMeterDisconnectAPITest {

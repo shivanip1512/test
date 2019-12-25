@@ -24,7 +24,6 @@ import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupDigiSep;
 import com.cannontech.rest.api.loadgroup.request.MockSepDeviceClass;
 import com.cannontech.rest.api.utilities.Log;
-
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupDigiSepAPITest {
@@ -753,7 +752,7 @@ public class LoadGroupDigiSepAPITest {
 
         Log.startTestCase("loadGroupDigiSep_28_CreateWithAboveMaxValInRampOutMinutes");
     }
-    
+
     /**
      * Delete all the test data and load programs created for Direct program test methods.
      */

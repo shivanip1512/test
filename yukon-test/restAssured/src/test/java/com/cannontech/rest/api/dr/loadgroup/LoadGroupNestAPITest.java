@@ -138,6 +138,7 @@ public class LoadGroupNestAPITest {
         assertTrue("Expected code in response is not correct", expectedFieldCode.equals(error.getFieldErrors().get(0).getCode()));
         Log.endTestCase("loadGroupNest_07_KwCapacityValidation");
     }
+     
     
     /**
      * DataProvider provides data to test method in the form of object array
