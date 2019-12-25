@@ -125,12 +125,19 @@ public class IOTHubService extends AzureCloudService {
             String fieldName = entry.getValue().getFieldName();
             String fieldValue = entry.getValue().getFieldValue();
             if (dataType == IOTDataType.TELEMETRY || dataType == IOTDataType.BOTH) {
-                telemetryData.add("{\"" + fieldName + "\":" + fieldValue + "}");
+                telemetryData.add(buildTelemetryDataString(fieldName, fieldValue));
             }
             if (dataType == IOTDataType.PROPERTY || dataType == IOTDataType.BOTH) {
                 propertyData.add(new Property(fieldName, fieldValue));
             }
         }
+    }
+
+    /**
+     * Build telemetry data string in {"fieldName": fieldValue} format.
+     */
+    private String buildTelemetryDataString (String fieldName, String fieldValue) {
+        return "{\"" + fieldName + "\":" + fieldValue + "}";
     }
 
     private void pushTelemetryData(List<String> telemetryData) {
