@@ -367,24 +367,6 @@ public class LoadGroupPointAPITest {
         Log.endTestCase("loadGroupPoint_16_CntStartStateIsBlank");
     }
 
-	/**
-	 * Negative validation when Load Group is copied with invalid Route Id
-	 */
-	@Test(dependsOnMethods = "loadGroupPoint_01_Create")
-	public void loadGroupPoint_17_CopyWithInvalidRouteId(ITestContext context) {
-
-		MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
-				.name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_POINT)).build();
-		loadGroupCopy.setRouteId(2222222);
-		ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
-				context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-		assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
-		assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
-				"Expected message should be - Validation error");
-		assertTrue(ValidationHelper.validateFieldError(copyResponse, "routeId", "Route Id does not exist."),
-				"Expected code in response is not correct");
-	}
-
     /**
      * This function build Mock Load Group payload to be used for negative scenarios test cases
      */

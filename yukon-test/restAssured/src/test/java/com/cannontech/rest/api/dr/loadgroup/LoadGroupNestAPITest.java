@@ -1,7 +1,6 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
-import static org.testng.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 
@@ -17,9 +16,7 @@ import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
-import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.utilities.Log;
-import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -141,24 +138,6 @@ public class LoadGroupNestAPITest {
         assertTrue("Expected code in response is not correct", expectedFieldCode.equals(error.getFieldErrors().get(0).getCode()));
         Log.endTestCase("loadGroupNest_07_KwCapacityValidation");
     }
-
-	/**
-	 * Negative validation when Load Group is copied with invalid Route Id
-	 */
-	@Test(dependsOnMethods = "loadGroupNest_01_Create")
-	public void loadGroupNest_08_CopyWithInvalidRouteId(ITestContext context) {
-
-		MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
-				.name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_NEST)).build();
-		loadGroupCopy.setRouteId(2222222);
-		ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
-				context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
-		assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
-		assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
-				"Expected message should be - Validation error");
-		assertTrue(ValidationHelper.validateFieldError(copyResponse, "routeId", "Route Id does not exist."),
-				"Expected code in response is not correct");
-	}     
     
     /**
      * DataProvider provides data to test method in the form of object array
