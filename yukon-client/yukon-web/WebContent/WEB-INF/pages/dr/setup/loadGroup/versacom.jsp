@@ -7,24 +7,8 @@
 <tags:sectionContainer2 nameKey="addressUsage">
     <tags:nameValueContainer2>
         <tags:nameValue2 id='js-versaAddressUsage' nameKey=".usage">
-             <cti:displayForPageEditModes modes="CREATE,EDIT">
-                 <div class="button-group stacked verAddressUsage">
-                     <c:forEach var="addressUsageValue" items="${addressUsageList}">
-                         <tags:check id="${addressUsageValue}_chk" path="addressUsage" value="${addressUsageValue}"
-                                    key="${addressUsageValue}"/>
-                     </c:forEach>
-                 </div>
-             </cti:displayForPageEditModes>
-             <cti:displayForPageEditModes modes="VIEW">
-                 <c:if test="${not empty addressUsages}">
-                     <c:forEach var="addressUsage" items="${addressUsages}" varStatus="status">
-                         <c:if test="${!status.first}">
-                             <i:inline key="yukon.common.comma"/>&nbsp;
-                         </c:if>
-                         <i:inline key="${addressUsage}"/>
-                     </c:forEach>
-                 </c:if>
-            </cti:displayForPageEditModes>
+            <c:set var="items" value="${mode == 'VIEW' ? addressUsages : addressUsageList}"/>
+            <tags:checkboxButtonGroup items="${items}" path="addressUsage" buttonGroupContainerCssClasses="verAddressUsage"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
@@ -38,7 +22,7 @@
         </tags:nameValue2>
         <tags:nameValue2 id="js-classAddress-row" nameKey=".classAddress" rowClass="${showClassAddress == true ? '' : 'dn'}">
             <form:hidden id="classAddressString" path="classAddress"/>
-            <div id="js-classAddress" class="button-group stacked classAddress">             
+            <div id="js-classAddress" class="button-group stacked classAddress">
                 <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <c:forEach var="classAddressValue" items="${classAddressValues}" varStatus="status">
                         <tags:check id="${classAddressValue}_chk" value="0" key="${classAddressValue}" classes="${status.first ? 'ML0' : ''}"/>
@@ -84,28 +68,8 @@
 <tags:sectionContainer2 nameKey="relayUsage">
     <tags:nameValueContainer2>
         <tags:nameValue2 id='js-relayUsage-row' nameKey=".relayUsage">
-            <cti:displayForPageEditModes modes="CREATE,EDIT">
-                <div class="button-group stacked">
-                    <c:forEach var="relayUsageValue" items="${relayUsageList}">
-                        <tags:check id="${relayUsageValue}_chk" path="relayUsage" value="${relayUsageValue}" key="${relayUsageValue}"/>
-                    </c:forEach>
-                </div>
-             </cti:displayForPageEditModes>
-             <cti:displayForPageEditModes modes="VIEW">
-                 <c:choose>
-                    <c:when test="${not empty relayUsages}">
-                        <c:forEach var="relayUsage" items="${relayUsages}" varStatus="status">
-                            <c:if test="${!status.first}">
-                                <i:inline key="yukon.common.comma"/>&nbsp;
-                            </c:if>
-                            <i:inline key="${relayUsage}"/>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <i:inline key="yukon.common.none"/>
-                    </c:otherwise>
-                </c:choose>
-            </cti:displayForPageEditModes>
+            <c:set var="items" value="${mode == 'VIEW' ? relayUsages : relayUsageList}"/>
+            <tags:checkboxButtonGroup items="${items}" path="relayUsage"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>
