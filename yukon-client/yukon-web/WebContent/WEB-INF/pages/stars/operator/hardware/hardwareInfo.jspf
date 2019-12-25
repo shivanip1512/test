@@ -337,24 +337,26 @@ $(function() { updateServiceCompanyInfo();});
         <cti:checkRolesAndProperties value="${editingRoleProperty}">
             <cti:button nameKey="save" type="submit" name="save" classes="js-disable-after-click primary action"/>
             <cti:displayForPageEditModes modes="EDIT">
-                <c:choose>
-                    <c:when test="${not empty accountId}">
-                        <cti:button nameKey="deleteDevice" onclick="showDeletePopup()" dialogButton="true" classes="delete"/>
-                    </c:when>
-                    <c:otherwise>
-                        <cti:url value="delete" var="deleteInvUrl">
-                            <cti:param name="inventoryId" value="${inventoryId}"/>
-                        </cti:url>
-                        <cti:button nameKey="deleteDevice" id="invDeleteBtn" dialogButton="true" href="${deleteInvUrl}"/>
-                        <c:if test="${hardware.hardwareType.meter}">
-                            <c:set var="deleteName" value="${hardware.meterNumber}"/>
-                        </c:if>
-                        <c:if test="${not hardware.hardwareType.meter}">
-                            <c:set var="deleteName" value="${hardware.serialNumber}"/>
-                        </c:if>
-                        <d:confirm nameKey="deleteInventoryConfirm" on="#invDeleteBtn" argument="${deleteName}"/>
-                    </c:otherwise>
-                </c:choose>
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                    <c:choose>
+                        <c:when test="${not empty accountId}">
+                            <cti:button nameKey="deleteDevice" onclick="showDeletePopup()" dialogButton="true" classes="delete"/>
+                        </c:when>
+                        <c:otherwise>
+                            <cti:url value="delete" var="deleteInvUrl">
+                                <cti:param name="inventoryId" value="${inventoryId}"/>
+                            </cti:url>
+                            <cti:button nameKey="deleteDevice" id="invDeleteBtn" dialogButton="true" href="${deleteInvUrl}"/>
+                            <c:if test="${hardware.hardwareType.meter}">
+                                <c:set var="deleteName" value="${hardware.meterNumber}"/>
+                            </c:if>
+                            <c:if test="${not hardware.hardwareType.meter}">
+                                <c:set var="deleteName" value="${hardware.serialNumber}"/>
+                            </c:if>
+                            <d:confirm nameKey="deleteInventoryConfirm" on="#invDeleteBtn" argument="${deleteName}"/>
+                        </c:otherwise>
+                    </c:choose>
+                </cti:checkRolesAndProperties>
            </cti:displayForPageEditModes>
            <cti:button nameKey="cancel" type="submit" name="cancel"/>
         </cti:checkRolesAndProperties>
