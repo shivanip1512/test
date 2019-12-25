@@ -133,7 +133,9 @@ public class IOTHubService extends AzureCloudService {
         }
     }
 
-    // Build telemetry data string in {"fieldName": fieldValue} format.
+    /**
+     * Build telemetry data string in {"fieldName": fieldValue} format.
+     */
     private String buildTelemetryDataString (String fieldName, String fieldValue) {
         return "{\"" + fieldName + "\":" + fieldValue + "}";
     }
