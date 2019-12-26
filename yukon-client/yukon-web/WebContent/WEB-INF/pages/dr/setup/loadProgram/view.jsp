@@ -176,7 +176,7 @@
                                     <tbody>
                                         <c:forEach var="gearInfo" items="${gearInfos}">
                                             <tr>
-                                                <td >
+                                                <td>
                                                     <cti:url var="viewUrl" value="/dr/setup/loadProgram/gear/${gearInfo.id}?mode=${mode}" />
                                                     <a href="${viewUrl}" data-gear-id="${gearInfo.id}" class="js-gear-details-link">
                                                         ${fn:escapeXml(gearInfo.name)}

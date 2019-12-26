@@ -497,7 +497,6 @@ yukon.dr.setup.program = (function() {
             });
             
             $(document).on('click', '.js-gear-details-link', function (event) {
-                debugger;
                 event.preventDefault();
                 var dialogDivJson = {
                     "data-url" : $(this).attr('href'),
