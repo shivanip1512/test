@@ -16,7 +16,7 @@
         </RollingFile>
  
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout   pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable" />
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable" />
         </Console>
     </Appenders>
 

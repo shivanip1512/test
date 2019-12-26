@@ -10,7 +10,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BootstrapServiceUtils {
 
-    public final static String getPath() {
+    public final static void setLogPath() {
+        System.setProperty("logPath", getLogPath());
+    }
+
+    public final static String getLogPath() {
         String path = getYukonBase();
         if (path != null)
             return path + File.separator + "Server";
