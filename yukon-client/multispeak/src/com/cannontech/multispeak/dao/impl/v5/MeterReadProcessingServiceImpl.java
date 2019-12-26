@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -42,7 +43,7 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
     @PostConstruct
     public void setup() {
         final RoundingMode roundingMode =
-            globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, RoundingMode.class);
+            globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class).getRoundingMode();
 
         ReadingProcessor usageConverter = new ReadingProcessor() {
             @Override
