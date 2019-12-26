@@ -70,15 +70,15 @@ public class SystemPublisherMetadataEncryptionTest {
 
     @Test
     public void test_encryptLine_singleLineSource() throws Exception {
-        String stringNotToEncrypt = "    source: Some SQL Query";
+        String stringToEncrypt = "    source: Some SQL Query";
         StringBuilder stringBuilder = new StringBuilder();
         Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
         Method method = encryptionClass.getDeclaredMethod("encryptLine", String.class, Boolean.class, Boolean.class,
                 StringBuilder.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, stringNotToEncrypt, true, false, stringBuilder);
+        method.invoke(SystemPublisherMetadataEncryption.class, stringToEncrypt, true, false, stringBuilder);
         assertTrue("Original string and encrypted string are same : ",
-                !stringNotToEncrypt.equals(stringBuilder.toString().trim()));
+                !stringToEncrypt.equals(stringBuilder.toString().trim()));
 
         String values[] = stringBuilder.toString().split(":", 2);
         assertTrue("source text should not get encrypted ", values[0].equals("    source"));
@@ -100,15 +100,15 @@ public class SystemPublisherMetadataEncryptionTest {
 
     @Test
     public void test_encryptLine_multiLineSource_secondLine() throws Exception {
-        String stringNotToEncrypt = "Some SQL to be encrypted";
+        String stringToEncrypt = "Some SQL to be encrypted";
         StringBuilder stringBuilder = new StringBuilder();
         Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
         Method method = encryptionClass.getDeclaredMethod("encryptLine", String.class, Boolean.class, Boolean.class,
                 StringBuilder.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, stringNotToEncrypt, true, true, stringBuilder);
+        method.invoke(SystemPublisherMetadataEncryption.class, stringToEncrypt, true, true, stringBuilder);
         assertTrue("Original string and encrypted string are same : ",
-                !stringNotToEncrypt.equals(stringBuilder.toString().trim()));
+                !stringToEncrypt.equals(stringBuilder.toString().trim()));
     }
 
 }
