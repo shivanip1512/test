@@ -177,7 +177,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     MAX_LOG_FILE_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1),
     LOG_RETENTION_DAYS(GlobalSettingSubCategory.MISC, integerType(), 90),
     NETWORK_MANAGER_DB_PASSWORD(GlobalSettingSubCategory.MISC, stringType(), null),
-    NETWORK_MANAGER_DB_USERID(GlobalSettingSubCategory.MISC, stringType(), null),
+    NETWORK_MANAGER_DB_USER(GlobalSettingSubCategory.MISC, stringType(), null),
     NETWORK_MANAGER_DB_HOSTNAME(GlobalSettingSubCategory.MISC, stringType(), null),
 
     // Misc. > Web Graph
