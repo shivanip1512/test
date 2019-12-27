@@ -60,7 +60,7 @@ public class SystemPublisherMetadataEncryption {
             key = sha.digest(key);
             secretKey = new SecretKeySpec(key, ENCRYPTION_ALGORITHM);
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            log.error("Error while creating secret key " + e);
+            log.error("Error while creating secret key ", e);
         }
     }
 
@@ -72,7 +72,7 @@ public class SystemPublisherMetadataEncryption {
             cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(cipherMode, secretKey);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
-            log.error("Error while initilizing cipher " + e);
+            log.error("Error while initilizing cipher ", e);
         }
     }
 
@@ -174,7 +174,7 @@ public class SystemPublisherMetadataEncryption {
         try {
             processFile();
         } catch (IOException | IllegalBlockSizeException | BadPaddingException e) {
-            log.error("Error while processing the file " + e);
+            log.error("Error while processing the file ", e);
         }
     }
 

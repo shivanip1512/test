@@ -103,7 +103,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
                         try {
                             encryptedSubSource = SystemPublisherMetadataEncryption.decrypt(source.trim());
                         } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
-                            log.error("Error while decrypting " + e);
+                            log.error("Error while decrypting ", e);
                         }
                         encryptedSource.append(encryptedSubSource.trim()).append(StringUtils.SPACE);
                     }
