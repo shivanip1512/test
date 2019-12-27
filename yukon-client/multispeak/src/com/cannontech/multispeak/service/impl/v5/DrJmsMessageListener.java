@@ -3,6 +3,7 @@ package com.cannontech.multispeak.service.impl.v5;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +33,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.service.RelayLogInterval;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfDRProgramEnrollment;
+import com.cannontech.msp.beans.v5.commonarrays.ArrayOfFormattedBlock;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfIntervalData;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfMeterReading;
 import com.cannontech.msp.beans.v5.commontypes.Duration;
@@ -52,6 +54,7 @@ import com.cannontech.msp.beans.v5.multispeak.DB;
 import com.cannontech.msp.beans.v5.multispeak.DRProgramEnrollment;
 import com.cannontech.msp.beans.v5.multispeak.EndReading;
 import com.cannontech.msp.beans.v5.multispeak.EndReadings;
+import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.IntervalBlock;
 import com.cannontech.msp.beans.v5.multispeak.IntervalChannel;
 import com.cannontech.msp.beans.v5.multispeak.IntervalData;
@@ -66,8 +69,12 @@ import com.cannontech.msp.beans.v5.multispeak.ReadingValue;
 import com.cannontech.msp.beans.v5.multispeak.ReadingValues;
 import com.cannontech.msp.beans.v5.not_server.DRProgramEnrollmentsNotification;
 import com.cannontech.msp.beans.v5.not_server.DRProgramUnenrollmentsNotification;
+import com.cannontech.msp.beans.v5.not_server.FormattedBlockNotification;
 import com.cannontech.msp.beans.v5.not_server.IntervalDataNotification;
 import com.cannontech.msp.beans.v5.not_server.MeterReadingsNotification;
+import com.cannontech.multispeak.block.data.status.v5.ProgramStatusBlock;
+import com.cannontech.multispeak.block.data.status.v5.ProgramStatusValList;
+import com.cannontech.multispeak.block.data.v5.FormattedBlockBase;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
@@ -465,8 +472,43 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         if (!isVendorsConfigured(vendorsToSendProgramStatusMsg)) {
             return;
         }
-        //TODO
-        
+
+        vendorsToSendProgramStatusMsg.forEach(mspVendor -> {
+
+            String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
+
+            String programName = drProgramStatusJmsMessage.getProgramName();
+            log.info("Sending " + PROGRAMSTATUS_METHOD + ", Program Name : " + programName + " with Message Type : " + drProgramStatusJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+
+            FormattedBlockNotification formattedBlockNotification = new FormattedBlockNotification();
+            String transactionId = String.valueOf(atomicLong.getAndIncrement());
+
+            ArrayOfFormattedBlock arrayOfFormattedBlock = buildArrayOfFormattedBlock(drProgramStatusJmsMessage);
+            formattedBlockNotification.setArrayOfFormattedBlock(arrayOfFormattedBlock);
+
+            try {
+                notClient.formattedBlockNotification(mspVendor, endpointUrl, formattedBlockNotification);
+
+                List<ErrorObject> errObjects = new ArrayList<>();
+                errObjects = multispeakFuncs.getErrorObjectsFromResponse();
+
+                multispeakEventLogService.drProgramStatusNotificationReponse(PROGRAMSTATUS_METHOD,
+                                                                mspVendor.getCompanyName().toString(),
+                                                                programName,
+                                                                transactionId,
+                                                                drProgramStatusJmsMessage.getMessageType().toString(),
+                                                                drProgramStatusJmsMessage.getProgramGearHistId(),
+                                                                CollectionUtils.size(errObjects),
+                                                                endpointUrl);
+                if (CollectionUtils.isNotEmpty(errObjects)) {
+                    multispeakFuncs.logErrorObjects(endpointUrl, PROGRAMSTATUS_METHOD, errObjects);
+                }
+
+            } catch (MultispeakWebServiceClientException e) {
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, PROGRAMSTATUS_METHOD, drProgramStatusJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("Error sending programStatusNotification.", e);
+            }
+        });
     }
 
     /**
@@ -622,6 +664,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
 
     }
 
+    
     /**
      * Filtering attributes from jms data messages.
      */
@@ -817,5 +860,32 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         return readingTypeCode;
 
     }
+    
+    
+    /**
+     * Build ArrayOfFormattedBlock that includes building of request fields from statusMessage.
+     */
+
+    private ArrayOfFormattedBlock buildArrayOfFormattedBlock(DrProgramStatusJmsMessage statusMessage) {
+
+        ArrayOfFormattedBlock arrayOfFormattedBlock = new ArrayOfFormattedBlock();
+        List<FormattedBlock> formattedBlockList = arrayOfFormattedBlock.getFormattedBlock();
+
+        ProgramStatusBlock block = new ProgramStatusBlock(statusMessage.getProgramGearHistId(),
+                                                          statusMessage.getProgramName(),
+                                                          statusMessage.getGearName(),
+                                                          statusMessage.getProgramStatusType().name(),
+                                                          statusMessage.getStartDateTime(),
+                                                          statusMessage.getStopDateTime(),
+                                                          statusMessage.getGearChangeTime());
+        ProgramStatusValList programStatusValList = new ProgramStatusValList(Collections.singletonList(block));
+        
+        // TODO Noun Type of program is to be decided 
+        FormattedBlock formattedBlock = FormattedBlockBase.createMspFormattedBlock(programStatusValList,"Load Control");
+        formattedBlockList.add(formattedBlock);
+
+        return arrayOfFormattedBlock;
+    }
+
 
 }
