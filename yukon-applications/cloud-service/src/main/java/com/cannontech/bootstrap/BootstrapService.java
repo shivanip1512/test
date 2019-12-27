@@ -19,6 +19,11 @@ import com.cannontech.cloud.service.CloudService;
 @EnableJms
 public class BootstrapService implements CommandLineRunner {
 
+    static {
+        // Set system property for log path.
+        BootstrapServiceUtils.setLogPath();
+    }
+
     Logger log = (Logger) LogManager.getLogger(BootstrapService.class);
     @Autowired CloudService cloudServices;
 
