@@ -484,8 +484,8 @@
     
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME">Network Manager DB Host Name</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME.description">Host name to connect to Network Manager database </entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID">Network Manager DB User ID</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID.description">User ID for Network Manager database. This will be used as read only operation in database</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USER">Network Manager DB User</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USER.description">User for Network Manager database. This will be used as read only operation in database</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD">Network Manager DB Password</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD.description">Password for Network Manager database</entry>
     
