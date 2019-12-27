@@ -226,6 +226,16 @@ MODIFY Interface VARCHAR2(20);
 INSERT INTO DBUpdates VALUES ('YUK-21096', '7.4.0', SYSDATE);
 /* @end YUK-21096 */
 
+/* @start YUK-21048 */
+INSERT INTO Command VALUES (-215, 'putconfig template ''?''LoadGroup''''', 'Install ExpressCom Addressing', 'ExpresscomSerial');
+
+INSERT INTO DeviceTypeCommand VALUES (-1273, -215, 'ExpresscomSerial', 1, 'Y', -1);
+
+UPDATE Command SET Command = 'putconfig template ''?''LoadGroup''''' WHERE CommandId = -71;
+
+INSERT INTO DBUpdates VALUES ('YUK-21048', '7.4.0', SYSDATE);
+/* @end YUK-21048 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/9/2019 2:48:30 AM                         */
+/* Created on:     12/27/2019 6:40:51 AM                        */
 /*==============================================================*/
 
 
@@ -1704,7 +1704,7 @@ INSERT INTO Command VALUES(-69, 'putconfig xcom temp service enable', 'Temp Out-
 INSERT INTO Command VALUES(-70, 'putconfig cycle r1 50', 'Install Cycle Count', 'LCRSerial');
 
 /* VersacomSerial */
-INSERT INTO Command VALUES(-71, 'putconfig template ''?LoadGroup''', 'Install Versacom Addressing', 'VersacomSerial');
+INSERT INTO Command VALUES(-71, 'putconfig template ''?''LoadGroup''''', 'Install Versacom Addressing', 'VersacomSerial');
 INSERT INTO Command VALUES(-72, 'putconfig cold_load r1 10', 'Install Versacom Cold Load (relay, minutes)', 'VersacomSerial');
 INSERT INTO Command VALUES(-73, 'putconfig raw 0x3a ff', 'Emetcon Cold Load (ON -ff / OFF -00', 'VersacomSerial');
 INSERT INTO Command VALUES(-74, 'putconfig raw 36 0', 'Set LCR 3000 to Emetcon Mode', 'VersacomSerial');
@@ -1866,6 +1866,8 @@ INSERT INTO Command VALUES (-212, 'getconfig model', 'Read Meter Config', 'All T
 INSERT INTO Command VALUES (-213, 'ping', 'Ping', 'All Two Way LCR');
 
 INSERT INTO Command VALUES (-214, 'putconfig install all', 'Send configuration', 'ALL RFNs');
+
+INSERT INTO Command VALUES (-215, 'putconfig template ''?''LoadGroup''''', 'Install ExpressCom Addressing', 'ExpresscomSerial');
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -4821,6 +4823,8 @@ INSERT INTO DeviceTypeCommand VALUES (-1266, -214, 'RFN-530S4eRXR', 2, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);
+
+INSERT INTO DeviceTypeCommand VALUES (-1273, -215, 'ExpresscomSerial', 1, 'Y', -1);
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
