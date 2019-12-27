@@ -494,13 +494,6 @@
     <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING">Cloud IoT Hub Connection String</entry>
     <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING.description">Cloud IoT Hub Connection String</entry>
     
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME">Network Manager DB Host Name</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME.description">Host name to connect to Network Manager database </entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USER">Network Manager DB User</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USER.description">User for Network Manager database. This will be used as read only operation in database</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD">Network Manager DB Password</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD.description">Password for Network Manager database</entry>
-    
     <!-- global setting enums -->
     <entry key="yukon.common.multispeakPaoNameAlias.METER_NUMBER">Meter Number (Default)</entry>
     <entry key="yukon.common.multispeakPaoNameAlias.ACCOUNT_NUMBER">Account Number</entry>
