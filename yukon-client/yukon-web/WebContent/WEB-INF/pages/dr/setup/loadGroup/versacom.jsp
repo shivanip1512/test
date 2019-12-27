@@ -1,13 +1,13 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <input type="hidden" id="allVersaAddressUsage" value="${loadGroup.addressUsage}"/>
 <input type="hidden" class="js-page-mode" value="${mode}">
 <tags:sectionContainer2 nameKey="addressUsage">
     <tags:nameValueContainer2>
         <tags:nameValue2 id='js-versaAddressUsage' nameKey=".usage">
-            <c:set var="items" value="${mode == 'VIEW' ? addressUsages : addressUsageList}"/>
+            <c:set var="items" value="${isViewMode ? addressUsages : addressUsageList}"/>
             <tags:checkboxButtonGroup items="${items}" path="addressUsage" buttonGroupContainerCssClasses="verAddressUsage"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
@@ -68,7 +68,7 @@
 <tags:sectionContainer2 nameKey="relayUsage">
     <tags:nameValueContainer2>
         <tags:nameValue2 id='js-relayUsage-row' nameKey=".relayUsage">
-            <c:set var="items" value="${mode == 'VIEW' ? relayUsages : relayUsageList}"/>
+            <c:set var="items" value="${isViewMode ? relayUsages : relayUsageList}"/>
             <tags:checkboxButtonGroup items="${items}" path="relayUsage"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
