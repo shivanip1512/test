@@ -70,10 +70,13 @@ public class LoadGroupSetupControllerHelper {
         model.addAttribute("isLoadGroupSupportRoute", loadGroupBase.getType().isLoadGroupSupportRoute());
         
         PageEditMode mode = (PageEditMode) model.get("mode");
+        boolean isViewMode = mode == PageEditMode.VIEW;
+        model.addAttribute("isViewMode", isViewMode);
+        
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_RFN_EXPRESSCOMM:
-            if (mode == PageEditMode.VIEW) {
+            if (isViewMode) {
                 LoadGroupExpresscom loadGroup = (LoadGroupExpresscom) model.get("loadGroup");
 
                 List<AddressUsage> addressUsage = loadGroup.getAddressUsage();
@@ -131,7 +134,7 @@ public class LoadGroupSetupControllerHelper {
             break;
         case LM_GROUP_VERSACOM:
             LoadGroupVersacom loadGroup = (LoadGroupVersacom) model.get("loadGroup");
-            if (mode == PageEditMode.VIEW) {
+            if (isViewMode) {
                 List<VersacomAddressUsage> addressUsage = loadGroup.getAddressUsage();
                 // Utility Address
                 if (addressUsage.contains(VersacomAddressUsage.UTILITY)) { 
@@ -177,7 +180,6 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("isMctAddressSelected", loadGroupMCT.getLevel() == AddressLevel.MCT_ADDRESS);
             model.addAttribute("mctAddressEnumVal", AddressLevel.MCT_ADDRESS);
             model.addAttribute("relayUsageList", Relays.values());
-            model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
                 BindingResult result = (BindingResult) model.get(bindingResultKey);
                 if (result.hasFieldErrors("mctDeviceId")) {
@@ -194,8 +196,6 @@ public class LoadGroupSetupControllerHelper {
             boolean isSpecialRippleEnabled = loadGroupRipple.isSpecialRippleEnabled(userContext.getYukonUser());
             model.addAttribute("isSpecialRippleEnabled", isSpecialRippleEnabled);
             setCommunicationRoute(model, request, userContext);
-            boolean isViewMode = mode == PageEditMode.VIEW;
-            model.addAttribute("isViewMode", isViewMode);
             if (isSpecialRippleEnabled) {
                 model.addAttribute("groups", RippleGroup.values());
                 model.addAttribute("areaCodes", RippleGroupAreaCode.values());
@@ -213,7 +213,6 @@ public class LoadGroupSetupControllerHelper {
         case LM_GROUP_POINT:
             LoadGroupPoint loadGroupPoint = (LoadGroupPoint) model.get("loadGroup");
             model.addAttribute("isPointGroupSelected", true);
-            model.addAttribute("isViewMode", mode == PageEditMode.VIEW);
             model.addAttribute("isCreateMode", mode == PageEditMode.CREATE);
             model.addAttribute("isEditMode", mode == PageEditMode.EDIT);
             if (loadGroupPoint.getPointUsage() != null && loadGroupPoint.getPointUsage().getId() != null ) {
