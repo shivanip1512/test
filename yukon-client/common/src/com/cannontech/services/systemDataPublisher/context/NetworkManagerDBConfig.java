@@ -22,10 +22,10 @@ public class NetworkManagerDBConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         String networkManagerHost = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_HOSTNAME);
-        String userId = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_USER);
+        String userName = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_USER);
         String password = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_PASSWORD);
         dataSource.setUrl(buildUrl(networkManagerHost));
-        dataSource.setUsername(userId);
+        dataSource.setUsername(userName);
         dataSource.setPassword(password);
         dataSource.setDriverClassName("net.sourceforge.jtds.jdbc.Driver");
         return dataSource;
