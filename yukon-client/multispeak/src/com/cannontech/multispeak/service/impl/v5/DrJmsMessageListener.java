@@ -85,6 +85,7 @@ import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
+import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.yukon.IDatabaseCache;
@@ -111,11 +112,14 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     private ImmutableList<MultispeakVendor> vendorsToSendUnEnrollmentOrOptOutMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendIntervalDataMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendVoltageDataMsg = ImmutableList.of();
+    private ImmutableList<MultispeakVendor> vendorsToSendProgramStatusMsg = ImmutableList.of();
 
     private static final String ENROLLMENT_METHOD = "DRProgramEnrollmentsNotification";
     private static final String UNENROLLMENT_METHOD = "DRProgramUnenrollmentsNotification";
     private static final String INTERVALDATA_METHOD = "IntervalDataNotification";
     private static final String VOLTAGEREADINGS_METHOD = "MeterReadingsNotification";
+    private static final String PROGRAMSTATUS_METHOD = "FormattedBlockNotification";
+
     private static final String LCR_INDENTIFIER_NAME = "lcrSerial";
     private static final String LCR_INDENTIFIER_LABEL = "LCR Serial";
     private static final String PROGRAM_INDENTIFIER_NAME = "programName";
@@ -147,6 +151,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         ImmutableList.Builder<MultispeakVendor> supportsUnEnrollmentOrOptOut = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsIntervalData = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsVoltageData = ImmutableList.builder();
+        ImmutableList.Builder<MultispeakVendor> supportsProgramStatus = ImmutableList.builder();
 
         for (MultispeakVendor mspVendor : allVendors) {
             Pair<String, MultiSpeakVersion> keyPair = MultispeakVendor.buildMapKey(MultispeakDefines.NOT_Server_DR_STR, MultiSpeakVersion.V5);
@@ -159,6 +164,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                     addSupportedVendors(mspMethodNames, UNENROLLMENT_METHOD, mspVendor, supportsUnEnrollmentOrOptOut);
                     addSupportedVendors(mspMethodNames, INTERVALDATA_METHOD, mspVendor, supportsIntervalData);
                     addSupportedVendors(mspMethodNames, VOLTAGEREADINGS_METHOD, mspVendor, supportsVoltageData);
+                    addSupportedVendors(mspMethodNames, PROGRAMSTATUS_METHOD, mspVendor, supportsProgramStatus);
 
                 } catch (MultispeakWebServiceClientException e) {
                     log.warn("caught exception in initialize", e);
@@ -170,6 +176,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         vendorsToSendEnrollmentOrOptInMsg = supportsUnEnrollmentOrOptOut.build();
         vendorsToSendIntervalDataMsg = supportsIntervalData.build();
         vendorsToSendVoltageDataMsg = supportsVoltageData.build();
+        vendorsToSendProgramStatusMsg = supportsProgramStatus.build();
     }
 
     /**
@@ -219,20 +226,33 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             try {
                 DrJmsMessage drMessage = (DrJmsMessage) objMessage.getObject();
 
-                if (drMessage.getMessageType() == DrJmsMessageType.ENROLLMENT) {
-                    enrollmentNotification((EnrollmentJmsMessage) drMessage);
-                } else if (drMessage.getMessageType() == DrJmsMessageType.UNENROLLMENT) {
-                    unenrollmentNotification((EnrollmentJmsMessage) drMessage);
-                } else if (drMessage.getMessageType() == DrJmsMessageType.OPTOUT) {
-                    optOutNotification((OptOutOptInJmsMessage) drMessage);
-                } else if (drMessage.getMessageType() == DrJmsMessageType.STOPOPTOUT) {
-                    optInNotification((OptOutOptInJmsMessage) drMessage);
-                } else if (drMessage.getMessageType() == DrJmsMessageType.RELAYDATA) {
-                    intervalDataNotification((DrAttributeDataJmsMessage) drMessage);
-                } else if (drMessage.getMessageType() == DrJmsMessageType.VOLTAGEDATA) {
-                    voltageMeterReadingsNotification((DrAttributeDataJmsMessage) drMessage);
+                switch (drMessage.getMessageType()) {
+                    case ENROLLMENT:
+                        enrollmentNotification((EnrollmentJmsMessage) drMessage);
+                        break;
+                    case UNENROLLMENT:
+                        unenrollmentNotification((EnrollmentJmsMessage) drMessage);
+                        break;
+                    case OPTOUT:
+                        optOutNotification((OptOutOptInJmsMessage) drMessage);
+                        break;
+                    case STOPOPTOUT:
+                        optInNotification((OptOutOptInJmsMessage) drMessage);
+                        break;
+                    case RELAYDATA:
+                        intervalDataNotification((DrAttributeDataJmsMessage) drMessage);
+                        break;
+                    case VOLTAGEDATA:
+                        voltageMeterReadingsNotification((DrAttributeDataJmsMessage) drMessage);
+                        break;
+                    case EVENT:
+                        break;
+                    case PROGRAMSTATUS:
+                        programStatusNotificationNotification((DrProgramStatusJmsMessage) drMessage);
+                        break;
+                    default:
+                        break;
                 }
-
             } catch (JMSException e) {
                 log.warn("Unable to extract multispeak Dr message", e);
             }
@@ -438,6 +458,15 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             }
         });
 
+    }
+
+    @Override
+    public void programStatusNotificationNotification(DrProgramStatusJmsMessage drProgramStatusJmsMessage) {
+        if (!isVendorsConfigured(vendorsToSendProgramStatusMsg)) {
+            return;
+        }
+        //TODO
+        
     }
 
     /**

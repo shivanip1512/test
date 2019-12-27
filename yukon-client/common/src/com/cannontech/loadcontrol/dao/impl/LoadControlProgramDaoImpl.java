@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -14,10 +15,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
+import com.cannontech.loadcontrol.dao.LmProgramGearHistory.GearAction;
 import com.cannontech.loadcontrol.dao.LmProgramGearHistoryMapper;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.dao.ProgramIdMapper;
@@ -173,7 +176,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
 			LmProgramGearHistory hist = rawHistory.get(i);
 
 			// stops will never create new ProgramControlHistory objects
-			if ("Stop".equals(hist.getAction())) {
+			if (GearAction.STOP == hist.getAction()) {
 				continue;
 			}
 
@@ -312,4 +315,39 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
         }
     }
 
+    @Override
+    public List<LmProgramGearHistory> getProgramsHistoryDetails(DateTime from, DateTime to) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append(getProgramGearHistoryBaseQuery());
+        sql.append("WHERE lmpgh.EventTime").gte(from);
+        sql.append("  AND lmpgh.EventTime").lt(to);
+        sql.append("ORDER BY lmph.ProgramId, lmpgh.LMProgramHistoryId, lmpgh.EventTime, lmpgh.LMProgramGearHistoryId");
+
+        List<LmProgramGearHistory> programsHistoryDetails = jdbcTemplate.query(sql, new LmProgramGearHistoryMapper());
+        return programsHistoryDetails;
+    }
+
+    @Override
+    public LmProgramGearHistory getProgramsHistoryDetail(Integer programHistoryId, GearAction action) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+
+        sql.append(getProgramGearHistoryBaseQuery());
+        sql.append("WHERE lmpgh.LMProgramHistoryId").eq_k(programHistoryId);
+        sql.append("  AND lmpgh.Action").eq_k(action);
+
+        LmProgramGearHistory programsHistoryDetail = jdbcTemplate.queryForObject(sql, new LmProgramGearHistoryMapper());
+        return programsHistoryDetail;
+    }
+
+    private SqlFragmentSource getProgramGearHistoryBaseQuery() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+        sql.append("lmph.ProgramId,");
+        sql.append("lmph.ProgramName,");
+        sql.append("lmpgh.*");
+        sql.append("FROM LMProgramGearHistory lmpgh");
+        sql.append("  JOIN LMProgramHistory lmph ON (lmpgh.LMProgramHistoryId = lmph.LMProgramHistoryId)");
+        return sql;
+    }
 }

@@ -12,6 +12,7 @@ import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
+import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
@@ -89,6 +90,14 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
     public void publishAttributeDataMessageNotice(DrAttributeDataJmsMessage message) {
         log.debug("Attribute Data message pushed to jms queue: " + message);
         jmsTemplate.convertAndSend(JmsApiDirectory.DATA_NOTIFICATION.getQueue().getName(), message);
+
+    }
+
+    @Override
+    public void publishProgramStatusNotice(DrProgramStatusJmsMessage message) {
+
+        log.debug("Program Status Message pushed to jms queue: " + message);
+        jmsTemplate.convertAndSend(JmsApiDirectory.PROGRAM_STATUS_NOTIFICATION.getQueue().getName(), message);
 
     }
 
