@@ -47,6 +47,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 
 public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncsBase.class);
+    private final String noneVendor = "none";
 
     @Autowired public AuthenticationService authenticationService;
     @Autowired public DeviceGroupService deviceGroupService;
@@ -339,5 +340,14 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
             webServiceTemplate.setMessageSender(HttpComponentsMessageSenderWithSSL.getInstance(timeOut));
         }
 
+    }
+    
+    /** 
+     * Builds the Primary CIS Vendor list for Global setting and Yukon Setup page.
+     */
+    public List<MultispeakVendor> getPrimaryCisVendorList() {
+        List<MultispeakVendor> mspCisVendorList = multispeakDao.getMultispeakCISVendors();
+        mspCisVendorList.add(0, new MultispeakVendor(0, noneVendor));
+        return mspCisVendorList;
     }
 }
