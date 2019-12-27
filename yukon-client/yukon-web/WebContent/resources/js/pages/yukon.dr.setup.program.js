@@ -410,7 +410,6 @@ yukon.dr.setup.program = (function() {
                             clonedRow.appendTo($("#js-assigned-gear"));
                         } else {
                             $('#' + id + ' a').text(data.gearName);
-                            $(event.target).dialog('close');
                         }
                         _initConfirmGearDeletePopup(data.id, data.gearName);
                         $('#js-assigned-gear').closest('.select-box').find('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
