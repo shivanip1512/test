@@ -76,7 +76,7 @@ public class LoadGroupSetupControllerHelper {
         switch (type) {
         case LM_GROUP_EXPRESSCOMM:
         case LM_GROUP_RFN_EXPRESSCOMM:
-            if (mode == PageEditMode.VIEW) {
+            if (isViewMode) {
                 LoadGroupExpresscom loadGroup = (LoadGroupExpresscom) model.get("loadGroup");
 
                 List<AddressUsage> addressUsage = loadGroup.getAddressUsage();
@@ -134,7 +134,7 @@ public class LoadGroupSetupControllerHelper {
             break;
         case LM_GROUP_VERSACOM:
             LoadGroupVersacom loadGroup = (LoadGroupVersacom) model.get("loadGroup");
-            if (mode == PageEditMode.VIEW) {
+            if (isViewMode) {
                 List<VersacomAddressUsage> addressUsage = loadGroup.getAddressUsage();
                 // Utility Address
                 if (addressUsage.contains(VersacomAddressUsage.UTILITY)) { 
