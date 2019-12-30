@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/27/2019 6:36:51 AM                        */
+/* Created on:     12/29/2019 10:43:04 PM                       */
 /*==============================================================*/
 
 
@@ -4598,7 +4598,7 @@ INSERT INTO DeviceTypeCommand VALUES (-1266, -214, 'RFN-530S4eRXR', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-1273, -215, 'ExpresscomSerial', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1273, -215, 'ExpresscomSerial', 31, 'Y', -1);
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

@@ -229,7 +229,7 @@ INSERT INTO DBUpdates VALUES ('YUK-21096', '7.4.0', SYSDATE);
 /* @start YUK-21048 */
 INSERT INTO Command VALUES (-215, 'putconfig template ''?''LoadGroup''''', 'Install ExpressCom Addressing', 'ExpresscomSerial');
 
-INSERT INTO DeviceTypeCommand VALUES (-1273, -215, 'ExpresscomSerial', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1273, -215, 'ExpresscomSerial', 31, 'Y', -1);
 
 UPDATE Command SET Command = 'putconfig template ''?''LoadGroup''''' WHERE CommandId = -71;
 
