@@ -258,6 +258,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                         programStatusNotificationNotification((DrProgramStatusJmsMessage) drMessage);
                         break;
                     default:
+                        log.debug("Unable to find proper multispeak Dr message type i.e: " + drMessage.getMessageType());
                         break;
                 }
             } catch (JMSException e) {
@@ -881,7 +882,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         ProgramStatusValList programStatusValList = new ProgramStatusValList(Collections.singletonList(block));
         
         // TODO Noun Type of program is to be decided 
-        FormattedBlock formattedBlock = FormattedBlockBase.createMspFormattedBlock(programStatusValList,"Load Control");
+        FormattedBlock formattedBlock = FormattedBlockBase.createMspFormattedBlock(programStatusValList,"LoadManagementDevice");
         formattedBlockList.add(formattedBlock);
 
         return arrayOfFormattedBlock;

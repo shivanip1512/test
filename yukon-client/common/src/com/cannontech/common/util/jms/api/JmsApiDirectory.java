@@ -1225,10 +1225,10 @@ public final class JmsApiDirectory {
                 INFRASTRUCTURE_WARNINGS,
                 INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
         
-        addApis(jmsApis, DR_NOTIFICATION, 
+        addApis(jmsApis, DR_NOTIFICATION,
+                         DATA_NOTIFICATION,
                          ENROLLMENT_NOTIFICATION, 
                          OPTOUTIN_NOTIFICATION,
-                         DATA_NOTIFICATION,
                          PROGRAM_STATUS_NOTIFICATION);
 
         return jmsApis;

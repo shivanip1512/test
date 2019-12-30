@@ -64,6 +64,6 @@ public class LoadBlockProcessingServiceImpl extends FormattedBlockProcessingServ
     @Override
     public FormattedBlock createMspFormattedBlock(List<LoadBlock> blocks) {
         LoadValList loadValList = new LoadValList(blocks);
-        return FormattedBlockBase.createMspFormattedBlock(loadValList,"Meter");
+        return FormattedBlockBase.createMspFormattedBlock(loadValList, "Meter");
     }
 }

@@ -110,11 +110,12 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
+    private static DateTime to= null;
 
     @PostConstruct
     public void init() {
         scheduledExecutor.scheduleAtFixedRate(this::sendProgramStatus, 5, 5, TimeUnit.MINUTES);
-        log.info("Initialized executor for Sending Program Status");
+        log.info("Initialized executor for Sending Program Status with frequency of 5 minutes.");
     }
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
@@ -803,11 +804,15 @@ public class ProgramServiceImpl implements ProgramService {
                                                null, additionalInfo, constraintId, programOriginSource);
     }
 
-
     public void sendProgramStatus() {
-        DateTime to = DateTime.now();
-        DateTime from = to.minusMinutes(5);
-
+        DateTime from = null;
+        if (to == null) {
+            to = DateTime.now();
+            from = to.minusMinutes(5);
+        } else {
+            from = to;
+            to = DateTime.now();
+        }
         List<LmProgramGearHistory> lmProgramGearHistories = loadControlProgramDao.getProgramsHistoryDetails(from, to);
 
         List<DrProgramStatusJmsMessage> programStatusMessages = new ArrayList<>();
