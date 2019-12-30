@@ -250,7 +250,9 @@ public class DataExporterFormatController {
         if (StringUtils.isEmpty(exportFieldJson)) {
             // add field popup
             ExportField exportField = new ExportField();
-            RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class).getRoundingMode();
+            RoundingMode roundingMode = globalSettingDao
+                .getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
+                .getRoundingMode();
             exportField.setRoundingMode(YukonRoundingMode.valueOf(roundingMode.name()));
             model.addAttribute("exportField", exportField);
         } else {

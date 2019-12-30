@@ -33,7 +33,9 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
 
     @PostConstruct
     public void setup() {
-        final RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class).getRoundingMode();
+        final RoundingMode roundingMode = globalSettingDao
+            .getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class)
+            .getRoundingMode();
 
         ReadingProcessor usageConverter = new ReadingProcessor() {
             @Override
