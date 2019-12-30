@@ -12,19 +12,22 @@ public interface DisconnectEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
     public void disconnectAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
                                           @Arg(ArgEnum.commandRequestString) DisconnectCommand command,
-                                          @Arg(ArgEnum.deviceName) String deviceName);
+                                          @Arg(ArgEnum.deviceName) String deviceName,
+                                          @Arg(ArgEnum.meterNumber) String meterNumber);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
     public void disconnectInitiated(@Arg(ArgEnum.username) LiteYukonUser user,
                                     @Arg(ArgEnum.commandRequestString) DisconnectCommand command,
-                                    @Arg(ArgEnum.deviceName) String deviceName);
+                                    @Arg(ArgEnum.deviceName) String deviceName,
+                                    @Arg(ArgEnum.meterNumber) String meterNumber);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
     public void actionCompleted(@Arg(ArgEnum.username) LiteYukonUser user,
                                 @Arg(ArgEnum.commandRequestString) DisconnectCommand command,
                                 @Arg(ArgEnum.deviceName) String deviceName,
                                 DisconnectDeviceState disconnectDeviceState,
-                                Integer successOrFail);
+                                Integer successOrFail,
+                                @Arg(ArgEnum.meterNumber) String meterNumber);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
     public void groupDisconnectAttempted(@Arg(ArgEnum.username) LiteYukonUser user,

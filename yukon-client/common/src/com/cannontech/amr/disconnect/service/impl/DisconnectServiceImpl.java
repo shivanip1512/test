@@ -175,7 +175,8 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             } else {
                 requestCount += meters.size();
                 meters.forEach(meter -> disconnectEventLogService.disconnectInitiated(context.getYukonUser(), command,
-                    dbCache.getAllPaosMap().get(meter.getPaoIdentifier().getPaoId()).getPaoName()));
+                    dbCache.getAllPaosMap().get(meter.getPaoIdentifier().getPaoId()).getPaoName(),
+                    Integer.toString(meter.getPaoIdentifier().getPaoId())));
                 strategy.execute(command, meters, callback, result.getExecution(), context.getYukonUser());
             }
         }
@@ -193,7 +194,8 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
     public DisconnectMeterResult execute(DisconnectCommand command, final DeviceRequestType type, YukonMeter meter,
             final LiteYukonUser user) {
 
-        disconnectEventLogService.disconnectAttempted(user, command, meter.getName());
+        disconnectEventLogService.disconnectAttempted(user, command, meter.getName(), 
+                                                      Integer.toString(meter.getDeviceId()));
 
         List<SimpleDevice> allDevices = Lists.newArrayList(new SimpleDevice(meter));
         if (!supportsDisconnect(allDevices)) {
@@ -219,7 +221,8 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 log.debug("validMeters =" + filteredDevices.getValid());
                 // since there is only 1 object in this method, if we made it here we can assume
                 // filteredDevices == meter
-                disconnectEventLogService.disconnectInitiated(user, command, meter.getName());
+                disconnectEventLogService.disconnectInitiated(user, command, meter.getName(), 
+                                                              Integer.toString(meter.getDeviceId()));
 
                 strategy.execute(command, filteredDevices.getValid(), callback, execution, user);
             }
@@ -280,7 +283,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             execution.setRequestCount(1);
             completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
             disconnectEventLogService.actionCompleted(user, result.getCommand(), result.getMeter().getName(),
-                result.getState(), result.isSuccess() ? 1 : 0);
+                result.getState(), result.isSuccess() ? 1 : 0, Integer.toString(result.getMeter().getDeviceId()));
             completeLatch.countDown();
         }
 
