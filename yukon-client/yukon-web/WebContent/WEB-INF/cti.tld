@@ -190,7 +190,7 @@
       </attribute>
   </tag>
   
-    <tag>
+  <tag>
     <name>checkYukonVersionUndefined</name>
     <tag-class>com.cannontech.web.taglib.CheckYukonVersionUndefinedTag</tag-class>
     <body-content>scriptless</body-content>

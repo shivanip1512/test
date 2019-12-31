@@ -66,6 +66,8 @@ public class MultispeakVendor {
         this.templateNameDefault = templateNameDefault;
     }
 
+    public static MultispeakVendor noneVendor = new MultispeakVendor(0, "none");
+
     /**
      * @return
      */
