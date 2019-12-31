@@ -29,12 +29,12 @@ public class SystemDataMessageListener {
             String json = null;
             try {
                 json = ((TextMessage) message).getText();
-                log.info("System data received " + json);
                 Gson gson = new Gson();
                 SystemData data = gson.fromJson(json, SystemData.class);
+                log.info("System data received " + json);
                 dataProvider.updateSystemInformation(data);
             } catch (JMSException e) {
-                log.error("Error when receiving system data " + e);
+                log.error("Error receiving system data " + e);
             }
         }
     }
