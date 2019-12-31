@@ -23,6 +23,7 @@ import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -533,6 +534,37 @@ public class SepProgramApiTest {
         assertTrue(createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."),
                 "Expected code in response is not correct");
         Log.endTestCase("SepProgram_22_ControlWindowStopTimeGreaterThanMaxValue");
+    }
+
+    /**
+     * Test case to validate Load Program cannot be created with null load group id and validates valid error
+     * message in response
+     */
+    @Test
+    public void SepProgram_23_CreateWithLoadGroupIdAsNull(ITestContext context) {
+
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_DIGI_SEP);
+        context.setAttribute("loadGroupDirect", loadGroup);
+        List<MockLoadGroupBase> loadGroups = new ArrayList<>();
+        loadGroups.add(loadGroup);
+        MockProgramConstraint programConstraint = ProgramConstraintHelper.createProgramConstraint();
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, programConstraint.getId());
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SepCycle);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_SEP_PROGRAM, loadGroups,
+                gearTypes, programConstraint.getId());
+        loadProgram.setName("Auto_ProgramTest");
+        loadProgram.setNotification(null);
+        loadProgram.getAssignedGroups().get(0).setGroupId(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "assignedGroups[0].groupId",
+                "Group Id is required."),
+                "Expected code in response is not correct");
     }
 
     /**
