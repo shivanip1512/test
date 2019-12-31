@@ -825,6 +825,8 @@ public class ProgramServiceImpl implements ProgramService {
             }
 
             sendProgramStatus(programStatusMessages);
+        } else {
+            log.debug("Not sending any data as there is no load program change history");
         }
 
     }
