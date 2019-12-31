@@ -41,4 +41,9 @@ public interface DrJmsMessageService extends MessageListener {
      */
     public void voltageMeterReadingsNotification(DrAttributeDataJmsMessage drDataJmsMessage);
 
+    /**
+     * Sending Alarm and Event notification messages to configured vendors.
+     */
+    public void alarmAndEventNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage);
+
 }

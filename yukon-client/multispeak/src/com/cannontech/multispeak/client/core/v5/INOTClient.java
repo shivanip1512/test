@@ -122,6 +122,16 @@ public interface INOTClient {
      */
     public void intervalDataNotification(MultispeakVendor mspVendor, String uri,
             IntervalDataNotification intervalDataNotification) throws MultispeakWebServiceClientException;
+
+    /**
+     * Event Data Notification
+     * 
+     * @param MSP vendor details
+     * @param String the URI of the NOT Server
+     * @throws MultispeakWebServiceClientException
+     */
+    public void alarmAndEventDataNotification(MultispeakVendor mspVendor, String uri, EndDeviceEventsNotification endDeviceEventsNotification)
+            throws MultispeakWebServiceClientException;
     
    
 }

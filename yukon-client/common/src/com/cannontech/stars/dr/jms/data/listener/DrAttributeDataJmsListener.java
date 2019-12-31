@@ -29,10 +29,10 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
 
         PointValueHolder valueHolder = richPointData.getPointValue();
         Set<BuiltInAttribute> attributes = Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes());
+        Set<BuiltInAttribute> allAttributes = Sets.union(attributes, BuiltInAttribute.getEventDataAttributes());
 
         PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(valueHolder.getId());
-        Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(),
-                                                                                            attributes);
+        Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), allAttributes);
 
         if (!supportedAttributes.isEmpty()) {
             DrAttributeDataJmsMessage attributeDataJmsMessage = new DrAttributeDataJmsMessage();
@@ -51,18 +51,30 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
             }
             attributeDataJmsMessage.setAttributeDataList(attributeDataList);
 
-            Boolean isVoltageAttribute = BuiltInAttribute.getVoltageAttributes()
-                                                       .stream()
-                                                       .anyMatch(attribute -> supportedAttributes.contains(attribute));
-            if (isVoltageAttribute) {
-                attributeDataJmsMessage.setMessageType(DrJmsMessageType.VOLTAGEDATA);
-            } else {
-                attributeDataJmsMessage.setMessageType(DrJmsMessageType.RELAYDATA);
-            }
-
+            setMessageTypeForAttribute(supportedAttributes, attributeDataJmsMessage);
             drJmsMessagingService.publishAttributeDataMessageNotice(attributeDataJmsMessage);
         }
 
+    }
+
+    /*
+     * Set message type based on Attributes.
+     */
+    private void setMessageTypeForAttribute(Set<BuiltInAttribute> supportedAttributes, DrAttributeDataJmsMessage attributeDataJmsMessage) {
+        
+        Boolean isVoltageAttribute = BuiltInAttribute.getVoltageAttributes().stream()
+                                                                            .anyMatch(attributeType -> supportedAttributes.contains(attributeType));
+
+        Boolean isRelayAttribute = BuiltInAttribute.getRelayDataAttributes().stream()
+                                                                            .anyMatch(attributeType -> supportedAttributes.contains(attributeType));
+
+        if (isVoltageAttribute) {
+            attributeDataJmsMessage.setMessageType(DrJmsMessageType.VOLTAGEDATA);
+        } else if (isRelayAttribute) {
+            attributeDataJmsMessage.setMessageType(DrJmsMessageType.RELAYDATA);
+        } else {
+            attributeDataJmsMessage.setMessageType(DrJmsMessageType.ALARMANDEVENT);
+        }
     }
 
 }
