@@ -23,7 +23,7 @@ public class ConfigurationDataMessageListener {
     Logger log = (Logger) LogManager.getLogger(ConfigurationDataMessageListener.class);
     @Autowired DataProvider dataProvider;
 
-    @JmsListener(destination = "com.eaton.eas.cloud.ConfigurationSettings")
+    @JmsListener(destination = "com.eaton.eas.cloud.ConfigurationSettingsResponse")
     public void receiveMessage(Message message) {
         if (message instanceof TextMessage) {
             String json = null;

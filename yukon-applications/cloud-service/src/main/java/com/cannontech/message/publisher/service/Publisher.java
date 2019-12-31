@@ -1,10 +1,12 @@
 package com.cannontech.message.publisher.service;
 
+import com.cannontech.message.model.SupportedDataType;
+
 /**
  * Publisher to publish data on Message Broker
  */
 public interface Publisher {
-
+    
     /**
      * Returns what type of data the publisher supports
      */

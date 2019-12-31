@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.azure.model.AzureServices;
 import com.cannontech.message.model.ConfigurationSettings;
+import com.cannontech.message.model.SupportedDataType;
 import com.cannontech.message.model.SystemData;
 import com.cannontech.message.publisher.service.Publisher;
-import com.cannontech.message.publisher.service.SupportedDataType;
 
 /**
  * This class will be providing data required for cloud services.
@@ -45,7 +45,7 @@ public class DataProvider {
         }
         return settings.get(service);
     }
-    
+
     /*
      * Check every 30 sec to see configuration settings are available or not.
      */
@@ -61,7 +61,7 @@ public class DataProvider {
             }
         }
     }
-    
+
     /*
      * Check configuration settings are available in cache.
      */
@@ -92,9 +92,9 @@ public class DataProvider {
      * This will be updated in the cache.
      */
     public void updateConfigurationInformation(AzureServices service, ConfigurationSettings confSettings) {
-        log.info("Updating configuration information");
+        log.info("Updating configuration settings");
         settings.put(service, confSettings);
-        
+
     }
 
 }
