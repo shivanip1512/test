@@ -18,6 +18,7 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +54,15 @@ import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.msp.beans.v5.commontypes.AddressItems;
 import com.cannontech.msp.beans.v5.commontypes.CSUnitsKind;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
+import com.cannontech.msp.beans.v5.commontypes.Extensions;
+import com.cannontech.msp.beans.v5.commontypes.MeterID;
+import com.cannontech.msp.beans.v5.commontypes.ObjectID;
 import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
+import com.cannontech.msp.beans.v5.commontypes.ServicePointID;
+import com.cannontech.msp.beans.v5.commontypes.SingleIdentifier;
 import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
 import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
+import com.cannontech.msp.beans.v5.enumerations.ServiceKind;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
@@ -72,6 +79,7 @@ import com.cannontech.multispeak.data.MspReturnList;
 import com.cannontech.multispeak.data.v5.MspRCDStateKind;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.multispeak.extension.Relay;
 import com.cannontech.user.YukonUserContext;
 
 public class MultispeakFuncs extends MultispeakFuncsBase {
@@ -96,6 +104,9 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         "objectsRemaining");
     private static final QName QNAME_RESULT = new QName("http://www.multispeak.org/V5.0/response", "Result");
     private static final QName QNAME_CALLER_RES = new QName("http://www.multispeak.org/V5.0/ws/response", "Caller");
+
+    public static final String DEFAULT_OBJECT_GUID = "00000000-0000-0000-0000-000000000000";
+    private static final String DR_SERVICE_TYPE = "Load Control";
 
 
     public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
@@ -174,13 +185,19 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         appVersionElement.addTextNode(VersionTools.getYUKON_VERSION());
         SOAPElement companyElement = callerElement.addChildElement("Company", "com");
         companyElement.addTextNode("Cannon");
-        SOAPElement systemIDElement = callerElement.addChildElement("SystemID", "com");
-        systemIDElement.addTextNode(mspVendor.getOutUserName());
-        SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
-        passwordElement.addTextNode(mspVendor.getOutPassword());
+        if (StringUtils.isNotBlank(mspVendor.getOutUserName())) {
+            SOAPElement systemIDElement = callerElement.addChildElement("SystemID", "com");
+            systemIDElement.addTextNode(mspVendor.getOutUserName());
+        }
+        if (StringUtils.isNotBlank(mspVendor.getOutPassword())) {
+            SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
+            passwordElement.addTextNode(mspVendor.getOutPassword());
+        }
         SOAPElement coordSysInforElement = headElement.addChildElement("CoordinateSystemInformation", prefix);
         SOAPElement csUnit = coordSysInforElement.addChildElement("CSUnits", "com");
         csUnit.addTextNode(CSUnitsKind.FEET.value());
+        coordSysInforElement.addChildElement("CSAuthorities", "com");
+        
         SOAPElement multiSpeakVersionElement = headElement.addChildElement("MultiSpeakVersion", prefix);
         SOAPElement majorVersionElement = multiSpeakVersionElement.addChildElement("MajorVersion", "com");
         majorVersionElement.addTextNode("5");
@@ -604,4 +621,104 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
         return allPhoneNumbers;
     }
+
+    public static String generateRandomGuid() {
+
+        char[] supportedChars = { 'a', 'b', 'c', 'd', 'e', 'f', 'A', 'B', 'C', 'D', 'E', 'F', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
+        List<Integer> sliceSizes = List.of(8, 4, 4, 4, 12);
+        StringBuilder objectGuid = new StringBuilder();
+
+        int index = 0;
+        for (Integer size : sliceSizes) {
+            if (index < sliceSizes.size() - 1) {
+                objectGuid.append(RandomStringUtils.random(size, supportedChars)).append("-");
+            } else {
+                objectGuid.append(RandomStringUtils.random(size, supportedChars));
+            }
+            index++;
+        }
+        return objectGuid.toString();
+
+    }
+
+    public static String getObjectGuid(Integer id) {
+
+        String idValue = String.valueOf(id);
+
+        StringBuilder objectGuid = new StringBuilder(DEFAULT_OBJECT_GUID);
+
+        int replaceStartIndex = (int) (objectGuid.length() - idValue.chars().count());
+
+        StringBuilder newObjectGuid = objectGuid.replace(replaceStartIndex, DEFAULT_OBJECT_GUID.length(), idValue);
+        return newObjectGuid.toString();
+
+    }
+
+    /**
+     * Build SingleIdentifier object that includes request fields (identifier Name & Label) 
+     */
+    public static SingleIdentifier buildSingleIdentifier(String identifierName, String identifierLabel,  String value) {
+
+        // TODO Method to take a paoType or hardwareType or something and
+        // be able to know what Name and Label to use without having to pass them into this method.
+
+        SingleIdentifier singleIdentifier = new SingleIdentifier();
+        singleIdentifier.setIdentifierName(identifierName);
+        singleIdentifier.setIdentifierLabel(identifierLabel);
+        singleIdentifier.setValue(value);
+        return singleIdentifier;
+    }
+
+    /**
+     * Build ServicePointID object that contains service type and  default objectGuid
+     */
+    public static ServicePointID buildDrServicePointID() {
+
+        ServicePointID servicePointId = new ServicePointID();
+        servicePointId.setServiceType(ServiceKind.OTHER);
+        servicePointId.setValue(DEFAULT_OBJECT_GUID);
+        return servicePointId;
+
+    }
+
+    /**
+     * Build ObjectID object that contains SingleIdentifier object and objectGuid
+     */
+    public static ObjectID buildDrProgramID(String objectGUID, String identifierName, String identifierLabel, String value) {
+        ObjectID drProgramId = new ObjectID();
+        drProgramId.setObjectGUID(objectGUID);
+        SingleIdentifier programPrimaryIdentifier = buildSingleIdentifier(identifierName, identifierLabel, value);
+        drProgramId.setPrimaryIdentifier(programPrimaryIdentifier);
+        return drProgramId;
+
+    }
+
+    /**
+     * Create MeterID object that contains serialNumber, RegisterName, ServiceType, SystemName, Utility and Other Service
+     * Type information.
+     */
+    public static  MeterID getDrMeterID(String serialNumber) {
+
+        MeterID meterID = new MeterID();
+        meterID.setMeterName(serialNumber);
+        meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+        meterID.setServiceType(ServiceKind.OTHER);
+        meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+        meterID.setUtility(MultispeakDefines.AMR_VENDOR);
+        meterID.setOtherServiceType(DR_SERVICE_TYPE);
+        return meterID;
+    }
+
+    /**
+     * Create Extension Object for RelayNumber.
+     */
+    public static Extensions getRelayExtension(Integer relayNumber) {
+        Extensions extensions = new Extensions();
+        List<Object> any = extensions.getAny();
+        Relay relay = new Relay(relayNumber);
+        any.add(relay);
+        return extensions;
+    }
+
 }

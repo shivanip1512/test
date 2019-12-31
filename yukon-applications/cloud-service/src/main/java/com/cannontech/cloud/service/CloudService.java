@@ -7,9 +7,10 @@ package com.cannontech.cloud.service;
 public interface CloudService {
 
     /**
-     * Create connection to a cloud service
+     * Create connection to a cloud service.
+     * @return true if connection is created successfully
      */
-    public abstract void createConnection();
+    public abstract boolean createConnection();
 
     /**
      * Checks if a service should be started or not.

@@ -1022,6 +1022,12 @@ public class NmIntegrationController {
         return "redirect:viewMappingSimulator";
     }
     
+    @RequestMapping("refreshNetworkTree")
+    public String refreshNetworkTree(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        //TODO: Refresh Network Tree
+        return "redirect:viewMappingSimulator";
+    }
+    
     private SimulatorResponseBase sendRequest(SimulatorRequest request, YukonMessageSourceResolvable confirmation, FlashScope flash){
         SimulatorResponseBase response = null;
         try {

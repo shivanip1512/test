@@ -26,6 +26,12 @@ yukon.dev.mappingSimulator = (function() {
                 form.submit();
             });
             
+            $(document).on('click', '#refreshNetworkTree', function () {
+                var form = $('#mapping-form');
+                form.attr("action", "refreshNetworkTree");
+                form.submit();
+            });
+            
             $(document).on('click', '#stopSimulator', function () {
                 var form = $('#mapping-form');
                 form.attr("action", "stopMappingSimulator");

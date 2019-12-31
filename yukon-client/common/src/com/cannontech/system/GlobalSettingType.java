@@ -176,6 +176,11 @@ public enum GlobalSettingType implements DisplayableEnum {
     ERROR_REPORTING(GlobalSettingSubCategory.MISC, booleanType(), false),
     MAX_LOG_FILE_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1),
     LOG_RETENTION_DAYS(GlobalSettingSubCategory.MISC, integerType(), 90),
+    NETWORK_MANAGER_DB_PASSWORD(GlobalSettingSubCategory.MISC, stringType(), null),
+    NETWORK_MANAGER_DB_USER(GlobalSettingSubCategory.MISC, stringType(), null),
+    NETWORK_MANAGER_DB_HOSTNAME(GlobalSettingSubCategory.MISC, stringType(), null),
+    CLOUD_DATA_SENDING_FREQUENCY(GlobalSettingSubCategory.MISC, 6, Range.inclusive(1, Integer.MAX_VALUE)),
+    CLOUD_IOT_HUB_CONNECTION_STRING(GlobalSettingSubCategory.MISC, stringType(), null),
 
     // Misc. > Web Graph
     HOME_DIRECTORY(GlobalSettingSubCategory.MISC, stringType(), "c:\\yukon\\client\\webgraphs\\"),
@@ -239,7 +244,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_HCM_PASSWORD,
             ITRON_SFTP_USERNAME,
             ITRON_SFTP_PASSWORD,
-            ITRON_SFTP_PRIVATE_KEY_PASSWORD);
+            ITRON_SFTP_PRIVATE_KEY_PASSWORD,
+            NETWORK_MANAGER_DB_PASSWORD);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

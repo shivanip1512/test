@@ -94,14 +94,7 @@ yukon.dr.setup.programGear = (function() {
                 _refreshShedType();
                 _initCss();
             });
-            
-            $(document).on("yukon:dr:setup:program:gearRendered", function (event) {
-                _whenToChange(event);
-                _howToStopControl(event);
-                _refreshShedType();
-                _initCss();
-            });
-            
+
             $(document).on('change', '.js-setpoint-input', function (event) {
                 var container = $(this).closest(".js-thermostat-ramping-ctrl-prms");
                 if ($(this).val() == 'DELTA') {
