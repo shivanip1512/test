@@ -62,7 +62,7 @@ public class DataProvider {
      * This will be updated in the cache.
      */
     public void updateSystemInformation(SystemData data) {
-        log.info("Updating system information");
+        log.debug("Updating system information " + data);
         systemData.put(data.getFieldName(), data);
     }
 
