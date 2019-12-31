@@ -13,4 +13,11 @@ public interface SystemDataPublisherDao {
      * 
      */
     List<Map<String, Object>> getSystemData(DictionariesField dictionariesField);
+    
+    /**
+     * This method is to execute query to get System Data from Network Manager. Using Network Manager DB
+     * connection we will get the result and form the system data to be pushed to topic.
+     * 
+     */
+    List<Map<String, Object>> getNMSystemData(DictionariesField dictionariesField);
 }
