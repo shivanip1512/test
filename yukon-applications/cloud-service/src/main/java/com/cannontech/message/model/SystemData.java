@@ -42,4 +42,10 @@ public class SystemData {
         this.iotDataType = iotDataType;
     }
 
+    @Override
+    public String toString() {
+        return "SystemData [fieldName=" + fieldName + ", fieldValue=" + fieldValue + ", timestamp=" + timestamp + ", iotDataType="
+                + iotDataType + "]";
+    }
+
 }

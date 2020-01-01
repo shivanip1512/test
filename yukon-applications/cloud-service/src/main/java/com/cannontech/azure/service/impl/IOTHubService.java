@@ -99,11 +99,13 @@ public class IOTHubService extends AzureCloudService {
             if (createConnection()) {
                 try {
                     prepareAndPushData();
-                } catch (IllegalArgumentException | UnsupportedOperationException | IOException e) {
+                } catch (IllegalArgumentException | IOException e) {
                     log.error("Unable to push data to IOT hub. " + e);
+                } catch (UnsupportedOperationException ex) {
+                    log.warn("Device twin is already started " + ex);
                 }
             }
-        }, 0, getConfigurationSetting().getFrequency(), TimeUnit.HOURS);
+        }, 2, getConfigurationSetting().getFrequency() * 5, TimeUnit.MINUTES);
     }
 
     private void prepareAndPushData() throws IllegalArgumentException, UnsupportedOperationException, IOException {
