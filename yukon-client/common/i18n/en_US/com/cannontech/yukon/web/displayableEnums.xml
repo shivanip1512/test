@@ -481,13 +481,18 @@
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS.description">The maximum number of comm channels to be displayed in one Comm Channel Queue Counts Widget.</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH">Comm Channel Queue Counts: Minutes to wait before data refresh</entry>
     <entry key="yukon.common.setting.PORTER_QUEUE_COUNTS_MINUTES_TO_WAIT_BEFORE_REFRESH.description">The number of minutes to wait before data can be refreshed for a given Comm Channel Queue Counts Widget.</entry>
-    
+   
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME">Network Manager DB Host Name</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_HOSTNAME.description">Host name to connect to Network Manager database </entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID">Network Manager DB User ID</entry>
-    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USERID.description">User ID for Network Manager database. This will be used as read only operation in database</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USER">Network Manager DB User</entry>
+    <entry key="yukon.common.setting.NETWORK_MANAGER_DB_USER.description">User for Network Manager database. This will be used as read only operation in database</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD">Network Manager DB Password</entry>
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD.description">Password for Network Manager database</entry>
+    
+    <entry key="yukon.common.setting.CLOUD_DATA_SENDING_FREQUENCY">Cloud Data Sending Frequency</entry>
+    <entry key="yukon.common.setting.CLOUD_DATA_SENDING_FREQUENCY.description">Frequency(In Hours) at which data will push to cloud</entry>
+    <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING">Cloud IoT Hub Connection String</entry>
+    <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING.description">Cloud IoT Hub Connection String</entry>
     
     <!-- global setting enums -->
     <entry key="yukon.common.multispeakPaoNameAlias.METER_NUMBER">Meter Number (Default)</entry>

@@ -42,6 +42,6 @@ public class OutageBlockProcessingServiceImpl extends FormattedBlockProcessingSe
     @Override
     public FormattedBlock createMspFormattedBlock(List<OutageBlock> blocks) {
         OutageValList outageValList = new OutageValList(blocks);
-        return FormattedBlockBase.createMspFormattedBlock(outageValList);
+        return FormattedBlockBase.createMspFormattedBlock(outageValList, "Meter");
     }
 }

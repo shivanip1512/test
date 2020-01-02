@@ -25,6 +25,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
@@ -169,7 +170,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             sql.append("APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,");
             sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT, ValidateCertificate");
             sql.append("FROM MSPVENDOR V JOIN MSPINTERFACE I on V.VENDORID = I.VENDORID");
-            sql.append("WHERE INTERFACE IN ('CB_Server', 'CB_MR')");
+            sql.append("WHERE INTERFACE").eq(MultispeakDefines.CB_Server_STR);
 
             List<MultispeakVendor> mspVendors = jdbcTemplate.query(sql, mspVendorRowMapper);
 

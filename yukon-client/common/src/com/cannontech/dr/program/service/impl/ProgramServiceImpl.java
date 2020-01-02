@@ -9,8 +9,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -35,6 +38,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -59,6 +63,8 @@ import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
+import com.cannontech.loadcontrol.dao.LmProgramGearHistory;
+import com.cannontech.loadcontrol.dao.LmProgramGearHistory.GearAction;
 import com.cannontech.loadcontrol.dao.LoadControlProgramDao;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -70,6 +76,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.loadcontrol.service.LoadControlCommandService;
 import com.cannontech.loadcontrol.service.ProgramChangeBlocker;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.loadcontrol.service.data.ProgramStatusType;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
@@ -77,6 +84,9 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
+import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
+import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -96,9 +106,17 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioDao scenarioDao;
     @Autowired private DateFormattingService dateFormattingService;
-    @Autowired @Qualifier("main") private Executor executor;
+    @Autowired private DrJmsMessagingService drJmsMessagingService;
+    @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
+    private static DateTime to= null;
+
+    @PostConstruct
+    public void init() {
+        scheduledExecutor.scheduleAtFixedRate(this::sendProgramStatus, 5, 5, TimeUnit.MINUTES);
+        log.info("Initialized executor for Sending Program Status with frequency of 5 minutes.");
+    }
 
     private final RowMapperWithBaseQuery<DisplayablePao> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
@@ -432,7 +450,7 @@ public class ProgramServiceImpl implements ProgramService {
                                           ProgramOriginSource programOriginSource)
                                                   throws NotFoundException, TimeoutException, NotAuthorizedException, BadServerResponseException,
                                                   ConnectionException {
-        executor.execute(new Runnable() {
+        scheduledExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -612,7 +630,7 @@ public class ProgramServiceImpl implements ProgramService {
                                          final boolean observeConstraints,
                                          final LiteYukonUser user,
                                          final ProgramOriginSource programOriginSource) throws NotFoundException, NotAuthorizedException {
-        executor.execute(new Runnable() {
+        scheduledExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -785,4 +803,82 @@ public class ProgramServiceImpl implements ProgramService {
         return program.createScheduledStartMsg(startDate, stopDate, gearNumber,
                                                null, additionalInfo, constraintId, programOriginSource);
     }
+
+    public void sendProgramStatus() {
+        DateTime from = null;
+        if (to == null) {
+            to = DateTime.now();
+            from = to.minusMinutes(5);
+        } else {
+            from = to;
+            to = DateTime.now();
+        }
+        List<LmProgramGearHistory> lmProgramGearHistories = loadControlProgramDao.getProgramHistoryDetails(from, to);
+
+        List<DrProgramStatusJmsMessage> programStatusMessages = new ArrayList<>();
+
+        if (CollectionUtils.isNotEmpty(lmProgramGearHistories)) {
+
+            for (LmProgramGearHistory programHistory : lmProgramGearHistories) {
+                DrProgramStatusJmsMessage message = buildProgramStatusJmsMessage(programHistory);
+                programStatusMessages.add(message);
+            }
+
+            sendProgramStatus(programStatusMessages);
+        } else {
+            log.debug("Not sending any data as there is no load program change history");
+        }
+
+    }
+
+    /**
+     * Build Program Status messages that include start/stop time, gear change time, status, program/gear name,
+     * correlationId(programGearHistoryId).
+     */
+    private DrProgramStatusJmsMessage buildProgramStatusJmsMessage(LmProgramGearHistory programHistory) {
+
+        DrProgramStatusJmsMessage message = new DrProgramStatusJmsMessage();
+        // correlationId
+        message.setProgramGearHistId(programHistory.getProgramGearHistoryId());
+        message.setProgramName(programHistory.getProgramName());
+        message.setGearName(programHistory.getGearName());
+        message.setMessageType(DrJmsMessageType.PROGRAMSTATUS);
+
+        if (GearAction.START == programHistory.getAction() || GearAction.UPDATE == programHistory.getAction()) {
+            message.setStartDateTime(programHistory.getEventTime());
+            message.setProgramStatusType(ProgramStatusType.ACTIVE);
+        } else if (GearAction.GEAR_CHANGE == programHistory.getAction()) {
+            message.setGearChangeTime(programHistory.getEventTime());
+            message.setProgramStatusType(ProgramStatusType.ACTIVE);
+        } else if (GearAction.STOP == programHistory.getAction()) {
+            message.setStopDateTime(programHistory.getEventTime());
+            Date startedTime = getProgramStartedDateTime(programHistory.getProgramHistoryId());
+            if (startedTime != null) {
+                message.setStartDateTime(startedTime);
+            }
+            message.setProgramStatusType(ProgramStatusType.INACTIVE);
+        }
+        return message;
+    }
+
+    /**
+     * Publish program status messages to queue.
+     */
+    private void sendProgramStatus(List<DrProgramStatusJmsMessage> programStatusMessages) {
+        for (DrProgramStatusJmsMessage message : programStatusMessages) {
+            drJmsMessagingService.publishProgramStatusNotice(message);
+        }
+    }
+
+    /**
+     * Get Program Start time from database corresponding to programHistoryId
+     */
+
+    private Date getProgramStartedDateTime(Integer programHistoryId) {
+
+        LmProgramGearHistory startedProgramGearHistory = loadControlProgramDao.getProgramHistoryDetail(programHistoryId, GearAction.START);
+        return startedProgramGearHistory.getEventTime();
+
+    }
+
 }

@@ -368,6 +368,54 @@ public class LoadGroupPointAPITest {
     }
 
     /**
+     * Negative validation when Creating a load group with control point of status type is NOT controlled
+     * Point load group
+     */
+    @Test
+    public void loadGroupPoint_17_CntPntNotControlled() {
+
+        Log.startTestCase("loadGroupPoint_17_CntPntNotControlled");
+
+        MockLoadGroupPoint loadGroup = buildMockLoadGroup();
+        MockLMDto deviceUsage = MockLMDto.builder().id(11735).build();
+        loadGroup.setDeviceUsage(deviceUsage);
+        MockLMDto pointUsage = MockLMDto.builder().id(113717).build();
+        loadGroup.setPointUsage(pointUsage);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "pointUsage.id", "Invalid Point type, must be status point with control enabled."),
+                "Expected code in response is not correct");
+
+        Log.endTestCase("loadGroupPoint_17_CntPntNotControlled");
+    }
+    
+    /**
+     * Negative validation when Creating a load group with control point not of status typed
+     * Point load group
+     */
+    @Test
+    public void loadGroupPoint_18_CntPntNotOfStatusType() {
+
+        Log.startTestCase("loadGroupPoint_18_CntPntNotOfStatusType");
+
+        MockLoadGroupPoint loadGroup = buildMockLoadGroup();
+        MockLMDto deviceUsage = MockLMDto.builder().id(11735).build();
+        loadGroup.setDeviceUsage(deviceUsage);
+        MockLMDto pointUsage = MockLMDto.builder().id(113684).build();
+        loadGroup.setPointUsage(pointUsage);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "pointUsage.id", "Invalid Point type, must be status point with control enabled."),
+                "Expected code in response is not correct");
+
+        Log.endTestCase("loadGroupPoint_18_CntPntNotOfStatusType");
+    }
+    
+    /**
      * This function build Mock Load Group payload to be used for negative scenarios test cases
      */
     public MockLoadGroupPoint buildMockLoadGroup() {
