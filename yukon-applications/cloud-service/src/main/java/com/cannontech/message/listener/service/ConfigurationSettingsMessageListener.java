@@ -19,8 +19,8 @@ import com.google.gson.Gson;
  * Listen for configuration data on queue, once received will call method to update cache.
  */
 @Service
-public class ConfigurationDataMessageListener {
-    Logger log = (Logger) LogManager.getLogger(ConfigurationDataMessageListener.class);
+public class ConfigurationSettingsMessageListener {
+    Logger log = (Logger) LogManager.getLogger(ConfigurationSettingsMessageListener.class);
     @Autowired DataProvider dataProvider;
 
     @JmsListener(destination = "com.eaton.eas.cloud.ConfigurationSettingsResponse")
