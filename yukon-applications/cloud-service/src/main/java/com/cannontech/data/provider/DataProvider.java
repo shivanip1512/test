@@ -92,7 +92,7 @@ public class DataProvider {
      * This will be updated in the cache.
      */
     public void updateConfigurationInformation(AzureServices service, ConfigurationSettings confSettings) {
-        log.info("Updating configuration settings");
+        log.info("Updating configuration settings ", service);
         settings.put(service, confSettings);
 
     }
