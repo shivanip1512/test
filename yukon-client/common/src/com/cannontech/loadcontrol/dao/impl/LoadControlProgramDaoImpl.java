@@ -316,7 +316,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     }
 
     @Override
-    public List<LmProgramGearHistory> getProgramsHistoryDetails(DateTime from, DateTime to) {
+    public List<LmProgramGearHistory> getProgramHistoryDetails(DateTime from, DateTime to) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append(getProgramGearHistoryBaseQuery());
@@ -329,7 +329,7 @@ public class LoadControlProgramDaoImpl implements LoadControlProgramDao {
     }
 
     @Override
-    public LmProgramGearHistory getProgramsHistoryDetail(Integer programHistoryId, GearAction action) {
+    public LmProgramGearHistory getProgramHistoryDetail(Integer programHistoryId, GearAction action) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append(getProgramGearHistoryBaseQuery());

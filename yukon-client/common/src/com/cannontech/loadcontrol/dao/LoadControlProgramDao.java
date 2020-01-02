@@ -98,12 +98,12 @@ public interface LoadControlProgramDao {
      * Get a list of LmProgramGearHistory based on Date Range.
      */
 
-    public List<LmProgramGearHistory> getProgramsHistoryDetails(DateTime from, DateTime to);
+    public List<LmProgramGearHistory> getProgramHistoryDetails(DateTime from, DateTime to);
 
     /**
      * Get LmProgramGearHistory based on programHistoryId and gearAction.
      */
 
-    public LmProgramGearHistory getProgramsHistoryDetail(Integer programHistoryId, GearAction action);
+    public LmProgramGearHistory getProgramHistoryDetail(Integer programHistoryId, GearAction action);
 
 }

@@ -255,7 +255,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                     case EVENT:
                         break;
                     case PROGRAMSTATUS:
-                        programStatusNotificationNotification((DrProgramStatusJmsMessage) drMessage);
+                        programStatusNotification((DrProgramStatusJmsMessage) drMessage);
                         break;
                     default:
                         log.debug("Unable to find proper multispeak Dr message type i.e: " + drMessage.getMessageType());
@@ -469,7 +469,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     }
 
     @Override
-    public void programStatusNotificationNotification(DrProgramStatusJmsMessage drProgramStatusJmsMessage) {
+    public void programStatusNotification(DrProgramStatusJmsMessage drProgramStatusJmsMessage) {
         if (!isVendorsConfigured(vendorsToSendProgramStatusMsg)) {
             return;
         }

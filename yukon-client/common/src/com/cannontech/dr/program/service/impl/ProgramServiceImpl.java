@@ -813,7 +813,7 @@ public class ProgramServiceImpl implements ProgramService {
             from = to;
             to = DateTime.now();
         }
-        List<LmProgramGearHistory> lmProgramGearHistories = loadControlProgramDao.getProgramsHistoryDetails(from, to);
+        List<LmProgramGearHistory> lmProgramGearHistories = loadControlProgramDao.getProgramHistoryDetails(from, to);
 
         List<DrProgramStatusJmsMessage> programStatusMessages = new ArrayList<>();
 
@@ -876,7 +876,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     private Date getProgramStartedDateTime(Integer programHistoryId) {
 
-        LmProgramGearHistory startedProgramGearHistory = loadControlProgramDao.getProgramsHistoryDetail(programHistoryId, GearAction.START);
+        LmProgramGearHistory startedProgramGearHistory = loadControlProgramDao.getProgramHistoryDetail(programHistoryId, GearAction.START);
         return startedProgramGearHistory.getEventTime();
 
     }

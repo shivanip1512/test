@@ -45,6 +45,6 @@ public interface DrJmsMessageService extends MessageListener {
     /**
      * Sending Program Status notification messages to configured vendors.
      */
-    public void programStatusNotificationNotification(DrProgramStatusJmsMessage drDataJmsMessage);
+    public void programStatusNotification(DrProgramStatusJmsMessage drDataJmsMessage);
 
 }

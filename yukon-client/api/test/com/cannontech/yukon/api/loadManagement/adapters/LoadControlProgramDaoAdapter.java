@@ -69,12 +69,12 @@ public class LoadControlProgramDaoAdapter implements LoadControlProgramDao {
     }
 
     @Override
-    public List<LmProgramGearHistory> getProgramsHistoryDetails(DateTime from, DateTime to) {
+    public List<LmProgramGearHistory> getProgramHistoryDetails(DateTime from, DateTime to) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
     @Override
-    public LmProgramGearHistory getProgramsHistoryDetail(Integer programHistoryId, GearAction action) {
+    public LmProgramGearHistory getProgramHistoryDetail(Integer programHistoryId, GearAction action) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not Implemented");
     }
