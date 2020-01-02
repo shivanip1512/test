@@ -37,6 +37,7 @@
                 <value>com/cannontech/dr/itron/itronContext.xml</value>
                 <value>com/cannontech/stars/starsContext.xml</value>
                 <value>com/cannontech/common/fileExportHistory/fileExportHistory.xml</value>
+                <value>com/cannontech/services/cloud/settings/cloudServicesContext.xml</value>
             </list>
         </constructor-arg>
         <constructor-arg index="1" value="true" />

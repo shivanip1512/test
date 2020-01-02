@@ -102,6 +102,7 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
+import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
@@ -1115,6 +1116,17 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_WEBSERVER)
                   .build();
 
+    public static final JmsApi<ConfigurationSettings,?,?> CLOUD_CONFIGURATION_SETTINGS =
+            JmsApi.builder(ConfigurationSettings.class)
+                  .name("Cloud Configuration Settings")
+                  .description("Yukon Service Manager takes Cloud Configuration Settings and passes it to Yukon Message Broker on a topic.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.cloud.ConfigurationSettingsResponse"))
+                  .requestMessage(ConfigurationSettings.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1141,6 +1153,7 @@ public final class JmsApiDirectory {
         addApis(jmsApis, OTHER, 
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
+                CLOUD_CONFIGURATION_SETTINGS,
                 ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
