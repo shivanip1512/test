@@ -25,9 +25,9 @@ public interface DisconnectEventLogService {
     public void actionCompleted(@Arg(ArgEnum.username) LiteYukonUser user,
                                 @Arg(ArgEnum.commandRequestString) DisconnectCommand command,
                                 @Arg(ArgEnum.deviceName) String deviceName,
+                                @Arg(ArgEnum.meterNumber) String meterNumber,
                                 DisconnectDeviceState disconnectDeviceState,
-                                Integer successOrFail,
-                                @Arg(ArgEnum.meterNumber) String meterNumber);
+                                Integer successOrFail);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
     public void groupDisconnectAttempted(@Arg(ArgEnum.username) LiteYukonUser user,

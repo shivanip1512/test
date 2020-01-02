@@ -519,7 +519,7 @@ public class DevEventLogCreationService {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
                 
                 String deviceName = "45645-Name";
-                String meterNumber = "123456";
+                String meterNumber = "123456-MeterNum";
                 
                 String action = "Disconnect";
                 String input = "disconnect input";
@@ -528,8 +528,8 @@ public class DevEventLogCreationService {
                 String key = "123";
                 String statistics = "Completed: 1";
                 
-                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, DisconnectDeviceState.CONNECTED, 1, meterNumber);
-                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, DisconnectDeviceState.DISCONNECTED, 0, meterNumber);
+                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, meterNumber, DisconnectDeviceState.CONNECTED, 1);
+                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, meterNumber, DisconnectDeviceState.DISCONNECTED, 0);
                 disconnectEventLogService.disconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, meterNumber);
                 disconnectEventLogService.disconnectInitiated(yukonUser, DisconnectCommand.DISCONNECT, deviceName, meterNumber);
                 disconnectEventLogService.groupActionCompleted(yukonUser, DisconnectCommand.CONNECT, 20, 15, 3, 2);
