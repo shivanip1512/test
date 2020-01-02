@@ -1,22 +1,23 @@
 package com.cannontech.loadcontrol.dao;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.springframework.jdbc.core.RowMapper;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.loadcontrol.dao.LmProgramGearHistory.GearAction;
 
 
-public class LmProgramGearHistoryMapper implements RowMapper<LmProgramGearHistory>{
+public class LmProgramGearHistoryMapper implements YukonRowMapper<LmProgramGearHistory>{
 
-    public LmProgramGearHistory mapRow(ResultSet rs, int rowNum) throws SQLException {
-
+    @Override
+    public LmProgramGearHistory mapRow(YukonResultSet rs) throws SQLException {
         LmProgramGearHistory hist = new LmProgramGearHistory();
         hist.setProgramId(rs.getInt("ProgramId"));
         hist.setProgramName(rs.getString("ProgramName"));
         hist.setProgramGearHistoryId(rs.getInt("LMProgramGearHistoryId"));
         hist.setProgramHistoryId(rs.getInt("LMProgramHistoryId"));
-        hist.setEventTime(rs.getTimestamp("EventTime"));
-        hist.setAction(rs.getString("Action"));
+        hist.setEventTime(rs.getDate("EventTime"));
+        hist.setAction(rs.getEnum("Action", GearAction.class));
         hist.setUserName(rs.getString("UserName"));
         hist.setGearName(rs.getString("GearName"));
         hist.setGearId(rs.getInt("GearId"));

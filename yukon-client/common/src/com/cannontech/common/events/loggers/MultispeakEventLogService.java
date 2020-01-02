@@ -224,4 +224,14 @@ public interface MultispeakEventLogService {
             String messageType, 
             Integer numberErrors,
             String responseUrl);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "multispeak")
+    public void drProgramStatusNotificationReponse(@Arg(ArgEnum.mspMethod) String mspMethod, 
+                                                   @Arg(ArgEnum.mspVendor) String mspVendor,
+                                                   @Arg(ArgEnum.programName) String programName, 
+                                                   @Arg(ArgEnum.mspTransactionId) String mspTransactionID, 
+                                                   String messageType, 
+                                                   Integer correlationId,
+                                                   Integer numberErrors,
+                                                   String responseUrl);
 }
