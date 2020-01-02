@@ -199,11 +199,11 @@ public class ControllableDevicesRequestEndPoint {
                                                                  device.getAccountNumber(),
                                                                  device.getSerialNumber(),
                                                                  EventSource.API);
-                    if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
-                        starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
-                    } else {
-                        throw new StarsClientRequestException("This operation is not supported for this device type");
-                    }
+                if (starsControllableDeviceHelper.isOperationAllowedForDevice(device, user)) {
+                    starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
+                } else {
+                    throw new StarsClientRequestException("This operation is not supported for this device type");
+                }
             } catch (StarsClientRequestException | ProcessingException e) {
                 // store error and continue to process all devices
                 device.setThrowable(e);
@@ -412,7 +412,7 @@ public class ControllableDevicesRequestEndPoint {
     @Autowired
     public void setStarsControllableDeviceHandler(
             StarsControllableDeviceHelper starsControllableDeviceHandler) {
-        this.starsControllableDeviceHelper = starsControllableDeviceHandler;
+        starsControllableDeviceHelper = starsControllableDeviceHandler;
     }
     
     @Autowired
