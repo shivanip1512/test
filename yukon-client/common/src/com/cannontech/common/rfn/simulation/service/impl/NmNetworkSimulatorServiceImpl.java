@@ -82,11 +82,13 @@ import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
 import com.cannontech.common.rfn.message.node.WifiSecurityType;
 import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
+import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
+import com.cannontech.common.rfn.simulation.service.NetworkTreeSimulatorService;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -120,6 +122,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Autowired private AttributeService attributeService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private PaoLocationSimulatorService paoLocationSimulatorService;
+    @Autowired private NetworkTreeSimulatorService networkTreeSimulatorService;
     
     private JmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
@@ -358,6 +361,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
                     neighborData.setNumSamples(randomElement);
                     result.getMetadatas().put(multi, neighborData);
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
+                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
+                    RfnVertex vertex = networkTreeSimulatorService.buildVertex(rfnDevice);                    
                 }
             }
         }
