@@ -44,8 +44,6 @@ public class IOTHubService extends AzureCloudService {
     private DeviceClient client;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
     private static IotHubClientProtocol protocol = IotHubClientProtocol.MQTT_WS;
-    // TODO This will be removed after YUK-21163
-    private static String CONNECTION_STRING = "HostName=iotc-43ed731f-bc8f-4e3c-aaa2-759ba862fa54.azure-devices.net;DeviceId=5ccfaf0c-c5ff-41e3-bf40-dd09f09e9500;SharedAccessKey=0HCpK4QOV58sUZnHdoV7KWwcHYVK7b/IXJv2BF/B6kU=";
 
     @Autowired DataProvider dataProviderService;
 
@@ -56,9 +54,8 @@ public class IOTHubService extends AzureCloudService {
 
     @Override
     public ConfigurationSettings getConfigurationSetting() {
-        // TODO This will be replaced with actual ConfigurationSettings call from dataProviderService (YUK-21163).
         ConfigurationSettings config = dataProviderService.getConfigurationSetting(getName());
-        return getConfigurationSettings();
+        return config;
     }
 
     @Override
@@ -192,14 +189,5 @@ public class IOTHubService extends AzureCloudService {
         }
         Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(hostName, port));
         return new ProxySettings(proxy);
-    }
-
-    // TODO Remove this after actual ConfigurationSettings implementation (YUK-21163).
-    private ConfigurationSettings getConfigurationSettings() {
-        ConfigurationSettings configurationSettings = new ConfigurationSettings();
-        configurationSettings.setConnectionString(CONNECTION_STRING);
-        configurationSettings.setProxySetting("proxy.etn.com:8080");
-        configurationSettings.setFrequency(5);
-        return configurationSettings;
     }
 }
