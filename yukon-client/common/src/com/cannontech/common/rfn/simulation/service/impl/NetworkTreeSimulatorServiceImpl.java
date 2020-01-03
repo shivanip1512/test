@@ -18,6 +18,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.simulation.service.NetworkTreeSimulatorService;
+import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
 import com.cannontech.common.util.tree.Node;
 
 public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorService {
@@ -63,7 +64,7 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
             endNodes.addAll(fork(it, node));
         }
 
-        log.info("---------------NODE-- total devices {} node count {} ", totalDevices, count(root));
+        log.info("---------------NODE-- total devices {} node count {} ", totalDevices, NetworkDebugHelper.count(root));
         //log.info(root.print());
         return root; 
     }
@@ -130,69 +131,11 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         vertex.setRfnIdentifier(node.getData());
         AtomicInteger totalNodesAdded = new AtomicInteger(1);
         copy(node, vertex, totalNodesAdded);
-        log.info("---------------VERTEX-- # of nodes added {} nodes counted {}", totalNodesAdded, count(vertex));
-        // log.info(print(vertex));
+        log.info("---------------VERTEX-- # of nodes added {} nodes counted {}", totalNodesAdded, NetworkDebugHelper.count(vertex));
+        //log.info(NetworkDebugHelper.print(vertex));
         return vertex;
     }
-    
-    /**
-     * Returns node count
-     */
-    private int count(RfnVertex vertex) {
-        AtomicInteger atomicInt = new AtomicInteger(1);
-        count(vertex, atomicInt);
-        return atomicInt.get();
-        
-    }
-    
-    /**
-     * Returns node count
-     */
-    private int count(Node<RfnIdentifier> node) {
-        AtomicInteger atomicInt = new AtomicInteger(1);
-        count(node, atomicInt);
-        return atomicInt.get();
-        
-    }
-    
-    private void count(Node<RfnIdentifier> node, AtomicInteger atomicInt) {
-        for (Iterator<Node<RfnIdentifier>> it = node.getChildren().iterator(); it.hasNext();) {
-            atomicInt.incrementAndGet();
-            count(it.next(), atomicInt);
-        }
-    }
-
-    private void count(RfnVertex vertex, AtomicInteger atomicInt) {
-        if(vertex.getChildren() == null) {
-            return;
-        }
-        for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
-            atomicInt.incrementAndGet();
-            count(it.next(), atomicInt);
-        }
-    }
-    
-    /**
-     * Returns a string representation of vertex
-     */
-    private String print(RfnVertex root) {
-        StringBuilder buffer = new StringBuilder(50);
-        print(buffer, "", "", root);
-        return buffer.toString();
-    }
-
-    private String print(StringBuilder buffer, String prefix, String childrenPrefix, RfnVertex vertex) {
-        buffer.append(prefix);
-        buffer.append(vertex.getRfnIdentifier());
-        buffer.append('\n');
-        if (vertex.getChildren() != null) {
-            for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
-                print(buffer, childrenPrefix + "*", childrenPrefix + "I   ", it.next());
-            }
-        }
-        return buffer.toString();
-    }
-    
+   
     /**
      * Makes a RfnVertex out of Node
      */
