@@ -285,8 +285,8 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             execution.setRequestCount(1);
             completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
             disconnectEventLogService.actionCompleted(user, result.getCommand(), result.getMeter().getName(),
-                                                      result.getMeter().getMeterNumber(),
                                                       result.getState(),
+                                                      result.getMeter().getMeterNumber(),
                                                       result.isSuccess() ? 1 : 0);
             completeLatch.countDown();
         }

@@ -528,8 +528,8 @@ public class DevEventLogCreationService {
                 String key = "123";
                 String statistics = "Completed: 1";
                 
-                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, meterNumber, DisconnectDeviceState.CONNECTED, 1);
-                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, meterNumber, DisconnectDeviceState.DISCONNECTED, 0);
+                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.CONNECT, deviceName, DisconnectDeviceState.CONNECTED, meterNumber, 1);
+                disconnectEventLogService.actionCompleted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, DisconnectDeviceState.DISCONNECTED, meterNumber, 0);
                 disconnectEventLogService.disconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT, deviceName, meterNumber);
                 disconnectEventLogService.disconnectInitiated(yukonUser, DisconnectCommand.DISCONNECT, deviceName, meterNumber);
                 disconnectEventLogService.groupActionCompleted(yukonUser, DisconnectCommand.CONNECT, 20, 15, 3, 2);
