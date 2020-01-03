@@ -110,7 +110,7 @@ public class ProgramServiceImpl implements ProgramService {
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
 
     private static final long PROGRAM_CHANGE_TIMEOUT_MS = 5000;
-    private static DateTime to= null;
+    private static DateTime lastRuntime = null;
 
     @PostConstruct
     public void init() {
@@ -806,14 +806,14 @@ public class ProgramServiceImpl implements ProgramService {
 
     public void sendProgramStatus() {
         DateTime from = null;
-        if (to == null) {
-            to = DateTime.now();
-            from = to.minusMinutes(5);
+        if (lastRuntime == null) {
+            lastRuntime = DateTime.now();
+            from = lastRuntime.minusMinutes(5);
         } else {
-            from = to;
-            to = DateTime.now();
+            from = lastRuntime;
+            lastRuntime = DateTime.now();
         }
-        List<LmProgramGearHistory> lmProgramGearHistories = loadControlProgramDao.getProgramHistoryDetails(from, to);
+        List<LmProgramGearHistory> lmProgramGearHistories = loadControlProgramDao.getProgramHistoryDetails(from, lastRuntime);
 
         List<DrProgramStatusJmsMessage> programStatusMessages = new ArrayList<>();
 
