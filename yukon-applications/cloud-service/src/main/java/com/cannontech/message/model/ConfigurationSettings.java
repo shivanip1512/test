@@ -1,11 +1,14 @@
 package com.cannontech.message.model;
 
+import java.io.Serializable;
+
 /**
  * This object hold configuration settings for Cloud service.
  * This object can be converted per service basis, if required in future.
  */
-public class ConfigurationSettings {
+public class ConfigurationSettings implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String connectionString;
     private String proxySetting;
     private int frequency;

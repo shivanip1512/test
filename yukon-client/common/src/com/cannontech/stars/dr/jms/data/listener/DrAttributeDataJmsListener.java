@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.stars.dr.jms.message.DrAttributeData;
@@ -21,30 +18,27 @@ import com.google.common.collect.Sets;
 
 public class DrAttributeDataJmsListener implements RichPointDataListener {
     @Autowired private DrJmsMessagingService drJmsMessagingService;
-    @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
 
-        PointValueHolder valueHolder = richPointData.getPointValue();
         Set<BuiltInAttribute> attributes = Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes());
 
-        PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(valueHolder.getId());
-        Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(),
+        Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
                                                                                             attributes);
 
         if (!supportedAttributes.isEmpty()) {
             DrAttributeDataJmsMessage attributeDataJmsMessage = new DrAttributeDataJmsMessage();
-            attributeDataJmsMessage.setPaoPointIdentifier(paoPointIdentifier);
+            attributeDataJmsMessage.setPaoPointIdentifier(richPointData.getPaoPointIdentifier());
 
             List<DrAttributeData> attributeDataList = new ArrayList<>();
             for (BuiltInAttribute attribute : supportedAttributes) {
                 DrAttributeData attributeData = new DrAttributeData();
 
                 attributeData.setAttribute(attribute);
-                attributeData.setTimeStamp(valueHolder.getPointDataTimeStamp());
-                attributeData.setValue(valueHolder.getValue());
+                attributeData.setTimeStamp(richPointData.getPointValue().getPointDataTimeStamp());
+                attributeData.setValue(richPointData.getPointValue().getValue());
 
                 attributeDataList.add(attributeData);
 
