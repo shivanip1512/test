@@ -28,8 +28,13 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.service.RelayLogInterval;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfDRProgramEnrollment;
@@ -41,7 +46,6 @@ import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.Extensions;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
-import com.cannontech.msp.beans.v5.commontypes.ObjectRef;
 import com.cannontech.msp.beans.v5.commontypes.ServicePointID;
 import com.cannontech.msp.beans.v5.commontypes.SingleIdentifier;
 import com.cannontech.msp.beans.v5.enumerations.Action;
@@ -95,6 +99,7 @@ import com.cannontech.multispeak.service.DrJmsMessageService;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.jms.message.DrAttributeData;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
@@ -115,6 +120,8 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private StateGroupDao stateGroupDao;
 
     private static final Logger log = YukonLogManager.getLogger(DrJmsMessageListener.class);
     private AtomicLong atomicLong = new AtomicLong();
@@ -140,7 +147,6 @@ public class DrJmsMessageListener implements DrJmsMessageService {
 
     private static final QName QNAME_BEGIN_TEMPORARY_OPTOUT = new QName("beginTemporaryOptOut");
     private static final QName QNAME_END_TEMPORARY_OPTOUT = new QName("endTemporaryOptOut");
-    private static final QName DEVICE_EVENT_REF = new QName("http://www.multispeak.org/V5.0/commonTypes", "objectRef", "com");
 
     @PostConstruct
     public void initialize() {
@@ -573,13 +579,13 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         List<EndDeviceEventList> listOfendDeviceEventList = arrayOfEndDeviceEventList.getEndDeviceEventList();
 
         EndDeviceEventList endDeviceEventList = new EndDeviceEventList();
-
-        EndDeviceEvents endDeviceEvents = getEndDeviceEvents(drAttributeDataJmsMessage, serialNumber);
+        String endDeviceEventTypeRef = UUID.randomUUID().toString();
+        EndDeviceEvents endDeviceEvents = getEndDeviceEvents(drAttributeDataJmsMessage, serialNumber, endDeviceEventTypeRef);
 
         endDeviceEventList.setEndDeviceEvents(endDeviceEvents);
         endDeviceEventList.setReferableID(serialNumber);
 
-        EndDeviceEventTypeList endDeviceEventTypeList = getEndDeviceEventTypeList(drAttributeDataJmsMessage);
+        EndDeviceEventTypeList endDeviceEventTypeList = getEndDeviceEventTypeList(drAttributeDataJmsMessage, endDeviceEventTypeRef);
         endDeviceEventList.setEndDeviceEventTypeList(endDeviceEventTypeList);
 
         listOfendDeviceEventList.add(endDeviceEventList);
@@ -879,7 +885,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     /**
      * Get EndDeviceEvents that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private EndDeviceEvents getEndDeviceEvents(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
+    private EndDeviceEvents getEndDeviceEvents(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber, String endDeviceEventTypeRef) {
 
         EndDeviceEvents endDeviceEvents = new EndDeviceEvents();
 
@@ -890,11 +896,10 @@ public class DrJmsMessageListener implements DrJmsMessageService {
 
             endDeviceEvent.setTimeStamp(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
 
-            ObjectRef devcieEventRef = getDeviceEventRef(serialNumber);
-            endDeviceEvent.setDeviceReference(devcieEventRef);
+            endDeviceEvent.setDeviceReference(MultispeakFuncs.getDeviceEventRef(serialNumber));
             
             EndDeviceEventTypeOption endDeviceEventTypeOption = new EndDeviceEventTypeOption();
-            endDeviceEventTypeOption.setEndDeviceEventTypeRef(END_DEVICE_EVENT_TYPE_REF);
+            endDeviceEventTypeOption.setEndDeviceEventTypeRef(endDeviceEventTypeRef);
             endDeviceEvent.setEndDeviceEventTypeOption(endDeviceEventTypeOption);
 
             ReadingValues associatedReadingValues = getAssociatedValues(drAttributeDataJmsMessage);
@@ -906,24 +911,9 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     }
 
     /**
-     * Build ObjectRef that includes building of request fields from drAttributeDataJmsMessage.
-     */
-    private ObjectRef getDeviceEventRef(String serialNumber) {
-
-        ObjectRef devcieEventRef = new ObjectRef();
-        devcieEventRef.setNoun(DEVICE_EVENT_REF);
-        devcieEventRef.setPrimaryIdentifierValue(serialNumber);
-        devcieEventRef.setRegisteredName("Eaton");
-        devcieEventRef.setSystemName("Yukon");
-        devcieEventRef.setValue(MultispeakFuncs.DEFAULT_OBJECT_GUID);
-
-        return devcieEventRef;
-    }
-    
-    /**
      * Get EndDeviceEventTypeList that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private EndDeviceEventTypeList getEndDeviceEventTypeList(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
+    private EndDeviceEventTypeList getEndDeviceEventTypeList(DrAttributeDataJmsMessage drAttributeDataJmsMessage,String endDeviceEventTypeRef) {
 
         EndDeviceEventTypeList endDeviceEventTypeList = new EndDeviceEventTypeList();
         List<EndDeviceEventTypeItem> endDeviceEventTypeItemList = endDeviceEventTypeList.getEndDeviceEventTypeItem();
@@ -939,7 +929,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             endDeviceEventType.setEventOrAction(Action.CHANGE.value());
             endDeviceEventTypeItem.setEndDeviceEventType(endDeviceEventType);
 
-            endDeviceEventTypeItem.setEndDeviceEventTypeRef(END_DEVICE_EVENT_TYPE_REF);
+            endDeviceEventTypeItem.setEndDeviceEventTypeRef(endDeviceEventTypeRef);
 
             endDeviceEventTypeItem.setEndDeviceEventType(endDeviceEventType);
             endDeviceEventTypeItemList.add(endDeviceEventTypeItem);
@@ -963,15 +953,30 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             readingValue.setTimeStamp(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
             readingValue.setReadingQualityCode(codeQuality);
 
+            setValue(readingValue, message, drAttributeDataJmsMessage.getPaoPointIdentifier());
+
             ReadingTypeCodeOption readingTypeCodeOption = new ReadingTypeCodeOption();
             ReadingTypeCode readingTypeCode = new ReadingTypeCode();
-            readingTypeCode.setValue("N/A");
             readingTypeCodeOption.setReadingTypeCode(readingTypeCode);
 
             readingValue.setReadingTypeCodeOption(readingTypeCodeOption);
             readingValueList.add(readingValue);
         });
         return readingValues;
+    }
+
+    /*
+     * Set Reading value based on point type.
+     */
+    private void setValue(ReadingValue readingValue, DrAttributeData message, PaoPointIdentifier paoPointIdentifier) {
+        PointType pointType = paoPointIdentifier.getPointIdentifier().getPointType();
+        if (pointType.isStatus()) {
+            LitePoint litePoint = pointDao.getLitePoint(paoPointIdentifier);
+            String stateText = stateGroupDao.getRawStateName(litePoint.getPointID(), message.getValue().intValue());
+            readingValue.setValue(stateText);
+        } else if (pointType == PointType.Analog) {
+            readingValue.setValue(String.valueOf(message.getValue()));
+        }
     }
 
 }

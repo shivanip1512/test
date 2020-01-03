@@ -23,16 +23,15 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     @Autowired private DrJmsMessagingService drJmsMessagingService;
     @Autowired private PointDao pointDao;
     @Autowired private AttributeService attributeService;
+    private static Set<BuiltInAttribute> attributes = Sets.union(Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes()),
+                                                                 BuiltInAttribute.getItronLcrAttributes());
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
 
         PointValueHolder valueHolder = richPointData.getPointValue();
-        Set<BuiltInAttribute> attributes = Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes());
-        Set<BuiltInAttribute> allAttributes = Sets.union(attributes, BuiltInAttribute.getEventDataAttributes());
-
         PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(valueHolder.getId());
-        Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), allAttributes);
+        Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(paoPointIdentifier.getPaoTypePointIdentifier(), attributes);
 
         if (!supportedAttributes.isEmpty()) {
             DrAttributeDataJmsMessage attributeDataJmsMessage = new DrAttributeDataJmsMessage();

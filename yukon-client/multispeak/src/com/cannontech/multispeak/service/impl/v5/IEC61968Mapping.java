@@ -9,9 +9,9 @@ import com.google.common.collect.ImmutableMap;
 
 public enum IEC61968Mapping {
 
-    BLINK_COUNT(BuiltInAttribute.BLINK_COUNT, EndDeviceEventDomain.DEVICE_ASSET, EndDeviceEventDomainPart.POWER_QUALITY,EndDeviceEventType.OUTAGE ,EndDeviceEventIndex.MOMENTARY_EVENTS ),
-    TOTAL_LUF_COUNT(BuiltInAttribute.TOTAL_LUF_COUNT, EndDeviceEventDomain.DEVICE_ASSET, EndDeviceEventDomainPart.FREQUENCY ,EndDeviceEventType.QUALITY_FLAG ,EndDeviceEventIndex.LOW_LIMIT ),
-    TOTAL_LUV_COUNT(BuiltInAttribute.TOTAL_LUV_COUNT, EndDeviceEventDomain.DEVICE_ASSET, EndDeviceEventDomainPart.VOLTAGE ,EndDeviceEventType.QUALITY_FLAG, EndDeviceEventIndex.LOW_LIMIT );
+    BLINK_COUNT(BuiltInAttribute.BLINK_COUNT, EndDeviceEventDomain.DEVICE_ASSET, EndDeviceEventDomainPart.POWER_QUALITY, EndDeviceEventType.OUTAGE, EndDeviceEventIndex.MOMENTARY_EVENTS),
+    TOTAL_LUF_COUNT(BuiltInAttribute.TOTAL_LUF_COUNT, EndDeviceEventDomain.DEVICE_ASSET, EndDeviceEventDomainPart.FREQUENCY, EndDeviceEventType.QUALITY_FLAG, EndDeviceEventIndex.LOW_LIMIT),
+    TOTAL_LUV_COUNT(BuiltInAttribute.TOTAL_LUV_COUNT, EndDeviceEventDomain.DEVICE_ASSET, EndDeviceEventDomainPart.VOLTAGE, EndDeviceEventType.QUALITY_FLAG, EndDeviceEventIndex.LOW_LIMIT);
     
     //TODO
     /*FIRMWARE_VERSION, 
@@ -50,47 +50,26 @@ public enum IEC61968Mapping {
 
     public static IEC61968Mapping getIEC61968MappingData(BuiltInAttribute attribute) {
         return lookupByAttribute.get(attribute);
-
     }
 
     public BuiltInAttribute getAttribute() {
         return attribute;
     }
 
-    public void setAttribute(BuiltInAttribute attribute) {
-        this.attribute = attribute;
-    }
-
     public EndDeviceEventDomain getEndDeviceDomain() {
         return endDeviceDomain;
-    }
-
-    public void setEndDeviceDomain(EndDeviceEventDomain endDeviceDomain) {
-        this.endDeviceDomain = endDeviceDomain;
     }
 
     public EndDeviceEventDomainPart getEndDeviceEventDomainPart() {
         return endDeviceEventDomainPart;
     }
 
-    public void setEndDeviceEventDomainPart(EndDeviceEventDomainPart endDeviceEventDomainPart) {
-        this.endDeviceEventDomainPart = endDeviceEventDomainPart;
-    }
-
     public EndDeviceEventType getEndDeviceEventType() {
         return endDeviceEventType;
     }
 
-    public void setEndDeviceEventType(EndDeviceEventType endDeviceEventType) {
-        this.endDeviceEventType = endDeviceEventType;
-    }
-
     public EndDeviceEventIndex getEndDeviceEventIndex() {
         return endDeviceEventIndex;
-    }
-
-    public void setEndDeviceEventIndex(EndDeviceEventIndex endDeviceEventIndex) {
-        this.endDeviceEventIndex = endDeviceEventIndex;
     }
 
 }

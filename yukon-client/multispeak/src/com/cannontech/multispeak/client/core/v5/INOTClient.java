@@ -128,6 +128,7 @@ public interface INOTClient {
      * 
      * @param MSP vendor details
      * @param String the URI of the NOT Server
+     * @param EndDeviceEventsNotification
      * @throws MultispeakWebServiceClientException
      */
     public void alarmAndEventDataNotification(MultispeakVendor mspVendor, String uri, EndDeviceEventsNotification endDeviceEventsNotification)
