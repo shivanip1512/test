@@ -407,8 +407,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         inventoryBaseDao.removeInventoryFromAccount(inventoryId, removeInstant, removeLbl);
         dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
             DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
-
-        // cleaup gateway assignments for zigbee devices
+        
+        // clean up gateway assignments for zigbee devices
         HardwareClass hardwareClass = identifier.getHardwareType().getHardwareClass();
         if (hardwareClass == HardwareClass.GATEWAY) {
             gatewayDeviceDao.removeDevicesFromGateway(lib.getDeviceID());
