@@ -98,6 +98,8 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService {
@@ -129,6 +131,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private ScheduledFuture<?> task;
     String templatePrefix;
     private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.RFN420CLW, PaoType.RFN420CDW);
+    
+    private final Cache<RfnIdentifier, RfnVertex> vertexCache =
+            CacheBuilder.newBuilder().expireAfterWrite(8, TimeUnit.HOURS).build();
     
     @PostConstruct
     public void init() {
@@ -362,12 +367,21 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     neighborData.setNumSamples(randomElement);
                     result.getMetadatas().put(multi, neighborData);
                 } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    RfnVertex vertex = networkTreeSimulatorService.buildVertex(rfnDevice);                    
+                    RfnMetadataMultiQueryResult result = getResult(results, device, multi); 
+                    result.getMetadatas().put(multi, getVertex(rfnDevice));
                 }
             }
         }
         return results;
+    }
+    
+    private RfnVertex getVertex(RfnDevice gateway) {
+        RfnVertex vertex = vertexCache.getIfPresent(gateway.getRfnIdentifier());
+        if(vertex == null) {
+           vertex = networkTreeSimulatorService.buildVertex(gateway);  
+           vertexCache.put(gateway.getRfnIdentifier(), vertex);
+        }
+        return vertex;
     }
 
     private void populateDeviceToGatewayMapping(List<RfnGateway> allGateways,

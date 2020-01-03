@@ -283,10 +283,11 @@ public class ComprehensiveMapController {
     @GetMapping("allPrimaryRoutes")
     public @ResponseBody List<FeatureCollection> primaryRoutes(String groupName) {
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
-        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);        
-        List<List<SimpleDevice>> chunks = Lists.partition(collection.getDeviceList(), 65);
+        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);     
+        
+        List<SimpleDevice> gateways = rfnGatewayService.getAllGateways().stream().map(g -> new SimpleDevice(g.getPaoIdentifier())).collect(Collectors.toList()).subList(0, 2);
         try {
-            Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(chunks.get(0));
+            Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(gateways);
         } catch (NmNetworkException | NmCommunicationException e) {
             e.printStackTrace();
         }
