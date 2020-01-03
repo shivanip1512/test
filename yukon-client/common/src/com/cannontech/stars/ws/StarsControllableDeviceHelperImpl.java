@@ -23,10 +23,12 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.GPS;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -376,7 +378,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     itronBuilder.createDevice(hardware);
                     lib.setDeviceID(hardware.getDeviceId());
                 } catch (ItronCommunicationException e) {
-                    throw new StarsClientRequestException("There was a communication error trying to connect with Itron.");
+                    throw new StarsClientRequestException("There was a communication error trying to connect with Itron.", e);
                 }
             }
         }
@@ -504,8 +506,20 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         }
         liteInv.setRemoveDate(removeDate.getTime());
 
-        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
+        // Itron devices require notifying HCM to remove the device from the account's service point on their side.
+        HardwareType hardwareType = getHardwareType(dto, energyCompany);
+        if (hardwareType.isItron()) {
+            YukonPao pao = paoDao.getYukonPao(liteInv.getDeviceID());
+            InventoryIdentifier inventoryIdentifier = new InventoryIdentifier(liteInv.getInventoryID(), hardwareType);
+            try {
+                itronBuilder.moveDeviceToInventory(pao, inventoryIdentifier);
+            } catch (ItronCommunicationException e) {
+                throw new StarsClientRequestException("An error occurred trying to communicate with Itron.", e);
+            }
+        }
+        
         // Remove device from the account
+        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
         starsInventoryBaseService.removeDeviceFromAccount(liteInv, lsec, ecOperator);
     }
 
