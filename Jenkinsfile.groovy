@@ -27,7 +27,7 @@ pipeline {
                             }
                             try {
                                 bat 'java -version'
-                                
+
                                 bat './yukon-build/go.bat build-client'
 
                                 stash name: 'yukon-client', excludes: '**/*.java, **/*.class'

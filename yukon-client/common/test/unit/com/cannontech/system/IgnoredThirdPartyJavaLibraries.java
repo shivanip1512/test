@@ -43,6 +43,7 @@ public enum IgnoredThirdPartyJavaLibraries {
     YUKON_WATCHDOG_SERVICE("yukon-watchdog-service.jar", YUKON_PROJECT),
     YUKON_WEB("yukon-web.jar", YUKON_PROJECT),
     YUKON_WEB_JSP("yukon-web-jsp.jar", YUKON_PROJECT),
+    CLOUD_SERVICE("cloud-service.jar", YUKON_PROJECT),
 
     ANT_LAUNCHER("ant-launcher.jar", ANT_BUILD_HELPERS),
     ANT("ant.jar", ANT_BUILD_HELPERS), 
