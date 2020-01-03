@@ -27,8 +27,17 @@ pipeline {
                             }
                             try {
                                 bat 'java -version'
-                                
+
+                                dir("yukon-applications/cloud-service") {
+                                    bat 'gradlew clean bootJar'
+                                }
+
                                 bat './yukon-build/go.bat build-client'
+
+                                dir("yukon-applications/cloud-service/build/libs") {
+                                    fileOperations([fileCopyOperation(excludes: '', flattenFiles: false,
+                                            includes: '*.jar', targetLocation: "${env.WORKSPACE}" + '/yukon-client/lib')])
+                                }
 
                                 stash name: 'yukon-client', excludes: '**/*.java, **/*.class'
 

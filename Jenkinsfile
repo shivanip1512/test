@@ -37,13 +37,24 @@ pipeline {
                                                         sparseCheckoutPaths: [[path: 'yukon-help'],
                                                                               [path: 'yukon-client'],
                                                                               [path: 'yukon-build'],
-                                                                              [path: 'yukon-shared']]],
+                                                                              [path: 'yukon-shared'],
+                                                                              [path: 'yukon-applications']]],
                                                        [$class: 'AuthorInChangelog']],
                                           submoduleCfg: [],
                                           userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                                 env.GIT_COMMIT = scmVars.GIT_COMMIT
+
+                                dir("yukon-applications/cloud-service") {
+                                    bat 'gradlew clean bootJar'
+                                }
+
                                 bat './yukon-build/go.bat build-client'
+
+                                dir("yukon-applications/cloud-service/build/libs") {
+                                    fileOperations([fileCopyOperation(excludes: '', flattenFiles: false,
+                                            includes: '*.jar', targetLocation: "${env.WORKSPACE}" + '/yukon-client/lib')])
+                                }
 
                                 stash name: 'yukon-client', excludes: '**/*.java, **/*.class'
 
