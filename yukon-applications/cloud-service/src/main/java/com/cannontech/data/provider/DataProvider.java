@@ -38,14 +38,35 @@ public class DataProvider {
      * If not then message will be send to publisher to get data and it will wait for listener to provide data.
      */
     public ConfigurationSettings getConfigurationSetting(AzureServices service) {
-        // If configuration information exists in cache then send it.
-        // If it does not exists then send a request and wait for certain amount of time to get this information
-        // If this information is not received this service cannot work, keep on waiting before quitting.
+        if (!settings.containsKey(service)) {
+            publisher.requestData(SupportedDataType.CONFIGURATION_DATA);
+            waitForResponse(service);
+            log.info("Received configuration settings for service", service);
+        }
+        return settings.get(service);
+    }
 
-        // Call publisher which support this type of data
-        log.info("Getting configuration information from cache");
-        publisher.requestData(SupportedDataType.CONFIGURATION_DATA);
-        return new ConfigurationSettings();
+    /*
+     * Check every 30 sec to see configuration settings are available or not.
+     */
+    private void waitForResponse(AzureServices service) {
+        log.info("Waiting... for configuration settings for service", service);
+
+        while (!checkIfExists(service)) {
+            try {
+                Thread.sleep(30000);
+                log.info("Checking status....", service);
+            } catch (InterruptedException e) {
+                log.error("Error when waiting for configuration settings ", e);
+            }
+        }
+    }
+
+    /*
+     * Check configuration settings are available in cache.
+     */
+    private boolean checkIfExists(AzureServices service) {
+        return settings.containsKey(service);
     }
 
     /**
@@ -70,9 +91,10 @@ public class DataProvider {
      * ActiveMQ listener will call this method to pass the updated configuration information.
      * This will be updated in the cache.
      */
-    public void updateConfigurationInformation(ConfigurationSettings settings) {
-        // configuration settings should have for which cloud service these are
-        log.info("Updating configuration information");
+    public void updateConfigurationInformation(AzureServices service, ConfigurationSettings confSettings) {
+        log.info("Updating configuration settings ", service);
+        settings.put(service, confSettings);
+
     }
 
 }
