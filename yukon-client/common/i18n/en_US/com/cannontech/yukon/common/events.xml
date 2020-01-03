@@ -335,9 +335,9 @@
     <entry key="yukon.common.events.system.databaseMigration.startingImport">Database migration import of file {2} started by {1}.</entry>
     
     <!-- Connect/Disconnect -->
-    <entry key="yukon.common.events.amr.disconnect.disconnectAttempted">{2} attempted on device {3} by {1}.</entry>
-    <entry key="yukon.common.events.amr.disconnect.disconnectInitiated">{2} command initiated on device {3} by {1}.</entry> 
-    <entry key="yukon.common.events.amr.disconnect.actionCompleted">{2} command {7,choice,0#failed|1#success} on device {3} with state {4} by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.disconnectAttempted">{2} attempted on device {3} with meter number {4} by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.disconnectInitiated">{2} command initiated on device {3} with meter number {4} by {1}.</entry> 
+    <entry key="yukon.common.events.amr.disconnect.actionCompleted">{2} command {7,choice,0#failed|1#success} on device {3} with meter number {5} with state {4} by {1}.</entry>
     <entry key="yukon.common.events.amr.disconnect.actionCompleted.4">Disconnect State</entry>
     <entry key="yukon.common.events.amr.disconnect.actionCompleted.7">Success(1)/Fail(0)</entry>
     <entry key="yukon.common.events.amr.disconnect.groupDisconnectAttempted">{2} command collection action attempted by {1}.</entry>

@@ -26,6 +26,7 @@ import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.disconnect.service.DisconnectStrategyService;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
@@ -45,6 +46,7 @@ import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -174,8 +176,11 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 callback.complete(strategy.getStrategy());
             } else {
                 requestCount += meters.size();
-                meters.forEach(meter -> disconnectEventLogService.disconnectInitiated(context.getYukonUser(), command,
-                    dbCache.getAllPaosMap().get(meter.getPaoIdentifier().getPaoId()).getPaoName()));
+                for (SimpleDevice meter : meters) {
+                    LiteYukonPAObject pao = dbCache.getAllPaosMap().get(meter.getPaoIdentifier().getPaoId());
+                    SimpleMeter simpleMeter = dbCache.getAllMeters().get(meter.getPaoIdentifier().getPaoId());
+                    disconnectEventLogService.disconnectInitiated(context.getYukonUser(), command, pao.getPaoName(), simpleMeter.getMeterNumber());
+                }
                 strategy.execute(command, meters, callback, result.getExecution(), context.getYukonUser());
             }
         }
@@ -193,7 +198,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
     public DisconnectMeterResult execute(DisconnectCommand command, final DeviceRequestType type, YukonMeter meter,
             final LiteYukonUser user) {
 
-        disconnectEventLogService.disconnectAttempted(user, command, meter.getName());
+        disconnectEventLogService.disconnectAttempted(user, command, meter.getName(), meter.getMeterNumber());
 
         List<SimpleDevice> allDevices = Lists.newArrayList(new SimpleDevice(meter));
         if (!supportsDisconnect(allDevices)) {
@@ -219,7 +224,7 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
                 log.debug("validMeters =" + filteredDevices.getValid());
                 // since there is only 1 object in this method, if we made it here we can assume
                 // filteredDevices == meter
-                disconnectEventLogService.disconnectInitiated(user, command, meter.getName());
+                disconnectEventLogService.disconnectInitiated(user, command, meter.getName(), meter.getMeterNumber());
 
                 strategy.execute(command, filteredDevices.getValid(), callback, execution, user);
             }
@@ -280,7 +285,9 @@ public class DisconnectServiceImpl implements DisconnectService, CollectionActio
             execution.setRequestCount(1);
             completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.COMPLETE);
             disconnectEventLogService.actionCompleted(user, result.getCommand(), result.getMeter().getName(),
-                result.getState(), result.isSuccess() ? 1 : 0);
+                                                      result.getState(),
+                                                      result.getMeter().getMeterNumber(),
+                                                      result.isSuccess() ? 1 : 0);
             completeLatch.countDown();
         }
 
