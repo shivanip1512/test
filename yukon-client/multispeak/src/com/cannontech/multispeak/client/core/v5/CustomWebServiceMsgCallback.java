@@ -1,5 +1,11 @@
 package com.cannontech.multispeak.client.core.v5;
 
+import java.util.GregorianCalendar;
+import java.util.UUID;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
@@ -35,10 +41,16 @@ public class CustomWebServiceMsgCallback {
                     env = saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope();
                     nxtNode = env.getBody().getFirstChild();
                     String soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
+
                     MimeHeaders mimeHeaders = saajSoapRequestMessage.getSaajMessage().getMimeHeaders();
                     mimeHeaders.setHeader("SOAPAction", soapAction);
-                    env.addNamespaceDeclaration("com", "http://www.multispeak.org/V5.0/commonTypes");
+
                     env.addNamespaceDeclaration("req", "http://www.multispeak.org/V5.0/ws/request");
+                    env.addNamespaceDeclaration("com", "http://www.multispeak.org/V5.0/commonTypes");
+                    env.addNamespaceDeclaration(nxtNode.getPrefix(), nxtNode.getNamespaceURI());
+                    env.addNamespaceDeclaration("v5", "http://www.multispeak.org/V5.0");
+                    env.addNamespaceDeclaration("com1", "http://www.multispeak.org/V5.0/commonArrays");
+
                 } catch (SOAPException e) {
                     log.warn("Unable to set SOAPAction in the Header");
                 }
@@ -46,6 +58,14 @@ public class CustomWebServiceMsgCallback {
                 try {
                     SOAPHeader header = env.getHeader();
                     SOAPElement headElement = header.addChildElement("MultiSpeakRequestMsgHeader", "req");
+                    headElement.setAttribute("MessageID", UUID.randomUUID().toString().replace("-", ""));
+
+                    try {
+                        XMLGregorianCalendar now = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+                        headElement.setAttribute("TimeStamp", now.toString());
+                    } catch (DatatypeConfigurationException e) {
+                        // ignore exception
+                    }
                     multispeakFuncs.getHeader(headElement, "req", mspVendor);
 
                 } catch (SOAPException e) {

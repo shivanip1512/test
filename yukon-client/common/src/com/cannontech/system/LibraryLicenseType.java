@@ -45,7 +45,6 @@ public enum LibraryLicenseType {
     ORACLE_OTN("Oracle Technology Network License", Attribution.NONE),
     OSGI_2_0("OSGI Specification License 2.0", Attribution.REQUIRED),
     PUBLIC_DOMAIN("Public domain", Attribution.NONE),
-    TANUKI_SOFTWARE("Tanuki Software", Attribution.REQUIRED),
     UNKNOWN("???", Attribution.NONE),
     W3C("W3C", Attribution.REQUIRED);
 

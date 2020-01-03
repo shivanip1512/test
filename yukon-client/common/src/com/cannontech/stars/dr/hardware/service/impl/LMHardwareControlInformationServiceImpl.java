@@ -14,6 +14,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
+import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
@@ -24,9 +25,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     
     private Logger logger = YukonLogManager.getLogger(LMHardwareControlInformationServiceImpl.class);
 
-	private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-	private OptOutEventDao optOutEventDao;
-	private OptOutService optOutService;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
+    @Autowired private OptOutEventDao optOutEventDao;
+    @Autowired private OptOutService optOutService;
+    @Autowired private DrJmsMessagingService drJmsMessagingService;
 
     @Override
     public boolean startEnrollment(HardwareEnrollmentInfo enrollmentInfo,
@@ -52,7 +54,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY, relay, programId, currentUser.getUserID());
             controlInformation.setGroupEnrollStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
-            
+
+            drJmsMessagingService.publishEnrollmentNotice(controlInformation);
 
             return true;
         } catch (Exception e) {
@@ -111,29 +114,29 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     @Override
-    public void startOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
-                              Instant startDate) {
+    public void startOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, OptOutEvent event) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         List<LMHardwareControlGroup> currentEnrollmentList = 
             lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(inventoryId, accountId);
         try {
             for(LMHardwareControlGroup enroll : currentEnrollmentList) {            
-                startOptOut(inventoryId, enroll.getLmGroupId(), accountId, enroll.getProgramId(), currentUser, startDate);
+                startOptOut(inventoryId, enroll.getLmGroupId(), accountId, enroll.getProgramId(), currentUser, event);
             }
         } catch (Exception e) {
             logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
         }
     }    
-    
-    @Override
-    public boolean startOptOut(int inventoryId, int loadGroupId, int accountId, int programId, 
-                                 LiteYukonUser currentUser, Instant startDate) {
+
+    private boolean startOptOut(int inventoryId, int loadGroupId, int accountId, int programId, 
+                                 LiteYukonUser currentUser, OptOutEvent event) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         
         try {
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY, programId, currentUser.getUserID());
-            controlInformation.setOptOutStart(startDate);
+            controlInformation.setOptOutStart(event.getStartDate());
             lmHardwareControlGroupDao.add(controlInformation);
+
+            drJmsMessagingService.publishStartOptOutNotice(inventoryId, event);
             return true;
         } catch (Exception e) {
             logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + " ProgramId: " + programId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
@@ -147,6 +150,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         
         try {
             lmHardwareControlGroupDao.stopOptOut(inventoryId, currentUser, stopDate);
+            drJmsMessagingService.publishStopOptOutNotice(inventoryId, stopDate);
         } catch (Exception e) {
             logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
         }        
@@ -166,6 +170,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                     controlInformation.setOptOutStop(stopDate);
                     controlInformation.setUserIdSecondAction(currentUser.getUserID());
                     lmHardwareControlGroupDao.update(controlInformation);
+
+                    drJmsMessagingService.publishStopOptOutNotice(inventoryId, stopDate);
                 }
                 return true;
             }
@@ -218,20 +224,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         existingEnrollment.setGroupEnrollStop(new Instant());
 		existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
 		lmHardwareControlGroupDao.update(existingEnrollment);
-    }
-    
-    public void setLmHardwareControlGroupDao(
-            LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
+
+        drJmsMessagingService.publishUnEnrollmentNotice(existingEnrollment);
     }
 
-    @Autowired
-    public void setOptOutEventDao(OptOutEventDao optOutEventDao) {
-    	this.optOutEventDao = optOutEventDao;
-    }
-
-    @Autowired
-    public void setOptOutService(OptOutService optOutService) {
-    	this.optOutService = optOutService;
-    }
 }

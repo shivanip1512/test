@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.msp.beans.v5.enumerations.FieldNameKind;
 import com.cannontech.msp.beans.v5.enumerations.FieldNameType;
 import com.cannontech.msp.beans.v5.enumerations.Uom;
+import com.cannontech.msp.beans.v5.multispeak.ContentModelGroup;
 import com.cannontech.msp.beans.v5.multispeak.FormatChoice;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlockMetaData;
@@ -124,19 +125,23 @@ public abstract class FormattedBlockBase extends FormattedBlock {
 
     /**
      * Helper method to construct a MultiSpeak FormattedBlock object
-     * 
      * @param blockBase
      * @return
      */
-    public static FormattedBlock createMspFormattedBlock(FormattedBlockBase blockBase) {
+    public static FormattedBlock createMspFormattedBlock(FormattedBlockBase blockBase, String nounType) {
         FormattedBlock mspFormattedBlock = new FormattedBlock();
         FormatChoice formatChoice = new FormatChoice();
         FormattedBlockMetaData formattedBlockMetaData = new FormattedBlockMetaData();
+        ContentModelGroup modelGroup = new ContentModelGroup();
+        
+        // TODO The noun describes the type of object or data that is to be included in the payload
+        modelGroup.setContentNounType(nounType);
         formattedBlockMetaData.setSeparator(blockBase.getSeparator());
         formattedBlockMetaData.setValSyntax(blockBase.getValSyntax());
         formatChoice.setFormattedBlockMetaData(formattedBlockMetaData);
         mspFormattedBlock.setFormatChoice(formatChoice);
         mspFormattedBlock.setValueList(blockBase.getValueList());
+        mspFormattedBlock.setContentModelGroup(modelGroup);
         return mspFormattedBlock;
     }
 

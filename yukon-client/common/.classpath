@@ -179,7 +179,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-beanutils-1.9.3.jar" sourcepath="/third-party/linked-sources/commons-beanutils-1.9.3-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-beanutils-1.9.4.jar" sourcepath="/third-party/linked-sources/commons-beanutils-1.9.4-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -402,22 +402,22 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.9.8.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.9.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-databind-2.10.1.jar" sourcepath="/third-party/linked-sources/jackson-databind-2.10.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.9.8.jar" sourcepath="/third-party/linked-sources/jackson-core-2.9.8-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-core-2.10.1.jar" sourcepath="/third-party/linked-sources/jackson-core-2.10.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.9.6-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-annotations-2.10.1.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.10.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.9.6-sources.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/jackson-dataformat-csv-2.9.6.jar" sourcepath="/third-party/linked-sources/jackson-annotations-2.10.1-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
@@ -629,7 +629,7 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-compress-1.18.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/commons-compress-1.19.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

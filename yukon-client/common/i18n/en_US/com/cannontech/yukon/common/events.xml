@@ -774,6 +774,17 @@
     <entry key="yukon.common.events.multispeak.errorObject">Encountered error: {1}. {2} by {3}.</entry>
     <entry key="yukon.common.events.multispeak.invalidSubstationName">Found invalid substation description : {2} for {1} by {3}.</entry>
     
+    <entry key="yukon.common.events.multispeak.drNotificationReponse">{1} initiated for serial number {3} by {2}; TransactionId: {4}, MessageType: {5}, Errors Count received: {7}, Url: {6}.</entry>
+    <entry key="yukon.common.events.multispeak.drNotificationReponse.5">MessageType</entry>
+    <entry key="yukon.common.events.multispeak.drNotificationReponse.6">Url</entry>
+    <entry key="yukon.common.events.multispeak.drNotificationReponse.7">Errors Count</entry>
+    
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse">{1} initiated for program name: {3} by {2} with correlationId: {7}; TransactionID: {4}, MessageType: {5},Errors Count received: {8}, URL: {6}.</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.5">MessageType</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.6">Url</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.7">correlationId</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.8">Errors Count</entry>
+    
     <entry key="yukon.common.events.estimatedLoad.applianceCategoryNotFound">No appliance category found for program {1}.</entry>
     <entry key="yukon.common.events.estimatedLoad.applianceCategoryInfoNotFound">Unable to calculate value for program {1}. Appliance Load (kW) not found for appliance category {2}.</entry>
     <entry key="yukon.common.events.estimatedLoad.gearNotFound">Gear number {7} not found for program {1}.</entry>

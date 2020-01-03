@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -260,6 +261,8 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
             } else if (inputDate instanceof Calendar) {
                 Calendar cal = (Calendar) inputDate;
                 gc.setTimeInMillis(cal.getTimeInMillis());
+            } else if (inputDate instanceof Instant) {
+                gc.setTimeInMillis(((Instant) inputDate).getMillis());
             } else {
                 Date date = new Date();
                 gc.setTime(date);
@@ -336,5 +339,14 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
             webServiceTemplate.setMessageSender(HttpComponentsMessageSenderWithSSL.getInstance(timeOut));
         }
 
+    }
+    
+    /** 
+     * Builds the Primary CIS Vendor list for Global setting and Yukon Setup page.
+     */
+    public List<MultispeakVendor> getPrimaryCisVendorList() {
+        List<MultispeakVendor> mspCisVendorList = multispeakDao.getMultispeakCISVendors();
+        mspCisVendorList.add(0, MultispeakVendor.noneVendor);
+        return mspCisVendorList;
     }
 }

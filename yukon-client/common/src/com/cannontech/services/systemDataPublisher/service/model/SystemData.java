@@ -1,5 +1,7 @@
 package com.cannontech.services.systemDataPublisher.service.model;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTime;
 
 import com.cannontech.services.systemDataPublisher.yaml.model.IOTDataType;
@@ -7,8 +9,9 @@ import com.cannontech.services.systemDataPublisher.yaml.model.IOTDataType;
 /**
  * POJO class to publish system data to message broker.
  */
-public class SystemData {
+public class SystemData implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String fieldName;
     private String fieldValue;
     private DateTime timestamp;

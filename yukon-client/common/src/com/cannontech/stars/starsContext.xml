@@ -3,12 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
 
     <context:annotation-config/>
+    <bean class="com.cannontech.stars.dr.jms.service.impl.DrJmsMessagingServiceImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableProgramDaoImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableEnrollmentDaoImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryDaoImpl"/>
@@ -99,10 +102,8 @@
     <bean id="enrollmentService" class="com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl"/>
     <bean class="com.cannontech.stars.dr.enrollment.service.impl.AlternateEnrollmentServiceImpl"/>
 
-	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
-		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
-	</bean>
-	
+	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl"/>
+
 	<bean id="lmHardwareControlGroupDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
@@ -293,5 +294,5 @@
     <bean class="com.cannontech.common.tag.service.impl.TagServiceImpl"/>   
     <bean class="com.cannontech.common.rtu.service.impl.RtuDnpServiceImpl"/>
     <bean class="com.cannontech.common.rtu.dao.impl.RtuDnpDaoImpl"/>
-    
+ 
 </beans>

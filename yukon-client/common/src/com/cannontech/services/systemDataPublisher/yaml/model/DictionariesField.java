@@ -9,6 +9,19 @@ public class DictionariesField {
     private IOTDataType iotType;
     private SystemDataPublisherFrequency frequency;
 
+    public DictionariesField(String field, String description, String details, String source, IOTDataType iotType,
+            SystemDataPublisherFrequency frequency) {
+        this.field = field;
+        this.description = description;
+        this.details = details;
+        this.source = source;
+        this.iotType = iotType;
+        this.frequency = frequency;
+    }
+
+    public DictionariesField() {
+    }
+
     public String getField() {
         return field;
     }

@@ -868,16 +868,21 @@ yukon.ui = (function () {
                         var title = popup.find('.js-popup-title');
                         if (title[0]) options.title = title[0].value;
                     }
-                    if (loadEvent) popup.trigger(loadEvent);
                     
                     if (tabbed) {
                         popup.tabbedDialog(options);
+                        if (loadEvent) {
+                            popup.trigger(loadEvent);
+                        }
                         mod.unblockPage();
                     } else {
                         if (yg.dev_mode) {
                             debug.time('dialog');
                         }
                         popup.dialog(options);
+                        if (loadEvent) {
+                            popup.trigger(loadEvent);
+                        }
                         if (yg.dev_mode) {
                             debug.timeEnd('dialog');
                         }
@@ -886,15 +891,19 @@ yukon.ui = (function () {
                     }
                 });
             } else {
-                
-                if (loadEvent) popup.trigger(loadEvent);
                 if (tabbed) {
                     popup.tabbedDialog(options);
+                    if (loadEvent) {
+                        popup.trigger(loadEvent);
+                    }
                 } else {
                     if (bigContent) {
                         content = popup.children().detach();
                     }
                     popup.dialog(options);
+                    if (loadEvent) {
+                        popup.trigger(loadEvent);
+                    }
                     mod.initContent(popup);
                 }
             }

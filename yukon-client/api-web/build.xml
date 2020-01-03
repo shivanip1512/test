@@ -53,9 +53,9 @@
         <include name="guava-18.0.jar"/>
         <include name="hawtbuf-1.11.jar"/>
         <include name="i18n-en_US.jar"/>
-        <include name="jackson-annotations-2.9.6.jar"/>
-        <include name="jackson-core-2.9.8.jar"/>
-        <include name="jackson-databind-2.9.8.jar"/>
+        <include name="jackson-annotations-2.10.1.jar"/>
+        <include name="jackson-core-2.10.1.jar"/>
+        <include name="jackson-databind-2.10.1.jar"/>
     	<include name="jackson-dataformat-csv-2.9.6.jar"/>
         <include name="snakeyaml-1.18.2.jar"/>
         <include name="jasypt-1.9.2.jar"/>
@@ -113,7 +113,7 @@
         <include name="itronProgramManagerTypes_v1_1.jar"/>
         <include name="itronReportManagerTypes_v1_2.jar"/>
         <include name="itronServicePointManagerTypes_v1_3.jar"/>
-        <include name="commons-compress-1.18.jar"/>
+        <include name="commons-compress-1.19.jar"/>
     	<include name="opencsv-4.5.jar"/>
     </fileset>
 

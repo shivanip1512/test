@@ -40,7 +40,6 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
@@ -140,7 +139,8 @@ public class MultispeakController {
 
     @RequestMapping(value = "save", method = RequestMethod.POST)
     public String save(HttpServletRequest request, ModelMap map, RedirectAttributes redirectAttributes,
-            FlashScope flashScope, @ModelAttribute("multispeak") MultispeakModel multispeak, BindingResult result) {
+            FlashScope flashScope, @ModelAttribute("multispeak") MultispeakModel multispeak, BindingResult result,
+            YukonUserContext userContext) {
         boolean isCreateNew = multispeak.getMspVendor().getVendorID() == null;
         // Validate the request parameters before continuing on.
         multispeakValidator.validate(multispeak, result);
@@ -150,10 +150,10 @@ public class MultispeakController {
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
 
         try {
-            addOrUpdateMspVendor(request, mspVendor, flashScope, isCreateNew, multispeak);
+            addOrUpdateMspVendor(mspVendor, flashScope, isCreateNew, multispeak, userContext.getYukonUser());
         } catch (DataIntegrityViolationException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.multispeak.exception",
-                mspVendor.getCompanyName()));
+                    mspVendor.getCompanyName()));
             return bindAndForward(multispeak, result, redirectAttributes, isCreateNew);
         }
         map.addAttribute("mspVendorId", mspVendor.getVendorID());
@@ -184,7 +184,7 @@ public class MultispeakController {
         MultispeakVendor deletedMspVendor = multispeakDao.getMultispeakVendor(vendorId);
         if (multispeakFuncs.isPrimaryCIS(deletedMspVendor)) {
             flash.setError(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.multispeak.deletePrimaryMessage", deletedMspVendor.getCompanyName()));
+                "yukon.web.modules.adminSetup.vendor.deletePrimaryMessage", deletedMspVendor.getCompanyName()));
         } else {
             multispeakDao.deleteMultispeakVendor(vendorId);
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.multispeak.deleted",
@@ -363,25 +363,48 @@ public class MultispeakController {
         return mspVendor;
     }
 
-    private void addOrUpdateMspVendor(HttpServletRequest request, MultispeakVendor mspVendor, FlashScope flashScope,
-            boolean add, MultispeakModel multispeak) {
+    private void addOrUpdateMspVendor(MultispeakVendor mspVendor, FlashScope flashScope,
+            boolean add, MultispeakModel multispeak, LiteYukonUser user) {
 
         if (add) {
             multispeakDao.addMultispeakVendor(mspVendor);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.multispeak.added",
-                mspVendor.getCompanyName()));
+                    mspVendor.getCompanyName()));
         } else {
             multispeakDao.updateMultispeakVendor(mspVendor);
+
+            // Check whether the vendor is Primary CIS Vendor or not. If yes then update the global setting if CB_Server support is removed.
+            if (mspVendor.getVendorID() == multispeakFuncs.getPrimaryCIS()) {
+                updatePrimaryVendorGlobalsetting(user, mspVendor);
+            }
+
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.multispeak.updated",
-                mspVendor.getCompanyName()));
+                    mspVendor.getCompanyName()));
 
             if (defaultMspVendor.getVendorID().intValue() == mspVendor.getVendorID().intValue()) {
-                updateRolePropertyValues(request, multispeak);
+                updateRolePropertyValues(user, multispeak);
             }
         }
     }
 
-    private void updateRolePropertyValues(HttpServletRequest request, MultispeakModel multispeak) {
+    /**
+     * Update the value of MSP_PRIMARY_CB_VENDORID (Primary CIS Vendor) Global setting to 0 if the CB_Server support is removed
+     */
+    private void updatePrimaryVendorGlobalsetting(LiteYukonUser user, MultispeakVendor mspVendor) {
+        if (mspVendor.getMspInterfaces() != null) {
+
+            Optional<MultispeakInterface> getFirstMspInterface = mspVendor.getMspInterfaces()
+                                                                          .stream()
+                                                                          .filter(mspInterface -> (mspInterface.getMspInterface() != MultispeakDefines.CB_Server_STR))
+                                                                          .findFirst();
+
+            if (getFirstMspInterface.isPresent()) {
+                globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, 0, user);
+            }
+        }
+    }
+
+    private void updateRolePropertyValues(LiteYukonUser user, MultispeakModel multispeak) {
 
         int oldMspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
         int mspPrimaryCIS = multispeak.getMspPrimaryCIS();
@@ -402,12 +425,10 @@ public class MultispeakController {
         MultispeakMeterLookupFieldEnum mspMeterLookupField = multispeak.getMeterLookupField();
 
         try {
-            YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-            LiteYukonUser user = yukonUserContext.getYukonUser();
             // update Primary CIS Vendor
             if (oldMspPrimaryCIS != mspPrimaryCIS) {
                 globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, mspPrimaryCIS,
-                    user);
+                        user);
                 if (globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class) != CisDetailRolePropertyEnum.CAYENTA) {
                     // Manage only if not already set to CAYENTA.
                     if (mspPrimaryCIS <= MultispeakVendor.CANNON_MSP_VENDORID) {
@@ -468,12 +489,7 @@ public class MultispeakController {
         map.addAttribute("noVendorsExist", noVendorsExist);
 
         map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors(ignoreCannon));
-        List<MultispeakVendor> mspCISVendorList = multispeakDao.getMultispeakCISVendors();
-        MultispeakVendor none = new MultispeakVendor();
-        none.setVendorID(0);
-        none.setCompanyName("none");
-        mspCISVendorList.add(0, none);
-        map.addAttribute("mspCISVendorList", mspCISVendorList);
+        map.addAttribute("mspCISVendorList", multispeakFuncs.getPrimaryCisVendorList());
         map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
         map.addAttribute("paoNameAliases", MspPaoNameAliasEnum.values());
         map.addAttribute("meterLookupFields", MultispeakMeterLookupFieldEnum.values());

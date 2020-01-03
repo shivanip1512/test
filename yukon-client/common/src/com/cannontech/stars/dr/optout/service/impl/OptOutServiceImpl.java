@@ -293,7 +293,7 @@ public class OptOutServiceImpl implements OptOutService {
                 optOutEventLog = optOutEventDao.save(event, OptOutAction.START_OPT_OUT, user);
 
                 // Update the LMHardwareControlGroup table
-                lmHardwareControlInformationService.startOptOut(inventoryId, customerAccountId, user, event.getStartDate());
+                lmHardwareControlInformationService.startOptOut(inventoryId, customerAccountId, user, event);
             }
             
             if (request.getSurveyIdsByInventoryId() != null &&

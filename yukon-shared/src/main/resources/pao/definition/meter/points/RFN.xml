@@ -10,10 +10,11 @@ Note: For attributes that reference the modifiers of "Quadrant" directly, the mo
 Note: Look at BuiltInAttribute as that follows the same convention. 
 -->
     <highestOffsets>
-        <analog offset="393"/>
+        <analog offset="394"/>
         <calcAnalog offset="0"/>
         <demandAccumulator offset="251"/>
         <status offset="101"/>
+        <systemStatus offset="2000"/>
     </highestOffsets>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="1" type="Analog">
@@ -1923,6 +1924,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVA"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="394" type="Analog">
+        <name>RSSI</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>
@@ -2422,5 +2429,9 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Outage Status"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <stategroup value="Comm Status State"/>
     </point>
 </points>

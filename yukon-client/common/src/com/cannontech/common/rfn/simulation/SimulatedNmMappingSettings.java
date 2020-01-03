@@ -23,6 +23,7 @@ public class SimulatedNmMappingSettings implements Serializable {
     private RfnMetadataMultiResponseType metadataResponseType;
     private RfnMetadataMultiQueryResultType metadataQueryResponseType;
     private String metadataResponseString;
+    private Integer emptyNullPercent;
     
     public NeighborData getNeighborData() {
         return neighborData;
@@ -77,5 +78,11 @@ public class SimulatedNmMappingSettings implements Serializable {
     }
     public void setMetadataResponseString(String metadataResponseString) {
         this.metadataResponseString = metadataResponseString;
+    }
+    public Integer getEmptyNullPercent() {
+        return emptyNullPercent;
+    }
+    public void setEmptyNullPercent(Integer emptyNullPercent) {
+        this.emptyNullPercent = emptyNullPercent;
     }
 }
