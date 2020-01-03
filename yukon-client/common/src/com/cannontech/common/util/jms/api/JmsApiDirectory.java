@@ -109,6 +109,7 @@ import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
+import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
@@ -1105,6 +1106,17 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
+    public static final JmsApi<DrProgramStatusJmsMessage,?,?> PROGRAM_STATUS_NOTIFICATION = 
+            JmsApi.builder(DrProgramStatusJmsMessage.class)
+                  .name("DR Program Status Notification")
+                  .description("Send Program Status Notification to other Integrated systems")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
+                  .requestMessage(DrProgramStatusJmsMessage.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
+
     public static final JmsApi<SystemData,?,?> SYSTEM_DATA =
             JmsApi.builder(SystemData.class)
                   .name("Yukon System Data")
@@ -1119,7 +1131,7 @@ public final class JmsApiDirectory {
     public static final JmsApi<ConfigurationSettings,?,?> CLOUD_CONFIGURATION_SETTINGS =
             JmsApi.builder(ConfigurationSettings.class)
                   .name("Cloud Configuration Settings")
-                  .description("Yukon Service Manager takes Cloud Configuration Settings and passes it to Yukon Message Broker on a topic.")
+                  .description("Yukon Service Manager takes Cloud Configuration Settings and passes it to Yukon Message Broker on a queue.")
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("com.eaton.eas.cloud.ConfigurationSettingsResponse"))
                   .requestMessage(ConfigurationSettings.class)
@@ -1226,10 +1238,11 @@ public final class JmsApiDirectory {
                 INFRASTRUCTURE_WARNINGS,
                 INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
         
-        addApis(jmsApis, DR_NOTIFICATION, 
+        addApis(jmsApis, DR_NOTIFICATION,
+                         DATA_NOTIFICATION,
                          ENROLLMENT_NOTIFICATION, 
                          OPTOUTIN_NOTIFICATION,
-                         DATA_NOTIFICATION);
+                         PROGRAM_STATUS_NOTIFICATION);
 
         return jmsApis;
     }

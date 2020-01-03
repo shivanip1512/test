@@ -32,7 +32,7 @@ public class ConfigurationSettingMessageListener implements MessageListener {
                     configurationSettingPublisherService.publish(configurationDataBuilder.buildConfigurationSetting());
                 }
             } catch (JMSException e) {
-                log.error("Error while retrieving text message from request.");
+                log.error("Error while retrieving text message from request." + e);
             }
     }
 }

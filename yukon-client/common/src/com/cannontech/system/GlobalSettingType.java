@@ -65,7 +65,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Multispeak
     MSP_PAONAME_ALIAS(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MspPaoNameAliasEnum.class), MspPaoNameAliasEnum.METER_NUMBER),
     MSP_PAONAME_EXTENSION(GlobalSettingSubCategory.MULTISPEAK, stringType(), null),
-    MSP_PRIMARY_CB_VENDORID(GlobalSettingSubCategory.MULTISPEAK, integerType(), 0),
+    MSP_PRIMARY_CB_VENDORID(GlobalSettingSubCategory.MULTISPEAK, primaryCisVendorType(), 0),
     MSP_BILLING_CYCLE_PARENT_DEVICEGROUP(GlobalSettingSubCategory.MULTISPEAK, stringType(), "/Meters/Billing/"),
     MSP_LM_MAPPING_SETUP(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     MSP_METER_LOOKUP_FIELD(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MultispeakMeterLookupFieldEnum.class), MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST),
@@ -244,7 +244,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_HCM_PASSWORD,
             ITRON_SFTP_USERNAME,
             ITRON_SFTP_PASSWORD,
-            ITRON_SFTP_PRIVATE_KEY_PASSWORD);
+            ITRON_SFTP_PRIVATE_KEY_PASSWORD,
+            NETWORK_MANAGER_DB_PASSWORD);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

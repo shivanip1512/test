@@ -12,17 +12,6 @@
 
     <context:annotation-config/>
     <bean class="com.cannontech.stars.dr.jms.service.impl.DrJmsMessagingServiceImpl"/>
-    <bean id="drAttributeDataJmsListener" class="com.cannontech.stars.dr.jms.data.listener.DrAttributeDataJmsListener"/>
-
-    <jms:listener-container 
-        connection-factory="connectionFactory" 
-        task-executor="globalTaskExecutor" 
-        destination-type="topic"
-        concurrency="1"
-        container-type="simple">
-        <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="drAttributeDataJmsListener" method="pointDataReceived"/>
-    </jms:listener-container>
-
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableProgramDaoImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableEnrollmentDaoImpl"/>
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryDaoImpl"/>

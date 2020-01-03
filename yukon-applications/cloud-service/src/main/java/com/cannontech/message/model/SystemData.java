@@ -1,10 +1,14 @@
 package com.cannontech.message.model;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTime;
 
 import com.cannontech.azure.model.IOTDataType;
 
-public class SystemData {
+public class SystemData implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     private String fieldName;
     private String fieldValue;
     private DateTime timestamp;
@@ -40,6 +44,12 @@ public class SystemData {
 
     public void setIotDataType(IOTDataType iotDataType) {
         this.iotDataType = iotDataType;
+    }
+
+    @Override
+    public String toString() {
+        return "SystemData [fieldName=" + fieldName + ", fieldValue=" + fieldValue + ", timestamp=" + timestamp + ", iotDataType="
+                + iotDataType + "]";
     }
 
 }

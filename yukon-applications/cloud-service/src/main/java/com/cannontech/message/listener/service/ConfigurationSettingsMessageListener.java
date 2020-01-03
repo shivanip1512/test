@@ -10,31 +10,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
+import com.cannontech.azure.model.AzureServices;
 import com.cannontech.data.provider.DataProvider;
-import com.cannontech.message.model.SystemData;
+import com.cannontech.message.model.ConfigurationSettings;
 import com.google.gson.Gson;
 
 /**
- * Listen for system data on queue, once received call method to update cache.
+ * Listen for configuration data on queue, once received will call method to update cache.
  */
 @Service
-public class SystemDataMessageListener {
-    Logger log = (Logger) LogManager.getLogger(SystemDataMessageListener.class);
-
+public class ConfigurationSettingsMessageListener {
+    Logger log = (Logger) LogManager.getLogger(ConfigurationSettingsMessageListener.class);
     @Autowired DataProvider dataProvider;
 
-    @JmsListener(destination = "com.eaton.eas.SystemData", containerFactory = "topicListenerFactory")
+    @JmsListener(destination = "com.eaton.eas.cloud.ConfigurationSettingsResponse")
     public void receiveMessage(Message message) {
         if (message instanceof TextMessage) {
             String json = null;
             try {
                 json = ((TextMessage) message).getText();
+                log.info("Configuration Settings received " + json);
                 Gson gson = new Gson();
-                SystemData data = gson.fromJson(json, SystemData.class);
-                log.info("System data received " + json);
-                dataProvider.updateSystemInformation(data);
+                ConfigurationSettings configurationSettings = gson.fromJson(json, ConfigurationSettings.class);
+                dataProvider.updateConfigurationInformation(AzureServices.IOT_HUB_SERVICE, configurationSettings);
             } catch (JMSException e) {
-                log.error("Error receiving system data " + e);
+                log.error("Error when receiving configuration settings " + e);
             }
         }
     }

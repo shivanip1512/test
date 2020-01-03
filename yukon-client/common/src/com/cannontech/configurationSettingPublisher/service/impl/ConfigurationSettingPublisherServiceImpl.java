@@ -27,7 +27,6 @@ public class ConfigurationSettingPublisherServiceImpl implements ConfigurationSe
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
         jmsTemplate.setMessageConverter(jacksonJmsMessageConverter());
-        jmsTemplate.setPubSubDomain(true);
     }
 
     public MessageConverter jacksonJmsMessageConverter() {
