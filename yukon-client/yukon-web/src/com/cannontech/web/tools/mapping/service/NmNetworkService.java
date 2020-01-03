@@ -67,7 +67,7 @@ public interface NmNetworkService {
     NetworkMap getNetworkMap(NetworkMapFilter filter, MessageSourceAccessor accessor) throws NmNetworkException, NmCommunicationException;
 
     /**
-     * Returns root element of the tree representing routes to gateway.
+     * Returns root element of the tree representing routes to gateways.
      */
-    Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<SimpleDevice> devices) throws NmNetworkException, NmCommunicationException;
+    Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<SimpleDevice> gateways) throws NmNetworkException, NmCommunicationException;
 }

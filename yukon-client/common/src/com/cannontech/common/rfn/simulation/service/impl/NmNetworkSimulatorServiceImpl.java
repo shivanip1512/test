@@ -82,11 +82,13 @@ import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
 import com.cannontech.common.rfn.message.node.WifiSecurityType;
 import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
+import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
+import com.cannontech.common.rfn.simulation.service.NetworkTreeSimulatorService;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -96,6 +98,8 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService {
@@ -120,12 +124,16 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Autowired private AttributeService attributeService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private PaoLocationSimulatorService paoLocationSimulatorService;
+    @Autowired private NetworkTreeSimulatorService networkTreeSimulatorService;
     
     private JmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
     String templatePrefix;
     private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.RFN420CLW, PaoType.RFN420CDW);
+    
+    private final Cache<RfnIdentifier, RfnVertex> vertexCache =
+            CacheBuilder.newBuilder().expireAfterWrite(8, TimeUnit.HOURS).build();
     
     @PostConstruct
     public void init() {
@@ -358,10 +366,22 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
                     neighborData.setNumSamples(randomElement);
                     result.getMetadatas().put(multi, neighborData);
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
+                    RfnMetadataMultiQueryResult result = getResult(results, device, multi); 
+                    result.getMetadatas().put(multi, getVertex(rfnDevice));
                 }
             }
         }
         return results;
+    }
+    
+    private RfnVertex getVertex(RfnDevice gateway) {
+        RfnVertex vertex = vertexCache.getIfPresent(gateway.getRfnIdentifier());
+        if(vertex == null) {
+           vertex = networkTreeSimulatorService.buildVertex(gateway);  
+           vertexCache.put(gateway.getRfnIdentifier(), vertex);
+        }
+        return vertex;
     }
 
     private void populateDeviceToGatewayMapping(List<RfnGateway> allGateways,

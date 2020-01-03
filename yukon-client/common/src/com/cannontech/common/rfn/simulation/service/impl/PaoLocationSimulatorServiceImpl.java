@@ -209,7 +209,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
                     .findFirst().isPresent()) {
                 continue;
             }
-            RfnIdentifier identifier = new RfnIdentifier("CPS_RFGateway_" + i, "CPS", "RFGateway");
+            RfnIdentifier identifier = new RfnIdentifier(Integer.toString(i), "CPS", "RFGateway");
             String name = simulatedGateway + " " + i;
             log.info("Creating {} {}", name, identifier);
             rfnDeviceCreationService.createGateway(name, identifier);
