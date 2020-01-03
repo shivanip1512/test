@@ -106,7 +106,7 @@ public class GatewayDataTopicListener implements MessageListener {
             
             // Always archive comm status
             int commStatus = message.getConnectionStatus() == ConnectionStatus.CONNECTED ? 0 : 1;
-            rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.COMM_STATUS, commStatus, true);
+            rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.COMM_STATUS, commStatus, true, message.getConnectionStatusTimestamp());
         } catch (NotFoundException e) {
             log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
         }

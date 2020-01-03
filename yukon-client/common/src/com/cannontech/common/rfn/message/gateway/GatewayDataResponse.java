@@ -30,6 +30,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private String ipAddress;
     private String port;
     private ConnectionStatus connectionStatus;
+    private long connectionStatusTimestamp;
     private LastCommStatus lastCommStatus;
     private long lastCommStatusTimestamp;
     private Set<Radio> radios;
@@ -217,7 +218,15 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public void setConnectionStatus(ConnectionStatus connectionStatus) {
         this.connectionStatus = connectionStatus;
     }
-    
+
+    public long getConnectionStatusTimestamp () {
+        return connectionStatusTimestamp ;
+    }
+
+    public void setConnectionStatusTimestamp(long connectionStatusTimestamp ) {
+        this.connectionStatusTimestamp  = connectionStatusTimestamp ;
+    }
+
     public LastCommStatus getLastCommStatus() {
         return lastCommStatus;
     }
@@ -335,9 +344,9 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         final int prime = 31;
         int result = 1;
         result = prime * result + ((admin == null) ? 0 : admin.hashCode());
-        result =
-            prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
+        result = prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
+        result = prime * result + (int) (connectionStatusTimestamp ^ (connectionStatusTimestamp >>> 32));
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
         long temp;
         temp = Double.doubleToLongBits(currentDataStreamingLoading);
@@ -351,14 +360,13 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((ipv6Prefix == null) ? 0 : ipv6Prefix.hashCode());
-        result =
-            prime * result + ((ipv6PrefixSuggested == null) ? 0 : ipv6PrefixSuggested.hashCode());
+        result = prime * result + ((ipv6PrefixSuggested == null) ? 0 : ipv6PrefixSuggested.hashCode());
         result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
-        result =
-            prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        result = prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
         temp = Double.doubleToLongBits(maxDataStreamingCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
         result = prime * result + ((radioVersion == null) ? 0 : radioVersion.hashCode());
         result = prime * result + ((radios == null) ? 0 : radios.hashCode());
@@ -372,222 +380,162 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
-    
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         GatewayDataResponse other = (GatewayDataResponse) obj;
         if (admin == null) {
-            if (other.admin != null) {
+            if (other.admin != null)
                 return false;
-            }
-        } else if (!admin.equals(other.admin)) {
+        } else if (!admin.equals(other.admin))
             return false;
-        }
         if (collectionSchedule == null) {
-            if (other.collectionSchedule != null) {
+            if (other.collectionSchedule != null)
                 return false;
-            }
-        } else if (!collectionSchedule.equals(other.collectionSchedule)) {
+        } else if (!collectionSchedule.equals(other.collectionSchedule))
             return false;
-        }
-        if (connectionStatus != other.connectionStatus) {
+        if (connectionStatus != other.connectionStatus)
             return false;
-        }
-        if (connectionType != other.connectionType) {
+        if (connectionStatusTimestamp != other.connectionStatusTimestamp)
             return false;
-        }
-        if (Double.doubleToLongBits(currentDataStreamingLoading) != Double
-            .doubleToLongBits(other.currentDataStreamingLoading)) {
+        if (connectionType != other.connectionType)
             return false;
-        }
-        if (gwTotalNodes != other.gwTotalNodes) {
+        if (Double.doubleToLongBits(currentDataStreamingLoading) != Double.doubleToLongBits(other.currentDataStreamingLoading))
             return false;
-        }
-        if (gwTotalNodesNoInfo != other.gwTotalNodesNoInfo) {
+        if (gwTotalNodes != other.gwTotalNodes)
             return false;
-        }
-        if (gwTotalNodesWithInfo != other.gwTotalNodesWithInfo) {
+        if (gwTotalNodesNoInfo != other.gwTotalNodesNoInfo)
             return false;
-        }
-        if (gwTotalNodesWithSN != other.gwTotalNodesWithSN) {
+        if (gwTotalNodesWithInfo != other.gwTotalNodesWithInfo)
             return false;
-        }
-        if (gwTotalNotReadyNodes != other.gwTotalNotReadyNodes) {
+        if (gwTotalNodesWithSN != other.gwTotalNodesWithSN)
             return false;
-        }
-        if (gwTotalReadyNodes != other.gwTotalReadyNodes) {
+        if (gwTotalNotReadyNodes != other.gwTotalNotReadyNodes)
             return false;
-        }
+        if (gwTotalReadyNodes != other.gwTotalReadyNodes)
+            return false;
         if (hardwareVersion == null) {
-            if (other.hardwareVersion != null) {
+            if (other.hardwareVersion != null)
                 return false;
-            }
-        } else if (!hardwareVersion.equals(other.hardwareVersion)) {
+        } else if (!hardwareVersion.equals(other.hardwareVersion))
             return false;
-        }
         if (ipAddress == null) {
-            if (other.ipAddress != null) {
+            if (other.ipAddress != null)
                 return false;
-            }
-        } else if (!ipAddress.equals(other.ipAddress)) {
+        } else if (!ipAddress.equals(other.ipAddress))
             return false;
-        }
         if (ipv6Prefix == null) {
-            if (other.ipv6Prefix != null) {
+            if (other.ipv6Prefix != null)
                 return false;
-            }
-        } else if (!ipv6Prefix.equals(other.ipv6Prefix)) {
+        } else if (!ipv6Prefix.equals(other.ipv6Prefix))
             return false;
-        }
         if (ipv6PrefixSuggested == null) {
-            if (other.ipv6PrefixSuggested != null) {
+            if (other.ipv6PrefixSuggested != null)
                 return false;
-            }
-        } else if (!ipv6PrefixSuggested.equals(other.ipv6PrefixSuggested)) {
+        } else if (!ipv6PrefixSuggested.equals(other.ipv6PrefixSuggested))
             return false;
-        }
-        if (lastCommStatus != other.lastCommStatus) {
+        if (lastCommStatus != other.lastCommStatus)
             return false;
-        }
-        if (lastCommStatusTimestamp != other.lastCommStatusTimestamp) {
+        if (lastCommStatusTimestamp != other.lastCommStatusTimestamp)
             return false;
-        }
-        if (Double.doubleToLongBits(maxDataStreamingCapacity) != Double
-            .doubleToLongBits(other.maxDataStreamingCapacity)) {
+        if (Double.doubleToLongBits(maxDataStreamingCapacity) != Double.doubleToLongBits(other.maxDataStreamingCapacity))
             return false;
-        }
-        if (mode != other.mode) {
+        if (mode != other.mode)
             return false;
-        }
-        if (port == null) {
-            if (other.port != null) {
-                return false;
-            }
-        } else if (!port.equals(other.port)) {
-            return false;
-        }
-        if (radioVersion == null) {
-            if (other.radioVersion != null) {
-                return false;
-            }
-        } else if (!radioVersion.equals(other.radioVersion)) {
-            return false;
-        }
-        if (radios == null) {
-            if (other.radios != null) {
-                return false;
-            }
-        } else if (!radios.equals(other.radios)) {
-            return false;
-        }
-        if (releaseVersion == null) {
-            if (other.releaseVersion != null) {
-                return false;
-            }
-        } else if (!releaseVersion.equals(other.releaseVersion)) {
-            return false;
-        }
-        if (rfnIdentifier == null) {
-            if (other.rfnIdentifier != null) {
-                return false;
-            }
-        } else if (!rfnIdentifier.equals(other.rfnIdentifier)) {
-            return false;
-        }
-        if (routeColor != other.routeColor) {
-            return false;
-        }
-        if (sequences == null) {
-            if (other.sequences != null) {
-                return false;
-            }
-        } else if (!sequences.equals(other.sequences)) {
-            return false;
-        }
-        if (softwareVersion == null) {
-            if (other.softwareVersion != null) {
-                return false;
-            }
-        } else if (!softwareVersion.equals(other.softwareVersion)) {
-            return false;
-        }
-        if (superAdmin == null) {
-            if (other.superAdmin != null) {
-                return false;
-            }
-        } else if (!superAdmin.equals(other.superAdmin)) {
-            return false;
-        }
-        if (updateServerLogin == null) {
-            if (other.updateServerLogin != null) {
-                return false;
-            }
-        } else if (!updateServerLogin.equals(other.updateServerLogin)) {
-            return false;
-        }
-        if (updateServerUrl == null) {
-            if (other.updateServerUrl != null) {
-                return false;
-            }
-        } else if (!updateServerUrl.equals(other.updateServerUrl)) {
-            return false;
-        }
-        if (upperStackVersion == null) {
-            if (other.upperStackVersion != null) {
-                return false;
-            }
-        } else if (!upperStackVersion.equals(other.upperStackVersion)) {
-            return false;
-        }
-        if (versionConflicts == null) {
-            if (other.versionConflicts != null) {
-                return false;
-            }
-        } else if (!versionConflicts.equals(other.versionConflicts)) {
-            return false;
-        }
         if (name == null) {
-            if (other.name != null) {
+            if (other.name != null)
                 return false;
-            }
-        } else if (!name.equals(other.name)) {
+        } else if (!name.equals(other.name))
             return false;
-        }
+        if (port == null) {
+            if (other.port != null)
+                return false;
+        } else if (!port.equals(other.port))
+            return false;
+        if (radioVersion == null) {
+            if (other.radioVersion != null)
+                return false;
+        } else if (!radioVersion.equals(other.radioVersion))
+            return false;
+        if (radios == null) {
+            if (other.radios != null)
+                return false;
+        } else if (!radios.equals(other.radios))
+            return false;
+        if (releaseVersion == null) {
+            if (other.releaseVersion != null)
+                return false;
+        } else if (!releaseVersion.equals(other.releaseVersion))
+            return false;
+        if (rfnIdentifier == null) {
+            if (other.rfnIdentifier != null)
+                return false;
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
+            return false;
+        if (routeColor != other.routeColor)
+            return false;
+        if (sequences == null) {
+            if (other.sequences != null)
+                return false;
+        } else if (!sequences.equals(other.sequences))
+            return false;
+        if (softwareVersion == null) {
+            if (other.softwareVersion != null)
+                return false;
+        } else if (!softwareVersion.equals(other.softwareVersion))
+            return false;
+        if (superAdmin == null) {
+            if (other.superAdmin != null)
+                return false;
+        } else if (!superAdmin.equals(other.superAdmin))
+            return false;
+        if (updateServerLogin == null) {
+            if (other.updateServerLogin != null)
+                return false;
+        } else if (!updateServerLogin.equals(other.updateServerLogin))
+            return false;
+        if (updateServerUrl == null) {
+            if (other.updateServerUrl != null)
+                return false;
+        } else if (!updateServerUrl.equals(other.updateServerUrl))
+            return false;
+        if (upperStackVersion == null) {
+            if (other.upperStackVersion != null)
+                return false;
+        } else if (!upperStackVersion.equals(other.upperStackVersion))
+            return false;
+        if (versionConflicts == null) {
+            if (other.versionConflicts != null)
+                return false;
+        } else if (!versionConflicts.equals(other.versionConflicts))
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", hardwareVersion="
-               + hardwareVersion + ", softwareVersion=" + softwareVersion + ", upperStackVersion="
-               + upperStackVersion + ", radioVersion=" + radioVersion + ", releaseVersion="
-               + releaseVersion + ", versionConflicts=" + versionConflicts + ", mode=" + mode
-               + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port="
-               + port + ", connectionStatus=" + connectionStatus + ", lastCommStatus="
-               + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp
-               + ", radios=" + radios + ", routeColor=" + routeColor + ", ipv6Prefix=" + ipv6Prefix
-               + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + ", superAdmin=" + superAdmin
-               + ", admin=" + admin + ", collectionSchedule=" + collectionSchedule + ", sequences="
-               + sequences + ", updateServerUrl=" + updateServerUrl + ", updateServerLogin="
-               + updateServerLogin + ", maxDataStreamingCapacity=" + maxDataStreamingCapacity
-               + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes="
-               + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
-               + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN="
-               + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
-               + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "name=" + name + "]";
+        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", name=" + name + ", hardwareVersion=" + hardwareVersion
+                + ", softwareVersion=" + softwareVersion + ", upperStackVersion=" + upperStackVersion + ", radioVersion="
+                + radioVersion + ", releaseVersion=" + releaseVersion + ", versionConflicts=" + versionConflicts + ", mode="
+                + mode + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port=" + port
+                + ", connectionStatus=" + connectionStatus + ", connectionStatusTimestamp=" + connectionStatusTimestamp
+                + ", lastCommStatus=" + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp + ", radios="
+                + radios + ", routeColor=" + routeColor + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested="
+                + ipv6PrefixSuggested + ", superAdmin=" + superAdmin + ", admin=" + admin + ", collectionSchedule="
+                + collectionSchedule + ", sequences=" + sequences + ", updateServerUrl=" + updateServerUrl
+                + ", updateServerLogin=" + updateServerLogin + ", maxDataStreamingCapacity=" + maxDataStreamingCapacity
+                + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes=" + gwTotalNodes
+                + ", gwTotalReadyNodes=" + gwTotalReadyNodes + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes
+                + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
+                + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
     }
-    
+
 }
