@@ -29,7 +29,7 @@ public class SystemPublisherMetadataEncryption {
 
     private static final Logger log = YukonLogManager.getLogger(SystemPublisherMetadataEncryption.class);
     private static final String SECRET_KEY = "452C3BdAD-1RT2-508A-6D62-FDFB58B52TRM";
-    private static final String SYSTEM_PUBLISHER_METADATA_PATH = "yukon-shared\\src\\main\\resources\\systemPublisherMetadata.yaml";
+    private static final String SYSTEM_PUBLISHER_METADATA_PATH = "\\resource\\systemPublisherMetadata.yaml";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final String CHARACTER_SET = "UTF-16";
     private static final String MESSAGEDIGEST_ALGORITHM = "SHA-256";
@@ -102,10 +102,7 @@ public class SystemPublisherMetadataEncryption {
     private static void processFile() throws IOException, IllegalBlockSizeException, BadPaddingException {
 
         // Get the actual directory of the file as we need to encrypt the actual file.
-        String commonDir = System.getProperty("user.dir");
-        String clientDir = commonDir.substring(0, commonDir
-                .lastIndexOf(commonDir.substring(commonDir.substring(0, commonDir.lastIndexOf("\\")).lastIndexOf("\\") + 1)));
-        File yamlFile = new File(clientDir + SYSTEM_PUBLISHER_METADATA_PATH);
+        File yamlFile = new File(System.getProperty("user.dir") + SYSTEM_PUBLISHER_METADATA_PATH);
         StringBuilder tempYamlBuilder = new StringBuilder();
 
         processLines(yamlFile, tempYamlBuilder);
