@@ -69,5 +69,5 @@ public interface NmNetworkService {
     /**
      * Returns root element of the tree representing routes to gateways.
      */
-    Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<SimpleDevice> gateways) throws NmNetworkException, NmCommunicationException;
+    Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<Integer> gatewayIds) throws NmNetworkException, NmCommunicationException;
 }

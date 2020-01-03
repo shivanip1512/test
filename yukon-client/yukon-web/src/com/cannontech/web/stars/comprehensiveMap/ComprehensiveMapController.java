@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.comprehensiveMap;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -285,10 +286,9 @@ public class ComprehensiveMapController {
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);     
         
-        List<SimpleDevice> gateways = rfnGatewayService.getAllGateways().stream().map(g -> new SimpleDevice(g.getPaoIdentifier())).collect(Collectors.toList()).subList(0, 2);
         try {
-            Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(gateways);
-			json.put("tree", root);
+            Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(Arrays.asList(gatewayIds));
+            json.put("tree", root);
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
         }
