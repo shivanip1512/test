@@ -25,8 +25,6 @@ import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupVersacomAPITest {
 
-    private static final int invalidRouteId = 2222222;
-    
     /**
      * This test case validates creation of Versacom load group with default values
      */
@@ -622,7 +620,7 @@ public class LoadGroupVersacomAPITest {
 
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_VERSACOM)).build();
-        loadGroupCopy.setRouteId(invalidRouteId);
+        loadGroupCopy.setRouteId(LoadGroupHelper.invalidRouteId);
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);

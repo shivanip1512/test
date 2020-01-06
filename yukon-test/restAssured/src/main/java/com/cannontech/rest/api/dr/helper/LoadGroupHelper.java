@@ -43,6 +43,7 @@ import io.restassured.response.ExtractableResponse;
 public class LoadGroupHelper {
     private static final Logger log = LogManager.getLogger(LoadGroupHelper.class);
     public final static String CONTEXT_GROUP_ID = "groupId";
+    public static final int invalidRouteId = 2222222;
 
     public final static MockLoadGroupBase buildLoadGroup(MockPaoType paoType) {
 

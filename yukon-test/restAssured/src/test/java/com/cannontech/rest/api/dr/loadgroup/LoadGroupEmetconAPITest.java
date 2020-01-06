@@ -25,7 +25,6 @@ import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupEmetconAPITest {
 
-    private static final int invalidRouteId = 2222222;
     MockLoadGroupEmetcon loadGroup = null;
 
     @BeforeClass
@@ -195,7 +194,7 @@ public class LoadGroupEmetconAPITest {
 
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).build();
-        loadGroupCopy.setRouteId(invalidRouteId);
+        loadGroupCopy.setRouteId(LoadGroupHelper.invalidRouteId);
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);

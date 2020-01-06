@@ -20,8 +20,6 @@ import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMCTAPITest {
 
-    private static final int invalidRouteId = 2222222;
-
     @Test
     public void loadGroupMCT_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupMCT_01_Create");
@@ -154,7 +152,7 @@ public class LoadGroupMCTAPITest {
 
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_MCT)).build();
-        loadGroupCopy.setRouteId(invalidRouteId);
+        loadGroupCopy.setRouteId(LoadGroupHelper.invalidRouteId);
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
