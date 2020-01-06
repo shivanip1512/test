@@ -65,7 +65,7 @@ public interface PaoLocationService {
     /**
      * Delete the location information for the specified pao.
      */
-    public void deleteLocationForPaoId(int paoId);
+    void deleteLocationForPaoId(int paoId);
     /**
      * Save the location information for the specified pao.
      */
@@ -73,5 +73,12 @@ public interface PaoLocationService {
     /**
      * Get location detail of all paoIds
      */
-    public List<PaoLocationDetails> getLocationDetailsForPaos (List<Integer> paoIds);
+    List<PaoLocationDetails> getLocationDetailsForPaos (List<Integer> paoIds);
+
+    /**
+     * Converts the collection of locations to a GeoJSON {@link FeatureCollection}.
+     * @param location
+     * @return a {@link FeatureCollection}
+     */
+    FeatureCollection getFeatureCollection(PaoLocation location);
 }

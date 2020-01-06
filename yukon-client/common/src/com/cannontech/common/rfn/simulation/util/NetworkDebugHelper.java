@@ -3,9 +3,7 @@ package com.cannontech.common.rfn.simulation.util;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.tree.RfnVertex;
-import com.cannontech.common.util.tree.Node;
 
 public class NetworkDebugHelper {
 
@@ -19,23 +17,6 @@ public class NetworkDebugHelper {
         
     }
     
-    /**
-     * Returns node count
-     */
-    public static int count(Node<RfnIdentifier> node) {
-        AtomicInteger atomicInt = new AtomicInteger(1);
-        count(node, atomicInt);
-        return atomicInt.get();
-        
-    }
-    
-    private static void count(Node<RfnIdentifier> node, AtomicInteger atomicInt) {
-        for (Iterator<Node<RfnIdentifier>> it = node.getChildren().iterator(); it.hasNext();) {
-            atomicInt.incrementAndGet();
-            count(it.next(), atomicInt);
-        }
-    }
-
     private static void count(RfnVertex vertex, AtomicInteger atomicInt) {
         if(vertex.getChildren() == null) {
             return;

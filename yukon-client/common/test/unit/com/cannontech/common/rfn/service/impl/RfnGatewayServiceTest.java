@@ -1198,5 +1198,10 @@ public class RfnGatewayServiceTest {
         public Set<PaoLocation> getLocations(Set<Integer> paoIds) {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public List<PaoLocation> getLocationsByGateway(Set<Integer> gatewayIds) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

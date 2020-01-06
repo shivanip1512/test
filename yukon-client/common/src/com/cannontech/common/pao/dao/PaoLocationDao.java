@@ -53,4 +53,9 @@ public interface PaoLocationDao {
      * Get location details for all paoIds
      */
     List<PaoLocationDetails> getPaoLocationDetails(List<Integer> paoIds);
+
+    /**
+     * Returns locations for devices linked to gateways
+     */
+    List<PaoLocation> getLocationsByGateway(Set<Integer> gatewayIds);
 }

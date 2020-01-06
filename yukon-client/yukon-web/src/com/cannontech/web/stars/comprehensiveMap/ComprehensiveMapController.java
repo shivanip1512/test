@@ -287,7 +287,7 @@ public class ComprehensiveMapController {
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);     
         
         try {
-            Node<Pair<Integer, FeatureCollection>> root = nmNetworkService.getPrimaryRoutes(Arrays.asList(gatewayIds));
+            List<Node<Pair<Integer, FeatureCollection>>> root = nmNetworkService.getPrimaryRoutes(Arrays.asList(gatewayIds));
             json.put("tree", root);
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());

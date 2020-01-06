@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.geojson.FeatureCollection;
 
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.util.tree.Node;
@@ -67,7 +66,7 @@ public interface NmNetworkService {
     NetworkMap getNetworkMap(NetworkMapFilter filter, MessageSourceAccessor accessor) throws NmNetworkException, NmCommunicationException;
 
     /**
-     * Returns root element of the tree representing routes to gateways.
+     * Returns root elements of the tree representing routes to gateways.
      */
-    Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<Integer> gatewayIds) throws NmNetworkException, NmCommunicationException;
+    List<Node<Pair<Integer, FeatureCollection>>> getPrimaryRoutes(List<Integer> gatewayIds) throws NmNetworkException, NmCommunicationException;
 }
