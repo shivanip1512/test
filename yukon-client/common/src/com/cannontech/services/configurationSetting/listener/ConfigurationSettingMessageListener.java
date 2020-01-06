@@ -34,6 +34,6 @@ public class ConfigurationSettingMessageListener implements MessageListener {
             } catch (JMSException e) {
                 log.error("Error while retrieving text message from request." + e);
             }
+        }
     }
-}
 }
