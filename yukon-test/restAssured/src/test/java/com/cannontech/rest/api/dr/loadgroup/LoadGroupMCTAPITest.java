@@ -152,7 +152,7 @@ public class LoadGroupMCTAPITest {
 
         MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
                 .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_MCT)).build();
-        loadGroupCopy.setRouteId(LoadGroupHelper.invalidRouteId);
+        loadGroupCopy.setRouteId(LoadGroupHelper.INVALID_ROUTE_ID);
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
                 context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
         assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
