@@ -4,6 +4,9 @@ import javax.jms.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageConverter;
+import org.springframework.jms.support.converter.MessageType;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -25,5 +28,12 @@ public class SystemDataPublisherServiceImpl implements SystemDataPublisherServic
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
         jmsTemplate.setPubSubDomain(true);
+        jmsTemplate.setMessageConverter(jacksonJmsMessageConverter());
+    }
+
+    public MessageConverter jacksonJmsMessageConverter() {
+        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+        converter.setTargetType(MessageType.TEXT);
+        return converter;
     }
 }

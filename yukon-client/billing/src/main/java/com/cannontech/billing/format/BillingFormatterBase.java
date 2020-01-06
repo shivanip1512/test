@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.billing.BillingDao;
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.simple.SimpleBillingFormatBase;
@@ -192,12 +193,12 @@ public abstract class BillingFormatterBase extends SimpleBillingFormatBase {
         if (value == null) {
             return null;
         }
-        
+
         //Default the rounding mode to the Billing System default property.
         if (format instanceof DecimalFormat) {
             GlobalSettingDao globalSettingDao = YukonSpringHook.getBean(GlobalSettingDao.class);
-        	RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, RoundingMode.class);
-        	((DecimalFormat)format).setRoundingMode(roundingMode);
+            RoundingMode roundingMode = globalSettingDao.getEnum(GlobalSettingType.DEFAULT_ROUNDING_MODE, YukonRoundingMode.class).getRoundingMode();
+            ((DecimalFormat) format).setRoundingMode(roundingMode);
         }
 
         return format.format(value);

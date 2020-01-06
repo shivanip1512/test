@@ -340,4 +340,13 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         }
 
     }
+    
+    /** 
+     * Builds the Primary CIS Vendor list for Global setting and Yukon Setup page.
+     */
+    public List<MultispeakVendor> getPrimaryCisVendorList() {
+        List<MultispeakVendor> mspCisVendorList = multispeakDao.getMultispeakCISVendors();
+        mspCisVendorList.add(0, MultispeakVendor.noneVendor);
+        return mspCisVendorList;
+    }
 }

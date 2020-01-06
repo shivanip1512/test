@@ -42,6 +42,12 @@ public class MultispeakVendor {
         super();
     }
 
+    public MultispeakVendor(Integer vendorID, String companyName) {
+        super();
+        this.vendorID = vendorID;
+        this.companyName = companyName;
+    }
+
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, String password,
             String outUserName, String outPassword, int maxReturnRecords, long requestMessageTimeout,
             long maxInitiateRequestObjects, String templateNameDefault, Boolean validateCertificate) {
@@ -59,6 +65,8 @@ public class MultispeakVendor {
         this.maxInitiateRequestObjects = maxInitiateRequestObjects;
         this.templateNameDefault = templateNameDefault;
     }
+
+    public static MultispeakVendor noneVendor = new MultispeakVendor(0, "none");
 
     /**
      * @return

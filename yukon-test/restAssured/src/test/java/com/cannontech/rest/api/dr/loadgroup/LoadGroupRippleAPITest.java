@@ -13,6 +13,8 @@ import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupRipple;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
+
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupRippleAPITest {
@@ -115,5 +117,201 @@ public class LoadGroupRippleAPITest {
                                                                          context.getAttribute("Copied_Ripple_GrpId").toString());
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
         Log.startTestCase("loadGroupRipple_05_Delete");
+    }
+    
+    /**
+     * Test case to validate Load Group cannot be created with empty name and gets valid error message in response
+     */
+    @Test
+    public void loadGroupRipple_07_NameCannotBeEmpty() {
+
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setName("");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name is required."),
+                "Expected code in response is not correct");
+
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with Group name having more than 60 characters and
+     * validates valid error message in response
+     */
+    @Test
+    public void loadGroupRipple_08_NameGreaterThanMaxLength() {
+
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setName("TestNameMoreThanSixtyCharacter_TestNameMoreThanSixtyCharacter");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Exceeds maximum length of 60."),
+                "Expected code in response is not correct");
+
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with Group name having special characters and validates
+     * valid error message in response
+     */
+    @Test
+    public void loadGroupRipple_09_NameWithSpecialChars() {
+
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setName("Test,//Test");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "name",
+                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with Control value greater than max limit
+     */
+    @Test
+    public void loadGroupRipple_10_ControlGreaterThanMaxLimit() {
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setControl("000011111111111111110000111111111111111111111111111");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "control", "Control must be of 50 character."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with Control value less than min limit
+     */
+    @Test
+    public void loadGroupRipple_11_ControlLessThanMinLimit() {
+
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setControl("0000111111111111111100001111111111111111111111111");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "control", "Control must be of 50 character."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with Restore value greater than max limit
+     */
+    @Test
+    public void loadGroupRipple_12_RestoreGreaterThanMaxLimit() {
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setRestore("000011111111111111110000111111111111111111111111111");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "restore", "Restore must be of 50 character."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with Restore value less than min limit
+     */
+    @Test
+    public void loadGroupRipple_13_RestoreLessThanMinLimit() {
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setRestore("110010111111111111110000111111111111111111111111");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "restore", "Restore must be of 50 character."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with Invalid Shed time
+     */
+    @Test
+    public void loadGroupRipple_14_InvalidShedTime() {
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setShedTime(350);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "shedTime", "Invalid Shed Time value."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Load Group cannot be created with blank Shed time
+     */
+    @Test
+    public void loadGroupRipple_15_BlankShedTime() {
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setShedTime(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "shedTime", "Shed Time is required."),
+                "Expected code in response is not correct");
+
+    }
+
+    /**
+     * Negative validation when Load Group is created with empty or blank Control value
+     */
+    @Test
+    public void loadGroupRipple_16_BlankControl() {
+
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setControl("");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "control", "Control is required."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group is created with empty Restore value
+     */
+    @Test
+    public void loadGroupRipple_17_BlankRestore() {
+
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setRestore("");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "restore", "Restore is required."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group is created with invalid Route Id
+     */
+    @Test
+    public void loadGroupRipple_18_CreateWithInvalidRouteId() {
+
+        MockLoadGroupRipple loadGroup = (MockLoadGroupRipple) LoadGroupHelper.buildLoadGroup(MockPaoType.LM_GROUP_RIPPLE);
+        loadGroup.setRouteId(687222);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveloadgroup", loadGroup);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "routeId", "Route Id does not exist."),
+                "Expected code in response is not correct");
     }
 }

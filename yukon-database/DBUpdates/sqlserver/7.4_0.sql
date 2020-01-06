@@ -256,6 +256,16 @@ UPDATE Command SET Command = 'putconfig template ''?''LoadGroup''''' WHERE Comma
 INSERT INTO DBUpdates VALUES ('YUK-21048', '7.4.0', GETDATE());
 /* @end YUK-21048 */
 
+/* @start YUK-21132 */
+UPDATE GlobalSetting
+SET Value = 'HALF_EVEN'
+WHERE Name = 'DEFAULT_ROUNDING_MODE'
+AND Value = 'UNNECESSARY';
+
+INSERT INTO DBUpdates VALUES('YUK-21132', '7.4.0', GETDATE());
+/* @end YUK-21132 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

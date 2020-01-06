@@ -3,12 +3,9 @@ package com.cannontech.core.roleproperties;
 import java.beans.PropertyEditor;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 
@@ -24,13 +21,13 @@ import com.cannontech.web.input.type.InputOptionProvider;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
 import com.cannontech.web.input.type.LongType;
+import com.cannontech.web.input.type.PrimaryCisVendorType;
 import com.cannontech.web.input.type.SliderType;
 import com.cannontech.web.input.type.StringType;
 import com.cannontech.web.input.type.UserType;
 import com.cannontech.web.input.type.WeekDaysType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import com.google.common.collect.Sets;
 
 /**
  * This class should never have any bean dependencies.
@@ -45,6 +42,7 @@ public class InputTypeFactory {
     private static final InputType<Integer> integerType = new IntegerType();
     private static final InputType<Long> longType = new LongType();
     private static final InputType<Integer> userType = new UserType();
+    private static final InputType<Integer> primaryCisVendorType = new PrimaryCisVendorType();
     private static final InputType<Double> doubleType = new DoubleType();
 
     public static <T extends Enum<T>> EnumInputType<T> enumType(final Class<T> enumClass) {
@@ -150,6 +148,10 @@ public class InputTypeFactory {
     
     public static InputType<Integer> userType() {
         return userType;
+    }
+    
+    public static InputType<Integer> primaryCisVendorType() {
+        return primaryCisVendorType;
     }
     
     public static InputType<String> weekDaysType(String setting) {
