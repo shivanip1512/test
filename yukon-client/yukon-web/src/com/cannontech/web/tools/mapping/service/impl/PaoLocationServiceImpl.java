@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class PaoLocationServiceImpl implements PaoLocationService {
     
@@ -105,6 +106,11 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         }
         
         return features;
+    }
+    
+    @Override
+    public FeatureCollection getFeatureCollection(PaoLocation location) {
+        return getFeatureCollection(Sets.newHashSet(location));
     }
     
     @Override

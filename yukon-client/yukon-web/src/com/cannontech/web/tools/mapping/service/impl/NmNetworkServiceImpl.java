@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,7 +34,6 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.creation.DeviceCreationException;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -550,11 +550,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
     
     @Override
-    public Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<Integer> gatewayIds)
+    public List<Node<Pair<Integer, FeatureCollection>>> getPrimaryRoutes(List<Integer> gatewayIds)
             throws NmNetworkException, NmCommunicationException {
 
-        Map<RfnIdentifier, RfnGateway> gatewayIdentifiers = rfnGatewayService.getGatewaysByPaoIds(gatewayIds).stream()
-                .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
+        List<Node<Pair<Integer, FeatureCollection>>> trees = new ArrayList<>();
+        
+        Map<RfnIdentifier, RfnGateway> gatewayIdentifiers = 
+                Maps.uniqueIndex(rfnGatewayService.getGatewaysByPaoIds(gatewayIds), RfnGateway::getRfnIdentifier);
         if(gatewayIdentifiers.isEmpty()) {
             log.error("Primary routes can be only found for gateways, not gateways {}", gatewayIds);
             return null;
@@ -562,23 +564,76 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         log.debug("Getting primary routes for gateways: {}", gatewayIdentifiers);
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService
                 .getMetadataForDeviceRfnIdentifiers(gatewayIdentifiers.keySet(), Set.of(PRIMARY_FORWARD_TREE));
-
+        
+        
+        Set<Integer> filteredGatewayIds = gatewayIdentifiers.values()
+                .stream().map(gateway -> gateway.getPaoIdentifier().getPaoId()).collect(Collectors.toSet());
+        
+        //device locations
+        List<PaoLocation> allLocations = paoLocationDao.getLocationsByGateway(filteredGatewayIds);
+        //add gateway locations
+        allLocations.addAll(paoLocationDao.getLocations(filteredGatewayIds));
+        Map<Integer, PaoLocation> locations = Maps.uniqueIndex(allLocations, location -> location.getPaoIdentifier().getPaoId());
+        log.debug("Locations found: {}", locations.size());
         for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
             if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
                 RfnVertex vertex = (RfnVertex) data.getValue().getMetadatas().get(PRIMARY_FORWARD_TREE);
                 if (log.isDebugEnabled()) {
-                    log.debug("------------Gateway {} VERTEX node count {}", data.getKey(), NetworkDebugHelper.count(vertex));
+                    log.debug("------------Gateway {} NM VERTEX node count {}", data.getKey(), NetworkDebugHelper.count(vertex));
                 }
                 RfnGateway gateway = gatewayIdentifiers.get(data.getKey());
                 if(gateway == null) {
-                    log.info("Recieved network tree for gateway {} that we didn't request, ignoring the network tree", gateway);
+                    log.info("Received network tree for gateway {} that we didn't request, ignoring the network tree", gateway);
                     continue;
                 }
-                log.debug("Recieved network tree for gateway {}", gateway);       
+                log.debug("Received network tree for gateway {}", gateway); 
+                
+                Node<Pair<Integer, FeatureCollection>> node = createNode(vertex.getRfnIdentifier(), locations); 
+                AtomicInteger totalNodesAdded = new AtomicInteger(1);
+                copy(vertex, node, locations, totalNodesAdded);
+                if (log.isDebugEnabled()) {
+                    log.debug("------------Gateway {} Yukon NODE node count {} gateway node {}", data.getKey(), node.count(), node.getData());
+                    //log.info(node.print());
+                }
+                trees.add(node);
             }
         }
 
-        return null;
+        return trees;
+    }
+    
+    /**
+     * Creates Node from rfnIdentifier and location
+     */
+    private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier,  Map<Integer, PaoLocation> locations) {
+        if(rfnIdentifier == null) {
+            //NN returned null rfnIdentifier
+            return new Node<Pair<Integer, FeatureCollection>>(Pair.of(null, null));
+        }
+        
+        //if device is not found create device
+        int deviceId =  findDevice(rfnIdentifier).getPaoIdentifier().getPaoId();
+        PaoLocation location = locations.get(deviceId);
+        //if no location in Yukon database featureCollection will be null
+        FeatureCollection featureCollection = location == null ? null : paoLocationService.getFeatureCollection(location);
+        return new Node<Pair<Integer, FeatureCollection>>(Pair.of(deviceId, featureCollection));
+    }
+    
+    /**
+     * Copies RfnVertex to Node
+     */
+    private void copy(RfnVertex vertex, Node<Pair<Integer, FeatureCollection>> parent, Map<Integer, PaoLocation> locations,
+            AtomicInteger totalNodesAdded) {
+        if (vertex.getChildren() == null) {
+            return;
+        }
+        for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
+            RfnVertex nextNode = it.next();
+            Node<Pair<Integer, FeatureCollection>> child = createNode(nextNode.getRfnIdentifier(), locations);
+            parent.addChild(child);
+            totalNodesAdded.incrementAndGet();
+            copy(nextNode, child, locations, totalNodesAdded);
+        }
     }
     
     @Override

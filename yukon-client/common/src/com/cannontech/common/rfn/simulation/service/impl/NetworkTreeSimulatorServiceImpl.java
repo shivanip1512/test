@@ -64,7 +64,7 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
             endNodes.addAll(fork(it, node));
         }
 
-        log.info("---------------NODE-- total devices {} node count {} ", totalDevices, NetworkDebugHelper.count(root));
+        log.info("---------------NODE-- total devices {} node count {} ", totalDevices, root.count());
         //log.info(root.print());
         return root; 
     }

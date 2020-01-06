@@ -3,6 +3,7 @@ package com.cannontech.common.util.tree;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -56,6 +57,23 @@ public class Node<T> {
         StringBuilder buffer = new StringBuilder(50);
         print(buffer, "", "");
         return buffer.toString();
+    }
+    
+    /**
+     * Returns node count starting from this node
+     */
+    public int count() {
+        AtomicInteger atomicInt = new AtomicInteger(1);
+        count(this, atomicInt);
+        return atomicInt.get();
+        
+    }
+    
+    private void count(Node<T> node, AtomicInteger atomicInt) {
+        for (Iterator<Node<T>> it = node.getChildren().iterator(); it.hasNext();) {
+            atomicInt.incrementAndGet();
+            count(it.next(), atomicInt);
+        }
     }
 
     private String print(StringBuilder buffer, String prefix, String childrenPrefix) {
