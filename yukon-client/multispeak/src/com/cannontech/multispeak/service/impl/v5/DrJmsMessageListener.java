@@ -880,9 +880,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                                                           statusMessage.getStopDateTime(),
                                                           statusMessage.getGearChangeTime());
         ProgramStatusValList programStatusValList = new ProgramStatusValList(Collections.singletonList(block));
-        
-        // TODO Noun Type of program is to be decided 
-        FormattedBlock formattedBlock = FormattedBlockBase.createMspFormattedBlock(programStatusValList,"LoadManagementDevice");
+        FormattedBlock formattedBlock = FormattedBlockBase.createMspFormattedBlock(programStatusValList, "LoadManagementDevice");
         formattedBlockList.add(formattedBlock);
 
         return arrayOfFormattedBlock;
