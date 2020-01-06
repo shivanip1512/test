@@ -913,7 +913,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     /**
      * Get EndDeviceEventTypeList that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private EndDeviceEventTypeList getEndDeviceEventTypeList(DrAttributeDataJmsMessage drAttributeDataJmsMessage,String endDeviceEventTypeRef) {
+    private EndDeviceEventTypeList getEndDeviceEventTypeList(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String endDeviceEventTypeRef) {
 
         EndDeviceEventTypeList endDeviceEventTypeList = new EndDeviceEventTypeList();
         List<EndDeviceEventTypeItem> endDeviceEventTypeItemList = endDeviceEventTypeList.getEndDeviceEventTypeItem();

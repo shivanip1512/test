@@ -110,7 +110,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     public static final String DEFAULT_OBJECT_GUID = "00000000-0000-0000-0000-000000000000";
     private static final String DR_SERVICE_TYPE = "Load Control";
     private static final String SYSTEM_NAME = "Yukon";
-    public static final String REGISTERED_NAME = "Eaton";
+    private static final String REGISTERED_NAME = "Eaton";
 
     public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
         if (CollectionUtils.isNotEmpty(objects)) {
