@@ -219,7 +219,7 @@ public class EcobeeProgramApiTest {
     public void loadPgmEcobee_09_CreateWithLoadGroupIdAsNull(ITestContext context) {
 
         MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EMETCON);
-        context.setAttribute("loadGroupDirect", loadGroup);
+        context.setAttribute(LoadGroupHelper.CONTEXT_MOCK_LOAD_GROUP, loadGroup);
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         loadGroups.add(loadGroup);
         MockProgramConstraint programConstraint = ProgramConstraintHelper.createProgramConstraint();

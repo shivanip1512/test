@@ -480,7 +480,7 @@ public class ItronProgramApiTest {
     public void ItronProgram_22_CreateWithLoadGroupIdAsNull(ITestContext context) {
 
         MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_ITRON);
-        context.setAttribute("loadGroupDirect", loadGroup);
+        context.setAttribute(LoadGroupHelper.CONTEXT_MOCK_LOAD_GROUP, loadGroup);
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         loadGroups.add(loadGroup);
         MockProgramConstraint programConstraint = ProgramConstraintHelper.createProgramConstraint();
