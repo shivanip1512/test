@@ -2,9 +2,9 @@ package com.cannontech.system;
 
 import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
-import java.math.RoundingMode;
 import java.util.Set;
 
+import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.common.config.SmtpEncryptionType;
@@ -65,7 +65,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Multispeak
     MSP_PAONAME_ALIAS(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MspPaoNameAliasEnum.class), MspPaoNameAliasEnum.METER_NUMBER),
     MSP_PAONAME_EXTENSION(GlobalSettingSubCategory.MULTISPEAK, stringType(), null),
-    MSP_PRIMARY_CB_VENDORID(GlobalSettingSubCategory.MULTISPEAK, integerType(), 0),
+    MSP_PRIMARY_CB_VENDORID(GlobalSettingSubCategory.MULTISPEAK, primaryCisVendorType(), 0),
     MSP_BILLING_CYCLE_PARENT_DEVICEGROUP(GlobalSettingSubCategory.MULTISPEAK, stringType(), "/Meters/Billing/"),
     MSP_LM_MAPPING_SETUP(GlobalSettingSubCategory.MULTISPEAK, booleanType(), false),
     MSP_METER_LOOKUP_FIELD(GlobalSettingSubCategory.MULTISPEAK, InputTypeFactory.enumType(MultispeakMeterLookupFieldEnum.class), MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST),
@@ -146,7 +146,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     APPEND_TO_FILE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, booleanType(), false),
     REMOVE_MULTIPLIER(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, booleanType(), false),
     COOP_ID_CADP_ONLY(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), null),
-    DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, InputTypeFactory.enumType(RoundingMode.class), RoundingMode.HALF_EVEN),
+    DEFAULT_ROUNDING_MODE(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, InputTypeFactory.enumType(YukonRoundingMode.class), YukonRoundingMode.HALF_EVEN),
     SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), ".csv,.dat,.txt"),
     // Defaulting to directory specified by CTIUtilities.getExportDirPath(), typically C:\Yukon\Client\Export.
     SCHEDULE_PARAMETERS_IMPORT_PATH(GlobalSettingSubCategory.DATA_IMPORT_EXPORT, stringType(), CtiUtilities.getImportDirPath()),

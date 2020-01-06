@@ -16,7 +16,7 @@ public class LmProgramGearHistory {
     private int programGearHistoryId;
     private int programHistoryId;
     private Date eventTime;
-    private String action;
+    private GearAction action;
     private String userName;
     private String gearName;
     private int gearId;
@@ -28,6 +28,7 @@ public enum GearAction implements DatabaseRepresentationSource {
         START("Start"),
         GEAR_CHANGE("Gear Change"),
         STOP("Stop"),
+        UPDATE("Update"),
         UNKNOWN("Unknown");
 
         String dbString;
@@ -98,11 +99,11 @@ public enum GearAction implements DatabaseRepresentationSource {
         this.eventTime = eventTime;
     }
 
-    public String getAction() {
+    public GearAction getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(GearAction action) {
         this.action = action;
     }
 

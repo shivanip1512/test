@@ -1,13 +1,11 @@
 package com.cannontech.message.publisher.service;
 
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.message.model.SupportedDataType;
-import com.cannontech.message.publisher.service.impl.ConfigurationDataPublisher;
+import com.cannontech.message.publisher.service.impl.ConfigurationSettingsPublisher;
 
 /**
  * Base class for publisher.
@@ -15,14 +13,10 @@ import com.cannontech.message.publisher.service.impl.ConfigurationDataPublisher;
 public abstract class PublisherBase implements Publisher {
 
     Logger log = (Logger) LogManager.getLogger(PublisherBase.class);
-    List<Publisher> publishers;
+    @Autowired ConfigurationSettingsPublisher publisher;
 
     @Override
     public void requestData(SupportedDataType dataType) {
-        // Find which publisher support this type of dataand call publishMessage();
-
+        publisher.publishMessage();
     }
-
-    @Override
-    public abstract SupportedDataType getSupportedDataType();
 }

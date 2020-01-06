@@ -20,6 +20,7 @@ abstract class YukonConnectionFactoryBase {
             "java.lang",
             "javax.security",
             "java.util",
+            "java.sql",
             "javax.jms",
             "com.thoughtworks.xstream.mapper",
             "org.joda",

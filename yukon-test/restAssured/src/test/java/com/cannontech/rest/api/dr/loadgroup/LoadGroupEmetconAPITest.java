@@ -1,6 +1,8 @@
 package com.cannontech.rest.api.dr.loadgroup;
 
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 
@@ -17,6 +19,7 @@ import com.cannontech.rest.api.loadgroup.request.MockEmetconRelayUsage;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupEmetcon;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -181,6 +184,24 @@ public class LoadGroupEmetconAPITest {
         assertTrue("Status code should be 200", deleteCopyResponse.statusCode() == 200);
 
         Log.endTestCase("loadGroupEmetcon_06_Delete");
+    }
+
+    /**
+     * Negative validation when Load Group is copied with invalid Route Id
+     */
+    @Test(dependsOnMethods = "loadGroupEmetcon_01_Create")
+    public void loadGroupEmetcon_07_CopyWithInvalidRouteId(ITestContext context) {
+
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+                .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).build();
+        loadGroupCopy.setRouteId(LoadGroupHelper.INVALID_ROUTE_ID);
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(copyResponse, "routeId", "Route Id does not exist."),
+                "Expected code in response is not correct");
     }
 
     /**

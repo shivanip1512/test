@@ -20,7 +20,7 @@ $(document).on('click', '#refreshLogs', loadOutageTable);
 <tags:nameValueContainer2>
     <c:forEach var="attribute" items="${attributes}">
         <tags:nameValue2 label="${attribute}">
-            <tags:attributeValue pao="${meter}" attribute="${attribute}" />
+            <tags:attributeValue pao="${device}" attribute="${attribute}" />
         </tags:nameValue2>
     </c:forEach>
 </tags:nameValueContainer2>

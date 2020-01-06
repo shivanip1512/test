@@ -19,7 +19,7 @@ import com.cannontech.rest.api.utilities.ValidationHelper;
 import io.restassured.response.ExtractableResponse;
 
 public class LoadGroupMCTAPITest {
-    
+
     @Test
     public void loadGroupMCT_01_Create(ITestContext context) {
         Log.startTestCase("loadGroupMCT_01_Create");
@@ -104,7 +104,7 @@ public class LoadGroupMCTAPITest {
         context.setAttribute("Copied_MCT_GrpId", loadGroupResponse.getId());
         Log.endTestCase("loadGroupMCT_04_Copy");
     }
-    
+
     @Test(dependsOnMethods = "loadGroupMCT_04_Copy")
     public void loadGroupMCT_05_Delete(ITestContext context) {
         Log.startTestCase("loadGroupMCT_05_Delete");
@@ -127,7 +127,8 @@ public class LoadGroupMCTAPITest {
     }
 
     /**
-     * Negative validation when Load Group is created with same name used while creation of Control Load Group in loadGroupMCT_01_Create
+     * Negative validation when Load Group is created with same name used while creation of Control Load Group in
+     * loadGroupMCT_01_Create
      */
     @Test(dependsOnMethods = "loadGroupMCT_01_Create")
     public void loadGroupMCT_06_Name_Is_Same_Validation(ITestContext context) {
@@ -140,6 +141,24 @@ public class LoadGroupMCTAPITest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name must be unique."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Negative validation when Load Group is copied with invalid Route Id
+     */
+    @Test(dependsOnMethods = "loadGroupMCT_01_Create")
+    public void loadGroupMCT_18_CopyWithInvalidRouteId(ITestContext context) {
+
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder()
+                .name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_MCT)).build();
+        loadGroupCopy.setRouteId(LoadGroupHelper.INVALID_ROUTE_ID);
+        ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyloadgroup", loadGroupCopy,
+                context.getAttribute(LoadGroupHelper.CONTEXT_GROUP_ID).toString());
+        assertTrue(copyResponse.statusCode() == 422, "Status code should be " + 422);
+        assertTrue(ValidationHelper.validateErrorMessage(copyResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(copyResponse, "routeId", "Route Id does not exist."),
                 "Expected code in response is not correct");
     }
 

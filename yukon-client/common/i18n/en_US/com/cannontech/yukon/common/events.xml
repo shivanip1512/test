@@ -335,9 +335,9 @@
     <entry key="yukon.common.events.system.databaseMigration.startingImport">Database migration import of file {2} started by {1}.</entry>
     
     <!-- Connect/Disconnect -->
-    <entry key="yukon.common.events.amr.disconnect.disconnectAttempted">{2} attempted on device {3} by {1}.</entry>
-    <entry key="yukon.common.events.amr.disconnect.disconnectInitiated">{2} command initiated on device {3} by {1}.</entry> 
-    <entry key="yukon.common.events.amr.disconnect.actionCompleted">{2} command {7,choice,0#failed|1#success} on device {3} with state {4} by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.disconnectAttempted">{2} attempted on device {3} with meter number {4} by {1}.</entry>
+    <entry key="yukon.common.events.amr.disconnect.disconnectInitiated">{2} command initiated on device {3} with meter number {4} by {1}.</entry> 
+    <entry key="yukon.common.events.amr.disconnect.actionCompleted">{2} command {7,choice,0#failed|1#success} on device {3} with meter number {5} with state {4} by {1}.</entry>
     <entry key="yukon.common.events.amr.disconnect.actionCompleted.4">Disconnect State</entry>
     <entry key="yukon.common.events.amr.disconnect.actionCompleted.7">Success(1)/Fail(0)</entry>
     <entry key="yukon.common.events.amr.disconnect.groupDisconnectAttempted">{2} command collection action attempted by {1}.</entry>
@@ -778,6 +778,12 @@
     <entry key="yukon.common.events.multispeak.drNotificationReponse.5">MessageType</entry>
     <entry key="yukon.common.events.multispeak.drNotificationReponse.6">Url</entry>
     <entry key="yukon.common.events.multispeak.drNotificationReponse.7">Errors Count</entry>
+    
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse">{1} initiated for program name: {3} by {2} with correlationId: {7}; TransactionID: {4}, MessageType: {5},Errors Count received: {8}, URL: {6}.</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.5">MessageType</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.6">Url</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.7">correlationId</entry>
+    <entry key="yukon.common.events.multispeak.drProgramStatusNotificationReponse.8">Errors Count</entry>
     
     <entry key="yukon.common.events.estimatedLoad.applianceCategoryNotFound">No appliance category found for program {1}.</entry>
     <entry key="yukon.common.events.estimatedLoad.applianceCategoryInfoNotFound">Unable to calculate value for program {1}. Appliance Load (kW) not found for appliance category {2}.</entry>

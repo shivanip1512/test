@@ -27,7 +27,14 @@ public enum SyntaxItem {
     MAX_VOLTAGE_DATETIME("maxVoltageDateTime", MspUom.DateTime, FieldNameKind.OTHER),
     MULTIPLIER("multiplier", null, FieldNameKind.OTHER),
     VOLTAGE_PROFILE("voltageProfile", MspUom.Volts, FieldNameKind.OTHER),
-    VOLTAGE_PROFILE_DATETIME("voltageProfileDateTime", MspUom.DateTime, FieldNameKind.OTHER);
+    VOLTAGE_PROFILE_DATETIME("voltageProfileDateTime", MspUom.DateTime, FieldNameKind.OTHER),
+    PROGRAM_NAME("programName", null, FieldNameKind.OTHER),
+    CURRENT_STATUS("currentStatus", null, FieldNameKind.OTHER),
+    START_DATETIME("startDateTime", MspUom.DateTime, FieldNameKind.OTHER),
+    STOP_DATETIME("stopDateTime", MspUom.DateTime, FieldNameKind.OTHER),
+    GEAR_CHANGETIME("gearChangeTime", MspUom.DateTime, FieldNameKind.OTHER),
+    GEAR_NAME("gearName", null, FieldNameKind.OTHER),
+    CORRELATION_ID("correlationId", null, FieldNameKind.OTHER);
 
     private String mspFieldName;
     private UomKind mspUom;
