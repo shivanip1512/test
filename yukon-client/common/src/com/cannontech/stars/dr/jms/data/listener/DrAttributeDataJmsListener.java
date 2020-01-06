@@ -39,6 +39,8 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
                 attributeData.setTimeStamp(richPointData.getPointValue().getPointDataTimeStamp());
                 attributeData.setValue(richPointData.getPointValue().getValue());
 
+                attributeDataList.add(attributeData);
+
             }
             attributeDataJmsMessage.setAttributeDataList(attributeDataList);
 
