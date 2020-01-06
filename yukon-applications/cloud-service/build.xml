@@ -7,7 +7,7 @@
 
     <target name="build">
 
-        <echo message="Building Jar : cloud-service.jar"/>
+        <echo message="Building Jar : yukon-cloud-service.jar"/>
         <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
                  <arg value="gradlew"/>

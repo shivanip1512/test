@@ -29,6 +29,9 @@ dependencies {
     api 'com.microsoft.azure.sdk.iot:iot-device-client:1.18.0'
 }
 
+bootJar {
+   archiveName = 'yukon-cloud-service.jar'
+}
 configurations.compile {
     // Ignore default logging provided by spring boot to use log4j
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
