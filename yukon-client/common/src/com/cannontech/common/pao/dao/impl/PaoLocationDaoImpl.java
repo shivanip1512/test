@@ -98,6 +98,18 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
     }
     
     @Override
+    public List<PaoLocation> getLocationsByGateway(Set<Integer> gatewayIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT pl.PAObjectId, Latitude, Longitude, Type, Origin, LastChangedDate");
+        sql.append("FROM PaoLocation pl");
+        sql.append("JOIN YukonPAObject ypo on ypo.PAObjectId = pl.PAObjectId");
+        sql.append("JOIN DynamicRfnDeviceData dd on dd.DeviceId = ypo.PAObjectID");
+        sql.append("WHERE dd.GatewayId").in(gatewayIds);
+               
+        return jdbcTemplate.query(sql,mapper);
+    }
+    
+    @Override
     public PaoLocation getLocation(int paoId) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
