@@ -78,7 +78,7 @@
                         <tags:sort column="${failure}" />
                         <tags:sort column="${notAttempted}" />
                         <th class="vab"><i:inline key=".detail"/></th>
-                        <tags:sort column="${status}" />
+                        <tags:sort column="${runStatus}" />
                         <tags:sort column="${userName}" />
                     </tr>
                     <tbody>
