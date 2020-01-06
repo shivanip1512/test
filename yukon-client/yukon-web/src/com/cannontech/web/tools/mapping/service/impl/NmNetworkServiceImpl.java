@@ -550,24 +550,34 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
     
     @Override
-    public Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<SimpleDevice> gateways) throws NmNetworkException, NmCommunicationException { 
-        log.debug("Getting primary routes for gateways: {}", gateways);
-        Set<RfnIdentifier> gatewayIdentifiers = gateways.stream()
-                .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
-                .collect(Collectors.toSet());
-       
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                metadataMultiService.getMetadataForDeviceRfnIdentifiers(gatewayIdentifiers, Set.of(PRIMARY_FORWARD_TREE));
-        
-        for(Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data: metaData.entrySet()) {
-            if(data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
+    public Node<Pair<Integer, FeatureCollection>> getPrimaryRoutes(List<Integer> gatewayIds)
+            throws NmNetworkException, NmCommunicationException {
+
+        Map<RfnIdentifier, RfnGateway> gatewayIdentifiers = rfnGatewayService.getGatewaysByPaoIds(gatewayIds).stream()
+                .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
+        if(gatewayIdentifiers.isEmpty()) {
+            log.error("Primary routes can be only found for gateways, not gateways {}", gatewayIds);
+            return null;
+        }
+        log.debug("Getting primary routes for gateways: {}", gatewayIdentifiers);
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService
+                .getMetadataForDeviceRfnIdentifiers(gatewayIdentifiers.keySet(), Set.of(PRIMARY_FORWARD_TREE));
+
+        for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
+            if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
                 RfnVertex vertex = (RfnVertex) data.getValue().getMetadatas().get(PRIMARY_FORWARD_TREE);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("------------Gateway {} VERTEX node count {}", data.getKey(), NetworkDebugHelper.count(vertex));
                 }
+                RfnGateway gateway = gatewayIdentifiers.get(data.getKey());
+                if(gateway == null) {
+                    log.info("Recieved network tree for gateway {} that we didn't request, ignoring the network tree", gateway);
+                    continue;
+                }
+                log.debug("Recieved network tree for gateway {}", gateway);       
             }
         }
-        
+
         return null;
     }
     
