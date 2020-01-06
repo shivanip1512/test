@@ -28,7 +28,7 @@ Yukon :
         SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, Timestamp, Value, Quality FROM RawPointHistory rph
         JOIN Point p ON rph.PointId = p.PointId
         AND PointType = 'Analog' AND PointOffset = 1
-        WHERE TimeStamp > DATEADD(day,-10, SYSDATETIME())  AND TimeStamp <= DATEADD(day,-3, SYSDATETIME())  
+        WHERE Timestamp > DATEADD(day,-10, CONVERT(date,SYSDATETIME())) and Timestamp <= DATEADD(day,-3, CONVERT(date,SYSDATETIME())) 
         AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
         JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
@@ -46,7 +46,7 @@ Yukon :
         SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, TimeStamp, Value, Quality FROM RawPointHistory rph 
         JOIN Point p ON rph.PointId = p.PointId
         AND PointType = 'Analog' AND PointOffset = 1
-        WHERE TimeStamp > DATEADD(day,-10, SYSDATETIME()) AND TimeStamp <= DATEADD(day,-3, SYSDATETIME()) 
+        WHERE Timestamp > DATEADD(day,-10, CONVERT(date,SYSDATETIME())) and Timestamp <= DATEADD(day,-3, CONVERT(date,SYSDATETIME()))
         AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
         JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
@@ -79,7 +79,7 @@ Yukon :
         JOIN RawPointHistory rph ON rph.PointId = p.PointId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
         JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
-        WHERE Type LIKE 'RFN%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME()) AND DisableFlag = 'N' AND PointType IN ('Analog')
+        WHERE Type LIKE 'RFN%' AND rph.TimeStamp > DATEADD(day,-3, CONVERT(date,SYSDATETIME())) AND DisableFlag = 'N' AND PointType = 'Analog' AND PointOffset = 1
         GROUP BY pao.PaObjectId) a)
         IF @threeDayRFNMeters > 0 SET @value = ROUND((@threeDayRFNMeters/@totalRFNMeters)*100, 2)
         ELSE SET @value = 0
@@ -134,7 +134,7 @@ Yukon :
         JOIN RawPointHistory rph ON rph.PointId = p.PointId
         JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
         JOIN RecentPointValue rpv ON pao.PaObjectId = rpv.PaObjectId
-        WHERE Type LIKE 'RFW%' AND rph.TimeStamp > DATEADD(day,-3, SYSDATETIME())  AND DisableFlag = 'N' AND PointType IN ('Analog') 
+        WHERE Type LIKE 'RFW%' AND rph.TimeStamp > DATEADD(day,-3, CONVERT(date,SYSDATETIME())) AND DisableFlag = 'N' AND PointType = 'Analog' and PointOffset = 1
         GROUP BY pao.PaObjectId) a)
         IF @threeDayRFWMeters > 0 SET @value = ROUND((@threeDayRFWMeters/@totalRFWMeters)*100, 2)
         ELSE SET @value = 0
@@ -192,7 +192,7 @@ Network Manager :
     details: Number of requests within 24 hours for Gap fill. 
     source: >-
         SELECT COUNT (*) FROM Gw_Node_Log_Entry nle 
-        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=408
+        WHERE nle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000 AND nle.GwNodeLogCodeId=408
     iotType: Both
     frequency : EverySixHours
 
@@ -215,7 +215,8 @@ Network Manager :
     details: Contains the frequency count of gateway reset for last 7 days.
     source: >-
         SELECT COUNT(*) AS "GatewayResetCount(Last7Days)" FROM Gw_Log_Entry gwle
-        WHERE gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-7, SYSDATETIME())) AND gwle.GwLogCodeId=1601
+        WHERE gwle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000
+        AND gwle.GwLogCodeId=1601
     iotType: Both
     frequency : EverySixHours
 
@@ -224,7 +225,7 @@ Network Manager :
     details: Contains the count of Socket error arises in gateway for last 7 days.
     source: >-
         SELECT COUNT(*) AS "GatewaySocketErrorCount(Last7Day)" FROM Gw_Log_Entry gwle 
-        WHERE gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-7, SYSDATETIME())) 
+        WHERE gwle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000
         AND (gwle.GwLogCodeId=1301 OR gwle.GwLogCodeId=1302)
     iotType: Both
     frequency : EverySixHours
@@ -236,7 +237,7 @@ Network Manager :
         SELECT COUNT(*) FROM (
         SELECT gw.GwId, COUNT(gwle.LogEntryId) AS "Syncs" FROM Gateway gw 
         JOIN Gw_Log_Entry gwle ON gw.GwId=gwle.GwId 
-        AND gwle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) 
+        AND gwle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000
         AND gwle.GwLogCodeId=2202 GROUP BY gw.GwId) AS gwsync 
         WHERE Syncs=0
     iotType: Both
@@ -249,7 +250,7 @@ Network Manager :
         SELECT COUNT(*) AS "NodesMissingRouteTables(Last24Hours)" FROM (
         SELECT n.NodeId, COUNT(nle.LogEntryId) AS "routeresps" FROM Node n 
         JOIN Gw_Node_Log_Entry nle ON n.NodeId=nle.NodeId 
-        AND nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) 
+        AND nle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000 
         AND nle.GwNodeLogCodeId=502 GROUP BY n.NodeId) AS noderouteresps, Node nn 
         WHERE routeresps=0 AND noderouteresps.NodeId=nn.NodeId AND nn.NodeType != 0 AND nn.NodeType != 2 AND nn.NodeType != 3
     iotType: Both
@@ -267,7 +268,7 @@ Network Manager :
     details: Contains the route table requests for last 24 hours.
     source: >-
         SELECT COUNT(*) AS "RouteTableRequests(Last24Hours)" FROM Gw_Node_Log_Entry nle 
-        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=506
+        WHERE nle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000 AND nle.GwNodeLogCodeId=506
     iotType: Both
     frequency : EverySixHours
 
@@ -276,7 +277,7 @@ Network Manager :
     details: Contains the route table responses for last 24 hours.
     source: >-
         SELECT COUNT(*) AS "RouteTableRequests(Last24Hours)" FROM Gw_Node_Log_Entry nle 
-        WHERE nle.GatewayTimeStamp / 1000 > DATEDIFF_BIG(s, '1970-01-01', DATEADD(day,-1, SYSDATETIME())) AND nle.GwNodeLogCodeId=502
+        WHERE nle.GatewayTimeStamp > CONVERT(BIGINT,(DATEDIFF(s, '1970-01-01', GETUTCDATE()) - 86400)) * 1000 AND nle.GwNodeLogCodeId=502
     iotType: Both
     frequency : EverySixHours
     
