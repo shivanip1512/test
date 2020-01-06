@@ -1,6 +1,8 @@
 package com.cannontech.rest.api.dr.loadprogram;
 
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,8 @@ import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.utilities.Log;
+import com.cannontech.rest.api.utilities.ValidationHelper;
+
 import io.restassured.response.ExtractableResponse;
 
 public class EcobeeProgramApiTest {
@@ -205,6 +209,37 @@ public class EcobeeProgramApiTest {
         assertTrue("Expected message should be - Validation error", response.path("message").equals("A PAObject with id 999999 cannot be found."));
 
         Log.endTestCase("loadPgmEcobee_08_CopyWithInvalidGroupId");
+    }
+
+    /**
+     * Test case to validate Load Program cannot be created with null load group id and validates valid error
+     * message in response
+     */
+    @Test
+    public void loadPgmEcobee_09_CreateWithLoadGroupIdAsNull(ITestContext context) {
+
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EMETCON);
+        context.setAttribute(LoadGroupHelper.CONTEXT_MOCK_LOAD_GROUP, loadGroup);
+        List<MockLoadGroupBase> loadGroups = new ArrayList<>();
+        loadGroups.add(loadGroup);
+        MockProgramConstraint programConstraint = ProgramConstraintHelper.createProgramConstraint();
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, programConstraint.getId());
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.EcobeeCycle);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM, loadGroups,
+                gearTypes, programConstraint.getId());
+        loadProgram.setName("Auto_ProgramTest");
+        loadProgram.setNotification(null);
+        loadProgram.getAssignedGroups().get(0).setGroupId(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "assignedGroups[0].groupId",
+                "Group Id is required."),
+                "Expected code in response is not correct");
     }
 
     /**

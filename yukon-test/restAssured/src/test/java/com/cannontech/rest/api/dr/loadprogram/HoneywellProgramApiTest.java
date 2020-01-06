@@ -1,6 +1,8 @@
 package com.cannontech.rest.api.dr.loadprogram;
 
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +22,8 @@ import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgramCopy;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
+import com.cannontech.rest.api.utilities.ValidationHelper;
+
 import io.restassured.response.ExtractableResponse;
 
 public class HoneywellProgramApiTest {
@@ -383,6 +387,37 @@ public class HoneywellProgramApiTest {
         assertTrue("Status code should be 422", createResponse.statusCode() == 422);
         assertTrue("Expected message should be - Validation error", createResponse.path("message").equals("Validation error"));
         assertTrue("Expected code in response is not correct", createResponse.path("fieldErrors.code[1]").equals("Must be between 0 and 1,440."));
+    }
+
+    /**
+     * Test case to validate Load Program cannot be created with null load group id and validates valid error
+     * message in response
+     */
+    @Test
+    public void HoneywellProgram_22_CreateWithLoadGroupIdAsNull(ITestContext context) {
+
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_HONEYWELL);
+        context.setAttribute(LoadGroupHelper.CONTEXT_MOCK_LOAD_GROUP, loadGroup);
+        List<MockLoadGroupBase> loadGroups = new ArrayList<>();
+        loadGroups.add(loadGroup);
+        MockProgramConstraint programConstraint = ProgramConstraintHelper.createProgramConstraint();
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, programConstraint.getId());
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.HoneywellCycle);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM, loadGroups,
+                gearTypes, programConstraint.getId());
+        loadProgram.setName("Auto_ProgramTest");
+        loadProgram.setNotification(null);
+        loadProgram.getAssignedGroups().get(0).setGroupId(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "assignedGroups[0].groupId",
+                "Group Id is required."),
+                "Expected code in response is not correct");
     }
 
     /**

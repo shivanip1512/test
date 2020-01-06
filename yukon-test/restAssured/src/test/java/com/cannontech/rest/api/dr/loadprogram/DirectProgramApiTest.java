@@ -481,6 +481,37 @@ public class DirectProgramApiTest {
                         "Must be between 0 and 1,440."),
                 "Expected code in response is not correct");
     }
+    
+    /**
+     * Test case to validate Load Program cannot be created with null load group id and validates valid error
+     * message in response
+     */
+    @Test
+    public void DirectProgram_23_CreateWithLoadGroupIdAsNull(ITestContext context) {
+
+        MockLoadGroupBase loadGroup = LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_EMETCON);
+        context.setAttribute(LoadGroupHelper.CONTEXT_MOCK_LOAD_GROUP, loadGroup);
+        List<MockLoadGroupBase> loadGroups = new ArrayList<>();
+        loadGroups.add(loadGroup);
+        MockProgramConstraint programConstraint = ProgramConstraintHelper.createProgramConstraint();
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_ID, programConstraint.getId());
+        context.setAttribute(ProgramConstraintHelper.CONTEXT_PROGRAM_CONSTRAINT_NAME, programConstraint.getName());
+        List<MockGearControlMethod> gearTypes = new ArrayList<>();
+        gearTypes.add(MockGearControlMethod.SmartCycle);
+
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_DIRECT_PROGRAM, loadGroups,
+                gearTypes, programConstraint.getId());
+        loadProgram.setName("Auto_ProgramTest");
+        loadProgram.setNotification(null);
+        loadProgram.getAssignedGroups().get(0).setGroupId(null);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", loadProgram);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "assignedGroups[0].groupId",
+                "Group Id is required."),
+                "Expected code in response is not correct");
+    }
 
     /**
      * Delete all the test data and load programs created for Direct program test methods.
