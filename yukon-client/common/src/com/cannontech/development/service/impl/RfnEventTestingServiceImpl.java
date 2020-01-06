@@ -126,7 +126,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         groupedMeterTypesBuilder.put("Itron single phase", ImmutableList.of(
             RfnManufacturerModel.RFN_410CL,
             RfnManufacturerModel.RFN_420CL,
-            RfnManufacturerModel.RFN_420CD));
+            RfnManufacturerModel.RFN_420CD,
+            RfnManufacturerModel.RFN_420CLW));
 
         groupedMeterTypesBuilder.put("Landis & Gyr single phase", ImmutableList.of(
             RfnManufacturerModel.RFN_410FL,
