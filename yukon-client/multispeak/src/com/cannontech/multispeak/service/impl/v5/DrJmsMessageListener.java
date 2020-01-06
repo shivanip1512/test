@@ -345,7 +345,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
             String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutOptInJmsMessage.getInventoryId());
 
-            log.info("Sending " + ENROLLMENT_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + optOutOptInJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+            log.info("Sending " + UNENROLLMENT_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + optOutOptInJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             DRProgramUnenrollmentsNotification drProgramUnEnrollmentsNotification = new DRProgramUnenrollmentsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
 
@@ -355,10 +355,10 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             try {
                 notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, drProgramUnEnrollmentsNotification);
 
-                logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+                logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
             } catch (MultispeakWebServiceClientException e) {
-                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, ENROLLMENT_METHOD, optOutOptInJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, UNENROLLMENT_METHOD, optOutOptInJmsMessage.getMessageType(), mspVendor.getCompanyName());
                 log.error("Error sending optOutNotification.", e);
             }
 
@@ -376,7 +376,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
             String serialNumber = lmHardwareBaseDao.getSerialNumberForInventoryId(optOutOptInJmsMessage.getInventoryId());
 
-            log.info("Sending " + UNENROLLMENT_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + optOutOptInJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+            log.info("Sending " + ENROLLMENT_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + optOutOptInJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
 
             DRProgramEnrollmentsNotification drProgramEnrollmentsNotification = new DRProgramEnrollmentsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
@@ -389,10 +389,10 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                 notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, drProgramEnrollmentsNotification);
 
 
-                logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
+                logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
             } catch (MultispeakWebServiceClientException e) {
-                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, UNENROLLMENT_METHOD, optOutOptInJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, ENROLLMENT_METHOD, optOutOptInJmsMessage.getMessageType(), mspVendor.getCompanyName());
                 log.error("Error sending optInNotification.", e);
             }
 
