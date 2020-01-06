@@ -9,6 +9,7 @@ public enum DrJmsMessageType {
     EVENT,
     PROGRAMSTATUS,
     VOLTAGEDATA,
-    RELAYDATA;
+    RELAYDATA,
+    ALARMANDEVENT;
 
 }

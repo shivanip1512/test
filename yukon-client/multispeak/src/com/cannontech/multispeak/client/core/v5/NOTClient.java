@@ -182,4 +182,16 @@ public class NOTClient implements INOTClient {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
+
+    @Override
+    public void alarmAndEventDataNotification(MultispeakVendor mspVendor, String uri, EndDeviceEventsNotification endDeviceEventsNotification)
+            throws MultispeakWebServiceClientException {
+        try {
+            multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
+
+            webServiceTemplate.marshalSendAndReceive(uri, endDeviceEventsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+        } catch (WebServiceException | XmlMappingException ex) {
+            throw new MultispeakWebServiceClientException(ex.getMessage());
+        }
+    }
 }

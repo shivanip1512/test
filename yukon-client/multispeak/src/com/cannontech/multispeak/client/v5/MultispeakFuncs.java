@@ -57,6 +57,7 @@ import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.Extensions;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
+import com.cannontech.msp.beans.v5.commontypes.ObjectRef;
 import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
 import com.cannontech.msp.beans.v5.commontypes.ServicePointID;
 import com.cannontech.msp.beans.v5.commontypes.SingleIdentifier;
@@ -104,10 +105,12 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         "objectsRemaining");
     private static final QName QNAME_RESULT = new QName("http://www.multispeak.org/V5.0/response", "Result");
     private static final QName QNAME_CALLER_RES = new QName("http://www.multispeak.org/V5.0/ws/response", "Caller");
+    private static final QName DEVICE_EVENT_REF = new QName("http://www.multispeak.org/V5.0/commonTypes", "objectRef", "com");
 
     public static final String DEFAULT_OBJECT_GUID = "00000000-0000-0000-0000-000000000000";
     private static final String DR_SERVICE_TYPE = "Load Control";
-
+    private static final String SYSTEM_NAME = "Yukon";
+    private static final String REGISTERED_NAME = "Eaton";
 
     public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
         if (CollectionUtils.isNotEmpty(objects)) {
@@ -719,6 +722,21 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         Relay relay = new Relay(relayNumber);
         any.add(relay);
         return extensions;
+    }
+
+    /**
+     * Build ObjectRef that includes building of request fields from drAttributeDataJmsMessage.
+     */
+    public static ObjectRef getDeviceEventRef(String serialNumber) {
+
+        ObjectRef devcieEventRef = new ObjectRef();
+        devcieEventRef.setNoun(DEVICE_EVENT_REF);
+        devcieEventRef.setPrimaryIdentifierValue(serialNumber);
+        devcieEventRef.setRegisteredName(REGISTERED_NAME);
+        devcieEventRef.setSystemName(SYSTEM_NAME);
+        devcieEventRef.setValue(MultispeakFuncs.DEFAULT_OBJECT_GUID);
+
+        return devcieEventRef;
     }
 
 }

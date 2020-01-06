@@ -708,6 +708,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> relayDataAttributes;
     
     private static Set<BuiltInAttribute> voltageAttributes;
+    
+    private static Set<BuiltInAttribute> itronLcrAttributes;
 
     static {
 
@@ -730,6 +732,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         buildAllStatusTypeAttributeGroups();
         buildRelayDataAttributes();
         buildVoltageAttributes();
+        buildItronLcrAttributes();
     }
 
     /**
@@ -1001,6 +1004,20 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                                             MAXIMUM_VOLTAGE, 
                                             AVERAGE_VOLTAGE);
     }
+    
+    private static void buildItronLcrAttributes() {
+
+        itronLcrAttributes = ImmutableSet.of(BLINK_COUNT, 
+                                            TOTAL_LUF_COUNT,
+                                            TOTAL_LUV_COUNT,
+                                            FIRMWARE_VERSION, 
+                                            RADIO_LINK_QUALITY,
+                                            EVENT_RECEIVED,
+                                            CONTROL_STATUS,
+                                            AVERAGE_VOLTAGE,
+                                            SERVICE_STATUS,
+                                            MEMORY_MAP_LOST);
+    }
 
     private String defaultDescription;
     private AttributeGroup attributeGroup;
@@ -1095,6 +1112,10 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
     public static Set<BuiltInAttribute> getRelayDataAttributes() {
         return relayDataAttributes;
+    }
+    
+    public static Set<BuiltInAttribute> getItronLcrAttributes() {
+        return itronLcrAttributes;
     }
 
     @Override

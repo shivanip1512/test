@@ -19,15 +19,14 @@ import com.google.common.collect.Sets;
 public class DrAttributeDataJmsListener implements RichPointDataListener {
     @Autowired private DrJmsMessagingService drJmsMessagingService;
     @Autowired private AttributeService attributeService;
+    private static Set<BuiltInAttribute> attributes = Sets.union(Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes()),
+                                                                 BuiltInAttribute.getItronLcrAttributes());
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
 
-        Set<BuiltInAttribute> attributes = Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes());
-
         Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
                                                                                             attributes);
-
         if (!supportedAttributes.isEmpty()) {
             DrAttributeDataJmsMessage attributeDataJmsMessage = new DrAttributeDataJmsMessage();
             attributeDataJmsMessage.setPaoPointIdentifier(richPointData.getPaoPointIdentifier());
@@ -45,18 +44,30 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
             }
             attributeDataJmsMessage.setAttributeDataList(attributeDataList);
 
-            Boolean isVoltageAttribute = BuiltInAttribute.getVoltageAttributes()
-                                                       .stream()
-                                                       .anyMatch(attribute -> supportedAttributes.contains(attribute));
-            if (isVoltageAttribute) {
-                attributeDataJmsMessage.setMessageType(DrJmsMessageType.VOLTAGEDATA);
-            } else {
-                attributeDataJmsMessage.setMessageType(DrJmsMessageType.RELAYDATA);
-            }
-
+            setMessageTypeForAttribute(supportedAttributes, attributeDataJmsMessage);
             drJmsMessagingService.publishAttributeDataMessageNotice(attributeDataJmsMessage);
         }
 
+    }
+
+    /*
+     * Set message type based on Attributes.
+     */
+    private void setMessageTypeForAttribute(Set<BuiltInAttribute> supportedAttributes, DrAttributeDataJmsMessage attributeDataJmsMessage) {
+        
+        Boolean isVoltageAttribute = BuiltInAttribute.getVoltageAttributes().stream()
+                                                                            .anyMatch(attributeType -> supportedAttributes.contains(attributeType));
+
+        Boolean isRelayAttribute = BuiltInAttribute.getRelayDataAttributes().stream()
+                                                                            .anyMatch(attributeType -> supportedAttributes.contains(attributeType));
+
+        if (isVoltageAttribute) {
+            attributeDataJmsMessage.setMessageType(DrJmsMessageType.VOLTAGEDATA);
+        } else if (isRelayAttribute) {
+            attributeDataJmsMessage.setMessageType(DrJmsMessageType.RELAYDATA);
+        } else {
+            attributeDataJmsMessage.setMessageType(DrJmsMessageType.ALARMANDEVENT);
+        }
     }
 
 }

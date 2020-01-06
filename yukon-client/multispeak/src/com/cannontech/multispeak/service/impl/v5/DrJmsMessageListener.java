@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -28,11 +29,17 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.dr.service.RelayLogInterval;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfDRProgramEnrollment;
+import com.cannontech.msp.beans.v5.commonarrays.ArrayOfEndDeviceEventList;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfFormattedBlock;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfIntervalData;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfMeterReading;
@@ -43,6 +50,7 @@ import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
 import com.cannontech.msp.beans.v5.commontypes.ServicePointID;
 import com.cannontech.msp.beans.v5.commontypes.SingleIdentifier;
+import com.cannontech.msp.beans.v5.enumerations.Action;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatus;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatusKind;
 import com.cannontech.msp.beans.v5.enumerations.FieldNameKind;
@@ -52,6 +60,13 @@ import com.cannontech.msp.beans.v5.multispeak.Channels;
 import com.cannontech.msp.beans.v5.multispeak.Chs;
 import com.cannontech.msp.beans.v5.multispeak.DB;
 import com.cannontech.msp.beans.v5.multispeak.DRProgramEnrollment;
+import com.cannontech.msp.beans.v5.multispeak.EndDeviceEvent;
+import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventList;
+import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventType;
+import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventTypeItem;
+import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventTypeList;
+import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventTypeOption;
+import com.cannontech.msp.beans.v5.multispeak.EndDeviceEvents;
 import com.cannontech.msp.beans.v5.multispeak.EndReading;
 import com.cannontech.msp.beans.v5.multispeak.EndReadings;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
@@ -61,6 +76,7 @@ import com.cannontech.msp.beans.v5.multispeak.IntervalData;
 import com.cannontech.msp.beans.v5.multispeak.IntervalProfile;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.Profiles;
+import com.cannontech.msp.beans.v5.multispeak.ReadingQualityCode;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCodeItem;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCodeItems;
@@ -69,6 +85,7 @@ import com.cannontech.msp.beans.v5.multispeak.ReadingValue;
 import com.cannontech.msp.beans.v5.multispeak.ReadingValues;
 import com.cannontech.msp.beans.v5.not_server.DRProgramEnrollmentsNotification;
 import com.cannontech.msp.beans.v5.not_server.DRProgramUnenrollmentsNotification;
+import com.cannontech.msp.beans.v5.not_server.EndDeviceEventsNotification;
 import com.cannontech.msp.beans.v5.not_server.FormattedBlockNotification;
 import com.cannontech.msp.beans.v5.not_server.IntervalDataNotification;
 import com.cannontech.msp.beans.v5.not_server.MeterReadingsNotification;
@@ -89,6 +106,7 @@ import com.cannontech.multispeak.service.DrJmsMessageService;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.jms.message.DrAttributeData;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
@@ -110,6 +128,8 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private LmHardwareBaseDao lmHardwareBaseDao;
     @Autowired private AssignedProgramDao assignedProgramDao;
+    @Autowired private PointDao pointDao;
+    @Autowired private StateGroupDao stateGroupDao;
 
     private static final Logger log = YukonLogManager.getLogger(DrJmsMessageListener.class);
     private AtomicLong atomicLong = new AtomicLong();
@@ -119,18 +139,21 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     private ImmutableList<MultispeakVendor> vendorsToSendUnEnrollmentOrOptOutMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendIntervalDataMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendVoltageDataMsg = ImmutableList.of();
+    private ImmutableList<MultispeakVendor> vendorsToSendAlarmAndEventDataMsg = ImmutableList.of();
     private ImmutableList<MultispeakVendor> vendorsToSendProgramStatusMsg = ImmutableList.of();
 
     private static final String ENROLLMENT_METHOD = "DRProgramEnrollmentsNotification";
     private static final String UNENROLLMENT_METHOD = "DRProgramUnenrollmentsNotification";
     private static final String INTERVALDATA_METHOD = "IntervalDataNotification";
     private static final String VOLTAGEREADINGS_METHOD = "MeterReadingsNotification";
+    private static final String ALARMANDEVENTDATA_METHOD = "EndDeviceEventsNotification";
     private static final String PROGRAMSTATUS_METHOD = "FormattedBlockNotification";
-
+    
     private static final String LCR_INDENTIFIER_NAME = "lcrSerial";
     private static final String LCR_INDENTIFIER_LABEL = "LCR Serial";
     private static final String PROGRAM_INDENTIFIER_NAME = "programName";
     private static final String PROGRAM_INDENTIFIER_LABEL = "Program Name";
+    final String END_DEVICE_EVENT_TYPE_REF = UUID.randomUUID().toString();
 
     private static final QName QNAME_BEGIN_TEMPORARY_OPTOUT = new QName("beginTemporaryOptOut");
     private static final QName QNAME_END_TEMPORARY_OPTOUT = new QName("endTemporaryOptOut");
@@ -158,6 +181,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         ImmutableList.Builder<MultispeakVendor> supportsUnEnrollmentOrOptOut = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsIntervalData = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsVoltageData = ImmutableList.builder();
+        ImmutableList.Builder<MultispeakVendor> supportsAlarmAndEventData = ImmutableList.builder();
         ImmutableList.Builder<MultispeakVendor> supportsProgramStatus = ImmutableList.builder();
 
         for (MultispeakVendor mspVendor : allVendors) {
@@ -171,6 +195,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                     addSupportedVendors(mspMethodNames, UNENROLLMENT_METHOD, mspVendor, supportsUnEnrollmentOrOptOut);
                     addSupportedVendors(mspMethodNames, INTERVALDATA_METHOD, mspVendor, supportsIntervalData);
                     addSupportedVendors(mspMethodNames, VOLTAGEREADINGS_METHOD, mspVendor, supportsVoltageData);
+                    addSupportedVendors(mspMethodNames, ALARMANDEVENTDATA_METHOD, mspVendor, supportsAlarmAndEventData);
                     addSupportedVendors(mspMethodNames, PROGRAMSTATUS_METHOD, mspVendor, supportsProgramStatus);
 
                 } catch (MultispeakWebServiceClientException e) {
@@ -183,6 +208,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         vendorsToSendEnrollmentOrOptInMsg = supportsUnEnrollmentOrOptOut.build();
         vendorsToSendIntervalDataMsg = supportsIntervalData.build();
         vendorsToSendVoltageDataMsg = supportsVoltageData.build();
+        vendorsToSendAlarmAndEventDataMsg = supportsAlarmAndEventData.build();
         vendorsToSendProgramStatusMsg = supportsProgramStatus.build();
     }
 
@@ -232,7 +258,6 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 DrJmsMessage drMessage = (DrJmsMessage) objMessage.getObject();
-
                 switch (drMessage.getMessageType()) {
                     case ENROLLMENT:
                         enrollmentNotification((EnrollmentJmsMessage) drMessage);
@@ -257,6 +282,9 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                     case PROGRAMSTATUS:
                         programStatusNotification((DrProgramStatusJmsMessage) drMessage);
                         break;
+                    case ALARMANDEVENT:
+                        alarmAndEventNotification((DrAttributeDataJmsMessage) drMessage);
+                        break;
                     default:
                         log.debug("Unable to find proper multispeak Dr message type i.e: " + drMessage.getMessageType());
                         break;
@@ -265,7 +293,6 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                 log.warn("Unable to extract multispeak Dr message", e);
             }
         }
-
     }
 
     @Override
@@ -469,6 +496,39 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     }
 
     @Override
+    public void alarmAndEventNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
+
+        if (!isVendorsConfigured(vendorsToSendAlarmAndEventDataMsg)) {
+            return;
+        }
+
+        vendorsToSendAlarmAndEventDataMsg.forEach(mspVendor -> {
+            String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
+
+            PaoIdentifier paoIdentifier = drAttributeDataJmsMessage.getPaoPointIdentifier().getPaoIdentifier();
+            String serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
+
+            log.info("Sending " + ALARMANDEVENTDATA_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + drAttributeDataJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
+
+            EndDeviceEventsNotification endDeviceEventsNotification = new EndDeviceEventsNotification();
+
+            String transactionId = String.valueOf(atomicLong.getAndIncrement());
+            endDeviceEventsNotification.setTransactionID(transactionId);
+
+            ArrayOfEndDeviceEventList arrayOfEndDeviceEventList = buildArrayOfAlarmAndEventData(drAttributeDataJmsMessage, serialNumber);
+
+            endDeviceEventsNotification.setArrayOfEndDeviceEventList(arrayOfEndDeviceEventList);
+            try {
+                notClient.alarmAndEventDataNotification(mspVendor, endpointUrl, endDeviceEventsNotification);
+
+                logEvent(serialNumber, drAttributeDataJmsMessage.getMessageType().toString(), ALARMANDEVENTDATA_METHOD, mspVendor, transactionId, endpointUrl);
+            } catch (MultispeakWebServiceClientException e) {
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, ALARMANDEVENTDATA_METHOD, drAttributeDataJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("Error sending alarmAndEventDataNotification.", e);
+            }
+        });
+    }
+            
     public void programStatusNotification(DrProgramStatusJmsMessage drProgramStatusJmsMessage) {
         if (!isVendorsConfigured(vendorsToSendProgramStatusMsg)) {
             return;
@@ -570,6 +630,29 @@ public class DrJmsMessageListener implements DrJmsMessageService {
 
         return arrayOfDrProgramEnrollment;
 
+    }
+
+    /**
+     * Building ArrayOfEndDeviceEventList that includes building of request fields from drAttributeDataJmsMessage.
+     */
+    private ArrayOfEndDeviceEventList buildArrayOfAlarmAndEventData(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
+
+        ArrayOfEndDeviceEventList arrayOfEndDeviceEventList = new ArrayOfEndDeviceEventList();
+        List<EndDeviceEventList> listOfendDeviceEventList = arrayOfEndDeviceEventList.getEndDeviceEventList();
+
+        EndDeviceEventList endDeviceEventList = new EndDeviceEventList();
+        String endDeviceEventTypeRef = UUID.randomUUID().toString();
+        EndDeviceEvents endDeviceEvents = getEndDeviceEvents(drAttributeDataJmsMessage, serialNumber, endDeviceEventTypeRef);
+
+        endDeviceEventList.setEndDeviceEvents(endDeviceEvents);
+        endDeviceEventList.setReferableID(serialNumber);
+
+        EndDeviceEventTypeList endDeviceEventTypeList = getEndDeviceEventTypeList(drAttributeDataJmsMessage, endDeviceEventTypeRef);
+        endDeviceEventList.setEndDeviceEventTypeList(endDeviceEventTypeList);
+
+        listOfendDeviceEventList.add(endDeviceEventList);
+
+        return arrayOfEndDeviceEventList;
     }
 
     /**
@@ -886,5 +969,102 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         return arrayOfFormattedBlock;
     }
 
+
+    /**
+     * Get EndDeviceEvents that includes building of request fields from drAttributeDataJmsMessage.
+     */
+    private EndDeviceEvents getEndDeviceEvents(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber, String endDeviceEventTypeRef) {
+
+        EndDeviceEvents endDeviceEvents = new EndDeviceEvents();
+
+        List<EndDeviceEvent> endDeviceEventsList = endDeviceEvents.getEndDeviceEvent();
+        EndDeviceEvent endDeviceEvent = new EndDeviceEvent();
+
+        drAttributeDataJmsMessage.getAttributeDataList().forEach(message -> {
+
+            endDeviceEvent.setTimeStamp(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
+
+            endDeviceEvent.setDeviceReference(MultispeakFuncs.getDeviceEventRef(serialNumber));
+            
+            EndDeviceEventTypeOption endDeviceEventTypeOption = new EndDeviceEventTypeOption();
+            endDeviceEventTypeOption.setEndDeviceEventTypeRef(endDeviceEventTypeRef);
+            endDeviceEvent.setEndDeviceEventTypeOption(endDeviceEventTypeOption);
+
+            ReadingValues associatedReadingValues = getAssociatedValues(drAttributeDataJmsMessage);
+            endDeviceEvent.setAssociatedReadingValues(associatedReadingValues);
+
+            endDeviceEventsList.add(endDeviceEvent);
+        });
+        return endDeviceEvents;
+    }
+
+    /**
+     * Get EndDeviceEventTypeList that includes building of request fields from drAttributeDataJmsMessage.
+     */
+    private EndDeviceEventTypeList getEndDeviceEventTypeList(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String endDeviceEventTypeRef) {
+
+        EndDeviceEventTypeList endDeviceEventTypeList = new EndDeviceEventTypeList();
+        List<EndDeviceEventTypeItem> endDeviceEventTypeItemList = endDeviceEventTypeList.getEndDeviceEventTypeItem();
+
+        drAttributeDataJmsMessage.getAttributeDataList().forEach(message -> {
+            EndDeviceEventTypeItem endDeviceEventTypeItem = new EndDeviceEventTypeItem();
+            IEC61968Mapping iec61968Mapping = IEC61968Mapping.getIEC61968MappingData(message.getAttribute());
+
+            EndDeviceEventType endDeviceEventType = new EndDeviceEventType();
+            endDeviceEventType.setEndDeviceDomain(iec61968Mapping.getEndDeviceDomain().code);
+            endDeviceEventType.setEndDeviceSubdomain(iec61968Mapping.getEndDeviceEventDomainPart().code);
+            endDeviceEventType.setEndDeviceType(iec61968Mapping.getEndDeviceEventType().code);
+            endDeviceEventType.setEventOrAction(Action.CHANGE.value());
+            endDeviceEventTypeItem.setEndDeviceEventType(endDeviceEventType);
+
+            endDeviceEventTypeItem.setEndDeviceEventTypeRef(endDeviceEventTypeRef);
+
+            endDeviceEventTypeItem.setEndDeviceEventType(endDeviceEventType);
+            endDeviceEventTypeItemList.add(endDeviceEventTypeItem);
+        });
+        return endDeviceEventTypeList;
+    }
+
+    /**
+     * Get ReadingValues that includes building of request fields from drAttributeDataJmsMessage.
+     */
+    private ReadingValues getAssociatedValues(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
+
+        ReadingValues readingValues = new ReadingValues();
+        List<ReadingValue> readingValueList = readingValues.getReadingValue();
+
+        drAttributeDataJmsMessage.getAttributeDataList().forEach(message -> {
+            IEC61968Mapping iec61968Mapping = IEC61968Mapping.getIEC61968MappingData(message.getAttribute());
+            ReadingValue readingValue = new ReadingValue();
+            ReadingQualityCode codeQuality = new ReadingQualityCode();
+            codeQuality.setCodeIndex(iec61968Mapping.getEndDeviceEventIndex().code);
+            readingValue.setTimeStamp(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
+            readingValue.setReadingQualityCode(codeQuality);
+
+            setValue(readingValue, message, drAttributeDataJmsMessage.getPaoPointIdentifier());
+
+            ReadingTypeCodeOption readingTypeCodeOption = new ReadingTypeCodeOption();
+            ReadingTypeCode readingTypeCode = new ReadingTypeCode();
+            readingTypeCodeOption.setReadingTypeCode(readingTypeCode);
+
+            readingValue.setReadingTypeCodeOption(readingTypeCodeOption);
+            readingValueList.add(readingValue);
+        });
+        return readingValues;
+    }
+
+    /*
+     * Set Reading value based on point type.
+     */
+    private void setValue(ReadingValue readingValue, DrAttributeData message, PaoPointIdentifier paoPointIdentifier) {
+        PointType pointType = paoPointIdentifier.getPointIdentifier().getPointType();
+        if (pointType.isStatus()) {
+            LitePoint litePoint = pointDao.getLitePoint(paoPointIdentifier);
+            String stateText = stateGroupDao.getRawStateName(litePoint.getPointID(), message.getValue().intValue());
+            readingValue.setValue(stateText);
+        } else if (pointType == PointType.Analog) {
+            readingValue.setValue(String.valueOf(message.getValue()));
+        }
+    }
 
 }

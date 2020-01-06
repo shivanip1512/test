@@ -47,4 +47,9 @@ public interface DrJmsMessageService extends MessageListener {
      */
     public void programStatusNotification(DrProgramStatusJmsMessage drDataJmsMessage);
 
+    /**
+     * Sending Alarm and Event notification messages to configured vendors.
+     */
+    public void alarmAndEventNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage);
+
 }
