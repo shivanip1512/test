@@ -592,7 +592,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 AtomicInteger totalNodesAdded = new AtomicInteger(1);
                 copy(vertex, node, locations, totalNodesAdded);
                 if (log.isDebugEnabled()) {
-                    log.debug("------------Gateway {} Yukon NODE node count {} gateway node {}", data.getKey(), node.count(), node.getData());
+                    log.debug("------------Gateway {} Yukon NODE total node count {} null node count {}  gateway node {}",
+                            data.getKey(), node.count(false), node.count(true), node.getData());
                     //log.info(node.print());
                 }
                 trees.add(node);
@@ -608,7 +609,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier,  Map<Integer, PaoLocation> locations) {
         if(rfnIdentifier == null) {
             //NN returned null rfnIdentifier
-            return new Node<Pair<Integer, FeatureCollection>>(Pair.of(null, null));
+            return new Node<Pair<Integer, FeatureCollection>>(null);
         }
         
         //if device is not found create device
