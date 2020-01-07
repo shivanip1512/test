@@ -23,13 +23,16 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.ClassPathResource;
+
 import com.cannontech.clientutils.YukonLogManager;
 
-public class SystemPublisherMetadataEncryption {
+public class SystemPublisherMetadataCryptoUtils {
 
-    private static final Logger log = YukonLogManager.getLogger(SystemPublisherMetadataEncryption.class);
+    private static final Logger log = YukonLogManager.getLogger(SystemPublisherMetadataCryptoUtils.class);
     private static final String SECRET_KEY = "452C3BdAD-1RT2-508A-6D62-FDFB58B52TRM";
-    private static final String SYSTEM_PUBLISHER_METADATA_PATH = "\\resource\\systemPublisherMetadata.yaml";
+    private static final String ENCRYPTED_FILE_PATH = "\\resource\\encryptedSystemPublisherMetadata.yaml";
+    private static final String SYSTEM_PUBLISHER_METADATA = "systemPublisherMetadata.yaml";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final String CHARACTER_SET = "UTF-16";
     private static final String MESSAGEDIGEST_ALGORITHM = "SHA-256";
@@ -102,24 +105,25 @@ public class SystemPublisherMetadataEncryption {
     private static void processFile() throws IOException, IllegalBlockSizeException, BadPaddingException {
 
         // Get the actual directory of the file as we need to encrypt the actual file.
-        File yamlFile = new File(System.getProperty("user.dir") + SYSTEM_PUBLISHER_METADATA_PATH);
+        File encryptedYamlFile = new File(System.getProperty("user.dir") + ENCRYPTED_FILE_PATH);
         StringBuilder tempYamlBuilder = new StringBuilder();
 
-        processLines(yamlFile, tempYamlBuilder);
+        processLines(tempYamlBuilder);
 
-        FileUtils.writeStringToFile(yamlFile, tempYamlBuilder.toString());
+        FileUtils.writeStringToFile(encryptedYamlFile, tempYamlBuilder.toString());
     }
 
     /**
      * Process the every line and set the required flags which will be used for encrypting the source fields.
      */
-    private static void processLines(File yamlFile, StringBuilder tempYamlBuilder)
+    private static void processLines(StringBuilder tempYamlBuilder)
             throws IOException, IllegalBlockSizeException, BadPaddingException {
 
-        InputStream yamlInputStream = FileUtils.openInputStream(yamlFile);
+        InputStream yamlInputStream = new ClassPathResource(SYSTEM_PUBLISHER_METADATA).getInputStream();
         // Flag to identify multiline source. Set it to true when "....source" contains multiple lines (identified by ">-" text).
         boolean multiLineSource = false;
         boolean encryptionRequired = false;
+        String multiLineSourceStr = StringUtils.EMPTY;
         try (BufferedReader systemPublisherMetadataReader = new BufferedReader(new InputStreamReader(yamlInputStream))) {
             List<String> lines = systemPublisherMetadataReader.lines().collect(Collectors.toList());
             for (String line : lines) {
@@ -129,11 +133,16 @@ public class SystemPublisherMetadataEncryption {
                         multiLineSource = true;
                     }
                     encryptionRequired = true;
-                } else {
-                    if (NON_SOURCE_FIELDS.contains(values[0])) {
-                        encryptionRequired = false;
-                        multiLineSource = false;
+                } else if (NON_SOURCE_FIELDS.contains(values[0])) {
+                    if (multiLineSource && StringUtils.isNotEmpty(multiLineSourceStr)) {
+                        encryptLine(multiLineSourceStr, encryptionRequired, multiLineSource, tempYamlBuilder);
+                        multiLineSourceStr = StringUtils.EMPTY;
                     }
+                    encryptionRequired = false;
+                    multiLineSource = false;
+                } else if (multiLineSource) {
+                    multiLineSourceStr = multiLineSourceStr.concat(StringUtils.SPACE).concat(line.trim());
+                    continue;
                 }
                 encryptLine(line, encryptionRequired, multiLineSource, tempYamlBuilder);
             }

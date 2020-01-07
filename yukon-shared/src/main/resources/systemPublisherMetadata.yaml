@@ -1,17 +1,3 @@
-# -------
-# Contains licenses in this order, each with a heading:
-# -------
-#----------------- 
-# field :Contains the data field name.
-# description : Contains the name of the field displayed in IOT dashboard.
-# details : Contains the detail of that particular field.
-# source : Contains the SQL query to retrieve that field's data. To write any complex SQL query i.e. more than 1 line,
-#           the SQL will be followed by ">-" as given for some fields.
-# iotType : IOT type of field. Valid value will be Telemetry , Property or Both.
-# Frequency: Contains the frequency at which field value should be retrieved. Valid value will be ApplicationControl, Onchange,
-#            OnStartupOnly, Daily, EverySixHours.
-#------------
-
 Yukon :
   - field: gmcount
     description: Gas Meter Count

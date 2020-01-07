@@ -11,14 +11,14 @@ import javax.crypto.IllegalBlockSizeException;
 
 import org.junit.Test;
 
-public class SystemPublisherMetadataEncryptionTest {
+public class SystemPublisherMetadataCryptoUtilsTest {
 
     @Test
     public void test_encrypt_decrypt_valid() throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         String strToEncrypt = "Test String";
-        String encryptedString = SystemPublisherMetadataEncryption.encrypt(strToEncrypt);
+        String encryptedString = SystemPublisherMetadataCryptoUtils.encrypt(strToEncrypt);
         assertFalse("Original string and encrypted string are same : ", strToEncrypt.equals(encryptedString));
-        String decryptedString = SystemPublisherMetadataEncryption.decrypt(encryptedString);
+        String decryptedString = SystemPublisherMetadataCryptoUtils.decrypt(encryptedString);
         assertTrue("Original string and encrypted string are not same : ", strToEncrypt.equals(decryptedString));
     }
 
@@ -26,44 +26,44 @@ public class SystemPublisherMetadataEncryptionTest {
     public void test_encrypt_decrypt_invalid()
             throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
         String strToEncrypt = "Test String";
-        String encryptedString = SystemPublisherMetadataEncryption.encrypt(strToEncrypt);
+        String encryptedString = SystemPublisherMetadataCryptoUtils.encrypt(strToEncrypt);
         assertFalse("Original string and encrypted string are same : ", strToEncrypt.equals(encryptedString));
-        SystemPublisherMetadataEncryption.decrypt(encryptedString + "Extra Param");
+        SystemPublisherMetadataCryptoUtils.decrypt(encryptedString + "Extra Param");
     }
 
     @Test
     public void test_setChiper_valid() throws Exception {
-        Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
+        Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("setChiper", Integer.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, 1);
+        method.invoke(SystemPublisherMetadataCryptoUtils.class, 1);
     }
 
     @Test(expected = Exception.class)
     public void test_setChiper_invalid() throws Exception {
-        Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
+        Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("setChiper", Integer.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, -999999);
+        method.invoke(SystemPublisherMetadataCryptoUtils.class, -999999);
     }
 
     @Test
     public void test_setKey_valid() throws Exception {
-        Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
+        Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("setKey");
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class);
+        method.invoke(SystemPublisherMetadataCryptoUtils.class);
     }
 
     @Test
     public void test_encryptLine_skipLine() throws Exception {
         String stringNotToEncrypt = "Key: Value";
         StringBuilder stringBuilder = new StringBuilder();
-        Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
+        Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("encryptLine", String.class, Boolean.class, Boolean.class,
                 StringBuilder.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, stringNotToEncrypt, false, false, stringBuilder);
+        method.invoke(SystemPublisherMetadataCryptoUtils.class, stringNotToEncrypt, false, false, stringBuilder);
         assertTrue("Original string and encrypted string are not same : ",
                 stringNotToEncrypt.equals(stringBuilder.toString().trim()));
     }
@@ -72,11 +72,11 @@ public class SystemPublisherMetadataEncryptionTest {
     public void test_encryptLine_singleLineSource() throws Exception {
         String stringToEncrypt = "    source: Some SQL Query";
         StringBuilder stringBuilder = new StringBuilder();
-        Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
+        Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("encryptLine", String.class, Boolean.class, Boolean.class,
                 StringBuilder.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, stringToEncrypt, true, false, stringBuilder);
+        method.invoke(SystemPublisherMetadataCryptoUtils.class, stringToEncrypt, true, false, stringBuilder);
         assertTrue("Original string and encrypted string are same : ",
                 !stringToEncrypt.equals(stringBuilder.toString().trim()));
 
@@ -89,11 +89,11 @@ public class SystemPublisherMetadataEncryptionTest {
     public void test_encryptLine_multiLineSource_firstLine() throws Exception {
         String stringNotToEncrypt = "    source: >-";
         StringBuilder stringBuilder = new StringBuilder();
-        Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
+        Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("encryptLine", String.class, Boolean.class, Boolean.class,
                 StringBuilder.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, stringNotToEncrypt, false, false, stringBuilder);
+        method.invoke(SystemPublisherMetadataCryptoUtils.class, stringNotToEncrypt, false, false, stringBuilder);
         assertTrue("Original string and encrypted string are not same : ",
                 stringNotToEncrypt.contains(stringBuilder.toString().trim()));
     }
@@ -102,11 +102,11 @@ public class SystemPublisherMetadataEncryptionTest {
     public void test_encryptLine_multiLineSource_secondLine() throws Exception {
         String stringToEncrypt = "Some SQL to be encrypted";
         StringBuilder stringBuilder = new StringBuilder();
-        Class<SystemPublisherMetadataEncryption> encryptionClass = SystemPublisherMetadataEncryption.class;
+        Class<SystemPublisherMetadataCryptoUtils> encryptionClass = SystemPublisherMetadataCryptoUtils.class;
         Method method = encryptionClass.getDeclaredMethod("encryptLine", String.class, Boolean.class, Boolean.class,
                 StringBuilder.class);
         method.setAccessible(true);
-        method.invoke(SystemPublisherMetadataEncryption.class, stringToEncrypt, true, true, stringBuilder);
+        method.invoke(SystemPublisherMetadataCryptoUtils.class, stringToEncrypt, true, true, stringBuilder);
         assertTrue("Original string and encrypted string are same : ",
                 !stringToEncrypt.equals(stringBuilder.toString().trim()));
     }
