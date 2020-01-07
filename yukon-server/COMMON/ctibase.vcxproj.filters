@@ -273,6 +273,9 @@
     <ClCompile Include="yaml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="checksums.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">
@@ -675,6 +678,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\boost_helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\checksums.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
