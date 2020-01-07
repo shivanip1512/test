@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="coud-service" default="all">
+<project name="cloud-service" default="all">
 
     <property file="../../yukon-client/build/build.properties"/>
 
@@ -14,7 +14,7 @@
                  <arg value="bootJar"/>
         </exec>
 
-        <copy todir="${cloud-service-to-yukon-lib}">
+        <copy todir="${yukon-client-lib}">
             <fileset dir="${cloud-service}/build/libs">
                 <include name="*.jar" />
             </fileset>
