@@ -9,7 +9,7 @@ package com.cannontech.multispeak.constants.iec61689_9;
  * This list is incomplete.
  */
 public enum EndDeviceEventIndex {
-    LOW_LIMIT("150 "),
+    LOW_LIMIT("150"),
     MOMENTARY_EVENTS("166"),
     RESET("214");
 
