@@ -45,10 +45,10 @@ public class SystemPublisherMetadataCryptoUtils {
     private static final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final String SEPARATOR = ":";
     private static final List<String> NON_SOURCE_FIELDS = Arrays.asList(DICTIONARY_FIELDS_SPACE + "field",
-            DICTIONARY_FIELDS_SPACE + "description",
-            DICTIONARY_FIELDS_SPACE + "details",
-            DICTIONARY_FIELDS_SPACE + "iotType",
-            DICTIONARY_FIELDS_SPACE + "frequency");
+                                                                        DICTIONARY_FIELDS_SPACE + "description",
+                                                                        DICTIONARY_FIELDS_SPACE + "details",
+                                                                        DICTIONARY_FIELDS_SPACE + "iotType",
+                                                                        DICTIONARY_FIELDS_SPACE + "frequency");
 
     private static SecretKeySpec secretKey;
     private static Cipher cipher;
@@ -161,15 +161,15 @@ public class SystemPublisherMetadataCryptoUtils {
                 // Add the required spaces to have a valid and readable YAML file. Applicable for multiline source.
                 // Encrypt line as a whole as its a part of the SQL query.
                 tempYamlBuilder.append(SOURCE_FIELD_SPACE).append(AUTO_ENCRYPTED_TEXT)
-                        .append(encrypt(line))
-                        .append(END_LINE_CHARACTER);
+                               .append(encrypt(line))
+                               .append(END_LINE_CHARACTER);
             } else {
                 // For single line source, keep the Key(source) as it is and encrypt value(SQL query).
                 // Append space for readable and valid YAML file.
                 tempYamlBuilder.append(values[0]).append(SEPARATOR).append(StringUtils.SPACE)
-                        .append(AUTO_ENCRYPTED_TEXT)
-                        .append(encrypt(values[1]))
-                        .append(END_LINE_CHARACTER);
+                               .append(AUTO_ENCRYPTED_TEXT)
+                               .append(encrypt(values[1]))
+                               .append(END_LINE_CHARACTER);
             }
         } else {
             tempYamlBuilder.append(line).append(END_LINE_CHARACTER);
