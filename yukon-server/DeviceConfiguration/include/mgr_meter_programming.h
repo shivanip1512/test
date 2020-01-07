@@ -35,6 +35,8 @@ private:
 
     Bytes loadProgram(const std::string guid);
     size_t getProgramSize(const std::string guid);
+    
+    Bytes convertRawProgram(const RawProgram& raw, const std::string guid);
 
     std::map<std::string, Bytes> _programs;
 };
