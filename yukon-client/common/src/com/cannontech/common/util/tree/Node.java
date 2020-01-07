@@ -60,19 +60,29 @@ public class Node<T> {
     }
     
     /**
-     * Returns node count starting from this node
+     * If onlyCountNullNodes is true, returns count of only null nodes, otherwise return all node count
      */
-    public int count() {
-        AtomicInteger atomicInt = new AtomicInteger(1);
-        count(this, atomicInt);
+    public int count(boolean onlyCountNullNodes) {
+        AtomicInteger atomicInt = new AtomicInteger(0);
+        incrementNodeCount(atomicInt, onlyCountNullNodes, this);
+        count(this, atomicInt, onlyCountNullNodes);
         return atomicInt.get();
-        
+
     }
-    
-    private void count(Node<T> node, AtomicInteger atomicInt) {
+
+    private void count(Node<T> node, AtomicInteger atomicInt, boolean onlyCountNullNodes) {
         for (Iterator<Node<T>> it = node.getChildren().iterator(); it.hasNext();) {
+            Node<T> nextNode = it.next();
+            incrementNodeCount(atomicInt, onlyCountNullNodes, nextNode);
+            count(nextNode, atomicInt, onlyCountNullNodes);
+        }
+    }
+
+    private void incrementNodeCount(AtomicInteger atomicInt, boolean onlyCountNullNodes, Node<T> node) {
+        if (!onlyCountNullNodes) {
             atomicInt.incrementAndGet();
-            count(it.next(), atomicInt);
+        } else if (onlyCountNullNodes && node.getData() == null) {
+            atomicInt.incrementAndGet();
         }
     }
 
