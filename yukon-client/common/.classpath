@@ -387,17 +387,17 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/bc-fips-1.0.1.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/bc-fips-1.0.2.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="/third-party/bcpkix-fips-1.0.2.jar">
+	<classpathentry exported="true" kind="lib" path="/third-party/bcpkix-fips-1.0.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/bcpg-fips-1.0.2.jar">
+	<classpathentry kind="lib" path="/third-party/bcpg-fips-1.0.3.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

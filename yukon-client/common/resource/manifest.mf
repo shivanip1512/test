@@ -88,9 +88,9 @@ Class-Path: ./
  nagasena.jar 
  jasypt-1.9.2.jar 
  servlet-api.jar 
- bcpkix-fips-1.0.2.jar 
- bc-fips-1.0.1.jar 
- bcpg-fips-1.0.2.jar 
+ bcpkix-fips-1.0.3.jar 
+ bc-fips-1.0.2.jar 
+ bcpg-fips-1.0.3.jar 
  libthrift-0.13.0.jar 
  yukon-shared.jar 
  annotation-detector-3.0.4.jar 

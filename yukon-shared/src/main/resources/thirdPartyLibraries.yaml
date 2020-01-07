@@ -385,21 +385,7 @@ Java :
     jira : YUK-20500
     notes : Microsoft Azure Service Bus
 
-  - filename : bc-fips-1.0.1.jar
-    yukon group : Bouncy Castle
-    project : Bouncy Castle FIPS
-    version : 1.0.1
-    project URL : "https://www.bouncycastle.org/fips-java/"
-    license : MIT-like
-    license URLs : "https://www.bouncycastle.org/license.html"
-    maven URL : n/a
-    md5 : 9495b97a8325c45255bb68027af2284b
-    sha1 : ed8dd3144761eaa33b9c56f5e2bef85f1b731d6f
-    updated : 2019-02-06
-    jira : YUK-19276
-    notes : Open source, but supported via donation or purchase
-  
-  - filename : bcpkix-fips-1.0.2.jar
+  - filename : bc-fips-1.0.2.jar
     yukon group : Bouncy Castle
     project : Bouncy Castle FIPS
     version : 1.0.2
@@ -407,24 +393,38 @@ Java :
     license : MIT-like
     license URLs : "https://www.bouncycastle.org/license.html"
     maven URL : n/a
-    md5 : eda684a72cae38afd4aa32691d80d595
-    sha1 : 543bc7a08cdba0172e95e536b5f7ca61f021253d
-    updated : 2019-02-06
-    jira : YUK-19276
+    md5 : 1555941e5e9aa10abcb15e4c8777498c
+    sha1 : 4fb5db5f03d00f6a94e43b78d097978190e4abb2
+    updated : 2020-01-06
+    jira : YUK-21091
     notes : Open source, but supported via donation or purchase
   
-  - filename : bcpg-fips-1.0.2.jar
+  - filename : bcpkix-fips-1.0.3.jar
     yukon group : Bouncy Castle
     project : Bouncy Castle FIPS
-    version : 1.0.2
+    version : 1.0.3
     project URL : "https://www.bouncycastle.org/fips-java/"
     license : MIT-like
     license URLs : "https://www.bouncycastle.org/license.html"
     maven URL : n/a
-    md5 : 8e283a0b21b67775d681c2a8c05c6dfe
-    sha1 : d00c7b8e5df8b3f40f81be7544f8185191712509
-    updated : 2019-02-06
-    jira : YUK-19276
+    md5 : 4715b11b76679d464604184d3e24108f
+    sha1 : 33c47b105777c9dcc8a08188186bd35401366bd1
+    updated : 2020-01-06
+    jira : YUK-21091
+    notes : Open source, but supported via donation or purchase
+  
+  - filename : bcpg-fips-1.0.3.jar
+    yukon group : Bouncy Castle
+    project : Bouncy Castle FIPS
+    version : 1.0.3
+    project URL : "https://www.bouncycastle.org/fips-java/"
+    license : MIT-like
+    license URLs : "https://www.bouncycastle.org/license.html"
+    maven URL : n/a
+    md5 : 6cdf2443e93ea54b3d25f02f256b3d3f
+    sha1 : e67f464dc25594fa4dca92281e093eab03e170e0
+    updated : 2020-01-06
+    jira : YUK-21091
     notes : Open source, but supported via donation or purchase
   
   - filename : bsf-2.3.0.jar
