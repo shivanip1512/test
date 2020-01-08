@@ -15,6 +15,7 @@ public enum DatabaseVendor {
     MS2014   ("Microsoft SQL Server", 12),
     MS2016   ("Microsoft SQL Server", 13),
     MS2017   ("Microsoft SQL Server", 14),
+    MS2019   ("Microsoft SQL Server", 15),
     MS_UNKNOWN("Microsoft SQL Server"),
     ORACLE10G("Oracle", 10),
     ORACLE11G("Oracle", 11),
