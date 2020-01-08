@@ -48,7 +48,7 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         sql.append("from point p");
         sql.append("join yukonpaobject ypo on (ypo.paobjectid = p.paobjectid)");
         sql.append("left join pointunit pu on p.pointid = pu.pointid");
-        sql.append("where ypo.category").in(ImmutableList.of(PaoCategory.DEVICE, PaoCategory.CAPCONTROL));
+        sql.append("where ypo.category").in(ImmutableList.of(PaoCategory.DEVICE, PaoCategory.CAPCONTROL, PaoCategory.LOADMANAGEMENT));
         return sql;
     }
     
