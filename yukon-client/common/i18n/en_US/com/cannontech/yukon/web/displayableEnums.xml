@@ -490,7 +490,7 @@
     <entry key="yukon.common.setting.NETWORK_MANAGER_DB_PASSWORD.description">Password for Network Manager database</entry>
     
     <entry key="yukon.common.setting.CLOUD_DATA_SENDING_FREQUENCY">Cloud Data Sending Frequency</entry>
-    <entry key="yukon.common.setting.CLOUD_DATA_SENDING_FREQUENCY.description">Frequency(In Hours) at which data will push to cloud</entry>
+    <entry key="yukon.common.setting.CLOUD_DATA_SENDING_FREQUENCY.description">Frequency(In Minutes) at which data will push to cloud.</entry>
     <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING">Cloud IoT Hub Connection String</entry>
     <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING.description">Cloud IoT Hub Connection String</entry>
     
