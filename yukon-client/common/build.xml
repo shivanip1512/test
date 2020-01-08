@@ -29,7 +29,7 @@
                 <include name="**/*.jar" />
             </fileset>
         </path>
-        <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="false" classpathref="classpathId"/>
+        <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
 
 		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
 			<manifest>
