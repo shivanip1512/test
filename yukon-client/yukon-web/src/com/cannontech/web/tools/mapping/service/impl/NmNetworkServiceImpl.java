@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -85,7 +86,10 @@ import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -120,6 +124,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
+    
+    private final Cache<RfnIdentifier, Node<Pair<Integer, FeatureCollection>>> networkTreeCache =
+            CacheBuilder.newBuilder().expireAfterWrite(8, TimeUnit.HOURS).build();
     
     @PostConstruct
     public void init() {
@@ -552,55 +559,87 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Override
     public List<Node<Pair<Integer, FeatureCollection>>> getPrimaryRoutes(List<Integer> gatewayIds)
             throws NmNetworkException, NmCommunicationException {
-
+        
         List<Node<Pair<Integer, FeatureCollection>>> trees = new ArrayList<>();
         
-        Map<RfnIdentifier, RfnGateway> gatewayIdentifiers = 
-                Maps.uniqueIndex(rfnGatewayService.getGatewaysByPaoIds(gatewayIds), RfnGateway::getRfnIdentifier);
-        if(gatewayIdentifiers.isEmpty()) {
-            log.error("Primary routes can be only found for gateways, not gateways {}", gatewayIds);
-            return null;
+        Map<RfnIdentifier, RfnGateway> gatewaysToSendToNM = new HashMap<>();
+        
+        rfnGatewayService.getGatewaysByPaoIds(gatewayIds).forEach(gateway -> {
+            Node<Pair<Integer, FeatureCollection>> tree = networkTreeCache.getIfPresent(gateway.getRfnIdentifier());
+            if(tree != null) {
+                log.debug("{} found in cache", gateway.getRfnIdentifier());
+                trees.add(tree);
+            } else {
+                gatewaysToSendToNM.put(gateway.getRfnIdentifier(), gateway);
+            }
+        });
+
+        if(gatewaysToSendToNM.isEmpty() && trees.isEmpty()) {
+            log.error("Network tree is per gateway, not gateways {}", gatewayIds);
+            return trees;
         }
-        log.debug("Getting primary routes for gateways: {}", gatewayIdentifiers);
+
+        if(gatewaysToSendToNM.isEmpty()) {
+            //all trees are cached
+            return trees;
+        }
+        
+        log.debug("Getting Network trees from NM for gateways: {}", gatewaysToSendToNM.keySet());
+        
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService
-                .getMetadataForDeviceRfnIdentifiers(gatewayIdentifiers.keySet(), Set.of(PRIMARY_FORWARD_TREE));
+                .getMetadataForDeviceRfnIdentifiers(gatewaysToSendToNM.keySet(), Set.of(PRIMARY_FORWARD_TREE));
+
+        Map<Integer, PaoLocation> locations = getLocationsForDevicesAndGateways(gatewaysToSendToNM.values());
         
-        
-        Set<Integer> filteredGatewayIds = gatewayIdentifiers.values()
-                .stream().map(gateway -> gateway.getPaoIdentifier().getPaoId()).collect(Collectors.toSet());
+        for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
+            if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
+                RfnVertex vertex = (RfnVertex) data.getValue().getMetadatas().get(PRIMARY_FORWARD_TREE);
+                if (log.isDebugEnabled()) {
+                    log.debug("{} Recieved NM VERTEX node count {}", data.getKey(), NetworkDebugHelper.count(vertex));
+                }
+                RfnGateway gateway = gatewaysToSendToNM.get(data.getKey());
+                if(gateway == null) {
+                    log.info("Received network tree for gateway {} that we didn't request, ignoring the network tree", gateway);
+                    continue;
+                }
+                trees.add(createTree(vertex, locations));
+            }
+        }
+
+        return trees;
+    }
+    
+    /**
+     * Converts NM tree to Yukon tree and returns Yukon tree. Caches the Yukon tree.
+     */
+    private Node<Pair<Integer, FeatureCollection>> createTree(RfnVertex vertex,  Map<Integer, PaoLocation> locations) {
+        Node<Pair<Integer, FeatureCollection>> node = createNode(vertex.getRfnIdentifier(), locations); 
+        AtomicInteger totalNodesAdded = new AtomicInteger(1);
+        copy(vertex, node, locations, totalNodesAdded);
+        networkTreeCache.put(vertex.getRfnIdentifier(), node);
+        if (log.isDebugEnabled()) {
+            log.debug("{} Yukon NODE total node count {} null node count {}  gateway node {}",
+                    vertex.getRfnIdentifier(), node.count(false), node.count(true), node.getData());
+            //log.info(node.print());
+        }
+        return node;
+    }
+
+    /**
+     * Returns location for gateways and devices associated with gateways
+     */
+    private Map<Integer, PaoLocation> getLocationsForDevicesAndGateways(Collection<RfnGateway> gateways) {
+        Set<Integer> filteredGatewayIds = gateways.stream().map(gateway -> gateway.getPaoIdentifier()
+                .getPaoId()).collect(Collectors.toSet());
         
         //device locations
         List<PaoLocation> allLocations = paoLocationDao.getLocationsByGateway(filteredGatewayIds);
         //add gateway locations
         allLocations.addAll(paoLocationDao.getLocations(filteredGatewayIds));
+        
         Map<Integer, PaoLocation> locations = Maps.uniqueIndex(allLocations, location -> location.getPaoIdentifier().getPaoId());
-        log.debug("Locations found: {}", locations.size());
-        for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
-            if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
-                RfnVertex vertex = (RfnVertex) data.getValue().getMetadatas().get(PRIMARY_FORWARD_TREE);
-                if (log.isDebugEnabled()) {
-                    log.debug("------------Gateway {} NM VERTEX node count {}", data.getKey(), NetworkDebugHelper.count(vertex));
-                }
-                RfnGateway gateway = gatewayIdentifiers.get(data.getKey());
-                if(gateway == null) {
-                    log.info("Received network tree for gateway {} that we didn't request, ignoring the network tree", gateway);
-                    continue;
-                }
-                log.debug("Received network tree for gateway {}", gateway); 
-                
-                Node<Pair<Integer, FeatureCollection>> node = createNode(vertex.getRfnIdentifier(), locations); 
-                AtomicInteger totalNodesAdded = new AtomicInteger(1);
-                copy(vertex, node, locations, totalNodesAdded);
-                if (log.isDebugEnabled()) {
-                    log.debug("------------Gateway {} Yukon NODE total node count {} null node count {}  gateway node {}",
-                            data.getKey(), node.count(false), node.count(true), node.getData());
-                    //log.info(node.print());
-                }
-                trees.add(node);
-            }
-        }
-
-        return trees;
+        log.debug("Locations found: {}", locations);
+        return locations;
     }
     
     /**
