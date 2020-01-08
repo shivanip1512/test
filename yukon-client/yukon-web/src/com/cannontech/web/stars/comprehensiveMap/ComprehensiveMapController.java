@@ -281,10 +281,8 @@ public class ComprehensiveMapController {
     }
     
     @GetMapping("allPrimaryRoutes")
-    public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds, String groupName) {
-        Map<String, Object> json = new HashMap<>();
-        DeviceGroup group = deviceGroupService.findGroupName(groupName);
-        DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);     
+    public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds) {
+        Map<String, Object> json = new HashMap<>();  
         
         try {
             List<Node<Pair<Integer, FeatureCollection>>> root = nmNetworkService.getPrimaryRoutes(Arrays.asList(gatewayIds));
