@@ -37,6 +37,7 @@ public enum IgnoredThirdPartyJavaLibraries {
     WEB_COMMON("web-common.jar", YUKON_PROJECT),
     YC("yc.jar", YUKON_PROJECT),
     YUKON_APP_SERVER("yukonappserver.jar", YUKON_PROJECT),
+    YUKON_CLOUD_SERVICE("yukon-cloud-service.jar", YUKON_PROJECT),
     YUKON_HELP("yukon-help.jar", YUKON_PROJECT),
     YUKON_MESSAGE_BROKER("yukon-message-broker.jar", YUKON_PROJECT),
     YUKON_SHARED("yukon-shared.jar", YUKON_PROJECT),

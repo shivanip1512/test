@@ -119,6 +119,7 @@
         <ant dir="${yukon-watchdog-service}" target="${dotarget}"/>
         <ant dir="${api-web}" target="${dotarget}" />
         <ant dir="${yukon-web}" target="${dotarget}" />
+        <ant dir="${cloud-service}" target="${dotarget}" />
     </target>
 
     <target name="deploy">

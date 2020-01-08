@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<project name="cloud-service" default="all">
+
+    <property file="../../yukon-client/build/build.properties"/>
+
+    <target name="all" depends="clean,build" />
+
+    <target name="build">
+
+        <echo message="Building Jar : yukon-cloud-service.jar"/>
+        <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
+                 <arg value="/c"/>
+                 <arg value="gradlew"/>
+                 <arg value="bootJar"/>
+        </exec>
+
+        <copy todir="${yukon-client-lib}">
+            <fileset dir="${cloud-service}/build/libs">
+                <include name="*.jar" />
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="clean">
+        <echo message="Deleting cloud service build directory."/>
+        <exec dir="" executable="cmd" failonerror="false" failifexecutionfails="false">
+                 <arg value="/c"/>
+                 <arg value="gradlew"/>
+                 <arg value="clean"/>
+        </exec>
+        <echo message="Cloud service build directory deleted."/>
+    </target>
+
+    <target name="runUnitTests" />
+
+</project>
