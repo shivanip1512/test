@@ -22,9 +22,9 @@ import com.cannontech.loadcontrol.service.data.ProgramStatusType;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
 import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.service.DrJmsMessagingService;
-import com.cannontech.stars.dr.jms.service.DrProgramStatusService;
+import com.cannontech.stars.dr.jms.service.DrJmsProgramStatusService;
 
-public class DrJmsProgramStatusServiceImpl implements DrProgramStatusService {
+public class DrJmsProgramStatusServiceImpl implements DrJmsProgramStatusService {
 
     private final Logger log = YukonLogManager.getLogger(DrJmsProgramStatusServiceImpl.class);
 
