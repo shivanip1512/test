@@ -30,6 +30,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private String ipAddress;
     private String port;
     private ConnectionStatus connectionStatus;
+    private long connectionStatusTimestamp;
     private LastCommStatus lastCommStatus;
     private long lastCommStatusTimestamp;
     private Set<Radio> radios;
@@ -217,7 +218,15 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public void setConnectionStatus(ConnectionStatus connectionStatus) {
         this.connectionStatus = connectionStatus;
     }
-    
+
+    public long getConnectionStatusTimestamp () {
+        return connectionStatusTimestamp ;
+    }
+
+    public void setConnectionStatusTimestamp(long connectionStatusTimestamp ) {
+        this.connectionStatusTimestamp  = connectionStatusTimestamp ;
+    }
+
     public LastCommStatus getLastCommStatus() {
         return lastCommStatus;
     }
@@ -335,9 +344,9 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         final int prime = 31;
         int result = 1;
         result = prime * result + ((admin == null) ? 0 : admin.hashCode());
-        result =
-            prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
+        result = prime * result + ((collectionSchedule == null) ? 0 : collectionSchedule.hashCode());
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
+        result = prime * result + (int) (connectionStatusTimestamp ^ (connectionStatusTimestamp >>> 32));
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
         long temp;
         temp = Double.doubleToLongBits(currentDataStreamingLoading);
@@ -351,14 +360,13 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((ipv6Prefix == null) ? 0 : ipv6Prefix.hashCode());
-        result =
-            prime * result + ((ipv6PrefixSuggested == null) ? 0 : ipv6PrefixSuggested.hashCode());
+        result = prime * result + ((ipv6PrefixSuggested == null) ? 0 : ipv6PrefixSuggested.hashCode());
         result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
-        result =
-            prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
+        result = prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
         temp = Double.doubleToLongBits(maxDataStreamingCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
         result = prime * result + ((radioVersion == null) ? 0 : radioVersion.hashCode());
         result = prime * result + ((radios == null) ? 0 : radios.hashCode());
@@ -372,10 +380,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
-    
 
     @Override
     public boolean equals(Object obj) {
@@ -406,11 +412,13 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         if (connectionStatus != other.connectionStatus) {
             return false;
         }
+        if (connectionStatusTimestamp != other.connectionStatusTimestamp) {
+            return false;
+        }
         if (connectionType != other.connectionType) {
             return false;
         }
-        if (Double.doubleToLongBits(currentDataStreamingLoading) != Double
-            .doubleToLongBits(other.currentDataStreamingLoading)) {
+        if (Double.doubleToLongBits(currentDataStreamingLoading) != Double.doubleToLongBits(other.currentDataStreamingLoading)) {
             return false;
         }
         if (gwTotalNodes != other.gwTotalNodes) {
@@ -465,11 +473,17 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         if (lastCommStatusTimestamp != other.lastCommStatusTimestamp) {
             return false;
         }
-        if (Double.doubleToLongBits(maxDataStreamingCapacity) != Double
-            .doubleToLongBits(other.maxDataStreamingCapacity)) {
+        if (Double.doubleToLongBits(maxDataStreamingCapacity) != Double.doubleToLongBits(other.maxDataStreamingCapacity)) {
             return false;
         }
         if (mode != other.mode) {
+            return false;
+        }
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.equals(other.name)) {
             return false;
         }
         if (port == null) {
@@ -559,35 +573,25 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         } else if (!versionConflicts.equals(other.versionConflicts)) {
             return false;
         }
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", hardwareVersion="
-               + hardwareVersion + ", softwareVersion=" + softwareVersion + ", upperStackVersion="
-               + upperStackVersion + ", radioVersion=" + radioVersion + ", releaseVersion="
-               + releaseVersion + ", versionConflicts=" + versionConflicts + ", mode=" + mode
-               + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port="
-               + port + ", connectionStatus=" + connectionStatus + ", lastCommStatus="
-               + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp
-               + ", radios=" + radios + ", routeColor=" + routeColor + ", ipv6Prefix=" + ipv6Prefix
-               + ", ipv6PrefixSuggested=" + ipv6PrefixSuggested + ", superAdmin=" + superAdmin
-               + ", admin=" + admin + ", collectionSchedule=" + collectionSchedule + ", sequences="
-               + sequences + ", updateServerUrl=" + updateServerUrl + ", updateServerLogin="
-               + updateServerLogin + ", maxDataStreamingCapacity=" + maxDataStreamingCapacity
-               + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes="
-               + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
-               + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN="
-               + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
-               + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "name=" + name + "]";
+        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", name=" + name + ", hardwareVersion=" + hardwareVersion
+                + ", softwareVersion=" + softwareVersion + ", upperStackVersion=" + upperStackVersion + ", radioVersion="
+                + radioVersion + ", releaseVersion=" + releaseVersion + ", versionConflicts=" + versionConflicts + ", mode="
+                + mode + ", connectionType=" + connectionType + ", ipAddress=" + ipAddress + ", port=" + port
+                + ", connectionStatus=" + connectionStatus + ", connectionStatusTimestamp=" + connectionStatusTimestamp
+                + ", lastCommStatus=" + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp + ", radios="
+                + radios + ", routeColor=" + routeColor + ", ipv6Prefix=" + ipv6Prefix + ", ipv6PrefixSuggested="
+                + ipv6PrefixSuggested + ", superAdmin=" + superAdmin + ", admin=" + admin + ", collectionSchedule="
+                + collectionSchedule + ", sequences=" + sequences + ", updateServerUrl=" + updateServerUrl
+                + ", updateServerLogin=" + updateServerLogin + ", maxDataStreamingCapacity=" + maxDataStreamingCapacity
+                + ", currentDataStreamingLoading=" + currentDataStreamingLoading + ", gwTotalNodes=" + gwTotalNodes
+                + ", gwTotalReadyNodes=" + gwTotalReadyNodes + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes
+                + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
+                + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
     }
-    
+
 }
