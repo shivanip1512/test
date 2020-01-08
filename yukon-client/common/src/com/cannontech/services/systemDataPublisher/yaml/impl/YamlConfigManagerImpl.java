@@ -2,7 +2,6 @@ package com.cannontech.services.systemDataPublisher.yaml.impl;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.encryption.SystemPublisherMetadataEncryption;
+import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
@@ -31,8 +30,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class YamlConfigManagerImpl implements YamlConfigManager {
 
-    private final String SYSTEM_PUBLISHER_METADATA = "systemPublisherMetadata.yaml";
-    private final String AUTO_ENCRYPTED_TEXT = "\\(AUTO_ENCRYPTED\\)";
+    private final String SYSTEM_PUBLISHER_METADATA = "encryptedSystemPublisherMetadata.yaml";
+    private final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
     private final Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDictionaries = new ConcurrentHashMap<>();
 
@@ -79,6 +78,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
 
     /**
      * Create and return List of DictionariesField object after decrypting source field.
+     * @param fields : List of DictionariesField with encrypted source field.
      * 
      */
     private List<DictionariesField> getDecryptedDictionaries(List<DictionariesField> fields) {
@@ -91,24 +91,16 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     }
 
     /**
-     * Return whole SQL script after decrypting the multi / Single line encrypted query.
-     * 
+     * Return  SQL script after decrypting the source. If any error occurred while decryption returns empty string.
+     * @param encryptedSource : Encrypted source field
      */
-    private String getDecryptedSource(String multiLineSource) {
-        StringBuilder encryptedSource = new StringBuilder();
-        Arrays.stream(multiLineSource.split(AUTO_ENCRYPTED_TEXT))
-              .forEach(source -> {
-                  if (StringUtils.isNotEmpty(source)) {
-                        String encryptedSubSource = StringUtils.EMPTY;
-                        try {
-                            encryptedSubSource = SystemPublisherMetadataEncryption.decrypt(source.trim());
-                        } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
-                            log.error("Error while decrypting ", e);
-                        }
-                        encryptedSource.append(encryptedSubSource.trim()).append(StringUtils.SPACE);
-                    }
-              });
-        return encryptedSource.toString();
+    private String getDecryptedSource(String encryptedSource) {
+        try {
+            return SystemPublisherMetadataCryptoUtils.decrypt(encryptedSource.substring(AUTO_ENCRYPTED_TEXT.length()).trim());
+        } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
+            log.error("Error while decrypting source field.", e);
+            return StringUtils.EMPTY;
+        }
     }
 
     @Override

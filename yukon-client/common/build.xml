@@ -23,6 +23,14 @@
 			</classpath>
 		</javac>
 
+        <path id="classpathId">
+            <pathelement location="${yukon-shared}\build\classes"/>
+            <fileset dir="${yukon.lib}">
+                <include name="**/*.jar" />
+            </fileset>
+        </path>
+        <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
+
 		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
 			<manifest>
 				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
@@ -34,6 +42,7 @@
 				<include name="**/*.gif"/>
 				<include name="**/*.png"/>
 				<include name="**/*.au"/>
+				<include name="**/*.yaml"/>
 			</fileset>
 			<fileset dir="src">
 				<exclude name="**/*.java"/>
