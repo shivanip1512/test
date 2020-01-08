@@ -1460,4 +1460,6 @@
         container-type="simple">
         <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="drAttributeDataJmsListener" method="pointDataReceived"/>
     </jms:listener-container>
+
+    <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
 </beans>
