@@ -2,6 +2,7 @@ package com.cannontech.services.systemDataPublisher.context;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -21,10 +22,15 @@ public class NetworkManagerDBConfig {
     @Bean(name = "nmDataSource")
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        String networkManagerHost = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_HOSTNAME);
+        String url = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_URL);
+        if (StringUtils.isNotBlank(url))
+            dataSource.setUrl(url);
+        else {
+            String networkManagerHost = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_HOSTNAME);
+            dataSource.setUrl(buildUrl(networkManagerHost));
+        }
         String userName = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_USER);
         String password = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_PASSWORD);
-        dataSource.setUrl(buildUrl(networkManagerHost));
         dataSource.setUsername(userName);
         dataSource.setPassword(password);
         dataSource.setDriverClassName("net.sourceforge.jtds.jdbc.Driver");
