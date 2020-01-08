@@ -404,7 +404,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 {
     E2eDataRequestMsg msg = createMessageFromRequest(req, asid);
 
-    CTILOG_DEBUG(dout, "Sending E2E request with message ID " << msg.header.messageId);
+    CTILOG_DEBUG(dout, "Sending E2E request to " << req.rfnIdentifier << " with message ID " << msg.header.messageId);
 
     SerializedMessage serialized;
 

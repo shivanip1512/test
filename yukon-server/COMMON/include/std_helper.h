@@ -200,6 +200,12 @@ boost::iterator_range<T*> arrayToRange(T* arr, size_t len)
     return boost::make_iterator_range(arr, arr+len);
 }
 
+template <typename T, size_t Size>
+boost::iterator_range<T*> arrayToRange(std::array<T, Size>& arr)
+{
+    return boost::make_iterator_range(arr.data(), arr.data() + arr.size());
+}
+
 template<size_t size>
 static constexpr uint8_t log2()
 {

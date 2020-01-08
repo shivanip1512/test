@@ -259,54 +259,37 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            Bytes payload;
-            std::optional<Block> block;
-            size_t totalSent;
+            Block block = message.block
+                            .value_or(Block { 0, true, E2EDT_DEFAULT_BLOCK_SIZE });
 
-            if( ! message.block && program.size() <= E2EDT_DEFAULT_BLOCK_SIZE.getSize() )
+            if( program.size() < block.start() )
             {
-                CTILOG_INFO(dout, "Sending meter programming reply, fits in a single packet: "
-                    << FormattedList::of("Device", rfnIdentifier,
-                        "GUID", guid,
-                        "Program size", program.size()));
+                sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
-                payload = program;
-                totalSent = program.size();
+                CTILOG_WARN(dout, "Meter program request block beyond end of program for device " << rfnIdentifier);
+
+                return;
             }
-            else
-            {
-                block = message.block
-                               .value_or(Block { 0, true, E2EDT_DEFAULT_BLOCK_SIZE });
 
-                if( program.size() < block->start() )
-                {
-                    sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
+            block.more = program.size() > block.end();
 
-                    CTILOG_WARN(dout, "Meter program request block beyond end of program for device " << rfnIdentifier);
+            auto begin = program.begin() + block.start();
+            auto end = block.more
+                ? program.begin() + block.end()
+                : program.end();
+            auto totalSent = block.more
+                ? block.end()
+                : program.size();
 
-                    return;
-                }
+            CTILOG_INFO(dout, "Sending meter programming block reply: "
+                << FormattedList::of("Device", rfnIdentifier,
+                    "GUID", guid,
+                    "Program size", program.size(),
+                    "Block number", block.num,
+                    "Block size", block.blockSize.getSize(),
+                    "Last block", ! block.more));
 
-                block->more = program.size() > block->end();
-
-                auto begin = program.begin() + block->start();
-                auto end = block->more
-                    ? program.begin() + block->end()
-                    : program.end();
-                totalSent = block->more
-                    ? block->end()
-                    : program.size();
-
-                CTILOG_INFO(dout, "Sending meter programming block reply: "
-                    << FormattedList::of("Device", rfnIdentifier,
-                        "GUID", guid,
-                        "Program size", program.size(),
-                        "Block number", block->num,
-                        "Block size", block->blockSize.getSize(),
-                        "Last block", ! block->more));
-
-                payload.assign(begin, end);
-            }
+            Bytes payload { begin, end };
 
             sendE2eDataReply(message.id, payload, asid, rfnIdentifier, *message.token, block);
 

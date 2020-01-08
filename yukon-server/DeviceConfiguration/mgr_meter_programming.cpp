@@ -8,9 +8,13 @@
 
 #include "database_reader.h"
 #include "encryption.h"
+#include "checksums.h"
 #include "std_helper.h"
 
 #include <meterProgramConverter/exports.h>
+#include <io.h>
+
+using Cti::Logging::Range::Hex::operator<<;
 
 namespace Cti::MeterProgramming {
 
@@ -21,28 +25,46 @@ namespace {
 
 auto MeterProgrammingManager::getProgram(const std::string guid) -> Bytes
 {
+    CTILOG_DEBUG(dout, guid);
+
     if( std::lock_guard lg(programMux); 
         auto existingProgram = mapFindRef(_programs, guid) )
     {
+        CTILOG_DEBUG(dout, "Returning existing program" << FormattedList::of(
+            "GUID", guid,
+            "Program size", existingProgram->size()));
+
         return *existingProgram;
     }
+
+    CTILOG_DEBUG(dout, "Program not found, loading: " << guid);
 
     return loadProgram(guid);
 }
 
 size_t MeterProgrammingManager::getProgramSize(const std::string guid)
 {
-    if( std::lock_guard lg(programMux); 
+    CTILOG_DEBUG(dout, guid);
+
+    if( std::lock_guard lg(programMux);
         auto existingProgram = mapFindRef(_programs, guid) )
     {
+        CTILOG_DEBUG(dout, "Returning existing program" << FormattedList::of(
+            "GUID", guid,
+            "Program size", existingProgram->size()));
+
         return existingProgram->size();
     }
+
+    CTILOG_DEBUG(dout, "Program not found, loading: " << guid);
 
     return loadProgram(guid).size();
 }
 
 auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> RawProgram
 {
+    CTILOG_DEBUG(dout, guid);
+
     std::string sql = "select program, password from MeterProgram where guid = ?";
 
     Database::DatabaseConnection conn;
@@ -59,12 +81,19 @@ auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> RawProgr
         return {};
     }
 
-    const auto program = rdr["program"] .as<Bytes>();
+    const auto program = rdr["program"].as<Bytes>();
     const auto encryptedPasswordString = rdr["password"].as<std::string>();
 
     const auto encryptedPassword = convertHexStringToBytes(encryptedPasswordString);
 
     const auto password = Cti::Encryption::decrypt(Cti::Encryption::SharedKeyfile, encryptedPassword);
+
+    CTILOG_DEBUG(dout, "Loaded program from DB" << FormattedList::of(
+        "Program length", program.size(),
+        "Program MD5", arrayToRange(calculateMd5Digest(program)),
+        "Encrypted password string length", encryptedPasswordString.size(),
+        "Encrypted password length", encryptedPassword.size(),
+        "Decrypted password length", password.size()));
 
     return { program, password };
 }
@@ -72,6 +101,8 @@ auto MeterProgrammingManager::loadRawProgram(const std::string guid) -> RawProgr
 
 auto MeterProgrammingManager::loadProgram(const std::string guid) -> Bytes
 {
+    CTILOG_DEBUG(dout, guid);
+
     auto raw = loadRawProgram(guid);
 
     if( raw.program.empty() )
@@ -81,34 +112,131 @@ auto MeterProgrammingManager::loadProgram(const std::string guid) -> Bytes
         return {};
     }
 
-    //  convert to char
-    std::vector<char> charProgram  { raw.program.begin(),  raw.program.end() };
-    std::vector<char> charPassword { raw.password.begin(), raw.password.end() };
-
-    FILEINFO_t fileInfo { charProgram.data(), static_cast<uint16_t>(charProgram.size()), 
-                          charPassword.data(), static_cast<uint8_t>(charPassword.size()) };
-
     std::lock_guard lg(programMux);
 
+    auto convertedBuffer = convertRawProgram(raw, guid);
+
+    if( convertedBuffer.empty() )
+    {
+        return {};
+    }
+
+    CTILOG_DEBUG(dout, "Converted meter program" << FormattedList::of(
+        "GUID", guid,
+        "Converted size", globalBuffer.size()));
+
+    return _programs[guid] = convertedBuffer;
+}
+
+namespace {
+
+struct stdout_state
+{
+    const int stdout_fd;
+    const int stdout_fd_orig;
+    HANDLE readPipe;
+    HANDLE writePipe;
+    int writePipe_fd;
+};
+
+stdout_state capture_printf()
+{
+    const int stdout_fd = 1;
+    const int stdout_fd_orig = _dup(stdout_fd);
+    HANDLE readPipe  = INVALID_HANDLE_VALUE;
+    HANDLE writePipe = INVALID_HANDLE_VALUE;
+    int writePipe_fd = -1;
+
+    if( ! CreatePipe(&readPipe, &writePipe, nullptr, 64 * 1024) )
+    {
+        CTILOG_DEBUG(dout, "Could not create pipe for stdout redirection");
+    }
+    else
+    {
+        writePipe_fd = _open_osfhandle(reinterpret_cast<intptr_t>(writePipe), 0);
+
+        if( _dup2(writePipe_fd, stdout_fd) )
+        {
+            CTILOG_DEBUG(dout, "Could not reassign stdout to writePipe " << writePipe_fd);
+
+            _close(writePipe_fd);
+            writePipe_fd = -1;
+        }
+    }
+
+    return { stdout_fd, stdout_fd_orig, readPipe, writePipe, writePipe_fd };
+}
+
+std::vector<std::string> restore_printf(const stdout_state state)
+{
+    std::vector<std::string> results;
+
+    if( state.writePipe_fd != -1 )
+    {
+        _dup2(state.stdout_fd_orig, state.stdout_fd);
+        _close(state.writePipe_fd);
+    }
+    if( state.readPipe != INVALID_HANDLE_VALUE )
+    {
+        std::array<char, 8192> buffer;
+
+        DWORD bytesRead;
+
+        for( int chunk = 1; ReadFile(state.readPipe, buffer.data(), buffer.size(), &bytesRead, nullptr) && bytesRead; ++chunk )
+        {
+            results.emplace_back(
+                buffer.data(), 
+                buffer.data() + bytesRead);
+        }
+
+        CloseHandle(state.readPipe);
+    }
+
+    return results;
+}
+
+}
+
+auto MeterProgrammingManager::convertRawProgram(const RawProgram &raw, const std::string guid) -> Bytes
+{
+    //  convert to char
+    std::vector<char> charProgram{ raw.program.begin(),  raw.program.end() };
+    std::vector<char> charPassword{ raw.password.begin(), raw.password.end() };
+
+    FILEINFO_t fileInfo{ charProgram.data(), static_cast<uint16_t>(charProgram.size()),
+                            charPassword.data(), static_cast<uint8_t>(charPassword.size()) };
+
     auto captureToBuffer = [](void *buf, size_t len) {
+        CTILOG_DEBUG(dout, "Conversion callback " << buf << ":" << len);
         auto ucBuf = reinterpret_cast<unsigned char*>(buf);
         globalBuffer.assign(ucBuf, ucBuf + len);
     };
 
+    const auto state = capture_printf();
+    
     if( auto error = conProcessBlob(&fileInfo, captureToBuffer) )
     {
         CTILOG_ERROR(dout, "Error processing meter program buffer" << FormattedList::of(
             "Error", error,
             "GUID", guid));
-
-        return {};
     }
 
-    return _programs[guid] = globalBuffer;
+    CTILOG_DEBUG(dout, "Output from RMP converter DLL BEGIN");
+
+    for( const auto& line : restore_printf(state) )
+    {
+        CTILOG_DEBUG(dout, line);
+    }
+
+    CTILOG_DEBUG(dout, "Output from RMP converter DLL END");
+
+    return globalBuffer;
 }
 
 std::optional<ProgramDescriptor> MeterProgrammingManager::describeAssignedProgram(const RfnIdentifier rfnIdentifier)
 {
+    CTILOG_DEBUG(dout, rfnIdentifier);
+
     const std::string sql =
         "select guid"
         " from"
@@ -149,6 +277,8 @@ std::optional<ProgramDescriptor> MeterProgrammingManager::describeAssignedProgra
 
 bool MeterProgrammingManager::isUploading(const RfnIdentifier rfnIdentifier, const std::string guid)
 {
+    CTILOG_DEBUG(dout, rfnIdentifier << ": " << guid);
+
     const std::string sql = 
         "select 1"
         " from"

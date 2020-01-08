@@ -337,6 +337,7 @@
     <ClCompile Include="boost_assert.cpp" />
     <ClCompile Include="resource_helper.cpp" />
     <ClCompile Include="test_CallSite.cpp" />
+    <ClCompile Include="test_checksums.cpp" />
     <ClCompile Include="test_DeviceAttributeLookup.cpp" />
     <ClCompile Include="test_cmdparse.cpp">
     </ClCompile>
