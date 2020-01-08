@@ -77,6 +77,7 @@ public class IOTHubService extends AzureCloudService {
                 client.open();
             } catch (IllegalArgumentException | URISyntaxException | IOException e) {
                 log.error("Unable to create connection with IOT hub. " + e);
+                client = null;
                 return false;
             }
         }
