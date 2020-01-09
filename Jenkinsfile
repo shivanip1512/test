@@ -130,7 +130,8 @@ pipeline {
                                                [$class: 'SparseCheckoutPaths',
                                                 sparseCheckoutPaths: [[path: 'yukon-install'],
                                                                       [path: 'yukon-build'],
-                                                                      [path: 'yukon-database']]],
+                                                                      [path: 'yukon-database'],
+                                                                      [path: 'yukon-applications']]],
                                                [$class: 'AuthorInChangelog']],
                                   submoduleCfg: [],
                                   userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])

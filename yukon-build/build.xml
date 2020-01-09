@@ -175,6 +175,7 @@
             <fileset dir="${basedir}/yukon-client/yukon-message-broker/conf"/>
             <fileset dir="${basedir}/yukon-client/yukon-watchdog-service/conf"/>
             <fileset dir="${basedir}/yukon-client/sensus-jms/conf"/>
+            <fileset dir="${basedir}/yukon-applications/cloud-service/conf"/>
         </copy>
         
         <antcall target="copy_web_content"/>
