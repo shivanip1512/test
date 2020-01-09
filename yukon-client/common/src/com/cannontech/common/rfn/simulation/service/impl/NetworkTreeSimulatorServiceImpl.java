@@ -36,13 +36,13 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
     
     private void initSettings() {
         nodeNullPercent = yukonSimulatorSettingsDao
-                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_NULL_PERCENT);
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL);
         branchMin = yukonSimulatorSettingsDao
-                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MIN);
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP);
         branchMax = yukonSimulatorSettingsDao
-                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MAX);
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP);
         devicesAroundTheGateway = yukonSimulatorSettingsDao
-                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_AROUND_THE_GATEWAY);
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP);
         log.info("nodeNullPercent:{} branchMin:{} branchMax:{} devicesAroundTheGateway:{}", nodeNullPercent,
                 branchMin, branchMax, devicesAroundTheGateway);
     }

@@ -548,10 +548,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             simulatedNmMappingSettings.setParentReplyType(RfnParentReplyType.valueOf((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE.getDefaultValue()));
             
             //Network Tree
-            simulatedNmMappingSettings.setEmptyNullPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_NULL_PERCENT));
-            simulatedNmMappingSettings.setBranchNodesMin(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MIN));
-            simulatedNmMappingSettings.setBranchNodesMax(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MAX));
-            simulatedNmMappingSettings.setNodesAroundTheGateway(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_AROUND_THE_GATEWAY));
+            simulatedNmMappingSettings.setEmptyNullPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL));
+            simulatedNmMappingSettings.setMinHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP));
+            simulatedNmMappingSettings.setMaxHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP));
+            simulatedNmMappingSettings.setNodesOneHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP));
             
             settings = simulatedNmMappingSettings;
         }

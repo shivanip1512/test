@@ -120,17 +120,17 @@
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Hops around the gateway">
-                <tags:input path="nodesAroundTheGateway" size="5"/>
+                <tags:input path="nodesOneHop" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Min Hop Count">
-                <tags:input path="branchNodesMin" size="5"/>
+                <tags:input path="minHop" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Max Hop Count">
-                <tags:input path="branchNodesMax" size="5"/>
+                <tags:input path="maxHop" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
