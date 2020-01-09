@@ -57,7 +57,7 @@ public class NetworkManagerDBConfig {
     /**
      * Check whether Network Manager DB Connection configurations are provided in Global setting or not.
      * 
-     * @return true: If Global setting for Network Manager DB configurations () are present return true
+     * @return true If Global setting for Network Manager DB configurations are present, false otherwise.
      */
     public boolean isNetworkManagerDBConnectionConfigured() {
 
