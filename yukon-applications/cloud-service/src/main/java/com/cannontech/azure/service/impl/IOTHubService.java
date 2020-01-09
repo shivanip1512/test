@@ -102,7 +102,7 @@ public class IOTHubService extends AzureCloudService {
                     log.warn("Device twin is already started " + ex);
                 }
             }
-        }, 2, getConfigurationSetting().getFrequency() * 5, TimeUnit.MINUTES);
+        }, 2, getConfigurationSetting().getFrequency(), TimeUnit.MINUTES);
     }
 
     private void prepareAndPushData() throws IllegalArgumentException, UnsupportedOperationException, IOException {

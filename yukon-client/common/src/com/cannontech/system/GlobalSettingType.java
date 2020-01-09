@@ -179,7 +179,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     NETWORK_MANAGER_DB_PASSWORD(GlobalSettingSubCategory.MISC, stringType(), null),
     NETWORK_MANAGER_DB_USER(GlobalSettingSubCategory.MISC, stringType(), null),
     NETWORK_MANAGER_DB_HOSTNAME(GlobalSettingSubCategory.MISC, stringType(), null),
-    CLOUD_DATA_SENDING_FREQUENCY(GlobalSettingSubCategory.MISC, 6, Range.inclusive(1, Integer.MAX_VALUE)),
+    CLOUD_DATA_SENDING_FREQUENCY(GlobalSettingSubCategory.MISC, 15, Range.inclusive(1, Integer.MAX_VALUE)),
     CLOUD_IOT_HUB_CONNECTION_STRING(GlobalSettingSubCategory.MISC, stringType(), null),
 
     // Misc. > Web Graph
