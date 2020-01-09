@@ -80,7 +80,6 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ pao: pao });
             
-        icon.setId(feature.id);
         icon.setStyle(style);
         _deviceOriginalStyle = style;
             
@@ -124,7 +123,6 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ parent: parent, pao: pao });
         
-        icon.setId(feature.id);
         icon.setStyle(style);
     
         if (src_projection === _destProjection) {
@@ -259,7 +257,6 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
             icon = new ol.Feature({ neighbor: neighbor, pao: pao });
             
-            icon.setId(feature.id);
             icon.setStyle(style);
             
             if (src_projection === _destProjection) {
@@ -366,7 +363,6 @@ yukon.map.network = (function () {
                 style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
                 icon = new ol.Feature({ routeInfo: route, pao: pao });
             
-            icon.setId(feature.id);
             icon.setStyle(style);
             
             //the first device in the route will be the focus device
@@ -461,7 +457,6 @@ yukon.map.network = (function () {
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
             icon = new ol.Feature({ nearby: nearby, pao: pao });
             
-            icon.setId(feature.id);
             icon.setStyle(style);
             
             if (src_projection === _destProjection) {
@@ -547,11 +542,12 @@ yukon.map.network = (function () {
     
     _removeFeatureFromLayer = function(layer, paoId) {
         if (layer) {
-            var source = layer.getSource(),
-                feature = source.getFeatureById(paoId);
-            if (feature) {
-                source.removeFeature(feature);
-            }
+            var source = layer.getSource();
+            source.getFeatures().forEach(function (feature) {
+                if (feature.get('pao').paoId === paoId) {
+                    source.removeFeature(feature);
+                }
+            });
         }
     },
     
