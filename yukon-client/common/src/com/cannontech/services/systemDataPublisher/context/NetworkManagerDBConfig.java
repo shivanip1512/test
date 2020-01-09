@@ -53,4 +53,27 @@ public class NetworkManagerDBConfig {
         url.append(":1433;");
         return url.toString();
     }
+
+    /**
+     * Check whether Network Manager DB Connection configurations are provided in Global setting or not.
+     * 
+     * @return true: If Global setting for Network Manager DB configurations () are present return true
+     */
+    public boolean isNetworkManagerDBConnectionConfigured() {
+
+        String userName = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_USER);
+        String password = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_PASSWORD);
+        if (StringUtils.isEmpty(userName) || StringUtils.isEmpty(password)) {
+            return false;
+        }
+        String url = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_URL);
+        if (StringUtils.isNotEmpty(url)) {
+            return true;
+        }
+        String networkManagerHost = globalSettingDao.getString(GlobalSettingType.NETWORK_MANAGER_DB_HOSTNAME);
+        if (StringUtils.isNotEmpty(networkManagerHost)) {
+            return true;
+        }
+        return false;
+    }
 }
