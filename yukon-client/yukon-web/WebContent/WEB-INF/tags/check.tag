@@ -54,7 +54,7 @@
     
 </cti:displayForPageEditModes>
 
-<c:if test="${mode == 'EDIT' or mode == 'CREATE' or forceDisplayCheckbox}">
+<c:if test="${mode == 'EDIT' or mode == 'CREATE' or forceDisplayCheckbox or empty mode}">
     <label class="switch-btn">
         <c:choose>
             <c:when test="${not empty name}">

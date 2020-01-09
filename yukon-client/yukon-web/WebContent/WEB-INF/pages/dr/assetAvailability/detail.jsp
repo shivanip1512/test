@@ -49,8 +49,8 @@
                         </cti:list>
                         <tags:deviceGroupPicker inputName="deviceSubGroups" inputValue="${groups}" multi="true"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".range">
-                        <div class="button-group stacked">
+                    <tags:nameValue2 nameKey=".range" nameClass="vam">
+                        <div class="button-group stacked MB5">
                             <c:forEach var="status" items="${statusTypes}">
                                 <c:set var="checked" value="${false}"/>
                                 <c:forEach var="statusEnum" items="${statuses}">
