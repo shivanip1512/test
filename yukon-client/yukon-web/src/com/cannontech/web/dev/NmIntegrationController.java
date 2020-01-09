@@ -1001,7 +1001,10 @@ public class NmIntegrationController {
     @RequestMapping(value="updateMappingSettings", method = RequestMethod.POST)
     public String updateMappingSettings(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
         retrieveFlagSettings(currentSettings, request);
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NETWORK_TREE_NULL_PERCENT, currentSettings.getEmptyNullPercent());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_NULL_PERCENT, currentSettings.getEmptyNullPercent());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MIN, currentSettings.getBranchNodesMin());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MAX, currentSettings.getBranchNodesMax());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_AROUND_THE_GATEWAY, currentSettings.getNodesAroundTheGateway());
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.UPDATE_SETTINGS);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated"), flash);
         model.addAttribute("simulatorRunning", true);

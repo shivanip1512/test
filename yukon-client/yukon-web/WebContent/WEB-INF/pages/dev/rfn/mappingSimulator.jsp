@@ -118,6 +118,21 @@
                 <tags:input path="emptyNullPercent" size="5"/>%
             </tags:nameValue>
         </tags:nameValueContainer>
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="Hops around the gateway">
+                <tags:input path="nodesAroundTheGateway" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="Banch nodes min">
+                <tags:input path="branchNodesMin" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="Banch nodes max">
+                <tags:input path="branchNodesMax" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
     </tags:sectionContainer>
     
     </div>

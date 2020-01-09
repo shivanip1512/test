@@ -49,9 +49,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
     
     private final static Logger log = YukonLogManager.getLogger(PaoLocationSimulatorServiceImpl.class);
     
-    private static final int MAX_RADIUS_IN_METERS = 50000;
-    private static final int MAX_DEVICE_COUNT = 250000;
-    
+   
     public static class Starbucks {
         public double longitude;
         public double latitude;
@@ -135,7 +133,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         int deviceChunkCounter = 0;
 
         // radius around starbucks
-        int radius = getEstimatedRadius(numberOfDevicesPerGateway);
+        int radius = 25000;
 
         List<PaoLocation> newLocations = new ArrayList<>();
 
@@ -146,8 +144,8 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
             }
             PaoLocation gatewayLocation = locations.get(gateway.getPaoIdentifier());
             if (gatewayLocation == null) {
-                log.info("mapping {} to the starbucks #{}", gateway.getName(), starbucksCounter);
                 Starbucks location = starbucksLocations.get(starbucksCounter++);
+                log.info("mapping {} to the starbucks #{} {}" , gateway.getName(), starbucksCounter, location);
                 gatewayLocation = new PaoLocation(gateway.getPaoIdentifier(), location.latitude, location.longitude,
                         Origin.SIMULATOR, new Instant());
                 newLocations.add(gatewayLocation);
@@ -240,13 +238,6 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
                 log.error("Unable to update device {} with {}", d, rfId);
             }
         });
-    }
-    
-    private int getEstimatedRadius(int deviceCount){
-        if(deviceCount >= MAX_DEVICE_COUNT){
-            return MAX_RADIUS_IN_METERS;
-        }
-        return deviceCount * MAX_RADIUS_IN_METERS / MAX_DEVICE_COUNT;
     }
     
     /**

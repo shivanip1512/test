@@ -548,7 +548,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             simulatedNmMappingSettings.setParentReplyType(RfnParentReplyType.valueOf((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE.getDefaultValue()));
             
             //Network Tree
-            simulatedNmMappingSettings.setEmptyNullPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NETWORK_TREE_NULL_PERCENT));
+            simulatedNmMappingSettings.setEmptyNullPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_NULL_PERCENT));
+            simulatedNmMappingSettings.setBranchNodesMin(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MIN));
+            simulatedNmMappingSettings.setBranchNodesMax(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_TREE_BRANCH_NODES_MAX));
+            simulatedNmMappingSettings.setNodesAroundTheGateway(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_AROUND_THE_GATEWAY));
             
             settings = simulatedNmMappingSettings;
         }
