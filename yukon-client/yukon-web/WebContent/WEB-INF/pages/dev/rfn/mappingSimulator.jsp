@@ -124,12 +124,12 @@
             </tags:nameValue>
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Banch nodes min">
+            <tags:nameValue name="Min Hop Count">
                 <tags:input path="branchNodesMin" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Banch nodes max">
+            <tags:nameValue name="Max Hop Count">
                 <tags:input path="branchNodesMax" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
