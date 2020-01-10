@@ -8,21 +8,21 @@ import org.joda.time.Instant;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
-import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
+import com.cannontech.amr.rfn.service.processor.RfnOutageLogEventConditionDataProcessorHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
 
-public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnEventConditionDataProcessorHelper
-        implements RfnArchiveRequestProcessor {
+public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnOutageLogEventConditionDataProcessorHelper{
     
     public static final Logger log = YukonLogManager.getLogger(RfnOutageBlinkEventArchiveRequestProcessor.class);
     
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
-        log.debug("Outage Blink event received for archiving");
+        log.debug("Outage Blink event received for archiving Device: " + device + " Event: " + event);
+        var eventInstant = instantOf(event);
+
         rfnMeterEventService.processAttributePointData(device, 
                                                        pointDatas, 
                                                        BuiltInAttribute.RFN_BLINK_COUNT, 
@@ -30,8 +30,10 @@ public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnEventConditio
                                                        getLongEventData(event, RfnConditionDataType.COUNT),
                                                        now);
 
-        // The OUTAGE_BLINK event may contain RfnConditionDataType.EVENT_END_TIME (time outage ended), but we do not use it at present.
-        // The outage log for blinks is created by RfnRestoreBlinkEventArchiveRequestProcessor. 
+        // The OUTAGE_BLINK event SHOULD contain RfnConditionDataType.EVENT_END_TIME (time outage ended), we do not use it at present.
+        // The outage log for blinks is created by RfnBlinkEventConditionDataProcessorHelper.
+
+        processOutageLog(device, event, pointDatas, now, eventInstant);
     }
     
     @Override

@@ -8,21 +8,21 @@ import org.joda.time.Instant;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.service.processor.RfnRestoreEventConditionDataProcessorHelper;
+import com.cannontech.amr.rfn.service.processor.RfnOutageLogEventConditionDataProcessorHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
 
-public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnRestoreEventConditionDataProcessorHelper {
+public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnOutageLogEventConditionDataProcessorHelper {
     
     public static final Logger log = YukonLogManager.getLogger(RfnRestoreBlinkEventArchiveRequestProcessor.class);
     
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
-        log.debug("Restore Blink event received for archiving");
+        log.debug("Restore Blink event received for archiving Device: \" + device + \" Event: \" + event");
         var eventInstant = instantOf(event);
-        
+
         rfnMeterEventService.processAttributePointData(device, 
                                                        pointDatas, 
                                                        BuiltInAttribute.RFN_BLINK_RESTORE_COUNT, 
@@ -32,7 +32,7 @@ public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnRestoreEvent
         
         processOutageLog(device, event, pointDatas, now, eventInstant);
     }
-    
+
     @Override
     public RfnConditionType getRfnConditionType() {
         return RfnConditionType.RESTORE_BLINK;
