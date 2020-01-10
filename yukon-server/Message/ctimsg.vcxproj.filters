@@ -183,6 +183,9 @@
     <ClCompile Include="LMMeterDisconnectMessages.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MeterProgramStatusArchiveRequestMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\amq_connection.h">
@@ -396,6 +399,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\LMMeterDisconnectMessages.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MeterProgramStatusArchiveRequestMsg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

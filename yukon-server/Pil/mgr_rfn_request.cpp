@@ -12,7 +12,6 @@
 #include "std_helper.h"
 #include "mgr_device.h"
 #include "MeterProgramStatusArchiveRequestMsg.h"
-#include "pil_message_serialization.h"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/range/adaptor/map.hpp>
@@ -161,26 +160,6 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
     return completedDevices;
 }
-
-
-void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & msg)
-{
-    using namespace Cti::Messaging;
-    using namespace Cti::Messaging::Pil;
-    using namespace Cti::Messaging::Serialization;
-    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
-
-    if( auto serializedMsg = MessageSerializer<MeterProgramStatusArchiveRequestMsg>::serialize(msg); 
-        serializedMsg.empty() )
-    {
-        CTILOG_ERROR(dout, "Could not serialize MeterProgramStatusArchiveRequestMsg for " << msg.rfnIdentifier);
-    }
-    else
-    {
-        ActiveMQConnectionManager::enqueueMessage(OutboundQueue::MeterProgramStatusArchiveRequest, serializedMsg);
-    }
-}
-
 
 void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
 {

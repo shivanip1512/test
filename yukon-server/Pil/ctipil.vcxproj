@@ -361,17 +361,14 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="pilserver.cpp">
     </ClCompile>
-    <ClCompile Include="pil_message_serialization.cpp" />
     <ClCompile Include="rf_data_streaming_processor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\exe_pcreq.h" />
-    <ClInclude Include="include\MeterProgramStatusArchiveRequestMsg.h" />
     <ClInclude Include="include\mgr_meter_programming.h" />
     <ClInclude Include="include\mgr_rfn_request.h" />
     <ClInclude Include="include\pil_exefct.h" />
     <ClInclude Include="include\pilserver.h" />
-    <ClInclude Include="include\pil_message_serialization.h" />
     <ClInclude Include="include\rfn_statistics.h" />
     <ClInclude Include="include\rf_data_streaming_processor.h" />
   </ItemGroup>

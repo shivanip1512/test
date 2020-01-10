@@ -3,6 +3,9 @@
 #include "dev_rfnCommercial.h"
 #include "mgr_meter_programming.h"
 #include "cmd_rfn_MeterProgramming.h"
+#include "MeterProgramStatusArchiveRequestMsg.h"
+
+using namespace Cti::Messaging::Pil;
 
 namespace Cti::Devices {
 
@@ -24,7 +27,19 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
     {
         if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress) )
         {
+            std::string guid;
+
+            getDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, guid);
+
+            sendMeterProgramStatusUpdate({
+                    getRfnIdentifier(),
+                    guid,
+                    ProgrammingStatus::Canceled,
+                    ClientErrors::None,
+                    std::chrono::system_clock::now() });
+
             purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
+            purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID);
 
             returnMsgs.emplace_back(
                 makeReturnMsg(*pReq, "Meter programming canceled", ClientErrors::None));
@@ -42,6 +57,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
         if( auto programDescriptor = MeterProgramming::gMeterProgrammingManager->describeAssignedProgram(getRfnIdentifier()) )
         {
             setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, programDescriptor->guid);
 
             rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>(programDescriptor->guid, programDescriptor->length));
 

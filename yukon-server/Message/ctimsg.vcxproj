@@ -396,6 +396,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="message.cpp">
     </ClCompile>
+    <ClCompile Include="MeterProgramStatusArchiveRequestMsg.cpp" />
     <ClCompile Include="msg_cmd.cpp">
     </ClCompile>
     <ClCompile Include="msg_dbchg.cpp">
@@ -482,6 +483,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\LMSepRestoreMessage.h" />
     <ClInclude Include="include\message.h" />
     <ClInclude Include="include\MessageListener.h" />
+    <ClInclude Include="include\MeterProgramStatusArchiveRequestMsg.h" />
     <ClInclude Include="include\msg_cmd.h" />
     <ClInclude Include="include\msg_dbchg.h" />
     <ClInclude Include="include\msg_lmcontrolhistory.h" />
