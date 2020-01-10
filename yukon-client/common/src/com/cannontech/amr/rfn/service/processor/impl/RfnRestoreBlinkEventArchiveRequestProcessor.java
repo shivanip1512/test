@@ -15,21 +15,21 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.message.dispatch.message.PointData;
 
 public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnOutageLogEventConditionDataProcessorHelper {
-    
+
     public static final Logger log = YukonLogManager.getLogger(RfnRestoreBlinkEventArchiveRequestProcessor.class);
-    
+
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
         log.debug("Restore Blink event received for archiving Device: \" + device + \" Event: \" + event");
         var eventInstant = instantOf(event);
 
-        rfnMeterEventService.processAttributePointData(device, 
-                                                       pointDatas, 
-                                                       BuiltInAttribute.RFN_BLINK_RESTORE_COUNT, 
-                                                       eventInstant, 
-                                                       getLongEventData(event, RfnConditionDataType.COUNT),
-                                                       now);
-        
+        rfnMeterEventService.processAttributePointData(device,
+                pointDatas,
+                BuiltInAttribute.RFN_BLINK_RESTORE_COUNT,
+                eventInstant,
+                getLongEventData(event, RfnConditionDataType.COUNT),
+                now);
+
         processOutageLog(device, event, pointDatas, now, eventInstant);
     }
 
@@ -37,5 +37,5 @@ public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnOutageLogEve
     public RfnConditionType getRfnConditionType() {
         return RfnConditionType.RESTORE_BLINK;
     }
-    
+
 }
