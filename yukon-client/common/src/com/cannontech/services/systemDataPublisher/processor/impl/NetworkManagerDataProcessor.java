@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.services.systemDataPublisher.context.NetworkManagerDBConfig;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
@@ -23,14 +24,20 @@ import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublishe
 public class NetworkManagerDataProcessor extends SystemDataProcessor {
 
     @Autowired private SystemDataPublisherDao systemDataPublisherDao;
+    @Autowired private NetworkManagerDBConfig networkManagerDBConfig;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     private static final Logger log = YukonLogManager.getLogger(NetworkManagerDataProcessor.class);
 
     @Override
     public void runScheduler(Entry<SystemDataPublisherFrequency, List<DictionariesField>> entry) {
-        executor.scheduleAtFixedRate(() -> {
-            buildAndPublishSystemData(entry.getValue());
-        }, 0, entry.getKey().getHours(), TimeUnit.HOURS);
+
+        if (networkManagerDBConfig.isNetworkManagerDBConnectionConfigured()) {
+            executor.scheduleAtFixedRate(() -> {
+                buildAndPublishSystemData(entry.getValue());
+            }, 0, entry.getKey().getHours(), TimeUnit.HOURS);
+        } else {
+            log.info("Network Manager DB configurations not found. Not able to publish data to Cloud Service");
+        }
     }
 
     @Override
