@@ -34,6 +34,11 @@
 <cti:default var="checked" value="${false}"/>
 <cti:default var="disabled" value="${false}"/>
 
+<c:set var="isCreateOrEditMode" value="${false}"/>
+<cti:displayForPageEditModes modes="CREATE,EDIT">
+    <c:set var="isCreateOrEditMode" value="${true}"/>
+</cti:displayForPageEditModes>
+
 <cti:displayForPageEditModes modes="VIEW">
     <c:if test="${not empty path}">
         <spring:bind path="${path}">
@@ -54,7 +59,7 @@
     
 </cti:displayForPageEditModes>
 
-<c:if test="${mode == 'EDIT' or mode == 'CREATE' or forceDisplayCheckbox}">
+<c:if test="${isCreateOrEditMode or forceDisplayCheckbox}">
     <label class="switch-btn">
         <c:choose>
             <c:when test="${not empty name}">
