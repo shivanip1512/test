@@ -20,7 +20,7 @@ public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnOutageLogEven
 
     @Override
     public void process(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now) {
-        log.debug("Outage Blink event received for archiving Device: " + device + " Event: " + event);
+        log.debug("Outage Blink event received for archiving Device: {} Event: {}", device, event);
         var eventInstant = instantOf(event);
 
         rfnMeterEventService.processAttributePointData(device,

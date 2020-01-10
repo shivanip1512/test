@@ -29,8 +29,9 @@ public abstract class RfnOutageLogEventConditionDataProcessorHelper extends RfnE
             rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventStart,
                     durationInSeconds, PointQuality.Normal, now);
 
-            log.debug("OutageLog processed for Device: " + device + "Event: " + event + "Start: " + eventStart
-                    + " End: " + eventInstant + " Duration: " + new Instant(durationInSeconds));
+            log.debug("OutageLog processed for Device: {} Event: {} Start: {} End: {} Duration: {} ", device, event, eventStart,
+                    eventInstant, new Instant(durationInSeconds));
+
         } catch (InvalidEventMessageException e) {
             // Old firmware and "compact aggregated restoration alarms" don't include the EVENT_START_TIME
             // meta-data, so don't create the outage log if we get here
