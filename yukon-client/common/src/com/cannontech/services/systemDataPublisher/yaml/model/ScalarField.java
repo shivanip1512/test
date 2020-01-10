@@ -14,11 +14,18 @@ public class ScalarField {
     @JsonProperty("Network Manager")
     public List<DictionariesField> nmDictionaries;
 
+    @JsonProperty("Other")
+    public List<DictionariesField> otherSettingsDictionaries;
+    
     public List<DictionariesField> getYukonDictionaries() {
         return yukonDictionaries;
     }
 
     public List<DictionariesField> getNmDictionaries() {
         return nmDictionaries;
+    }
+
+    public List<DictionariesField> getOtherSettingsDictionaries() {
+        return otherSettingsDictionaries;
     }
 }

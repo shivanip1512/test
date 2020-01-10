@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
 import com.cannontech.services.systemDataPublisher.processor.impl.NetworkManagerDataProcessor;
+import com.cannontech.services.systemDataPublisher.processor.impl.OtherSettingsDataProcessor;
 import com.cannontech.services.systemDataPublisher.processor.impl.YukonDataProcessor;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 
@@ -18,6 +19,7 @@ public class SystemDataProcessorFactory {
 
     @Autowired private YukonDataProcessor yukonDataProcessor;
     @Autowired private NetworkManagerDataProcessor networkManagerDataProcessor;
+    @Autowired private OtherSettingsDataProcessor otherSettingsDataProcessor;
 
     /**
      * This method will return the processor based on the passed publisher.
@@ -29,6 +31,8 @@ public class SystemDataProcessorFactory {
             processor = yukonDataProcessor;
         } else if (iotPublisher == SystemDataPublisher.NETWORK_MANAGER) {
             processor = networkManagerDataProcessor;
+        } else if (iotPublisher == SystemDataPublisher.OTHER_SETTINGS) {
+            processor = otherSettingsDataProcessor;
         }
         return processor;
     }
