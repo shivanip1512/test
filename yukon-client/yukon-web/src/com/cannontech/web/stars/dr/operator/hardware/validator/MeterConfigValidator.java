@@ -30,15 +30,15 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
         }
         
         /* Physical Address */
-        if (meter instanceof PlcMeter) {
-            PlcMeter plcMeter = (PlcMeter)meter; 
-            if(!StringUtils.isNumeric(plcMeter.getAddress())) {
+        PaoType deviceType = meter.getPaoType();
+        if (deviceType.isPlc()) {
+            PlcMeter plcMeter = (PlcMeter) meter;
+            if (!StringUtils.isNumeric(plcMeter.getAddress())) {
                 errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.nonNumeric");
             } else {
-                PaoType deviceType = plcMeter.getPaoType();
                 try {
-                    int physicalAddress = Integer.parseInt(plcMeter.getAddress()); 
-                    if(!dlcAddressRangeService.isValidEnforcedAddress(deviceType, physicalAddress)) {
+                    int physicalAddress = Integer.parseInt(plcMeter.getAddress());
+                    if (!dlcAddressRangeService.isValidEnforcedAddress(deviceType, physicalAddress)) {
                         failAddress(plcMeter, errors);
                     }
                 } catch (NumberFormatException e) {
@@ -46,7 +46,7 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
                 }
             }
         }
-        
+
     }
     
     private void failAddress(YukonMeter meter, Errors errors) {

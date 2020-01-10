@@ -41,15 +41,17 @@
             </c:if>
    
         </tags:nameValueContainer2>
-        
 
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <cti:button nameKey="save" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" name="cancel" type="submit"/>
+                    <cti:url var="viewUrl" value="/stars/operator/hardware/list">
+                        <cti:param name="accountId" value="${accountId}"/>
+                    </cti:url>
+                    <cti:button nameKey="cancel" name="cancel" href="${viewUrl}"/>
                 </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes>    
-        </div>        
+            </cti:displayForPageEditModes>
+        </div>
     </form:form>
 </cti:standardPage>
