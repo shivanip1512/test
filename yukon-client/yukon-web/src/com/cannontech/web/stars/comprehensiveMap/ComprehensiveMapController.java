@@ -135,6 +135,13 @@ public class ComprehensiveMapController {
             }
             json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName());
             json.put("collectionGroup", tempGroup.getFullName());
+            
+            
+            log.debug("Devices without location {}", map.getDevicesWithoutLocation().size());
+           // StoredDeviceGroup devicesWithoutLocation = tempDeviceGroupService.createTempGroup();
+            //deviceGroupMemberEditorDao.addDevices(devicesWithoutLocation, map.getDevicesWithoutLocation());
+           // json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + devicesWithoutLocation.getFullName());
+           // json.put("collectionGroup", devicesWithoutLocation.getFullName());            
         } catch (NmNetworkException | NmCommunicationException e) {
             String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
             log.error(errorMsg, e);
@@ -287,6 +294,15 @@ public class ComprehensiveMapController {
         try {
             List<Node<Pair<Integer, FeatureCollection>>> root = nmNetworkService.getPrimaryRoutes(Arrays.asList(gatewayIds));
             json.put("tree", root);
+            
+            StoredDeviceGroup devicesWithoutLocation = tempDeviceGroupService.createTempGroup();
+            List<SimpleDevice> devices = paoLocationDao.getDevicesWithoutLocationByGateway(Arrays.asList(gatewayIds));
+            log.debug("Devices without location {}", devices.size());
+            
+            //  deviceGroupMemberEditorDao.addDevices(devicesWithoutLocation, devices);
+           // json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + devicesWithoutLocation.getFullName());
+           // json.put("collectionGroup", devicesWithoutLocation.getFullName()); 
+            
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
         }

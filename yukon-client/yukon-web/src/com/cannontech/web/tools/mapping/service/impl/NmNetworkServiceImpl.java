@@ -35,6 +35,7 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.creation.DeviceCreationException;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -73,6 +74,7 @@ import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.tools.mapping.model.MappingInfo;
 import com.cannontech.web.tools.mapping.model.Neighbor;
@@ -121,6 +123,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MeterDao meterDao;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private ServerDatabaseCache dbCache;
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
@@ -828,13 +831,18 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if(CollectionUtils.isEmpty(paoIds)) {
             return;
         }
-        Set<PaoLocation> locations = paoLocationDao.getLocations(paoIds);
-        if(CollectionUtils.isEmpty(locations)) {
+        
+        Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds), l -> l.getPaoIdentifier().getPaoId());
+        map.setDevicesWithoutLocation(paoIds.stream().filter(paoId -> !locations.containsKey(paoId))
+            .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
+            .collect(Collectors.toList()));
+        
+        if(locations.isEmpty()) {
             log.debug("Failed to add devices {} to map, locations empty", devices.size());
             return;
         }
         log.debug("Attempting to add devices {} to map locations found {}. Only devices, with locations will be added.", devices.size(), locations.size() );
-        FeatureCollection features = paoLocationService.getFeatureCollection(locations);
+        FeatureCollection features = paoLocationService.getFeatureCollection(locations.values());
         map.getMappedDevices().put(hexColor, features);
     }
 }

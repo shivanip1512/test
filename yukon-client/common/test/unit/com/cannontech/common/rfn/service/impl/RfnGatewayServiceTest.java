@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.mock.FakeRequestReplyTemplate;
 import com.cannontech.common.mock.FakeRequestReplyTemplate.Mode;
@@ -1201,6 +1202,11 @@ public class RfnGatewayServiceTest {
 
         @Override
         public List<PaoLocation> getLocationsByGateway(Set<Integer> gatewayIds) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<SimpleDevice> getDevicesWithoutLocationByGateway(List<Integer> gatewayIds) {
             throw new UnsupportedOperationException();
         }
     }

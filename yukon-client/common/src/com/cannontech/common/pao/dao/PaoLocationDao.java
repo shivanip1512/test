@@ -3,6 +3,7 @@ package com.cannontech.common.pao.dao;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.model.PaoLocationDetails;
@@ -58,4 +59,9 @@ public interface PaoLocationDao {
      * Returns locations for devices linked to gateways
      */
     List<PaoLocation> getLocationsByGateway(Set<Integer> gatewayIds);
+
+    /**
+     * Returns locations for devices linked to gateways that do not have locations
+     */
+    List<SimpleDevice> getDevicesWithoutLocationByGateway(List<Integer> gatewayIds);
 }
