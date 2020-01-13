@@ -640,6 +640,25 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
+    public Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        Set<Integer> gatewayIds = new HashSet<>();
+        template.query(devices -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT DISTINCT GatewayId");
+            sql.append("FROM DynamicRfnDeviceData");
+            sql.append("WHERE DeviceId").in(devices);
+            return sql;
+        }, deviceIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                gatewayIds.add(rs.getInt("GatewayId"));
+            }
+        });
+        return gatewayIds;
+    }
+    
+    @Override
     public void clearDynamicRfnDeviceData() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE from DynamicRfnDeviceData");
