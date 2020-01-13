@@ -75,6 +75,13 @@
     <c:if test="${showRoute}">
         <tags:nameValue2 nameKey=".route">${fn:escapeXml(pao.meter.route)}</tags:nameValue2>
     </c:if>
+    <c:if test="${!empty routeData}">
+        <tags:nameValue2 nameKey=".destinationAddress">${fn:escapeXml(routeData.destinationAddress)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".nextHopAddress">${fn:escapeXml(routeData.nextHopAddress)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".totalCost">${fn:escapeXml(routeData.totalCost)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".hopCount">${fn:escapeXml(routeData.hopCount)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".flags">${fn:escapeXml(routeFlags)}</tags:nameValue2>
+    </c:if>
     <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span><i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>
 
@@ -82,12 +89,14 @@
     <tags:hideReveal2 styleClass="mw300" titleClass="error" titleKey="yukon.web.modules.tools.map.network.error" showInitially="false">${errorMsg}</tags:hideReveal2>
 </c:if>
 
-<c:forEach items="${attributes}" var="attr">
-    <div>
-        <h4><i:inline key="${attr}"/></h4>
-        <div style="padding: 2px 10px;"><tags:attributeValue attribute="${attr}" pao="${pao}"/></div>
-    </div>
-</c:forEach>
+<c:if test="${empty routeData}">
+    <c:forEach items="${attributes}" var="attr">
+        <div>
+            <h4><i:inline key="${attr}"/></h4>
+            <div style="padding: 2px 10px;"><tags:attributeValue attribute="${attr}" pao="${pao}"/></div>
+        </div>
+    </c:forEach>
+</c:if>
 
 <div class="dn" 
     data-dialog 

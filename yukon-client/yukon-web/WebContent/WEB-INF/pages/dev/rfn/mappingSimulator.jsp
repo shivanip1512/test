@@ -119,7 +119,7 @@
             </tags:nameValue>
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Hops around the gateway">
+            <tags:nameValue name="# of Nodes at First Hop">
                 <tags:input path="nodesOneHop" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>

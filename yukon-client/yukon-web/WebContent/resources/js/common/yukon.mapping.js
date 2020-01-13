@@ -390,7 +390,12 @@ yukon.mapping = (function () {
                 parent = properties.parent,
                 neighbor = properties.neighbor,
                 routeInfo = properties.routeInfo,
-                nearby = properties.nearby;
+                nearby = properties.nearby,
+                primaryRoutesExists = $('.js-all-routes').exists(),
+                includeRouteData = false;
+                if (primaryRoutesExists) {
+                    includeRouteData = $('.js-all-routes').find(':checkbox').prop('checked');
+                }
             if (parent != null) {
                 mod.displayCommonPopupProperties(parent);
                 mod.displayParentNodePopupProperties(parent);
@@ -407,7 +412,7 @@ yukon.mapping = (function () {
                 $('#parent-info').hide();
                 $('#neighbor-info').hide();
                 $('#route-info').hide();
-                var url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
+                var url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info?includePrimaryRoute=' + includeRouteData);
                 $('#device-info').load(url, function() {
                     if (nearby != null) {
                         $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
