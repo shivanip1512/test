@@ -70,6 +70,7 @@ import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
@@ -163,6 +164,7 @@ public class NmIntegrationController {
         model.addAttribute("firmwareUpdateResultTypes", GatewayFirmwareUpdateRequestResult.values());
         model.addAttribute("gatewayUpdateResultTypes", GatewayUpdateResult.values());
         model.addAttribute("gatewayConfigResultTypes", GatewayConfigResult.values());
+        model.addAttribute("gatewayModelTypes", RfnDeviceCreationService.ALL_GATEWAY_MODELS);
         model.addAttribute("connectionTypes", ConnectionStatus.values());
         
         try {
@@ -191,10 +193,10 @@ public class NmIntegrationController {
 
     @RequestMapping("createNewGateway")
     public String createNewGateway(@RequestParam String serial, 
-                                   @RequestParam(defaultValue="false") boolean returnGwy800Model,
+                                   @RequestParam String gatewayModel,
                                    FlashScope flash) {
         
-        gatewaySimService.sendGatewayArchiveRequest(serial, returnGwy800Model);
+        gatewaySimService.sendGatewayArchiveRequest(serial, gatewayModel);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated", serial));
         
         return "redirect:gatewaySimulator";
@@ -202,24 +204,24 @@ public class NmIntegrationController {
 
     @RequestMapping("deleteGateway")
     public String deleteGateway(@RequestParam String serial, 
-                                @RequestParam(defaultValue="false") boolean returnGwy800Model,
+                                @RequestParam String gatewayModel,
                                 FlashScope flash) {
         
-        gatewaySimService.sendGatewayDeleteRequest(serial, returnGwy800Model);
+        gatewaySimService.sendGatewayDeleteRequest(serial, gatewayModel);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDelete", serial));
         
         return "redirect:gatewaySimulator";
     }
 
     @RequestMapping("sendGatewayDataResponse")
-    public String sendGatewayDataResponse(@RequestParam String serial,
-            @RequestParam(defaultValue = "false") boolean returnGwy800Model, FlashScope flash) {
+    public String sendGatewayDataResponse(@RequestParam String serial, 
+            @RequestParam String gatewayModel, FlashScope flash) {
 
         try {
             GatewaySimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings settings = response.getDataSettings();
-            gatewaySimService.sendGatewayDataResponse(serial, returnGwy800Model, settings);
+            gatewaySimService.sendGatewayDataResponse(serial, gatewayModel, settings);
             flash.setConfirm(new YukonMessageSourceResolvable(
                 "yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse", serial));
         } catch (ExecutionException e) {

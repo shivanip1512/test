@@ -456,8 +456,12 @@
                         <tags:nameValue name="Serial Number">
                             <input name="serial" value="7500000019">
                         </tags:nameValue>
-                        <tags:nameValue name="GWY-800">
-                            <input name="returnGwy800Model" type="checkbox">
+                        <tags:nameValue name="Gateway Model">
+                            <select name="gatewayModel" >
+                                <c:forEach var="gatewayModelType" items="${gatewayModelTypes}">
+                                    <option value="${gatewayModelType}"}>${gatewayModelType}</option>
+                                </c:forEach>
+                            </select> 
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <cti:button label="Create" type="submit"/>
@@ -475,8 +479,12 @@
                         <tags:nameValue name="Serial Number">
                             <input name="serial" value="7500000019">
                         </tags:nameValue>
-                        <tags:nameValue name="GWY-800">
-                            <input name="returnGwy800Model" type="checkbox">
+                        <tags:nameValue name="Gateway Model">
+                            <select name="gatewayModel" >
+                                <c:forEach var="gatewayModelType" items="${gatewayModelTypes}">
+                                    <option value="${gatewayModelType}"}>${gatewayModelType}</option>
+                                </c:forEach>
+                            </select> 
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <cti:button label="Send" type="submit"/>
@@ -491,8 +499,12 @@
                         <tags:nameValue name="Serial Number">
                             <input name="serial" value="7500000019">
                         </tags:nameValue>
-                        <tags:nameValue name="GWY-800">
-                            <input name="returnGwy800Model" type="checkbox">
+                        <tags:nameValue name="Gateway Model">
+                            <select name="gatewayModel" >
+                                <c:forEach var="gatewayModelType" items="${gatewayModelTypes}">
+                                    <option value="${gatewayModelType}"}>${gatewayModelType}</option>
+                                </c:forEach>
+                            </select> 
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <cti:button label="Delete" type="submit"/>

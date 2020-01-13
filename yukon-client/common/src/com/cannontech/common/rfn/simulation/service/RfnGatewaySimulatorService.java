@@ -84,12 +84,12 @@ public interface RfnGatewaySimulatorService extends AutoStartableSimulator{
     /**
      * Send an unsolicited gateway data message.
      */
-    void sendGatewayDataResponse(String serial, boolean isGateway2, SimulatedGatewayDataSettings settings);
+    void sendGatewayDataResponse(String serial, String model, SimulatedGatewayDataSettings settings);
     
     /**
      * Send an unsolicited gateway archive message (which will create a new gateway device in Yukon).
      */
-    void sendGatewayArchiveRequest(String serial, boolean isGateway2);
+    void sendGatewayArchiveRequest(String serial, String model);
     
     /**
      * @return true if the simulator is actively replying to data requests.
@@ -159,5 +159,5 @@ public interface RfnGatewaySimulatorService extends AutoStartableSimulator{
     /**
      * Send an unsolicited gateway delete message (which will delete gateway device in Yukon).
      */
-    void sendGatewayDeleteRequest(String serial, boolean isGateway2);
+    void sendGatewayDeleteRequest(String serial, String model);
 }
