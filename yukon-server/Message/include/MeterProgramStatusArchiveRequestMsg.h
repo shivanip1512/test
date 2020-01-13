@@ -2,13 +2,11 @@
 
 #include "rfn_identifier.h"
 
-#include <set>
-#include <map>
 #include <chrono>
 
 namespace Cti::Messaging::Pil {
 
-    enum class ProgrammingStatus
+    enum class IM_EX_MSG ProgrammingStatus
     {
         Idle, 
         Uploading,
@@ -20,7 +18,7 @@ namespace Cti::Messaging::Pil {
     };
 
     //  In the Porter namespace, since the serializer assumes the message source is Porter
-    struct MeterProgramStatusArchiveRequestMsg
+    struct IM_EX_MSG MeterProgramStatusArchiveRequestMsg
     {
         RfnIdentifier rfnIdentifier;
         std::string configurationId;
@@ -28,4 +26,6 @@ namespace Cti::Messaging::Pil {
         YukonError_t error;
         std::chrono::system_clock::time_point timeStamp;
     };
+
+    IM_EX_MSG void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & msg);
 }
