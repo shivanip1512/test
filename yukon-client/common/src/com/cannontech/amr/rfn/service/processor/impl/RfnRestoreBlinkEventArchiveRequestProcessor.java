@@ -30,7 +30,7 @@ public class RfnRestoreBlinkEventArchiveRequestProcessor extends RfnOutageLogEve
                 getLongEventData(event, RfnConditionDataType.COUNT),
                 now);
 
-        processOutageLog(device, event, pointDatas, now, eventInstant, getRfnConditionType());
+        processOutageLog(device, event, pointDatas, now, eventInstant);
     }
 
     @Override

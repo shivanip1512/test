@@ -21,11 +21,11 @@ public abstract class RfnOutageLogEventConditionDataProcessorHelper extends RfnE
     public static final Logger log = YukonLogManager.getLogger(RfnOutageLogEventConditionDataProcessorHelper.class);
 
     protected void processOutageLog(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now,
-            Instant eventInstant, RfnConditionType rfnConditionType) {
+            Instant eventInstant) {
         try {
             Long start;
             Long end;
-            if (rfnConditionType == RfnConditionType.OUTAGE_BLINK) {
+            if (getRfnConditionType() == RfnConditionType.OUTAGE_BLINK) {
                 start = eventInstant.getMillis();
                 end = getLongEventData(event, RfnConditionDataType.EVENT_END_TIME);
             } else {
@@ -38,7 +38,8 @@ public abstract class RfnOutageLogEventConditionDataProcessorHelper extends RfnE
             rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventStart,
                     durationInSeconds, PointQuality.Normal, now);
 
-            log.debug("OutageLog processed {} for Device: {} Event: {} Start: {} End: {} Duration: {} ", rfnConditionType, device,
+            log.debug("OutageLog processed {} for Device: {} Event: {} Start: {} End: {} Duration: {} ", getRfnConditionType(),
+                    device,
                     event, eventStart,
                     eventInstant, new Instant(durationInSeconds));
         } catch (InvalidEventMessageException e) {

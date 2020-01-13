@@ -33,7 +33,7 @@ public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnOutageLogEven
         // The OUTAGE_BLINK event SHOULD contain RfnConditionDataType.EVENT_END_TIME (time outage ended)
         // The outage log for blinks is created by RfnOutageLogEventConditionDataProcessorHelper.
 
-        processOutageLog(device, event, pointDatas, now, eventInstant, getRfnConditionType());
+        processOutageLog(device, event, pointDatas, now, eventInstant);
     }
 
     @Override
