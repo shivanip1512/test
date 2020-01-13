@@ -118,6 +118,21 @@
                 <tags:input path="emptyNullPercent" size="5"/>%
             </tags:nameValue>
         </tags:nameValueContainer>
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="Hops around the gateway">
+                <tags:input path="nodesOneHop" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="Min Hop Count">
+                <tags:input path="minHop" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="Max Hop Count">
+                <tags:input path="maxHop" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
     </tags:sectionContainer>
     
     </div>

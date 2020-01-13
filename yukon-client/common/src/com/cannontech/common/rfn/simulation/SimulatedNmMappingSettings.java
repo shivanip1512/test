@@ -24,6 +24,9 @@ public class SimulatedNmMappingSettings implements Serializable {
     private RfnMetadataMultiQueryResultType metadataQueryResponseType;
     private String metadataResponseString;
     private Integer emptyNullPercent;
+    private Integer minHop;
+    private Integer maxHop;
+    private Integer nodesOneHop;
     
     public NeighborData getNeighborData() {
         return neighborData;
@@ -84,5 +87,23 @@ public class SimulatedNmMappingSettings implements Serializable {
     }
     public void setEmptyNullPercent(Integer emptyNullPercent) {
         this.emptyNullPercent = emptyNullPercent;
+    }
+    public Integer getMinHop() {
+        return minHop;
+    }
+    public void setMinHop(Integer minHop) {
+        this.minHop = minHop;
+    }
+    public Integer getMaxHop() {
+        return maxHop;
+    }
+    public void setMaxHop(Integer maxHop) {
+        this.maxHop = maxHop;
+    }
+    public Integer getNodesOneHop() {
+        return nodesOneHop;
+    }
+    public void setNodesOneHop(Integer nodesOneHop) {
+        this.nodesOneHop = nodesOneHop;
     }
 }

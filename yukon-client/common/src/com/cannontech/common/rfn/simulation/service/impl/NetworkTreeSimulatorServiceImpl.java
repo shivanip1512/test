@@ -30,18 +30,30 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     private Random random = new Random();
     private Integer nodeNullPercent;
+    private Integer branchMin;
+    private Integer branchMax;
+    private Integer devicesAroundTheGateway;
+    
+    private void initSettings() {
+        nodeNullPercent = yukonSimulatorSettingsDao
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL);
+        branchMin = yukonSimulatorSettingsDao
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP);
+        branchMax = yukonSimulatorSettingsDao
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP);
+        devicesAroundTheGateway = yukonSimulatorSettingsDao
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP);
+        log.info("nodeNullPercent:{} branchMin:{} branchMax:{} devicesAroundTheGateway:{}", nodeNullPercent,
+                branchMin, branchMax, devicesAroundTheGateway);
+    }
     
     /**
      * Builds randomized node from all devices 
      */
     private Node<RfnIdentifier> buildNode(RfnDevice gateway) {
-        nodeNullPercent = yukonSimulatorSettingsDao
-                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NETWORK_TREE_NULL_PERCENT);
-                
+        initSettings();        
         Node<RfnIdentifier> root = new Node<RfnIdentifier>(gateway.getRfnIdentifier());
-        List<RfnDevice> allDevices = Collections 
-                .synchronizedList(rfnDeviceDao.getDevicesForGateway(gateway.getPaoIdentifier().getPaoId()));
-
+        List<RfnDevice> allDevices = rfnDeviceDao.getDevicesForGateway(gateway.getPaoIdentifier().getPaoId());
         int totalDevices = allDevices.size();
         
         log.info("\nCreating a tree (Node) for {} devices {} ", gateway, totalDevices);
@@ -49,14 +61,13 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
             return root;
         }
         //System.out.println(allDevices);
-        //create 350 devices around the gateway
-        int devicesAroundTheGateway = 350;
+       
         ListIterator<RfnDevice> it = allDevices.listIterator();
         
         List<Node<RfnIdentifier>> endNodes = new ArrayList<>();
         
         while (devicesAroundTheGateway-- > 0) {
-            List<Node<RfnIdentifier>> branch = getNodes(2, 8, it);
+            List<Node<RfnIdentifier>> branch = getNodes(it);
             // System.out.println("Added devices " + branch.size());
             endNodes.addAll(fork(it, addToBranch(root, branch)));
         }
@@ -73,7 +84,7 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
 
         log.info("---------------NODE-- total devices {} total node count {} null node count {}", totalDevices, root.count(false),
                 root.count(true));
-        //log.info(root.print());
+       // log.info(root.print());
         return root; 
     }
 
@@ -85,11 +96,11 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
             return new ArrayList<>();
         }
         List<Node<RfnIdentifier>> endNodes = new ArrayList<>();
-        List<Node<RfnIdentifier>> left = getNodes(6, 20, it);
+        List<Node<RfnIdentifier>> left = getNodes(it);
         endNodes.add(addToBranch(node, left));
 
         if (random.nextBoolean()) {
-            List<Node<RfnIdentifier>> right = getNodes(5, 15, it);
+            List<Node<RfnIdentifier>> right = getNodes(it);
             // System.out.println("-- Added devices " + branch.size() + " node "+ node + " branch "+branch);
             endNodes.add(addToBranch(node, right));
         }
@@ -119,9 +130,9 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
     /**
      * Returns random number of nodes in range between min and max number of nodes
      */
-    private List<Node<RfnIdentifier>> getNodes(int min, int max, Iterator<RfnDevice> it) {
+    private List<Node<RfnIdentifier>> getNodes(Iterator<RfnDevice> it) {
         List<Node<RfnIdentifier>> nodes = new ArrayList<>();
-        int randomNodeCount = getRandomNumberInRange(min, max);
+        int randomNodeCount = getRandomNumberInRange(branchMin, branchMax);
         while (randomNodeCount-- > 0 && it.hasNext()) {
             RfnDevice nextNode = it.next();
             nodes.add(random.nextInt(100) < nodeNullPercent ? new Node<>(null): new Node<>(nextNode.getRfnIdentifier()));
