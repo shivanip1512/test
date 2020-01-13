@@ -128,4 +128,9 @@ public interface RfnDeviceDao {
      * Returns device id for rfn identifier. Cache lookup.
      */
     Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier);
+
+    /**
+     * Returns gateway ids for the set of devices
+     */
+    Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds);
 }
