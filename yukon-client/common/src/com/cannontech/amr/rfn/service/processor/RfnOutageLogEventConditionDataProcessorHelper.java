@@ -22,10 +22,11 @@ public abstract class RfnOutageLogEventConditionDataProcessorHelper extends RfnE
 
     protected void processOutageLog(RfnDevice device, RfnEvent event, List<? super PointData> pointDatas, Instant now,
             Instant eventInstant) {
+        RfnConditionType rfnConditionType = getRfnConditionType();
         try {
             Long start;
             Long end;
-            if (getRfnConditionType() == RfnConditionType.OUTAGE_BLINK) {
+            if (rfnConditionType == RfnConditionType.OUTAGE_BLINK || rfnConditionType == RfnConditionType.RESTORE_BLINK) {
                 start = eventInstant.getMillis();
                 end = getLongEventData(event, RfnConditionDataType.EVENT_END_TIME);
             } else {
@@ -38,14 +39,14 @@ public abstract class RfnOutageLogEventConditionDataProcessorHelper extends RfnE
             rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventStart,
                     durationInSeconds, PointQuality.Normal, now);
 
-            log.debug("OutageLog processed {} for Device: {} Event: {} Start: {} End: {} Duration: {} ", getRfnConditionType(),
+            log.debug("OutageLog processed {} for Device: {} Event: {} Start: {} End: {} Duration: {} ", rfnConditionType,
                     device,
                     event, eventStart,
                     eventInstant, new Instant(durationInSeconds));
         } catch (InvalidEventMessageException e) {
             // Old firmware and "compact aggregated restoration alarms" don't include the EVENT_START_TIME
             // meta-data, so don't create the outage log if we get here
-            log.trace(device + " " + getRfnConditionType() + " not creating OUTAGE_LOG entry", e);
+            log.trace(device + " " + rfnConditionType + " not creating OUTAGE_LOG entry", e);
         }
     }
 }
