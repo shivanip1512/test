@@ -86,6 +86,7 @@ namespace {
 }
 
 namespace Pil {
+    //  In Pil namespace as this message should only be sent by Porter.
 
     IM_EX_MSG void sendMeterProgramStatusUpdate(const MeterProgramStatusArchiveRequestMsg & msg)
     {

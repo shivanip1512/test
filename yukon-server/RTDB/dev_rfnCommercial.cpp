@@ -38,6 +38,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
                     ClientErrors::None,
                     std::chrono::system_clock::now() });
 
+            // when we have a ProgrammingProgress entry we also have a ProgrammingConfigID entry
             purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress);
             purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID);
 
@@ -56,6 +57,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
     {
         if( auto programDescriptor = MeterProgramming::gMeterProgrammingManager->describeAssignedProgram(getRfnIdentifier()) )
         {
+            // when we have a ProgrammingProgress entry we also have a ProgrammingConfigID entry
             setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
             setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, programDescriptor->guid);
 
