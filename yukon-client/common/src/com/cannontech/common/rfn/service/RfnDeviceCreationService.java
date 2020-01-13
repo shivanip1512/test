@@ -1,5 +1,7 @@
 package com.cannontech.common.rfn.service;
 
+import java.util.Set;
+
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -13,6 +15,10 @@ public interface RfnDeviceCreationService {
     public static final String GATEWAY_1_MODEL_STRING = "RFGateway";
     public static final String GATEWAY_2_MODEL_STRING = "RFGateway2";
     public static final String GATEWAY_3_MODEL_STRING = "RFVirtualGateway";
+    
+    public static final Set<String> ALL_GATEWAY_MODELS = Set.of(GATEWAY_1_MODEL_STRING,
+                                                                GATEWAY_2_MODEL_STRING,
+                                                                GATEWAY_3_MODEL_STRING);
     
     /**
      * Creates an rfn device using {@link DeviceCreationService} using an
