@@ -70,7 +70,7 @@ public class FileUtilTest {
 
     @Test
     public void testReadLinesFileIntLongOffSetTen() throws IOException {
-        List<String> lines = FileUtil.readLines(file, 50, 225889);
+        List<String> lines = FileUtil.readLines(file, 50, 222620);
         
         if(!lines.get(0).equalsIgnoreCase("08/15/2007 20:26:11 Dispatch DB Writer Thread Active. TID:  3800")){
             fail("Line 1 did not matchup with test case!");
@@ -86,7 +86,7 @@ public class FileUtilTest {
 
     @Test
     public void testReadLinesFileIntLongOffSetFifty() throws IOException {
-        List<String> lines = FileUtil.readLines(file, 100, 223021);
+        List<String> lines = FileUtil.readLines(file, 100, 219791);
         
         if(!lines.get(0).equalsIgnoreCase("08/15/2007 20:16:06 InThread  : 127.0.0.1 / 1515 connection is not valid. ")){
             fail("Line 1 did not matchup with test case!");
