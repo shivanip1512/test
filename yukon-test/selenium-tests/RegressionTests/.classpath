@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.testng.TESTNG_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/animal-sniffer-annotations-1.14.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/byte-buddy-1.8.15.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/checker-compat-qual-2.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/client-combined-3.141.59.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/client-combined-3.141.59-sources.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/commons-exec-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/commons-logging-1.2.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/error_prone_annotations-2.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/guava-23.0.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/guava-25.0-jre.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/httpclient-4.5.5.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/httpcore-4.4.9.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/j2objc-annotations-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/jsr305-1.3.9.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/okhttp-3.0.0-RC1.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/okhttp-3.10.0.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/okhttp-3.11.0.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/okio-1.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/okio-1.14.1.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/selenium-api-3.141.59.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/selenium-remote-driver-3.141.59.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/selenium-support-3.141.59.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
