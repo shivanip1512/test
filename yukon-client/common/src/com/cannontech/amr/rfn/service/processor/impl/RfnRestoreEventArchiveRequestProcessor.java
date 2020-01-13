@@ -35,7 +35,7 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnOutageLogEventCon
             pointQuality = PointQuality.Estimated;
         } else { 
             // only process Outage Log when actual eventTimestamp known.
-            processOutageLog(device, event, pointDatas, now, eventInstant);
+            processOutageLog(device, event, pointDatas, now, eventInstant, getRfnConditionType());
         }
         
         rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.GOOD.getRawState(), pointQuality, now);

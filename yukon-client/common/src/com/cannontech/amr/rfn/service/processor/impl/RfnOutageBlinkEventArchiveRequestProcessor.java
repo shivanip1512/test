@@ -26,14 +26,14 @@ public class RfnOutageBlinkEventArchiveRequestProcessor extends RfnOutageLogEven
         rfnMeterEventService.processAttributePointData(device,
                 pointDatas,
                 BuiltInAttribute.RFN_BLINK_COUNT,
-                instantOf(event),
+                eventInstant,
                 getLongEventData(event, RfnConditionDataType.COUNT),
                 now);
 
         // The OUTAGE_BLINK event SHOULD contain RfnConditionDataType.EVENT_END_TIME (time outage ended)
         // The outage log for blinks is created by RfnOutageLogEventConditionDataProcessorHelper.
 
-        processOutageLog(device, event, pointDatas, now, eventInstant);
+        processOutageLog(device, event, pointDatas, now, eventInstant, getRfnConditionType());
     }
 
     @Override
