@@ -68,9 +68,9 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
             if (scalars.getNmDictionaries() != null) {
                 mapOfPublisherToDictionaries.put(SystemDataPublisher.NETWORK_MANAGER, getDecryptedDictionaries(scalars.getNmDictionaries()));
             }
-            if (scalars.getOtherSettingsDictionaries() != null) {
-                mapOfPublisherToDictionaries.put(SystemDataPublisher.OTHER_SETTINGS,
-                        getDecryptedDictionaries(scalars.getOtherSettingsDictionaries()));
+            if (scalars.getOtherDictionaries() != null) {
+                mapOfPublisherToDictionaries.put(SystemDataPublisher.OTHER,
+                        getDecryptedDictionaries(scalars.getOtherDictionaries()));
             }
         } catch (JsonParseException | JsonMappingException e) {
             log.error("Error while parsing the YAML file fields.", e);

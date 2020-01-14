@@ -16,7 +16,7 @@ import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
 import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublisherFrequency;
 
 @Service
-public class OtherSettingsDataProcessor extends SystemDataProcessor {
+public class OtherDataProcessor extends SystemDataProcessor {
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
 

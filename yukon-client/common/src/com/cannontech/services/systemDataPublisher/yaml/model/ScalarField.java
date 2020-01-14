@@ -15,7 +15,7 @@ public class ScalarField {
     public List<DictionariesField> nmDictionaries;
 
     @JsonProperty("Other")
-    public List<DictionariesField> otherSettingsDictionaries;
+    public List<DictionariesField> otherDictionaries;
     
     public List<DictionariesField> getYukonDictionaries() {
         return yukonDictionaries;
@@ -25,7 +25,7 @@ public class ScalarField {
         return nmDictionaries;
     }
 
-    public List<DictionariesField> getOtherSettingsDictionaries() {
-        return otherSettingsDictionaries;
+    public List<DictionariesField> getOtherDictionaries() {
+        return otherDictionaries;
     }
 }
