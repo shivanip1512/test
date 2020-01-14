@@ -9,7 +9,7 @@ import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
-import com.cannontech.amr.rfn.service.processor.RfnRestoreEventConditionDataProcessorHelper;
+import com.cannontech.amr.rfn.service.processor.RfnOutageLogEventConditionDataProcessorHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
@@ -18,7 +18,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.message.dispatch.message.PointData;
 
-public class RfnRestoreEventArchiveRequestProcessor extends RfnRestoreEventConditionDataProcessorHelper {
+public class RfnRestoreEventArchiveRequestProcessor extends RfnOutageLogEventConditionDataProcessorHelper {
     
     private final static Logger log = YukonLogManager.getLogger(RfnRestoreEventArchiveRequestProcessor.class);
 
