@@ -79,6 +79,6 @@
     
     <entry key="yukon.web.modules.operator.meterConfig.error.required.meterNumber">Meter Number Required</entry>
     <entry key="yukon.web.modules.operator.meterConfig.error.invalidRange.address">Valid range for {0} addresses is: {1}.</entry>
-    <entry key="yukon.web.modules.operator.meterConfig.error.nonNumeric">Address can only contain numeric characters.</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.error.nonNumeric">{0} can only contain numeric characters.</entry>
     
 </properties>

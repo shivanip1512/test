@@ -26,7 +26,7 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
         if (StringUtils.isBlank(meter.getMeterNumber())) {
             errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterConfig.error.required");
         } else if (!StringUtils.isNumeric(meter.getMeterNumber())) {
-            errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterConfig.error.nonNumeric");
+            errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterConfig.error.nonNumeric", new Object[] { "Meter Number" }, "");
         } else {
             YukonValidationUtils.checkExceedsMaxLength(errors, "meterNumber", meter.getMeterNumber(), 50);
         }
@@ -35,7 +35,7 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
         if (meter instanceof PlcMeter) {
             PlcMeter plcMeter = (PlcMeter) meter;
             if (!StringUtils.isNumeric(plcMeter.getAddress())) {
-                errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.nonNumeric");
+                errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.nonNumeric", new Object[] { "Address" }, "");
             } else {
                 PaoType deviceType = plcMeter.getPaoType();
                 try {
