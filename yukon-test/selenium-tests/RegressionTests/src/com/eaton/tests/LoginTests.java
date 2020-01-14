@@ -16,13 +16,13 @@ public class LoginTests extends SeleniumTestSetup {
 
     @Test(enabled = false)
     public void loginSuccessfully() {
-        this.driver.get(SeleniumTestSetup.getBaseUrl() + Urls.LOGIN);
+        driver.get(SeleniumTestSetup.getBaseUrl() + Urls.LOGIN);
 
-        this.page = new LoginPage(this.driver, null);
+        page = new LoginPage(this.driver, null);
 
-        this.page.setUserName("ea");
-        this.page.setPassword("ea");
-        this.page.loginClick();
+        page.setUserName("ea");
+        page.setPassword("ea");
+        page.loginClick();
 
         DefaultMainDashboardPage dashboardPage = new DefaultMainDashboardPage(this.driver, null);
         String title = dashboardPage.getTitle();

@@ -11,22 +11,21 @@ import com.eaton.pages.demandresponse.cicurtailment.GroupCreatePage;
 
 public class GroupCreateTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    GroupCreatePage createPage;
+    private GroupCreatePage createPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.CI_GROUP_CREATE);
+        driver.get(getBaseUrl() + Urls.DemandResponse.CI_GROUP_CREATE);
 
-        this.createPage = new GroupCreatePage(this.driver, null);
+        createPage = new GroupCreatePage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_DrCICurtailmentNavigation" })
     public void titleCorrect() {
 
-        Assert.assertEquals(this.createPage.getTitle(), "Edit Group");
+        Assert.assertEquals(createPage.getTitle(), "Edit Group");
     }
 }

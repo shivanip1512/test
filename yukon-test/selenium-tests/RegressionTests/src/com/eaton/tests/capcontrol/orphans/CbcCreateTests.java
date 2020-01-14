@@ -11,17 +11,16 @@ import com.eaton.pages.capcontrol.orphans.CbcCreatePage;
 
 public class CbcCreateTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    CbcCreatePage createPage;
+    private CbcCreatePage createPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.CBC_CREATE);
+        driver.get(getBaseUrl() + Urls.CapControl.CBC_CREATE);
 
-        this.createPage = new CbcCreatePage(this.driver, null);
+        this.createPage = new CbcCreatePage(driver, null);
     }
 
     @Test

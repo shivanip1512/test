@@ -12,14 +12,10 @@ public class SubstationBusListPage extends PageBase {
     public SubstationBusListPage(WebDriver driver, String baseUrl) {
         super(driver, baseUrl);
 
-        setTable(new WebTable(driver, "compact-results-table"));
+        table = new WebTable(driver, "compact-results-table");
     }
 
     public WebTable getTable() {
         return this.table;
-    }
-
-    private void setTable(WebTable table) {
-        this.table = table;
     }
 }

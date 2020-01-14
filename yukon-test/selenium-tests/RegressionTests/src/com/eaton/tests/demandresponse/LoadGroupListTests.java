@@ -16,19 +16,18 @@ import com.eaton.pages.demandresponse.LoadGroupListPage;
 
 public class LoadGroupListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    LoadGroupListPage listPage;
-    SoftAssert softAssertion;
+    private LoadGroupListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
-        this.softAssertion = getSoftAssertion();
+        WebDriver driver = getDriver();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUPS);
+        driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUPS);
 
-        this.listPage = new LoadGroupListPage(this.driver, null);
+        listPage = new LoadGroupListPage(driver, null);
     }
 
     @Test
@@ -40,7 +39,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     @Test
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
+        List<ColumnHeader> headers = listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
@@ -49,10 +48,10 @@ public class LoadGroupListTests extends SeleniumTestSetup {
         }
 
         Assert.assertEquals(headerList.size(), 6);
-        this.softAssertion.assertTrue(headerList.contains("Name"));
-        this.softAssertion.assertTrue(headerList.contains("State"));
-        this.softAssertion.assertTrue(headerList.contains("Last Action"));
-        this.softAssertion.assertTrue(headerList.contains("Day/Month/Season/Year Hrs"));
-        this.softAssertion.assertTrue(headerList.contains("Reduction"));
+        softAssertion.assertTrue(headerList.contains("Name"));
+        softAssertion.assertTrue(headerList.contains("State"));
+        softAssertion.assertTrue(headerList.contains("Last Action"));
+        softAssertion.assertTrue(headerList.contains("Day/Month/Season/Year Hrs"));
+        softAssertion.assertTrue(headerList.contains("Reduction"));
     }
 }

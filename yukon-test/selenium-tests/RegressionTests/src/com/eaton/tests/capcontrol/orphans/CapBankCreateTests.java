@@ -12,17 +12,16 @@ import org.testng.Assert;
 
 public class CapBankCreateTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    CapBankCreatePage createPage;
+    private CapBankCreatePage createPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_CREATE);
+        driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_CREATE);
 
-        this.createPage = new CapBankCreatePage(this.driver, null);
+        createPage = new CapBankCreatePage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })

@@ -16,20 +16,19 @@ import com.eaton.pages.capcontrol.orphans.CapBankListPage;
 
 public class CapBankListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    CapBankListPage listPage;
-    SoftAssert softAssertion;
+    private CapBankListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.softAssertion = getSoftAssertion();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_LIST);
+        driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_LIST);
 
-        this.listPage = new CapBankListPage(this.driver, null);
+        listPage = new CapBankListPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })

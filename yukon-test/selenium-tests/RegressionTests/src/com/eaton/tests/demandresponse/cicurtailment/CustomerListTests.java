@@ -11,22 +11,21 @@ import com.eaton.pages.demandresponse.cicurtailment.CustomerListPage;
 
 public class CustomerListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    CustomerListPage listPage;
+    private CustomerListPage listPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.CI_CUSTOMER_LIST);
+        driver.get(getBaseUrl() + Urls.DemandResponse.CI_CUSTOMER_LIST);
 
-        this.listPage = new CustomerListPage(this.driver, null);
+        listPage = new CustomerListPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_DrCICurtailmentNavigation" })
     public void titleCorrect() {
 
-        Assert.assertEquals(this.listPage.getTitle(), "Customers");
+        Assert.assertEquals(listPage.getTitle(), "Customers");
     }
 }

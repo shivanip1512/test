@@ -11,22 +11,21 @@ import com.eaton.pages.demandresponse.cicurtailment.ProgramCreatePage;
 
 public class ProgramCreateTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    ProgramCreatePage createPage;
+    private ProgramCreatePage createPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.CI_PROGRAM_CREATE);
+        driver.get(getBaseUrl() + Urls.DemandResponse.CI_PROGRAM_CREATE);
 
-        this.createPage = new ProgramCreatePage(this.driver, null);
+        createPage = new ProgramCreatePage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_DrCICurtailmentNavigation" })
     public void titleCorrect() {
 
-        Assert.assertEquals(this.createPage.getTitle(), "Create Program");
+        Assert.assertEquals(createPage.getTitle(), "Create Program");
     }
 }

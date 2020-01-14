@@ -16,10 +16,10 @@ public class ConfigFileReader {
 
         try {
             reader = new BufferedReader(new FileReader(FILE_PATH));
-            this.properties = new Properties();
+            properties = new Properties();
 
             try {
-                this.properties.load(reader);
+                properties.load(reader);
                 reader.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -37,7 +37,7 @@ public class ConfigFileReader {
 
     public String getDriverPath() {
 
-        String driverPath = this.properties.getProperty("driverPath");
+        String driverPath = properties.getProperty("driverPath");
 
         if (driverPath != null)
             return driverPath;
@@ -47,7 +47,7 @@ public class ConfigFileReader {
 
     public String getApplicationUrl() {
 
-        String url = this.properties.getProperty("url");
+        String url = properties.getProperty("url");
 
         if (url != null)
             return url;
@@ -57,7 +57,7 @@ public class ConfigFileReader {
 
     public String getBrowser() {
 
-        String browser = this.properties.getProperty("browser");
+        String browser = properties.getProperty("browser");
 
         if (browser != null)
             return browser;
@@ -67,7 +67,7 @@ public class ConfigFileReader {
 
     public String getUseRemoteDriver() {
 
-        String useRemoteDriver = this.properties.getProperty("useRemoteDriver");
+        String useRemoteDriver = properties.getProperty("useRemoteDriver");
 
         if (useRemoteDriver != null)
             return useRemoteDriver;
@@ -77,7 +77,7 @@ public class ConfigFileReader {
 
     public String getRunHeadless() {
 
-        String runHeadless = this.properties.getProperty("runHeadless");
+        String runHeadless = properties.getProperty("runHeadless");
 
         if (runHeadless != null)
             return runHeadless;

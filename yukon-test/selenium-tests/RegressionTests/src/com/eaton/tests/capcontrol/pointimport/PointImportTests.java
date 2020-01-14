@@ -11,17 +11,16 @@ import com.eaton.pages.capcontrol.pointimport.PointImportPage;
 
 public class PointImportTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    PointImportPage importPage;
+    private PointImportPage importPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.POINT_IMPORT);
+        driver.get(getBaseUrl() + Urls.CapControl.POINT_IMPORT);
 
-        this.importPage = new PointImportPage(this.driver, null);
+        importPage = new PointImportPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTEst_CapControl" })

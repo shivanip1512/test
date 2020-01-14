@@ -11,17 +11,16 @@ import com.eaton.pages.capcontrol.orphans.SubstationCreatePage;
 
 public class SubstationCreateTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    SubstationCreatePage createPage;
+    private SubstationCreatePage createPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_CREATE);
+        driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_CREATE);
 
-        this.createPage = new SubstationCreatePage(this.driver, null);
+        this.createPage = new SubstationCreatePage(driver, null);
     }
 
     @Test

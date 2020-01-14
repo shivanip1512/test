@@ -11,22 +11,21 @@ import com.eaton.pages.demandresponse.cicurtailment.ProgramsPage;
 
 public class ProgramsTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    ProgramsPage programPage;
+    private ProgramsPage programPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.CI_PROGRAM_LIST);
+        driver.get(getBaseUrl() + Urls.DemandResponse.CI_PROGRAM_LIST);
 
-        this.programPage = new ProgramsPage(this.driver, null);
+        programPage = new ProgramsPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_DrCICurtailmentNavigation" })
     public void titleCorrect() {
 
-        Assert.assertEquals(this.programPage.getTitle(), "Programs");
+        Assert.assertEquals(programPage.getTitle(), "Programs");
     }
 }

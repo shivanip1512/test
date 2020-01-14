@@ -16,25 +16,24 @@ import com.eaton.pages.capcontrol.orphans.RegulatorListPage;
 
 public class RegulatorListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    RegulatorListPage listPage;
-    SoftAssert softAssertion;
+    private RegulatorListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
-        this.softAssertion = getSoftAssertion();
+        WebDriver driver = getDriver();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_LIST);
+        driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_LIST);
 
-        this.listPage = new RegulatorListPage(this.driver, null);
+        listPage = new RegulatorListPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
+        List<ColumnHeader> headers = listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 

@@ -16,19 +16,18 @@ import com.eaton.pages.capcontrol.orphans.FeederListPage;
 
 public class FeederListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    FeederListPage listPage;
-    SoftAssert softAssertion;
+    private FeederListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
-        this.softAssertion = getSoftAssertion();
+        WebDriver driver = getDriver();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.FEEDER_LIST);
+        driver.get(getBaseUrl() + Urls.CapControl.FEEDER_LIST);
 
-        this.listPage = new FeederListPage(this.driver, null);
+        listPage = new FeederListPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })

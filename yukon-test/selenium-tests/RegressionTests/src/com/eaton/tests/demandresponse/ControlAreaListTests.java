@@ -15,25 +15,24 @@ import com.eaton.pages.demandresponse.ControlAreaListPage;
 
 public class ControlAreaListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    ControlAreaListPage listPage;
-    SoftAssert softAssertion;
+    private ControlAreaListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
-        this.softAssertion = getSoftAssertion();
+        WebDriver driver = getDriver();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA);
+        driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA);
 
-        this.listPage = new ControlAreaListPage(this.driver, null);
+        listPage = new ControlAreaListPage(driver, null);
     }
 
     @Test
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
+        List<ColumnHeader> headers = listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
@@ -42,18 +41,18 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         }
 
         Assert.assertEquals(headerList.size(), 9);
-        this.softAssertion.assertTrue(headerList.contains("Name"));
-        this.softAssertion.assertTrue(headerList.contains("State"));
-        this.softAssertion.assertTrue(headerList.contains("Value / Threshold"));
-        this.softAssertion.assertTrue(headerList.contains("Peak / Projection"));
-        this.softAssertion.assertTrue(headerList.contains("ATKU"));
-        this.softAssertion.assertTrue(headerList.contains("Priority"));
-        this.softAssertion.assertTrue(headerList.contains("Time Window"));
-        this.softAssertion.assertTrue(headerList.contains("kW Savings (Max/Now)"));
+        softAssertion.assertTrue(headerList.contains("Name"));
+        softAssertion.assertTrue(headerList.contains("State"));
+        softAssertion.assertTrue(headerList.contains("Value / Threshold"));
+        softAssertion.assertTrue(headerList.contains("Peak / Projection"));
+        softAssertion.assertTrue(headerList.contains("ATKU"));
+        softAssertion.assertTrue(headerList.contains("Priority"));
+        softAssertion.assertTrue(headerList.contains("Time Window"));
+        softAssertion.assertTrue(headerList.contains("kW Savings (Max/Now)"));
     }
 
     @Test(groups = { "smoketest", "SmokeTest_DemandResponse" })
     public void pageTitleCorrect() {
-        Assert.assertEquals(this.listPage.getTitle(), "Control Areas");
+        Assert.assertEquals(listPage.getTitle(), "Control Areas");
     }
 }

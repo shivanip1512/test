@@ -12,14 +12,10 @@ public class CapBankListPage extends PageBase {
     public CapBankListPage(WebDriver driver, String baseUrl) {
         super(driver, baseUrl);
 
-        setTable(new WebTable(this.driver, "compact-results-table"));
+        table = new WebTable(driver, "compact-results-table");
     }
 
     public WebTable getTable() {
-        return this.table;
-    }
-
-    private void setTable(WebTable table) {
-        this.table = table;
+        return table;
     }
 }

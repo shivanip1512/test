@@ -16,30 +16,29 @@ import com.eaton.pages.demandresponse.ScenariosListPage;
 
 public class ScenariosListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    ScenariosListPage listPage;
-    SoftAssert softAssertion;
+    private ScenariosListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
-        this.softAssertion = getSoftAssertion();
+        WebDriver driver = getDriver();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIOS);
+        driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIOS);
 
-        this.listPage = new ScenariosListPage(this.driver, null);
+        listPage = new ScenariosListPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_DemandResponse" })
     public void titleCorrect() {
-        Assert.assertEquals(this.listPage.getTitle(), "Scenarios");
+        Assert.assertEquals(listPage.getTitle(), "Scenarios");
     }
 
     @Test
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
+        List<ColumnHeader> headers = listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
@@ -48,8 +47,8 @@ public class ScenariosListTests extends SeleniumTestSetup {
         }
 
         Assert.assertEquals(headerList.size(), 3);
-        this.softAssertion.assertTrue(headerList.contains("Name"));
-        this.softAssertion.assertTrue(headerList.contains("kW Savings (Max/Now)"));
+        softAssertion.assertTrue(headerList.contains("Name"));
+        softAssertion.assertTrue(headerList.contains("kW Savings (Max/Now)"));
     }
 
     @Test(enabled = false)

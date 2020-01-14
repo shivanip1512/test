@@ -7,10 +7,10 @@ public class ColumnHeader {
 	private WebElement webColumnHeader;
 	
 	public ColumnHeader(WebElement webColumnHeader) {
-		this.webColumnHeader = webColumnHeader;
+		webColumnHeader = webColumnHeader;
 	}
 
 	public String getColumnName() {
-		return this.webColumnHeader.getText();
+		return webColumnHeader.getText();
 	}
 }

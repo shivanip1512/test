@@ -11,22 +11,21 @@ import com.eaton.pages.capcontrol.reports.ReportsPage;
 
 public class ReportsTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    ReportsPage reportPage;
+    private ReportsPage reportPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.REPORTS);
+        driver.get(getBaseUrl() + Urls.CapControl.REPORTS);
 
-        this.reportPage = new ReportsPage(this.driver, null);
+        reportPage = new ReportsPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })
     public void titleCorrect() {
 
-        Assert.assertEquals(this.reportPage.getTitle(), "Report Selection");
+        Assert.assertEquals(reportPage.getTitle(), "Report Selection");
     }
 }

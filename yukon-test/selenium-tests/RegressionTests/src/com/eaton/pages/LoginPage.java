@@ -11,7 +11,7 @@ public class LoginPage extends PageBase {
         super(driver, pageUrl);
 
         driver.navigate().to(pageUrl);
-        this.requiresLogin = false;
+        requiresLogin = false;
     }
 
     public void login() {
@@ -23,14 +23,14 @@ public class LoginPage extends PageBase {
     }
 
     public void setUserName(String userName) {
-        this.driver.findElement(By.id("login_email")).sendKeys(userName);
+        driver.findElement(By.id("login_email")).sendKeys(userName);
     }
 
     public void setPassword(String password) {
-        this.driver.findElement(By.id("login_password")).sendKeys(password);
+        driver.findElement(By.id("login_password")).sendKeys(password);
     }
 
     public void loginClick() {
-        this.driver.findElement(By.name("login")).click();
+        driver.findElement(By.name("login")).click();
     }
 }

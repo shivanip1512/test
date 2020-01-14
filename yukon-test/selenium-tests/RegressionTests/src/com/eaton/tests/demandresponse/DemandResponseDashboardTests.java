@@ -11,44 +11,43 @@ import com.eaton.pages.demandresponse.DemandResponseDashboardPage;
 
 public class DemandResponseDashboardTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    DemandResponseDashboardPage demandPage;
+    private DemandResponseDashboardPage demandPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.DASHBOARD);
+        driver.get(getBaseUrl() + Urls.DemandResponse.DASHBOARD);
 
         // this.demandPage = getInstance(DemandResponseDashboardPage.class);
 
-        this.demandPage = new DemandResponseDashboardPage(this.driver, getBaseUrl());
+        demandPage = new DemandResponseDashboardPage(driver, getBaseUrl());
     }
 
     @Test
     public void titleCorrect() {
 
-        Assert.assertEquals(this.demandPage.getTitle(), "DR Dashboard");
+        Assert.assertEquals(demandPage.getTitle(), "DR Dashboard");
     }
 
     @Test
     public void quickSearchLinkActiveControlAreasUrlCorrect() {
-        String url = this.demandPage.getQuickSearchesUrl("Active Control Areas");
+        String url = demandPage.getQuickSearchesUrl("Active Control Areas");
 
         Assert.assertTrue(url.contains("/dr/controlArea/list?state=active"));
     }
 
     @Test
     public void quickSearchLinkActiveProgramsUrlCorrect() {
-        String url = this.demandPage.getQuickSearchesUrl("Active Programs");
+        String url = demandPage.getQuickSearchesUrl("Active Programs");
 
         Assert.assertTrue(url.contains("/dr/program/list?state=ACTIVE"));
     }
 
     @Test
     public void quickSearchLinkActiveLoadGroupsUrlCorrect() {
-        String url = this.demandPage.getQuickSearchesUrl("Active Load Groups");
+        String url = demandPage.getQuickSearchesUrl("Active Load Groups");
 
         Assert.assertTrue(url.contains("/dr/loadGroup/list?state=active"));
     }

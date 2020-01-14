@@ -13,19 +13,15 @@ public class LoadGroupListPage extends PageBase {
     public LoadGroupListPage(WebDriver driver, String baseUrl) {
         super(driver, baseUrl);
 
-        setTable(new WebTable(driver, "compact-results-table"));
+        table = new WebTable(driver, "compact-results-table");
     }
 
     public String getTitle() {
 
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        return driver.findElement(By.cssSelector(".page-heading")).getText();
     }
 
     public WebTable getTable() {
-        return this.table;
-    }
-
-    private void setTable(WebTable table) {
-        this.table = table;
+        return table;
     }
 }

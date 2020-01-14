@@ -16,19 +16,18 @@ import com.eaton.pages.capcontrol.orphans.CbcListPage;
 
 public class CbcListTests extends SeleniumTestSetup {
 
-    CbcListPage listPage;
-    WebDriver driver;
-    SoftAssert softAssertion;
+    private CbcListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
-        this.softAssertion = getSoftAssertion();
+        WebDriver driver = getDriver();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.CBC_LIST);
+        driver.get(getBaseUrl() + Urls.CapControl.CBC_LIST);
 
-        this.listPage = new CbcListPage(this.driver, null);
+        listPage = new CbcListPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })

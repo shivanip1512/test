@@ -11,22 +11,21 @@ import com.eaton.pages.demandresponse.cicurtailment.CiCurtailmentPage;
 
 public class CiCurtailmentTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    CiCurtailmentPage curtailmentPage;
+    private CiCurtailmentPage curtailmentPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.CI_CURTAILMENT);
+        driver.get(getBaseUrl() + Urls.DemandResponse.CI_CURTAILMENT);
 
-        this.curtailmentPage = new CiCurtailmentPage(this.driver, null);
+        curtailmentPage = new CiCurtailmentPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_DrCICurtailmentNavigation" })
     public void titleCorrect() {
 
-        Assert.assertEquals(this.curtailmentPage.getTitle(), "Commercial Curtailment");
+        Assert.assertEquals(curtailmentPage.getTitle(), "Commercial Curtailment");
     }
 }

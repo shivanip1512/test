@@ -15,29 +15,29 @@ public class WebTable {
     private List<WebRow> dataRows;
 
     public WebTable(WebDriver driver, String tableClassName) {
-        this.driver = driver;
-        this.tableClassName = tableClassName;
+        driver = driver;
+        tableClassName = tableClassName;
         getTable();
     }
 
     private WebElement getTable() {
-        return this.driver.findElement(By.cssSelector("." + this.tableClassName));
+        return driver.findElement(By.cssSelector("." + this.tableClassName));
     }
 
     public List<ColumnHeader> getColumnHeaders() {
 
-        if (this.columnHeaders == null) {
+        if (columnHeaders == null) {
             findColumnHeaders();
         }
 
-        return this.columnHeaders;
+        return columnHeaders;
     }
 
     public List<WebRow> dataRow() {
 
         findDataRows();
 
-        return this.dataRows;
+        return dataRows;
     }
 
     public void waitForLoadToComplete() {
@@ -45,7 +45,7 @@ public class WebTable {
     }
 
     private void findDataRows() {
-        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
+        List<WebElement> rowList = getTable().findElements(By.cssSelector("tbody tr"));
 
         List<WebRow> newList = new ArrayList<>();
         for (WebElement element : rowList) {
@@ -56,12 +56,12 @@ public class WebTable {
 
     private void findColumnHeaders() {
 
-        List<WebElement> headerList = this.getTable().findElements(By.cssSelector("thead tr th"));
+        List<WebElement> headerList = getTable().findElements(By.cssSelector("thead tr th"));
 
-        this.columnHeaders = new ArrayList<>();
+        columnHeaders = new ArrayList<>();
         for (WebElement element : headerList) {
 
-            this.columnHeaders.add(new ColumnHeader(element));
+            columnHeaders.add(new ColumnHeader(element));
         }
     }
 }

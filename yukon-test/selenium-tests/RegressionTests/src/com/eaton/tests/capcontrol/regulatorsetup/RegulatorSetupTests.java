@@ -11,17 +11,16 @@ import com.eaton.pages.capcontrol.regulatorsetup.RegulatorSetupPage;
 
 public class RegulatorSetupTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    RegulatorSetupPage regulatorSetupPage;
+    private RegulatorSetupPage regulatorSetupPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_SETUP);
+        driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_SETUP);
 
-        this.regulatorSetupPage = new RegulatorSetupPage(this.driver, null);
+        regulatorSetupPage = new RegulatorSetupPage(driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })

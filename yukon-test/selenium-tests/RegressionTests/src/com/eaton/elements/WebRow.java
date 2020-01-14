@@ -8,15 +8,15 @@ public class WebRow {
     private WebElement row;
 
     public WebRow(WebElement row) {
-        this.row = row;
+        row = row;
     }
 
     public void selectRow() {
-        this.row.click();
+        row.click();
     }
 
     public String getCellText(int cellIndex) {
 
-        return this.row.findElement(By.cssSelector("" + cellIndex)).getText();
+        return row.findElement(By.cssSelector("" + cellIndex)).getText();
     }
 }

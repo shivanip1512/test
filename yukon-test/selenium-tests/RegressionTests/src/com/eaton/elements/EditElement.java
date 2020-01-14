@@ -11,20 +11,20 @@ public class EditElement {
     private String elementName;
 
     public EditElement(WebDriver driver, String elementName) {
-        this.driver = driver;
-        this.elementName = elementName;
-        this.input = getEditElement();
+        driver = driver;
+        elementName = elementName;
+        input = getEditElement();
     }
 
     public void clearInputValue() {
-        this.input.clear();
+        input.clear();
     }
 
     public void setInputValue(String value) {
-        this.input.sendKeys(value);
+        input.sendKeys(value);
     }
 
     private WebElement getEditElement() {
-        return this.driver.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
+        return driver.findElement(By.cssSelector("input[name='" + elementName + "']"));
     }
 }

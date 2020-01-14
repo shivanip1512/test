@@ -11,17 +11,16 @@ import com.eaton.pages.capcontrol.orphans.FeederCreatePage;
 
 public class FeederCreateTests extends SeleniumTestSetup {
 
-    WebDriver driver;
-    FeederCreatePage createPage;
+    private FeederCreatePage createPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.FEEDER_CREATE);
+        driver.get(getBaseUrl() + Urls.CapControl.FEEDER_CREATE);
 
-        this.createPage = new FeederCreatePage(this.driver, null);
+        createPage = new FeederCreatePage(driver, null);
     }
 
     @Test
