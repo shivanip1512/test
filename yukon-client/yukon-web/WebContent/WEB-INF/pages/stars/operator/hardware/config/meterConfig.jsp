@@ -7,8 +7,14 @@
 
 <cti:standardPage module="operator" page="meterConfig">
     <tags:setFormEditMode mode="${mode}"/>
-    
-    <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updateMeterConfig"/>
+
+    <c:if test="${meter.paoType.isPlc()}">
+         <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updatePlcMeterConfig"/>
+    </c:if>
+    <c:if test="${meter.paoType.isRfn()}">
+        <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updateRfnMeterConfig"/>
+    </c:if>
+
     <form:form modelAttribute="meter" action="${updateMeterConfigUrl}">
         <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}"/>
