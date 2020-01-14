@@ -508,6 +508,9 @@ public class OperatorHardwareConfigController {
         return updateMeterConfig(meter, bindingResult, model, request, flashScope, accountInfoFragment);
     }
 
+    /**
+     * Updates the meter fields depending upon the meter type after validation.
+     */
     private String updateMeterConfig(YukonMeter meter, BindingResult bindingResult, ModelMap model, HttpServletRequest request,
             FlashScope flashScope, AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
