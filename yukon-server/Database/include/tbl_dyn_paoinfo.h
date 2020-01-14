@@ -387,6 +387,7 @@ public:
         Key_RF_DA_DnpSlaveAddress,
 
         Key_RFN_MeterProgrammingProgress,
+        Key_RFN_MeterProgrammingConfigID,
     };
 
 protected:

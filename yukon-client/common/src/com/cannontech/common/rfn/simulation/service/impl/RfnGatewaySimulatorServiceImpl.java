@@ -225,9 +225,8 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     @Override
-    public void sendGatewayDataResponse(String serial, boolean isGateway2, SimulatedGatewayDataSettings settings) {
+    public void sendGatewayDataResponse(String serial, String model, SimulatedGatewayDataSettings settings) {
         
-        String model = isGateway2 ? RfnDeviceCreationService.GATEWAY_2_MODEL_STRING : RfnDeviceCreationService.GATEWAY_1_MODEL_STRING;
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
         
         GatewayDataResponse response = setUpDataResponse(rfnIdentifier, settings);
@@ -235,11 +234,10 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
 
     @Override
-    public void sendGatewayArchiveRequest(String serial, boolean isGateway2) {
+    public void sendGatewayArchiveRequest(String serial, String model) {
         
         GatewayArchiveRequest request = new GatewayArchiveRequest();
   
-        String model = isGateway2 ? RfnDeviceCreationService.GATEWAY_2_MODEL_STRING : RfnDeviceCreationService.GATEWAY_1_MODEL_STRING;
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
         request.setRfnIdentifier(rfnIdentifier);
         
@@ -247,10 +245,9 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
 
     @Override
-    public void sendGatewayDeleteRequest(String serial, boolean isGateway2) {
+    public void sendGatewayDeleteRequest(String serial, String model) {
 
         GatewayDeleteRequest request = new GatewayDeleteRequest();
-        String model = isGateway2 ? RfnDeviceCreationService.GATEWAY_2_MODEL_STRING : RfnDeviceCreationService.GATEWAY_1_MODEL_STRING;
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
         request.setRfnIdentifier(rfnIdentifier);
 
@@ -630,16 +627,11 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
      * edit requests will be used in this response. All data values not in the cache will be set to default values.
      */
     private GatewayDataResponse setUpDataResponse(RfnIdentifier rfnId, SimulatedGatewayDataSettings settings) {
+        // If we are forcing this
         if (settings != null && settings.isReturnGwy800Model()) {
             rfnId = new RfnIdentifier(rfnId.getSensorSerialNumber(), 
                                       rfnId.getSensorManufacturer(), 
                                       RfnDeviceCreationService.GATEWAY_2_MODEL_STRING);
-        }
-        
-        if (settings != null && settings.isReturnVirtualGatewayModel()) {
-            rfnId = new RfnIdentifier(rfnId.getSensorSerialNumber(), 
-                                      rfnId.getSensorManufacturer(), 
-                                      RfnDeviceCreationService.GATEWAY_3_MODEL_STRING);
         }
         
         if (gatewayDataCache.get(rfnId) == null) {

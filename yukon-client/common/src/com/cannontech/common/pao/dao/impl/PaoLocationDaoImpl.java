@@ -13,6 +13,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
+import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
@@ -24,6 +26,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -107,6 +110,22 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
         sql.append("WHERE dd.GatewayId").in(gatewayIds);
                
         return jdbcTemplate.query(sql,mapper);
+    }
+    
+    @Override
+    public List<SimpleDevice> getDevicesWithoutLocationByGateway(List<Integer> gatewayIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PAObjectID, ypo.type");
+        sql.append("FROM DynamicRfnDeviceData dd");
+        sql.append("JOIN YukonPAObject ypo on dd.DeviceId = ypo.PAObjectID");
+        sql.append("WHERE dd.GatewayId").in(gatewayIds);
+        sql.append("AND NOT EXISTS (");
+        sql.append("  SELECT pl.PAObjectId");
+        sql.append("  FROM PaoLocation pl");
+        sql.append("  WHERE pl.PAObjectId = dd.DeviceId");
+        sql.append(")");        
+                       
+        return jdbcTemplate.query(sql, new YukonDeviceRowMapper());
     }
     
     @Override
