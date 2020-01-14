@@ -49,7 +49,7 @@ public class SystemDataProcessorHelper {
      * Process data for "Other" field types available in YAML.
      * 
      */
-    public static SystemData processOtherSettingsData(DictionariesField dictionariesField) {
+    public static SystemData processOtherData(DictionariesField dictionariesField) {
         SystemData systemData = new SystemData();
         systemData.setFieldName(dictionariesField.getField());
         systemData.setFieldValue(dictionariesField.getSource());

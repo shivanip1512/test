@@ -22,7 +22,7 @@ public class OtherDataProcessor extends SystemDataProcessor {
 
     @Override
     public SystemData buildSystemData(DictionariesField dictionariesField) {
-        return SystemDataProcessorHelper.processOtherSettingsData(dictionariesField);
+        return SystemDataProcessorHelper.processOtherData(dictionariesField);
     }
 
     @Override
