@@ -104,4 +104,12 @@ public class RfnMetadataMultiRequest implements Serializable {
     public void setPrimaryForwardNodesForGatewayRfnIdentifiers(Set<RfnIdentifier> primaryForwardNodesForGatewayRfnIdentifiers) {
         this.primaryForwardNodesForGatewayRfnIdentifiers = primaryForwardNodesForGatewayRfnIdentifiers;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "RfnMetadataMultiRequest [requestID=%s, rfnMetadatas=%s, rfnIdentifiers=%s, primaryNodesForGatewayRfnIdentifiers=%s, primaryForwardNodesForGatewayRfnIdentifiers=%s]",
+                requestID, rfnMetadatas, rfnIdentifiers, primaryNodesForGatewayRfnIdentifiers,
+                primaryForwardNodesForGatewayRfnIdentifiers);
+    }
 }

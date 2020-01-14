@@ -61,9 +61,6 @@ public enum RfnMetadataMulti implements Serializable {
 
     PRIMARY_FORWARD_TREE(RfnVertex.class, 1000, EntityType.NODE),
     
-    // Same as above but requesting a refresh
-    PRIMARY_FORWARD_TREE_REFRESH(RfnVertex.class, 1000, EntityType.NODE),
-    
     PRIMARY_FORWARD_ROUTE(RfnRoute.class, 1000, EntityType.NODE),
     
     // PRIMARY_FORWARD_CHILDREN(RfnChildren.class, 1000, EntityType.NODE), // reserved for future use
