@@ -48,5 +48,10 @@ public interface RfnDeviceCreationService {
     
     @ManagedAttribute
     public int getNewDeviceCreated();
+
+    /**
+     * If device is not found creates device
+     */
+    RfnDevice createIfNotFound(RfnIdentifier identifier);
     
 }
