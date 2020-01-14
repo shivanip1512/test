@@ -16,24 +16,25 @@ import com.eaton.pages.capcontrol.orphans.SubstationListPage;
 
 public class SubstationListTests extends SeleniumTestSetup {
 
-    private SubstationListPage listPage;
-    private SoftAssert softAssertion;
+    WebDriver driver;
+    SubstationListPage listPage;
+    SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        WebDriver driver = getDriver();
-        softAssertion = getSoftAssertion();
+        this.driver = getDriver();
+        this.softAssertion = getSoftAssertion();
 
-        driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_LIST);
+        this.driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_LIST);
 
-        listPage = new SubstationListPage(driver, null);
+        this.listPage = new SubstationListPage(this.driver, null);
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = listPage.getTable().getColumnHeaders();
+        List<ColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
@@ -42,8 +43,8 @@ public class SubstationListTests extends SeleniumTestSetup {
         }
 
         Assert.assertEquals(headerList.size(), 3);
-        softAssertion.assertTrue(headerList.contains("Name"));
-        softAssertion.assertTrue(headerList.contains("Item Type"));
-        softAssertion.assertTrue(headerList.contains("Description"));
+        this.softAssertion.assertTrue(headerList.contains("Name"));
+        this.softAssertion.assertTrue(headerList.contains("Item Type"));
+        this.softAssertion.assertTrue(headerList.contains("Description"));
     }
 }

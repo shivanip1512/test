@@ -26,6 +26,6 @@ public class FeederCreateTests extends SeleniumTestSetup {
     @Test
     public void titleCorrect() {
 
-        Assert.assertEquals(this.createPage.getTitle(), "Create Feeder");
+        Assert.assertEquals(createPage.getTitle(), "Create Feeder");
     }
 }

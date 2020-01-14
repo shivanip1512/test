@@ -13,16 +13,16 @@ public class DemandResponseDashboardPage extends PageBase {
     public DemandResponseDashboardPage(WebDriver driver, String pageUrl) {
         super(driver, pageUrl);
 
-        requiresLogin = true;
+        this.requiresLogin = true;
         pageUrl = DEFAULT_URL;
     }
 
     public String getTitle() {
 
-        return driver.findElement(By.cssSelector(".page-heading")).getText();
+        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
     }
 
     public String getQuickSearchesUrl(String linkText) {
-        return driver.findElement(By.linkText(linkText)).getAttribute("href");
+        return this.driver.findElement(By.linkText(linkText)).getAttribute("href");
     }
 }

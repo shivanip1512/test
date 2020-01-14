@@ -13,15 +13,19 @@ public class ScenariosListPage extends PageBase {
     public ScenariosListPage(WebDriver driver, String baseUrl) {
         super(driver, baseUrl);
 
-        table = new WebTable(driver, "compact-results-table");
+        setTable(new WebTable(driver, "compact-results-table"));
     }
 
     public String getTitle() {
 
-        return driver.findElement(By.cssSelector(".page-heading")).getText();
+        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
     }
 
     public WebTable getTable() {
-        return table;
+        return this.table;
+    }
+
+    private void setTable(WebTable table) {
+        this.table = table;
     }
 }

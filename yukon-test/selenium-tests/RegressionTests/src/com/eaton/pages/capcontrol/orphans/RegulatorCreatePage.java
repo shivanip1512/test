@@ -13,6 +13,6 @@ public class RegulatorCreatePage extends PageBase {
     }
 
     public String getTitle() {
-        return driver.findElement(By.cssSelector(".page-heading")).getText();
+        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
     }
 }

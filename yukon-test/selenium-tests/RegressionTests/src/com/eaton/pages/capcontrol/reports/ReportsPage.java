@@ -13,6 +13,6 @@ public class ReportsPage extends PageBase {
     }
 
     public String getTitle() {
-        return driver.findElement(By.cssSelector(".title")).getText();
+        return this.driver.findElement(By.cssSelector(".title")).getText();
     }
 }

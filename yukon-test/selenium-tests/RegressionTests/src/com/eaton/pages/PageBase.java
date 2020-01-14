@@ -10,19 +10,19 @@ public class PageBase implements ISeleniumPage {
 
     public PageBase(WebDriver driver, String pageUrl) {
 
-        driver = driver;
-        pageUrl = pageUrl;
+        this.driver = driver;
+        this.pageUrl = pageUrl;
     }
 
     @Override
     public String getPageUrl() {
 
-        return pageUrl;
+        return this.pageUrl;
     }
 
     @Override
     public boolean getRequiresLogin() {
 
-        return requiresLogin;
+        return this.requiresLogin;
     }
 }

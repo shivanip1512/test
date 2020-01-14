@@ -12,10 +12,14 @@ public class FeederListPage extends PageBase {
     public FeederListPage(WebDriver driver, String baseUrl) {
         super(driver, baseUrl);
 
-        table = new WebTable(driver, "compact-results-table");
+        setTable(new WebTable(driver, "compact-results-table"));
     }
 
     public WebTable getTable() {
-        return table;
+        return this.table;
+    }
+
+    private void setTable(WebTable table) {
+        this.table = table;
     }
 }

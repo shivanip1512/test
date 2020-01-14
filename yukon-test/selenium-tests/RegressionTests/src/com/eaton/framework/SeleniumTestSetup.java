@@ -37,8 +37,7 @@ public class SeleniumTestSetup {
             navigateToLoginPage();
             login();
         } catch (Exception ex) {
-            logger.fine(EXCEPTION_MSG + ex);
-            throw ex;
+            logger.fine(EXCEPTION_MSG + ex);            
         }
     }
 
