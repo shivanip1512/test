@@ -524,6 +524,7 @@ public class OperatorHardwareConfigController {
 
         if (!bindingResult.hasErrors()) {
             if (meter instanceof RfnMeter) {
+                // Since, RfnMeter.RfnIdentifier is not populated over here so using meterDao will not work here.
                 deviceDao.changeMeterNumber((SimpleMeter) meter, meter.getMeterNumber());
             } else {
                 meterDao.update(meter);
@@ -532,9 +533,11 @@ public class OperatorHardwareConfigController {
         } else {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            List<LiteYukonPAObject> routes = Lists
-                    .newArrayList(paoDao.getRoutesByType(new PaoType[] { PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO }));
-            model.addAttribute("routes", routes);
+            if (meter instanceof PlcMeter) {
+                List<LiteYukonPAObject> routes = Lists
+                        .newArrayList(paoDao.getRoutesByType(new PaoType[] { PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO }));
+                model.addAttribute("routes", routes);
+            }
             return "operator/hardware/config/meterConfig.jsp";
         }
 
