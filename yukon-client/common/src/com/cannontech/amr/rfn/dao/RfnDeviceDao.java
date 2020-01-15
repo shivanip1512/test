@@ -110,7 +110,7 @@ public interface RfnDeviceDao {
     /**
      * Returns list of devices for gateways
      * Has boolean option to sort Descending or Ascending
-     * Set to true to order by descending
+     * Set to true to order by DynamicRfnDeviceData.LastTransferTime descending
      */
     List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIds, boolean orderDescending);
 
