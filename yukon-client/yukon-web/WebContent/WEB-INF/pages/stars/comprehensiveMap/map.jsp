@@ -20,7 +20,7 @@
     <cti:msg2 var="coordinatesDeleted" key="yukon.web.modules.operator.mapNetwork.location.delete.successful"/>
     <input id="coordinatesDeletedMsg" type="hidden" value="${coordinatesDeleted}"/>
     
-    <tags:alertBox classes="dn js-no-location-message"><i:inline key=".missingLocations"/></tags:alertBox>
+    <tags:alertBox classes="dn js-no-location-message" type="warning"><i:inline key=".missingLocations"/></tags:alertBox>
                 
     <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">
         <div class="filter-section">
