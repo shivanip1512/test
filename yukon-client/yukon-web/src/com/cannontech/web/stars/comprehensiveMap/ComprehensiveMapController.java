@@ -68,6 +68,7 @@ import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
+import com.cannontech.web.tools.mapping.service.NetworkTreeService;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
@@ -86,6 +87,7 @@ public class ComprehensiveMapController {
     
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private NmNetworkService nmNetworkService;
+    @Autowired private NetworkTreeService networkTreeService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private MeterDao meterDao;
     @Autowired private PaoDao paoDao;
@@ -292,7 +294,7 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();  
         
         try {
-            List<Node<Pair<Integer, FeatureCollection>>> root = nmNetworkService.getPrimaryRoutes(Arrays.asList(gatewayIds));
+            List<Node<Pair<Integer, FeatureCollection>>> root = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
             json.put("tree", root);
             
             StoredDeviceGroup devicesWithoutLocation = tempDeviceGroupService.createTempGroup();
