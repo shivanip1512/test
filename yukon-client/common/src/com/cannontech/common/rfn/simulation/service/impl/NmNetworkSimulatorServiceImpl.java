@@ -82,6 +82,7 @@ import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
 import com.cannontech.common.rfn.message.node.WifiSecurityType;
 import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
+import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -369,6 +370,38 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi); 
                     result.getMetadatas().put(multi, getVertex(rfnDevice));
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA) {
+                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
+                    com.cannontech.common.rfn.message.route.RouteData routeData = new com.cannontech.common.rfn.message.route.RouteData();
+                    routeData.setDestinationAddress(settings.getRouteData().getDestinationAddress());
+                    routeData.setHopCount(settings.getRouteData().getHopCount());
+                    routeData.setNextHopAddress(settings.getRouteData().getNextHopAddress());
+                    routeData.setRouteColor(settings.getRouteData().getRouteColor());
+                    routeData.setRouteDataTimeStamp(settings.getRouteData().getRouteDataTimestamp());
+                    List<RouteFlag> flags = new ArrayList<>();
+                    for (RouteFlagType flag : settings.getRouteData().getRouteFlags()) {
+                        if (flag == RouteFlagType.BR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_BATTERY);
+                        } else if (flag == RouteFlagType.GC) {
+                            flags.add(RouteFlag.ROUTE_FLAG_ROUTE_START_GC);
+                        } else if (flag == RouteFlagType.IR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_IGNORED);
+                        } else if (flag == RouteFlagType.PF) {
+                            flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_FORWARD);
+                        } else if (flag == RouteFlagType.PR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_REVERSE);
+                        } else if (flag == RouteFlagType.RU) {
+                            flags.add(RouteFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE);
+                        } else if (flag == RouteFlagType.TO) {
+                            flags.add(RouteFlag.ROUTE_FLAG_TIMED_OUT);
+                        } else if (flag == RouteFlagType.VR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_VALID);
+                        }
+                    }
+                    routeData.setRouteFlags(new HashSet<RouteFlag>(flags));
+                    routeData.setRouteTimeout(settings.getRouteData().getRouteTimeout());
+                    routeData.setTotalCost(settings.getRouteData().getTotalCost());
+                    result.getMetadatas().put(multi, routeData);
                 }
             }
         }
