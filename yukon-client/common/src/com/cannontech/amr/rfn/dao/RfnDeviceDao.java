@@ -108,6 +108,13 @@ public interface RfnDeviceDao {
     List<RfnDevice> getDevicesForGateway(int gatewayId);
     
     /**
+     * Returns list of devices for gateways
+     * Has boolean option to sort Descending or Ascending
+     * Set to true to order by descending
+     */
+    List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIds, boolean orderDescending);
+
+    /**
      * Returns limited list of RfnIdentifier for gateway. Used by simulator.
      */
     List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit);

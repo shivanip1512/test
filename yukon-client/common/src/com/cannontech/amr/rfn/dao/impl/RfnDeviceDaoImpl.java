@@ -607,6 +607,21 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("WHERE dd.GatewayId").eq(gatewayId);
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
+
+    public List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIds, boolean orderDescending) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM DynamicRfnDeviceData dd");
+        sql.append("JOIN YukonPaObject ypo on dd.DeviceId = ypo.PAObjectID");
+        sql.append("JOIN RfnAddress rfn on dd.DeviceId = rfn.DeviceId");
+        sql.append("WHERE dd.GatewayId").in(gatewayIds);
+        if (orderDescending) {
+            sql.append("ORDER BY LastTransferTime DESC");
+        } else {
+            sql.append("ORDER BY LastTransferTime ASC");
+        }
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+    }
         
     @Override
     public List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit) {
