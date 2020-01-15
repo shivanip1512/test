@@ -77,8 +77,8 @@
     <entry key="yukon.web.modules.operator.meterConfig.route">Route</entry>
     <entry key="yukon.web.modules.operator.meterConfig.cancel">Cancel</entry>
     
-    <entry key="yukon.web.modules.operator.meterConfig.error.required.meterNumber">Meter Number Required</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.error.required.meterNumber">Meter Number Required.</entry>
     <entry key="yukon.web.modules.operator.meterConfig.error.invalidRange.address">Valid range for {0} addresses is: {1}.</entry>
-    <entry key="yukon.web.modules.operator.meterConfig.error.nonNumeric">Physical Address can only contain numeric characters.</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.error.nonNumeric">Address can only contain numeric characters.</entry>
     
 </properties>
