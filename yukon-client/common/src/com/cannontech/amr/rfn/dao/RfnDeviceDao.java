@@ -109,8 +109,11 @@ public interface RfnDeviceDao {
     
     /**
      * Returns list of devices for gateways
+     * A list of PaoTypes can be specified for filtering or set to null to return all devices
+     * @param gatewayIdsList - an integer list of gatewayIds
+     * @param paoTypes - a list of PaoTypes
      */
-    List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIds);
+    List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIdsList, List<PaoType> paoTypes);
 
     /**
      * Returns limited list of RfnIdentifier for gateway. Used by simulator.

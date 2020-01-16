@@ -10,6 +10,6 @@ public interface RfnWiFiCommDataService {
      * Returns WiFiMeterCommData Objects for a list of virtual gateway Ids;
      * @param virtualGatewayIds - A list of VirtualGatewayIds
      */
-    List<WiFiMeterCommData> getWiFiMeterCommDataForVirtualGateway(List<Integer> virtualGatewayIds);
+    List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> virtualGatewayIds);
 
 }
