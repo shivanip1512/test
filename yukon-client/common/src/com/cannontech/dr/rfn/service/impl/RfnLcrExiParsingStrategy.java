@@ -65,9 +65,8 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
         Instant payloadTime = new Instant(decodedPayload.evaluateAsLong("/DRReport/@utc") * 1000);
         Instant currentInstant = new Instant();
 
-        // Discard all the data before 1/1/2001 or that is older than the global timestamp limit
-        if (rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)
-            && RfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
+        // Discard all the data that is older than the global timestamp limit
+        if (RfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
             // Handle point data
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
