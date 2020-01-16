@@ -3,16 +3,16 @@ package com.cannontech.web.stars.gateway.model;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.database.data.lite.LitePoint;
 
-public class SuperMeterInfo {
+public class WiFiMeterCommData {
 
     private final PaoIdentifier paoIdentifier;
-    private final LitePoint commStatusPointId;
-    private final LitePoint rssiPointId;
+    private final LitePoint commStatusPoint;
+    private final LitePoint rssiPoint;
 
-    public SuperMeterInfo(PaoIdentifier paoIdentifier, LitePoint commStatusPointId, LitePoint rssiPointId) {
+    public WiFiMeterCommData(PaoIdentifier paoIdentifier, LitePoint commStatusPoint, LitePoint rssiPoint) {
         this.paoIdentifier = paoIdentifier;
-        this.commStatusPointId = commStatusPointId;
-        this.rssiPointId = rssiPointId;
+        this.commStatusPoint = commStatusPoint;
+        this.rssiPoint = rssiPoint;
 
     }
 
@@ -20,21 +20,21 @@ public class SuperMeterInfo {
         return paoIdentifier;
     }
 
-    public LitePoint getCommStatusPointId() {
-        return commStatusPointId;
+    public LitePoint getCommStatusPoint() {
+        return commStatusPoint;
     }
 
-    public LitePoint getRssiPointId() {
-        return rssiPointId;
+    public LitePoint getRssiPoint() {
+        return rssiPoint;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((commStatusPointId == null) ? 0 : commStatusPointId.hashCode());
+        result = prime * result + ((commStatusPoint == null) ? 0 : commStatusPoint.hashCode());
         result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
-        result = prime * result + ((rssiPointId == null) ? 0 : rssiPointId.hashCode());
+        result = prime * result + ((rssiPoint == null) ? 0 : rssiPoint.hashCode());
         return result;
     }
 
@@ -49,12 +49,12 @@ public class SuperMeterInfo {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        SuperMeterInfo other = (SuperMeterInfo) obj;
-        if (commStatusPointId == null) {
-            if (other.commStatusPointId != null) {
+        WiFiMeterCommData other = (WiFiMeterCommData) obj;
+        if (commStatusPoint == null) {
+            if (other.commStatusPoint != null) {
                 return false;
             }
-        } else if (!commStatusPointId.equals(other.commStatusPointId)) {
+        } else if (!commStatusPoint.equals(other.commStatusPoint)) {
             return false;
         }
         if (paoIdentifier == null) {
@@ -64,11 +64,11 @@ public class SuperMeterInfo {
         } else if (!paoIdentifier.equals(other.paoIdentifier)) {
             return false;
         }
-        if (rssiPointId == null) {
-            if (other.rssiPointId != null) {
+        if (rssiPoint == null) {
+            if (other.rssiPoint != null) {
                 return false;
             }
-        } else if (!rssiPointId.equals(other.rssiPointId)) {
+        } else if (!rssiPoint.equals(other.rssiPoint)) {
             return false;
         }
         return true;
@@ -76,8 +76,7 @@ public class SuperMeterInfo {
 
     @Override
     public String toString() {
-        return "SuperMeterInfo [paoIdentifier=" + paoIdentifier + ", commStatusPointId=" + commStatusPointId + ", rssiPointId="
-                + rssiPointId + "]";
+        return "WiFiMeterCommData [paoIdentifier=" + paoIdentifier + ", commStatusPoint=" + commStatusPoint + ", rssiPoint="
+                + rssiPoint + "]";
     }
-
 }
