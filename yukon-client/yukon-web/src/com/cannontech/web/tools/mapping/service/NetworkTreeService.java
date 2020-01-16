@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.geojson.FeatureCollection;
+import org.joda.time.Instant;
 
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.util.tree.Node;
@@ -16,4 +17,24 @@ public interface NetworkTreeService {
      */
     List<Node<Pair<Integer, FeatureCollection>>> getNetworkTree(List<Integer> gatewayIds)
             throws NmNetworkException, NmCommunicationException;
+    
+    /**
+     * Sends request to NM to update Network Tree. Returns true if the request was sent.
+     */
+    boolean requestNetworkTreeUpdate();
+
+    /**
+     * Returns true if it is possible to send request to NM to update Network Tree.
+     */
+    boolean isNetworkTreeUpdatePossible();
+
+    /**
+     * Returns Network Tree update time
+     */
+    Instant getNetworkTreeUpdateTime();
+
+    /**
+     * Returns true if Network Tree was updated after lastUpdateTime.
+     */
+    boolean isNetworkTreeUpdated(Instant lastUpdateTime);
 }
