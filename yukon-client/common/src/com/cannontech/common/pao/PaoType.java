@@ -1235,4 +1235,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public static ImmutableSet<PaoType> getDirectLMProgramTypes() {
         return directProgramTypes;
     }
+    
+    public boolean isWifiDevice() {
+        return wifiTypes.contains(this);
+    }
 }

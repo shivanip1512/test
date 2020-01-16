@@ -313,6 +313,7 @@ public class MeterController {
         model.addAttribute("showRfOutage", outageSupported && rfDevice);
         model.addAttribute("showRfMetadata", rfDevice);
         model.addAttribute("showTou", touDevice);
+        model.addAttribute("showWifiConnection", type.isWifiDevice());
         
         /** Page Actions */
         model.addAttribute("showCommander", commanderDevice && commanderUser);
