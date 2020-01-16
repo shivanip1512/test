@@ -7,9 +7,9 @@ import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
 public interface RfnWiFiCommDataService {
 
     /**
-     * Returns WiFiMeterCommData Objects for a list of virtual gateway Ids;
-     * @param virtualGatewayIds - A list of VirtualGatewayIds
+     * Returns WiFiMeterCommData Objects for a list of gateway Ids;
+     * @param gatewayIds - A list of GatewayIds
      */
-    List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> virtualGatewayIds);
+    List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds);
 
 }
