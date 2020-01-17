@@ -608,15 +608,15 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
 
-    public List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIds, List<PaoType> paoTypes) {
+    public List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIds, Iterable<PaoType> paoTypes) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("FROM DynamicRfnDeviceData dd");
         sql.append("JOIN YukonPaObject ypo on dd.DeviceId = ypo.PAObjectID");
         sql.append("JOIN RfnAddress rfn on dd.DeviceId = rfn.DeviceId");
         sql.append("WHERE dd.GatewayId").in(gatewayIds);
-        if(paoTypes != null) {
-            sql.append("and ypo.type").in(paoTypes);
+        if (paoTypes != null) {
+            sql.append("AND ypo.Type").in(paoTypes);
         }
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }

@@ -27,7 +27,7 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
 
     public List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds) {
         // Select all the WiFi meters in DynamicRfnDeviceData
-        List<RfnDevice> wiFiMeters = rfnDeviceDao.getDevicesForGateways(gatewayIds, PaoType.getWifiTypes().asList());
+        List<RfnDevice> wiFiMeters = rfnDeviceDao.getDevicesForGateways(gatewayIds, PaoType.getWifiTypes());
         // Turn the list of RfnDevices into WiFiMeterCommData objects
         List<WiFiMeterCommData> wiFiMeterCommData = wiFiMeters.stream()
                                                               .map(this::buildWiFiMeterCommDataObject)
