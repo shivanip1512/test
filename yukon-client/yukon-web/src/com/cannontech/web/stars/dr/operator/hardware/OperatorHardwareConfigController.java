@@ -24,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.PlcMeter;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -39,6 +41,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -129,6 +132,7 @@ public class OperatorHardwareConfigController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private DeviceDao deviceDao;
     
     private final ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private final TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
@@ -483,37 +487,64 @@ public class OperatorHardwareConfigController {
         
         return "operator/hardware/config/meterConfig.jsp";
     }
-    
-    @RequestMapping("updateMeterConfig")
-    public String updateMeterConfig(@ModelAttribute("meter") PlcMeter meter, BindingResult bindingResult,
-                                 ModelMap model,
-                                 YukonUserContext userContext,
-                                 HttpServletRequest request,
-                                 FlashScope flashScope,
-                                 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+
+    @RequestMapping("updateRfnMeterConfig")
+    public String updateRfnMeterConfig(@ModelAttribute("meter") RfnMeter meter, BindingResult bindingResult,
+            ModelMap model,
+            YukonUserContext userContext,
+            HttpServletRequest request,
+            FlashScope flashScope,
+            AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+        return updateMeterConfig(meter, bindingResult, model, request, flashScope, accountInfoFragment);
+    }
+
+    @RequestMapping("updatePlcMeterConfig")
+    public String updatePlcMeterConfig(@ModelAttribute("meter") PlcMeter meter, BindingResult bindingResult,
+            ModelMap model,
+            YukonUserContext userContext,
+            HttpServletRequest request,
+            FlashScope flashScope,
+            AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+        return updateMeterConfig(meter, bindingResult, model, request, flashScope, accountInfoFragment);
+    }
+
+    /**
+     * Updates the meter fields depending upon the meter type after validation.
+     */
+    private String updateMeterConfig(YukonMeter meter, BindingResult bindingResult, ModelMap model, HttpServletRequest request,
+            FlashScope flashScope, AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        
+
         int deviceTypeId = ServletRequestUtils.getRequiredIntParameter(request, "deviceTypeId");
         int paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");
         PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.getForId(deviceTypeId));
         meter.setPaoIdentifier(paoIdentifier);
-        
+
         meterConfigValidator.validate(meter, bindingResult);
-        
-        if(!bindingResult.hasErrors()) {
-            meterDao.update(meter);
+
+        if (!bindingResult.hasErrors()) {
+            if (meter instanceof RfnMeter) {
+                // Since, RfnMeter.RfnIdentifier is not populated over here so using meterDao will not work here.
+                deviceDao.changeMeterNumber((SimpleMeter) meter, meter.getMeterNumber());
+            } else {
+                meterDao.update(meter);
+            }
+
         } else {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new PaoType[]{PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO}));
-            model.addAttribute("routes", routes);
+            if (meter instanceof PlcMeter) {
+                List<LiteYukonPAObject> routes = Lists
+                        .newArrayList(paoDao.getRoutesByType(new PaoType[] { PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO }));
+                model.addAttribute("routes", routes);
+            }
             return "operator/hardware/config/meterConfig.jsp";
         }
-        
+
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.meterConfigUpdated"));
         return "redirect:/stars/operator/hardware/list";
     }
-    
+
     @RequestMapping(value="cancel", params="cancel")
     public String cancel(ModelMap modelMap,
                           AccountInfoFragment accountInfoFragment,
