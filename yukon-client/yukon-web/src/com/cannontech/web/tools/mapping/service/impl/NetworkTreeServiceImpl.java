@@ -175,7 +175,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     public List<Node<Pair<Integer, FeatureCollection>>> getNetworkTree(List<Integer> gatewayIds)
             throws NmNetworkException, NmCommunicationException {
         
-        if(treeUpdateResponse == null) {
+        if (treeUpdateResponse == null) {
             log.debug("Network tree generation time was not found, sending request to NM to get the time");
             jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), new NetworkTreeUpdateTimeRequest());
         }
