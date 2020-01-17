@@ -120,8 +120,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN410CL(DeviceTypes.RFN410CL, "RFN-410cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420CL(DeviceTypes.RFN420CL, "RFN-420cL", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN420CD(DeviceTypes.RFN420CD, "RFN-420cD", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN420CLW(DeviceTypes.RFN420CLW, "RFN-420cLW", PaoCategory.DEVICE, PaoClass.RFMESH),
-    RFN420CDW(DeviceTypes.RFN420CDW, "RFN-420cDW", PaoCategory.DEVICE, PaoClass.RFMESH),
+    WRL420CL(DeviceTypes.WRL420CL, "WRL-420cL", PaoCategory.DEVICE, PaoClass.RFMESH),
+    WRL420CD(DeviceTypes.WRL420CD, "WRL-420cD", PaoCategory.DEVICE, PaoClass.RFMESH),
     
     RFN430A3D(DeviceTypes.RFN430A3D, "RFN-430A3D", PaoCategory.DEVICE, PaoClass.RFMESH),
     RFN430A3T(DeviceTypes.RFN430A3T, "RFN-430A3T", PaoCategory.DEVICE, PaoClass.RFMESH),
@@ -482,9 +482,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN410FL,
             RFN410FX,
             RFN420CD,
-            RFN420CDW,
+            WRL420CD,
             RFN420CL,
-            RFN420CLW,
+            WRL420CL,
             RFN420FD,
             RFN420FL,
             RFN420FRD,
@@ -531,9 +531,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN410FL,
             RFN410FX,
             RFN420CD,
-            RFN420CDW,
+            WRL420CD,
             RFN420CL,
-            RFN420CLW,
+            WRL420CL,
             RFN420FD,
             RFN420FL,
             RFN420FRD,
@@ -582,8 +582,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         );
         
         wifiTypes = ImmutableSet.of(
-            RFN420CLW,
-            RFN420CDW
+            WRL420CL,
+            WRL420CD
         );
         
         mctTypes = ImmutableSet.of(

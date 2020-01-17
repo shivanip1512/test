@@ -135,7 +135,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
     String templatePrefix;
-    private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.RFN420CLW, PaoType.RFN420CDW);
+    private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.WRL420CL, PaoType.WRL420CD);
     private NetworkTreeUpdateTimeResponse networkTreeUpdateTimeResponse;
     
     private final Cache<RfnIdentifier, RfnVertex> vertexCache =

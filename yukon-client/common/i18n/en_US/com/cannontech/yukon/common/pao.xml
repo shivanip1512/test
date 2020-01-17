@@ -97,9 +97,9 @@
 
     <entry key="yukon.common.pao.RFN410CL">RFN-410cL</entry>
     <entry key="yukon.common.pao.RFN420CL">RFN-420cL</entry>
-    <entry key="yukon.common.pao.RFN420CLW">RFN-420cLW</entry>
+    <entry key="yukon.common.pao.WRL420CL">WRL-420cL</entry>
     <entry key="yukon.common.pao.RFN420CD">RFN-420cD</entry>
-    <entry key="yukon.common.pao.RFN420CDW">RFN-420cDW</entry>
+    <entry key="yukon.common.pao.WRL420CD">WRL-420cD</entry>
 
     <entry key="yukon.common.pao.RFN430A3D">RFN-430A3D</entry>
     <entry key="yukon.common.pao.RFN430A3T">RFN-430A3T</entry>

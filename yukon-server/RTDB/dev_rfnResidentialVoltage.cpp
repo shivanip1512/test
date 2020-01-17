@@ -50,9 +50,9 @@ Commands::RfnOvUvConfigurationCommand::MeterID getMeterIdForDeviceType( const in
     {
         { TYPE_RFN410CL,  Commands::RfnOvUvConfigurationCommand::CentronC1SX },
         { TYPE_RFN420CL,  Commands::RfnOvUvConfigurationCommand::CentronC2SX },
-        { TYPE_RFN420CLW, Commands::RfnOvUvConfigurationCommand::CentronC2SX },
+        { TYPE_WRL420CL,  Commands::RfnOvUvConfigurationCommand::CentronC2SX },
         { TYPE_RFN420CD,  Commands::RfnOvUvConfigurationCommand::CentronC2SX },
-        { TYPE_RFN420CDW, Commands::RfnOvUvConfigurationCommand::CentronC2SX },
+        { TYPE_WRL420CD,  Commands::RfnOvUvConfigurationCommand::CentronC2SX },
 
         { TYPE_RFN410FX,  Commands::RfnOvUvConfigurationCommand::LGFocusAX },
         { TYPE_RFN410FD,  Commands::RfnOvUvConfigurationCommand::LGFocusAX },

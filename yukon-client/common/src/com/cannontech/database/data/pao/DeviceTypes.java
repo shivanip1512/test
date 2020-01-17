@@ -276,7 +276,7 @@ public interface DeviceTypes extends TypeBase
     public final static int LM_GROUP_METER_DISCONNECT = DEVICE_OFFSET + 209;
     public final static int LM_METER_DISCONNECT_PROGRAM = DEVICE_OFFSET + 210;
 
-    public final static int RFN420CLW = DEVICE_OFFSET + 211;
-    public final static int RFN420CDW = DEVICE_OFFSET + 212;
+    public final static int WRL420CL = DEVICE_OFFSET + 211;
+    public final static int WRL420CD = DEVICE_OFFSET + 212;
     public final static int VIRTUAL_GATEWAY = DEVICE_OFFSET + 213;
 }
