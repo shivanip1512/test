@@ -68,7 +68,7 @@ import com.google.common.collect.Maps;
  * NoForceRefreshBeforeTimeMillis - is used to figure out if Yukon can send a message to NM to do the tree load.
  * 
  * Example:
- * It is 12am the networkTreeCache is cleared we got message from NM at 3am that the Network Trees are regenerated.
+ * It is 12am the networkTreeCache is cleared we got message from NM later that the Network Trees are regenerated.
  * We cached the message (treeUpdateResponse).
  * At 8am user want to see a Network Tree. Yukon sends a message to NM to get the tree and caches the received tree.
  * At 9am user wants to see 2 trees the one we cached and a new one. Yukon gets one tree from cache a sends a request to NM to get a second tree and caches the tree.
@@ -96,7 +96,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     private final Cache<RfnIdentifier, Node<Pair<Integer, FeatureCollection>>> networkTreeCache = CacheBuilder.newBuilder().build();
     private NetworkTreeUpdateTimeResponse treeUpdateResponse;
     private Instant nextForceReloadTime;
-    private int THIRTY_MINUTES = 30;
+    private int reloadFrequencyInMinutes = 30;
          
      
     //clear cache every day at midnight local time
@@ -124,12 +124,13 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     
     @Override
     public boolean isNetworkTreeUpdated(Instant lastUpdateTime) {
-        return treeUpdateResponse != null && lastUpdateTime.isBefore(new Instant(treeUpdateResponse.getTreeGenerationEndTimeMillis()));
+        return treeUpdateResponse != null
+                && lastUpdateTime.isBefore(new Instant(treeUpdateResponse.getTreeGenerationEndTimeMillis()));
     }
     
     @Override
     public Instant getNetworkTreeUpdateTime() {
-        return treeUpdateResponse == null? null : new Instant(treeUpdateResponse.getTreeGenerationEndTimeMillis());
+        return treeUpdateResponse == null ? null : new Instant(treeUpdateResponse.getTreeGenerationEndTimeMillis());
     }
         
     @Override
@@ -137,10 +138,10 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         if(!isNetworkTreeUpdatePossible()) {
             return false;
         }
-        nextForceReloadTime = new DateTime().plusMinutes(THIRTY_MINUTES).toInstant();
+        nextForceReloadTime = new DateTime().plusMinutes(reloadFrequencyInMinutes).toInstant();
         NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
         request.setForceRefresh(true);
-        log.debug("Sending message to NM to initiate force refresh");
+        log.debug("Sending NetworkTreeUpdateTimeRequest message to request reload of network tree information.");
         jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), request);
         return true;
     }
