@@ -86,6 +86,8 @@ import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveResponse;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
@@ -379,6 +381,32 @@ public final class JmsApiDirectory {
               .receiver(NETWORK_MANAGER)
               .receiver(YUKON_SIMULATORS)
               .build();
+    
+    public static final JmsApi<NetworkTreeUpdateTimeRequest,?,?> NETWORK_TREE_UPDATE_REQUEST =
+            JmsApi.builder(NetworkTreeUpdateTimeRequest.class)
+                  .name("Network Tree Update Request")
+                  .description("Sent by Yukon to ask Network Manager when the network tree was last updated or to ask Network Manager for a tree update. Upon receipt, "
+                          + "Network Manager will either initate the network tree update and will notify Yukon when done or "
+                          + "send a message to Yukon with last network tree update time.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeRequest"))
+                  .requestMessage(NetworkTreeUpdateTimeRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(NETWORK_MANAGER)
+                  .receiver(YUKON_SIMULATORS)
+                  .build();
+    
+    public static final JmsApi<NetworkTreeUpdateTimeResponse,?,?> NETWORK_TREE_UPDATE_RESPONSE =
+            JmsApi.builder(NetworkTreeUpdateTimeResponse.class)
+                  .name("Network Tree Update Response")
+                  .description("Sent by Network Manager to notify the Web Server of the network tree update")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeResponse"))
+                  .requestMessage(NetworkTreeUpdateTimeResponse.class)
+                  .sender(NETWORK_MANAGER)
+                  .sender(YUKON_SIMULATORS)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
     
     public static final JmsApi<GatewayCreateRequest,?,GatewayUpdateResponse> RF_GATEWAY_CREATE =
         JmsApi.builder(GatewayCreateRequest.class, GatewayUpdateResponse.class)
@@ -1211,7 +1239,9 @@ public final class JmsApiDirectory {
         addApis(jmsApis, RF_NETWORK, 
                 NETWORK_NEIGHBOR, 
                 NETWORK_PARENT,
-                NETWORK_PRIMARY_ROUTE);
+                NETWORK_PRIMARY_ROUTE,
+                NETWORK_TREE_UPDATE_REQUEST,
+                NETWORK_TREE_UPDATE_RESPONSE);
         
         addApis(jmsApis, RF_MISC, 
                 RFN_METADATA, 

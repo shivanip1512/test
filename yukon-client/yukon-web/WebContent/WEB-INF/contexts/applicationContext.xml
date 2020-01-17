@@ -24,7 +24,14 @@
         
     <bean class="com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl"/>
     
-    <bean class="com.cannontech.web.tools.mapping.service.impl.NetworkTreeServiceImpl"/>
+    <bean id="networkTreeUpdateTimeResponseListener" class="com.cannontech.web.tools.mapping.service.impl.NetworkTreeServiceImpl"/>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeResponse"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="networkTreeUpdateTimeResponseListener"/>
+    </bean>
     
     <bean class="com.cannontech.web.common.resources.service.impl.CSSCompressionFilterServiceImpl">
         <qualifier value="cssCompressionFilterService"/>
