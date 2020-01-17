@@ -1213,6 +1213,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return batteryAnalysisTypes;
     }
     
+    public static ImmutableSet<PaoType> getLoadGroupSupportingRouteTypes() {
+        return loadGroupSupportingRoute;
+    }
+    
     public boolean supportsMacroGroup() {
         return (isLoadGroup() && (this != PaoType.LM_GROUP_ECOBEE && this != PaoType.LM_GROUP_HONEYWELL
             && this != PaoType.LM_GROUP_NEST && this != PaoType.LM_GROUP_ITRON));
