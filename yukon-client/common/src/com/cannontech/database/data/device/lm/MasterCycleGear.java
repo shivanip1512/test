@@ -49,6 +49,7 @@ public Integer getStartingPeriodCnt()
 	return getMethodRateCount();
 }
 
+@Override
 public String getGroupSelectionMethod()
 {
 	return super.getGroupSelectionMethod();
@@ -82,8 +83,14 @@ public void setStartingPeriodCnt(Integer periodCnt )
 	setMethodRateCount( periodCnt );
 }
 
+@Override
 public void setGroupSelectionMethod(String method) 
 {
 	super.setGroupSelectionMethod( method );
+}
+
+@Override
+public boolean useCustomDbRetrieve() {
+    return false;
 }
 }

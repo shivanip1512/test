@@ -28,6 +28,7 @@ import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
@@ -111,7 +112,6 @@ public class LoadProgramSetupControllerHelper {
 
     }
 
-
     /**
      * Retrieve ProgramConstraints
      */
@@ -155,8 +155,11 @@ public class LoadProgramSetupControllerHelper {
                         ProgramDirectMemberControl directMemberControl = new ProgramDirectMemberControl();
                         directMemberControl.setSubordinateProgId(subordinateProgId);
 
-                        LiteYukonPAObject excludedPao = cache.getAllLMPrograms().stream().filter(
-                            program -> program.getLiteID() == subordinateProgId).findFirst().get();
+                        LiteYukonPAObject excludedPao = cache.getAllLMPrograms()
+                                .stream()
+                                .filter(program -> program.getLiteID() == subordinateProgId)
+                                .findFirst()
+                                .get();
                         directMemberControl.setSubordinateProgName(excludedPao.getPaoName());
                         return directMemberControl;
                     }
@@ -246,6 +249,10 @@ public class LoadProgramSetupControllerHelper {
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             setHoneywellCycleGearFieldsDefaultValues(honeywellCycleGearFields);
+            break;
+        case HoneywellSetpoint:
+            HoneywellSetpointGearFields honeywellSetpointGearFields = (HoneywellSetpointGearFields) programGear.getFields();
+            setHoneywellSetpointGearFieldsDefaultValues(honeywellSetpointGearFields);
             break;
         case ItronCycle:
             ItronCycleGearFields itronCycleGearFields = (ItronCycleGearFields) programGear.getFields();
@@ -354,6 +361,14 @@ public class LoadProgramSetupControllerHelper {
         honeywellCycleGearFields.setRampInOut(true);
         honeywellCycleGearFields.setControlPercent(50);
         honeywellCycleGearFields.setCapacityReduction(100);
+    }
+
+    private void setHoneywellSetpointGearFieldsDefaultValues(HoneywellSetpointGearFields honeywellSetpointGearFields) {
+        honeywellSetpointGearFields.setMandatory(false);
+        honeywellSetpointGearFields.setSetpointOffset(0);
+        honeywellSetpointGearFields.setPrecoolOffset(0);
+        honeywellSetpointGearFields.setMode(Mode.COOL);
+        honeywellSetpointGearFields.setCapacityReduction(100);
     }
 
     private void setItronCycleGearFieldsDefaultValues(ItronCycleGearFields itronCycleGearFields) {
@@ -486,6 +501,11 @@ public class LoadProgramSetupControllerHelper {
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             honeywellCycleGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(honeywellCycleGearFields.getWhenToChangeFields()));
+            break;
+        case HoneywellSetpoint:
+            HoneywellSetpointGearFields honeywellSetpointGearFields = (HoneywellSetpointGearFields) programGear.getFields();
+            honeywellSetpointGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(honeywellSetpointGearFields.getWhenToChangeFields()));
             break;
         case ItronCycle:
             ItronCycleGearFields itronCycleGearFields = (ItronCycleGearFields) programGear.getFields();
