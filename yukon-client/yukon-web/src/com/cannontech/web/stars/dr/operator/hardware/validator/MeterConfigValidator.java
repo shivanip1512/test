@@ -21,24 +21,24 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
     
     @Override
     public void doValidation(YukonMeter meter, Errors errors) {
-        
+
         /* Meter Number */
         if (StringUtils.isBlank(meter.getMeterNumber())) {
             errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterConfig.error.required");
         } else {
             YukonValidationUtils.checkExceedsMaxLength(errors, "meterNumber", meter.getMeterNumber(), 50);
         }
-        
+
         /* Physical Address */
         if (meter instanceof PlcMeter) {
-            PlcMeter plcMeter = (PlcMeter)meter; 
-            if(!StringUtils.isNumeric(plcMeter.getAddress())) {
+            PlcMeter plcMeter = (PlcMeter) meter;
+            if (!StringUtils.isNumeric(plcMeter.getAddress())) {
                 errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.nonNumeric");
             } else {
                 PaoType deviceType = plcMeter.getPaoType();
                 try {
-                    int physicalAddress = Integer.parseInt(plcMeter.getAddress()); 
-                    if(!dlcAddressRangeService.isValidEnforcedAddress(deviceType, physicalAddress)) {
+                    int physicalAddress = Integer.parseInt(plcMeter.getAddress());
+                    if (!dlcAddressRangeService.isValidEnforcedAddress(deviceType, physicalAddress)) {
                         failAddress(plcMeter, errors);
                     }
                 } catch (NumberFormatException e) {
@@ -46,9 +46,9 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
                 }
             }
         }
-        
+
     }
-    
+
     private void failAddress(YukonMeter meter, Errors errors) {
         String paoTypeString = meter.getPaoType().getPaoTypeName();
         
