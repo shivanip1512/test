@@ -37,13 +37,12 @@ bool LMGroupItron::sendCycleControl( long controlDurationSeconds,
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     ActiveMQConnectionManager::enqueueMessage( 
         OutboundQueue::ItronCyclingControl, 
         std::make_unique<LMItronCyclingControlMessage>( 
             getPAOId(), 
-            localSeconds,
+            now.seconds(),
             controlDurationSeconds,
             rampInOption,
             rampOutOption,
@@ -77,13 +76,12 @@ bool LMGroupItron::sendStopControl( bool stopImmediately )
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     ActiveMQConnectionManager::enqueueMessage(
         OutboundQueue::ItronRestore,
         std::make_unique<LMItronRestoreMessage>(
             getPAOId(),
-            localSeconds ) );
+            now.seconds() ) );
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -104,7 +102,6 @@ bool LMGroupItron::sendShedControl( long controlMinutes )
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    ctitime_t localSeconds = now.getLocalTimeSeconds();
 
     // shed == cycle at 100% duty cycle with no ramp in/out
 
@@ -112,7 +109,7 @@ bool LMGroupItron::sendShedControl( long controlMinutes )
         OutboundQueue::ItronCyclingControl, 
         std::make_unique<LMItronCyclingControlMessage>( 
             getPAOId(), 
-            localSeconds,
+            now.seconds(),
             controlMinutes * 60,
             false,
             false,
