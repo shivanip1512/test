@@ -70,7 +70,7 @@
     <bean id="drMessageService" class="com.cannontech.multispeak.service.impl.v5.DrJmsMessageListener" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="destinationName" value="yukon.notif.obj.dr.DRNotificationMessage" />
-        <property name="concurrentConsumers" value="1"/>
+        <property name="concurrentConsumers" value="10"/>
         <property name="pubSubDomain" value="false"/>
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="taskExecutor" ref="globalTaskExecutor"/>
