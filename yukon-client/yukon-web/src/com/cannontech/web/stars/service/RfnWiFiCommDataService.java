@@ -2,6 +2,7 @@ package com.cannontech.web.stars.service;
 
 import java.util.List;
 
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
 
 public interface RfnWiFiCommDataService {
@@ -12,4 +13,10 @@ public interface RfnWiFiCommDataService {
      */
     List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds);
 
+    /**
+     * @param wiFiMeterIds - A Integer list of WiFiMeterIds
+     * @param userContext - YukonUserContext object
+     */
+    void refreshWiFiMeterConnection(List<Integer> wiFiMeterIds, YukonUserContext userContext);
+    
 }
