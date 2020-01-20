@@ -42,10 +42,5 @@ public interface RfnLcrDataMappingService <T> {
      * @return This method will return null if a valid range is not determined.
      */
     public Range<Instant> mapBroadcastVerificationUnsuccessRange(T data, RfnDevice device);
-    
-    /**
-     * This method returns true if the time of reading is before 1/1/2001
-     */
-    public boolean isValidTimeOfReading(T data);
 
 }

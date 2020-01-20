@@ -400,16 +400,4 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         return range;
     }
 
-    @Override
-    public boolean isValidTimeOfReading(ListMultimap<FieldType, byte[]> data) {
-
-        Long timeInSec = ByteUtil.getLong(data.get(FieldType.UTC).get(0));
-        DateTime timeOfReading = new DateTime(timeInSec * 1000);
-        boolean isValid = timeOfReading.isAfter(year2001);
-        log.debug("time of reading:" + timeOfReading.toDate() + " after 1/1/2001 =" + isValid);
-
-        return isValid;
-
-    }
-
 }
