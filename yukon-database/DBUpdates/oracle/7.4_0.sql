@@ -245,6 +245,10 @@ AND Value = 'UNNECESSARY';
 INSERT INTO DBUpdates VALUES('YUK-21132', '7.4.0', SYSDATE);
 /* @end YUK-21132 */
 
+/* @start YUK-20859 */
+UPDATE YukonPaobject SET Type = 'WRL-420cL' WHERE Type = 'RFN-420cLW';
+UPDATE YukonPaobject SET Type = 'WRL-420cD' WHERE Type = 'RFN-420cDW';
+/* @end YUK-20859 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

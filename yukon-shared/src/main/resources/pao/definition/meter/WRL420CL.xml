@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
-<!-- ITRON RFN METER -->
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN420CLW" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-420cLW" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<!-- ITRON RFN WIFI METER -->
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="WRL420CL" changeGroup="meter" displayGroup="RFMESH" displayName="WRL-420cL" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN.xml</pointFile>
     </pointFiles>
