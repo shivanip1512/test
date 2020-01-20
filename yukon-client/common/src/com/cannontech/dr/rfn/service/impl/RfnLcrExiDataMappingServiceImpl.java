@@ -374,15 +374,4 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
         return range;
     }
     
-    @Override
-    public boolean isValidTimeOfReading(SimpleXPathTemplate data) {
-        
-        Long timeInSec = data.evaluateAsLong("/DRReport/@utc");
-        DateTime timeOfReading = new DateTime(timeInSec * 1000);
-        boolean isValid = timeOfReading.isAfter(year2001);
-        log.debug("time of reading:"+timeOfReading.toDate()+"    after 1/1/2001 =" +isValid);
-        
-        return isValid;
-    }
-    
 }
