@@ -2,21 +2,20 @@ package com.cannontech.common.dr.gear.setup.fields;
 
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
-import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
 import com.cannontech.database.data.device.lm.HeatCool;
+import com.cannontech.database.data.device.lm.HoneywellSetpointGear;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class EcobeeSetpointGearFields implements ProgramGearFields {
+public class HoneywellSetpointGearFields implements ProgramGearFields {
     private Boolean mandatory;
     private Integer setpointOffset;
+    private Integer precoolOffset;
     private Mode mode;
-    
     private HowToStopControl howToStopControl;
     private Integer capacityReduction;
-    
     private WhenToChangeFields whenToChangeFields;
     
     public Integer getSetpointOffset() {
@@ -25,6 +24,14 @@ public class EcobeeSetpointGearFields implements ProgramGearFields {
     
     public void setSetpointOffset(Integer setpointOffset) {
         this.setpointOffset = setpointOffset;
+    }
+    
+    public Integer getPrecoolOffset() {
+        return precoolOffset;
+    }
+    
+    public void setPrecoolOffset(Integer precoolOffset) {
+        this.precoolOffset = precoolOffset;
     }
     
     public Boolean getMandatory() {
@@ -69,29 +76,27 @@ public class EcobeeSetpointGearFields implements ProgramGearFields {
     
     @Override
     public void buildModel(LMProgramDirectGear programDirectGear) {
-        EcobeeSetpointGear ecobeeSetpointGear = (EcobeeSetpointGear) programDirectGear;
+        HoneywellSetpointGear honeywellSetpointGear = (HoneywellSetpointGear) programDirectGear;
         
-        setHowToStopControl(HowToStopControl.valueOf(ecobeeSetpointGear.getMethodStopType()));
-        setCapacityReduction(ecobeeSetpointGear.getPercentReduction());
-        setMandatory(ecobeeSetpointGear.isMandatorySelected(ecobeeSetpointGear.getMethodOptionType()));
-        setSetpointOffset(ecobeeSetpointGear.getSetpointOffset());
-        setMode(ecobeeSetpointGear.getHeatCool().getMode());
-        
-        WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
-        whenToChangeFields.buildModel(programDirectGear);
-        setWhenToChangeFields(whenToChangeFields);
+        setHowToStopControl(HowToStopControl.valueOf(honeywellSetpointGear.getMethodStopType()));
+        setCapacityReduction(honeywellSetpointGear.getPercentReduction());
+        setMandatory(honeywellSetpointGear.isMandatorySelected(honeywellSetpointGear.getMethodOptionType()));
+        setSetpointOffset(honeywellSetpointGear.getSetpointOffset());
+        setPrecoolOffset(honeywellSetpointGear.getPrecoolOffset());
+        setMode(honeywellSetpointGear.getHeatCool().getMode());
     }
     
     @Override
     public void buildDBPersistent(LMProgramDirectGear programDirectGear) {
-        EcobeeSetpointGear ecobeeSetpointGear = (EcobeeSetpointGear) programDirectGear;
+        HoneywellSetpointGear honeywellSetpointGear = (HoneywellSetpointGear) programDirectGear;
         
-        ecobeeSetpointGear.setMethodStopType(getHowToStopControl().name());
-        ecobeeSetpointGear.setPercentReduction(getCapacityReduction());
-        ecobeeSetpointGear.setMethodOptionType(getMandatory());
-        ecobeeSetpointGear.setSetpointOffset(getSetpointOffset());
-        ecobeeSetpointGear.setHeatCool(HeatCool.fromMode(getMode()));
+        honeywellSetpointGear.setMethodStopType(getHowToStopControl().name());
+        honeywellSetpointGear.setPercentReduction(getCapacityReduction());
+        honeywellSetpointGear.setMethodOptionType(getMandatory());
+        honeywellSetpointGear.setSetpointOffset(getSetpointOffset());
+        honeywellSetpointGear.setPrecoolOffset(getPrecoolOffset());
+        honeywellSetpointGear.setHeatCool(HeatCool.fromMode(getMode()));
         
-        whenToChangeFields.buildDBPersistent(ecobeeSetpointGear);
+        whenToChangeFields.buildDBPersistent(honeywellSetpointGear);
     }
 }

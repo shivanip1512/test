@@ -97,6 +97,13 @@ public class GearValidatorHelper {
         }
     }
     
+    public void checkPrecoolOffset(Integer precoolOffset, Errors errors) {
+        lmValidatorHelper.checkIfFieldRequired("precoolOffset", errors, precoolOffset, "Precool Offset");
+        if (!errors.hasFieldErrors("precoolOffset")) {
+            YukonValidationUtils.checkRange(errors, "precoolOffset", precoolOffset, -10, 10, true);
+        }
+    }
+    
     /**
      * Check for When to Change
      */
