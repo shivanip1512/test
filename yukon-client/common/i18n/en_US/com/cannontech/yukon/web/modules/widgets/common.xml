@@ -313,4 +313,8 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
         
         Click on the "View Details" link to view all scheduled, current day and previous 7 days program events.
 ]]></entry>
+
+    <!-- Wifi Connection Widget -->
+    <entry key="yukon.web.widgets.wifiConnectionWidget">Wi-Fi Connection</entry>
+
 </properties>
