@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="warn">
-    <Properties>
-        <Property  name="basePath">${sys:logPath} </Property>
-    </Properties>
- 
+<Configuration status="warn" packages="com.cannontech.bootstrap">
+
     <Appenders>
-        <RollingFile name="fileLogger" filePattern="${basePath}/Log/CloudServer_%d{yyyyMMdd}.log.zip" advertiseURI= "${basePath}/CloudServer_%d{yyyyMMdd}.log">
-            <PatternLayout>
-                <pattern>%d %d{zzz} [%t] %-5p %c - %m%n%throwable</pattern>
-            </PatternLayout>
+        <CloudServiceRollingFile name="CloudServiceRollingFileAppender">
+            <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable" />
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
-                <SizeBasedTriggeringPolicy size="1GB" />
+                <!-- Time based triggering policy which will roll log files daily -->
+                <TimeBasedTriggeringPolicy interval="1" />
             </Policies>
-        </RollingFile>
- 
+            <DirectWriteRolloverStrategy maxFiles="1" />
+        </CloudServiceRollingFile>
+
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d %d{zzz} [%t] %-5p %c - %m%n%throwable" />
         </Console>
@@ -22,11 +18,10 @@
 
     <Loggers>
         <Logger name="com.cannontech" level="info" additivity="true">
-            <appender-ref ref="fileLogger" level="debug" />
+            <appender-ref ref="CloudServiceRollingFileAppender" level="debug" />
         </Logger>
         <Root level="info" additivity="false">
             <appender-ref ref="console" />
-            <appender-ref ref="com.cannontech" />
         </Root>
     </Loggers>
 </Configuration>
