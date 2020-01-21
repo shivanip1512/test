@@ -141,4 +141,9 @@ public interface RfnDeviceDao {
      * Returns gateway ids for the set of devices
      */
     Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds);
+
+    /**
+     * Returns device count for types excluding rfn templates
+     */
+    int getDeviceCount(Set<PaoType> paoTypes);
 }
