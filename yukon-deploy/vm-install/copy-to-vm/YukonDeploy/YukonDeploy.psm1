@@ -44,6 +44,18 @@ Function Start-Simulators() {
     Start-Service "Yukon Field Simulator Service"
 }
 
+<# 
+.SYNOPSIS
+    Checks to see if Cloud Server files exist, then creates cloud service and starts them.
+.DESCRIPTION 
+    Checks to see if Cloud Server files exist, then creates cloud service and starts them.
+.EXAMPLE
+    InstallAndStartCloudService
+#>
+Function Install-CloudService() {
+    Write-Host "Installing Cloud Service"
+    Start-Process -FilePath "C:\Yukon\Client\Bin\install_cloudService.bat" -WorkingDirectory "C:\Yukon\Client\Bin\" -Wait -NoNewWindow
+}
 
 <# 
 .SYNOPSIS
@@ -193,6 +205,20 @@ Function Uninstall-EIMAndSimulator() {
 
     Write-Host  "Uninstall EIM"
     Remove-Item -Path "C:/Program Files/Apache Software Foundation/Tomcat 9.0/conf/Catalina" -Recurse
+}
+
+<#
+.SYNOPSIS
+    Stop Cloud Service
+.DESCRIPTION 
+    Stop Cloud services
+.EXAMPLE
+    Stop-Services
+#>
+Function Uninstall-CloudService() {
+    Write-Host "Uninstall Cloud Service"
+    C:\Yukon\Runtime\bin\java.exe -jar c:\Yukon\Client\bin\wrapper.jar -removeWait c:\Yukon\Client\bin\cloudService.conf
+
 }
 
 <#
