@@ -127,23 +127,18 @@ public class ComprehensiveMapController {
         NetworkMap map = null;
         try {
             map = nmNetworkService.getNetworkMap(filter, accessor);
-            log.debug("Devices in map="+ map.getTotalDevices());
+            log.debug("Devices in map {}", map.getTotalDevices());
+            log.debug("Devices without location {}", map.getDevicesWithoutLocation().size());
             //create collection action group
             StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
             for(FeatureCollection feature : map.getMappedDevices().values()) {
                 List<YukonPao> devices = feature.getFeatures().stream()
                         .map(d -> new SimpleDevice(d.getProperty("paoIdentifier"))).collect(Collectors.toList());
+                devices.addAll(map.getDevicesWithoutLocation());
                 deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
             }
             json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName());
-            json.put("collectionGroup", tempGroup.getFullName());
-            
-            
-            log.debug("Devices without location {}", map.getDevicesWithoutLocation().size());
-           // StoredDeviceGroup devicesWithoutLocation = tempDeviceGroupService.createTempGroup();
-            //deviceGroupMemberEditorDao.addDevices(devicesWithoutLocation, map.getDevicesWithoutLocation());
-           // json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + devicesWithoutLocation.getFullName());
-           // json.put("collectionGroup", devicesWithoutLocation.getFullName());            
+            json.put("collectionGroup", tempGroup.getFullName());             
         } catch (NmNetworkException | NmCommunicationException e) {
             String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
             log.error(errorMsg, e);
@@ -292,23 +287,12 @@ public class ComprehensiveMapController {
     @GetMapping("allPrimaryRoutes")
     public @ResponseBody Map<String, Object> primaryRoutes(Integer[] gatewayIds) {
         Map<String, Object> json = new HashMap<>();  
-        
         try {
-            List<Node<Pair<Integer, FeatureCollection>>> root = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
-            json.put("tree", root);
-            
-            StoredDeviceGroup devicesWithoutLocation = tempDeviceGroupService.createTempGroup();
-            List<SimpleDevice> devices = paoLocationDao.getDevicesWithoutLocationByGateway(Arrays.asList(gatewayIds));
-            log.debug("Devices without location {}", devices.size());
-            
-            //  deviceGroupMemberEditorDao.addDevices(devicesWithoutLocation, devices);
-           // json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + devicesWithoutLocation.getFullName());
-           // json.put("collectionGroup", devicesWithoutLocation.getFullName()); 
-            
+            List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
+            json.put("tree", tree);
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
         }
-     
         return json;
     }
     

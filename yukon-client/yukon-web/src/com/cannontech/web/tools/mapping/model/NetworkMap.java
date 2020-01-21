@@ -43,7 +43,7 @@ public class NetworkMap {
         for (FeatureCollection feature : mappedDevices.values()) {
             totalNumber += feature.getFeatures().size();
         }
-        return totalNumber;
+        return totalNumber + devicesWithoutLocation.size();
     }
     
     @Override
