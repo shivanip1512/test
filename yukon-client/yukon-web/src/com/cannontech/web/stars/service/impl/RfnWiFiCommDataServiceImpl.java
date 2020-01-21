@@ -2,7 +2,6 @@ package com.cannontech.web.stars.service.impl;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -11,26 +10,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestDevice;
+import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.service.CommandExecutionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
 import com.cannontech.web.stars.service.RfnWiFiCommDataService;
-import com.cannontech.web.tools.commander.model.CommandParams;
-import com.cannontech.web.tools.commander.model.CommandTarget;
-import com.cannontech.web.tools.commander.service.CommanderService;
-import com.google.common.collect.Maps;
 
 public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
 
     private static final Logger log = YukonLogManager.getLogger(RfnWiFiCommDataServiceImpl.class);
 
     @Autowired private AttributeService attributeService;
-    @Autowired private CommanderService commanderService;
+    @Autowired private CommandExecutionService commandExecutionService;
+    @Autowired private PaoDao paoDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
 
     public List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds) {
@@ -58,21 +60,14 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
     }
 
     public void refreshWiFiMeterConnection(List<Integer> wiFiMeterIds, YukonUserContext userContext) {
-        Map<String, Integer> commandCounts = Maps.newConcurrentMap();
-        CommandParams params = new CommandParams();
-        params.setTarget(CommandTarget.DEVICE);
-        params.setRouteId(null);
-        params.setSerialNumber(null);
-        params.setCommand("GetStatus WiFi");
-        params.setPriority(14);
-        params.setQueueCommand(true);
+        List<PaoIdentifier> paoIds = paoDao.getPaoIdentifiersForPaoIds(wiFiMeterIds);
 
-        Iterator<Integer> iterator = wiFiMeterIds.iterator();
+        Iterator<PaoIdentifier> iterator = paoIds.iterator();
         while (iterator.hasNext()) {
-            params.setPaoId(iterator.next());
-
-            commandCounts = commanderService.parseCommand(params, userContext);
-            commanderService.sendCommand(userContext, params, commandCounts);
+            CommandRequestDevice request = new CommandRequestDevice("getstatus wifi", new SimpleDevice(iterator.next()));
+            CommandResultHolder result = commandExecutionService.execute(request,
+                    DeviceRequestType.WIFI_METER_CONNECTION_STATUS_REFRESH, userContext.getYukonUser());
+            log.debug("WiFi Meter connection refresh result: {}", result);
         }
     }
 

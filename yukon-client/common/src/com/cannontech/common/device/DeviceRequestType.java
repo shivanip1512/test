@@ -53,7 +53,9 @@ public enum DeviceRequestType {
     
     METER_PROGRAM_UPLOAD_INITIATE("Meter Programing Upload Initiation Command", "Command sent to initiate program upload to a meter.", false),
     METER_PROGRAM_UPLOAD_CANCEL("Meter Programing Upload Cancel Command", "Command sent to cancel program upload to a meter.", false),
-    METER_PROGRAM_STATUS_READ("Meter Programming Status Read Command", "Command sent to retrieve program status for a meter.", false)
+    METER_PROGRAM_STATUS_READ("Meter Programming Status Read Command", "Command sent to retrieve program status for a meter.", false),
+    
+    WIFI_METER_CONNECTION_STATUS_REFRESH("WiFi Meter Connection Status Refresh Command", "Command sent to WiFi meters to have them update connection status.", false)
     ;
     
     private String shortName;
