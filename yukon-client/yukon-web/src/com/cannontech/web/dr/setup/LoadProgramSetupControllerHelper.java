@@ -632,6 +632,11 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             model.addAttribute("cyclePeriod", List.of(30));
             break;
+        case HoneywellSetpoint:
+            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
+            break;
         case ItronCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("cycleType", ItronCycleType.values());

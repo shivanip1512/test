@@ -117,6 +117,15 @@ yukon.dr.setup.programGear = (function() {
                 }
             });
 
+            $(document).on('change', '.js-setpoint-mode', function (event) {
+               var container = $(this).closest(".js-hw-temperature-ctrl-prms");
+               if ($(this).val() == 'HEAT') {
+                   container.find(".js-setpoint-mode-td").text($(".js-preheat-offset-lbl").val() + ":");
+               } else {
+                   container.find(".js-setpoint-mode-td").text($(".js-precool-offset-lbl").val() + ":");
+               }
+            });
+
             _initialized = true;
         }
     };
