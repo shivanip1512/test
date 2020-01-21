@@ -20,9 +20,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
 import com.cannontech.web.stars.service.RfnWiFiCommDataService;
 
@@ -32,7 +31,6 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
 
     @Autowired private AttributeService attributeService;
     @Autowired private CommandExecutionService commandExecutionService;
-    @Autowired private PaoDao paoDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
 
     public List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds) {
@@ -59,15 +57,17 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
         return wiFiMeterCommData;
     }
 
-    public void refreshWiFiMeterConnection(List<Integer> wiFiMeterIds, YukonUserContext userContext) {
-        List<PaoIdentifier> paoIds = paoDao.getPaoIdentifiersForPaoIds(wiFiMeterIds);
+    public void refreshWiFiMeterConnection(List<PaoIdentifier> paoIdentifiers, LiteYukonUser user) {
+        Iterator<PaoIdentifier> iterator = paoIdentifiers.iterator();
 
-        Iterator<PaoIdentifier> iterator = paoIds.iterator();
         while (iterator.hasNext()) {
-            CommandRequestDevice request = new CommandRequestDevice("getstatus wifi", new SimpleDevice(iterator.next()));
-            CommandResultHolder result = commandExecutionService.execute(request,
-                    DeviceRequestType.WIFI_METER_CONNECTION_STATUS_REFRESH, userContext.getYukonUser());
-            log.debug("WiFi Meter connection refresh result: {}", result);
+            SimpleDevice device = new SimpleDevice(iterator.next());
+            if (PaoType.getWifiTypes().contains(device.getDeviceType())) {
+                CommandRequestDevice request = new CommandRequestDevice("getstatus wifi", device);
+                CommandResultHolder result = commandExecutionService.execute(request,
+                        DeviceRequestType.WIFI_METER_CONNECTION_STATUS_REFRESH, user);
+                log.debug("WiFi Meter connection refresh result: {}", result);
+            }
         }
     }
 

@@ -2,7 +2,8 @@ package com.cannontech.web.stars.service;
 
 import java.util.List;
 
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
 
 public interface RfnWiFiCommDataService {
@@ -14,9 +15,11 @@ public interface RfnWiFiCommDataService {
     List<WiFiMeterCommData> getWiFiMeterCommDataForGateways(List<Integer> gatewayIds);
 
     /**
-     * @param wiFiMeterIds - A Integer list of WiFiMeterIds
-     * @param userContext - YukonUserContext object
+     * This method will send a "getstatus wifi" command to devices of paoType WiFi
+     * 
+     * @param paoIdentifiers - A list of PaoIdentifiers
+     * @param user - LiteYukonUser object
      */
-    void refreshWiFiMeterConnection(List<Integer> wiFiMeterIds, YukonUserContext userContext);
+    void refreshWiFiMeterConnection(List<PaoIdentifier> paoIdentifiers, LiteYukonUser user);
     
 }
