@@ -48,6 +48,7 @@
 <entry key="yukon.exception.processingException.unsupportedDirection">{0} direction is not supported by the {1} interface.</entry>
 <entry key="yukon.exception.processingException.unableToInsert">Unable to insert translation - a conflicting translation exists on this point.</entry>
 <entry key="yukon.exception.processingException.unableToRemove">Unable to remove translation - no matching translation found.</entry>
+<entry key="yukon.exception.processingException.invalidDataType">{0} must be of type Integer.</entry>
 <entry key="yukon.exception.processingException.invalidAction">Import Error: Invalid Action.</entry>
 <entry key="yukon.exception.processingException.invalidDeviceTypeFdr">{0} is not a valid device type.</entry>
 <entry key="yukon.exception.processingException.validationError">Unknown validation error: {0}.</entry>
