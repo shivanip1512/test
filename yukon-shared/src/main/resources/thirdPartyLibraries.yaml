@@ -3147,30 +3147,30 @@ Java :
   - filename : wrapper.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.12
+    version : 12.14
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
     md5 : 8f75d839f9d2812b382371cc075a40ee
     sha1 : 24e0330e04a69bba6e27570198356aeca5c57160
-    updated : 2018-06-15
-    jira : YUK-19313
-    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.12.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    updated : 2020-01-13
+    jira : YUK-21104
+    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.14.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.12
+    version : 12.14
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
     md5 : ac53279ce9c8edf00cbd2e22c0f54cc3
     sha1 : 984d6883db38f7906c1b2f67148a711555b0eda6
-    updated : 2018-06-15
-    jira : YUK-19313
-    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.12.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    updated : 2020-01-13
+    jira : YUK-21104
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.14.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wro4j-core-1.6.3.jar
     yukon group : UI
