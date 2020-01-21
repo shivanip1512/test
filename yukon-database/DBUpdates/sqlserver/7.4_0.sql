@@ -268,6 +268,7 @@ INSERT INTO DBUpdates VALUES('YUK-21132', '7.4.0', GETDATE());
 /* @start YUK-20859 */
 UPDATE YukonPaobject SET Type = 'WRL-420cL' WHERE Type = 'RFN-420cLW';
 UPDATE YukonPaobject SET Type = 'WRL-420cD' WHERE Type = 'RFN-420cDW';
+INSERT INTO DBUpdates VALUES('YUK-20859', '7.4.0', GETDATE());
 /* @end YUK-20859 */
 
 /**************************************************************/
