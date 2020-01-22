@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.service.impl;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -58,17 +57,17 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
     }
 
     public void refreshWiFiMeterConnection(List<PaoIdentifier> paoIdentifiers, LiteYukonUser user) {
-        Iterator<PaoIdentifier> iterator = paoIdentifiers.iterator();
 
-        while (iterator.hasNext()) {
-            SimpleDevice device = new SimpleDevice(iterator.next());
-            if (PaoType.getWifiTypes().contains(device.getDeviceType())) {
-                CommandRequestDevice request = new CommandRequestDevice("getstatus wifi", device);
-                CommandResultHolder result = commandExecutionService.execute(request,
-                        DeviceRequestType.WIFI_METER_CONNECTION_STATUS_REFRESH, user);
-                log.debug("WiFi Meter connection refresh result: {}", result);
-            }
-        }
+        paoIdentifiers.stream()
+                      .filter(pao -> pao.getPaoType().isWifiDevice())
+                      .forEach(pao -> initiateWiFiStatusRefresh(pao, user));
+    }
+
+    private void initiateWiFiStatusRefresh(PaoIdentifier paoIdentifier, LiteYukonUser user) {
+        CommandRequestDevice request = new CommandRequestDevice("getstatus wifi", new SimpleDevice(paoIdentifier));
+        CommandResultHolder result = commandExecutionService.execute(request,
+                DeviceRequestType.WIFI_METER_CONNECTION_STATUS_REFRESH, user);
+        log.debug("WiFi Meter connection refresh result: {}", result);
     }
 
 }
