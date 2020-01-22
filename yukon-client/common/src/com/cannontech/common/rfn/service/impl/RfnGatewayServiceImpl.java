@@ -243,6 +243,13 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         return buildRfnGateway(device, device.getName(), data);
     }
     
+    @Override
+    public RfnGateway getGatewayByRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);
+        RfnGatewayData data = dataCache.getIfPresent(device.getPaoIdentifier());
+        return buildRfnGateway(device, device.getName(), data);
+    }
+    
     private RfnGateway buildRfnGateway(RfnDevice device, String name, RfnGatewayData data) {
         
         RfnGateway gateway;

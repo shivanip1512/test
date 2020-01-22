@@ -84,7 +84,7 @@ public class EcobeeSetpointGearValidationAPITest {
      * Test case to validate, Load Program cannot be created with Setpoint Offset greater than max value
      */
     @Test
-    public void gearValidation_04_ControlPercentGreaterThanMaxValue() {
+    public void gearValidation_04_SetpointOffsetGreaterThanMaxValue() {
 
         mockLoadProgram = buildMockLoadProgram();
         MockEcobeeSetpointGearFields mockEcobeeSetpointGearFields = (MockEcobeeSetpointGearFields) mockLoadProgram.getGears()
@@ -379,6 +379,28 @@ public class EcobeeSetpointGearValidationAPITest {
     }
 
     /**
+     * Test case to validate, Load Program cannot be created with How To Stop Control field as Blank
+     */
+    @Test
+    public void gearValidation_18_HowToStopControlAsBlank() {
+
+        mockLoadProgram = buildMockLoadProgram();
+        MockEcobeeSetpointGearFields mockEcobeeSetpointGearFields = (MockEcobeeSetpointGearFields) mockLoadProgram.getGears()
+                .get(0).getFields();
+
+        mockEcobeeSetpointGearFields.setHowToStopControl(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be: Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "gears[0].fields.howToStopControl",
+                        "How To Stop Control is required."),
+                "Expected Error not found: How To Stop Control is required.");
+    }
+    
+    /**
      * This is to build Mock LoadProgram payload to be used for negative scenarios test cases
      */
     public MockLoadProgram buildMockLoadProgram() {
@@ -393,7 +415,7 @@ public class EcobeeSetpointGearValidationAPITest {
         programConstraint.setName("Default Constraint");
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
-        gearTypes.add(MockGearControlMethod.EcobeeCycle);
+        gearTypes.add(MockGearControlMethod.EcobeeSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                 loadGroups,
                 gearTypes,

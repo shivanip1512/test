@@ -188,6 +188,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnMeterDisconnectWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnOutagesWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/meterEventsWidget</value>
+                <value>classpath:com/cannontech/yukon/web/modules/widgets/wifiConnectionWidget</value>
                 <value>classpath:com/cannontech/yukon/common/deviceErrors</value>
                 <value>classpath:com/cannontech/yukon/common/device/attributeRead</value>
                 <value>classpath:com/cannontech/yukon/common/device/archiveAnalysis</value>

@@ -38,6 +38,7 @@ import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.IterableUtils;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -605,6 +606,19 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append("JOIN YukonPaObject ypo on dd.DeviceId = ypo.PAObjectID");
         sql.append("JOIN RfnAddress rfn on dd.DeviceId = rfn.DeviceId");
         sql.append("WHERE dd.GatewayId").eq(gatewayId);
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+    }
+
+    public List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIds, Iterable<PaoType> paoTypes) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM DynamicRfnDeviceData dd");
+        sql.append("JOIN YukonPaObject ypo on dd.DeviceId = ypo.PAObjectID");
+        sql.append("JOIN RfnAddress rfn on dd.DeviceId = rfn.DeviceId");
+        sql.append("WHERE dd.GatewayId").in(gatewayIds);
+        if (IterableUtils.isNotEmpty(paoTypes)) {
+            sql.append("AND ypo.Type").in(paoTypes);
+        }
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
         

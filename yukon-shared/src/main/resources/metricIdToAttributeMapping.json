@@ -45,6 +45,7 @@
                 { "metricId" : 51, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA" },
                 { "metricId" : 52, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA" },
                 { "metricId" : 53, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_FROZEN" },
+                { "metricId" : 54, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_FROZEN" },
 
                 { "metricId" : 78, "attributeMagnitude" : 3, "attribute" : "AVERAGE_DELIVERED_POWER_FACTOR" },
                 { "metricId" : 79, "attributeMagnitude" : 3, "attribute" : "AVERAGE_RECEIVED_POWER_FACTOR" },
@@ -144,6 +145,7 @@
                 { "metricId" : 1051, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_RATE_A" },
                 { "metricId" : 1052, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_RATE_A" },
                 { "metricId" : 1053, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_FROZEN_RATE_A" },
+                { "metricId" : 1054, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_FROZEN_RATE_A" },
                 { "metricId" : 1184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_A" },
                 { "metricId" : 1210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_A" },
 
@@ -168,6 +170,7 @@
                 { "metricId" : 2051, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_RATE_B" },
                 { "metricId" : 2052, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_RATE_B" },
                 { "metricId" : 2053, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_FROZEN_RATE_B" },
+                { "metricId" : 2054, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_FROZEN_RATE_B" },
                 { "metricId" : 2184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_B" },
                 { "metricId" : 2210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_B" },
 
@@ -192,6 +195,7 @@
                 { "metricId" : 3051, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_RATE_C" },
                 { "metricId" : 3052, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_RATE_C" },
                 { "metricId" : 3053, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_FROZEN_RATE_C" },
+                { "metricId" : 3054, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_FROZEN_RATE_C" },
                 { "metricId" : 3184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_C" },
                 { "metricId" : 3210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_C" },
 
@@ -216,6 +220,7 @@
                 { "metricId" : 4051, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_RATE_D" },
                 { "metricId" : 4052, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_RATE_D" },
                 { "metricId" : 4053, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA_FROZEN_RATE_D" },
+                { "metricId" : 4054, "attributeMagnitude" : 3, "attribute" : "RECEIVED_PEAK_KVA_FROZEN_RATE_D" },
                 { "metricId" : 4184, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVAR_RATE_D" },
                 { "metricId" : 4210, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_KVA_RATE_D" }
         ],

@@ -6,5 +6,7 @@ package com.cannontech.services.systemDataPublisher.service;
  */
 public enum SystemDataPublisher {
     YUKON,
-    NETWORK_MANAGER
+    NETWORK_MANAGER,
+    OTHER
+   
 }

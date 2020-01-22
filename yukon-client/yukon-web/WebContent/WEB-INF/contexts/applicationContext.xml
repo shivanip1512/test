@@ -24,6 +24,15 @@
         
     <bean class="com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl"/>
     
+    <bean id="networkTreeUpdateTimeResponseListener" class="com.cannontech.web.tools.mapping.service.impl.NetworkTreeServiceImpl"/>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeResponse"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="networkTreeUpdateTimeResponseListener"/>
+    </bean>
+    
     <bean class="com.cannontech.web.common.resources.service.impl.CSSCompressionFilterServiceImpl">
         <qualifier value="cssCompressionFilterService"/>
     </bean>
@@ -1426,6 +1435,7 @@
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
+    <bean id="honeywellSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellSetpointGearFieldsValidator"/>
     <bean id="ecobeeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeCycleGearFieldsValidator"/>
     <bean id="ecobeeSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeSetpointGearFieldsValidator"/>
     <bean id="smartCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SmartCycleGearFieldsValidator"/>
@@ -1460,4 +1470,6 @@
         container-type="simple">
         <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="drAttributeDataJmsListener" method="pointDataReceived"/>
     </jms:listener-container>
+
+    <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
 </beans>

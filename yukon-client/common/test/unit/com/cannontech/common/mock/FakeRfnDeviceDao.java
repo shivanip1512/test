@@ -128,4 +128,9 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIdsList, Iterable<PaoType> paoTypes) {
+        throw new MethodNotImplementedException();
+    }
 }

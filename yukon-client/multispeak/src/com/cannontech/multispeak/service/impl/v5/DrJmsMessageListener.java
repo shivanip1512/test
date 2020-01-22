@@ -50,7 +50,6 @@ import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
 import com.cannontech.msp.beans.v5.commontypes.ServicePointID;
 import com.cannontech.msp.beans.v5.commontypes.SingleIdentifier;
-import com.cannontech.msp.beans.v5.enumerations.Action;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatus;
 import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatusKind;
 import com.cannontech.msp.beans.v5.enumerations.FieldNameKind;
@@ -63,8 +62,6 @@ import com.cannontech.msp.beans.v5.multispeak.DRProgramEnrollment;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEvent;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventList;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventType;
-import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventTypeItem;
-import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventTypeList;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventTypeOption;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEvents;
 import com.cannontech.msp.beans.v5.multispeak.EndReading;
@@ -76,7 +73,6 @@ import com.cannontech.msp.beans.v5.multispeak.IntervalData;
 import com.cannontech.msp.beans.v5.multispeak.IntervalProfile;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.Profiles;
-import com.cannontech.msp.beans.v5.multispeak.ReadingQualityCode;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCodeItem;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCodeItems;
@@ -641,14 +637,10 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         List<EndDeviceEventList> listOfendDeviceEventList = arrayOfEndDeviceEventList.getEndDeviceEventList();
 
         EndDeviceEventList endDeviceEventList = new EndDeviceEventList();
-        String endDeviceEventTypeRef = UUID.randomUUID().toString();
-        EndDeviceEvents endDeviceEvents = getEndDeviceEvents(drAttributeDataJmsMessage, serialNumber, endDeviceEventTypeRef);
+        EndDeviceEvents endDeviceEvents = getEndDeviceEvents(drAttributeDataJmsMessage, serialNumber);
 
         endDeviceEventList.setEndDeviceEvents(endDeviceEvents);
         endDeviceEventList.setReferableID(serialNumber);
-
-        EndDeviceEventTypeList endDeviceEventTypeList = getEndDeviceEventTypeList(drAttributeDataJmsMessage, endDeviceEventTypeRef);
-        endDeviceEventList.setEndDeviceEventTypeList(endDeviceEventTypeList);
 
         listOfendDeviceEventList.add(endDeviceEventList);
 
@@ -973,7 +965,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     /**
      * Get EndDeviceEvents that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private EndDeviceEvents getEndDeviceEvents(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber, String endDeviceEventTypeRef) {
+    private EndDeviceEvents getEndDeviceEvents(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
 
         EndDeviceEvents endDeviceEvents = new EndDeviceEvents();
 
@@ -987,7 +979,9 @@ public class DrJmsMessageListener implements DrJmsMessageService {
             endDeviceEvent.setDeviceReference(MultispeakFuncs.getDeviceEventRef(serialNumber));
             
             EndDeviceEventTypeOption endDeviceEventTypeOption = new EndDeviceEventTypeOption();
-            endDeviceEventTypeOption.setEndDeviceEventTypeRef(endDeviceEventTypeRef);
+            EndDeviceEventType endDeviceEventType = new EndDeviceEventType();
+            endDeviceEventType.setEndDeviceEventTypeRef(message.getAttribute().name());
+            endDeviceEventTypeOption.setEndDeviceEventType(endDeviceEventType);
             endDeviceEvent.setEndDeviceEventTypeOption(endDeviceEventTypeOption);
 
             ReadingValues associatedReadingValues = getAssociatedValues(drAttributeDataJmsMessage);
@@ -999,33 +993,6 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     }
 
     /**
-     * Get EndDeviceEventTypeList that includes building of request fields from drAttributeDataJmsMessage.
-     */
-    private EndDeviceEventTypeList getEndDeviceEventTypeList(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String endDeviceEventTypeRef) {
-
-        EndDeviceEventTypeList endDeviceEventTypeList = new EndDeviceEventTypeList();
-        List<EndDeviceEventTypeItem> endDeviceEventTypeItemList = endDeviceEventTypeList.getEndDeviceEventTypeItem();
-
-        drAttributeDataJmsMessage.getAttributeDataList().forEach(message -> {
-            EndDeviceEventTypeItem endDeviceEventTypeItem = new EndDeviceEventTypeItem();
-            IEC61968Mapping iec61968Mapping = IEC61968Mapping.getIEC61968MappingData(message.getAttribute());
-
-            EndDeviceEventType endDeviceEventType = new EndDeviceEventType();
-            endDeviceEventType.setEndDeviceDomain(iec61968Mapping.getEndDeviceDomain().code);
-            endDeviceEventType.setEndDeviceSubdomain(iec61968Mapping.getEndDeviceEventDomainPart().code);
-            endDeviceEventType.setEndDeviceType(iec61968Mapping.getEndDeviceEventType().code);
-            endDeviceEventType.setEventOrAction(Action.CHANGE.value());
-            endDeviceEventTypeItem.setEndDeviceEventType(endDeviceEventType);
-
-            endDeviceEventTypeItem.setEndDeviceEventTypeRef(endDeviceEventTypeRef);
-
-            endDeviceEventTypeItem.setEndDeviceEventType(endDeviceEventType);
-            endDeviceEventTypeItemList.add(endDeviceEventTypeItem);
-        });
-        return endDeviceEventTypeList;
-    }
-
-    /**
      * Get ReadingValues that includes building of request fields from drAttributeDataJmsMessage.
      */
     private ReadingValues getAssociatedValues(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
@@ -1034,19 +1001,12 @@ public class DrJmsMessageListener implements DrJmsMessageService {
         List<ReadingValue> readingValueList = readingValues.getReadingValue();
 
         drAttributeDataJmsMessage.getAttributeDataList().forEach(message -> {
-            IEC61968Mapping iec61968Mapping = IEC61968Mapping.getIEC61968MappingData(message.getAttribute());
             ReadingValue readingValue = new ReadingValue();
-            ReadingQualityCode codeQuality = new ReadingQualityCode();
-            codeQuality.setCodeIndex(iec61968Mapping.getEndDeviceEventIndex().code);
             readingValue.setTimeStamp(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
-            readingValue.setReadingQualityCode(codeQuality);
-
             setValue(readingValue, message, drAttributeDataJmsMessage.getPaoPointIdentifier());
-
             ReadingTypeCodeOption readingTypeCodeOption = new ReadingTypeCodeOption();
             ReadingTypeCode readingTypeCode = new ReadingTypeCode();
             readingTypeCodeOption.setReadingTypeCode(readingTypeCode);
-
             readingValue.setReadingTypeCodeOption(readingTypeCodeOption);
             readingValueList.add(readingValue);
         });

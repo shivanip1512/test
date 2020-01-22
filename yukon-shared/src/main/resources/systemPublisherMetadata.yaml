@@ -12,6 +12,14 @@
 #            OnStartupOnly, Daily, EverySixHours.
 #------------
 
+Other :
+  - field: dashboardiotcv
+    description: Remote Dashboard App version
+    details: Contains the version of IOT dashboard
+    source: 1.1.3
+    iotType: Property
+    frequency : OnStartupOnly
+
 Yukon :
   - field: gmcount
     description: Gas Meter Count
@@ -261,13 +269,5 @@ Network Manager :
     description: RF Network Version
     details: Contains the latest RF network version
     source: SELECT TOP 1 gwreleaserev FROM Gateway ORDER BY gwreleaserev DESC
-    iotType: Property
-    frequency : OnStartupOnly
-
-Other :
-  - field: dashboardiotcv
-    description: Remote Dashboard App version
-    details: Contains the version of IOT dashboard
-    source: 1.1.3
     iotType: Property
     frequency : OnStartupOnly

@@ -57,4 +57,9 @@ public class HoneywellCycleGear extends com.cannontech.database.db.device.lm.LMP
     public Integer getCyclePeriod() {
         return getMethodRateCount();
     }
+    
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return false;
+    }
 }

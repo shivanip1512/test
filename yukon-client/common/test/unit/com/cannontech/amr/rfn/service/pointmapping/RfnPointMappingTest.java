@@ -1034,13 +1034,13 @@ public class RfnPointMappingTest {
                         "Received kWh (Rate E kWh)")
                 .putAll(PaoType.RFN420CD,
                         "Peak Demand Daily")
-                .putAll(PaoType.RFN420CDW,
+                .putAll(PaoType.WRL420CD,
                         "Peak Demand Daily",
                         "RSSI"  // This is not a channel, but special handle by RfnNodeWiFiCommArchiveRequestListener  
                         )
                 .putAll(PaoType.RFN420CL,
                         "Peak Demand Daily")
-                .putAll(PaoType.RFN420CLW,
+                .putAll(PaoType.WRL420CL,
                         "Peak Demand Daily",
                         "RSSI"  // This is not a channel, but special handle by RfnNodeWiFiCommArchiveRequestListener
                         )

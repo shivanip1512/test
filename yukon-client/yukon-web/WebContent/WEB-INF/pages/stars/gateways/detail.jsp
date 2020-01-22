@@ -65,6 +65,7 @@
         </div>
         
         <div class="column two nogutter">
+            <c:set var="infrastructureLabelWidth" value="90px"/>
             <%@ include file="/WEB-INF/pages/stars/mapNetwork/locationContainer.jsp" %>
         </div>
         

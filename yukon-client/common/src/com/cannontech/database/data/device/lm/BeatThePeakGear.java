@@ -26,6 +26,7 @@ public class BeatThePeakGear extends com.cannontech.database.db.device.lm.LMProg
         this.tierGearContainer = tierGearContainer;
     }
 
+    @Override
     public void add() throws SQLException {
         super.add();
 
@@ -34,6 +35,12 @@ public class BeatThePeakGear extends com.cannontech.database.db.device.lm.LMProg
         gearDao.insertContainer(tierGearContainer);
     }
 
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return true;
+    }
+    
+    @Override
     public void retrieve() throws SQLException {
         super.retrieve();
 
@@ -41,6 +48,7 @@ public class BeatThePeakGear extends com.cannontech.database.db.device.lm.LMProg
         setTierGearContainer(gearDao.getContainer(getGearID()));
     }
 
+    @Override
     public void update() throws SQLException {
         super.update();
 

@@ -127,8 +127,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             RfnManufacturerModel.RFN_410CL,
             RfnManufacturerModel.RFN_420CL,
             RfnManufacturerModel.RFN_420CD,
-            RfnManufacturerModel.RFN_420CLW,
-            RfnManufacturerModel.RFN_420CDW));
+            RfnManufacturerModel.WRL_420CL,
+            RfnManufacturerModel.WRL_420CD));
 
         groupedMeterTypesBuilder.put("Landis & Gyr single phase", ImmutableList.of(
             RfnManufacturerModel.RFN_410FL,

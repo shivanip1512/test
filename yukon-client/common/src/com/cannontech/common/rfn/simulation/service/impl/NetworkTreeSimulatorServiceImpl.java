@@ -52,13 +52,13 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
      */
     private Node<RfnIdentifier> buildNode(RfnDevice gateway) {
         initSettings();        
-        Node<RfnIdentifier> root = new Node<RfnIdentifier>(gateway.getRfnIdentifier());
+        Node<RfnIdentifier> node = new Node<RfnIdentifier>(gateway.getRfnIdentifier());
         List<RfnDevice> allDevices = rfnDeviceDao.getDevicesForGateway(gateway.getPaoIdentifier().getPaoId());
         int totalDevices = allDevices.size();
         
         log.info("\nCreating a tree (Node) for {} devices {} ", gateway, totalDevices);
         if(allDevices.isEmpty()) {
-            return root;
+            return node;
         }
         //System.out.println(allDevices);
        
@@ -69,7 +69,7 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         while (devicesAroundTheGateway-- > 0) {
             List<Node<RfnIdentifier>> branch = getNodes(it);
             // System.out.println("Added devices " + branch.size());
-            endNodes.addAll(fork(it, addToBranch(root, branch)));
+            endNodes.addAll(fork(it, addToBranch(node, branch)));
         }
 
         while (it.hasNext()) {
@@ -77,15 +77,12 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
                 // remove half end nodes
                 endNodes.subList(0, (int) endNodes.size() / 2).clear();
             }
-            Node<RfnIdentifier> node = endNodes.get(random.nextInt(endNodes.size()));
             // fork from a random node
-            endNodes.addAll(fork(it, node));
-        }
+            endNodes.addAll(fork(it, endNodes.get(random.nextInt(endNodes.size()))));
+        }        
 
-        log.info("---------------NODE-- total devices {} total node count {} null node count {}", totalDevices, root.count(false),
-                root.count(true));
        // log.info(root.print());
-        return root; 
+        return node; 
     }
 
     /**
@@ -152,7 +149,10 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         vertex.setRfnIdentifier(node.getData());
         AtomicInteger totalNodesAdded = new AtomicInteger(1);
         copy(node, vertex, totalNodesAdded);
-        log.info("---------------VERTEX-- # of nodes added {} nodes counted {}", totalNodesAdded, NetworkDebugHelper.count(vertex));
+        log.info("{} Created Yukon NODE total node count {} null node count {}",
+                node.getData(), node.count(false), node.count(true));
+        log.info("{} Created NM VERTEX from Yukon Node node count {} added nodes {}", vertex.getRfnIdentifier(),
+                NetworkDebugHelper.count(vertex), totalNodesAdded);
         //log.info(NetworkDebugHelper.print(vertex));
         return vertex;
     }

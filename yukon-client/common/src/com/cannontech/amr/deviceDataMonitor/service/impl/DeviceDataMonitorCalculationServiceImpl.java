@@ -384,15 +384,23 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         //found violation and device is not in violation group
         if(addToGroup) {
             //add device to group
-            deviceGroupMemberEditorDao.addDevices(monitor.getViolationGroup(), device);
-            sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
-            log.debug("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
+            int rowsAdded = deviceGroupMemberEditorDao.addDevice(monitor.getViolationGroup(), device);
+            if (rowsAdded > 0) {
+                sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
+                log.debug("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
+            } else {
+                log.debug("{} adding {} to violation group {}. Device already in group, no notification.", monitor, device, monitor.getViolationGroup());
+            }
         }
         else {
             // remove device from group
-            deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
-            sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
-            log.debug("{} removing {} form violation group {}", monitor, device, monitor.getViolationGroup());
+            int rowsDeleted = deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
+            if (rowsDeleted > 0) {
+                sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
+                log.debug("{} removing {} from violation group {}", monitor, device, monitor.getViolationGroup());
+            } else {
+                log.debug("{} removing {} from violation group {}. Device already removed from group, no notification.", monitor, device, monitor.getViolationGroup());
+            }
         }
     }
 

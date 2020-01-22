@@ -44,4 +44,17 @@ public class SystemDataProcessorHelper {
         }
         return systemData;
     }
+    
+    /**
+     * Process data for "Other" field types available in YAML.
+     * 
+     */
+    public static SystemData processOtherData(DictionariesField dictionariesField) {
+        SystemData systemData = new SystemData();
+        systemData.setFieldName(dictionariesField.getField());
+        systemData.setFieldValue(dictionariesField.getSource());
+        systemData.setIotDataType(dictionariesField.getIotType());
+        systemData.setTimestamp(new DateTime());
+        return systemData;
+    }
 }

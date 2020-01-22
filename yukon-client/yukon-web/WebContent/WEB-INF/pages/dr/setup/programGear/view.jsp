@@ -87,6 +87,9 @@
                 <c:if test="${selectedGearType == 'HoneywellCycle'}">
                     <%@ include file="honeywellCycle.jsp" %>
                 </c:if>
+                <c:if test="${selectedGearType == 'HoneywellSetpoint'}">
+                    <!-- TODO: include file="honeywellSetpoint.jsp" -->
+                </c:if>
                 <c:if test="${selectedGearType == 'ItronCycle'}">
                     <%@ include file="itronCycle.jsp" %>
                 </c:if>

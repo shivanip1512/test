@@ -15,7 +15,8 @@
     <%@ include file="locationInput.jspf"%>
     <c:if test="${!empty coordinates.latitude}">
         <span class="fr js-infrastructure">
-            <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="150px">
+            <c:set var="labelWidth" value="${!empty infrastructureLabelWidth ? infrastructureLabelWidth : '150px'}"/>
+            <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}">
                 <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
                 <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
 <%--                 <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/> --%>

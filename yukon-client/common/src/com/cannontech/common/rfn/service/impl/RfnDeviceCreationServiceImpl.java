@@ -45,6 +45,7 @@ import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.TransactionTemplateHelper;
@@ -112,6 +113,24 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         });
         
         templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+    }
+    
+    @Override
+    public RfnDevice createIfNotFound(RfnIdentifier identifier) {
+        RfnDevice rfnDevice = null;
+        if (identifier != null) {
+            try {
+                rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
+            } catch (NotFoundException e) {
+                try {
+                    rfnDevice = create(identifier);
+                    log.info(identifier + " is not found. Creating device.");
+                } catch (DeviceCreationException e1) {
+                    log.error("Device creation failed for " + identifier, e1);
+                }
+            }
+        }
+        return rfnDevice;
     }
     
     @Override

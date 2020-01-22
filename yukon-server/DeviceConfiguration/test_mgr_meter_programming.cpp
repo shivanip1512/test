@@ -383,7 +383,7 @@ BOOST_AUTO_TEST_CASE(test_getProgram)
 
     const auto buf = mgr.getProgram("not-really-a-guid");
 
-    BOOST_CHECK_EQUAL(buf.size(), 1742);
+    BOOST_CHECK_EQUAL(buf.size(), 1744);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

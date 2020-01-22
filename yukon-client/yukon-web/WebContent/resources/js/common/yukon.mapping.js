@@ -44,6 +44,7 @@ yukon.mapping = (function () {
     _allRoutesIcons = [],
     _allRoutesLines = [],
     _allRoutesLineFeatures = [],
+    _allRoutesDashedLineFeatures = [],
     
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
@@ -390,7 +391,12 @@ yukon.mapping = (function () {
                 parent = properties.parent,
                 neighbor = properties.neighbor,
                 routeInfo = properties.routeInfo,
-                nearby = properties.nearby;
+                nearby = properties.nearby,
+                primaryRoutesExists = $('.js-all-routes').exists(),
+                includeRouteData = false;
+                if (primaryRoutesExists) {
+                    includeRouteData = $('.js-all-routes').find(':checkbox').prop('checked');
+                }
             if (parent != null) {
                 mod.displayCommonPopupProperties(parent);
                 mod.displayParentNodePopupProperties(parent);
@@ -407,7 +413,7 @@ yukon.mapping = (function () {
                 $('#parent-info').hide();
                 $('#neighbor-info').hide();
                 $('#route-info').hide();
-                var url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
+                var url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info?includePrimaryRoute=' + includeRouteData);
                 $('#device-info').load(url, function() {
                     if (nearby != null) {
                         $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
@@ -524,28 +530,49 @@ yukon.mapping = (function () {
             }
         },
         
-        drawChildren: function(currentNode, primaryRoutePreviousPoints) {
+        drawChildren: function(currentNode, primaryRoutePreviousPoints, dashedLine, atRoot, gatewayPoints) {
             var currentNodePoints = primaryRoutePreviousPoints;
             for (var x in currentNode.children) {
-                var child = currentNode.children[x];
-                
-                if (yukon.mapping.shouldLineBeDrawn(child)) {
-                    var feature = Object.values(child.data)[0].features[0],
-                        icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
-                    if (currentNodePoints != null) {
-                        var points = [];
-                        points.push(icon.getGeometry().getCoordinates());
-                        points.push(currentNodePoints);
-                        
-                        var lineFeature = new ol.Feature({
-                            geometry: new ol.geom.LineString(points),
-                            name: 'Line'
-                        })
-                        _allRoutesLineFeatures.push(lineFeature);
-                    }
-                    primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                if (atRoot) {
+                    dashedLine = false;
+                    currentNodePoints = gatewayPoints;
+                    primaryRoutePreviousPoints = gatewayPoints;
                 }
-                yukon.mapping.drawChildren(child, primaryRoutePreviousPoints);
+                var child = currentNode.children[x];
+      
+                if (yukon.mapping.shouldLineBeDrawn(child)) {
+                    if (child.data != null) {
+                        var features = Object.keys(child.data).map(function (key) {                
+                            return child.data[key];
+                        });
+                        if (features[0] != null) {
+                            var feature = features[0].features[0],
+                                icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
+                            if (currentNodePoints != null) {
+                                var points = [];
+                                points.push(icon.getGeometry().getCoordinates());
+                                points.push(currentNodePoints);
+                                
+                                var lineFeature = new ol.Feature({
+                                    geometry: new ol.geom.LineString(points),
+                                    name: 'Line'
+                                })
+                                if (dashedLine) {
+                                    _allRoutesDashedLineFeatures.push(lineFeature);
+                                } else {
+                                    _allRoutesLineFeatures.push(lineFeature);
+                                }
+                            }
+                            primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                            dashedLine = false;
+                        } else {
+                            dashedLine = true;
+                        }
+                    } else {
+                        dashedLine = true;
+                    }
+                } 
+                yukon.mapping.drawChildren(child, primaryRoutePreviousPoints, dashedLine, false, gatewayPoints);
             }
         },
         
@@ -553,24 +580,30 @@ yukon.mapping = (function () {
             //check node and all children to see if any of the devices are on map
             var iconLayer = yukon.mapping.getIconLayer(),
                 source = iconLayer.getSource(),
-                paoId = Object.keys(currentNode.data)[0],
                 drawLine = false;
-            //first check self
-            if (source.getFeatureById(paoId)) {
-                return true;
-            }
-            for (var x in currentNode.children) {
-                var child = currentNode.children[x],
-                    paoId = Object.keys(child.data)[0];
-                //check any of the children
-                if (source.getFeatureById(paoId) != null || yukon.mapping.shouldLineBeDrawn(child)) {
+            if (currentNode.data != null) {
+                var paoId = Object.keys(currentNode.data)[0];
+                //first check self
+                if (source.getFeatureById(paoId)) {
                     return true;
+                }
+            }
+
+            for (var x in currentNode.children) {
+                var child = currentNode.children[x];
+                if (child.data != null) {
+                    var paoId = Object.keys(child.data)[0];
+                    //check any of the children
+                    if (source.getFeatureById(paoId) != null || yukon.mapping.shouldLineBeDrawn(child)) {
+                        return true;
+                    }
                 }
             }
             return drawLine;
         },
                 
         showHideAllRoutes: function() {
+            $('.js-no-location-message').addClass('dn');
             var checked = $('.js-all-routes').find(':checkbox').prop('checked');
             if (!checked) {
                 yukon.mapping.removeAllRoutesLayers();
@@ -589,25 +622,47 @@ yukon.mapping = (function () {
                         //gateway is top node
                         for (var x in json.tree) {
                             var currentNode = json.tree[x],
-                                feature = Object.values(currentNode.data)[0].features[0],
+                                features = Object.keys(currentNode.data).map(function (key) {                
+                                    return currentNode.data[key];
+                                });
+                                var feature = features[0].features[0],
                                 icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
                             primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-                            yukon.mapping.drawChildren(currentNode, primaryRoutePreviousPoints);
+                            yukon.mapping.drawChildren(currentNode, primaryRoutePreviousPoints, false, true, primaryRoutePreviousPoints);
                             
-                            //draw lines
-                            var layerLines = new ol.layer.Vector({
-                                source: new ol.source.Vector({
-                                    features: _allRoutesLineFeatures
-                                }),
-                                style: new ol.style.Style({
-                                    stroke: new ol.style.Stroke({ color: _routeColor, width: 2.5 })
-                                })
-                            });
+                            if (_allRoutesLineFeatures.length > 0) {
+                                //draw lines
+                                var layerLines = new ol.layer.Vector({
+                                    source: new ol.source.Vector({
+                                        features: _allRoutesLineFeatures
+                                    }),
+                                    style: new ol.style.Style({
+                                        stroke: new ol.style.Stroke({ color: _routeColor, width: 2.5 })
+                                    })
+                                });
+                                
+                                _allRoutesLines.push(layerLines);
+                                _map.getLayers().insertAt(_lineLayerIndex, layerLines);
+                                _allRoutesLineFeatures = [];
+                            }
                             
-                            _allRoutesLines.push(layerLines);
-                            _map.getLayers().insertAt(_lineLayerIndex, layerLines);
-                            
-                            _allRoutesLineFeatures = [];
+                            if (_allRoutesDashedLineFeatures.length > 0) {
+                                
+                                $('.js-no-location-message').removeClass('dn');
+                                //draw dashed lines
+                                var dashedLines = new ol.layer.Vector({
+                                    source: new ol.source.Vector({
+                                        features: _allRoutesDashedLineFeatures
+                                    }),
+                                    style: new ol.style.Style({
+                                        stroke: new ol.style.Stroke({ color: _routeColor, width: 2.5, lineDash: [10,10] })
+                                    })
+                                });
+                                
+                                _allRoutesLines.push(dashedLines);
+                                _map.getLayers().insertAt(_lineLayerIndex, dashedLines);
+                                _allRoutesDashedLineFeatures = [];
+                            }
                             
                         }
                     }

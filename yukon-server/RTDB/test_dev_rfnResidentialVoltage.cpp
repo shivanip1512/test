@@ -77,9 +77,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_install_ovuv_mete
         TYPE_RFN420FRD,
         TYPE_RFN410CL,
         TYPE_RFN420CL,
-        TYPE_RFN420CLW,
+        TYPE_WRL420CL,
         TYPE_RFN420CD,
-        TYPE_RFN420CDW
+        TYPE_WRL420CD
     };
 
     CtiCommandParser parse("getconfig install ovuv");
@@ -310,9 +310,9 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_mete
             TYPE_RFN420FRD,
             TYPE_RFN410CL,
             TYPE_RFN420CL,
-            TYPE_RFN420CLW,
+            TYPE_WRL420CL,
             TYPE_RFN420CD,
-            TYPE_RFN420CDW
+            TYPE_WRL420CD
         };
 
         using ResultType = std::vector<std::vector<unsigned char>>;

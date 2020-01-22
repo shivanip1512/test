@@ -24,8 +24,10 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.CollectionUtils;
 
@@ -82,6 +84,9 @@ import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
 import com.cannontech.common.rfn.message.node.WifiSecurityType;
 import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
+import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -130,7 +135,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> task;
     String templatePrefix;
-    private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.RFN420CLW, PaoType.RFN420CDW);
+    private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.WRL420CL, PaoType.WRL420CD);
+    private NetworkTreeUpdateTimeResponse networkTreeUpdateTimeResponse;
     
     private final Cache<RfnIdentifier, RfnVertex> vertexCache =
             CacheBuilder.newBuilder().expireAfterWrite(8, TimeUnit.HOURS).build();
@@ -225,15 +231,48 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         }
                     }
                     
-                    recieveMetaDataMultiMessage();
-                    recieveDemandResetMessage();
+                    receiveMetaDataMultiMessage();
+                    receiveDemandResetMessage();
+                    receiveNetworkTreeUpdateTimeMessage();
                     
                 } catch (Exception e) {
                     log.error("Error occurred in NM Network Simulator.", e);
                 }
             }
 
-            private void recieveDemandResetMessage() throws JMSException {
+            private void receiveNetworkTreeUpdateTimeMessage() throws JMSException {
+                Object message = jmsTemplate.receive(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName());
+                if (message != null) {
+                    ObjectMessage requestMessage = (ObjectMessage) message;
+                    if (requestMessage.getObject() instanceof NetworkTreeUpdateTimeRequest) {
+                        NetworkTreeUpdateTimeRequest request = (NetworkTreeUpdateTimeRequest) requestMessage.getObject();
+                        log.debug("NetworkTreeUpdateTimeRequest received {}", request);
+                       
+                        if(!request.isForceRefresh() && networkTreeUpdateTimeResponse != null){
+                            jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE.getQueue().getName(), networkTreeUpdateTimeResponse);
+                            return;
+                        }
+              
+                       
+                        if(request.isForceRefresh()) {
+                            vertexCache.asMap().keySet().forEach(gateway -> {
+                                RfnVertex vertex = networkTreeSimulatorService
+                                        .buildVertex(rfnGatewayService.getGatewayByRfnIdentifier(gateway));
+                                vertexCache.put(gateway, vertex);
+                            });
+         
+                        }
+                        networkTreeUpdateTimeResponse = new NetworkTreeUpdateTimeResponse();
+                        networkTreeUpdateTimeResponse.setTreeGenerationStartTimeMillis(System.currentTimeMillis());
+                        networkTreeUpdateTimeResponse.setTreeGenerationEndTimeMillis(new DateTime().plusMinutes(1).getMillis());
+                        networkTreeUpdateTimeResponse.setNextScheduledRefreshTimeMillis(new DateTime().plusMinutes(2).getMillis());
+                        networkTreeUpdateTimeResponse.setNoForceRefreshBeforeTimeMillis(new DateTime().plusMinutes(3).getMillis());
+                        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE.getQueue().getName(), networkTreeUpdateTimeResponse);
+                    }
+                }
+            }
+
+            private void receiveDemandResetMessage() throws JMSException {
                 Object demandResetMessage = jmsTemplate.receive(JmsApiDirectory.RFN_METER_DEMAND_RESET.getQueue().getName());
                 if (demandResetMessage != null) {
                     ObjectMessage requestMessage = (ObjectMessage) demandResetMessage;
@@ -255,7 +294,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 }
             }
 
-            private void recieveMetaDataMultiMessage() throws JMSException {
+            private void receiveMetaDataMultiMessage() throws JMSException {
                 Object metaDataMultiMessage = jmsTemplate.receive(JmsApiDirectory.RF_METADATA_MULTI.getQueue().getName());
                 if (metaDataMultiMessage != null) {
                     ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
@@ -369,6 +408,38 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
                     RfnMetadataMultiQueryResult result = getResult(results, device, multi); 
                     result.getMetadatas().put(multi, getVertex(rfnDevice));
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA) {
+                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
+                    com.cannontech.common.rfn.message.route.RouteData routeData = new com.cannontech.common.rfn.message.route.RouteData();
+                    routeData.setDestinationAddress(settings.getRouteData().getDestinationAddress());
+                    routeData.setHopCount(settings.getRouteData().getHopCount());
+                    routeData.setNextHopAddress(settings.getRouteData().getNextHopAddress());
+                    routeData.setRouteColor(settings.getRouteData().getRouteColor());
+                    routeData.setRouteDataTimeStamp(settings.getRouteData().getRouteDataTimestamp());
+                    List<RouteFlag> flags = new ArrayList<>();
+                    for (RouteFlagType flag : settings.getRouteData().getRouteFlags()) {
+                        if (flag == RouteFlagType.BR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_BATTERY);
+                        } else if (flag == RouteFlagType.GC) {
+                            flags.add(RouteFlag.ROUTE_FLAG_ROUTE_START_GC);
+                        } else if (flag == RouteFlagType.IR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_IGNORED);
+                        } else if (flag == RouteFlagType.PF) {
+                            flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_FORWARD);
+                        } else if (flag == RouteFlagType.PR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_REVERSE);
+                        } else if (flag == RouteFlagType.RU) {
+                            flags.add(RouteFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE);
+                        } else if (flag == RouteFlagType.TO) {
+                            flags.add(RouteFlag.ROUTE_FLAG_TIMED_OUT);
+                        } else if (flag == RouteFlagType.VR) {
+                            flags.add(RouteFlag.ROUTE_FLAG_VALID);
+                        }
+                    }
+                    routeData.setRouteFlags(new HashSet<RouteFlag>(flags));
+                    routeData.setRouteTimeout(settings.getRouteData().getRouteTimeout());
+                    routeData.setTotalCost(settings.getRouteData().getTotalCost());
+                    result.getMetadatas().put(multi, routeData);
                 }
             }
         }
