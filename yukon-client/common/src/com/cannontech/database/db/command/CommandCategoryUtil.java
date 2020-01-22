@@ -178,7 +178,9 @@ public class CommandCategoryUtil {
                         paoType == PaoType.LCULG ||
                         paoType == PaoType.DAVISWEATHER || 
                         paoType == PaoType.RTUILEX || 
-                        paoType == PaoType.RTUWELCO ) {
+                        paoType == PaoType.RTUWELCO ||
+                        paoType == PaoType.RTU_DART ||
+                        paoType == PaoType.RTU_DNP ) {
                     CAT_PING_BASE_DEVTYPES.add(paoType);
                 }
             }

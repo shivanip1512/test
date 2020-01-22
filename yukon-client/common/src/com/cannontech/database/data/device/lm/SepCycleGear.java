@@ -64,4 +64,8 @@ public class SepCycleGear extends com.cannontech.database.db.device.lm.LMProgram
         setMethodPeriod(criticality);
     }
 
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return false;
+    }
 }

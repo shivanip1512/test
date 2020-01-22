@@ -105,8 +105,8 @@ YukonError_t Rfn420CentronDevice::executeGetStatusWifi(CtiRequestMsg *pReq, CtiC
     switch( getDeviceType() )
     {
         //  ... and this will need to change to an isRfnWifiDevice() call
-        case TYPE_RFN420CDW:
-        case TYPE_RFN420CLW:
+        case TYPE_WRL420CD:
+        case TYPE_WRL420CL:
         {
             rfnRequests.emplace_back(std::make_unique<Commands::RfnWifiGetCommunicationStatusUpdateCommand>());
 

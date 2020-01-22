@@ -1,5 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -10,6 +12,7 @@ import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
 import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
 import com.cannontech.database.data.device.lm.HoneywellCycleGear;
+import com.cannontech.database.data.device.lm.HoneywellSetpointGear;
 import com.cannontech.database.data.device.lm.ItronCycleGear;
 import com.cannontech.database.data.device.lm.LatchingGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
@@ -37,6 +40,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle", PaoType.LM_ECOBEE_PROGRAM),
     EcobeeSetpoint(EcobeeSetpointGear.class, "ecobee Setpoint", PaoType.LM_ECOBEE_PROGRAM),
     HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle", PaoType.LM_HONEYWELL_PROGRAM),
+    HoneywellSetpoint(HoneywellSetpointGear.class, "Honeywell Setpoint", PaoType.LM_HONEYWELL_PROGRAM),
     ItronCycle(ItronCycleGear.class, "Itron Cycle", PaoType.LM_ITRON_PROGRAM),
     NestCriticalCycle(NestCriticalCycleGear.class, "Nest Critical Cycle", PaoType.LM_NEST_PROGRAM),
     NestStandardCycle(NestStandardCycleGear.class, "Nest Standard Cycle", PaoType.LM_NEST_PROGRAM),
@@ -53,7 +57,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     MeterDisconnect(MeterDisconnectGear.class, "Meter Disconnect", PaoType.LM_METER_DISCONNECT_PROGRAM),
     NoControl(NoControlGear.class, "No Control", PaoType.LM_DIRECT_PROGRAM, PaoType.LM_SEP_PROGRAM);
 
-    private final static Logger log = YukonLogManager.getLogger(GearControlMethod.class);
+    private static final Logger log = YukonLogManager.getLogger(GearControlMethod.class);
     static ImmutableSetMultimap<PaoType, GearControlMethod> gearTypesByProgramType;
     static {
         try {
@@ -86,7 +90,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
         return displayName;
     }
 
-    static public GearControlMethod getGearControlMethod(String value) {
+    public static GearControlMethod getGearControlMethod(String value) {
         try {
             return GearControlMethod.valueOf(value);
         } catch (IllegalArgumentException e) {
@@ -100,11 +104,11 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
 
     public LMProgramDirectGear createNewGear() {
         try {
-            return (LMProgramDirectGear) gearClass.newInstance();
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("IllegalAccessException while from createNewGear()");
-        } catch (InstantiationException e) {
-            throw new RuntimeException("InstantiationException while from createNewGear()");
+            return (LMProgramDirectGear) gearClass.getConstructor().newInstance();
+        } catch (InstantiationException|IllegalAccessException|IllegalArgumentException|InvocationTargetException
+                    |NoSuchMethodException|SecurityException e) {
+            
+            throw new IllegalStateException("An error occurred creating new gear.", e);
         }
     }
 

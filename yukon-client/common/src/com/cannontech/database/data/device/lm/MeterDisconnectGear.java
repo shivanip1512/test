@@ -8,4 +8,9 @@ public class MeterDisconnectGear extends LMProgramDirectGear {
     public MeterDisconnectGear() {
         setControlMethod(GearControlMethod.MeterDisconnect);
     }
+    
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return false;
+    }
 }

@@ -69,11 +69,11 @@ import com.google.common.collect.ImmutableSet;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_VIEW_CONFIG)
 public class DeviceConfigurationCategoryController {
 
-    private final Set<PaoType> voltageDataStreamingTypes = ImmutableSet.of(PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420CLW, 
-        PaoType.RFN420FX, PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD, PaoType.RFN420CDW,
+    private final Set<PaoType> voltageDataStreamingTypes = ImmutableSet.of(PaoType.RFN410CL, PaoType.RFN420CL, PaoType.WRL420CL, 
+        PaoType.RFN420FX, PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD, PaoType.WRL420CD,
         PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD);
     private final Set<PaoType> disconnectDisplayDisabledTypes =
-        ImmutableSet.of(PaoType.RFN420CD, PaoType.RFN420CDW, PaoType.MCT420FD, PaoType.MCT420CD);
+        ImmutableSet.of(PaoType.RFN420CD, PaoType.WRL420CD, PaoType.MCT420FD, PaoType.MCT420CD);
     private final Set<Class<?>> specialFields = ImmutableSet.of(RateMapField.class, RfnChannelField.class, AttributeMappingField.class);
     
     private static final Logger log = YukonLogManager.getLogger(DeviceConfigurationCategoryController.class);

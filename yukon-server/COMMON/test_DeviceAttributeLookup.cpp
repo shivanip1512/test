@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_Lookup_success)
         BOOST_CHECK_EQUAL(point->type, 1);
     }
     {
-        auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::TYPE_RFN420CLW, Attribute::WiFiBssidChange);
+        auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::TYPE_WRL420CL, Attribute::WiFiBssidChange);
 
         BOOST_REQUIRE(point);
 

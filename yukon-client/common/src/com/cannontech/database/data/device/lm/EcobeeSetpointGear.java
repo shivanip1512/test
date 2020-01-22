@@ -2,102 +2,25 @@ package com.cannontech.database.data.device.lm;
 
 import java.sql.SQLException;
 
-import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.database.db.device.lm.GearControlMethod;
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
-public class EcobeeSetpointGear extends LMProgramDirectGear {
+public class EcobeeSetpointGear extends WifiThermostatSetpointGear {
     private static final long serialVersionUID = 1L;
-    
-    private static final String TABLE_NAME = "LMThermostatGear";
-    private static final String[] CONSTRAINT_COLUMNS = {"GearID"};
-    private static final String[] SETTER_COLUMNS = {"Settings", "MinValue", "MaxValue", "ValueB", "ValueD", "ValueF", 
-            "Random", "ValueTa", "ValueTb", "ValueTc", "ValueTd", "ValueTe", "ValueTf", "RampRate"};
-    
-    private int setpointOffset = 0;
-    private HeatCool heatCool = HeatCool.COOL;
-    
-    /**
-     * Enum to map between LmThermostatGear.Settings and Heat/Cool UI selector
-     */
-    public enum HeatCool {
-        HEAT("--H-"),
-        COOL("---I");
-        
-        private String dbValue;
-        
-        private HeatCool(String dbValue) {
-            this.dbValue = dbValue;
-        }
-        
-        public String getDbValue() {
-            return dbValue;
-        }
-        
-        public Mode getMode() {
-            if(this == HEAT) {
-                return Mode.HEAT;
-            }
-            return Mode.COOL;
-        }
-        
-        public static HeatCool fromMode(Mode mode) {
-            if(mode == Mode.HEAT) {
-                return HEAT;
-            }
-            return COOL;
-        }
-        
-        public static HeatCool of(Object dbValue) {
-            if (HEAT.dbValue.equals(dbValue)) {
-                return HEAT;
-            }
-            return COOL;
-        }
-    }
     
     public EcobeeSetpointGear() {
         setControlMethod(GearControlMethod.EcobeeSetpoint);
     }
     
-    public void setMethodOptionType(boolean isSelected) {
-        if (isSelected) {
-            setMethodOptionType(OPTION_MANDATORY);
-        } else {
-            setMethodOptionType(OPTION_OPTIONAL);
-        }
-    }
-
-    public boolean isMandatorySelected(String methodOptionType) {
-        return OPTION_MANDATORY.equalsIgnoreCase(methodOptionType);
-    }
-    
-    public void setSetpointOffset(int setpointOffset) {
-        this.setpointOffset = setpointOffset;
-    }
-    
-    public int getSetpointOffset() {
-        return setpointOffset;
-    }
-    
-    public void setHeatCool(HeatCool heatCool) {
-        this.heatCool = heatCool;
-    }
-    
-    public HeatCool getHeatCool() {
-        return heatCool;
-    }
-    
     @Override
     public void add() throws SQLException {
         super.add();
-        Object[] addValues = {getGearID(), heatCool.getDbValue(), 0, setpointOffset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        Object[] addValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         add(TABLE_NAME, addValues);
     }
     
     @Override
     public void addPartial() throws SQLException {
-        Object[] addValues = {getGearID(), heatCool.getDbValue(), 0, setpointOffset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        Object[] addValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         add(TABLE_NAME, addValues);
     }
 
@@ -110,6 +33,11 @@ public class EcobeeSetpointGear extends LMProgramDirectGear {
     @Override
     public void deletePartial() throws SQLException {
         delete(TABLE_NAME, "GearID", getGearID());
+    }
+    
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return true;
     }
     
     @Override
@@ -133,7 +61,7 @@ public class EcobeeSetpointGear extends LMProgramDirectGear {
             addPartial();
         } catch (SQLException e) {
             // Add failed, do the update instead
-            Object[] setValues = {getGearID(), heatCool.getDbValue(), 0, setpointOffset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            Object[] setValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             Object[] constraintValues = {getGearID()};
             update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
         }

@@ -44,6 +44,7 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.meterNumberOrName">Meter Number or Name</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.searchNoResultsFound">No devices were found on the map with the provided Meter Number or Device Name.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.nmError">There was a problem getting the devices for the gateway(s) selected. Please see the logs for more details.</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.missingLocations">There were devices on the primary path that do not have coordinates. Dashed lines have been drawn in between those devices.</entry>
     
 
 </properties>

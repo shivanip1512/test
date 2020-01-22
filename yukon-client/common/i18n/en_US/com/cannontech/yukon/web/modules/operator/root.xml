@@ -242,5 +242,8 @@
     <entry key="yukon.web.modules.operator.gateways.streamingDetail">View Data Streaming Summary</entry>
     <entry key="yukon.web.modules.operator.gateways.streamingCapacityHistory">View History</entry>
     
+    <!-- WiFi Connection Status page -->
+    <entry key="yukon.web.modules.operator.wifi.connection.refreshMsg">A refresh of the Wi-Fi Connection data has been requested. It may take a few minutes for the data to update.</entry>
+    
     
 </properties>

@@ -150,15 +150,15 @@ Java :
   - filename : ahessian.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.12
+    version : 12.14
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/ahessian/11.11"
-    md5 : fdd01e8005a439af3c1b4922d01d7b79
-    sha1 : 50ab91cbc6f6ae50cd5ec8a96ec7fb3a47300260
-    updated : 2018-06-15
-    jira : YUK-18370
+    md5 : e022eaf0e1c2876fa77efae09b922694
+    sha1 : 78e68dceb471f4b927286ee1962af30b4036e596
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : YAJSW - Asynchronous Hessian.  Maven version is 11.11, not 12.12
   
   - filename : annotation-detector-3.0.4.jar
@@ -567,18 +567,18 @@ Java :
     jira : YUK-21102
     notes : 
   
-  - filename : commons-cli-1.3.1.jar
+  - filename : commons-cli-1.4.jar
     yukon group : Apache Commons
     project : Apache Commons Command Line Interface
-    version : 1.3.1
+    version : 1.4
     project URL : "https://commons.apache.org/proper/commons-cli/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/commons-cli/commons-cli/1.3.1"
-    md5 : 8d5fa2a42fef17d9034b35a9ac9cc750
-    sha1 : 1303efbc4b181e5a58bf2e967dc156a3132b97c0
-    updated : 2017-02-22
-    jira : YUK-15475
+    maven URL : "https://mvnrepository.com/artifact/commons-cli/commons-cli/1.4"
+    md5 : c966d7e03507c834d5b09b848560174e
+    sha1 : c51c00206bb913cd8612b24abd9fa98ae89719b1
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : 
   
   - filename : commons-codec-1.10.jar
@@ -603,8 +603,8 @@ Java :
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
     maven URL : "https://mvnrepository.com/artifact/commons-collections/commons-collections/3.2.2"
-    md5 : eade44c4663aa92183c02e9b18ac036e
-    sha1 : 29aa472e30c2619f8aa58e6855934546cb1a6978
+    md5 : f54a8510f834a1a57166970bfc982e94
+    sha1 : 8ad72fe39fa8c91eaaf12aadb21e0c3661fe26d5
     updated : 2017-04-04
     jira : YUK-16390
     notes : 3.2.2 version needed for wrapper.jar
@@ -637,19 +637,19 @@ Java :
     jira : YUK-21103
     notes : 
   
-  - filename : commons-configuration2-2.1.1.jar
+  - filename : commons-configuration2-2.3.jar
     yukon group : Apache Commons
     project : Apache Commons Configuration 2
-    version : 2.1.1
+    version : 2.3
     project URL : "https://commons.apache.org/proper/commons-configuration/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.1.1"
-    md5 : 6c070e57bcd44ed93994f5a33102c277
-    sha1 : d97d5b3f8b58c52730d47e1a63c8d3258f41ca6c
-    updated : 2017-03-10
-    jira : YUK-16203
-    notes : 
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2/2.3"
+    md5 : 6abd3f30ee9ce059d32d32cb0e172508
+    sha1 : 97dcb24a1624e93d7ef2a434d3c1707ceba9d01b
+    updated : 2020-01-13
+    jira : YUK-21104
+    notes :  
   
   - filename : commons-dbcp2-2.0.jar
     yukon group : Apache Commons
@@ -693,18 +693,18 @@ Java :
     jira : YUK-18347
     notes : 
   
-  - filename : commons-io-2.4.jar
+  - filename : commons-io-2.6.jar
     yukon group : Apache Commons
     project : Apache Commons IO
-    version : 2.4
+    version : 2.6
     project URL : "https://commons.apache.org/proper/commons-io/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.4"
-    md5 : 7f97854dc04c119d461fed14f5d8bb96
-    sha1 : b1b6ea3b7e4aa4f492509a4952029cd8e48019ad
-    updated : 2013-10-07
-    jira : YUK-12079
+    maven URL : "https://mvnrepository.com/artifact/commons-io/commons-io/2.6"
+    md5 : 467c2a1f64319c99b5faf03fc78572af
+    sha1 : 815893df5f31da2ece4040fe0a12fd44b577afaf
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : 
   
   - filename : commons-lang-2.6.jar
@@ -721,18 +721,18 @@ Java :
     jira : YUK-12614
     notes : 
   
-  - filename : commons-lang3-3.4.jar
+  - filename : commons-lang3-3.8.1.jar
     yukon group : Apache Commons
     project : Apache Commons Lang 3
-    version : 3.4
+    version : 3.8.1
     project URL : "https://commons.apache.org/proper/commons-lang/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-lang3/3.4"
-    md5 : 8667a442ee77e509fbe8176b94726eb2
-    sha1 : 5fe28b9518e58819180a43a850fbc0dd24b7c050
-    updated : 2016-09-28
-    jira : YUK-15740
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-lang3/3.8.1"
+    md5 : 540b1256d887a6993ecbef23371a3302
+    sha1 : 6505a72a097d9270f7a9e7bf42c4238283247755
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : 
   
   - filename : commons-logging-1.1.3.jar
@@ -763,6 +763,20 @@ Java :
     jira : YUK-12614
     notes : 
   
+  - filename : commons-text-1.6.jar
+    yukon group : Apache Commons
+    project : Apache Commons text
+    version : 1.6
+    project URL : "https://commons.apache.org/proper/commons-lang/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-text/1.6"
+    md5 : a1fb840c3963ed43c78291b5e61d55ac
+    sha1 : ba72cf0c40cf701e972fe7720ae844629f4ecca2
+    updated : 2020-01-13
+    jira : YUK-21104
+    notes :
+  
   - filename : commons-validator-1.4.0.jar
     yukon group : Apache Commons
     project : Apache Commons Validator
@@ -777,18 +791,18 @@ Java :
     jira : YUK-12040
     notes : 
   
-  - filename : commons-vfs2-2.0.jar
+  - filename : commons-vfs2-2.2.jar
     yukon group : Apache Commons
     project : Apache Commons Virtual File System
-    version : 2.0
+    version : 2.2
     project URL : "https://commons.apache.org/proper/commons-vfs/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2/2.0"
-    md5 : a2cabc6a91a9de9e3d5d460b06d65b45
-    sha1 : b5af3b9c96b060d77c68fa5ac9384b402dd58013
-    updated : 2015-03-24
-    jira : YUK-13411, YUK-20160
+    maven URL : "https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2/2.2"
+    md5 : 76580725fade0191ac0518f97c7b2045
+    sha1 : 98a98f365a07256ec33c32a653c14255b12859e0
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : YAJSW, Support Bundle, Itron SFTP file transfer 
   
   - filename : converter-jackson-2.5.0.jar
@@ -903,6 +917,20 @@ Java :
     jira : YUK-11337
     notes : Geronimo J2EE Management 1.1
   
+  - filename : groovy-2.5.7.jar
+    yukon group : Yet Another Java Service Wrapper
+    project : YAJSW
+    version : 2.5.7
+    project URL : "http://groovy-lang.org/" 
+    license : Apache 2.0
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    maven URL : "https://mvnrepository.com/artifact/org.codehaus.groovy/groovy/2.5.7" 
+    md5 : da5d7df6713a271861606fd75a837992
+    sha1 : 99907efe4b69f800c42584386f5d668e4d952bd5
+    updated : 2020-01-13
+    jira : YUK-21104
+    notes :
+  
   - filename : groovy-all-2.4.11.jar
     yukon group : Yet Another Java Service Wrapper
     project : Apache Groovy
@@ -920,15 +948,15 @@ Java :
   - filename : groovy-patch.jar
     yukon group : Yet Another Java Service Wrapper 
     project : YAJSW
-    version : 12.12
+    version : 12.14
     project URL : "http://yajsw.sourceforge.net"
     license : Apache 2.0
     license URLs : "http://yajsw.sourceforge.net/#mozTocId236130"
     maven URL : n/a
-    md5 : 6f8bdf5b431a42ef08ecb0fa490d08bf
-    sha1 : a2fd0967f536597088695d4d26bf772ed9f1961a
-    updated : 2019-01-24
-    jira : YUK-19330
+    md5 : a6857fd2e97c3423dfec7572ab38b819
+    sha1 : cf1484d84002260c71d078594b4f1eda8c4d2702
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : YAJSW specific patches for Groovy
   
   - filename : gson-1.7.2.jar
@@ -1477,32 +1505,32 @@ Java :
     jira : YUK-19930
     notes : 
   
-  - filename : jna-4.5.0.jar
+  - filename : jna-5.3.1.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 4.5.0
+    version : 5.3.1
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/4.5.0"
-    md5 : ac50a8197824a5926256534ae44d983d
-    sha1 : 55b548d3195efc5280bf1c3f17b49659c54dee40
-    updated : 2018-06-15
-    jira : YUK-18370
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna/5.3.1"
+    md5 : df3ad04f50fb50840eeb674210200f64
+    sha1 : 6eb9d07456c56b9c2560722e90382252f0f98405
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : 
   
-  - filename : jna-platform-4.5.0.jar
+  - filename : jna-platform-5.3.1.jar
     yukon group : Yet Another Java Service Wrapper
     project : Java Native Access
-    version : 4.5.0
+    version : 5.3.1
     project URL : "https://github.com/java-native-access/jna"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/4.5.0"
-    md5 : 7775cf45316d83bbbce593d0441a1165
-    sha1 : 00ab163522ed76eb01c8c9a750dedacb134fc8c0
-    updated : 2018-06-15
-    jira : YUK-18370
+    maven URL : "https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/5.3.1"
+    md5 : 078fb626e8879c55e7a0035f389ec30c
+    sha1 : 925049dd00b3def5ab561709a56b96055fa67011
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : Java Native Access Platform
   
   - filename : joda-time-2.3.jar
@@ -1883,18 +1911,18 @@ Java :
     jira : YUK-11673
     notes : 
   
-  - filename : netty-all-4.0.47.Final.jar
+  - filename : netty-all-4.1.36.Final.jar
     yukon group : Yet Another Java Service Wrapper
     project : Netty
-    version : 4.0.47
+    version : 4.1.36
     project URL : "https://github.com/netty"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-all/4.0.47.Final"
-    md5 : a95fb7618eb17ecad17b4593ed929098
-    sha1 : dae64cb2d99fb2bbb93a29a598432c817bc0e190
-    updated : 2018-06-15
-    jira : YUK-18370
+    maven URL : "https://mvnrepository.com/artifact/io.netty/netty-all/4.1.36.Final"
+    md5 : 6076f17339a583be6990a6e1fef70bda
+    sha1 : 722e6b1b3ceead8fbe3c5d0218e083f757155451
+    updated : 2020-01-13
+    jira : YUK-21104
     notes : 
   
   - filename : netty-buffer-4.1.27.Final.jar
@@ -3119,30 +3147,30 @@ Java :
   - filename : wrapper.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.12
+    version : 12.14
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapper/11.11"
-    md5 : afc432e4f960aecab0e506b45a80d528
-    sha1 : 381b4d7300cfba800af0eeb233e1117072994108
-    updated : 2018-06-15
-    jira : YUK-19313
-    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.12.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    md5 : 8f75d839f9d2812b382371cc075a40ee
+    sha1 : 24e0330e04a69bba6e27570198356aeca5c57160
+    updated : 2020-01-13
+    jira : YUK-21104
+    notes : YAJSW Wrapper.  Maven version is 11.11, not 12.14.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wrapperApp.jar
     yukon group : Yet Another Java Service Wrapper
     project : YAJSW
-    version : 12.12
+    version : 12.14
     project URL : "http://yajsw.sourceforge.net/"
     license : Apache 2.0, LGPL 2.1
     license URLs : "https://opensource.org/licenses/Apache-2.0, https://opensource.org/licenses/LGPL-2.1"
     maven URL : "https://mvnrepository.com/artifact/org.rzo.yajsw/wrapperApp/11.11"
-    md5 : f112f1f7f3c77e082dfadd5db1c4c8c4
-    sha1 : 3f50b0be21835970ca81192bdca1fd4d0b07c165
-    updated : 2018-06-15
-    jira : YUK-19313
-    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.12.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
+    md5 : ac53279ce9c8edf00cbd2e22c0f54cc3
+    sha1 : 984d6883db38f7906c1b2f67148a711555b0eda6
+    updated : 2020-01-13
+    jira : YUK-21104
+    notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.14.  Jar rebuilt to adjust classpath entries in MANIFEST.MF
   
   - filename : wro4j-core-1.6.3.jar
     yukon group : UI
@@ -5871,12 +5899,12 @@ C++ :
     project URL : none
     license : Eaton-owned
     license URLs : none
-    md5 : 8e7dea2dd2a77e12a07d1d7e49fa9bd9
-    sha1 : a14e912e34e86cf14914a5bdd12140f7a4082f99
+    md5 : 4a9861eec1cc2a920084705226b50254
+    sha1 : 609a406d0202233f9f6495c498777e9ad18e4f30
     fileCount : 3
-    totalSize : 55766
-    updated : 2020-01-10
-    jira : YUK-20821
+    totalSize : 56278
+    updated : 2020-01-16
+    jira : YUK-21329
     notes : 
     
   - project : SQLAPI 
