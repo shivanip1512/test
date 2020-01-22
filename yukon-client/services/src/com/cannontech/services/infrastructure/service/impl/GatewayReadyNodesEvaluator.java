@@ -1,6 +1,6 @@
 package com.cannontech.services.infrastructure.service.impl;
 
-import static com.cannontech.infrastructure.model.InfrastructureWarningType.*;
+import static com.cannontech.infrastructure.model.InfrastructureWarningType.GATEWAY_READY_NODES;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -24,6 +25,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Generates warnings for gateways that are not in a gateway connection warning state and whose ready node count drops 
@@ -34,7 +36,8 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RawPointHistoryDao rphDao;
-    @Autowired GatewayConnectionStatusEvaluator gatewayConnectionStatusEvaluator;
+    @Autowired private GatewayConnectionStatusEvaluator gatewayConnectionStatusEvaluator;
+    @Autowired private IDatabaseCache cache;
 
     @Override
     public Set<PaoType> getSupportedTypes() {
@@ -46,32 +49,47 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
         log.debug("Running RF Gateway ready nodes evaluator");
         
         // Retrieve the relevant global settings
-        int threshold = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_READY_NODES_THRESHOLD);
         int connectionWarningMinutes = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTION_WARNING_MINUTES);
         Duration connectionWarningDuration = Duration.standardMinutes(connectionWarningMinutes);
-        log.debug("Threshold: " + threshold + ", Connection warning minutes: " + connectionWarningMinutes);
         
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
-        
+                
         // Get most recent "ready nodes" value for each gateway
         Map<PaoIdentifier, PointValueQualityHolder> gatewayToReadyNodes = 
                 rphDao.getSingleAttributeData(gateways, BuiltInAttribute.READY_NODES, false, null);
         
         // Get most recent connection status for each gateway
         Map<PaoIdentifier, PointValueQualityHolder> gatewayToConnectionStatus =
-            rphDao.getMostRecentAttributeDataByValue(rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS,
+            rphDao.getMostRecentAttributeDataByValue(gateways, BuiltInAttribute.COMM_STATUS,
                 false, CommStatusState.CONNECTED.getRawState(), null);
         
         // Look for gateways whose ready node count is at or below the configurable threshold, and the gateway is
         // connected
         return gatewayToReadyNodes.entrySet()
                                   .stream()
-                                  .filter(entry -> entry.getValue().getValue() <= threshold)
+                                  .filter(entry -> isWarnable(entry))
                                   .filter(entry -> isConnected(entry.getKey(), gatewayToConnectionStatus, connectionWarningDuration)) 
-                                  .map(entry -> buildWarning(entry, threshold))
+                                  .map(entry -> buildWarning(entry))
                                   .collect(Collectors.toList());
     }
     
+    private boolean isWarnable(Map.Entry<PaoIdentifier,PointValueQualityHolder> gatewayToReadyNodes) {
+        if (gatewayToReadyNodes.getKey().getPaoType() == PaoType.VIRTUAL_GATEWAY
+                && cache.getAllPaoTypes().stream().noneMatch(PaoType::isWifiDevice)) {
+            log.debug("Vitual Gateway {} is Found. No WiFi meters found on the system.", gatewayToReadyNodes.getKey());
+            return false;
+        }
+        int threshold = getThreshold(gatewayToReadyNodes.getKey());
+        boolean isWarnable = gatewayToReadyNodes.getValue().getValue() <= threshold;
+        log.debug("Gateway {} threshold {} nodes {} warnable {}", gatewayToReadyNodes.getKey(), threshold, gatewayToReadyNodes.getValue().getValue(), isWarnable);
+        return isWarnable;
+    }
+    
+    private int getThreshold(PaoIdentifier gateway) {
+        return gateway.getPaoType() == PaoType.VIRTUAL_GATEWAY ? 0 : globalSettingDao
+                .getInteger(GlobalSettingType.GATEWAY_READY_NODES_THRESHOLD);
+    }
+
     /**
      * Considers the gateway connected if it does not meet the criteria to generate a gateway connection status warning.
      */
@@ -82,10 +100,9 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
                                                            connectionWarningDuration);
     }
 
-    private InfrastructureWarning buildWarning(Map.Entry<PaoIdentifier,PointValueQualityHolder> gatewayToReadyNodes, 
-                                               int threshold) {
+    private InfrastructureWarning buildWarning(Map.Entry<PaoIdentifier,PointValueQualityHolder> gatewayToReadyNodes) {
         PaoIdentifier gateway = gatewayToReadyNodes.getKey();
         int readyNodes = (int) gatewayToReadyNodes.getValue().getValue();
-        return new InfrastructureWarning(gateway, GATEWAY_READY_NODES, readyNodes, threshold);
+        return new InfrastructureWarning(gateway, GATEWAY_READY_NODES, readyNodes, getThreshold(gateway));
     }
 }
