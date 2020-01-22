@@ -28,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -74,8 +72,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
     @Autowired private DatabaseVendorResolver dbVendorResolver;
-    @Autowired ConfigurationSource configurationSource;
-    private String rfTemplatePrefix;
     private RfnAddressCache rfnIdentifierCache;
     private static SimpleDateFormat oracleLastTransferTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     
@@ -97,7 +93,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @PostConstruct
     private void init() {
         rfnIdentifierCache = new RfnAddressCache(jdbcTemplate, dynamicDataSource);
-        rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
     }
     
     @Override
