@@ -24,31 +24,7 @@ import com.google.common.collect.Sets;
 
 public class RfnLcrTlvDataMappingServiceTest {
     private RfnLcrTlvDataMappingServiceImpl service = new RfnLcrTlvDataMappingServiceImpl();
-    
-    @Test
-    public void test_isValidTimeOfReading_withValidDate() {
-        DateTime validDate = new DateTime(2001, 1, 1, 0, 0, 1); //1 second after the start of the year
-        byte[] validDateSecondsBytes = getBytes(validDate.getMillis() / 1000);
-        
-        ListMultimap<FieldType, byte[]> validData = LinkedListMultimap.create();
-        validData.put(FieldType.UTC, validDateSecondsBytes);
-        
-        boolean isValid = service.isValidTimeOfReading(validData);
-        assertTrue("Date after start of 2001 marked as invalid.", isValid);
-    }
-    
-    @Test
-    public void test_isValidTimeOfReading_withInvalidDate() {
-        DateTime invalidDate = new DateTime(2001, 1, 1, 0, 0, 0); //the exact start of the year
-        byte[] invalidDateSecondsBytes = getBytes(invalidDate.getMillis() / 1000);
-        
-        ListMultimap<FieldType, byte[]> invalidData = LinkedListMultimap.create();
-        invalidData.put(FieldType.UTC, invalidDateSecondsBytes);
-        
-        boolean isValid = service.isValidTimeOfReading(invalidData);
-        assertFalse("Date at start of 2001 marked as valid.", isValid);
-    }
-    
+
     @Test
     public void test_evaluateArchiveReadValue_ordinaryPoints() {
         // These points are just plain values, no processing

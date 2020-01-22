@@ -12,6 +12,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.rfn.service.RfnDataValidator;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -61,8 +62,11 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
             rfnPerformanceVerificationService.processVerificationMessages(rfnDevice, verificationMsgs, range);
         }
 
-        // Discard all the data before 1/1/2001
-        if (rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)) {
+        Instant payloadTime = new Instant(decodedPayload.evaluateAsLong("/DRReport/@utc") * 1000);
+        Instant currentInstant = new Instant();
+
+        // Discard all the data that is older than the global timestamp limit
+        if (RfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
             // Handle point data
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
@@ -74,6 +78,8 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
 
             // Handle addressing data
             rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+        } else {
+            log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " with timestamp " + payloadTime);
         }
 
     }
