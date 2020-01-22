@@ -7,20 +7,20 @@ import com.google.common.collect.Maps;
 
 public class MultispeakDeviceGroupSyncProgress {
 
-    private MultispeakDeviceGroupSyncType type;
+    private MultispeakSyncType type;
     private MultispeakDeviceGroupSyncProgressStatus status;
     private AtomicInteger metersProcessed = new AtomicInteger(0);
-    private Map<MultispeakDeviceGroupSyncTypeProcessorType, AtomicInteger> changeCount = Maps.newHashMap();
-    private Map<MultispeakDeviceGroupSyncTypeProcessorType, AtomicInteger> noChangeCount = Maps.newHashMap();
+    private Map<MultispeakSyncTypeProcessorType, AtomicInteger> changeCount = Maps.newHashMap();
+    private Map<MultispeakSyncTypeProcessorType, AtomicInteger> noChangeCount = Maps.newHashMap();
     private Exception exception = null;
     
     // type
-    public MultispeakDeviceGroupSyncProgress(MultispeakDeviceGroupSyncType type) {
+    public MultispeakDeviceGroupSyncProgress(MultispeakSyncType type) {
         this.type = type;
         this.status = MultispeakDeviceGroupSyncProgressStatus.RUNNING;
     }
     
-    public MultispeakDeviceGroupSyncType getType() {
+    public MultispeakSyncType getType() {
         return type;
     }
     
@@ -36,7 +36,7 @@ public class MultispeakDeviceGroupSyncProgress {
         return metersProcessed.get();
     }
     
-    public void incrementChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+    public void incrementChangeCount(MultispeakSyncTypeProcessorType processorType) {
         
         if (!changeCount.containsKey(processorType)) {
             changeCount.put(processorType, new AtomicInteger(0));
@@ -44,7 +44,7 @@ public class MultispeakDeviceGroupSyncProgress {
         changeCount.get(processorType).incrementAndGet();
     }
     
-    public void incrementNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+    public void incrementNoChangeCount(MultispeakSyncTypeProcessorType processorType) {
         
         if (!noChangeCount.containsKey(processorType)) {
             noChangeCount.put(processorType, new AtomicInteger(0));
@@ -52,7 +52,7 @@ public class MultispeakDeviceGroupSyncProgress {
         noChangeCount.get(processorType).incrementAndGet();
     }
     
-    public int getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+    public int getChangeCount(MultispeakSyncTypeProcessorType processorType) {
         
         if (!changeCount.containsKey(processorType)) {
             return 0;
@@ -60,7 +60,7 @@ public class MultispeakDeviceGroupSyncProgress {
         return changeCount.get(processorType).get();
     }
     
-    public int getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+    public int getNoChangeCount(MultispeakSyncTypeProcessorType processorType) {
         
         if (!noChangeCount.containsKey(processorType)) {
             return 0;

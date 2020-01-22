@@ -224,7 +224,7 @@
     
     <bean id="multispeakController" class="com.cannontech.web.multispeak.MultispeakController"/>
     
-    <bean class="com.cannontech.web.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncController" />
+    <bean class="com.cannontech.web.multispeak.multispeakSync.MultispeakSyncController" />
     <!-- VISUAL DISPLAYS SERVICE -->
     <bean id="visualDisplaysService" class="com.cannontech.web.multispeak.visualDisplays.service.impl.VisualDisplaysServiceImpl"/>
     

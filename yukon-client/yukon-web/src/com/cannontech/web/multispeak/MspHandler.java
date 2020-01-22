@@ -15,7 +15,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
+import com.cannontech.multispeak.service.MultispeakSyncType;
 import com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV3;
@@ -47,16 +47,16 @@ public class MspHandler {
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "GetDomainMembers - substationCode";
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
 
-    public void startDeviceGroupSync(MultispeakDeviceGroupSyncType multispeakDeviceGroupSyncType,
+    public void startDeviceGroupSync(MultispeakSyncType type,
             YukonUserContext userContext) {
         MultispeakVendor mspPrimaryCISVendor = getMspPrimaryCISVendor();
         if (mspPrimaryCISVendor != null) {
             MultiSpeakVersion cisVersion = multispeakFuncs.getPrimaryCISVersion(mspPrimaryCISVendor);
             if (cisVersion != null) {
                 if (cisVersion == MultiSpeakVersion.V3) {
-                    multispeakDeviceGroupSyncServiceV3.startSyncForType(multispeakDeviceGroupSyncType, userContext);
+                    multispeakDeviceGroupSyncServiceV3.startSyncForType(type, userContext);
                 } else if (cisVersion == MultiSpeakVersion.V5) {
-                    multispeakDeviceGroupSyncServiceV5.startSyncForType(multispeakDeviceGroupSyncType, userContext);
+                    multispeakDeviceGroupSyncServiceV5.startSyncForType(type, userContext);
                 }
             }
         }

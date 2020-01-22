@@ -1,17 +1,17 @@
-package com.cannontech.web.multispeak.deviceGroupSync;
+package com.cannontech.web.multispeak.multispeakSync;
 
 import org.joda.time.Instant;
 
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
+import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 
 public class LastRunTimestampValue {
 	
-	private MultispeakDeviceGroupSyncTypeProcessorType type;
+	private MultispeakSyncTypeProcessorType type;
 	private Instant instant;
 	private boolean linkableProgress = false;
 	
-	public LastRunTimestampValue(MultispeakDeviceGroupSyncTypeProcessorType type, Instant instant, MultispeakDeviceGroupSyncProgress progress) {
+	public LastRunTimestampValue(MultispeakSyncTypeProcessorType type, Instant instant, MultispeakDeviceGroupSyncProgress progress) {
 		
 		this.type = type;
 		this.instant = instant;
@@ -20,7 +20,7 @@ public class LastRunTimestampValue {
 		}
 	}
 	
-	public MultispeakDeviceGroupSyncTypeProcessorType getType() {
+	public MultispeakSyncTypeProcessorType getType() {
 		return type;
 	}
 	public Instant getInstant() {

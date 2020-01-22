@@ -163,12 +163,14 @@
 
     <!-- device group sync pages -->
     <!-- enum entries -->
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncType.SUBSTATION">Substation</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncType.BILLING_CYCLE">Billing Cycle</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncType.SUBSTATION_AND_BILLING_CYCLE">Substation and Billing Cycle</entry>
-    
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncTypeProcessorType.SUBSTATION">Substation</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE">Billing Cycle</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncType.SUBSTATION">Substation</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncType.BILLING_CYCLE">Billing Cycle</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncType.SUBSTATION_AND_BILLING_CYCLE">Substation and Billing Cycle</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncType.ENROLLMENT">Enrollment</entry>
+
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncTypeProcessorType.SUBSTATION">Substation</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncTypeProcessorType.BILLING_CYCLE">Billing Cycle</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncTypeProcessorType.ENROLLMENT">Enrollment</entry>
     
     <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.RUNNING">In Progress...</entry>
     <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FAILED">Error</entry>
@@ -176,18 +178,20 @@
     <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FINISHED">Complete</entry>
     
     <!-- sync home.jsp -->
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.pageName">MultiSpeak</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.tab.title">Synchronization</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.pageName">MultiSpeak</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.tab.title">Synchronization</entry>
     
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.startContainer.title">Synchronize Device Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.startButton">Sync Now</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.lastSyncCompleted">Last Sync Completed</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.startContainer.title">Synchronize Device Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.startButton">Sync Now</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.lastSyncCompleted">Last Sync Completed</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.syncType">Synchronization Type</entry>
     
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.error.noCisVendorId">Primary CIS vendor is not configured.</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.startOk">Synchronization successfully started.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.error.noCisVendorId">Primary CIS vendor is not configured.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.error.noNOTServerVendor">No vendor with support of NOT_Server(DR).</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.startOk">Synchronization successfully started.</entry>
     
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.instructionsContainer.title">Instructions</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncHome.instructions"><![CDATA[
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.instructionsContainer.title">Instructions</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.instructions"><![CDATA[
         <br>
         Select a synchronization type from the list, then click "Sync Now".
         <br><br>
@@ -254,18 +258,18 @@
     ]]></entry>
     
     <!-- sync progress.jsp -->
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.pageName">Device Group Sync Progress</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.cancelButton">Cancel Sync</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.backToHomeButton">Back To Main Page</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.cancelOk">Synchronization successfully canceled.</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.progressDetailContainer.title">Progress Details</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoLabel.status">Status</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoLabel.type">Synchronization Type</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoLabel.progress">Progress</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoLabel.statsLabel.SUBSTATION">Substation Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoLabel.statsLabel.BILLING_CYCLE">Billing Cycle Groups</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoValue.metersAdded">meters added</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSyncProgress.infoValue.noChange">no change</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.pageName">Multispeak Progress</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.cancelButton">Cancel Sync</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.backToHomeButton">Back To Main Page</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.cancelOk">Synchronization successfully canceled.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.progressDetailContainer.title">Progress Details</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.infoLabel.status">Status</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.infoLabel.type">Synchronization Type</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.infoLabel.progress">Progress</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.infoLabel.statsLabel.SUBSTATION">Substation Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.infoLabel.statsLabel.BILLING_CYCLE">Billing Cycle Groups</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.infoValue.metersAdded">meters added</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.infoValue.noChange">no change</entry>
     
     <!-- lmMappings home.jsp -->
     <entry key="yukon.web.modules.adminSetup.lmMappings.pageName">MultiSpeak</entry>

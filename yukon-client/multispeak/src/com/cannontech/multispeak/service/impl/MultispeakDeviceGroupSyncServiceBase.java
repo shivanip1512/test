@@ -13,9 +13,9 @@ import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessor;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
+import com.cannontech.multispeak.service.MultispeakSyncType;
+import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.multispeak.service.v5.MultispeakMeterService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Maps;
@@ -26,7 +26,7 @@ public abstract class MultispeakDeviceGroupSyncServiceBase {
     @Autowired private MultispeakMeterService multispeakMeterService;
 
     protected MultispeakDeviceGroupSyncProgress progress = null;
-    protected Map<MultispeakDeviceGroupSyncTypeProcessorType, MultispeakDeviceGroupSyncTypeProcessor> processorMap;
+    protected Map<MultispeakSyncTypeProcessorType, MultispeakDeviceGroupSyncTypeProcessor> processorMap;
     
     private static final String SUBSTATION_SYNC_LOG_STRING = "SubstationDeviceGroupSync";
     private static final String BILLING_CYCLE_LOG_STRING = "BillingCycleDeviceGroupSync";
@@ -34,8 +34,8 @@ public abstract class MultispeakDeviceGroupSyncServiceBase {
     @PostConstruct
     public void init() {
         processorMap = Maps.newLinkedHashMap();
-        processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, new SubstationSyncTypeProcessor());
-        processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
+        processorMap.put(MultispeakSyncTypeProcessorType.SUBSTATION, new SubstationSyncTypeProcessor());
+        processorMap.put(MultispeakSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
     }
 
     public MultispeakDeviceGroupSyncProgress getProgress() {
@@ -47,20 +47,20 @@ public abstract class MultispeakDeviceGroupSyncServiceBase {
      */
 
     // LAST SYNC INSTANTS
-    public Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> getLastSyncInstants() {
+    public Map<MultispeakSyncTypeProcessorType, Instant> getLastSyncInstants() {
 
         Instant lastSubstationInstant =
             persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
         Instant lastBillingCycleInstant =
             persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED);
 
-        Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstantsMap = Maps.newLinkedHashMap();
-        lastSyncInstantsMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, lastSubstationInstant);
-        lastSyncInstantsMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, lastBillingCycleInstant);
+        Map<MultispeakSyncTypeProcessorType, Instant> lastSyncInstantsMap = Maps.newLinkedHashMap();
+        lastSyncInstantsMap.put(MultispeakSyncTypeProcessorType.SUBSTATION, lastSubstationInstant);
+        lastSyncInstantsMap.put(MultispeakSyncTypeProcessorType.BILLING_CYCLE, lastBillingCycleInstant);
         return lastSyncInstantsMap;
     }
 
-    abstract public void startSyncForType(MultispeakDeviceGroupSyncType type, YukonUserContext userContext);
+    abstract public void startSyncForType(MultispeakSyncType type, YukonUserContext userContext);
     
     // PROCESSORS
     private class SubstationSyncTypeProcessor implements MultispeakDeviceGroupSyncTypeProcessor {

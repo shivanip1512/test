@@ -18,7 +18,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
+import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.updater.UpdateBackingService;
@@ -112,7 +112,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.SUBSTATION_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION) : 0;
+        		return progress != null ? progress.getChangeCount(MultispeakSyncTypeProcessorType.SUBSTATION) : 0;
         	}
         });
         
@@ -120,7 +120,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.SUBSTATION_NO_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION) : 0;
+        		return progress != null ? progress.getNoChangeCount(MultispeakSyncTypeProcessorType.SUBSTATION) : 0;
         	}
         });
         
@@ -128,7 +128,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.BILLING_CYCLE_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE) : 0;
+        		return progress != null ? progress.getChangeCount(MultispeakSyncTypeProcessorType.BILLING_CYCLE) : 0;
         	}
         });
         
@@ -136,7 +136,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.BILLING_CYCLE_NO_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE) : 0;
+        		return progress != null ? progress.getNoChangeCount(MultispeakSyncTypeProcessorType.BILLING_CYCLE) : 0;
         	}
         });
         
@@ -176,7 +176,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT_OR_LAST_SYNC_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getStatusTextObj(progress, MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, userContext);
+        		return getStatusTextObj(progress, MultispeakSyncTypeProcessorType.SUBSTATION, userContext);
         	}
         });
 
@@ -184,7 +184,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT_OR_LAST_SYNC_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getStatusTextObj(progress, MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, userContext);
+        		return getStatusTextObj(progress, MultispeakSyncTypeProcessorType.BILLING_CYCLE, userContext);
         	}
         });
         
@@ -201,7 +201,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.SUBSTATION)) {
         			return true;
         		}
         		return false;
@@ -213,7 +213,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.SUBSTATION)) {
         			return true;
         		}
         		return false;
@@ -225,7 +225,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.BILLING_CYCLE)) {
         			return true;
         		}
         		return false;
@@ -237,7 +237,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.BILLING_CYCLE)) {
         			return true;
         		}
         		return false;
@@ -248,7 +248,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, userContext);
+        		return getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType.SUBSTATION, userContext);
         	}
         });
 
@@ -256,12 +256,12 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, userContext);
+        		return getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType.BILLING_CYCLE, userContext);
         	}
         });
     }
     
-    private Object getStatusTextObj(MultispeakDeviceGroupSyncProgress progress, MultispeakDeviceGroupSyncTypeProcessorType type, YukonUserContext userContext) {
+    private Object getStatusTextObj(MultispeakDeviceGroupSyncProgress progress, MultispeakSyncTypeProcessorType type, YukonUserContext userContext) {
     	
     	if (progress == null) {
 			return null;
@@ -275,13 +275,13 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
 		return getLastCompletedSyncDateStr(type, userContext);
     }
     
-    private String getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType type,
+    private String getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType type,
             YukonUserContext userContext) {
         
         int vendorId = multispeakFuncs.getPrimaryCIS();
         Instant instant = null;
         if (vendorId > 0) {
-            Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants =
+            Map<MultispeakSyncTypeProcessorType, Instant> lastSyncInstants =
                 mspHandler.getDeviceGroupSyncService().getLastSyncInstants();
             instant = lastSyncInstants.get(type);
         }
