@@ -693,15 +693,4 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     public Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier) {
         return rfnIdentifierCache.getPaoIdFor(rfnIdentifier);
     }
-    
-    @Override
-    public int getDeviceCount(Set<PaoType> paoTypes) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT count(ypo.paobjectid)");
-        sql.append("FROM RfnAddress a");
-        sql.append("JOIN YukonPaObject ypo ON (a.deviceid = ypo.paobjectid)");
-        sql.append("WHERE ypo.Type").in(paoTypes);
-        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
-        return jdbcTemplate.queryForInt(sql);
-    }
 }

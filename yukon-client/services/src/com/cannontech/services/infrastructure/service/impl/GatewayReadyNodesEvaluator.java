@@ -25,6 +25,7 @@ import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Generates warnings for gateways that are not in a gateway connection warning state and whose ready node count drops 
@@ -32,11 +33,11 @@ import com.cannontech.system.dao.GlobalSettingDao;
  */
 public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayReadyNodesEvaluator.class);
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private GatewayConnectionStatusEvaluator gatewayConnectionStatusEvaluator;
+    @Autowired private IDatabaseCache cache;
 
     @Override
     public Set<PaoType> getSupportedTypes() {
@@ -74,7 +75,7 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
     
     private boolean isWarnable(Map.Entry<PaoIdentifier,PointValueQualityHolder> gatewayToReadyNodes) {
         if (gatewayToReadyNodes.getKey().getPaoType() == PaoType.VIRTUAL_GATEWAY
-                && rfnDeviceDao.getDeviceCount(PaoType.getWifiTypes()) == 0) {
+                && cache.getAllPaoTypes().stream().noneMatch(PaoType::isWifiDevice)) {
             log.debug("Vitual Gateway {} is Found. No WiFi meters found on the system.", gatewayToReadyNodes.getKey());
             return false;
         }
