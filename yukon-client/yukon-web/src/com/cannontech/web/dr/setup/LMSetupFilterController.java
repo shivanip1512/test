@@ -112,6 +112,10 @@ public class LMSetupFilterController {
         return "dr/setup/list.jsp";
     }
 
+    /**
+     * Get FilterCriteria based on LMSetupFilter, SortingParameters, PagingParameters.
+     */
+
     private FilterCriteria<LMSetupFilter> getFilterCriteria(LMSetupFilter lmSetupFilter, SortingParameters sorting, PagingParameters paging) {
         FilterCriteria<LMSetupFilter> filterCriteria = new FilterCriteria<LMSetupFilter>(lmSetupFilter, sorting, paging);
 
@@ -135,6 +139,11 @@ public class LMSetupFilterController {
         }
         return filterCriteria;
     }
+
+
+    /**
+     * Set SortableColumn in Model based on LMSetupFilter.
+     */
 
     private void setSortableColumnInModel(ModelMap model, LMSetupFilter lmSetupFilter, Direction dir, SortingParameters sorting, YukonUserContext userContext) {
 
@@ -182,6 +191,9 @@ public class LMSetupFilterController {
 
     }
 
+    /**
+     * Call API based on LMSetupFilter.
+     */
     private ResponseEntity<? extends Object> callAPIForParameterizedTypeObject(LMSetupFilter lmSetupFilter, FilterCriteria<LMSetupFilter> filterCriteria,
             YukonUserContext userContext, HttpServletRequest request) {
 

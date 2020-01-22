@@ -79,6 +79,9 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
         return LmSetupFilterType.GEAR;
     }
 
+    /**
+     * Build comma separated fieldName/Value pair for fields.
+     */
     private String buildGearDetailsInString(ProgramGearFields fields, YukonUserContext userContext) {
         Map<String, String> fieldValueMap = new LinkedHashMap<>();
         List<String> stringValueTypeFields = new ArrayList<>();
@@ -93,6 +96,9 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
 
     }
 
+    /**
+     * Build fieldName/Value based on i18n.
+     */
     private String getField(String key, String value, YukonUserContext userContext, List<String> stringValueTypeFields) {
 
         String fieldValue = null;
@@ -114,6 +120,9 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
 
     }
 
+    /**
+     * Convert JsonTree structure to String fields Map.
+     */
     private void objectToStringFields(String fieldPath, JsonNode jsonNode, Map<String, String> fieldValueMap, List<String> stringValueTypeFields) {
         if (jsonNode.isObject()) {
             ObjectNode objectNode = (ObjectNode) jsonNode;
@@ -139,22 +148,31 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
         }
     }
 
-    private String getFieldName(YukonUserContext userContext, String currentPath) {
+    /**
+     * Get FieldName based on fieldPath.
+     */
+    private String getFieldName(YukonUserContext userContext, String fieldPath) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String fieldName = accessor.getMessage(new YukonMessageSourceResolvable(baseKey + currentPath));
+        String fieldName = accessor.getMessage(new YukonMessageSourceResolvable(baseKey + fieldPath));
 
         return "<b>" + fieldName + "</b>";
 
     }
 
-    private String getFieldValue(YukonUserContext userContext, String currentPath) {
+    /**
+     * Get FieldValue on fieldPath.
+     */
+    private String getFieldValue(YukonUserContext userContext, String fieldPath) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String fieldValue = accessor.getMessage(new YukonMessageSourceResolvable(baseKey + currentPath));
+        String fieldValue = accessor.getMessage(new YukonMessageSourceResolvable(baseKey + fieldPath));
 
         return fieldValue;
 
     }
 
+    /**
+     * Get Boolean FieldValue based on fieldPath.
+     */
     private String getBooleanField(YukonUserContext userContext, String currentPath) {
 
         String fieldValue = null;
