@@ -6,14 +6,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.stars.gateway.model.WiFiMeterCommData;
+import com.cannontech.web.stars.service.RfnWiFiCommDataService;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 
@@ -24,8 +23,8 @@ import com.cannontech.web.widget.support.SimpleWidgetInput;
 @RequestMapping("/wifiConnectionWidget/*")
 public class WifiConnectionWidget extends AdvancedWidgetControllerBase {
 
-    @Autowired private AttributeService attributeService;
-    @Autowired private MeterDao meterDao;
+    @Autowired private RfnWiFiCommDataService wifiService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     public WifiConnectionWidget() {
     }
@@ -42,13 +41,10 @@ public class WifiConnectionWidget extends AdvancedWidgetControllerBase {
     @RequestMapping("render")
     public String render(ModelMap model, YukonUserContext userContext, Integer deviceId) {
 
-        YukonMeter meter = meterDao.getForId(deviceId);
-        model.addAttribute("device", meter);
-        LitePoint commStatusPoint = attributeService.findPointForAttribute(meter.getPaoIdentifier(), BuiltInAttribute.COMM_STATUS);
-        LitePoint rssiPoint = attributeService.findPointForAttribute(meter.getPaoIdentifier(),
-                BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
-        model.addAttribute("commStatus", commStatusPoint);
-        model.addAttribute("rssi", rssiPoint);
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        model.addAttribute("device", device);
+        WiFiMeterCommData data = wifiService.buildWiFiMeterCommDataObject(device);
+        model.addAttribute("wifiData", data);
 
         return "wifiConnectionWidget/render.jsp";
     }

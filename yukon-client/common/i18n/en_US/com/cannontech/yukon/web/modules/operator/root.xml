@@ -80,6 +80,8 @@
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithInfo">Nodes with Info: {0}; Nodes Without Info: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithSNs">Nodes with Serial Numbers: {0}; Total Nodes: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.infraStructureWarnings.title">Infrastructure Warnings</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.wifiCapableCount">Wi-Fi Capable Count</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.viewWiFiMeters">View Wi-Fi Meters</entry>
 
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
@@ -243,7 +245,14 @@
     <entry key="yukon.web.modules.operator.gateways.streamingCapacityHistory">View History</entry>
     
     <!-- WiFi Connection Status page -->
-    <entry key="yukon.web.modules.operator.wifi.connection.refreshMsg">A refresh of the Wi-Fi Connection data has been requested. It may take a few minutes for the data to update.</entry>
-    
+    <entry key="yukon.web.modules.operator.wifiConnection.refreshMsg">A refresh of the Wi-Fi Connection data has been requested. It may take a few minutes for the data to update.</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.pageName">Connected Devices</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.statusLastUpdated">Status Last Updated</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.rssiLastUpdated">RSSI Last Updated</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.refreshStatus">Refresh Communication Status</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.allStatuses">All Communication Statuses</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.commStatusState.CONNECTED">Connected</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.commStatusState.DISCONNECTED">Disconnected</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.refreshAll">Refresh Status</entry>
     
 </properties>

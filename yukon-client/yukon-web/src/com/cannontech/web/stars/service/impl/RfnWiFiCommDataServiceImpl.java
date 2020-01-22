@@ -37,13 +37,13 @@ public class RfnWiFiCommDataServiceImpl implements RfnWiFiCommDataService{
         return wiFiMeterCommData;
     }
 
-    private WiFiMeterCommData buildWiFiMeterCommDataObject(RfnDevice rfnDevice) {
+    public WiFiMeterCommData buildWiFiMeterCommDataObject(RfnDevice rfnDevice) {
         PaoIdentifier paoIdentifier = rfnDevice.getPaoIdentifier();
         LitePoint commStatusPoint = attributeService.findPointForAttribute(paoIdentifier, BuiltInAttribute.COMM_STATUS);
         LitePoint rssiPoint = attributeService.findPointForAttribute(paoIdentifier,
                 BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
 
-        WiFiMeterCommData wiFiMeterCommData = new WiFiMeterCommData(paoIdentifier, commStatusPoint, rssiPoint);
+        WiFiMeterCommData wiFiMeterCommData = new WiFiMeterCommData(rfnDevice, commStatusPoint, rssiPoint);
         log.debug("Created WiFiMeterCommData object for {}", wiFiMeterCommData);
 
         return wiFiMeterCommData;

@@ -18,8 +18,10 @@
 <div id="page-buttons" class="dn">
     <cm:dropdown type="button" data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
         <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"/>
-        <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${gateway.paoIdentifier.paoId}"/>
-        <cm:dropdownOption icon="icon-map" key=".mapNetwork" href="${mapNetworkUrl}"/>
+        <c:if test="${!isVirtualGateway}">        
+            <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${gateway.paoIdentifier.paoId}"/>
+            <cm:dropdownOption icon="icon-map" key=".mapNetwork" href="${mapNetworkUrl}"/>
+        </c:if>
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
             <li class="divider"></li>
             <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
@@ -62,103 +64,100 @@
         <div class="one column">
             <tags:widget bean="gatewayInformationWidget" container="section"/>
             <tags:widget bean="paoNotesWidget" container="section" hideTableBorders="true"/> 
+            
+            <tags:sectionContainer2 nameKey="comms" styleClass="stacked" id="gw-comm">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".admin" valueClass="js-gw-admin">
+                        <c:if test="${empty data.admin}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
+                        <c:if test="${not empty data.admin}">${fn:escapeXml(data.admin.username)}</c:if>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".superAdmin" valueClass="js-gw-super-admin">
+                        <c:if test="${empty data.superAdmin}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
+                        <c:if test="${not empty data.superAdmin}">${fn:escapeXml(data.superAdmin.username)}</c:if>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".connectionType" valueClass="js-gw-conn-type">
+                        <c:if test="${not empty data}"><i:inline key=".connectionType.${data.connectionType}"/></c:if>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".ipaddress">
+                        <span class="js-gw-ip">${fn:escapeXml(data.ipAddress)}</span>&nbsp;
+                        <span class="js-gw-port">
+                            <c:if test="${not empty data}">
+                                <i:inline key=".port" arguments="${data.port}"/>
+                            </c:if>
+                        </span>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".radios" valueClass="js-gw-radios">
+                        <c:if test="${not empty data}">
+                            <c:forEach var="radio" items="${data.radios}">
+                                <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">
+                                    <div><i:inline key=".radioType.${radio.type}"/></div>
+                                    <div><i:inline key=".macAddress" arguments="${radio.macAddress}"/></div>
+                                    <div><i:inline key=".version" arguments="${radio.version}"/></div>
+                                </div>
+                            </c:forEach>
+                        </c:if>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".connectionStatus">
+                        <cti:attributeResolver pao="${gateway}" attribute="${commStatusAttribute}" var="pointId"/>
+                        <cti:pointStatus pointId="${pointId}"/>
+                        <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
+                        <cti:url var="historyUrl" value="/meter/historicalReadings/view">
+                            <cti:param name="pointId" value="${pointId}"/>
+                            <cti:param name="deviceId" value="${gateway.paoIdentifier.paoId}"/>
+                        </cti:url>
+                        <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
+                            <cti:pointValue pointId="${pointId}"/>
+                        </a>
+                        <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".lastComms">
+                        <c:set var="clazz" value="green"/>
+                        <c:if test="${gateway.lastCommFailed}">
+                            <c:set var="clazz" value="red"/>
+                        </c:if>
+                        <c:if test="${gateway.lastCommMissed}">
+                            <c:set var="clazz" value="orange"/>
+                        </c:if>
+                        <c:if test="${gateway.lastCommUnknown}">
+                            <c:set var="clazz" value="gray"/>
+                        </c:if>
+                        <span class="${clazz} js-gw-last-comm">
+                            <c:if test="${not empty data}">
+                                <i:inline key=".lastCommStatus.${data.lastCommStatus}"/>
+                            </c:if>
+                        </span>
+                        <cti:formatDate var="lastCommTime" type="DATEHM" value="${data.lastCommStatusTimestamp}"/>
+                        <span class="js-gw-last-comm-time subtle">${lastCommTime}</span>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </tags:sectionContainer2>    
+            <%-- Add back when NM test connection works. --%>
+            <%-- <div class="action-area"> --%>
+                <%-- <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/> --%>
+            <%-- </div> --%>
         </div>
         
         <div class="column two nogutter">
-            <c:set var="infrastructureLabelWidth" value="90px"/>
-            <%@ include file="/WEB-INF/pages/stars/mapNetwork/locationContainer.jsp" %>
+            <c:if test="${!isVirtualGateway}">
+                <c:set var="infrastructureLabelWidth" value="90px"/>
+                <%@ include file="/WEB-INF/pages/stars/mapNetwork/locationContainer.jsp" %>
+            </c:if>
+            
+            <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
+            <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section"/>
+            <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
+            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
+            </cti:checkRolesAndProperties>
+            <cti:msg2 var="widgetTitle" key=".metrics.title"/>
+            <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" />
+            <!-- Gateway node Information  -->
+            <cti:msg2 var="nodeInfoTitle" key=".gatewayNodeInfo.title"/>
+            <tags:widget bean="gatewayNodeInformationWidget" title="${nodeInfoTitle}" container="section" />
         </div>
         
     </div>
-    <div class="stacked">
-        <div class="column-12-12 clearfix">
-            <div class="column one">
-                <tags:sectionContainer2 nameKey="comms" styleClass="stacked" id="gw-comm">
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".admin" valueClass="js-gw-admin">
-                            <c:if test="${empty data.admin}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
-                            <c:if test="${not empty data.admin}">${fn:escapeXml(data.admin.username)}</c:if>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".superAdmin" valueClass="js-gw-super-admin">
-                            <c:if test="${empty data.superAdmin}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
-                            <c:if test="${not empty data.superAdmin}">${fn:escapeXml(data.superAdmin.username)}</c:if>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".connectionType" valueClass="js-gw-conn-type">
-                            <c:if test="${not empty data}"><i:inline key=".connectionType.${data.connectionType}"/></c:if>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".ipaddress">
-                            <span class="js-gw-ip">${fn:escapeXml(data.ipAddress)}</span>&nbsp;
-                            <span class="js-gw-port">
-                                <c:if test="${not empty data}">
-                                    <i:inline key=".port" arguments="${data.port}"/>
-                                </c:if>
-                            </span>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".radios" valueClass="js-gw-radios">
-                            <c:if test="${not empty data}">
-                                <c:forEach var="radio" items="${data.radios}">
-                                    <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">
-                                        <div><i:inline key=".radioType.${radio.type}"/></div>
-                                        <div><i:inline key=".macAddress" arguments="${radio.macAddress}"/></div>
-                                        <div><i:inline key=".version" arguments="${radio.version}"/></div>
-                                    </div>
-                                </c:forEach>
-                            </c:if>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".connectionStatus">
-                            <cti:attributeResolver pao="${gateway}" attribute="${commStatusAttribute}" var="pointId"/>
-                            <cti:pointStatus pointId="${pointId}"/>
-                            <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
-                            <cti:url var="historyUrl" value="/meter/historicalReadings/view">
-                                <cti:param name="pointId" value="${pointId}"/>
-                                <cti:param name="deviceId" value="${gateway.paoIdentifier.paoId}"/>
-                            </cti:url>
-                            <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
-                                <cti:pointValue pointId="${pointId}"/>
-                            </a>
-                            <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".lastComms">
-                            <c:set var="clazz" value="green"/>
-                            <c:if test="${gateway.lastCommFailed}">
-                                <c:set var="clazz" value="red"/>
-                            </c:if>
-                            <c:if test="${gateway.lastCommMissed}">
-                                <c:set var="clazz" value="orange"/>
-                            </c:if>
-                            <c:if test="${gateway.lastCommUnknown}">
-                                <c:set var="clazz" value="gray"/>
-                            </c:if>
-                            <span class="${clazz} js-gw-last-comm">
-                                <c:if test="${not empty data}">
-                                    <i:inline key=".lastCommStatus.${data.lastCommStatus}"/>
-                                </c:if>
-                            </span>
-                            <cti:formatDate var="lastCommTime" type="DATEHM" value="${data.lastCommStatusTimestamp}"/>
-                            <span class="js-gw-last-comm-time subtle">${lastCommTime}</span>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </tags:sectionContainer2>    
-                <%-- Add back when NM test connection works. --%>
-                <%-- <div class="action-area"> --%>
-                    <%-- <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/> --%>
-                <%-- </div> --%>
-            </div>
-            <div class="column two nogutter">
-                <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
-                <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section"/>
-                <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
-                <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                    <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
-                </cti:checkRolesAndProperties>
-                <cti:msg2 var="widgetTitle" key=".metrics.title"/>
-                <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" />
-                <!-- Gateway node Information  -->
-                <cti:msg2 var="nodeInfoTitle" key=".gatewayNodeInfo.title"/>
-                <tags:widget bean="gatewayNodeInformationWidget" title="${nodeInfoTitle}" container="section" />
-            </div>
-        </div>
-    </div>
+    
 </tags:widgetContainer>
 &nbsp;
 

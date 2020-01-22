@@ -1472,4 +1472,6 @@
     </jms:listener-container>
 
     <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
+    
+    <bean class="com.cannontech.web.stars.service.impl.RfnWiFiCommDataServiceImpl"/>
 </beans>

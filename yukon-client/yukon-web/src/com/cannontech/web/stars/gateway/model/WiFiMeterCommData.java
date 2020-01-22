@@ -1,23 +1,22 @@
 package com.cannontech.web.stars.gateway.model;
 
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.data.lite.LitePoint;
 
 public class WiFiMeterCommData {
 
-    private final PaoIdentifier paoIdentifier;
+    private final RfnDevice device;
     private final LitePoint commStatusPoint;
     private final LitePoint rssiPoint;
 
-    public WiFiMeterCommData(PaoIdentifier paoIdentifier, LitePoint commStatusPoint, LitePoint rssiPoint) {
-        this.paoIdentifier = paoIdentifier;
+    public WiFiMeterCommData(RfnDevice device, LitePoint commStatusPoint, LitePoint rssiPoint) {
+        this.device = device;
         this.commStatusPoint = commStatusPoint;
         this.rssiPoint = rssiPoint;
-
     }
 
-    public PaoIdentifier getPaoIdentifier() {
-        return paoIdentifier;
+    public RfnDevice getDevice() {
+        return device;
     }
 
     public LitePoint getCommStatusPoint() {
@@ -33,7 +32,7 @@ public class WiFiMeterCommData {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((commStatusPoint == null) ? 0 : commStatusPoint.hashCode());
-        result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
+        result = prime * result + ((device == null) ? 0 : device.hashCode());
         result = prime * result + ((rssiPoint == null) ? 0 : rssiPoint.hashCode());
         return result;
     }
@@ -57,11 +56,11 @@ public class WiFiMeterCommData {
         } else if (!commStatusPoint.equals(other.commStatusPoint)) {
             return false;
         }
-        if (paoIdentifier == null) {
-            if (other.paoIdentifier != null) {
+        if (device == null) {
+            if (other.device != null) {
                 return false;
             }
-        } else if (!paoIdentifier.equals(other.paoIdentifier)) {
+        } else if (!device.equals(other.device)) {
             return false;
         }
         if (rssiPoint == null) {
@@ -76,7 +75,8 @@ public class WiFiMeterCommData {
 
     @Override
     public String toString() {
-        return "WiFiMeterCommData [paoIdentifier=" + paoIdentifier + ", commStatusPoint=" + commStatusPoint + ", rssiPoint="
+        return "WiFiMeterCommData [device=" + device + ", commStatusPoint=" + commStatusPoint + ", rssiPoint="
                 + rssiPoint + "]";
     }
+
 }
