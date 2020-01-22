@@ -43,7 +43,7 @@
         <dependent-module archiveName="saaj.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/saaj.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="commons-io-2.4.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-io-2.4.jar">
+        <dependent-module archiveName="commons-io-2.6.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-io-2.6.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="dom4j-2.1.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/dom4j-2.1.1.jar">
@@ -163,7 +163,7 @@
         <dependent-module archiveName="guava-18.0.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/guava-18.0.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="commons-lang3-3.4.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-lang3-3.4.jar">
+        <dependent-module archiveName="commons-lang3-3.8.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/commons-lang3-3.8.1.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="snakeyaml-1.18.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/snakeyaml-1.18.2.jar">
