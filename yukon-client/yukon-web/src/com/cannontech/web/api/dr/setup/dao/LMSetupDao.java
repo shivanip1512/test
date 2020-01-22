@@ -52,7 +52,24 @@ public interface LMSetupDao <T> {
             return dbString;
         }
     }
-    
+
+    public enum LoadProgramSortBy {
+        PROGRAMNAME("ypo.PAOName"),
+        OPERATIONALSTATE("lp.ControlType"),
+        CONSTRAINT("lpc.ConstraintName"),
+        PROGRAMTYPE("ypo.Type");
+
+        private final String dbString;
+
+        private LoadProgramSortBy(String dbString) {
+            this.dbString = dbString;
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
+
     /**
      * Retrieves program constraints based on filter criteria.
      */
