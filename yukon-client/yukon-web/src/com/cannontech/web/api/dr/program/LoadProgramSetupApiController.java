@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.program.setup.model.NotificationGroup;
@@ -89,6 +90,12 @@ public class LoadProgramSetupApiController {
     public ResponseEntity<Object> getAllAvailableProgramNotificationGroups() {
         List<NotificationGroup> notificationGroups = loadProgramService.getAllAvailableProgramNotificationGroups();
         return new ResponseEntity<>(notificationGroups, HttpStatus.OK);
+    }
+    
+    @GetMapping("/gear/{gearId}")
+    public ResponseEntity<Object> getProgramGear(@PathVariable Integer gearId) {
+        ProgramGear programGear = loadProgramService.getProgramGear(gearId);
+        return new ResponseEntity<>(programGear, HttpStatus.OK);
     }
 
     @GetMapping("/allAvailableDirectMemberControls")

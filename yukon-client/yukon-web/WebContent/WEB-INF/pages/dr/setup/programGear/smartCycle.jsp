@@ -9,7 +9,7 @@
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.controlPercent" units="${percent}" size="10" minValue="5" maxValue="100"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".cyclePeriod">
+                    <tags:nameValue2 nameKey=".cyclePeriodInMinutes">
                         <tags:numeric path="fields.cyclePeriodInMinutes" size="10" minValue="1" maxValue="945"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".cycleCountSendType">
@@ -52,7 +52,7 @@
 
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".groupCapacityReduction">
+                    <tags:nameValue2 nameKey=".capacityReduction">
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.capacityReduction" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>

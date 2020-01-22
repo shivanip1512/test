@@ -700,7 +700,7 @@ public class FormulaDaoImpl implements FormulaDao {
 
         final Map<Integer, GearAssignment> assignmentMap = new HashMap<>();
         for (LMProgramDirectGear gear : gears.values()) {
-            assignmentMap.put(gear.getYukonID(), new GearAssignment(gear, null));
+            assignmentMap.put(gear.getGearId(), new GearAssignment(gear, null));
         }
 
         chunkingTemplate.query(new SqlFragmentGenerator<Integer>() {

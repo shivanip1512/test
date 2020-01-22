@@ -2,6 +2,7 @@ package com.cannontech.dr.loadprogram.service;
 
 import java.util.List;
 
+import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
 import com.cannontech.common.dr.program.setup.model.NotificationGroup;
@@ -68,4 +69,9 @@ public interface LoadProgramSetupService extends LMSetupService<LoadProgram, Loa
      * Return all the Gears associated with programId.
      */
     List<LiteGear> getGearsForProgram(int programId);
+
+    /**
+     * Return ProgramGear corresponding to gearId.
+     */
+    ProgramGear getProgramGear(Integer gearId);
 }

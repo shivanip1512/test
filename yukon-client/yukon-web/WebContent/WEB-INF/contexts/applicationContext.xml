@@ -1427,8 +1427,23 @@
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintValidator"/>
     <bean class="com.cannontech.dr.constraint.service.impl.ProgramConstraintServiceImpl"/>
     <bean class="com.cannontech.web.dr.setup.ProgramConstraintControllerHelper"/>
-    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl"/>
-    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMSetupDaoImpl"/>
+
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMControlAreaSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMControlScenarioSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMGearSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMLoadGroupSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMLoadProgramSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMMacroLoadGroupSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMProgramConstraintSetupFilterServiceImpl"/>
+
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMControlAreaSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMControlScenarioSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMGearSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMLoadGroupSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMLoadProgramSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMMacroLoadGroupSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMProgramConstraintSetupDaoImpl"/>
+    <bean class="com.cannontech.common.dr.gear.setup.fields.ProgramGearFieldsBuilder"/>
     
     <bean class="com.cannontech.web.dr.setup.LoadProgramSetupControllerHelper"/>
 
@@ -1472,4 +1487,6 @@
     </jms:listener-container>
 
     <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
+    
+    
 </beans>

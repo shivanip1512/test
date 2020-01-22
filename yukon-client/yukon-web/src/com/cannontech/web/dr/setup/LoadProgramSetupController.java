@@ -632,4 +632,28 @@ public class LoadProgramSetupController {
         return "dr/setup/programGear/view.jsp";
     }
 
+    @GetMapping("/programGear/{id}")
+    public String programGear(ModelMap model, @PathVariable String id, YukonUserContext userContext,
+            HttpServletRequest request) {
+        String url = helper.findWebServerUrl(request, userContext, ApiURL.drRetrieveGearUrl + id);
+
+        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext,
+                                                                                      request,
+                                                                                      url,
+                                                                                      HttpMethod.GET,
+                                                                                      ProgramGear.class);
+
+        ProgramGear programGear = null;
+        if (response.getStatusCode() == HttpStatus.OK) {
+            programGear = (ProgramGear) response.getBody();
+        }
+        model.addAttribute("mode", PageEditMode.VIEW);
+        model.addAttribute("selectedGearType", programGear.getControlMethod().name());
+        model.addAttribute("programGear", programGear);
+        model.addAttribute("showGearTypeOptions", false);
+
+        controllerHelper.populateDefaultValuesForDependentFields(programGear);
+        return "dr/setup/programGear/view.jsp";
+    }
+
 }

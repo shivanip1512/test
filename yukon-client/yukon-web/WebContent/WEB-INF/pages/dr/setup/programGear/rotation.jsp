@@ -41,7 +41,7 @@
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".groupCapacityReduction">
+                    <tags:nameValue2 nameKey=".capacityReduction">
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.capacityReduction" units="${percent}" size="10" minValue="0" maxValue="100" stepValue="1"/>
                     </tags:nameValue2>

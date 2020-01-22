@@ -60,10 +60,18 @@ yukon.dr.setup.list = (function() {
             });
             
             $(document).on("click", ".js-gear-link", function (event) {
-               var dialogDiv = $("<div/>").attr({
-                  'data-title': "Gear Dialog"
-               }).text("This is a div. This is a div. This is a div.");
-                yukon.ui.dialog(dialogDiv[0].outerHTML);
+                 event.preventDefault();
+                 var dialogDivJson = {
+                     "data-url" : $(this).attr('href'),
+                     "data-load-event" : "yukon:dr:setup:gear:viewMode",
+                     "data-width" : "900",
+                     "data-height" : "525",
+                     "data-title" : $(this).text(),
+                     "data-destroy-dialog-on-close" : "",
+                 };
+               
+                dialogDivJson['id'] = $(this).data("gear-id");
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
             });
             
             _initialized = true;

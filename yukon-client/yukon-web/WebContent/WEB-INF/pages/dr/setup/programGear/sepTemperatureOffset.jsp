@@ -1,7 +1,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
-    <cti:msg2 var="heatingOffsetLbl" key=".heatingOffset"/>
+    <cti:msg2 var="heatingOffsetLbl" key=".offset"/>
     <cti:msg2 var="coolingOffsetLbl" key=".coolingOffset"/>
             
     <input type="hidden" class="js-heating-offset-lbl" value="${heatingOffsetLbl}"/>
@@ -9,7 +9,7 @@
 
     <c:choose>
         <c:when test="${programGear.fields.mode == 'HEAT'}">
-            <c:set var="modeOffsetLblKey" value=".heatingOffset"/>
+            <c:set var="modeOffsetLblKey" value=".offset"/>
         </c:when>
         <c:otherwise>
             <c:set var="modeOffsetLblKey" value=".coolingOffset"/>
@@ -67,7 +67,7 @@
                             <i:inline key=".${programGear.fields.mode}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".unit">
+                    <tags:nameValue2 nameKey=".celsiusOrFahrenheit">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <c:forEach var="unit" items="${units}" varStatus="status">
                                 <c:choose>
@@ -100,7 +100,7 @@
         <div class="column two nogutter"> 
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".groupCapacityReduction">
+                    <tags:nameValue2 nameKey=".capacityReduction">
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.capacityReduction" units="${percent}" size="5" minValue="0" maxValue="100"/>
                     </tags:nameValue2>

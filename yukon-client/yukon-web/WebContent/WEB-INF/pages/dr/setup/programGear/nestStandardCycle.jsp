@@ -5,7 +5,7 @@
             <tags:sectionContainer2 nameKey="controlParameters">
                 <tags:nameValueContainer2>
                     <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
-                    <tags:nameValue2 nameKey=".preparationLoadShaping">
+                    <tags:nameValue2 nameKey=".prep">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <tags:selectWithItems items="${preparationLoadShaping}" path="fields.prep" />
                         </cti:displayForPageEditModes>
@@ -13,7 +13,7 @@
                             <i:inline key="${programGear.fields.prep}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2> 
-                     <tags:nameValue2 nameKey=".peakLoadShaping">
+                     <tags:nameValue2 nameKey=".peak">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <tags:selectWithItems items="${peakLoadShaping}" path="fields.peak" />
                         </cti:displayForPageEditModes>
@@ -21,7 +21,7 @@
                             <i:inline key="${programGear.fields.peak}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2> 
-                    <tags:nameValue2 nameKey=".postPeakLoadShaping">
+                    <tags:nameValue2 nameKey=".post">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <tags:selectWithItems items="${postPeakLoadShaping}" path="fields.post" />
                         </cti:displayForPageEditModes>

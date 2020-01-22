@@ -9,7 +9,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -19,11 +18,18 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.device.lm.HeatCool;
 import com.cannontech.database.data.lite.LiteGear;
-import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.ThermostatRampRateValues;
+import com.cannontech.dr.itron.model.ItronCycleType;
+import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
+import com.cannontech.dr.nest.model.v3.PeakLoadShape;
+import com.cannontech.dr.nest.model.v3.PostLoadShape;
+import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
+import com.cannontech.loadcontrol.gear.model.EcobeeSetpointValues;
+import com.cannontech.loadcontrol.gear.model.LMThermostatGear;
 import com.google.common.collect.Maps;
 
 public class LMGearDaoImpl implements LMGearDao {
@@ -31,8 +37,7 @@ public class LMGearDaoImpl implements LMGearDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     private ChunkingSqlTemplate chunkingSqlTemplate;
     private final static String beatThePeakTableName = "LMBeatThePeakGear";
-    private final static String tableName = "LMProgramDirectGear";
-    
+
     public static YukonRowMapper<BeatThePeakGearContainer> beatThePeakGearRowMapper = new YukonRowMapper<BeatThePeakGearContainer>() {
         @Override
         public BeatThePeakGearContainer mapRow(YukonResultSet rs) throws SQLException {
@@ -105,7 +110,7 @@ public class LMGearDaoImpl implements LMGearDao {
 
         Map<Integer, LMProgramDirectGear> gearMap = Maps.newHashMap();
         for (LMProgramDirectGear gear : gears) {
-            gearMap.put(gear.getYukonID(), gear);
+            gearMap.put(gear.getGearId(), gear);
         }
 
         return gearMap;
@@ -130,7 +135,7 @@ public class LMGearDaoImpl implements LMGearDao {
 
         Map<Integer, LMProgramDirectGear> gearMap = Maps.newHashMap();
         for (LMProgramDirectGear gear : gears) {
-            gearMap.put(gear.getYukonID(), gear);
+            gearMap.put(gear.getGearId(), gear);
         }
 
         return gearMap;
@@ -141,47 +146,6 @@ public class LMGearDaoImpl implements LMGearDao {
         return getByGearIds(Collections.singleton(gearId)).get(gearId);
     }
 
-    private static class LMProgramDirectGearRowMapper extends AbstractRowMapperWithBaseQuery<LMProgramDirectGear> {
-        @Override
-        public SqlFragmentSource getBaseQuery() {
-            SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT * FROM").append(tableName);
-            return retVal;
-        }
-
-        @Override
-        public LMProgramDirectGear mapRow(YukonResultSet rs) throws SQLException {
-            LMProgramDirectGear gear = new LMProgramDirectGear();
-
-            gear.setChangeCondition(rs.getString("ChangeCondition"));
-            gear.setChangeDuration(rs.getInt("ChangeDuration"));
-            gear.setChangePriority(rs.getInt("ChangePriority"));
-            gear.setChangeTriggerNumber(rs.getInt("ChangeTriggerNumber"));
-            gear.setChangeTriggerOffset(rs.getDouble("ChangeTriggerOffset"));
-            gear.setControlMethod(rs.getEnum("ControlMethod", GearControlMethod.class));
-            gear.setCycleRefreshRate(rs.getInt("CycleRefreshRate"));
-            gear.setGearName(rs.getString("GearName"));
-            gear.setGearNumber(rs.getInt("GearNumber"));
-            gear.setGroupSelectionMethod(rs.getString("GroupSelectionMethod"));
-            gear.setKwReduction(rs.getDouble("kwReduction"));
-            gear.setMethodOptionMax(rs.getInt("MethodOptionMax"));
-            gear.setMethodOptionType(rs.getString("MethodOptionType"));
-            gear.setMethodPeriod(rs.getInt("MethodPeriod"));
-            gear.setMethodRate(rs.getInt("MethodRate"));
-            gear.setMethodRateCount(rs.getInt("MethodRateCount"));
-            gear.setMethodStopType(rs.getString("MethodStopType"));
-            gear.setRampInInterval(rs.getInt("RampInInterval"));
-            gear.setPercentReduction(rs.getInt("PercentReduction"));
-            gear.setRampInPercent(rs.getInt("RampInPercent"));
-            gear.setRampOutInterval(rs.getInt("RampOutInterval"));
-            gear.setRampOutPercent(rs.getInt("RampOutPercent"));
-            gear.setYukonID(rs.getInt("GearId"));
-            gear.setDeviceId(rs.getInt("DeviceID"));
-
-            return gear;
-        }
-    }
-    
     public ThermostatRampRateValues getThermostatGearRampRateValues(int gearId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ValueD, ValueTd");
@@ -258,6 +222,94 @@ public class LMGearDaoImpl implements LMGearDao {
                 gear.setOwnerID(rs.getInt("DeviceId"));
                 gear.setGearNumber(rs.getInt("GearNumber"));
                 return gear;
+            }
+        });
+    }
+
+    @Override
+    public LoadShapingOptions getLoadShapingOptions(Integer gearId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PreparationOption, PeakOption, PostPeakOption");
+        sql.append("FROM LMNestLoadShapingGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<LoadShapingOptions>() {
+            @Override
+            public LoadShapingOptions mapRow(YukonResultSet rs) throws SQLException {
+
+                PrepLoadShape prepLoadShape = rs.getEnum("PreparationOption", PrepLoadShape.class);
+                PeakLoadShape peakLoadShape = rs.getEnum("PeakOption", PeakLoadShape.class);
+                PostLoadShape postLoadShape = rs.getEnum("PostPeakOption", PostLoadShape.class);
+
+                LoadShapingOptions loadShapingOptions = new LoadShapingOptions(prepLoadShape, peakLoadShape, postLoadShape);
+
+                return loadShapingOptions;
+            }
+        });
+    }
+
+    @Override
+    public ItronCycleType getItronCycleType(Integer gearId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CycleOption");
+        sql.append("FROM LMItronCycleGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        String itronCycle = jdbcTemplate.queryForString(sql);
+
+        return ItronCycleType.valueOf(itronCycle);
+    }
+
+    @Override
+    public EcobeeSetpointValues getEcobeeSetpointValues(Integer gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Settings, MaxValue");
+        sql.append("FROM LMThermostatGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<EcobeeSetpointValues>() {
+            @Override
+            public EcobeeSetpointValues mapRow(YukonResultSet rs) throws SQLException {
+
+                String heatCool = rs.getString("Settings");
+                Integer setpointOffset = rs.getInt("MaxValue");
+
+                EcobeeSetpointValues ecobeeSetpointValues = new EcobeeSetpointValues(setpointOffset, HeatCool.of(heatCool));
+
+                return ecobeeSetpointValues;
+            }
+        });
+    }
+
+    @Override
+    public LMThermostatGear getLMThermostatGear(Integer gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM LMThermostatGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<LMThermostatGear>() {
+            @Override
+            public LMThermostatGear mapRow(YukonResultSet rs) throws SQLException {
+                LMThermostatGear thermostatGear = new LMThermostatGear();
+                thermostatGear.setSettings(rs.getString("Settings"));
+                thermostatGear.setMinValue(rs.getInt("MinValue"));
+                thermostatGear.setMaxValue(rs.getInt("MaxValue"));
+                thermostatGear.setValueB(rs.getInt("ValueB"));
+                thermostatGear.setValueD(rs.getInt("ValueD"));
+                thermostatGear.setValueF(rs.getInt("ValueF"));
+                thermostatGear.setValueTa(rs.getInt("ValueTa"));
+                thermostatGear.setValueTb(rs.getInt("ValueTb"));
+                thermostatGear.setValueTc(rs.getInt("ValueTc"));
+                thermostatGear.setValueTd(rs.getInt("ValueTd"));
+                thermostatGear.setValueTe(rs.getInt("ValueTe"));
+                thermostatGear.setValueTf(rs.getInt("ValueTf"));
+                thermostatGear.setRampRate(rs.getFloat("RampRate"));
+                thermostatGear.setRandom(rs.getInt("Random"));
+
+                return thermostatGear;
             }
         });
     }

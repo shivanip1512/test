@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 
 <cti:standardPage module="dr" page="setup">
     
@@ -112,6 +113,9 @@
             <%@ include file="filteredResults.jsp" %>
         </c:otherwise>
     </c:choose>
-    
+
+    <dt:pickerIncludes />
+    <cti:includeScript link="YUKON_TIME_FORMATTER" />
+    <cti:includeScript link="/resources/js/pages/yukon.dr.setup.programGear.js" />
     <cti:includeScript link="/resources/js/pages/yukon.dr.setup.list.js" />
 </cti:standardPage>

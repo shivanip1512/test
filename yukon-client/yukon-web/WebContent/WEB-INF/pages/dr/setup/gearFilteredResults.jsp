@@ -18,28 +18,29 @@
     <table class="compact-results-table row-highlighting wrbw" style="table-layout:fixed;">
         <thead>
             <tr>
-                <tags:sort column="${NAME}" width="20%"/>
+                <tags:sort column="${NAME}" width="15%"/>
                 <tags:sort column="${TYPE}" width="15%"/>
                 <tags:sort column="${ORDER}" width="5%"/>
-                <tags:sort column="${PROGRAM}" width="20%"/>
-                <th width="40%"><i:inline key="yukon.common.details"/></th>
+                <tags:sort column="${PROGRAM}" width="15%"/>
+                <th width="60%"><i:inline key="yukon.common.details"/></th>
             </tr>
         </thead>
         <tbody>
             <c:forEach var="filteredResult" items="${filteredResults.resultList}">
                 <tr>
                     <td>
-                        <a href="#" data-gear-id="${filteredResult.programGear.gearId}" data-program-id="${filteredResult.programId}" class="js-gear-link">
-                            ${fn:escapeXml(filteredResult.programGear.gearName)}
+                        <cti:url var="viewUrl" value="/dr/setup/loadProgram/programGear/${filteredResult.gearId}"/> 
+                        <a href="${viewUrl}" data-gear-id="${filteredResult.gearId}" data-program-id="${filteredResult.loadProgram.id}" class="js-gear-link">
+                            ${fn:escapeXml(filteredResult.gearName)}
                         </a>
                     </td>
                     <td>
-                        <i:inline key="${filteredResult.programGear.controlMethod}"/>
+                        <i:inline key="${filteredResult.controlMethod}"/>
                     </td>
-                    <td>${filteredResult.programGear.gearNumber}</td>
+                    <td>${filteredResult.gearNumber}</td>
                     <td>
-                        <cti:url var="viewUrl" value="/dr/setup/loadProgram/${filteredResult.programId}"/>
-                        <a href="${viewUrl}">${fn:escapeXml(filteredResult.programName)}</a>
+                        <cti:url var="viewUrl" value="/dr/setup/loadProgram/${filteredResult.loadProgram.id}"/>
+                        <a href="${viewUrl}">${fn:escapeXml(filteredResult.loadProgram.name)}</a>
                     </td>
                     <td>${filteredResult.gearDetails}</td>
                 </tr>

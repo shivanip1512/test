@@ -2,13 +2,10 @@ package com.cannontech.web.api.dr.setup.dao;
 
 import java.util.List;
 
-import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LMSetupFilter;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.FilterCriteria;
-import com.cannontech.common.search.result.SearchResults;
 
-public interface LMSetupDao {
+public interface LMSetupDao <T> {
 
     public enum SortBy {
         NAME("PAONAME"),
@@ -25,13 +22,46 @@ public interface LMSetupDao {
         }
     }
 
-    /**
-     * Retrieves pao details based on filter criteria and pao types.
-     */
-    SearchResults<LMPaoDto> getPaoDetails(FilterCriteria<LMSetupFilter> criteria, List<PaoType> paoTypes);
+    public enum GearSortBy {
+        GEARNAME("GearName"),
+        GEARTYPE("ControlMethod"),
+        GEARNUMBER("GearNumber"),
+        PROGRAM("PAONAME");
 
+        private final String dbString;
+
+        private GearSortBy(String dbString) {
+            this.dbString = dbString;
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
+
+    public enum ProgramConstraintSortBy {
+        CONSTRAINTNAME("constraintName");
+
+        private final String dbString;
+
+        private ProgramConstraintSortBy(String dbString) {
+            this.dbString = dbString;
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
+    
     /**
      * Retrieves program constraints based on filter criteria.
      */
-    SearchResults<LMPaoDto> getProgramConstraint(FilterCriteria<LMSetupFilter> criteria);
+    List<T> getDetails(FilterCriteria<LMSetupFilter> criteria);
+
+    /**
+     * Retrieves total count based on filter criteria.
+     */
+    
+    Integer getTotalCount(FilterCriteria<LMSetupFilter> criteria);
+
 }

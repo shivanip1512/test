@@ -32,6 +32,7 @@ public class ApiURL {
     public static final String drLoadProgramUpdateUrl = "/dr/setup/loadProgram/update/";
     public static final String drLoadProgramAvailableProgramsUrl = "/dr/setup/loadProgram/availablePrograms";
     public static final String drGetGearsForLoadProgram = "/dr/setup/loadProgram/getGearsForProgram/";
+    public static final String drRetrieveGearUrl = "/dr/setup/loadProgram/gear/";
 
     public static final String drAllProgramConstraintUrl = "/dr/setup/constraint/getAllProgramConstraint";
     public static final String drProgramConstraintRetrieveUrl = "/dr/setup/constraint/";

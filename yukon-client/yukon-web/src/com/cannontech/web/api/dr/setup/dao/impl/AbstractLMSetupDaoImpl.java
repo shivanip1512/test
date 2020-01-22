@@ -15,11 +15,10 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao;
 
-public class LMSetupDaoImpl implements LMSetupDao {
+public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
 
-    @Override
-    public SearchResults<LMPaoDto> getPaoDetails(FilterCriteria<LMSetupFilter> criteria, List<PaoType> paoTypes) {
+    public SearchResults<LMPaoDto> getDetails(FilterCriteria<LMSetupFilter> criteria, List<PaoType> paoTypes) {
         SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
         SqlStatementBuilder sqlPaginationQuery = new SqlStatementBuilder();
@@ -45,9 +44,9 @@ public class LMSetupDaoImpl implements LMSetupDao {
         sqlCommon.append("PAOName,");
         sqlCommon.append("Type");
         sqlCommon.append("FROM YukonPAObject");
-        if (!paoTypes.isEmpty()) {
-            sqlCommon.append("WHERE Type").in_k(paoTypes);
-        }
+
+        sqlCommon.append("WHERE Type").in_k(paoTypes);
+
         if (filter.getName() != null && !filter.getName().isBlank()) {
             sqlCommon.append("AND PAOName").contains(filter.getName());
         }
@@ -55,12 +54,7 @@ public class LMSetupDaoImpl implements LMSetupDao {
         sqlTotalCountQuery.append(sqlCommon);
         sqlTotalCountQuery.append(") outertable");
         sqlPaginationQuery.append(sqlCommon);
-        if (criteria.getPagingParameters() != null) {
-            sqlPaginationQuery.append(" WHERE RowNumber BETWEEN");
-            sqlPaginationQuery.append(criteria.getPagingParameters().getOneBasedStartIndex());
-            sqlPaginationQuery.append(" AND ");
-            sqlPaginationQuery.append(criteria.getPagingParameters().getOneBasedEndIndex());
-        }
+        sqlPaginationQuery.append(getPaginationQuery(criteria));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
 
@@ -77,53 +71,43 @@ public class LMSetupDaoImpl implements LMSetupDao {
 
     }
 
-    @Override
-    public SearchResults<LMPaoDto> getProgramConstraint(FilterCriteria<LMSetupFilter> criteria) {
+    public SqlStatementBuilder getCommonQuery(Direction sortingDirection, String sortValue, LMSetupFilter filter, String columnNames) {
         SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
-        SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
-        SqlStatementBuilder sqlPaginationQuery = new SqlStatementBuilder();
-        Direction sortingDirection = ((criteria.getSortingParameters().getDirection() == null) ? Direction.asc
-            : criteria.getSortingParameters().getDirection());
 
-        LMSetupFilter filter = criteria.getFilteringParameters();
-
-        sqlTotalCountQuery.append("SELECT COUNT(*) FROM (");
         sqlCommon.append("SELECT");
-        sqlCommon.append("RowNumber, ConstraintID, ConstraintName");
+        sqlCommon.append("RowNumber, * ");
         sqlCommon.append("FROM (");
         sqlCommon.append("SELECT ");
         sqlCommon.append("ROW_NUMBER() OVER (ORDER BY ");
-        sqlCommon.append("ConstraintName");
+        sqlCommon.append(sortValue);
         sqlCommon.append(" ");
         sqlCommon.append(sortingDirection);
-        sqlCommon.append(") AS RowNumber,");
-        sqlCommon.append("ConstraintID,");
-        sqlCommon.append("ConstraintName");
-        sqlCommon.append("FROM LMProgramConstraints");
-        if (filter.getName() != null && !filter.getName().isBlank()) {
-            sqlCommon.append("WHERE ConstraintName").contains(filter.getName());
-        }
+        sqlCommon.append(") AS RowNumber, " + columnNames);
+        sqlCommon.append(getTableAndWhereClause(filter));
         sqlCommon.append(") innertable");
-        sqlTotalCountQuery.append(sqlCommon);
-        sqlTotalCountQuery.append(") outertable");
-        sqlPaginationQuery.append(sqlCommon);
+
+        return sqlCommon;
+    }
+
+    public SqlStatementBuilder getPaginationQuery(FilterCriteria<LMSetupFilter> criteria) {
+
+        SqlStatementBuilder sqlPaginationQuery = new SqlStatementBuilder();
         if (criteria.getPagingParameters() != null) {
             sqlPaginationQuery.append(" WHERE RowNumber BETWEEN");
             sqlPaginationQuery.append(criteria.getPagingParameters().getOneBasedStartIndex());
             sqlPaginationQuery.append(" AND ");
             sqlPaginationQuery.append(criteria.getPagingParameters().getOneBasedEndIndex());
         }
-
-        int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
-
-        final List<LMPaoDto> resultList = jdbcTemplate.query(sqlPaginationQuery, (YukonResultSet rs) -> {
-            LMPaoDto lmPaoDto = new LMPaoDto();
-            lmPaoDto.setId(rs.getInt("ConstraintID"));
-            lmPaoDto.setName(rs.getString("ConstraintName"));
-            return lmPaoDto;
-        });
-        SearchResults<LMPaoDto> searchResults =
-            SearchResults.pageBasedForSublist(resultList, criteria.getPagingParameters(), totalHitCount);
-        return searchResults;
+        return sqlPaginationQuery;
     }
+
+    /**
+     * Return SqlStatementBuilder corresponding to Table and where clause.
+     */
+    public abstract SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter);
+
+    /**
+     * Return selected columns names for filtering.
+     */
+    public abstract String getColumnNames();
 }

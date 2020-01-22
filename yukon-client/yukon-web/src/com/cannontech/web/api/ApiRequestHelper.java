@@ -17,15 +17,23 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
+import com.cannontech.common.dr.setup.ProgramConstraint;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.api.dr.setup.model.ControlAreaFilteredResult;
+import com.cannontech.web.api.dr.setup.model.ControlScenariosFilteredResult;
+import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
+import com.cannontech.web.api.dr.setup.model.LoadGroupFilteredResult;
+import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
+import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
 import com.cannontech.web.api.token.TokenHelper;
 
 public class ApiRequestHelper {
@@ -61,8 +69,25 @@ public class ApiRequestHelper {
     static {
         paramTypeObjectRefMap.put(LMPaoDto.class, new ParameterizedTypeReference<SearchResults<LMPaoDto>>() {
         });
+        paramTypeObjectRefMap.put(GearFilteredResult.class, new ParameterizedTypeReference<SearchResults<GearFilteredResult>>() {
+        });
+        paramTypeObjectRefMap.put(ControlAreaFilteredResult.class, new ParameterizedTypeReference<SearchResults<ControlAreaFilteredResult>>() {
+        });
+        paramTypeObjectRefMap.put(ControlScenariosFilteredResult.class, new ParameterizedTypeReference<SearchResults<ControlScenariosFilteredResult>>() {
+        });
+        paramTypeObjectRefMap.put(LoadGroupFilteredResult.class, new ParameterizedTypeReference<SearchResults<LoadGroupFilteredResult>>() {
+        });
+        paramTypeObjectRefMap.put(LoadProgramFilteredResult.class, new ParameterizedTypeReference<SearchResults<LoadProgramFilteredResult>>() {
+        });
+        paramTypeObjectRefMap.put(MacroLoadGroupFilteredResult.class, new ParameterizedTypeReference<SearchResults<MacroLoadGroupFilteredResult>>() {
+        });
+        paramTypeObjectRefMap.put(ProgramConstraint.class, new ParameterizedTypeReference<SearchResults<ProgramConstraint>>() {
+        });
+        paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
+        });
+
     }
-    
+
     /**
      * This method will send a API request to the passed url and return object.
      * 

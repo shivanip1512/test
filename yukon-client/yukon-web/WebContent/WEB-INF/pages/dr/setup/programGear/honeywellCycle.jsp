@@ -9,7 +9,7 @@
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.controlPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".cyclePeriod"> 
+                    <tags:nameValue2 nameKey=".cyclePeriodInMinutes"> 
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <tags:selectWithItems items="${cyclePeriod}" path="fields.cyclePeriodInMinutes" />
                         </cti:displayForPageEditModes>
@@ -29,7 +29,7 @@
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".groupCapacityReduction">
+                    <tags:nameValue2 nameKey=".capacityReduction">
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.capacityReduction" units="${percent}" size="10" minValue="0" maxValue="100"/>
                     </tags:nameValue2>
@@ -42,7 +42,7 @@
         <div class="column two nogutter"> 
             <tags:sectionContainer2 nameKey="rampInRampOut">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".rampInRampOut">
+                    <tags:nameValue2 nameKey=".rampInOut">
                         <tags:switchButton path="fields.rampInOut"   onNameKey=".yes" offNameKey=".no" />
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
