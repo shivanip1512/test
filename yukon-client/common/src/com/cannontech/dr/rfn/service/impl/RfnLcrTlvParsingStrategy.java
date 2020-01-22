@@ -108,7 +108,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
                 }
             }
         } else {
-            log.warn("Discarding invalid or old pointdat for device " + rfnDevice + " with timestamp " + payloadTime);
+            log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " with timestamp " + payloadTime);
         }
 
     }
