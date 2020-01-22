@@ -107,6 +107,8 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
                     pqrEventDao.saveEvents(pqrEvents);
                 }
             }
+        } else {
+            log.warn("Discarding invalid or old pointdat for device " + rfnDevice + " with timestamp " + payloadTime);
         }
 
     }

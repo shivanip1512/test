@@ -78,6 +78,8 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
 
             // Handle addressing data
             rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+        } else {
+            log.warn("Discarding invalid or old pointdat for device " + rfnDevice + " with timestamp " + payloadTime);
         }
 
     }
