@@ -27,8 +27,10 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
@@ -56,12 +58,14 @@ public class WifiConnectionController {
     @Autowired private DeviceMemoryCollectionProducer producer;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private PaoDao paoDao;
 
     private final static String baseKey = "yukon.web.modules.operator.wifiConnection.";
 
     @GetMapping("/wifiConnection/refresh")
-    public void refreshAllConnections(Integer[] deviceIds, HttpServletResponse resp) {
-        //TODO: Call code to refresh connection
+    public void refreshAllConnections(Integer[] deviceIds, HttpServletResponse resp, YukonUserContext userContext) {
+        List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(Arrays.asList(deviceIds));
+        wifiService.refreshWiFiMeterConnection(paoIdentifiers, userContext.getYukonUser());
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
