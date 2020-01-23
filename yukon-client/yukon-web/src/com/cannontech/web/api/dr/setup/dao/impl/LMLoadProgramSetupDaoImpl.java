@@ -22,7 +22,7 @@ public class LMLoadProgramSetupDaoImpl extends AbstractLMSetupDaoImpl <LoadProgr
     }
 
     @Override
-    public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
+    public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
         // TODO 
         return null;
     }

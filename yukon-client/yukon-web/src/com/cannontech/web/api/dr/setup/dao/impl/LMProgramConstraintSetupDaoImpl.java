@@ -2,6 +2,7 @@ package com.cannontech.web.api.dr.setup.dao.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.DayOfWeek;
@@ -72,20 +73,20 @@ public class LMProgramConstraintSetupDaoImpl extends AbstractLMSetupDaoImpl<Prog
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
 
         sqlTotalCountQuery.append("SELECT COUNT(*)");
-        sqlTotalCountQuery.append(getTableAndWhereClause(filter));
+        sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
         return totalHitCount;
     }
 
     @Override
-    public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
+    public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
 
         SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
         statementBuilder.append("FROM LMProgramConstraints");
 
-        if (filter.getName() != null && !filter.getName().isBlank()) {
-            statementBuilder.append("WHERE ConstraintName").contains(filter.getName());
+        if (StringUtils.isNotEmpty(filter.getName())) {
+            statementBuilder.append("AND UPPER(ConstraintName)").contains(filter.getName().toUpperCase());
         }
 
         return statementBuilder;

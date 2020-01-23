@@ -36,8 +36,6 @@ public class ProgramGearFieldsBuilder {
             case TrueCycle:
             case MagnitudeCycle:
             case SmartCycle:
-                gearFields = getSmartCycleGearFields(directGear);
-                break;
             case TargetCycle:
                 gearFields = getSmartCycleGearFields(directGear);
                 break;
