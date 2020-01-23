@@ -53,6 +53,23 @@ public interface LMSetupDao <T> {
         }
     }
 
+    public enum LoadProgramSortBy {
+        PROGRAMNAME("PAOName"),
+        OPERATIONALSTATE("ControlType"),
+        CONSTRAINT("ConstraintName"),
+        PROGRAMTYPE("Type");
+
+        private final String dbString;
+
+        private LoadProgramSortBy(String dbString) {
+            this.dbString = dbString;
+        }
+
+        public String getDbString() {
+            return dbString;
+        }
+    }
+
     /**
      * Retrieves pao details based on filter criteria.
      */
