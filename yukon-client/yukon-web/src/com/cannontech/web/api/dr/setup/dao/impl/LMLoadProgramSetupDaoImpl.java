@@ -3,6 +3,8 @@ package com.cannontech.web.api.dr.setup.dao.impl;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.gear.setup.OperationalState;
@@ -71,18 +73,18 @@ public class LMLoadProgramSetupDaoImpl extends AbstractLMSetupDaoImpl<LoadProgra
         statementBuilder.append("JOIN LMProgramConstraints lpc");
         statementBuilder.append("ON lpc.ConstraintID = lp.ConstraintID");
 
-        if (filter.getTypes() != null && !filter.getTypes().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(filter.getTypes())) {
             statementBuilder.append("WHERE ypo.Type").in_k(filter.getTypes());
         } else {
             statementBuilder.append("WHERE ypo.Type").in_k(PaoType.getDirectLMProgramTypes());
         }
-        if (filter.getOperationalStates() != null && !filter.getOperationalStates().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(filter.getOperationalStates())) {
             statementBuilder.append("AND lp.ControlType").in_k(filter.getOperationalStates());
         } else {
             statementBuilder.append("AND lp.ControlType").in_k(Arrays.asList(OperationalState.values()));
         }
-        if (filter.getName() != null && !filter.getName().isBlank()) {
-            statementBuilder.append("AND ypo.PAOName").contains(filter.getName());
+        if (StringUtils.isNotEmpty(filter.getName())) {
+            statementBuilder.append("AND UPPER(ypo.PAOName)").contains(filter.getName().toUpperCase());
         }
         return statementBuilder;
     }
@@ -94,10 +96,10 @@ public class LMLoadProgramSetupDaoImpl extends AbstractLMSetupDaoImpl<LoadProgra
     public List<LMDto> getGearsOrderByGearNumber(Integer programId) {
 
         SqlStatementBuilder sqlStatementBuilder = new SqlStatementBuilder();
-        sqlStatementBuilder.append("SELECT GearID as id, GearName as name from LMProgramDirectGear");
+        sqlStatementBuilder.append("SELECT GearID, GearName from LMProgramDirectGear");
         sqlStatementBuilder.append("WHERE DeviceID").eq(programId);
         sqlStatementBuilder.append("ORDER BY GearNumber");
-        return jdbcTemplate.query(sqlStatementBuilder, lmDtoMapper);
+        return jdbcTemplate.query(sqlStatementBuilder, gearMapper);
     }
 
     /**
@@ -106,16 +108,20 @@ public class LMLoadProgramSetupDaoImpl extends AbstractLMSetupDaoImpl<LoadProgra
      */
     public List<LMDto> getLoadGroupsOrderByGroupOrder(Integer programId) {
         SqlStatementBuilder sqlStatementBuilder = new SqlStatementBuilder();
-        sqlStatementBuilder.append("SELECT lpdg.LMGroupDeviceID as id, ypo.PAOName as name");
+        sqlStatementBuilder.append("SELECT lpdg.LMGroupDeviceID, ypo.PAOName");
         sqlStatementBuilder.append("FROM YukonPAObject ypo JOIN LMProgramDirectGroup lpdg");
         sqlStatementBuilder.append("ON ypo.PAObjectID = lpdg.LMGroupDeviceID");
         sqlStatementBuilder.append("WHERE lpdg.DeviceID").eq(programId);
         sqlStatementBuilder.append("ORDER BY lpdg.GroupOrder");
-        return jdbcTemplate.query(sqlStatementBuilder, lmDtoMapper);
+        return jdbcTemplate.query(sqlStatementBuilder, loadGroupMapper);
     }
 
-    private static final YukonRowMapper<LMDto> lmDtoMapper = (YukonResultSet rs) -> {
-        return new LMDto(rs.getInt("id"), rs.getString("name"));
+    private static final YukonRowMapper<LMDto> gearMapper = (YukonResultSet rs) -> {
+        return new LMDto(rs.getInt("GearID"), rs.getString("GearName"));
+    };
+    
+    private static final YukonRowMapper<LMDto> loadGroupMapper = (YukonResultSet rs) -> {
+        return new LMDto(rs.getInt("LMGroupDeviceID"), rs.getString("PAOName"));
     };
 
     @Override

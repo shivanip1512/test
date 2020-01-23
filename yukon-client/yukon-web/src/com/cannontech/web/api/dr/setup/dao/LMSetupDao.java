@@ -54,10 +54,10 @@ public interface LMSetupDao <T> {
     }
 
     public enum LoadProgramSortBy {
-        PROGRAMNAME("ypo.PAOName"),
-        OPERATIONALSTATE("lp.ControlType"),
-        CONSTRAINT("lpc.ConstraintName"),
-        PROGRAMTYPE("ypo.Type");
+        PROGRAMNAME("PAOName"),
+        OPERATIONALSTATE("ControlType"),
+        CONSTRAINT("ConstraintName"),
+        PROGRAMTYPE("Type");
 
         private final String dbString;
 
