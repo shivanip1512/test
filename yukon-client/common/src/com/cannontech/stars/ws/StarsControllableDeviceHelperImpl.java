@@ -537,7 +537,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             // if gps.latitude and gps.longitude are null, delete location info.
             // else save location info
             if (dto.getGps() == null) {
-                log.warn("Location data is not modified/inserted for serial number " + dto.getSerialNumber()
+                log.debug("Location data is not modified/inserted for serial number " + dto.getSerialNumber()
                     + ". Latitude or longitude fields are not specified in the request.");
             } else if (dto.getGps().getLatitude() == null && dto.getGps().getLongitude() == null) {
                 paoLocationDao.delete(lib.getDeviceID());
