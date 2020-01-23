@@ -271,6 +271,27 @@ UPDATE YukonPaobject SET Type = 'WRL-420cD' WHERE Type = 'RFN-420cDW';
 INSERT INTO DBUpdates VALUES('YUK-20859', '7.4.0', GETDATE());
 /* @end YUK-20859 */
 
+/* @start YUK-21378 */
+UPDATE YukonPAObject 
+SET Type = 'Virtual Gateway'
+WHERE PAObjectID IN
+    (SELECT DISTINCT DeviceId 
+     FROM RfnAddress 
+     WHERE Model IN
+        ('VGW', 'RFVirtualGateway'))
+
+UPDATE RfnAddress 
+SET Model = 'VGW' 
+WHERE Model = 'RFVirtualGateway'
+AND DeviceId IN 
+    (SELECT DISTINCT PaobjectId 
+     FROM YukonPaobject 
+     WHERE Type = 'Virtual Gateway' 
+     and PaoClass = 'RFMESH')
+
+INSERT INTO DBUpdates VALUES('YUK-21378', '7.4.0', GETDATE());
+/* @end YUK-21378 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
