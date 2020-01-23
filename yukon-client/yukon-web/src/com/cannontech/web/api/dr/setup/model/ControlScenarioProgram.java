@@ -3,7 +3,7 @@ package com.cannontech.web.api.dr.setup.model;
 public class ControlScenarioProgram {
 
     private Integer scenarioId;
-    private Integer programID;
+    private Integer programId;
 
     public Integer getScenarioId() {
         return scenarioId;
@@ -13,12 +13,13 @@ public class ControlScenarioProgram {
         this.scenarioId = scenarioId;
     }
 
-    public Integer getProgramID() {
-        return programID;
+    public Integer getProgramId() {
+        return programId;
     }
 
-    public void setProgramID(Integer programID) {
-        this.programID = programID;
+    public void setProgramId(Integer programId) {
+        this.programId = programId;
     }
+
 
 }

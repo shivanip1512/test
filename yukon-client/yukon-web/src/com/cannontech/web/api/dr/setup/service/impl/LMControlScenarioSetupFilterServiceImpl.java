@@ -48,15 +48,17 @@ public class LMControlScenarioSetupFilterServiceImpl implements LMSetupFilterSer
 
                 List<LMDto> assignedPrograms = new ArrayList<>();
                 for (ControlScenarioProgram liteControlScenario : liteControlScenarios) {
-                    LMDto assignedProgram = new LMDto();
-                    assignedProgram.setId(liteControlScenario.getProgramID());
-                    assignedProgram.setName(getPaoName(liteControlScenario.getProgramID()));
-                    assignedPrograms.add(assignedProgram);
+                    if (liteControlScenario.getProgramId() != null) {
+                        LMDto assignedProgram = new LMDto();
+                        assignedProgram.setId(liteControlScenario.getProgramId());
+                        assignedProgram.setName(getPaoName(liteControlScenario.getProgramId()));
+                        assignedPrograms.add(assignedProgram);
+                    }
                 }
-
-                assignedPrograms.sort(Comparator.comparing(e -> e.getName(),String.CASE_INSENSITIVE_ORDER));
-
-                controlScenario.setAssignedPrograms(assignedPrograms);
+                if (CollectionUtils.isNotEmpty(assignedPrograms)) {
+                    assignedPrograms.sort(Comparator.comparing(e -> e.getName(), String.CASE_INSENSITIVE_ORDER));
+                    controlScenario.setAssignedPrograms(assignedPrograms);
+                }
 
                 filteredResultList.add(controlScenario);
             }

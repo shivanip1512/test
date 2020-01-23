@@ -41,20 +41,22 @@ public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<Contro
         LMSetupFilter filter = criteria.getFilteringParameters();
 
         sqlTotalCountQuery.append("SELECT COUNT(*) ");
-        sqlTotalCountQuery.append(getTableAndWhereClause(filter));
+        sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
         return totalHitCount;
     }
 
     @Override
-    public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
+    public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
         SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
         statementBuilder.append("FROM YukonPAObject ypo");
-        statementBuilder.append("JOIN LMControlScenarioProgram lmcsp ON ypo.PAObjectID = lmcsp.ScenarioID");
+        statementBuilder.append("LEFT OUTER JOIN LMControlScenarioProgram lmcsp");
+        statementBuilder.append("ON ypo.PAObjectID = lmcsp.ScenarioID");
+        statementBuilder.append("WHERE ypo.Type='LMSCENARIO'");
 
         if (StringUtils.isNotBlank(filter.getName())) {
-            statementBuilder.append("WHERE ypo.PAOName").contains(filter.getName().toUpperCase());
+            statementBuilder.append("AND ypo.PAOName").contains(filter.getName().toUpperCase());
         }
 
         return statementBuilder;
@@ -63,7 +65,7 @@ public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<Contro
     private static final YukonRowMapper<ControlScenarioProgram> controlScnerioRowMapper = (YukonResultSet rs) -> {
         ControlScenarioProgram liteControlScenario = new ControlScenarioProgram();
         liteControlScenario.setScenarioId(rs.getInt("PAObjectID"));
-        liteControlScenario.setProgramID(rs.getInt("ProgramID"));
+        liteControlScenario.setProgramId(rs.getNullableInt("ProgramID"));
         return liteControlScenario;
     };
 
