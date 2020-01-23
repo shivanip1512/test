@@ -1,7 +1,12 @@
 package com.cannontech.web.dr.setup;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LMSetupFilter;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
@@ -39,12 +45,14 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.GearSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.ProgramConstraintSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.SortBy;
+import com.cannontech.web.api.dr.setup.model.ControlScenarioFilteredResult;
 import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.google.common.collect.Maps;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
@@ -88,6 +96,7 @@ public class LMSetupFilterController {
         model.addAttribute("isFilterByGearSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.GEAR);
         model.addAttribute("isFilterByLoadProgramSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM);
         model.addAttribute("isFilterByLoadGroupSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_GROUP);
+        model.addAttribute("isFilterByControlScenarioSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.CONTROL_SCENARIO);
 
         ResponseEntity<? extends Object> response = null;
         // Make API call to get filtered result.
@@ -106,10 +115,46 @@ public class LMSetupFilterController {
         SearchResults<?> filteredResults = (SearchResults<?>) response.getBody();
         model.addAttribute("filteredResults", filteredResults);
 
+        setupModel(filteredResults, lmSetupFilter.getFilterByType(), userContext, model);
+
         // Build setup model
         model.addAttribute("viewUrlPrefix", lmSetupFilter.getFilterByType().getViewUrl());
 
         return "dr/setup/list.jsp";
+    }
+
+    private void setupModel(SearchResults<?> filteredResults, LmSetupFilterType filterByType, YukonUserContext userContext, ModelMap model) {
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        // Add text to be displayed for columns for different object based on the LM object being filtered.
+        switch (filterByType) {
+        case CONTROL_SCENARIO:
+            Map<Integer, String> loadProgramsForScenario = Maps.newHashMap();
+            List<ControlScenarioFilteredResult> filteredControlScenarios = (List<ControlScenarioFilteredResult>) filteredResults.getResultList();
+            for (ControlScenarioFilteredResult filteredControlScenario : filteredControlScenarios) {
+                loadProgramsForScenario.put(filteredControlScenario.getScenario().getId(), getAbbrevatedText(accessor, filteredControlScenario.getAssignedPrograms()));
+                model.addAttribute("loadProgramForScenario", loadProgramsForScenario);
+            }
+            break;
+        }
+    }
+
+    private String getAbbrevatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
+        StringBuilder builder = new StringBuilder();
+        if (CollectionUtils.isEmpty(lmObjects)) {
+            builder.append(accessor.getMessage("yukon.common.none.choice"));
+        } else if (lmObjects.size() > 5) {
+            builder.append(lmObjects.subList(0, 5).stream().map(loadGroup -> loadGroup.getName())
+                    .collect(Collectors.joining(", ")));
+            builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbrevatedTxt", lmObjects.size() - 5));
+        } else if (lmObjects.size() == 1) {
+            builder.append(lmObjects.get(0).getName());
+        } else if (CollectionUtils.isNotEmpty(lmObjects)) {
+            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(loadGroup -> loadGroup.getName())
+                    .collect(Collectors.joining(", ")));
+        } else {
+            builder.append(accessor.getMessage("yukon.common.none.choice"));
+        }
+        return builder.toString();
     }
 
     /**
@@ -121,7 +166,6 @@ public class LMSetupFilterController {
 
         switch (lmSetupFilter.getFilterByType()) {
             case CONTROL_AREA:
-            case CONTROL_SCENARIO:
             case LOAD_GROUP:
             case LOAD_PROGRAM:
             case MACRO_LOAD_GROUP:
@@ -131,6 +175,10 @@ public class LMSetupFilterController {
             case GEAR:
                 GearSortBy gearSortBy = LMFilterGearSortBy.valueOf(sorting.getSort()).getValue();
                 filterCriteria.setSortingParameters(SortingParameters.of(gearSortBy.getDbString(), filterCriteria.getSortingParameters().getDirection()));
+                break;
+            case CONTROL_SCENARIO:
+                SortBy sortByName = LMFilterSortBy.valueOf(sorting.getSort()).getValue();
+                filterCriteria.setSortingParameters(SortingParameters.of(sortByName.getDbString(), filterCriteria.getSortingParameters().getDirection()));
                 break;
             case PROGRAM_CONSTRAINT:
                 ProgramConstraintSortBy constraintSortBy = LMFilterProgramConstraintSortBy.valueOf(sorting.getSort()).getValue();
@@ -154,7 +202,6 @@ public class LMSetupFilterController {
 
         switch (lmSetupFilter.getFilterByType()) {
             case CONTROL_AREA:
-            case CONTROL_SCENARIO:
             case MACRO_LOAD_GROUP:
                 LMFilterSortBy filterSortBy = LMFilterSortBy.valueOf(sorting.getSort());
                 text = accessor.getMessage(LMFilterSortBy.NAME);
@@ -169,6 +216,14 @@ public class LMSetupFilterController {
                     model.addAttribute(column.name(), col);
                 }
                 break;
+            case CONTROL_SCENARIO:
+                LMFilterSortBy sortByName = LMFilterSortBy.valueOf(sorting.getSort());
+                for (LMFilterSortBy column : LMFilterSortBy.values()) {
+                    text = accessor.getMessage(column);
+                    col = SortableColumn.of(dir, column == sortByName, text, column.name());
+                    model.addAttribute(column.name(), col);
+                }
+                break;
             case LOAD_GROUP:
             case LOAD_PROGRAM:
                 LMFilterSortBy sortBy = LMFilterSortBy.valueOf(sorting.getSort());
@@ -179,7 +234,6 @@ public class LMSetupFilterController {
                 }
                 break;
             case PROGRAM_CONSTRAINT:
-
                 LMFilterProgramConstraintSortBy constraintSortBy = LMFilterProgramConstraintSortBy.valueOf(sorting.getSort());
                 for (LMFilterProgramConstraintSortBy column : LMFilterProgramConstraintSortBy.values()) {
                     text = accessor.getMessage(column);
@@ -200,7 +254,6 @@ public class LMSetupFilterController {
         Class<?> requestObject = null;
         switch (lmSetupFilter.getFilterByType()) {
             case CONTROL_AREA:
-            case CONTROL_SCENARIO:
             case LOAD_GROUP:
             case LOAD_PROGRAM:
             case MACRO_LOAD_GROUP:
@@ -211,6 +264,9 @@ public class LMSetupFilterController {
                 break;
             case GEAR:
                 requestObject = GearFilteredResult.class;
+                break;
+            case CONTROL_SCENARIO:
+                requestObject = ControlScenarioFilteredResult.class;
                 break;
         }
 
