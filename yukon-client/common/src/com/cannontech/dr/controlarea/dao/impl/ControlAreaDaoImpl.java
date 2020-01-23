@@ -93,7 +93,8 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         return Sets.newHashSet(programIdList);
     }
 
-    private Map<Integer, List<ControlAreaTrigger>> getControlAreaTriggers(int controlAreaId) {
+    @Override
+    public Map<Integer, List<ControlAreaTrigger>> getControlAreaTriggers(int controlAreaId) {
         TriggerRowCallbackHandler triggerRowCallbackHandler = new TriggerRowCallbackHandler();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (controlAreaId < 0) {
