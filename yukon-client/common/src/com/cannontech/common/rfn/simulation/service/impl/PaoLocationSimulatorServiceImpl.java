@@ -40,6 +40,8 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -63,9 +65,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         }
     }
     
-   private static String simulatedGateway = "Simulated Gateway";
-   private static int numberOfDevicesPerGateway = 5000;
-    
+   private static String simulatedGateway = "Simulated Gateway";    
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private IDatabaseCache cache;
@@ -73,6 +73,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     
     private JmsTemplate jmsTemplate;
     
@@ -115,6 +116,9 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         // If RFN identifiers do not exist creates identifiers
         createRfnIdentifiers(allRfnDevices);
 
+        int numberOfDevicesPerGateway = yukonSimulatorSettingsDao
+                .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_NUM_DEVICES_PER_GW);
+        
         // split devices between gateways
         List<List<LiteYukonPAObject>> rfnDevicesSplit = Lists.partition(allRfnDevices, numberOfDevicesPerGateway);
         // we are going to add none rfn devices around the gateways as well
@@ -123,11 +127,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         log.info("Partitioned device chunks: rfn devices {} none rfn devices {}", rfnDevicesSplit.size(),
                 noneRfnDevicesSplit.size());
 
-        int newGatewaysToCreate = rfnDevicesSplit.size() - gateways.size();
-        if (newGatewaysToCreate > 0) {
-            createNewGateways(gateways, newGatewaysToCreate);
-            gateways = rfnGatewayService.getAllGateways();
-        }
+        gateways = createAdditionalGateways(gateways, rfnDevicesSplit);
 
         int starbucksCounter = 0;
         int deviceChunkCounter = 0;
@@ -159,9 +159,22 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
             sendsNodeCommRequest(gateway, rfnDevices);
             deviceChunkCounter++;
         }
-        log.info("Inserting " + newLocations.size() + " locations.");
+        log.info("Inserting {} locations.", newLocations.size());
         paoLocationDao.save(newLocations);
-        log.info("Inserting " + newLocations.size() + " locations is done.");
+        log.info("Inserting {} locations is done.", newLocations.size());
+    }
+
+    private Set<RfnGateway> createAdditionalGateways(Set<RfnGateway> gateways, List<List<LiteYukonPAObject>> rfnDevicesSplit) {
+        boolean createGateways = yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_CREATE_GW);
+        if(!createGateways) {
+            return gateways;
+        }
+        int newGatewaysToCreate = rfnDevicesSplit.size() - gateways.size();
+        if (newGatewaysToCreate > 0) {
+            createNewGateways(gateways, newGatewaysToCreate);
+            gateways = rfnGatewayService.getAllGateways();
+        }
+        return gateways;
     }
 
     /**
