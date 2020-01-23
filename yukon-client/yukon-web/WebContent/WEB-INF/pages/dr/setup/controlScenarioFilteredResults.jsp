@@ -11,7 +11,7 @@
     </c:forEach>
     <cti:param name="filterByType" value="${lmSetupFilter.filterByType}"/>
 </cti:url>
-<div id="js-filtered-scenario-results-container" data-url="${filterUrl}" data-static>
+<div data-url="${filterUrl}" data-static>
     <table class="compact-results-table row-highlighting wrbw" style="table-layout:fixed;">
         <thead>
             <tr>
