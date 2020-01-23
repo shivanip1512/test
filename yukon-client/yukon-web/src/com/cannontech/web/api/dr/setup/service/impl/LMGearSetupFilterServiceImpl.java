@@ -34,14 +34,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
 public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFilteredResult> {
-    @Autowired
-    private LMGearSetupDaoImpl setupDao;
-    @Autowired
-    private ServerDatabaseCache cache;
-    @Autowired
-    private ProgramGearFieldsBuilder gearFieldsBuilder;
-    @Autowired
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private LMGearSetupDaoImpl setupDao;
+    @Autowired private ServerDatabaseCache cache;
+    @Autowired private ProgramGearFieldsBuilder gearFieldsBuilder;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final String baseKey = "yukon.web.modules.dr.setup.gear.";
 
     @Override
