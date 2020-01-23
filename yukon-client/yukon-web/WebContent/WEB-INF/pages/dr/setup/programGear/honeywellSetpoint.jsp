@@ -22,14 +22,6 @@
                     <tags:nameValue2 nameKey=".mandatory">
                         <tags:switchButton path="fields.mandatory" onNameKey=".yes" offNameKey=".no" />
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".setpointOffset">
-                        <cti:msg2 var="fahrenheit" key="yukon.common.fahrenheit"/>
-                        <tags:numeric path="fields.setpointOffset" units="${fahrenheit}" size="3" minValue="-10" maxValue="10" />
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey="${modeLblKey}" nameClass="js-setpoint-mode-td">
-                        <cti:msg2 var="fahrenheit" key="yukon.common.fahrenheit"/>
-                        <tags:numeric path="fields.precoolOffset" units="${fahrenheit}" size="3" minValue="-10" maxValue="10" />
-                    </tags:nameValue2>
                     <tags:nameValue2 nameKey=".mode">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <c:forEach var="temperatureMode" items="${temperatureModes}" varStatus="status">
@@ -52,9 +44,15 @@
                             <i:inline key=".${programGear.fields.mode}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".setpointOffset">
+                        <cti:msg2 var="fahrenheit" key="yukon.common.fahrenheit"/>
+                        <tags:numeric path="fields.setpointOffset" units="${fahrenheit}" size="3" minValue="-10" maxValue="10" />
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey="${modeLblKey}" nameClass="js-setpoint-mode-td">
+                        <tags:numeric path="fields.precoolOffset" units="${fahrenheit}" size="3" minValue="-10" maxValue="10" />
+                    </tags:nameValue2>
                     <tags:nameValue2 nameKey=".howToStopControl">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
                             <tags:selectWithItems items="${howToStopControl}" path="fields.howToStopControl" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
