@@ -73,7 +73,7 @@ public class LMControlAreaSetupDaoImpl extends AbstractLMSetupDaoImpl<LMDto> {
 
     @Override
     public String getColumnNames() {
-        return "*";
+        return "PAObjectId, PAOName";
     }
 
     /**
