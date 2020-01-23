@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakSyncProgressStatus;
 import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
@@ -19,18 +18,15 @@ import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.multispeak.MultispeakSyncBackingServiceBase;
 import com.cannontech.web.updater.multispeak.deviceGroupSync.handler.MultispeakDeviceGroupSyncUpdaterHandler;
-import com.google.common.collect.ImmutableMap;
 
 public class MultispeakDeviceGroupSyncBackingService extends MultispeakSyncBackingServiceBase implements UpdateBackingService {
     
     private Map<MultispeakDeviceGroupSyncUpdaterTypeEnum, MultispeakDeviceGroupSyncUpdaterHandler> handlersMap;
     private ObjectFormattingService objectFormattingService;
     private MeterDao meterDao;
-    
-    private ImmutableMap<MultispeakSyncProgressStatus, String> statusStyleClassNameMap;
+
     @Autowired private MspHandler mspHandler;
-    @Autowired MultispeakDao multispeakDao;
-    @Autowired MultispeakFuncs multispeakFuncs;
+    @Autowired private MultispeakFuncs multispeakFuncs;
 
     @Override
     public String getLatestValue(String updaterTypeStr, long afterDate, YukonUserContext userContext) {

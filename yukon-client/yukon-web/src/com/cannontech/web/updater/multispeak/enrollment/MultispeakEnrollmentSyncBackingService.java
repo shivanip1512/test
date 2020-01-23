@@ -8,8 +8,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.core.dao.PersistedSystemValueDao;
-import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.multispeak.MspHandler;
@@ -23,8 +21,6 @@ public class MultispeakEnrollmentSyncBackingService extends MultispeakSyncBackin
 
     @Autowired private MspHandler mspHandler;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired MultispeakFuncs multispeakFuncs;
-    @Autowired public PersistedSystemValueDao persistedSystemValueDao;
 
     @PostConstruct
     public void secondInit() {
@@ -58,7 +54,7 @@ public class MultispeakEnrollmentSyncBackingService extends MultispeakSyncBackin
             return getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType.ENROLLMENT, userContext);
         });
     }
-    
+
     @Override
     public String getLatestValue(String updaterTypeStr, long afterDate, YukonUserContext userContext) {
 
