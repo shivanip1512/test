@@ -1,20 +1,14 @@
 package com.cannontech.common.bulk.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
-
 import javax.annotation.Resource;
-
-
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
@@ -164,7 +158,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 //parse data array into import object
                 FdrImportDataRow dataRow = new FdrImportDataRow();
                 int columnsToProcess = Math.min(headers.size(), line.length);
-                List<String> dnpslaveColumns = new ArrayList<>();
+               
                 for(int i = 0; i < columnsToProcess; i++) {
                     if(columnsToIgnore.contains(i)) continue; //ignored column, skip to next
                     String header = headers.get(i);
@@ -200,19 +194,9 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                             throw new ProcessingException(error, "noValidInterface", e, columnValue);
                         }  
                     }
-                    if (header.toString().equals("DNPSLAVE_MASTERID") || header.toString().equals("DNPSLAVE_SLAVEID")
-                            || header.toString().equals("DNPSLAVE_OFFSET")) {
-                        if (!NumberUtils.isNumber(columnValue)) {
-                            dnpslaveColumns.add(header.toString());
-                        }
-                    }
+                   
                 }
-                
-                if (!dnpslaveColumns.isEmpty()) {
-                    String error = StringEscapeUtils.escapeXml11(messageSourceAccessor.getMessage(
-                            "yukon.exception.processingException.invalidDataType", String.join(", ", dnpslaveColumns)));
-                    throw new ProcessingException(error, "invalidDataType");
-                }
+               
                 //Validate data object
                 if(dataRow.getInterface() == null) {
                     String error = messageSourceAccessor.getMessage("yukon.exception.processingException.noInterfaceColumns");
@@ -257,14 +241,21 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                     String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unsupportedDirection", fdrDirection, dataRow.getInterface());
                     throw new ProcessingException(error, "unsupportedDirection", fdrDirection, dataRow.getInterface());
                 }
-                                
+                              
                 //build translation
                 FdrTranslation translation = new FdrTranslation();
                 String translationString = "";
-                for(Entry<FdrInterfaceOption, String> entry : dataRow.getInterfaceColumns().entrySet()) {
+                for (Entry<FdrInterfaceOption, String> entry : dataRow.getInterfaceColumns().entrySet()) {
+
+                    if (!entry.getKey().isValid(entry.getValue())) {
+                        String error = StringEscapeUtils.escapeXml11(messageSourceAccessor.getMessage(
+                                "yukon.exception.processingException.invalidValue", entry.getValue(), entry.getKey()));
+                        throw new ProcessingException(error, "invalidValue");
+                    }
                     translationString += entry.getKey().getOptionLabel() + ":" + entry.getValue() + ";";
                     translation.getParameterMap().put(entry.getKey().getOptionLabel(), entry.getValue());
                 }
+             
                 translationString += "POINTTYPE:" + point.getPointTypeEnum().toString() + ";";
                 
                 translation.setTranslation(translationString);
