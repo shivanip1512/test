@@ -109,6 +109,9 @@
         <c:when test="${isFilterByGearSelected}">
             <%@ include file="gearFilteredResults.jsp" %>
         </c:when>
+        <c:when test="${isFilterByControlAreaSelected}">
+            <%@ include file="controlAreaFilteredResults.jsp" %>
+        </c:when>
         <c:otherwise>
             <%@ include file="filteredResults.jsp" %>
         </c:otherwise>
