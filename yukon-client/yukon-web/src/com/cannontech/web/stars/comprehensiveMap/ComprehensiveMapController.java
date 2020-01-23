@@ -116,6 +116,9 @@ public class ComprehensiveMapController {
         
         model.addAttribute("colorCodeByOptions", ColorCodeBy.values());
         model.addAttribute("linkQualityOptions", LinkQuality.values());
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
         
         return "comprehensiveMap/map.jsp";
     }

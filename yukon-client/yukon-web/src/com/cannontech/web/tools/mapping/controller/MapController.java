@@ -176,6 +176,10 @@ public class MapController {
 
         }
         
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        
         return "map/map.jsp";
     }
 
@@ -198,6 +202,10 @@ public class MapController {
         model.addAttribute("filteredCollection", filteredCollection);
         filter.setTempDeviceGroupName(groupName);
         model.addAttribute("filter", filter);
+        
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
         
         return "map/map.jsp";
     }

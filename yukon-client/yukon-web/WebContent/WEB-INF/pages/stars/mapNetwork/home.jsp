@@ -9,6 +9,10 @@
     <cti:msg2 var="coordinatesDeleted" key=".location.delete.successful"/>
     <input id="coordinatesDeletedMsg" type="hidden" value="${coordinatesDeleted}"/>
     
+    <input id="gatewayTypes" type="hidden" value="${gatewayPaoTypes}"/>
+    <input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
+    <input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
+    
     <div class="column-10-14 clearfix">
         <div class="column one">
             <c:choose>
