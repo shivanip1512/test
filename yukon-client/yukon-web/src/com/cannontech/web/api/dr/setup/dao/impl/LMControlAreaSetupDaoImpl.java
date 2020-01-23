@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.ControlAreaTrigger;
