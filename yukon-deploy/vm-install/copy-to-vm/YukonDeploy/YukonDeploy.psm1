@@ -213,7 +213,7 @@ Function Uninstall-EIMAndSimulator() {
 .DESCRIPTION 
     Uninstall Cloud services
 .EXAMPLE
-    Stop-Services
+    Uninstall-CloudService
 #>
 Function Uninstall-CloudService() {
     Write-Host "Uninstall Cloud Service"
