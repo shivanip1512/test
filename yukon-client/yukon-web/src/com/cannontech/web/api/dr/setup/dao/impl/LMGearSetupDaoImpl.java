@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.LMSetupFilter;
@@ -36,20 +37,21 @@ public class LMGearSetupDaoImpl extends AbstractLMSetupDaoImpl<LMProgramDirectGe
         return resultList;
     }
 
-    public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
+    @Override
+    public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
 
         SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
-        statementBuilder.append("FROM LMProgramDirectGear lmdg ");
-        statementBuilder.append("JOIN YukonPAObject pao on lmdg.DeviceID = pao.PAObjectId ");
+        statementBuilder.append("FROM LMProgramDirectGear lmdg");
+        statementBuilder.append("JOIN YukonPAObject pao on lmdg.DeviceID = pao.PAObjectId");
 
-        if (filter.getGearTypes() != null && !filter.getGearTypes().isEmpty()) {
+        if (CollectionUtils.isNotEmpty(filter.getGearTypes())) {
             statementBuilder.append("WHERE ControlMethod").in_k(filter.getGearTypes());
         } else {
             statementBuilder.append("WHERE ControlMethod").in_k(Arrays.asList(GearControlMethod.values()));
         }
 
-        if (filter.getName() != null && !filter.getName().isBlank()) {
-            statementBuilder.append("AND GearName").contains(filter.getName());
+        if (StringUtils.isNotEmpty(filter.getName())) {
+            statementBuilder.append("AND UPPER(GearName)").contains(filter.getName().toUpperCase());
         }
 
         if (CollectionUtils.isNotEmpty(filter.getProgramIds())) {
@@ -64,7 +66,7 @@ public class LMGearSetupDaoImpl extends AbstractLMSetupDaoImpl<LMProgramDirectGe
         LMSetupFilter filter = criteria.getFilteringParameters();
 
         sqlTotalCountQuery.append("SELECT COUNT(*) ");
-        sqlTotalCountQuery.append(getTableAndWhereClause(filter));
+        sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
         return totalHitCount;

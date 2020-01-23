@@ -1,7 +1,9 @@
 package com.cannontech.web.api.dr.setup.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.LMSetupFilter;
@@ -19,11 +21,15 @@ public class LMLoadProgramSetupFilterServiceImpl implements LMSetupFilterService
     @Override
     public SearchResults<LoadProgramFilteredResult> filter(FilterCriteria<LMSetupFilter> filterCriteria,
             YukonUserContext userContext) {
-        List<LoadProgramFilteredResult> filteredResults = setupDao.getDetails(filterCriteria);
-        filteredResults.stream().forEach(result -> {
-            result.setGears(setupDao.getGearsOrderByGearNumber(result.getProgram().getId()));
-            result.setLoadGroups(setupDao.getLoadGroupsOrderByGroupOrder(result.getProgram().getId()));
-        });
+        List<LoadProgramFilteredResult> filteredResults = new ArrayList<LoadProgramFilteredResult>();
+        filteredResults = setupDao.getDetails(filterCriteria);
+        if (CollectionUtils.isNotEmpty(filteredResults)) {
+
+            filteredResults.stream().forEach(result -> {
+                result.setGears(setupDao.getGearsOrderByGearNumber(result.getProgram().getId()));
+                result.setLoadGroups(setupDao.getLoadGroupsOrderByGroupOrder(result.getProgram().getId()));
+            });
+        }
         int totalHitCount = setupDao.getTotalCount(filterCriteria);
         SearchResults<LoadProgramFilteredResult> searchResults = SearchResults.pageBasedForSublist(filteredResults,
                 filterCriteria.getPagingParameters(), totalHitCount);

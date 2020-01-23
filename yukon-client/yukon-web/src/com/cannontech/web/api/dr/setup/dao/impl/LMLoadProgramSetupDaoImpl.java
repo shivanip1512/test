@@ -58,14 +58,14 @@ public class LMLoadProgramSetupDaoImpl extends AbstractLMSetupDaoImpl<LoadProgra
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
 
         sqlTotalCountQuery.append("SELECT COUNT(*)");
-        sqlTotalCountQuery.append(getTableAndWhereClause(filter));
+        sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
         return totalHitCount;
     }
 
     @Override
-    public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
+    public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
 
         SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
         statementBuilder.append("FROM YukonPAObject ypo JOIN LMPROGRAM lp");

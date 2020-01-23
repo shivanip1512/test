@@ -22,7 +22,7 @@ public class LMMacroLoadGroupSetupDaoImpl extends AbstractLMSetupDaoImpl <MacroL
     }
 
     @Override
-    public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
+    public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
         // TODO 
         return null;
     }
