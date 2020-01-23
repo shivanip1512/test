@@ -46,15 +46,15 @@ Function Start-Simulators() {
 
 <# 
 .SYNOPSIS
-    Checks to see if Cloud Server files exist, then creates cloud service and install them.
+    Install Cloud Service.
 .DESCRIPTION 
-    Checks to see if Cloud Server files exist, then creates cloud service and install them.
+    Install Cloud Service.
 .EXAMPLE
     Install-CloudService
 #>
 Function Install-CloudService() {
     Write-Host "Installing Cloud Service"
-    Start-Process -FilePath "C:\Yukon\Client\Bin\install_cloudService.bat" -WorkingDirectory "C:\Yukon\Client\Bin\" -Wait -NoNewWindow
+    Start-Process -FilePath "C:\Yukon\Client\bin\install_cloudService.bat" -WorkingDirectory "C:\Yukon\Client\bin\" -Wait -NoNewWindow
 }
 
 <# 
@@ -217,7 +217,7 @@ Function Uninstall-EIMAndSimulator() {
 #>
 Function Uninstall-CloudService() {
     Write-Host "Uninstall Cloud Service"
-    Start-Process -FilePath "C:\Yukon\Client\Bin\uninstall_cloudService.bat" -WorkingDirectory "C:\Yukon\Client\Bin\" -Wait -NoNewWindow
+    Start-Process -FilePath "C:\Yukon\Client\bin\uninstall_cloudService.bat" -WorkingDirectory "C:\Yukon\Client\bin\" -Wait -NoNewWindow
 }
 
 <#
