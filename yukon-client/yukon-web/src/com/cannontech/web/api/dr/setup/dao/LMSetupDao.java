@@ -71,7 +71,7 @@ public interface LMSetupDao <T> {
     }
 
     /**
-     * Retrieves program constraints based on filter criteria.
+     * Retrieves pao details based on filter criteria.
      */
     List<T> getDetails(FilterCriteria<LMSetupFilter> criteria);
 
