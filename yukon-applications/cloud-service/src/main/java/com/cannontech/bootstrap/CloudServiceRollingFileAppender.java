@@ -124,7 +124,7 @@ public class CloudServiceRollingFileAppender extends AbstractOutputStreamAppende
             @PluginElement("Strategy") RolloverStrategy strategy) {
 
         directory = BootstrapServiceUtils.getLogPath();
-        String applicationName = System.getProperty("applicationName");
+        String applicationName = System.getProperty("cti.app.name");
         String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
         String fileName = directory + applicationName + "_" + creationDate + ".log";
 
@@ -378,7 +378,7 @@ public class CloudServiceRollingFileAppender extends AbstractOutputStreamAppende
         config.getAppenders().entrySet().stream().filter(e -> !"console".equals(e.getKey())).forEach(e -> {
             CloudServiceRollingFileAppender appender = (CloudServiceRollingFileAppender) e.getValue();
             String creationDate = new SimpleDateFormat(filenameDateFormat).format(new Date());
-            String applicationName = System.getProperty("applicationName");
+            String applicationName = System.getProperty("cti.app.name");
             appender.setFileName(directory + applicationName + "_" + creationDate + ".log");
             appender.start();
             config.addAppender(appender);

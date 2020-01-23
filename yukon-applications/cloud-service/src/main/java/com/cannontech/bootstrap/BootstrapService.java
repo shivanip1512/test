@@ -23,7 +23,7 @@ public class BootstrapService implements CommandLineRunner {
     @Autowired CloudService cloudServices;
 
     public static void main(String[] args) {
-        System.setProperty("applicationName", "CloudServer");
+        System.setProperty("cti.app.name", "CloudService");
         SpringApplication.run(BootstrapService.class, args);
     }
 
