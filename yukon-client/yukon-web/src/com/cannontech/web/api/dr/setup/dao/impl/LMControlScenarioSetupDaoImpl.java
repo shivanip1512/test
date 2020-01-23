@@ -2,6 +2,7 @@ package com.cannontech.web.api.dr.setup.dao.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.LMSetupFilter;
@@ -14,7 +15,8 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.web.api.dr.setup.model.ControlScenarioProgram;
 
 public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<ControlScenarioProgram> {
-    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired
+    private YukonJdbcTemplate jdbcTemplate;
 
     @Override
     public List<ControlScenarioProgram> getDetails(FilterCriteria<LMSetupFilter> criteria) {
@@ -48,11 +50,11 @@ public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<Contro
     @Override
     public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
         SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
-        statementBuilder.append(" FROM YukonPAObject ypo  ");
-        statementBuilder.append("JOIN LMControlScenarioProgram lmcsp ON ypo.PAObjectID = lmcsp.ScenarioID ");
+        statementBuilder.append("FROM YukonPAObject ypo");
+        statementBuilder.append("JOIN LMControlScenarioProgram lmcsp ON ypo.PAObjectID = lmcsp.ScenarioID");
 
-        if (filter.getName() != null && !filter.getName().isBlank()) {
-            statementBuilder.append("WHERE ypo.PAOName").contains(filter.getName());
+        if (StringUtils.isNotBlank(filter.getName())) {
+            statementBuilder.append("WHERE ypo.PAOName").contains(filter.getName().toUpperCase());
         }
 
         return statementBuilder;
@@ -61,14 +63,13 @@ public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<Contro
     private static final YukonRowMapper<ControlScenarioProgram> controlScnerioRowMapper = (YukonResultSet rs) -> {
         ControlScenarioProgram liteControlScenario = new ControlScenarioProgram();
         liteControlScenario.setScenarioId(rs.getInt("PAObjectID"));
-        liteControlScenario.setScenarioName(rs.getString("PAOName"));
         liteControlScenario.setProgramID(rs.getInt("ProgramID"));
         return liteControlScenario;
     };
 
     @Override
     public String getColumnNames() {
-        return "*";
+        return "PAObjectID,ProgramID";
     }
 
 }
