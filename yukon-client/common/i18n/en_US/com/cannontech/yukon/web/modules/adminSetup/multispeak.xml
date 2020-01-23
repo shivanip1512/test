@@ -172,10 +172,10 @@
     <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncTypeProcessorType.BILLING_CYCLE">Billing Cycle</entry>
     <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncTypeProcessorType.ENROLLMENT">Enrollment</entry>
     
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.RUNNING">In Progress...</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FAILED">Error</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.CANCELED">Canceled</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FINISHED">Complete</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.RUNNING">In Progress...</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.FAILED">Error</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.CANCELED">Canceled</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.FINISHED">Complete</entry>
     
     <!-- sync home.jsp -->
     <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.pageName">MultiSpeak</entry>

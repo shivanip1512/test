@@ -17,9 +17,8 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakSyncType;
 import com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceBase;
+import com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV3;
-import com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV5;
 import com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV3;
 import com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportV5;
 import com.cannontech.web.widget.accountInformation.MspAccountInformationV3;
@@ -34,8 +33,6 @@ public class MspHandler {
     @Autowired private MspAccountInformationV5 mspAccountInformationV5;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private com.cannontech.multispeak.dao.v5.MspObjectDao mspObjectDaoV5;
-    @Autowired private MspSearchFieldsProviderV3 fieldsProviderV3;
-    @Autowired private MspSearchFieldsProviderV5 fieldsProviderV5;
     @Autowired private MspWaterLeakReportV3 mspWaterLeakReportV3;
     @Autowired private MspWaterLeakReportV5 mspWaterLeakReportV5;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
@@ -43,6 +40,7 @@ public class MspHandler {
     @Autowired private MultispeakDao multispeakDao;
     @Autowired @Qualifier("v3") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV3;
     @Autowired @Qualifier("v5") private MultispeakDeviceGroupSyncServiceBase multispeakDeviceGroupSyncServiceV5;
+    @Autowired private  MultispeakEnrollmentSyncService multispeakEnrollmentSyncService;
 
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "GetDomainMembers - substationCode";
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
@@ -154,6 +152,14 @@ public class MspHandler {
             return multispeakFuncs.getPrimaryCISVersion(mspPrimaryCISVendor);
         }
         return null;
+    }
+
+    public void startEnrollmentSync() {
+        multispeakEnrollmentSyncService.startEnrollmentSync();
+    }
+
+    public MultispeakEnrollmentSyncService getMultispeakEnrollmentSyncService() {
+        return multispeakEnrollmentSyncService;
     }
 
     /**

@@ -17,6 +17,7 @@ public enum PersistedSystemValueKey {
     NEST_SYNC_TIME(null, new InstantType()), 
     ITRON_DATA_LAST_RECORD_ID(-1L, InputTypeFactory.longType()),
     ITRON_READ_GROUP_ID(-1L, InputTypeFactory.longType()),
+    MSP_ENROLLMENT_SYNC_LAST_COMPLETED(null, new InstantType()),
     ;
     
     private final Object defaultValue;

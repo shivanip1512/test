@@ -50,7 +50,7 @@
                     <%-- status --%>
                     <tags:nameValue2 nameKey=".infoLabel.status">
                         <!-- TO DO - Replace it with updaters -->
-                        <i:inline key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.RUNNING"/>
+                        <i:inline key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.RUNNING"/>
                     </tags:nameValue2>
 
                     <%-- progress bar --%>

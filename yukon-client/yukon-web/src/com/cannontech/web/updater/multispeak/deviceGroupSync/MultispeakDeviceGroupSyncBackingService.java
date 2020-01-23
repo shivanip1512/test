@@ -5,51 +5,33 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
+import com.cannontech.multispeak.service.MultispeakSyncProgressStatus;
 import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.updater.UpdateBackingService;
+import com.cannontech.web.updater.multispeak.MultispeakSyncBackingServiceBase;
 import com.cannontech.web.updater.multispeak.deviceGroupSync.handler.MultispeakDeviceGroupSyncUpdaterHandler;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
-public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingService {
+public class MultispeakDeviceGroupSyncBackingService extends MultispeakSyncBackingServiceBase implements UpdateBackingService {
     
     private Map<MultispeakDeviceGroupSyncUpdaterTypeEnum, MultispeakDeviceGroupSyncUpdaterHandler> handlersMap;
     private ObjectFormattingService objectFormattingService;
     private MeterDao meterDao;
-    private DateFormattingService dateFormattingService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    private ImmutableMap<MultispeakDeviceGroupSyncProgressStatus, String> statusStyleClassNameMap;
+    private ImmutableMap<MultispeakSyncProgressStatus, String> statusStyleClassNameMap;
     @Autowired private MspHandler mspHandler;
     @Autowired MultispeakDao multispeakDao;
     @Autowired MultispeakFuncs multispeakFuncs;
-    
-    @PostConstruct
-    public void init() {
-    	
-    	Builder<MultispeakDeviceGroupSyncProgressStatus, String> builder = ImmutableMap.builder();
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.RUNNING, "");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FAILED, "error");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.CANCELED, "error");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FINISHED, "success");
-    	statusStyleClassNameMap = builder.build();
-    }
-    
+
     @Override
     public String getLatestValue(String updaterTypeStr, long afterDate, YukonUserContext userContext) {
         int vendorId = multispeakFuncs.getPrimaryCIS();
@@ -267,33 +249,14 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
 			return null;
 		}
 		
-		MultispeakDeviceGroupSyncProgressStatus status = progress.getStatus();
-		if (status != MultispeakDeviceGroupSyncProgressStatus.FINISHED) {
+		MultispeakSyncProgressStatus status = progress.getStatus();
+		if (status != MultispeakSyncProgressStatus.FINISHED) {
 			return status;
 		}
 		
 		return getLastCompletedSyncDateStr(type, userContext);
     }
-    
-    private String getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType type,
-            YukonUserContext userContext) {
-        
-        int vendorId = multispeakFuncs.getPrimaryCIS();
-        Instant instant = null;
-        if (vendorId > 0) {
-            Map<MultispeakSyncTypeProcessorType, Instant> lastSyncInstants =
-                mspHandler.getDeviceGroupSyncService().getLastSyncInstants();
-            instant = lastSyncInstants.get(type);
-        }
 
-        if (vendorId <= 0 || instant == null) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            return messageSourceAccessor.getMessage("yukon.common.na");
-        }
-
-        String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
-        return dateStr;
-    }
     
     @Autowired
     public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
@@ -303,15 +266,5 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
 		this.meterDao = meterDao;
-	}
-    
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-		this.dateFormattingService = dateFormattingService;
-	}
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
 	}
 }
