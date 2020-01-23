@@ -46,4 +46,5 @@
              </c:forEach>
         </tbody>
     </table>
+    <tags:pagingResultsControls result="${filteredResults}" adjustPageCount="true" thousands="true"/>
 </div>
