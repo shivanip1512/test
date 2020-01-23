@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
@@ -33,40 +34,46 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
 public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFilteredResult> {
-    @Autowired private LMGearSetupDaoImpl setupDao;
-    @Autowired private ServerDatabaseCache cache;
-    @Autowired private ProgramGearFieldsBuilder gearFieldsBuilder;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired
+    private LMGearSetupDaoImpl setupDao;
+    @Autowired
+    private ServerDatabaseCache cache;
+    @Autowired
+    private ProgramGearFieldsBuilder gearFieldsBuilder;
+    @Autowired
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     private static final String baseKey = "yukon.web.modules.dr.setup.gear.";
 
     @Override
     public SearchResults<GearFilteredResult> filter(FilterCriteria<LMSetupFilter> filterCriteria, YukonUserContext userContext) {
 
         List<LMProgramDirectGear> directGears = setupDao.getDetails(filterCriteria);
+
         List<GearFilteredResult> filteredResultList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(directGears)) {
 
-        for (LMProgramDirectGear directGear : directGears) {
-            GearFilteredResult result = new GearFilteredResult();
+            for (LMProgramDirectGear directGear : directGears) {
+                GearFilteredResult result = new GearFilteredResult();
 
-            result.setControlMethod(directGear.getControlMethod());
-            result.setGearId(directGear.getGearId());
-            result.setGearName(directGear.getGearName());
-            result.setGearNumber(directGear.getGearNumber());
+                result.setControlMethod(directGear.getControlMethod());
+                result.setGearId(directGear.getGearId());
+                result.setGearName(directGear.getGearName());
+                result.setGearNumber(directGear.getGearNumber());
 
-            ProgramGearFields fields = gearFieldsBuilder.getProgramGearFields(directGear);
-            if (fields != null) {
-                result.setGearDetails(buildGearDetailsInString(fields, userContext));
+                ProgramGearFields fields = gearFieldsBuilder.getProgramGearFields(directGear);
+                if (fields != null) {
+                    result.setGearDetails(buildGearDetailsInString(fields, userContext));
+                }
+
+                LMDto program = new LMDto();
+                LiteYukonPAObject pao = cache.getAllPaosMap().get(directGear.getProgramId());
+                program.setId(directGear.getProgramId());
+                program.setName(pao.getPaoName());
+                result.setLoadProgram(program);
+
+                filteredResultList.add(result);
             }
-
-            LMDto program = new LMDto();
-            LiteYukonPAObject pao = cache.getAllPaosMap().get(directGear.getProgramId());
-            program.setId(directGear.getProgramId());
-            program.setName(pao.getPaoName());
-            result.setLoadProgram(program);
-
-            filteredResultList.add(result);
         }
-
         int totalHitCount = setupDao.getTotalCount(filterCriteria);
         SearchResults<GearFilteredResult> searchResults = SearchResults.pageBasedForSublist(filteredResultList,
                                                                                             filterCriteria.getPagingParameters(),
@@ -75,8 +82,7 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
     }
 
     @Override
-    public LmSetupFilterType getFilterType() {
-        return LmSetupFilterType.GEAR;
+    public LmSetupFilterType getFilterType() {return LmSetupFilterType.GEAR;
     }
 
     /**
@@ -113,8 +119,8 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
                 fieldValue = value;
             }
         }
-        
-        //TODO Idenity time fields and display with units ?
+
+        // TODO Idenity time fields and display with units ?
 
         return fieldName + ": " + fieldValue;
 

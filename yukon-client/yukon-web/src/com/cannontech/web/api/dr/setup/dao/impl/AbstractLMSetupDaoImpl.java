@@ -75,7 +75,7 @@ public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
         SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
 
         sqlCommon.append("SELECT");
-        sqlCommon.append("RowNumber, * ");
+        sqlCommon.append("RowNumber, " + columnNames);
         sqlCommon.append("FROM (");
         sqlCommon.append("SELECT ");
         sqlCommon.append("ROW_NUMBER() OVER (ORDER BY ");
@@ -83,7 +83,7 @@ public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
         sqlCommon.append(" ");
         sqlCommon.append(sortingDirection);
         sqlCommon.append(") AS RowNumber, " + columnNames);
-        sqlCommon.append(getTableAndWhereClause(filter));
+        sqlCommon.append(getFromAndWhereClause(filter));
         sqlCommon.append(") innertable");
 
         return sqlCommon;
@@ -104,7 +104,7 @@ public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
     /**
      * Return SqlStatementBuilder corresponding to Table and where clause.
      */
-    public abstract SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter);
+    public abstract SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter);
 
     /**
      * Return selected columns names for filtering.

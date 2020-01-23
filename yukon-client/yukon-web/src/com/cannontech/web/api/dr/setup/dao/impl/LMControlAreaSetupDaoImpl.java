@@ -22,7 +22,7 @@ public class LMControlAreaSetupDaoImpl extends AbstractLMSetupDaoImpl <ControlAr
     }
 
     @Override
-    public SqlStatementBuilder getTableAndWhereClause(LMSetupFilter filter) {
+    public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
         // TODO 
         return null;
     }
