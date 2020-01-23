@@ -26,8 +26,8 @@
         </cti:linkTab>
     </cti:checkGlobalSetting>
 
-    <cti:linkTab tabId="deviceGroupTab" selectorKey="yukon.web.modules.adminSetup.deviceGroupSyncHome.tab.title">
-        <c:url value="/multispeak/setup/deviceGroupSync/home" />
+    <cti:linkTab tabId="synchronizationTab" selectorKey="yukon.web.modules.adminSetup.multispeakSyncHome.tab.title">
+        <c:url value="/multispeak/setup/multispeakSync/home" />
     </cti:linkTab>
 </cti:linkTabbedContainer>
     <c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />

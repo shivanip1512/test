@@ -1001,12 +1001,12 @@
                 <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
                 <link>/multispeak/setup/lmMappings/home</link>
             </page>
-            <page name="deviceGroupSyncHome" type="BASIC">
-                <link>/multispeak/setup/deviceGroupSync/home</link>
+            <page name="multispeakSyncHome" type="BASIC">
+                <link>/multispeak/setup/multispeakSync/home</link>
                 <pages>
-                    <page name="deviceGroupSyncProgress" type="BASIC">
+                    <page name="multispeakSyncProgress" type="BASIC">
                         <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
-                        <link>/multispeak/setup/deviceGroupSync/progress</link>
+                        <link>/multispeak/setup/multispeakSync/progress</link>
                     </page>
                 </pages>
             </page>
