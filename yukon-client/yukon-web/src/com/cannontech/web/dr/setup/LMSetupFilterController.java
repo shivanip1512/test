@@ -131,28 +131,24 @@ public class LMSetupFilterController {
             Map<Integer, String> loadProgramsForScenario = Maps.newHashMap();
             List<ControlScenarioFilteredResult> filteredControlScenarios = (List<ControlScenarioFilteredResult>) filteredResults.getResultList();
             for (ControlScenarioFilteredResult filteredControlScenario : filteredControlScenarios) {
-                loadProgramsForScenario.put(filteredControlScenario.getScenario().getId(), getAbbrevatedText(accessor, filteredControlScenario.getAssignedPrograms()));
+                loadProgramsForScenario.put(filteredControlScenario.getScenario().getId(), getAbbreviatedText(accessor, filteredControlScenario.getAssignedPrograms()));
                 model.addAttribute("loadProgramForScenario", loadProgramsForScenario);
             }
             break;
         }
     }
 
-    private String getAbbrevatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
+    private String getAbbreviatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isEmpty(lmObjects)) {
             builder.append(accessor.getMessage("yukon.common.none.choice"));
         } else if (lmObjects.size() > 5) {
-            builder.append(lmObjects.subList(0, 5).stream().map(loadGroup -> loadGroup.getName())
+            builder.append(lmObjects.subList(0, 5).stream().map(lmObject -> lmObject.getName())
                     .collect(Collectors.joining(", ")));
-            builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbrevatedTxt", lmObjects.size() - 5));
-        } else if (lmObjects.size() == 1) {
-            builder.append(lmObjects.get(0).getName());
-        } else if (CollectionUtils.isNotEmpty(lmObjects)) {
-            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(loadGroup -> loadGroup.getName())
-                    .collect(Collectors.joining(", ")));
+            builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbreviatedText", lmObjects.size() - 5));
         } else {
-            builder.append(accessor.getMessage("yukon.common.none.choice"));
+            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(lmObject -> lmObject.getName())
+                    .collect(Collectors.joining(", ")));
         }
         return builder.toString();
     }
@@ -160,12 +156,12 @@ public class LMSetupFilterController {
     /**
      * Get FilterCriteria based on LMSetupFilter, SortingParameters, PagingParameters.
      */
-
     private FilterCriteria<LMSetupFilter> getFilterCriteria(LMSetupFilter lmSetupFilter, SortingParameters sorting, PagingParameters paging) {
         FilterCriteria<LMSetupFilter> filterCriteria = new FilterCriteria<LMSetupFilter>(lmSetupFilter, sorting, paging);
 
         switch (lmSetupFilter.getFilterByType()) {
             case CONTROL_AREA:
+            case CONTROL_SCENARIO:
             case LOAD_GROUP:
             case LOAD_PROGRAM:
             case MACRO_LOAD_GROUP:
@@ -175,10 +171,6 @@ public class LMSetupFilterController {
             case GEAR:
                 GearSortBy gearSortBy = LMFilterGearSortBy.valueOf(sorting.getSort()).getValue();
                 filterCriteria.setSortingParameters(SortingParameters.of(gearSortBy.getDbString(), filterCriteria.getSortingParameters().getDirection()));
-                break;
-            case CONTROL_SCENARIO:
-                SortBy sortByName = LMFilterSortBy.valueOf(sorting.getSort()).getValue();
-                filterCriteria.setSortingParameters(SortingParameters.of(sortByName.getDbString(), filterCriteria.getSortingParameters().getDirection()));
                 break;
             case PROGRAM_CONSTRAINT:
                 ProgramConstraintSortBy constraintSortBy = LMFilterProgramConstraintSortBy.valueOf(sorting.getSort()).getValue();
@@ -202,6 +194,7 @@ public class LMSetupFilterController {
 
         switch (lmSetupFilter.getFilterByType()) {
             case CONTROL_AREA:
+            case CONTROL_SCENARIO:
             case MACRO_LOAD_GROUP:
                 LMFilterSortBy filterSortBy = LMFilterSortBy.valueOf(sorting.getSort());
                 text = accessor.getMessage(LMFilterSortBy.NAME);
@@ -213,14 +206,6 @@ public class LMSetupFilterController {
                 for (LMFilterGearSortBy column : LMFilterGearSortBy.values()) {
                     text = accessor.getMessage(column);
                     col = SortableColumn.of(dir, column == gearSortBy, text, column.name());
-                    model.addAttribute(column.name(), col);
-                }
-                break;
-            case CONTROL_SCENARIO:
-                LMFilterSortBy sortByName = LMFilterSortBy.valueOf(sorting.getSort());
-                for (LMFilterSortBy column : LMFilterSortBy.values()) {
-                    text = accessor.getMessage(column);
-                    col = SortableColumn.of(dir, column == sortByName, text, column.name());
                     model.addAttribute(column.name(), col);
                 }
                 break;

@@ -23,7 +23,7 @@
             <c:forEach var="filteredResult" items="${filteredResults.resultList}">
                 <tr>
                     <td>
-                        <cti:url var="viewUrl" value="/dr/setup/controlScenario/${filteredResult.scenario.id}"/>
+                        <cti:url var="viewUrl" value="${viewUrlPrefix}/${filteredResult.scenario.id}"/>
                         <a href="${viewUrl}">${fn:escapeXml(filteredResult.scenario.name)}</a>
                     </td>
                     <td>
