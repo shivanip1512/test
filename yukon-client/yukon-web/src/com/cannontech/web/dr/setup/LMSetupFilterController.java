@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.dr.gear.setup.OperationalState;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LMSetupFilter;
@@ -94,6 +95,7 @@ public class LMSetupFilterController {
         model.addAttribute("loadGroupTypes", PaoType.getAllLMGroupTypes());
         model.addAttribute("loadProgramTypes", PaoType.getDirectLMProgramTypes());
         model.addAttribute("gearTypes", GearControlMethod.values());
+        model.addAttribute("operationalStates", OperationalState.values());
         model.addAttribute("isFilterByGearSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.GEAR);
         model.addAttribute("isFilterByLoadProgramSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM);
         model.addAttribute("isFilterByLoadGroupSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_GROUP);
@@ -129,11 +131,14 @@ public class LMSetupFilterController {
         switch (filterByType) {
             case LOAD_PROGRAM:
                 Map<Integer, String> loadGroupsForProgram = Maps.newHashMap();
+                Map<Integer, String> gearsForProgram = Maps.newHashMap();
                 List<LoadProgramFilteredResult> loadPrograms = (List<LoadProgramFilteredResult>) filteredResults.getResultList();
                 for (LoadProgramFilteredResult loadProgram : loadPrograms) {
                     loadGroupsForProgram.put(loadProgram.getProgram().getId(), getAbbreviatedText(accessor, loadProgram.getLoadGroups()));
-                    model.addAttribute("loadGroupsForProgram", loadGroupsForProgram);
+                    gearsForProgram.put(loadProgram.getProgram().getId(), getAbbreviatedText(accessor, loadProgram.getGears()));
                 }
+                model.addAttribute("loadGroupsForProgram", loadGroupsForProgram);
+                model.addAttribute("gearsForProgram", gearsForProgram);
                 break;
         }
     }
