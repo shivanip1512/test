@@ -1,12 +1,7 @@
 package com.cannontech.web.dr.setup;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -19,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LMSetupFilter;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
@@ -52,7 +46,6 @@ import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.google.common.collect.Maps;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
@@ -115,42 +108,10 @@ public class LMSetupFilterController {
         SearchResults<?> filteredResults = (SearchResults<?>) response.getBody();
         model.addAttribute("filteredResults", filteredResults);
 
-        setupModel(filteredResults, lmSetupFilter.getFilterByType(), userContext, model);
-
         // Build setup model
         model.addAttribute("viewUrlPrefix", lmSetupFilter.getFilterByType().getViewUrl());
 
         return "dr/setup/list.jsp";
-    }
-
-    private void setupModel(SearchResults<?> filteredResults, LmSetupFilterType filterByType, YukonUserContext userContext, ModelMap model) {
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        // Add text to be displayed for columns for different object based on the LM object being filtered.
-        switch (filterByType) {
-        case CONTROL_SCENARIO:
-            Map<Integer, String> loadProgramsForScenario = Maps.newHashMap();
-            List<ControlScenarioFilteredResult> filteredControlScenarios = (List<ControlScenarioFilteredResult>) filteredResults.getResultList();
-            for (ControlScenarioFilteredResult filteredControlScenario : filteredControlScenarios) {
-                loadProgramsForScenario.put(filteredControlScenario.getScenario().getId(), getAbbreviatedText(accessor, filteredControlScenario.getAssignedPrograms()));
-                model.addAttribute("loadProgramForScenario", loadProgramsForScenario);
-            }
-            break;
-        }
-    }
-
-    private String getAbbreviatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
-        StringBuilder builder = new StringBuilder();
-        if (CollectionUtils.isEmpty(lmObjects)) {
-            builder.append(accessor.getMessage("yukon.common.none.choice"));
-        } else if (lmObjects.size() > 5) {
-            builder.append(lmObjects.subList(0, 5).stream().map(lmObject -> lmObject.getName())
-                    .collect(Collectors.joining(", ")));
-            builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbreviatedText", lmObjects.size() - 5));
-        } else {
-            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(lmObject -> lmObject.getName())
-                    .collect(Collectors.joining(", ")));
-        }
-        return builder.toString();
     }
 
     /**
