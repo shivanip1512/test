@@ -42,7 +42,7 @@ public abstract class MultispeakSyncBackingServiceBase {
     public String getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType type,
             YukonUserContext userContext) {
         Instant instant = null;
-        if (type == MultispeakSyncTypeProcessorType.ENROLLMENT) {
+        if (type == MultispeakSyncTypeProcessorType.ENROLLMENT && mspHandler.isEnrollmentSyncSupported()) {
             instant = mspHandler.getMultispeakEnrollmentSyncService().getLastSyncInstants();
         } else {
             int vendorId = multispeakFuncs.getPrimaryCIS();
