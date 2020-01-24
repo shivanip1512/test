@@ -28,7 +28,7 @@ public class MultispeakEnrollmentSyncService {
     }
 
     public Instant getLastSyncInstants() {
-        return persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+        return persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_ENROLLMENT_SYNC_LAST_COMPLETED);
     }
 
     public void startEnrollmentSync() {
