@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,12 +32,15 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -59,6 +63,7 @@ public class WifiConnectionController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private PaoDao paoDao;
+    @Autowired private StateGroupDao stateGroupDao;
 
     private final static String baseKey = "yukon.web.modules.operator.wifiConnection.";
 
@@ -83,25 +88,35 @@ public class WifiConnectionController {
                 .collect(Collectors.joining(","));
         model.addAttribute("deviceIds", deviceIdList);
         
-        model.addAttribute("commStatusValues", CommStatusState.values());
+        LiteStateGroup phaseStateGroup = stateGroupDao.getStateGroup("Comm Status State");
+        //remove Any state
+        List<LiteState> states = phaseStateGroup.getStatesList().stream()
+                .filter(state -> state.getLiteID() > -1).collect(Collectors.toList());
+        model.addAttribute("commStatusValues", states);
         
         return "gateways/wifiConnection.jsp";
     }
     
     @GetMapping("/wifiConnection/connectedDevicesMapping")
-    public String connectedDevicesMapping(Integer[] connectedIds, Integer[] disconnectedIds, String[] filteredCommStatus, YukonUserContext userContext, RedirectAttributes attrs) {
+    public String connectedDevicesMapping(Integer[] connectedIds, Integer[] disconnectedIds, Integer[] filteredCommStatus, YukonUserContext userContext, RedirectAttributes attrs) {
         List<MappingColorCollection> colorCollections = new ArrayList<MappingColorCollection>();
         Map<String, List<Integer>> mappingMap = new HashMap<String, List<Integer>>();
-        List<String> selectedCommStatuses = Arrays.asList(filteredCommStatus);
-        boolean includeConnected = selectedCommStatuses.isEmpty() || selectedCommStatuses.contains("Connected");
-        boolean includeDisconnected = selectedCommStatuses.isEmpty() || selectedCommStatuses.contains("Disconnected");
+        List<Integer> selectedCommStatuses = Arrays.asList(filteredCommStatus);
+        boolean includeConnected = selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(CommStatusState.CONNECTED.getRawState());
+        boolean includeDisconnected = selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(CommStatusState.DISCONNECTED.getRawState());
         List<Integer> allDevices = new ArrayList<>();
+        LiteStateGroup phaseStateGroup = stateGroupDao.getStateGroup("Comm Status State");
 
         if (includeConnected) {
             List<Integer> connectedList = Arrays.asList(connectedIds);
             String connectedColor = "#093";
             DeviceCollection connectedCollection = producer.createDeviceCollection(connectedList);
-            MappingColorCollection mapCollection = new MappingColorCollection(connectedCollection, connectedColor, "yukon.web.modules.operator.wifiConnection.commStatusState.CONNECTED");
+            MappingColorCollection mapCollection = new MappingColorCollection(connectedCollection, connectedColor, null);
+            Optional <LiteState> connectedState = phaseStateGroup.getStatesList().stream()
+                    .filter(state -> state.getStateRawState() == CommStatusState.CONNECTED.getRawState()).findFirst();
+            if (connectedState.isPresent()) {
+                mapCollection.setLabelText(connectedState.get().getStateText());
+            }
             colorCollections.add(mapCollection);
             mappingMap.put(connectedColor, connectedList);
             allDevices.addAll(connectedList);
@@ -111,7 +126,12 @@ public class WifiConnectionController {
             List<Integer> disconnectedList = Arrays.asList(disconnectedIds);
             String disconnectedColor = "#D14836";
             DeviceCollection disconnectedCollection = producer.createDeviceCollection(disconnectedList);
-            MappingColorCollection disconnectedMapCollection = new MappingColorCollection(disconnectedCollection, disconnectedColor, "yukon.web.modules.operator.wifiConnection.commStatusState.DISCONNECTED");
+            MappingColorCollection disconnectedMapCollection = new MappingColorCollection(disconnectedCollection, disconnectedColor, null);
+            Optional <LiteState> disconnectedState = phaseStateGroup.getStatesList().stream()
+                    .filter(state -> state.getStateRawState() == CommStatusState.DISCONNECTED.getRawState()).findFirst();
+            if (disconnectedState.isPresent()) {
+                disconnectedMapCollection.setLabelText(disconnectedState.get().getStateText());
+            }
             colorCollections.add(disconnectedMapCollection);
             mappingMap.put(disconnectedColor, disconnectedList);
             allDevices.addAll(disconnectedList);
@@ -129,7 +149,7 @@ public class WifiConnectionController {
     }
     
     @GetMapping("/wifiConnection/connectedDevicesDownload/{gatewayId}")
-    public String connectedDevicesDownload(@PathVariable int gatewayId, String[] filteredCommStatus, 
+    public String connectedDevicesDownload(@PathVariable int gatewayId, Integer[] filteredCommStatus, 
                                            YukonUserContext userContext, HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[5];
@@ -144,13 +164,12 @@ public class WifiConnectionController {
         List<WiFiMeterCommData> wifiData = wifiService.getWiFiMeterCommDataForGateways(Arrays.asList(gatewayId));
         
         List<String[]> dataRows = Lists.newArrayList();
-        List<String> selectedCommStatuses = Arrays.asList(filteredCommStatus);
+        List<Integer> selectedCommStatuses = Arrays.asList(filteredCommStatus);
         for (WiFiMeterCommData data : wifiData) {
             String[] dataRow = new String[5];
             dataRow[0] = data.getDevice().getName();
             PointValueQualityHolder commStatus = asyncDynamicDataSource.getPointValue(data.getCommStatusPoint().getPointID());
-            String commStatusValue = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
-            if (selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(commStatusValue)) {
+            if (selectedCommStatuses.isEmpty() || selectedCommStatuses.contains(Integer.valueOf((int)commStatus.getValue()))) {
                 dataRow[1] = pointFormattingService.getValueString(commStatus, Format.VALUE, userContext);
                 dataRow[2] = pointFormattingService.getValueString(commStatus, Format.DATE, userContext);
                 PointValueQualityHolder rssi = asyncDynamicDataSource.getPointValue(data.getRssiPoint().getPointID());

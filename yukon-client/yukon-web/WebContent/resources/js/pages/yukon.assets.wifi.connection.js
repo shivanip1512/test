@@ -39,7 +39,7 @@ yukon.assets.wifi.connection = (function () {
             
             //filter devices
             $('#commStatusFilter').chosen().change(function () {
-                var selectedValues = $(this).val(),
+                var selectedValues = $(this).find('option:selected').text(),
                     count = 0,
                     deviceIds = [];
                 $('.js-refresh-msg').addClass('dn');
@@ -76,9 +76,9 @@ yukon.assets.wifi.connection = (function () {
                 $('.js-refresh-msg').addClass('dn');
                 //find connected and disconnected
                 $('.js-table-row').each(function() {
-                    var commStatus = $(this).find('.js-comm-status').text(),
+                    var commStatus = $(this).find('.js-comm-status-value').text(),
                         deviceId = $(this).data('deviceId');
-                    commStatus == 'Connected' ? connectedIds.push(deviceId) : disconnectedIds.push(deviceId);
+                    commStatus == 1 ? connectedIds.push(deviceId) : disconnectedIds.push(deviceId);
                 });
                 window.open(yukon.url('/stars/wifiConnection/connectedDevicesMapping?connectedIds=' + connectedIds + 
                         '&disconnectedIds=' + disconnectedIds + '&filteredCommStatus=' + selectedStatuses));

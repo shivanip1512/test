@@ -17,7 +17,7 @@
         <cti:msg2 var="allStatuses" key=".allStatuses"/>
         <select id="commStatusFilter" multiple="multiple" data-placeholder="${allStatuses}">
             <c:forEach var="status" items="${commStatusValues}">
-                <option><i:inline key=".commStatusState.${status}"/></option>
+                <option value="${status.liteID}">${status.stateText}</option>
             </c:forEach>
         </select>
         <hr/>
@@ -64,7 +64,7 @@
                     <i:inline key=".rssiLastUpdated"/>
                     <i class="icon icon=blank"/>
                 </th>
-                <th></th>
+                <th class="action-column"><cti:icon icon="icon-arrow-refresh" classes="M0"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -76,6 +76,7 @@
                     </td>
                     <td>
                         <cti:pointStatus pointId="${data.commStatusPoint.pointID}"/>
+                        <span class="dn js-comm-status-value"><cti:pointValue pointId="${data.commStatusPoint.pointID}" format="RAWVALUE"/></span>
                         <span class="js-comm-status"><cti:pointValue pointId="${data.commStatusPoint.pointID}" format="VALUE"/></span>
                     </td>
                     <td>
@@ -87,9 +88,9 @@
                     <td>
                         <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}"/>
                     </td>
-                    <td>
+                    <td class="PL0">
                         <cti:msg2 var="refreshTitle" key=".refreshStatus"/>
-                        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-refresh-wifi" 
+                        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-refresh-wifi show-on-hover" 
                             data-device-id="${data.device.paoIdentifier.paoId}" title="${refreshTitle}"/>
                     </td>
                 </tr>

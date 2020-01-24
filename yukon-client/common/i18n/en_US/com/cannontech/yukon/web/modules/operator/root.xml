@@ -251,8 +251,6 @@
     <entry key="yukon.web.modules.operator.wifiConnection.rssiLastUpdated">RSSI Last Updated</entry>
     <entry key="yukon.web.modules.operator.wifiConnection.refreshStatus">Refresh Communication Status</entry>
     <entry key="yukon.web.modules.operator.wifiConnection.allStatuses">All Communication Statuses</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.commStatusState.CONNECTED">Connected</entry>
-    <entry key="yukon.web.modules.operator.wifiConnection.commStatusState.DISCONNECTED">Disconnected</entry>
     <entry key="yukon.web.modules.operator.wifiConnection.refreshAll">Refresh Status</entry>
     
 </properties>
