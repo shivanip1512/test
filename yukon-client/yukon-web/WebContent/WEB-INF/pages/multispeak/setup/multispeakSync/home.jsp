@@ -44,7 +44,7 @@
 
     <div class="column-12-12">
         <div class="column one">
-          <cti:url var="submitUrl" value="/multispeak/setup/multispeakSync/start"/>
+            <cti:url var="submitUrl" value="/multispeak/setup/multispeakSync/start"/>
             <form id="startForm" action="${submitUrl}" method="post">
                 <cti:csrfToken/>
                 <tags:nameValueContainer2>
@@ -86,6 +86,6 @@
         <cti:msg2 key=".instructions"/>
     </tags:sectionContainer2>
     
-    <cti:dataUpdaterCallback function="toggleSyncNowControls()" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
     <cti:dataUpdaterCallback function="toggleSyncNowControls()" initialize="true" value="MSP_ENROLLMENT_SYNC/IS_RUNNING" />
+    <cti:dataUpdaterCallback function="toggleSyncNowControls()" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
 </cti:standardPage>

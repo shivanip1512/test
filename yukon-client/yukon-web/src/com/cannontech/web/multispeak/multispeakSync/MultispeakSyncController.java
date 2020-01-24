@@ -178,7 +178,8 @@ public class MultispeakSyncController {
     // CANCEL
     @RequestMapping(value = "done", params = "cancel")
     public String done(FlashScope flashScope) {
-        if (MultispeakSyncType.ENROLLMENT == mspHandler.getMultispeakEnrollmentSyncService().getProgress().getType()) {
+        if (mspHandler.getMultispeakEnrollmentSyncService().getProgress() != null
+                && mspHandler.getMultispeakEnrollmentSyncService().getProgress().isRunning()) {
             mspHandler.getMultispeakEnrollmentSyncService().getProgress().cancel();
             flashScope.setConfirm(new YukonMessageSourceResolvable(
                     "yukon.web.modules.adminSetup.multispeakSyncProgress.cancelOk"));
@@ -194,7 +195,6 @@ public class MultispeakSyncController {
     // BACK TO HOME
     @RequestMapping(value = "done", params = "backToHome")
     public String done() {
-
         return "redirect:home";
     }
 }
