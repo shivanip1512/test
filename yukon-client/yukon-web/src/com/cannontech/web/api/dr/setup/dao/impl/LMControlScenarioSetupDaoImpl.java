@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.dr.setup.LMSetupFilter;
 import com.cannontech.common.model.Direction;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.FilterCriteria;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -40,7 +41,7 @@ public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<Contro
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
         LMSetupFilter filter = criteria.getFilteringParameters();
 
-        sqlTotalCountQuery.append("SELECT COUNT(*) ");
+        sqlTotalCountQuery.append("SELECT COUNT(*)");
         sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
@@ -53,10 +54,10 @@ public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<Contro
         statementBuilder.append("FROM YukonPAObject ypo");
         statementBuilder.append("LEFT OUTER JOIN LMControlScenarioProgram lmcsp");
         statementBuilder.append("ON ypo.PAObjectID = lmcsp.ScenarioID");
-        statementBuilder.append("WHERE ypo.Type='LMSCENARIO'");
+        statementBuilder.append("WHERE ypo.Type").eq_k(PaoType.LM_SCENARIO);
 
         if (StringUtils.isNotBlank(filter.getName())) {
-            statementBuilder.append("AND ypo.PAOName").contains(filter.getName().toUpperCase());
+            statementBuilder.append("AND UPPER(ypo.PAOName)").contains(filter.getName().toUpperCase());
         }
 
         return statementBuilder;
