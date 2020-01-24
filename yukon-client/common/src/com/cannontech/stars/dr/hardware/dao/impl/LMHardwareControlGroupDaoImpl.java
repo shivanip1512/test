@@ -41,6 +41,8 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
+import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
@@ -839,4 +841,45 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
             return null;
         }
     }
+    
+
+    @Override
+    public List<EnrollmentJmsMessage> getEnrollmentSyncMessagesToSend() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT lmhg.InventoryID, lmhg.Relay, lmhg.GroupEnrollStart, lmhg.GroupEnrollStop,");
+        sql.append(    "lmhg.ProgramId, lmhg.lmGroupId, lmhg.AccountID");
+        sql.append("FROM LMHardwareControlGroup lmhg");
+        sql.append("JOIN");
+        sql.append(    "(SELECT  InventoryID , Relay , MAX(GroupEnrollStart) AS GroupEnrollStart");
+        sql.append(    "FROM LMHardwareControlGroup GROUP BY inventoryid, Relay) inq");
+        sql.append("ON lmhg.InventoryID = inq.InventoryID");
+        sql.append(    "AND lmhg.Relay = inq.Relay");
+        sql.append(    "AND lmhg.GroupEnrollStart = inq.GroupEnrollStart");
+        sql.append("JOIN LMProgramWebPublishing lmwp ON lmwp.ProgramID = lmhg.ProgramId");
+        sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectID = lmwp.DeviceID");
+        sql.append("JOIN yukonPAObject lgPao on lgPao.paobjectId = lmhg.lmGroupId");
+        sql.append("WHERE lmhg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        return yukonJdbcTemplate.query(sql, enrollmentMessageRowMapper);
+    }
+
+    private final static YukonRowMapper<EnrollmentJmsMessage> enrollmentMessageRowMapper = new YukonRowMapper<EnrollmentJmsMessage>() {
+        @Override
+        public EnrollmentJmsMessage mapRow(YukonResultSet rs) throws SQLException {
+            int inventoryId = rs.getInt("InventoryID");
+            int relay = rs.getInt("Relay");
+            int programId = rs.getInt("ProgramId");
+            int loadGroupId = rs.getInt("lmGroupId");
+            int accountId = rs.getInt("AccountID");
+            Instant enrollmentStartTime = rs.getInstant("GroupEnrollStart");
+            Instant enrollmentStopTime = rs.getInstant("GroupEnrollStop");
+            EnrollmentJmsMessage enrollmentMessage = new EnrollmentJmsMessage(inventoryId, accountId, loadGroupId,
+                    relay, programId, enrollmentStartTime, enrollmentStopTime);
+            if (enrollmentStopTime != null) {
+                enrollmentMessage.setMessageType(DrJmsMessageType.UNENROLLMENT);
+            } else {
+                enrollmentMessage.setMessageType(DrJmsMessageType.ENROLLMENT);
+            }
+            return enrollmentMessage;
+        }
+    };
 }

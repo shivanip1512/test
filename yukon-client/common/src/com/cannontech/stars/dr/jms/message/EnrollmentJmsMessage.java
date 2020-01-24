@@ -24,6 +24,9 @@ public class EnrollmentJmsMessage extends DrJmsMessage {
         this.enrollmentStopTime = enrollmentStopTime;
     }
 
+    public EnrollmentJmsMessage() {
+    }
+
     public Instant getEnrollmentStartTime() {
         return enrollmentStartTime;
     }
