@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.dr.setup.LMDto;
 
-public class ControlScenariosFilteredResult {
+public class ControlScenarioFilteredResult {
 
     private LMDto scenario;
     private List<LMDto> assignedPrograms;
