@@ -217,7 +217,7 @@ Function Uninstall-EIMAndSimulator() {
 #>
 Function Uninstall-CloudService() {
     Write-Host "Uninstall Cloud Service"
-    Start-Process -FilePath "C:\Yukon\Client\bin\uninstall_cloudService.bat" -WorkingDirectory "C:\Yukon\Client\bin\" -Wait -NoNewWindow
+    C:\Yukon\Runtime\bin\java.exe -jar c:\Yukon\Client\bin\wrapper.jar -removeWait c:\Yukon\Client\bin\cloudService.conf
 }
 
 <#
