@@ -11,7 +11,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakSyncProgressStatus;
 import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.multispeak.MspHandler;
@@ -238,21 +237,6 @@ public class MultispeakDeviceGroupSyncBackingService extends MultispeakSyncBacki
         	}
         });
     }
-    
-    private Object getStatusTextObj(MultispeakDeviceGroupSyncProgress progress, MultispeakSyncTypeProcessorType type, YukonUserContext userContext) {
-    	
-    	if (progress == null) {
-			return null;
-		}
-		
-		MultispeakSyncProgressStatus status = progress.getStatus();
-		if (status != MultispeakSyncProgressStatus.FINISHED) {
-			return status;
-		}
-		
-		return getLastCompletedSyncDateStr(type, userContext);
-    }
-
     
     @Autowired
     public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
