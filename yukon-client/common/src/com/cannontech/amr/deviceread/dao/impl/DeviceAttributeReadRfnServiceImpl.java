@@ -372,6 +372,9 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         if(!rfnDevices.isEmpty()){
             completionCounter ++;
         }
+        if(!rfnDisconnectMeters.isEmpty()){
+            completionCounter ++;
+        }
         
         if (log.isDebugEnabled()) {
             log.debug(getStrategy() + " Strategy initiateRead");
