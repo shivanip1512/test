@@ -17,9 +17,12 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
+import com.cannontech.multispeak.service.MultispeakEnrollmentSyncProgress;
 import com.cannontech.multispeak.service.MultispeakSyncType;
 import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceBase;
+import com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncService;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.multispeak.MspHandler;
@@ -35,17 +38,19 @@ public class MultispeakSyncController {
     @Autowired private MeterDao meterDao;
     @Autowired private MspHandler mspHandler;
     @Autowired private MultispeakDao multispeakDao;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
 
     // HOME
     @RequestMapping("home")
     public String home(ModelMap modelMap) {
-
         MultispeakDeviceGroupSyncProgress progress = null;
+        MultispeakEnrollmentSyncProgress enrollmentProgress = null;
         Map<MultispeakSyncTypeProcessorType, Instant> lastSyncInstants = Maps.newLinkedHashMap();
 
         MultispeakSyncType[] multispeakSyncTypes = MultispeakSyncType.values();
         modelMap.addAttribute("multispeakSyncTypes", multispeakSyncTypes);
         int vendorId = multispeakFuncs.getPrimaryCIS();
+
         if (vendorId > 0) {
             progress = mspHandler.getDeviceGroupSyncService().getProgress();
             // start page
@@ -54,14 +59,30 @@ public class MultispeakSyncController {
             lastSyncInstants.put(MultispeakSyncTypeProcessorType.SUBSTATION, null);
             lastSyncInstants.put(MultispeakSyncTypeProcessorType.BILLING_CYCLE, null);
         }
-        List<LastRunTimestampValue> lastRunTimestampValues = Lists.newArrayListWithCapacity(lastSyncInstants.size());
-        for (Entry<MultispeakSyncTypeProcessorType, Instant> lastSyncInstantEntry : lastSyncInstants.entrySet()) {
-            LastRunTimestampValue lastRunTimestampValue = new LastRunTimestampValue(lastSyncInstantEntry.getKey(),
-                    lastSyncInstantEntry.getValue(), progress);
-            lastRunTimestampValues.add(lastRunTimestampValue);
+
+        if (mspHandler.isEnrollmentSyncSupported()) {
+            enrollmentProgress = mspHandler.getMultispeakEnrollmentSyncService().getProgress();
+            // start page
+            Instant lastEnrollmentSyncInstant = mspHandler.getMultispeakEnrollmentSyncService().getLastSyncInstants();
+            lastSyncInstants.put(MultispeakSyncTypeProcessorType.ENROLLMENT, lastEnrollmentSyncInstant);
+        } else {
+            lastSyncInstants.put(MultispeakSyncTypeProcessorType.ENROLLMENT, null);
         }
 
+        List<LastRunTimestampValue> lastRunTimestampValues = Lists.newArrayListWithCapacity(lastSyncInstants.size());
+        for (Entry<MultispeakSyncTypeProcessorType, Instant> lastSyncInstantEntry : lastSyncInstants.entrySet()) {
+            LastRunTimestampValue lastRunTimestampValue;
+            if (MultispeakSyncTypeProcessorType.ENROLLMENT == lastSyncInstantEntry.getKey()) {
+                lastRunTimestampValue = new LastRunTimestampValue(MultispeakSyncTypeProcessorType.ENROLLMENT,
+                        lastSyncInstantEntry.getValue(), enrollmentProgress);
+            } else {
+                lastRunTimestampValue = new LastRunTimestampValue(lastSyncInstantEntry.getKey(),
+                        lastSyncInstantEntry.getValue(), progress);
+            }
+            lastRunTimestampValues.add(lastRunTimestampValue);
+        }
         modelMap.addAttribute("lastRunTimestampValues", lastRunTimestampValues);
+
         return "setup/multispeakSync/home.jsp";
     }
 
@@ -73,19 +94,10 @@ public class MultispeakSyncController {
      */
     @RequestMapping("start")
     public String start(ModelMap modelMap, FlashScope flashScope, String multispeakSyncType, YukonUserContext userContext) {
-
-        List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(true);
-        boolean isEnrollmentSyncSupportExists = allVendors.stream()
-                                                          .anyMatch(multispeakVendor -> multispeakVendor.getMspInterfaces()
-                                                                                                        .stream()
-                                                                                                        .anyMatch(mspInterface -> mspInterface.getMspInterface()
-                                                                                                                                              .equals(MultispeakDefines.NOT_Server_DR_STR)));
-
         if (multispeakSyncType.equals(MultispeakSyncType.ENROLLMENT.name())) {
             // Start the synchronization for enrollment only if any vendor has support for NOT_Server(DR)
-            if (isEnrollmentSyncSupportExists) {
-                // To Do - Start the multispeak synchronization for enrollment
-
+            if (mspHandler.isEnrollmentSyncSupported()) {
+                mspHandler.startEnrollmentSync();
                 flashScope.setConfirm(new YukonMessageSourceResolvable(
                         "yukon.web.modules.adminSetup.multispeakSyncHome.startOk"));
                 return "redirect:enrollmentProgress";
@@ -96,10 +108,8 @@ public class MultispeakSyncController {
                                 "yukon.web.modules.adminSetup.multispeakSyncHome.error.noNOTServerVendor"));
                 return "redirect:home";
             }
-
         } else {
             // Start the synchronization for Substation/Billing/Substation and Billing Cycle
-
             int vendorId = multispeakFuncs.getPrimaryCIS();
             if (vendorId <= 0) {
                 flashScope.setError(
@@ -109,13 +119,13 @@ public class MultispeakSyncController {
 
             MultispeakSyncType multispeakSynchronizationType = MultispeakSyncType
                     .valueOf(multispeakSyncType);
-
             mspHandler.startDeviceGroupSync(multispeakSynchronizationType, userContext);
 
             flashScope.setConfirm(new YukonMessageSourceResolvable(
                     "yukon.web.modules.adminSetup.multispeakSyncHome.startOk"));
             return "redirect:progress";
         }
+
 
     }
 
@@ -124,7 +134,6 @@ public class MultispeakSyncController {
      */
     @RequestMapping("progress")
     public String progress(ModelMap modelMap, FlashScope flashScope) {
-
         flashScope.setConfirm(new YukonMessageSourceResolvable(
                 "yukon.web.modules.adminSetup.multispeakSyncHome.startOk"));
         MultispeakDeviceGroupSyncProgress progress = null;
@@ -149,21 +158,22 @@ public class MultispeakSyncController {
      */
     @RequestMapping("enrollmentProgress")
     public String enrollmentProgress(ModelMap modelMap, FlashScope flashScope) {
-
         flashScope.setConfirm(new YukonMessageSourceResolvable(
                 "yukon.web.modules.adminSetup.multispeakSyncHome.startOk"));
-        MultispeakDeviceGroupSyncProgress progress = new MultispeakDeviceGroupSyncProgress(MultispeakSyncType.ENROLLMENT);
-        // To Do service call 
+        MultispeakEnrollmentSyncProgress progress = null;
+        MultispeakEnrollmentSyncService service = mspHandler.getMultispeakEnrollmentSyncService();
 
-        // This is not a dead code. Will be used once service call is ready.
+        if (service != null) {
+            progress = service.getProgress();
+        }
+
         if (progress == null) {
             return "redirect:home";
         }
 
         modelMap.addAttribute("progress", progress);
 
-        // To Do - Set the total enrollment message count
-        modelMap.addAttribute("totalCount", 100);
+        modelMap.addAttribute("totalCount", lmHardwareControlGroupDao.getEnrollmentSyncMessagesToSend().size());
         modelMap.addAttribute("isEnrollmentSelected", true);
 
         return "setup/multispeakSync/progress.jsp";
@@ -172,16 +182,17 @@ public class MultispeakSyncController {
     // CANCEL
     @RequestMapping(value = "done", params = "cancel")
     public String done(FlashScope flashScope) {
-        if (MultispeakSyncType.ENROLLMENT.equals(mspHandler.getDeviceGroupSyncService().getProgress().getType())) {
-            // To do cancel the enrollment 
+        if (MultispeakSyncType.ENROLLMENT == mspHandler.getMultispeakEnrollmentSyncService().getProgress().getType()) {
+            mspHandler.getMultispeakEnrollmentSyncService().getProgress().cancel();
+            flashScope.setConfirm(new YukonMessageSourceResolvable(
+                    "yukon.web.modules.adminSetup.multispeakSyncProgress.cancelOk"));
+            return "redirect:enrollmentProgress";
         } else {
             mspHandler.getDeviceGroupSyncService().getProgress().cancel();
+            flashScope.setConfirm(new YukonMessageSourceResolvable(
+                    "yukon.web.modules.adminSetup.multispeakSyncProgress.cancelOk"));
+            return "redirect:progress";
         }
-
-        flashScope.setConfirm(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.multispeakSyncProgress.cancelOk"));
-
-        return "redirect:progress";
     }
 
     // BACK TO HOME

@@ -1,8 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="multispeakSync" tagdir="/WEB-INF/tags/multispeakSync" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="multispeakSyncHome">
 
@@ -87,5 +87,5 @@
     </tags:sectionContainer2>
     
     <cti:dataUpdaterCallback function="toggleSyncNowControls()" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
-    
+    <cti:dataUpdaterCallback function="toggleSyncNowControls()" initialize="true" value="MSP_ENROLLMENT_SYNC/IS_RUNNING" />
 </cti:standardPage>

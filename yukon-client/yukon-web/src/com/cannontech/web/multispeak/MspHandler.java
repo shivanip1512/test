@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
@@ -173,5 +174,18 @@ public class MspHandler {
         }
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         return mspVendor;
+    }
+    
+    /**
+     * Checks whether synchronization for enrollment is supported or not.
+     */
+    public boolean isEnrollmentSyncSupported() {
+        List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(true);
+        boolean isEnrollmentSyncSupportExists = allVendors.stream()
+                                                          .anyMatch(multispeakVendor -> multispeakVendor.getMspInterfaces()
+                                                                                                        .stream()
+                                                                                                        .anyMatch(mspInterface -> mspInterface.getMspInterface()
+                                                                                                                                              .equals(MultispeakDefines.NOT_Server_DR_STR)));
+        return isEnrollmentSyncSupportExists;
     }
 }
