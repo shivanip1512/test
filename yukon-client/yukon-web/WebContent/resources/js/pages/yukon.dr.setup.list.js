@@ -23,6 +23,7 @@ yukon.dr.setup.list = (function() {
             }
             if (!$("#js-load-program-types").is(":visible")) {
                 $("#js-load-program-types").val("").trigger("chosen:updated");
+                $("#js-operational-states").val("").trigger("chosen:updated");
             }
             if (!$("#js-gear-types").is(":visible")) {
                 $("#js-gear-types").val("").trigger("chosen:updated");
@@ -43,7 +44,8 @@ yukon.dr.setup.list = (function() {
             }
             
             if ($("#js-load-program-types").is(":visible")) {
-                $("#js-load-program-types").chosen({width: "305px"});
+                $("#js-load-program-types").chosen({width: "290px"});
+                $("#js-operational-states").chosen({width: "200px"});
             }
             
             if ($("#js-gear-types").is(":visible")) {

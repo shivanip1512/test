@@ -15,6 +15,7 @@
 <entry key="yukon.web.modules.dr.setup.delete.success">{0} deleted successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.select">Select</entry>
 <entry key="yukon.web.modules.dr.setup.selectPrograms.label">Select Program(s)</entry>
+<entry key="yukon.web.modules.dr.setup.abbreviatedText">and {0} more...</entry>
 
 <!-- Load Group -->
 <entry key="yukon.web.modules.dr.setup.loadGroup.CREATE.pageName">Create Load Group</entry>
@@ -106,6 +107,7 @@
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_7">Load 7</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.Load_8">Load 8</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.filter.types">Select Type(s)</entry>
+<entry key="yukon.web.modules.dr.setup.loadGroup.operationalStates.selectLbl">Select Operational State(s)</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.title">Load level group addressing vs. load number addressing</entry>
 <entry key="yukon.web.modules.dr.setup.loadGroup.loadAddressingPopup.message">
 By including load in your address usage, you are requiring the load to be configured
@@ -342,6 +344,8 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.filter.TYPE">Type</entry>
 <entry key="yukon.web.modules.dr.setup.filter.ORDER">Order</entry>
 <entry key="yukon.web.modules.dr.setup.filter.PROGRAM">Program</entry>
+<entry key="yukon.web.modules.dr.setup.filter.OPERATIONAL_STATE">Operational State</entry>
+<entry key="yukon.web.modules.dr.setup.filter.CONSTRAINT">Constraint</entry>
 <entry key="yukon.web.modules.dr.setup.filter.error">Error filtering records: {0}.</entry>
 
 <!-- Program Gear -->
