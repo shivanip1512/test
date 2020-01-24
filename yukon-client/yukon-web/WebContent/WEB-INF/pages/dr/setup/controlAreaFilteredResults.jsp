@@ -26,16 +26,15 @@
                     </td>
                     <td>
                         <c:choose>
-                            <c:when test="${empty filteredResult.triggers}">
+                            <c:when test="${empty filteredResult.triggers || fn:length(filteredResult.triggers) == 0}">
                                 <i:inline key="yukon.common.none.choice"/>
-                            </c:when>
-                            <c:when test="${fn:length(filteredResult.triggers) == 1}">
-                                <cti:triggerName pointId="${filteredResult.triggers[0].triggerPointId}" type="${filteredResult.triggers[0].triggerType}"/>
                             </c:when>
                             <c:otherwise>
                                 <cti:triggerName pointId="${filteredResult.triggers[0].triggerPointId}" type="${filteredResult.triggers[0].triggerType}"/>
-                                <i:inline key="yukon.common.comma"/>
-                                <cti:triggerName pointId="${filteredResult.triggers[1].triggerPointId}" type="${filteredResult.triggers[1].triggerType}"/>
+                                <c:if test="${fn:length(filteredResult.triggers) >1}">
+                                     <i:inline key="yukon.common.comma"/>
+                                     <cti:triggerName pointId="${filteredResult.triggers[1].triggerPointId}" type="${filteredResult.triggers[1].triggerType}"/>
+                                </c:if>
                             </c:otherwise>
                         </c:choose>
                     </td>

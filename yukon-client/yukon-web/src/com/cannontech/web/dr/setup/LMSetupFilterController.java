@@ -131,26 +131,25 @@ public class LMSetupFilterController {
                 Map<Integer, String> programsForControlArea = Maps.newHashMap();
                 List<ControlAreaFilteredResult> controlAreas = (List<ControlAreaFilteredResult>) filteredResults.getResultList();
                 for (ControlAreaFilteredResult controlArea : controlAreas) {
-                    programsForControlArea.put(controlArea.getControlAreaId(), getAbbrevatedText(accessor, controlArea.getAssignedPrograms()));
+                    programsForControlArea.put(controlArea.getControlAreaId(), getAbbreviatedText(accessor, controlArea.getAssignedPrograms()));
                     model.addAttribute("programsForControlArea", programsForControlArea);
                 }
                 break;
         }
     }
 
-    private String getAbbrevatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
+    private String getAbbreviatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
         StringBuilder builder = new StringBuilder();
-        if (lmObjects.size() > 5) {
-            builder.append(lmObjects.subList(0, 5).stream().map(loadGroup -> loadGroup.getName())
-                    .collect(Collectors.joining(", ")));
-            builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbrevatedTxt", lmObjects.size() - 5));
-        } else if (lmObjects.size() == 1) {
-            builder.append(lmObjects.get(0).getName());
-        } else if (CollectionUtils.isNotEmpty(lmObjects)){
-            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(loadGroup -> loadGroup.getName())
-                                                                                                                    .collect(Collectors.joining(", ")));
-        } else {
+        
+        if (CollectionUtils.isEmpty(lmObjects)) {
             builder.append(accessor.getMessage("yukon.common.none.choice"));
+        } else if (lmObjects.size() > 5) {
+            builder.append(lmObjects.subList(0, 5).stream().map(loadGroup -> loadGroup.getName())
+                                                                                        .collect(Collectors.joining(", ")));
+            builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbreviatedText", lmObjects.size() - 5));
+        } else {
+            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(loadGroup -> loadGroup.getName())
+                                                                                                               .collect(Collectors.joining(", ")));
         }
         return builder.toString();
     }
