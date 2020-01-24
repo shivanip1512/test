@@ -25,7 +25,7 @@ Yukon :
     description: Gas Meter Count
     details: Contains the count of gas meter.
     source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'RFG%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
-    iotType: Telemetry
+    iotType: Both
     frequency : EverySixHours
 
   - field: dcelectric
