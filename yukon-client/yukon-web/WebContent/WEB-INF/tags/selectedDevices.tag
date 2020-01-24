@@ -8,18 +8,25 @@
 <%@ attribute name="id" %>
 <%@ attribute name="deviceCollection" required="true" type="java.lang.Object"%>
 <%@ attribute name="labelKey" type="java.lang.String" description="The key to use for the label for the device collection.  Default is Devices Selected:" %>
+<%@ attribute name="labelString" type="java.lang.String" description="The string to use for the label for the device collection. If provided, used instead of labelKey." %>
 <%@ attribute name="badgeClasses" type="java.lang.String" description="Css class names to apply to the badge." %>
 <%@ attribute name="badgeColor" type="java.lang.String" description="Color to make the badge." %>
 
 <c:set var="count" value="${deviceCollection.deviceCount}"/>
 <cti:default var="labelKey" value="yukon.common.device.bulk.selectedDevicesPopup.linkLabel"/>
 
+<cti:msg2 var="label" key="${labelKey}"/>
+
+<c:if test="${!empty labelString}">
+    <c:set var="label" value="${labelString}"/>
+</c:if>
+
 <cti:url var="downloadResultUrl" value="/bulk/downloadResult"/>
 <cti:uniqueIdentifier prefix="form_" var="thisId"/>
 <form method="post" action="${downloadResultUrl}" id="${thisId}" class="dib">
 <cti:csrfToken/>
 <div <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
-    <strong><cti:msg2 key="${labelKey}"/>:</strong>&nbsp;
+    <strong>${label}:</strong>&nbsp;
     <span class="badge js-count ${badgeClasses}" style="background-color:${badgeColor}">${count}</span>&nbsp;
     <cti:msg2 key="${deviceCollection.description}" htmlEscape="true"/>
     <c:if test="${count > 0}"><tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/></c:if>

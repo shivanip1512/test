@@ -7,6 +7,7 @@ public class MappingColorCollection {
     private DeviceCollection deviceCollection;
     private String color;
     private String labelKey;
+    private String labelText;
 
     public MappingColorCollection(DeviceCollection deviceCollection, String color, String labelKey) {
         this.deviceCollection = deviceCollection;
@@ -36,5 +37,13 @@ public class MappingColorCollection {
 
     public void setLabelKey(String labelKey) {
         this.labelKey = labelKey;
+    }
+
+    public String getLabelText() {
+        return labelText;
+    }
+
+    public void setLabelText(String labelText) {
+        this.labelText = labelText;
     }
 }

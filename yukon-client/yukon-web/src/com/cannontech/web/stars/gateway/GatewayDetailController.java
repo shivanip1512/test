@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -90,6 +91,7 @@ public class GatewayDetailController {
         model.addAttribute("displayNeighborsLayer", true);
         model.addAttribute("displayNearbyLayer", true);
         model.addAttribute("numLayers", 1);
+        model.addAttribute("isVirtualGateway", gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY);
         
         return "gateways/detail.jsp";
     }
