@@ -29,7 +29,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.dr.setup.model.ControlAreaFilteredResult;
-import com.cannontech.web.api.dr.setup.model.ControlScenariosFilteredResult;
+import com.cannontech.web.api.dr.setup.model.ControlScenarioFilteredResult;
 import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadGroupFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
@@ -73,7 +73,7 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(ControlAreaFilteredResult.class, new ParameterizedTypeReference<SearchResults<ControlAreaFilteredResult>>() {
         });
-        paramTypeObjectRefMap.put(ControlScenariosFilteredResult.class, new ParameterizedTypeReference<SearchResults<ControlScenariosFilteredResult>>() {
+        paramTypeObjectRefMap.put(ControlScenarioFilteredResult.class, new ParameterizedTypeReference<SearchResults<ControlScenarioFilteredResult>>() {
         });
         paramTypeObjectRefMap.put(LoadGroupFilteredResult.class, new ParameterizedTypeReference<SearchResults<LoadGroupFilteredResult>>() {
         });

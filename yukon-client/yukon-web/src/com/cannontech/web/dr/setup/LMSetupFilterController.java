@@ -46,6 +46,7 @@ import com.cannontech.web.api.dr.setup.dao.LMSetupDao.GearSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.ProgramConstraintSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.SortBy;
 import com.cannontech.web.api.dr.setup.model.ControlAreaFilteredResult;
+import com.cannontech.web.api.dr.setup.model.ControlScenarioFilteredResult;
 import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
@@ -97,6 +98,7 @@ public class LMSetupFilterController {
         model.addAttribute("isFilterByLoadProgramSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM);
         model.addAttribute("isFilterByLoadGroupSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_GROUP);
         model.addAttribute("isFilterByControlAreaSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.CONTROL_AREA);
+        model.addAttribute("isFilterByControlScenarioSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.CONTROL_SCENARIO);
 
         ResponseEntity<? extends Object> response = null;
         // Make API call to get filtered result.
@@ -114,7 +116,7 @@ public class LMSetupFilterController {
 
         SearchResults<?> filteredResults = (SearchResults<?>) response.getBody();
         model.addAttribute("filteredResults", filteredResults);
-        
+
         setupModel(filteredResults, lmSetupFilter.getFilterByType(), userContext, model);
 
         // Build setup model
@@ -133,6 +135,14 @@ public class LMSetupFilterController {
                 for (ControlAreaFilteredResult controlArea : controlAreas) {
                     programsForControlArea.put(controlArea.getControlAreaId(), getAbbreviatedText(accessor, controlArea.getAssignedPrograms()));
                     model.addAttribute("programsForControlArea", programsForControlArea);
+                }
+                break;
+            case CONTROL_SCENARIO:
+                Map<Integer, String> loadProgramsForScenario = Maps.newHashMap();
+                List<ControlScenarioFilteredResult> filteredControlScenarios = (List<ControlScenarioFilteredResult>) filteredResults.getResultList();
+                for (ControlScenarioFilteredResult filteredControlScenario : filteredControlScenarios) {
+                    loadProgramsForScenario.put(filteredControlScenario.getScenario().getId(), getAbbreviatedText(accessor, filteredControlScenario.getAssignedPrograms()));
+                    model.addAttribute("loadProgramForScenario", loadProgramsForScenario);
                 }
                 break;
         }
@@ -246,7 +256,6 @@ public class LMSetupFilterController {
             case CONTROL_AREA:
                 requestObject = ControlAreaFilteredResult.class;
                 break;
-            case CONTROL_SCENARIO:
             case LOAD_GROUP:
             case LOAD_PROGRAM:
             case MACRO_LOAD_GROUP:
@@ -257,6 +266,9 @@ public class LMSetupFilterController {
                 break;
             case GEAR:
                 requestObject = GearFilteredResult.class;
+                break;
+            case CONTROL_SCENARIO:
+                requestObject = ControlScenarioFilteredResult.class;
                 break;
         }
 

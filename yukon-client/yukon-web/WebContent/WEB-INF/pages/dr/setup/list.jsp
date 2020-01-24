@@ -112,6 +112,9 @@
         <c:when test="${isFilterByControlAreaSelected}">
             <%@ include file="controlAreaFilteredResults.jsp" %>
         </c:when>
+        <c:when test="${isFilterByControlScenarioSelected}">
+            <%@ include file="controlScenarioFilteredResults.jsp" %>
+        </c:when>
         <c:otherwise>
             <%@ include file="filteredResults.jsp" %>
         </c:otherwise>
