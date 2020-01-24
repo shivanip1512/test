@@ -152,10 +152,12 @@ INSERT INTO DBUpdates VALUES ('YUK-20689', '7.4.0', SYSDATE);
 /* @end YUK-20689 */
 
 /* @start YUK-20819 */
+/* @error ignore-begin */
 ALTER TABLE DeviceMacAddress
 ADD SecondaryMacAddress VARCHAR2(255);
 
-INSERT INTO DBUpdates VALUES ('YUK-20819', '7.3.2', SYSDATE);
+INSERT INTO DBUpdates VALUES ('YUK-20819', '7.4.0', SYSDATE);
+/* @error ignore-end */
 /* @end YUK-20819 */
 
 /* @start YUK-20788 */
