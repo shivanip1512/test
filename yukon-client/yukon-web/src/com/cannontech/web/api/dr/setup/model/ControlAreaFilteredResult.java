@@ -2,8 +2,8 @@ package com.cannontech.web.api.dr.setup.model;
 
 import java.util.List;
 
+import com.cannontech.common.dr.setup.ControlAreaTrigger;
 import com.cannontech.common.dr.setup.LMDto;
-import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
 
 public class ControlAreaFilteredResult {
 

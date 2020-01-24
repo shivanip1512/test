@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.dr.setup.ControlAreaTrigger;
+import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMSetupFilter;
 import com.cannontech.common.model.Direction;
@@ -27,6 +29,16 @@ public class LMControlAreaSetupDaoImpl extends AbstractLMSetupDaoImpl<LMDto> {
             lmdto.setName(rs.getString("PAOName"));
 
             return lmdto;
+        }
+    };
+
+    private final YukonRowMapper<ControlAreaTrigger> triggerRowMapper = new YukonRowMapper<ControlAreaTrigger>() {
+        @Override
+        public ControlAreaTrigger mapRow(YukonResultSet rs) throws SQLException {
+            final ControlAreaTrigger controlAreaTrigger = new ControlAreaTrigger();
+            controlAreaTrigger.setTriggerPointId(rs.getInt("PointId"));
+            controlAreaTrigger.setTriggerType(ControlAreaTriggerType.getTriggerValue(rs.getString("TriggerType")));
+            return controlAreaTrigger;
         }
     };
 
@@ -52,7 +64,7 @@ public class LMControlAreaSetupDaoImpl extends AbstractLMSetupDaoImpl<LMDto> {
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
         LMSetupFilter filter = criteria.getFilteringParameters();
 
-        sqlTotalCountQuery.append("SELECT COUNT(*) ");
+        sqlTotalCountQuery.append("SELECT COUNT(*)");
         sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
@@ -62,7 +74,7 @@ public class LMControlAreaSetupDaoImpl extends AbstractLMSetupDaoImpl<LMDto> {
     @Override
     public SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter) {
         SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
-        statementBuilder.append("FROM LMControlArea lmca ");
+        statementBuilder.append("FROM LMControlArea lmca");
         statementBuilder.append("JOIN YukonPAObject ypo on lmca.DeviceID = ypo.PAObjectId");
 
         if (StringUtils.isNotBlank(filter.getName())) {
@@ -73,7 +85,7 @@ public class LMControlAreaSetupDaoImpl extends AbstractLMSetupDaoImpl<LMDto> {
 
     @Override
     public String getColumnNames() {
-        return "*";
+        return "PAObjectId, PAOName";
     }
 
     /**
@@ -89,5 +101,18 @@ public class LMControlAreaSetupDaoImpl extends AbstractLMSetupDaoImpl<LMDto> {
         
         List<LMDto> programs = jdbcTemplate.query(statementBuilder, rowMapper);
         return programs;
+    }
+
+    /**
+     * Get triggers associated with a control area.
+     */
+    public List<ControlAreaTrigger> getControlAreaTriggers(int controlAreaId) {
+        SqlStatementBuilder statementBuilder = new SqlStatementBuilder();
+        statementBuilder.append("SELECT PointId, TriggerType");
+        statementBuilder.append("FROM LMControlAreaTrigger");
+        statementBuilder.append("WHERE DeviceID").eq(controlAreaId);
+
+        List<ControlAreaTrigger> triggers = jdbcTemplate.query(statementBuilder, triggerRowMapper);
+        return triggers;
     }
 }
