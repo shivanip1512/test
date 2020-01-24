@@ -13,6 +13,17 @@ public class EnrollmentJmsMessage extends DrJmsMessage {
     private Instant enrollmentStartTime;
     private Instant enrollmentStopTime;
 
+    public EnrollmentJmsMessage(Integer inventoryId, Integer accountId, Integer loadGroupId, Integer relayNumber,
+            Integer programId, Instant enrollmentStartTime, Instant enrollmentStopTime) {
+        this.inventoryId = inventoryId;
+        this.accountId = accountId;
+        this.loadGroupId = loadGroupId;
+        this.relayNumber = relayNumber;
+        this.programId = programId;
+        this.enrollmentStartTime = enrollmentStartTime;
+        this.enrollmentStopTime = enrollmentStopTime;
+    }
+
     public Instant getEnrollmentStartTime() {
         return enrollmentStartTime;
     }

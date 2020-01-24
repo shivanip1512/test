@@ -87,6 +87,7 @@
   </bean>
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncService"/>
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncHelper"/>
+  <bean class="com.cannontech.multispeak.dao.v5.MultispeakEnrollmentDao"/>
 
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
     <property name="strategiesToExcludeInReport">
