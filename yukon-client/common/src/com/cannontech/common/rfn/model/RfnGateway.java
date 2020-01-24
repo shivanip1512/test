@@ -4,10 +4,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.Locatable;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -17,6 +20,9 @@ import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGateway> {
+    
+    @Autowired PaoDefinitionDao paoDefinitionDao;
+    
     private static final Logger log = YukonLogManager.getLogger(RfnGateway.class);
     
     private RfnGatewayData data;
@@ -227,7 +233,7 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     }
     
     public boolean isDataStreamingSupported() {
-        return getPaoIdentifier().getPaoType() == PaoType.GWY800;
+        return paoDefinitionDao.isTagSupported(getPaoIdentifier().getPaoType(), PaoTag.DATA_STREAMING);
     }
     
     public String getNameWithIPAddress() {
