@@ -39,6 +39,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.GearSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.ProgramConstraintSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.SortBy;
+import com.cannontech.web.api.dr.setup.model.ControlScenarioFilteredResult;
 import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
@@ -88,6 +89,7 @@ public class LMSetupFilterController {
         model.addAttribute("isFilterByGearSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.GEAR);
         model.addAttribute("isFilterByLoadProgramSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM);
         model.addAttribute("isFilterByLoadGroupSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_GROUP);
+        model.addAttribute("isFilterByControlScenarioSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.CONTROL_SCENARIO);
 
         ResponseEntity<? extends Object> response = null;
         // Make API call to get filtered result.
@@ -115,7 +117,6 @@ public class LMSetupFilterController {
     /**
      * Get FilterCriteria based on LMSetupFilter, SortingParameters, PagingParameters.
      */
-
     private FilterCriteria<LMSetupFilter> getFilterCriteria(LMSetupFilter lmSetupFilter, SortingParameters sorting, PagingParameters paging) {
         FilterCriteria<LMSetupFilter> filterCriteria = new FilterCriteria<LMSetupFilter>(lmSetupFilter, sorting, paging);
 
@@ -179,7 +180,6 @@ public class LMSetupFilterController {
                 }
                 break;
             case PROGRAM_CONSTRAINT:
-
                 LMFilterProgramConstraintSortBy constraintSortBy = LMFilterProgramConstraintSortBy.valueOf(sorting.getSort());
                 for (LMFilterProgramConstraintSortBy column : LMFilterProgramConstraintSortBy.values()) {
                     text = accessor.getMessage(column);
@@ -200,7 +200,6 @@ public class LMSetupFilterController {
         Class<?> requestObject = null;
         switch (lmSetupFilter.getFilterByType()) {
             case CONTROL_AREA:
-            case CONTROL_SCENARIO:
             case LOAD_GROUP:
             case LOAD_PROGRAM:
             case MACRO_LOAD_GROUP:
@@ -211,6 +210,9 @@ public class LMSetupFilterController {
                 break;
             case GEAR:
                 requestObject = GearFilteredResult.class;
+                break;
+            case CONTROL_SCENARIO:
+                requestObject = ControlScenarioFilteredResult.class;
                 break;
         }
 
