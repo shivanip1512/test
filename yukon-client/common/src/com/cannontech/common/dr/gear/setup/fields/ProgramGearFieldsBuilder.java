@@ -2,7 +2,7 @@ package com.cannontech.common.dr.gear.setup.fields;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
+import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
 import com.cannontech.common.dr.gear.setup.ControlStartState;
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
@@ -188,9 +188,9 @@ public class ProgramGearFieldsBuilder {
         String methodOptionType = directGear.getMethodOptionType();
 
         if (methodOptionType.compareTo(IlmDefines.OPTION_COUNT_DOWN) == 0) {
-            gearFields.setRefreshShedTime(CycleCountSendType.valueOf(IlmDefines.OPTION_DYNAMIC_SHED));
+            gearFields.setRefreshShedType(CycleCountSendType.valueOf(IlmDefines.OPTION_DYNAMIC_SHED));
         } else {
-            gearFields.setRefreshShedTime(CycleCountSendType.valueOf(IlmDefines.OPTION_FIXED_SHED));
+            gearFields.setRefreshShedType(CycleCountSendType.valueOf(IlmDefines.OPTION_FIXED_SHED));
         }
 
         gearFields.setSendRate(directGear.getMethodRate());
@@ -305,15 +305,15 @@ public class ProgramGearFieldsBuilder {
         gearFields.setValueTf(thermostatGear.getValueTf());
 
         if (thermostatGear.getSettings().charAt(0) == 'A') {
-            gearFields.setAbsoluteOrDelta(AbsoluteOrDelta.ABSOLUTE);
+            gearFields.setSetpoint(Setpoint.ABSOLUTE);
         } else {
-            gearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
+            gearFields.setSetpoint(Setpoint.DELTA);
         }
 
         if (thermostatGear.getSettings().charAt(1) == 'C') {
-            gearFields.setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
+            gearFields.setTempMeasureUnit(TemperatureMeasureUnit.CELSIUS);
         } else {
-            gearFields.setMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
+            gearFields.setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         }
 
         if (thermostatGear.getSettings().charAt(3) == 'I') {
@@ -493,7 +493,7 @@ public class ProgramGearFieldsBuilder {
         gearFields.setCriticality(Integer.parseInt(methodOptionType));
         gearFields.setDutyCyclePeriodInMinutes(directGear.getMethodPeriod() / 60);
         ItronCycleType cycleType = gearDao.getItronCycleType(directGear.getGearId());
-        gearFields.setCycleType(cycleType);
+        gearFields.setDutyCycleType(cycleType);
 
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
         gearFields.setWhenToChangeFields(changeFields);
@@ -509,9 +509,9 @@ public class ProgramGearFieldsBuilder {
         NestStandardCycleGearFields gearFields = new NestStandardCycleGearFields();
 
         LoadShapingOptions loadShapingOptions = gearDao.getLoadShapingOptions(directGear.getGearId());
-        gearFields.setPeak(loadShapingOptions.getPeakLoadShape());
-        gearFields.setPost(loadShapingOptions.getPostLoadShape());
-        gearFields.setPrep(loadShapingOptions.getPrepLoadShape());
+        gearFields.setPeakLoadShaping(loadShapingOptions.getPeakLoadShape());
+        gearFields.setPostPeakLoadShaping(loadShapingOptions.getPostLoadShape());
+        gearFields.setPreparationLoadShaping(loadShapingOptions.getPrepLoadShape());
         return gearFields;
 
     }
@@ -578,9 +578,9 @@ public class ProgramGearFieldsBuilder {
         }
 
         if (thermostatGear.getSettings().charAt(1) == 'C') {
-            gearFields.setCelsiusOrFahrenheit(TemperatureMeasureUnit.CELSIUS);
+            gearFields.setTempMeasureUnit(TemperatureMeasureUnit.CELSIUS);
         } else {
-            gearFields.setCelsiusOrFahrenheit(TemperatureMeasureUnit.FAHRENHEIT);
+            gearFields.setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         }
 
         gearFields.setCriticality(directGear.getMethodPeriod());

@@ -8,48 +8,48 @@ import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 
 public class NestStandardCycleGearFields implements ProgramGearFields {
 
-    private PrepLoadShape prep;
-    private PeakLoadShape peak;
-    private PostLoadShape post;
+    private PrepLoadShape preparationLoadShaping;
+    private PeakLoadShape peakLoadShaping;
+    private PostLoadShape postPeakLoadShaping;
 
-    public PrepLoadShape getPrep() {
-        return prep;
+    public PrepLoadShape getPreparationLoadShaping() {
+        return preparationLoadShaping;
     }
 
-    public void setPrep(PrepLoadShape prep) {
-        this.prep = prep;
+    public void setPreparationLoadShaping(PrepLoadShape preparationLoadShaping) {
+        this.preparationLoadShaping = preparationLoadShaping;
     }
 
-    public PeakLoadShape getPeak() {
-        return peak;
+    public PeakLoadShape getPeakLoadShaping() {
+        return peakLoadShaping;
     }
 
-    public void setPeak(PeakLoadShape peak) {
-        this.peak = peak;
+    public void setPeakLoadShaping(PeakLoadShape peakLoadShaping) {
+        this.peakLoadShaping = peakLoadShaping;
     }
 
-    public PostLoadShape getPost() {
-        return post;
+    public PostLoadShape getPostPeakLoadShaping() {
+        return postPeakLoadShaping;
     }
 
-    public void setPost(PostLoadShape post) {
-        this.post = post;
+    public void setPostPeakLoadShaping(PostLoadShape postPeakLoadShaping) {
+        this.postPeakLoadShaping = postPeakLoadShaping;
     }
 
     @Override
     public void buildModel(LMProgramDirectGear programDirectGear) {
         NestStandardCycleGear nestStandardCycleGear = (NestStandardCycleGear) programDirectGear;
-        setPeak(nestStandardCycleGear.getPeakLoadShape());
-        setPost(nestStandardCycleGear.getPostLoadShape());
-        setPrep(nestStandardCycleGear.getPrepLoadShape());
+        setPeakLoadShaping(nestStandardCycleGear.getPeakLoadShape());
+        setPostPeakLoadShaping(nestStandardCycleGear.getPostLoadShape());
+        setPreparationLoadShaping(nestStandardCycleGear.getPrepLoadShape());
     }
 
     @Override
     public void buildDBPersistent(LMProgramDirectGear programDirectGear) {
         NestStandardCycleGear nestStandardCycle = (NestStandardCycleGear) programDirectGear;
-        PrepLoadShape prep = getPrep();
-        PeakLoadShape peak = getPeak();
-        PostLoadShape post = getPost();
+        PrepLoadShape prep = getPreparationLoadShaping();
+        PeakLoadShape peak = getPeakLoadShaping();
+        PostLoadShape post = getPostPeakLoadShaping();
         nestStandardCycle.setLoadShapingOptions(prep, peak, post);
     }
 

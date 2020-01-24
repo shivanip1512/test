@@ -34,8 +34,8 @@ public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
         sqlCommon.append("SELECT");
         sqlCommon.append("RowNumber, PAObjectID, PAOName, Type");
         sqlCommon.append("FROM (");
-        sqlCommon.append("SELECT ");
-        sqlCommon.append("ROW_NUMBER() OVER (ORDER BY ");
+        sqlCommon.append("SELECT");
+        sqlCommon.append("ROW_NUMBER() OVER (ORDER BY");
         sqlCommon.append(sortValue);
         sqlCommon.append(" ");
         sqlCommon.append(sortingDirection);
@@ -75,10 +75,10 @@ public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
         SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
 
         sqlCommon.append("SELECT");
-        sqlCommon.append("RowNumber, * ");
+        sqlCommon.append("RowNumber, *");
         sqlCommon.append("FROM (");
-        sqlCommon.append("SELECT ");
-        sqlCommon.append("ROW_NUMBER() OVER (ORDER BY ");
+        sqlCommon.append("SELECT");
+        sqlCommon.append("ROW_NUMBER() OVER (ORDER BY");
         sqlCommon.append(sortValue);
         sqlCommon.append(" ");
         sqlCommon.append(sortingDirection);
@@ -93,16 +93,16 @@ public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
 
         SqlStatementBuilder sqlPaginationQuery = new SqlStatementBuilder();
         if (criteria.getPagingParameters() != null) {
-            sqlPaginationQuery.append(" WHERE RowNumber BETWEEN");
+            sqlPaginationQuery.append("WHERE RowNumber BETWEEN");
             sqlPaginationQuery.append(criteria.getPagingParameters().getOneBasedStartIndex());
-            sqlPaginationQuery.append(" AND ");
+            sqlPaginationQuery.append("AND");
             sqlPaginationQuery.append(criteria.getPagingParameters().getOneBasedEndIndex());
         }
         return sqlPaginationQuery;
     }
 
     /**
-     * Return SqlStatementBuilder corresponding to Table and where clause.
+     * Return SqlStatementBuilder corresponding to From and Where clause.
      */
     public abstract SqlStatementBuilder getFromAndWhereClause(LMSetupFilter filter);
 

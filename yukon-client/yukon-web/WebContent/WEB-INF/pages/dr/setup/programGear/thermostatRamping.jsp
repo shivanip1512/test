@@ -18,7 +18,7 @@
             <input type="hidden" class="js-deltaF-lbl" value="${deltaFLbl}"/>
             
             <c:choose>
-                <c:when test="${programGear.fields.absoluteOrDelta == 'ABSOLUTE'}">
+                <c:when test="${programGear.fields.setpoint == 'ABSOLUTE'}">
                     <c:set var="valueBLblKey" value=".valueB"/>
                     <c:set var="valueDLblKey" value=".valueD"/>
                     <c:set var="valueFLblKey" value=".valueF"/>
@@ -58,7 +58,7 @@
                             </c:choose>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".measureUnit">
+                    <tags:nameValue2 nameKey=".tempMeasureUnit">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <c:forEach var="unit" items="${units}" varStatus="status">
                                 <c:choose>
@@ -72,14 +72,14 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.measureUnit" value="${unit}" classes="${css}" key=".${unit}" />
+                                <tags:radio path="fields.tempMeasureUnit" value="${unit}" classes="${css}" key=".${unit}" />
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.measureUnit}"/>
+                            <i:inline key=".${programGear.fields.tempMeasureUnit}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".absoluteOrDelta">
+                    <tags:nameValue2 nameKey=".setpoint">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <c:forEach var="setpoint" items="${setpoints}" varStatus="status">
                                 <c:choose>
@@ -93,12 +93,12 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.absoluteOrDelta" value="${setpoint}" classes="${css}"
+                                <tags:radio path="fields.setpoint" value="${setpoint}" classes="${css}"
                                             key=".${setpoint}" inputClass="js-setpoint-input"/>
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.absoluteOrDelta}"/>
+                            <i:inline key=".${programGear.fields.setpoint}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".minValue">

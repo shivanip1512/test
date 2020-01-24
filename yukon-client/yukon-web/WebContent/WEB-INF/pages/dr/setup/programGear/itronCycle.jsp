@@ -5,12 +5,12 @@
             <tags:sectionContainer2 nameKey="controlParameters">
                 <tags:nameValueContainer2>
                     <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
-                    <tags:nameValue2 nameKey=".cycleType">
+                    <tags:nameValue2 nameKey=".dutyCycleType">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectWithItems items="${cycleType}" path="fields.cycleType" />
+                            <tags:selectWithItems items="${cycleType}" path="fields.dutyCycleType" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key="${programGear.fields.cycleType}"/>
+                            <i:inline key="${programGear.fields.dutyCycleType}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2> 
                     <tags:nameValue2 nameKey=".dutyCyclePercent">

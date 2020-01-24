@@ -31,17 +31,17 @@ public class TimeRefreshGearFieldsValidator extends ProgramGearFieldsValidator<T
     @Override
     protected void doValidation(TimeRefreshGearFields timeRefreshCycleGear, Errors errors) {
         // Check Refresh Shed Type
-        lmValidatorHelper.checkIfFieldRequired("refreshShedTime", errors, timeRefreshCycleGear.getRefreshShedTime(),
+        lmValidatorHelper.checkIfFieldRequired("refreshShedType", errors, timeRefreshCycleGear.getRefreshShedType(),
             "Refresh Shed Type");
-        if (!errors.hasFieldErrors("refreshShedTime")) {
-            if (timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.FixedShedTime
-                && timeRefreshCycleGear.getRefreshShedTime() != CycleCountSendType.DynamicShedTime) {
-                errors.rejectValue("refreshShedTime", invalidKey, new Object[] { "Refresh Shed Time" }, "");
+        if (!errors.hasFieldErrors("refreshShedType")) {
+            if (timeRefreshCycleGear.getRefreshShedType() != CycleCountSendType.FixedShedTime
+                && timeRefreshCycleGear.getRefreshShedType() != CycleCountSendType.DynamicShedTime) {
+                errors.rejectValue("refreshShedType", invalidKey, new Object[] { "Refresh Shed Type" }, "");
             }
         }
 
         // Check Shed Time
-        if (!errors.hasFieldErrors("refreshShedTime")) {
+        if (!errors.hasFieldErrors("refreshShedType")) {
             lmValidatorHelper.checkIfFieldRequired("shedTime", errors, timeRefreshCycleGear.getShedTime(), "Shed Time");
             if (!errors.hasFieldErrors("shedTime")) {
                 TimeIntervals shedTime = TimeIntervals.fromSeconds(timeRefreshCycleGear.getShedTime());

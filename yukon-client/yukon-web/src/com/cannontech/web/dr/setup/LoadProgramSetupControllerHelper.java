@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
+import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
 import com.cannontech.common.dr.gear.setup.ControlStartState;
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
@@ -401,11 +401,11 @@ public class LoadProgramSetupControllerHelper {
         if (thermostatCycleGearFields.getIsHeatMode() == null) {
             thermostatCycleGearFields.setIsHeatMode(false);
         }
-        if (thermostatCycleGearFields.getAbsoluteOrDelta() == null) {
-            thermostatCycleGearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
+        if (thermostatCycleGearFields.getSetpoint() == null) {
+            thermostatCycleGearFields.setSetpoint(Setpoint.DELTA);
         }
-        if (thermostatCycleGearFields.getMeasureUnit() == null) {
-            thermostatCycleGearFields.setMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
+        if (thermostatCycleGearFields.getTempMeasureUnit() == null) {
+            thermostatCycleGearFields.setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         }
     }
 
@@ -447,7 +447,7 @@ public class LoadProgramSetupControllerHelper {
         sepTemperatureOffsetGearFields.setRampIn(true);
         sepTemperatureOffsetGearFields.setRampOut(true);
         sepTemperatureOffsetGearFields.setMode(Mode.HEAT);
-        sepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(TemperatureMeasureUnit.FAHRENHEIT);
+        sepTemperatureOffsetGearFields.setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         sepTemperatureOffsetGearFields.setOffset(1.0);
         sepTemperatureOffsetGearFields.setCriticality(6);
         sepTemperatureOffsetGearFields.setHowToStopControl(HowToStopControl.TimeIn);
@@ -645,7 +645,7 @@ public class LoadProgramSetupControllerHelper {
             break;
         case ThermostatRamping:
             model.addAttribute("units", TemperatureMeasureUnit.values());
-            model.addAttribute("setpoints", AbsoluteOrDelta.values());
+            model.addAttribute("setpoints", Setpoint.values());
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
