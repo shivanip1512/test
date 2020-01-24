@@ -75,7 +75,7 @@ public abstract class AbstractLMSetupDaoImpl<T> implements LMSetupDao<T> {
         SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
 
         sqlCommon.append("SELECT");
-        sqlCommon.append("RowNumber, " + columnNames);
+        sqlCommon.append("RowNumber, * ");
         sqlCommon.append("FROM (");
         sqlCommon.append("SELECT ");
         sqlCommon.append("ROW_NUMBER() OVER (ORDER BY ");
