@@ -102,6 +102,16 @@ public class GearFieldHelper {
                                                      .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                      .build();
             break;
+        case HoneywellSetpoint:
+                gearFields = MockHoneywellSetpointGearFields.builder()
+                                     .mandatory(true)
+                                     .setpointOffset(7)
+                                     .precoolOffset(-2)
+                                     .mode(MockMode.COOL)
+                                     .howToStopControl(MockHowToStopControl.Restore)
+                                     .capacityReduction(50)
+                                     .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
+                                     .build();
         case ItronCycle:
                 gearFields = MockItronCycleGearFields.builder()
                                                  .cycleType(MockItronCycleType.STANDARD)

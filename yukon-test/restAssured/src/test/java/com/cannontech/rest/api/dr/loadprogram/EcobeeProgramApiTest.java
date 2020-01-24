@@ -75,8 +75,12 @@ public class EcobeeProgramApiTest {
 
         assertTrue("Expected and actual name is different", expectedLoadProgram.getName().equals(actualLoadProgram.getName()));
         assertTrue("Expected and actual type is different", expectedLoadProgram.getType().equals(actualLoadProgram.getType()));
+        assertEquals("Expected and actual number of gears is different",
+                     expectedLoadProgram.getGears().size(), actualLoadProgram.getGears().size());
         assertTrue("Expected and actual gear name is different",
                    expectedLoadProgram.getGears().get(0).getGearName().equals(actualLoadProgram.getGears().get(0).getGearName()));
+        assertTrue("Expected and actual gear name is different",
+                   expectedLoadProgram.getGears().get(1).getGearName().equals(actualLoadProgram.getGears().get(1).getGearName()));
         assertTrue("Expected and actual gear control method is different",
                    expectedLoadProgram.getGears().get(0).getControlMethod().equals(actualLoadProgram.getGears().get(0).getControlMethod()));
         Log.endTestCase("loadPgmEcobee_02_Get");
