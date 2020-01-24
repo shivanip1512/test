@@ -138,18 +138,20 @@ public class LMSetupFilterController {
         }
     }
 
+    /**
+     * This method returns abbreviated text for the LM object list passed as a parameter.
+     */
     private String getAbbreviatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
         StringBuilder builder = new StringBuilder();
-        
         if (CollectionUtils.isEmpty(lmObjects)) {
             builder.append(accessor.getMessage("yukon.common.none.choice"));
         } else if (lmObjects.size() > 5) {
-            builder.append(lmObjects.subList(0, 5).stream().map(loadGroup -> loadGroup.getName())
-                                                                                        .collect(Collectors.joining(", ")));
+            builder.append(lmObjects.subList(0, 5).stream().map(lmObject -> lmObject.getName())
+                                                           .collect(Collectors.joining(", ")));
             builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbreviatedText", lmObjects.size() - 5));
         } else {
-            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(loadGroup -> loadGroup.getName())
-                                                                                                               .collect(Collectors.joining(", ")));
+            builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(lmObject -> lmObject.getName())
+                                                                          .collect(Collectors.joining(", ")));
         }
         return builder.toString();
     }
