@@ -8,4 +8,5 @@ public enum MultispeakEnrollmentSyncUpdaterTypeEnum {
     ENROLLMENT_MESSAGE_SENT_COUNT,
     STATUS_CLASS,
     LAST_COMPLETED_SYNC_TIME,
+    STATUS_TEXT_OR_LAST_SYNC_ENROLLMENT
 }

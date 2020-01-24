@@ -53,6 +53,10 @@ public class MultispeakEnrollmentSyncBackingService extends MultispeakSyncBackin
         handlersMap.put(MultispeakEnrollmentSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_TIME, (progress, userContext) -> {
             return getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType.ENROLLMENT, userContext);
         });
+        
+        handlersMap.put(MultispeakEnrollmentSyncUpdaterTypeEnum.STATUS_TEXT_OR_LAST_SYNC_ENROLLMENT, (progress, userContext) -> {
+            return getStatusTextObj(progress, MultispeakSyncTypeProcessorType.ENROLLMENT, userContext);
+        });
     }
 
     @Override
