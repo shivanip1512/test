@@ -1452,16 +1452,5 @@
 
     <bean class="com.cannontech.web.tools.commander.CustomCommandBeanValidator"/>
 
-    <bean id="drAttributeDataJmsListener" class="com.cannontech.stars.dr.jms.data.listener.DrAttributeDataJmsListener"/>
-
-    <jms:listener-container 
-        connection-factory="connectionFactory" 
-        task-executor="globalTaskExecutor" 
-        destination-type="topic"
-        concurrency="1"
-        container-type="simple">
-        <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="drAttributeDataJmsListener" method="pointDataReceived"/>
-    </jms:listener-container>
-
     <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
 </beans>

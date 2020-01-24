@@ -10,7 +10,6 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
-import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
 import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
@@ -84,13 +83,6 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
-    }
-
-    @Override
-    public void publishAttributeDataMessageNotice(DrAttributeDataJmsMessage message) {
-        log.debug("Attribute Data message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.DATA_NOTIFICATION.getQueue().getName(), message);
-
     }
 
     @Override
