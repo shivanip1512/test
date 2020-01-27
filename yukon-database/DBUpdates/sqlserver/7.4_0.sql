@@ -295,18 +295,15 @@ INSERT INTO DBUpdates VALUES('YUK-21378', '7.4.0', GETDATE());
 /* @start YUK-21216 */
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-milliwatts', '(none)');
 
-UPDATE POINTUNIT
-SET UOMID = 57
-WHERE UOMID = 54
-AND POINTID IN
-    (SELECT POINTID
-     FROM POINT
-     WHERE POINTOFFSET = 394
-     AND PAObjectID IN
-        (SELECT PAObjectId
-         FROM YukonPAObject
-         WHERE Type in
-            ('WRL-420cD', 'WRL-420cL')));
+UPDATE PointUnit
+SET UomId = 57
+WHERE UomId = 54
+AND PointId IN
+    (SELECT PointId FROM Point p
+     JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+     WHERE PointType = 'Analog' 
+     AND PointOffset = 394
+     AND Type in ('WRL-420cD', 'WRL-420cL'));
 
 INSERT INTO DBUpdates VALUES('YUK-21216', '7.4.0', GETDATE());
 /* @end YUK-21216 */
