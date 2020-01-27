@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -130,8 +131,6 @@ public class MultispeakSyncController {
      */
     @RequestMapping("progress")
     public String progress(ModelMap modelMap, FlashScope flashScope) {
-        flashScope.setConfirm(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.multispeakSyncHome.startOk"));
         MultispeakDeviceGroupSyncProgress progress = null;
         MultispeakDeviceGroupSyncServiceBase service = mspHandler.getDeviceGroupSyncService();
         if (service != null) {
@@ -154,8 +153,6 @@ public class MultispeakSyncController {
      */
     @RequestMapping("enrollmentProgress")
     public String enrollmentProgress(ModelMap modelMap, FlashScope flashScope) {
-        flashScope.setConfirm(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.multispeakSyncHome.startOk"));
         MultispeakEnrollmentSyncProgress progress = null;
         MultispeakEnrollmentSyncService service = mspHandler.getMultispeakEnrollmentSyncService();
 
@@ -176,10 +173,9 @@ public class MultispeakSyncController {
     }
     
     // CANCEL
-    @RequestMapping(value = "done", params = "cancel")
-    public String done(FlashScope flashScope) {
-        if (mspHandler.getMultispeakEnrollmentSyncService().getProgress() != null
-                && mspHandler.getMultispeakEnrollmentSyncService().getProgress().isRunning()) {
+    @PostMapping("cancel")
+    public String cancel(FlashScope flashScope, MultispeakSyncType multispeakSyncType) {
+        if (multispeakSyncType == MultispeakSyncType.ENROLLMENT) {
             mspHandler.getMultispeakEnrollmentSyncService().getProgress().cancel();
             flashScope.setConfirm(new YukonMessageSourceResolvable(
                     "yukon.web.modules.adminSetup.multispeakSyncProgress.cancelOk"));

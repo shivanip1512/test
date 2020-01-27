@@ -22,6 +22,12 @@ public class EnrollmentJmsMessage extends DrJmsMessage {
         this.programId = programId;
         this.enrollmentStartTime = enrollmentStartTime;
         this.enrollmentStopTime = enrollmentStopTime;
+        // Set message type based on enrollment stop time.
+        if (enrollmentStopTime != null) {
+            this.setMessageType(DrJmsMessageType.UNENROLLMENT);
+        } else {
+            this.setMessageType(DrJmsMessageType.ENROLLMENT);
+        }
     }
 
     public EnrollmentJmsMessage() {

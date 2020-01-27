@@ -68,14 +68,20 @@
         </tags:nameValueContainer2>
         <br>
 
-        <%-- BACK/CANCEL BUTTONS --%>
+        <%-- BACK BUTTON --%>
         <cti:url var="backUrl" value="/multispeak/setup/multispeakSync/done"/>
         <form id="backToHomeForm" action="${backUrl}" method="post">
             <cti:csrfToken/>
             <button name="backToHome" class="button">
                 <i:inline key=".backToHomeButton"/>
             </button>
+        </form>
 
+        <%-- CANCEL BUTTON --%>
+        <cti:url var="cancelUrl" value="/multispeak/setup/multispeakSync/cancel"/>
+        <form action="${cancelUrl}" method="post">
+            <cti:csrfToken/>
+            <input type="hidden" name="multispeakSyncType" value="${progress.type}">
             <button name="cancel" class="button" id="cancelButton">
                 <i:inline key=".cancelButton"/>
             </button>
