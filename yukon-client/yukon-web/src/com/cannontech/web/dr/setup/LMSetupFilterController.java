@@ -47,6 +47,8 @@ import com.cannontech.web.api.dr.setup.dao.LMSetupDao.GearSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.LoadProgramSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.ProgramConstraintSortBy;
 import com.cannontech.web.api.dr.setup.dao.LMSetupDao.SortBy;
+import com.cannontech.web.api.dr.setup.model.ControlAreaFilteredResult;
+import com.cannontech.web.api.dr.setup.model.ControlScenarioFilteredResult;
 import com.cannontech.web.api.dr.setup.model.GearFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.validation.ApiCommunicationException;
@@ -99,6 +101,8 @@ public class LMSetupFilterController {
         model.addAttribute("isFilterByGearSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.GEAR);
         model.addAttribute("isFilterByLoadProgramSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM);
         model.addAttribute("isFilterByLoadGroupSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_GROUP);
+        model.addAttribute("isFilterByControlAreaSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.CONTROL_AREA);
+        model.addAttribute("isFilterByControlScenarioSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.CONTROL_SCENARIO);
 
         ResponseEntity<? extends Object> response = null;
         // Make API call to get filtered result.
@@ -129,6 +133,22 @@ public class LMSetupFilterController {
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         // Add text to be displayed for columns for different object based on the LM object being filtered.
         switch (filterByType) {
+            case CONTROL_AREA:
+                Map<Integer, String> programsForControlArea = Maps.newHashMap();
+                List<ControlAreaFilteredResult> controlAreas = (List<ControlAreaFilteredResult>) filteredResults.getResultList();
+                for (ControlAreaFilteredResult controlArea : controlAreas) {
+                    programsForControlArea.put(controlArea.getControlAreaId(), getAbbreviatedText(accessor, controlArea.getAssignedPrograms()));
+                    model.addAttribute("programsForControlArea", programsForControlArea);
+                }
+                break;
+            case CONTROL_SCENARIO:
+                Map<Integer, String> loadProgramsForScenario = Maps.newHashMap();
+                List<ControlScenarioFilteredResult> filteredControlScenarios = (List<ControlScenarioFilteredResult>) filteredResults.getResultList();
+                for (ControlScenarioFilteredResult filteredControlScenario : filteredControlScenarios) {
+                    loadProgramsForScenario.put(filteredControlScenario.getScenario().getId(), getAbbreviatedText(accessor, filteredControlScenario.getAssignedPrograms()));
+                    model.addAttribute("loadProgramForScenario", loadProgramsForScenario);
+                }
+                break;
             case LOAD_PROGRAM:
                 Map<Integer, String> loadGroupsForProgram = Maps.newHashMap();
                 Map<Integer, String> gearsForProgram = Maps.newHashMap();
@@ -142,22 +162,21 @@ public class LMSetupFilterController {
                 break;
         }
     }
-    
+
     /**
-     * This method returns abbreviated text for the LM objects passed as a parameter.
+     * This method returns abbreviated text for the LM object list passed as a parameter.
      */
     private String getAbbreviatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
         StringBuilder builder = new StringBuilder();
-        
         if (CollectionUtils.isEmpty(lmObjects)) {
             builder.append(accessor.getMessage("yukon.common.none.choice"));
         } else if (lmObjects.size() > 5) {
             builder.append(lmObjects.subList(0, 5).stream().map(lmObject -> lmObject.getName())
-                    .collect(Collectors.joining(", ")));
+                                                           .collect(Collectors.joining(", ")));
             builder.append(accessor.getMessage("yukon.web.modules.dr.setup.abbreviatedText", lmObjects.size() - 5));
         } else {
             builder.append(lmObjects.subList(0, lmObjects.size()).stream().map(lmObject -> lmObject.getName())
-                    .collect(Collectors.joining(", ")));
+                                                                          .collect(Collectors.joining(", ")));
         }
         return builder.toString();
     }
@@ -258,7 +277,8 @@ public class LMSetupFilterController {
         Class<?> requestObject = null;
         switch (lmSetupFilter.getFilterByType()) {
             case CONTROL_AREA:
-            case CONTROL_SCENARIO:
+                requestObject = ControlAreaFilteredResult.class;
+                break;
             case LOAD_GROUP:
             case MACRO_LOAD_GROUP:
                 requestObject = LMPaoDto.class;
@@ -268,6 +288,9 @@ public class LMSetupFilterController {
                 break;
             case GEAR:
                 requestObject = GearFilteredResult.class;
+                break;
+            case CONTROL_SCENARIO:
+                requestObject = ControlScenarioFilteredResult.class;
                 break;
             case LOAD_PROGRAM:
                 requestObject = LoadProgramFilteredResult.class;

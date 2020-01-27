@@ -67,7 +67,7 @@
                             <i:inline key=".${programGear.fields.mode}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".celsiusOrFahrenheit">
+                    <tags:nameValue2 nameKey=".tempMeasureUnit">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <c:forEach var="unit" items="${units}" varStatus="status">
                                 <c:choose>
@@ -81,11 +81,11 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.celsiusOrFahrenheit" value="${unit}" classes="${css}" key=".${unit}" />
+                                <tags:radio path="fields.tempMeasureUnit" value="${unit}" classes="${css}" key=".${unit}" />
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.celsiusOrFahrenheit}"/>
+                            <i:inline key=".${programGear.fields.tempMeasureUnit}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="${modeOffsetLblKey}" nameClass="vam js-temperature-mode-td">

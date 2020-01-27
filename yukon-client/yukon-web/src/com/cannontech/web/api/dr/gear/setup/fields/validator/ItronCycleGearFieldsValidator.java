@@ -31,7 +31,7 @@ public class ItronCycleGearFieldsValidator extends ProgramGearFieldsValidator<It
     protected void doValidation(ItronCycleGearFields itronCycleGear, Errors errors) {
 
         // Check Itron duty Cycle
-        lmValidatorHelper.checkIfFieldRequired("cycleType", errors, itronCycleGear.getCycleType(), "Itron Cycle Type");
+        lmValidatorHelper.checkIfFieldRequired("dutyCycleType", errors, itronCycleGear.getDutyCycleType(), "Itron Cycle Type");
 
         // Check Ramp In
         gearValidatorHelper.checkRampIn(itronCycleGear.getRampIn(), errors);

@@ -5,14 +5,14 @@
         <div class="column one">
             <tags:sectionContainer2 nameKey="controlParameters">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".refreshShedTime">
+                    <tags:nameValue2 nameKey=".refreshShedType">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl" />
-                            <tags:selectWithItems id="refreshShedType" items="${refreshShedType}" path="fields.refreshShedTime"/>
+                            <tags:selectWithItems id="refreshShedType" items="${refreshShedType}" path="fields.refreshShedType"/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <input type=hidden id="refreshShedType" value="${programGear.fields.refreshShedTime}">
-                               <i:inline key="${programGear.fields.refreshShedTime}" />
+                            <input type=hidden id="refreshShedType" value="${programGear.fields.refreshShedType}">
+                               <i:inline key="${programGear.fields.refreshShedType}" />
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
 

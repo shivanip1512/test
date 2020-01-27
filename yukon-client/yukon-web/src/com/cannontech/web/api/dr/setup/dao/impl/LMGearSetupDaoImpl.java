@@ -65,7 +65,7 @@ public class LMGearSetupDaoImpl extends AbstractLMSetupDaoImpl<LMProgramDirectGe
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
         LMSetupFilter filter = criteria.getFilteringParameters();
 
-        sqlTotalCountQuery.append("SELECT COUNT(*) ");
+        sqlTotalCountQuery.append("SELECT COUNT(*)");
         sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);
