@@ -6724,7 +6724,31 @@ requestContext.updateRequestBool = false</con:script><con:responseContent><![CDA
       </detail>
     </soapenv:Fault>
   </soapenv:Body>
-</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="549c8aaf-ab99-4ab9-b0b7-6a43f74276fb" port="8083" path="/ServicePointManagerPort" host="localhost" name="ServicePointManager Mock Service" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/updateDeviceEventLogsResponse"/></con:response><con:dispatchConfig/></con:mockOperation><con:mockOperation name="findHANDevice" id="d0498404-9367-48d3-96d2-d89ba755e247" interface="DeviceManagerSoapBinding" operation="findHANDevice"><con:settings/><con:defaultResponse>Mock Success Response (Reversed Mac)</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Mock Success Response (Reversed Mac)" id="d071333d-4f45-4d45-92d5-5d3b048b3d7c" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:script>def holder = new com.eviware.soapui.support.XmlHolder( mockRequest.requestContent )
+//We must declare the namespace alias we will use in the xpath below.
+//If we don't do this, the namespace aliases in the xpath must exactly match those in the request
+holder.declareNamespace('soap-env',"http://schemas.xmlsoap.org/soap/envelope/")
+holder.declareNamespace('itron-dm',"urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd")
+
+//Reverse the mac in the request, and send that back as the secondary mac
+requestContext.secondaryMac = holder.getNodeValue("/soap-env:Envelope/soap-env:Body/itron-dm:FindHANDeviceRequest/itron-dm:ESIMacID").reverse()</con:script><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:FindHANDeviceResponse>
+         <!--Optional:-->
+         <urn:DeviceCount>1</urn:DeviceCount>
+         <!--Zero or more repetitions:-->
+         <urn:MacID>${secondaryMac}</urn:MacID>
+      </urn:FindHANDeviceResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/findHANDeviceResponse"/></con:response><con:response name="Mock Empty Response" id="ca5f5958-8c5f-46e0-937b-d822af49e82b" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager.xsd">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:FindHANDeviceResponse>
+         <urn:DeviceCount>0</urn:DeviceCount>
+      </urn:FindHANDeviceResponse>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.8:DeviceManager/DeviceManagerPortType/findHANDeviceResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:mockService id="549c8aaf-ab99-4ab9-b0b7-6a43f74276fb" port="8083" path="/ServicePointManagerPort" host="localhost" name="ServicePointManager Mock Service" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.support.types.StringToStringsMap;
 
 // Package the Username and Password into variables
 

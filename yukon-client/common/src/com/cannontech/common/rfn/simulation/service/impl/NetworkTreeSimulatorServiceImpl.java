@@ -163,9 +163,6 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
     private void copy(Node<RfnIdentifier> node, RfnVertex parent, AtomicInteger totalNodesAdded) {
         for (Iterator<Node<RfnIdentifier>> it = node.getChildren().iterator(); it.hasNext();) {
             Node<RfnIdentifier> nextNode = it.next();
-            if(parent.getChildren() == null) {
-                parent.setChildren(new HashSet<RfnVertex>());
-            }
             RfnVertex child = new RfnVertex();
             child.setParent(parent);
             child.setRfnIdentifier(nextNode.getData());

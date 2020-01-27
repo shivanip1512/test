@@ -1,13 +1,19 @@
 package com.cannontech.web.widget.gatewayNodeInfo;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.NmCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -27,6 +33,7 @@ public class GatewayNodeInformationWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
 
     @Autowired
     public GatewayNodeInformationWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
@@ -43,6 +50,10 @@ public class GatewayNodeInformationWidget extends AdvancedWidgetControllerBase {
         try {
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
             model.addAttribute("gateway", gateway);
+            
+            //check for wifi meters
+            List<RfnDevice> wiFiMeters = rfnDeviceDao.getDevicesForGateways(Arrays.asList(deviceId), PaoType.getWifiTypes());
+            model.addAttribute("wifiCount", wiFiMeters.size());
         } catch (NmCommunicationException e) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
