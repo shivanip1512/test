@@ -3,9 +3,9 @@
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
     <div class="column-12-12 clearfix">
         <div class="column one">
-            <cti:msg2 var="absBLbl" key=".valueB"/>
-            <cti:msg2 var="absDLbl" key=".valueD"/>
-            <cti:msg2 var="absFLbl" key=".valueF"/>
+            <cti:msg2 var="absBLbl" key=".absB"/>
+            <cti:msg2 var="absDLbl" key=".absD"/>
+            <cti:msg2 var="absFLbl" key=".absF"/>
             <cti:msg2 var="deltaBLbl" key=".deltaB"/>
             <cti:msg2 var="deltaDLbl" key=".deltaD"/>
             <cti:msg2 var="deltaFLbl" key=".deltaF"/>
@@ -19,9 +19,9 @@
             
             <c:choose>
                 <c:when test="${programGear.fields.setpoint == 'ABSOLUTE'}">
-                    <c:set var="valueBLblKey" value=".valueB"/>
-                    <c:set var="valueDLblKey" value=".valueD"/>
-                    <c:set var="valueFLblKey" value=".valueF"/>
+                    <c:set var="valueBLblKey" value=".absB"/>
+                    <c:set var="valueDLblKey" value=".absD"/>
+                    <c:set var="valueFLblKey" value=".absF"/>
                 </c:when>
                 <c:otherwise>
                     <c:set var="valueBLblKey" value=".deltaB"/>
