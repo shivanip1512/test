@@ -11,8 +11,7 @@
     </tags:nameValue2>
     
     <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">
-        <cti:pointValue pointId="${wifiData.rssiPoint.pointID}" format="VALUE"/>&nbsp;
-        <tags:historicalValue pao="${device}" pointId="${wifiData.rssiPoint.pointID}"/>
+        <tags:attributeValue pao="${device}" attribute="${rssiAttribute}"/>
     </tags:nameValue2>
 
 </tags:nameValueContainer2>

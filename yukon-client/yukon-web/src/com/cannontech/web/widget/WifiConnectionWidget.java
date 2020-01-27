@@ -7,6 +7,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -45,6 +46,7 @@ public class WifiConnectionWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("device", device);
         WiFiMeterCommData data = wifiService.buildWiFiMeterCommDataObject(device);
         model.addAttribute("wifiData", data);
+        model.addAttribute("rssiAttribute", BuiltInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR);
 
         return "wifiConnectionWidget/render.jsp";
     }
