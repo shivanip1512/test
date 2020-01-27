@@ -53,7 +53,7 @@ public class ProgramDirectGearSerializer extends ThriftSerializer<LMProgramDirec
         msg.setRampInPercent(entity.get_rampInPercent());
         msg.setRampOutInterval(entity.get_rampOutInterval());
         msg.setRampOutPercent(entity.get_rampOutPercent());
-        msg.setYukonID(entity.get_programPaoId());
+        msg.setProgramId(entity.get_programPaoId());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.cannontech.common.dr.gear.setup.fields;
 
-import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
+import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.TemperatureMeasureUnit;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class ThermostatSetbackGearFields implements ProgramGearFields {
 
-    private AbsoluteOrDelta absoluteOrDelta;
-    private TemperatureMeasureUnit measureUnit;
+    private Setpoint setpoint;
+    private TemperatureMeasureUnit tempMeasureUnit;
 
     public Boolean isHeatMode;
     public Boolean isCoolMode;
@@ -37,12 +37,12 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
 
     private WhenToChangeFields whenToChangeFields;
 
-    public AbsoluteOrDelta getAbsoluteOrDelta() {
-        return absoluteOrDelta;
+    public Setpoint getSetpoint() {
+        return setpoint;
     }
 
-    public void setAbsoluteOrDelta(AbsoluteOrDelta absoluteOrDelta) {
-        this.absoluteOrDelta = absoluteOrDelta;
+    public void setSetpoint(Setpoint setpoint) {
+        this.setpoint = setpoint;
     }
 
     public Integer getMinValue() {
@@ -181,12 +181,12 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
         this.whenToChangeFields = whenToChangeFields;
     }
 
-    public TemperatureMeasureUnit getMeasureUnit() {
-        return measureUnit;
+    public TemperatureMeasureUnit getTempMeasureUnit() {
+        return tempMeasureUnit;
     }
 
-    public void setMeasureUnit(TemperatureMeasureUnit measureUnit) {
-        this.measureUnit = measureUnit;
+    public void setTempMeasureUnit(TemperatureMeasureUnit tempMeasureUnit) {
+        this.tempMeasureUnit = tempMeasureUnit;
     }
 
     @Override
@@ -210,15 +210,15 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
         setValueTf(thermostatSetbackGear.getValueTf());
 
         if (thermostatSetbackGear.getSettings().charAt(0) == 'A') {
-            setAbsoluteOrDelta(AbsoluteOrDelta.ABSOLUTE);
+            setSetpoint(Setpoint.ABSOLUTE);
         } else {
-            setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
+            setSetpoint(Setpoint.DELTA);
         }
 
         if (thermostatSetbackGear.getSettings().charAt(1) == 'C') {
-            setMeasureUnit(TemperatureMeasureUnit.CELSIUS);
+            setTempMeasureUnit(TemperatureMeasureUnit.CELSIUS);
         } else {
-            setMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
+            setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         }
 
         if (thermostatSetbackGear.getSettings().charAt(3) == 'I') {
@@ -283,13 +283,13 @@ public class ThermostatSetbackGearFields implements ProgramGearFields {
             thermostatSetbackGear.setValueTf(getValueTf());
         }
 
-        if (getAbsoluteOrDelta() == AbsoluteOrDelta.ABSOLUTE) {
+        if (getSetpoint() == Setpoint.ABSOLUTE) {
             thermostatSetbackGear.getSettings().setCharAt(0, 'A');
         } else {
             thermostatSetbackGear.getSettings().setCharAt(0, 'D');
         }
 
-        if (getMeasureUnit() == TemperatureMeasureUnit.CELSIUS) {
+        if (getTempMeasureUnit() == TemperatureMeasureUnit.CELSIUS) {
             thermostatSetbackGear.getSettings().setCharAt(1, 'C');
         } else {
             thermostatSetbackGear.getSettings().setCharAt(1, 'F');

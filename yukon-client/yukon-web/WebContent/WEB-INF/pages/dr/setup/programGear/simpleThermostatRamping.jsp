@@ -26,7 +26,7 @@
                             <i:inline key=".${programGear.fields.mode}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".randomStartTime" nameClass="vam">
+                    <tags:nameValue2 nameKey=".randomStartTimeInMinutes" nameClass="vam">
                         <cti:msg var="randomStartTimeInMinutesRange" key="yukon.web.modules.dr.setup.gear.range" arguments="0:00,2:00"/>
                         <dt:timeOffset path="fields.randomStartTimeInMinutes" wrapClass="fn vam" minValue="0" maxValue="120" rangeText="${randomStartTimeInMinutesRange}"/>
                     </tags:nameValue2>
@@ -36,21 +36,21 @@
                 <h3><i:inline key=".preOpCoolOrHeat"/></h3>
                 
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".temp" nameClass="vam">
+                    <tags:nameValue2 nameKey=".preOpTemp" nameClass="vam">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <cti:msg var="preOpTempRange" key="yukon.web.modules.dr.setup.gear.range" arguments="-20,20"/>
                         </cti:displayForPageEditModes>
                         <tags:numeric path="fields.preOpTemp" units="${preOpTempRange}" minValue="-20" maxValue="20" size="5"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".time" nameClass="vam">
+                    <tags:nameValue2 nameKey=".preOpTimeInMinutes" nameClass="vam">
                         <cti:msg var="preOpTimeInMinutesRange" key="yukon.web.modules.dr.setup.gear.range" arguments="0:00,5:00"/>
                         <dt:timeOffset path="fields.preOpTimeInMinutes" wrapClass="fn vam" minValue="0" maxValue="300" rangeText="${preOpTimeInMinutesRange}"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".hold" nameClass="vam">
+                    <tags:nameValue2 nameKey=".preOpHoldInMinutes" nameClass="vam">
                         <cti:msg var="preOpHoldInMinutesRange" key="yukon.web.modules.dr.setup.gear.range" arguments="0:00,5:00"/>
                         <dt:timeOffset path="fields.preOpHoldInMinutes" wrapClass="fn vam" minValue="0" maxValue="300" rangeText="${preOpHoldInMinutesRange}"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".maxRuntime" nameClass="vam">
+                    <tags:nameValue2 nameKey=".maxRuntimeInMinutes" nameClass="vam">
                         <cti:msg var="maxRuntimeRange" key="yukon.web.modules.dr.setup.gear.range" arguments="4:00,23:59"/>
                         <dt:timeOffset path="fields.maxRuntimeInMinutes" wrapClass="fn vam" minValue="240" rangeText="${maxRuntimeRange}"/>
                     </tags:nameValue2>
@@ -67,7 +67,7 @@
         <div class="column two nogutter"> 
             <tags:sectionContainer2 nameKey="rampIn">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".rampFahrenheitPerHour" nameClass="vam">
+                    <tags:nameValue2 nameKey=".rampPerHour" nameClass="vam">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <cti:msg var="rampPerHourRange" key="yukon.web.modules.dr.setup.gear.range" arguments="-9.9,9.9"/>
                         </cti:displayForPageEditModes>
@@ -79,7 +79,7 @@
                                       isDecimalNumber="true"
                                       stepValue="0.1"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".maxDegreeDelta" nameClass="vam">
+                    <tags:nameValue2 nameKey=".max" nameClass="vam">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <cti:msg var="maxDegreeDeltaRange" key="yukon.web.modules.dr.setup.gear.range" arguments="0,20"/>
                         </cti:displayForPageEditModes>
@@ -89,7 +89,7 @@
             </tags:sectionContainer2>
             <tags:sectionContainer2 nameKey="stopControl">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".rampOutTime" nameClass="vam">
+                    <tags:nameValue2 nameKey=".rampOutTimeInMinutes" nameClass="vam">
                         <cti:msg var="rampOutTimeInMinutesRange" key="yukon.web.modules.dr.setup.gear.range" arguments="0:00,5:00"/>
                         <dt:timeOffset path="fields.rampOutTimeInMinutes" wrapClass="fn vam" minValue="0" maxValue="300" rangeText="${rampOutTimeInMinutesRange}"/>
                     </tags:nameValue2>

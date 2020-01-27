@@ -8,7 +8,7 @@ public class LMProgramDirectGear {
     public static final String SELECTION_ALWAYS_FIRST_GROUP = "AlwaysFirstGroup";
     public static final String SELECTION_LEAST_CONTROL_TIME = "LeastControlTime";
 
-    private Integer yukonID;
+    private Integer gearId;
     private String gearName;
     private Integer gearNumber;
     private GearControlMethod controlMethod;
@@ -31,7 +31,26 @@ public class LMProgramDirectGear {
     private Integer rampOutInterval;
     private Integer rampOutPercent;
     private Double kwReduction;
-    private Integer deviceId;
+    private Integer programId;
+    private String frontRampOption;
+    private String backRampOption;
+    private Integer stopCommandRepeat;
+
+    public Integer getGearId() {
+        return gearId;
+    }
+
+    public void setGearId(Integer gearId) {
+        this.gearId = gearId;
+    }
+
+    public Integer getProgramId() {
+        return programId;
+    }
+
+    public void setProgramId(Integer programId) {
+        this.programId = programId;
+    }
 
     public String getChangeCondition() {
         return changeCondition;
@@ -106,10 +125,6 @@ public class LMProgramDirectGear {
         return percentReduction;
     }
 
-    public Integer getYukonID() {
-        return yukonID;
-    }
-
     public void setChangeCondition(String newChangeCondition) {
         changeCondition = newChangeCondition;
     }
@@ -178,14 +193,6 @@ public class LMProgramDirectGear {
         percentReduction = newPercentReduction;
     }
 
-    public void setYukonID(Integer newYukonID) {
-        yukonID = newYukonID;
-    }
-
-    @Override
-    public String toString() {
-        return getGearName();
-    }
 
     public Integer getRampInInterval() {
         return rampInInterval;
@@ -227,11 +234,35 @@ public class LMProgramDirectGear {
         this.kwReduction = kwReduction;
     }
 
-    public Integer getDeviceId() {
-        return deviceId;
+    
+    public String getFrontRampOption() {
+        return frontRampOption;
     }
 
-    public void setDeviceId(Integer deviceId) {
-        this.deviceId = deviceId;
+    public void setFrontRampOption(String frontRampOption) {
+        this.frontRampOption = frontRampOption;
     }
+
+    public String getBackRampOption() {
+        return backRampOption;
+    }
+
+    public void setBackRampOption(String backRampOption) {
+        this.backRampOption = backRampOption;
+    }
+
+    public Integer getStopCommandRepeat() {
+        return stopCommandRepeat;
+    }
+
+    public void setStopCommandRepeat(Integer stopCommandRepeat) {
+        this.stopCommandRepeat = stopCommandRepeat;
+    }
+    
+
+    @Override
+    public String toString() {
+        return getGearName();
+    }
+
 }

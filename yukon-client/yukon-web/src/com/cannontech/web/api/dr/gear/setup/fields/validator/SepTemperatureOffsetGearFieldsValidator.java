@@ -38,8 +38,8 @@ public class SepTemperatureOffsetGearFieldsValidator
         gearValidatorHelper.checkRampOut(sepTemperatureOffsetCycleGear.getRampOut(), errors);
 
         // Check degree F/ degree C
-        lmValidatorHelper.checkIfFieldRequired("celsiusOrFahrenheit", errors,
-            sepTemperatureOffsetCycleGear.getCelsiusOrFahrenheit(), "Temperature Measure Unit");
+        lmValidatorHelper.checkIfFieldRequired("tempMeasureUnit", errors,
+            sepTemperatureOffsetCycleGear.getTempMeasureUnit(), "Temperature Measure Unit");
 
         // Check Heating Mode or Cooling Mode
         lmValidatorHelper.checkIfFieldRequired("mode", errors, sepTemperatureOffsetCycleGear.getMode(), "Mode");
@@ -48,7 +48,7 @@ public class SepTemperatureOffsetGearFieldsValidator
         lmValidatorHelper.checkIfFieldRequired("offset", errors, sepTemperatureOffsetCycleGear.getOffset(),
             (sepTemperatureOffsetCycleGear.getMode() == Mode.HEAT) ? "Heating Offset" : "Cooling Offset");
         if (!errors.hasFieldErrors("offset")) {
-            if (sepTemperatureOffsetCycleGear.getCelsiusOrFahrenheit() == TemperatureMeasureUnit.FAHRENHEIT) {
+            if (sepTemperatureOffsetCycleGear.getTempMeasureUnit() == TemperatureMeasureUnit.FAHRENHEIT) {
                 YukonValidationUtils.checkRange(errors, "offset", sepTemperatureOffsetCycleGear.getOffset(), 0.1, 77.7,
                     false);
             } else {

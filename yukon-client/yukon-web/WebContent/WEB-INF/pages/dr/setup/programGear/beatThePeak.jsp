@@ -14,10 +14,10 @@
                             <i:inline key="${programGear.fields.indicator}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".timeout">
+                    <tags:nameValue2 nameKey=".timeoutInMinutes">
                         <tags:numeric path="fields.timeoutInMinutes" minValue="0" maxValue="99999" stepValue="1" size="15"></tags:numeric>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".resendRate">
+                    <tags:nameValue2 nameKey=".resendInMinutes">
                         <tags:numeric path="fields.resendInMinutes" minValue="0" maxValue="99999" stepValue="1" size="15"></tags:numeric>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>

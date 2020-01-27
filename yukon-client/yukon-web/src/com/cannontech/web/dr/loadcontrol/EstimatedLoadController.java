@@ -769,8 +769,8 @@ public class EstimatedLoadController {
         }
         @Override
         public int compare(GearAssignment o1, GearAssignment o2) {
-            LiteYukonPAObject program1 = gearPrograms.get(o1.getGear().getDeviceId());
-            LiteYukonPAObject program2 = gearPrograms.get(o2.getGear().getDeviceId());
+            LiteYukonPAObject program1 = gearPrograms.get(o1.getGear().getProgramId());
+            LiteYukonPAObject program2 = gearPrograms.get(o2.getGear().getProgramId());
             if (program1 == program2) {
                 return 0;
             }
