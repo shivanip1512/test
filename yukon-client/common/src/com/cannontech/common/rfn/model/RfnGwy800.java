@@ -12,6 +12,7 @@ public class RfnGwy800 extends RfnGateway {
         super(name, pao, rfnIdentifier, data);
     }
 
+    @Override
     public boolean isDataStreamingSupported() {
         return true;
     }

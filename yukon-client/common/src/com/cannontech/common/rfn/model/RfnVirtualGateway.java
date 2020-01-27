@@ -12,10 +12,12 @@ public class RfnVirtualGateway extends RfnGateway {
         super(name, pao, rfnIdentifier, data);
     }
 
+    @Override
     public boolean isIpv6Supported() {
         return false;
     }
 
+    @Override
     public boolean isDataStreamingSupported() {
         return true;
     }
