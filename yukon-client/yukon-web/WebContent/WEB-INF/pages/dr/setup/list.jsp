@@ -69,21 +69,26 @@
                     <c:set var="displayLoadGroupFilters" value="${isFilterByLoadGroupSelected ? '' : 'dn'}"/>
                     <c:set var="displayLoadProgramFilters" value="${isFilterByLoadProgramSelected ? '' : 'dn'}"/>
                     
-                    <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat"/>
-                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat" id="js-name"/>
-                    <div class="js-load-group-types-container dib ${displayLoadGroupFilters}">
+                    <tags:selectWithItems items="${filterByTypes}" path="filterByType" id="js-filter-by-type" inputClass="vat MR5"/>
+                    <tags:input path="name" placeholder="${namePlaceholder}" inputClass="vat MR5" id="js-name"/>
+                    <div class="js-load-group-types-container dib ${displayLoadGroupFilters} MR5">
                         <tags:selectWithItems items="${loadGroupTypes}" path="types" dataPlaceholder="${selectLbl}" 
                                               id="js-load-group-types"/>
                     </div>
-                    <div class="js-load-program-types-container dib ${displayLoadProgramFilters}">
+                    <div class="js-load-program-types-container vat dib ${displayLoadProgramFilters} MR5">
                         <tags:selectWithItems items="${loadProgramTypes}" path="types" dataPlaceholder="${selectLbl}"
                                               id="js-load-program-types"/>
                     </div>
-                    <div class="js-gear-types-container dib ${displayGearFilters}">
+                    <div class="js-operational-states-container dib vat ${displayLoadProgramFilters} MR5">
+                        <cti:msg2 var="selectOperationalStatesLbl" key="yukon.web.modules.dr.setup.loadGroup.operationalStates.selectLbl"/>
+                        <tags:selectWithItems items="${operationalStates}" path="operationalStates" dataPlaceholder="${selectOperationalStatesLbl}"
+                                                               id="js-operational-states"/>
+                    </div>
+                    <div class="js-gear-types-container dib ${displayGearFilters} MR5">
                         <tags:selectWithItems items="${gearTypes}" path="gearTypes" dataPlaceholder="${selectLbl}"
                                                                id="js-gear-types"/>
                     </div>
-                    <div class="js-program-container dib vat ${displayGearFilters}">
+                    <div class="js-program-container dib vat ${displayGearFilters} MR5">
                             <form:hidden path="programIds" id="js-programIds"/>
                            <tags:pickerDialog id="programPicker"
                                                             type="programPicker"
@@ -93,7 +98,8 @@
                                                             selectionProperty="paoName"
                                                             multiSelectMode="true"
                                                             initialIds="${lmSetupFilter.programIds}"
-                                                            endEvent="yukon:gear:filter:programSelected"/>
+                                                            endEvent="yukon:gear:filter:programSelected"
+                                                            allowEmptySelection="true"/>
                     </div>
                     <cti:button label="${filterLbl}" classes="primary action fr" type="submit"/>
                 </form:form>
@@ -108,6 +114,9 @@
         </c:when>
         <c:when test="${isFilterByGearSelected}">
             <%@ include file="gearFilteredResults.jsp" %>
+        </c:when>
+        <c:when test="${isFilterByLoadProgramSelected}">
+            <%@ include file="loadProgramFilteredResults.jsp" %>
         </c:when>
         <c:when test="${isFilterByControlAreaSelected}">
             <%@ include file="controlAreaFilteredResults.jsp" %>
