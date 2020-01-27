@@ -200,6 +200,11 @@
       <or>
         <role name="CONSUMER_INFO" />
         <role name="INVENTORY" />
+        <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
+        <roleProperty name="INFRASTRUCTURE_DELETE"/>
+        <roleProperty name="INFRASTRUCTURE_ADMIN"/>
+        <roleProperty name="INFRASTRUCTURE_VIEW"/>
+        <roleProperty name="CBC_DATABASE_EDIT"/>
 <!--        <role name="DEVICE_MANAGEMENT"/> --> <!--  may need to change this to 4 separate role properties. Saw at Bowling Green, clicking assests gave no access error because they don't have any LCRs/DR/STARS --> 
       </or>
     </permissions>
