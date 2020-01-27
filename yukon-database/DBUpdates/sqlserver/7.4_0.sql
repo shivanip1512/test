@@ -293,7 +293,7 @@ INSERT INTO DBUpdates VALUES('YUK-21378', '7.4.0', GETDATE());
 /* @end YUK-21378 */
 
 /* @start YUK-21216 */
-INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-milliwatts', '(none)');
+INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
 
 UPDATE PointUnit
 SET UomId = 57
