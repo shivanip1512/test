@@ -11,5 +11,10 @@ public class RfnGwy800 extends RfnGateway {
     public RfnGwy800(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData data) {
         super(name, pao, rfnIdentifier, data);
     }
-    
+
+    @Override
+    public boolean isDataStreamingSupported() {
+        return true;
+    }
+
 }
