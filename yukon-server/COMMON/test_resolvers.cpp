@@ -339,6 +339,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
         
 BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
 {
+    BOOST_CHECK(isKnownUnsupportedDevice("virtual gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("digi gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("rf gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("gwy-800"));

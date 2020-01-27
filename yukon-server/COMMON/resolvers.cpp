@@ -413,6 +413,7 @@ bool isKnownUnsupportedDevice(const string& typeStr)
     //  Do not report an error ("Unsupported DEVICE type ...") if we try to resolve any of these
     static const std::set<string> unsupported_devices
     {
+        "virtual gateway",
         "digi gateway",
         "rf gateway",
         "gwy-800",
