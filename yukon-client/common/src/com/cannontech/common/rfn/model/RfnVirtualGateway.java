@@ -16,4 +16,8 @@ public class RfnVirtualGateway extends RfnGateway {
         return false;
     }
 
+    public boolean isDataStreamingSupported() {
+        return true;
+    }
+
 }
