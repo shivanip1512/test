@@ -1,7 +1,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
-    <cti:msg2 var="heatingOffsetLbl" key=".offset"/>
+    <cti:msg2 var="heatingOffsetLbl" key=".heatingOffset"/>
     <cti:msg2 var="coolingOffsetLbl" key=".coolingOffset"/>
             
     <input type="hidden" class="js-heating-offset-lbl" value="${heatingOffsetLbl}"/>
@@ -9,7 +9,7 @@
 
     <c:choose>
         <c:when test="${programGear.fields.mode == 'HEAT'}">
-            <c:set var="modeOffsetLblKey" value=".offset"/>
+            <c:set var="modeOffsetLblKey" value=".heatingOffset"/>
         </c:when>
         <c:otherwise>
             <c:set var="modeOffsetLblKey" value=".coolingOffset"/>

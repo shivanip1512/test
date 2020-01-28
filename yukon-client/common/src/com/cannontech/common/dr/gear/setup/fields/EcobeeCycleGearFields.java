@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class EcobeeCycleGearFields implements ProgramGearFields {
 
     private Boolean mandatory;
+    private Integer controlPercent;
+    private HowToStopControl howToStopControl;
+
     private Boolean rampIn;
     private Boolean rampOut;
 
-    private Integer controlPercent;
-    private HowToStopControl howToStopControl;
     private Integer capacityReduction;
-
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getControlPercent() {

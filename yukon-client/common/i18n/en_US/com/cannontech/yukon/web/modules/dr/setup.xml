@@ -494,9 +494,9 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.deltaB">Delta B</entry>
 <entry key="yukon.web.modules.dr.setup.gear.deltaD">Delta D</entry>
 <entry key="yukon.web.modules.dr.setup.gear.deltaF">Delta F</entry>
-<entry key="yukon.web.modules.dr.setup.gear.valueB">Abs B</entry>
-<entry key="yukon.web.modules.dr.setup.gear.valueD">Abs D</entry>
-<entry key="yukon.web.modules.dr.setup.gear.valueF">Abs F</entry>
+<entry key="yukon.web.modules.dr.setup.gear.absB">Abs B</entry>
+<entry key="yukon.web.modules.dr.setup.gear.absD">Abs D</entry>
+<entry key="yukon.web.modules.dr.setup.gear.absF">Abs F</entry>
 <entry key="yukon.web.modules.dr.setup.gear.isHeatMode">Heat</entry>
 <entry key="yukon.web.modules.dr.setup.gear.isCoolMode">Cool</entry>
 <entry key="yukon.web.modules.dr.setup.gear.randomStartTimeInMinutes">Random Start Time</entry>
@@ -509,7 +509,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.degreeFahrenheit">°F</entry>
 <entry key="yukon.web.modules.dr.setup.gear.max">Max °Δ</entry>
 <entry key="yukon.web.modules.dr.setup.gear.rampOutTimeInMinutes">Ramp Out Time</entry>
-<entry key="yukon.web.modules.dr.setup.gear.offset">Heating Offset</entry>
+<entry key="yukon.web.modules.dr.setup.gear.heatingOffset">Heating Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.coolingOffset">Cooling Offset</entry>
 <entry key="yukon.web.modules.dr.setup.gear.ramp">Ramp</entry>
 

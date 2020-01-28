@@ -12,14 +12,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class SmartCycleGearFields implements ProgramGearFields {
 
-    private Boolean noRamp;
     private Integer controlPercent;
     private Integer cyclePeriodInMinutes;
     private CycleCountSendType cycleCountSendType;
     private Integer maxCycleCount;
     private Integer startingPeriodCount;
-
     private Integer sendRate;
+    private Boolean noRamp;
     private Integer stopCommandRepeat;
 
     private HowToStopControl howToStopControl;

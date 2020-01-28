@@ -16,15 +16,14 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
 
     private Boolean rampIn;
     private Boolean rampOut;
-    public TemperatureMeasureUnit tempMeasureUnit;
     public Mode mode;
+    public TemperatureMeasureUnit tempMeasureUnit;
     private Double offset;
     private Integer criticality;
 
-    private HowToStopControl howToStopControl;
     private Integer capacityReduction;
-
     private WhenToChangeFields whenToChangeFields;
+    private HowToStopControl howToStopControl;
 
     public Boolean getRampIn() {
         return rampIn;
