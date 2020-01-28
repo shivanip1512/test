@@ -13,20 +13,36 @@ public class NetworkTreeUpdateTimeResponse implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    // Start time is used in the following cases:
-    // 1. (End time - Start time) actually shows how long it took to build the network tree,
-    //     which could be used for performance evaluation and statistics collection in the future.
-    // 2. By default the network tree is built from 9 days of route data before the Start time.
-    // 3. It is the same networkTreeGenerationStart in RfnMetadataMultiResponse.
+    /**
+     * StartTime is used in the following cases:
+     * <ul>
+     * <li> (EndTime - StartTime) actually shows how long it took to build the network tree,
+     *      which can be used for performance evaluation and statistics collection.</li>
+     * <li> By default the network tree is built from 9 days of route data before the StartTime.</li>
+     * <li> This is also included in RfnMetadataMultiResponse.</li>
+     * <li> Either StartTime or EndTime can be used as a tree identifier.
+     * </ul>
+     */
     private long treeGenerationStartTimeMillis; 
     
-    // End time is the time-stamp used by Yukon to track if there is any new Network Tree generated.
+    /**
+     * EndTime is used in the following cases:
+     * <ul>
+     * <li> (EndTime - StartTime): See above
+     * <li> Yukon will disable the refresh button for half an hour from the EndTime.
+     * <li> Either StartTime or EndTime can be used as a tree identifier.
+     * <ul> 
+     */
     private long treeGenerationEndTimeMillis;
     
     private long nextScheduledRefreshTimeMillis;
     
     private long noForceRefreshBeforeTimeMillis;
 
+    /**
+     * 
+     * @return the start time (in milliseconds) at which the network tree was generated.
+     */
     public long getTreeGenerationStartTimeMillis() {
         return treeGenerationStartTimeMillis;
     }

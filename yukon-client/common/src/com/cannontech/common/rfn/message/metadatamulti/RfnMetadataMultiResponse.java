@@ -35,8 +35,16 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     // Note: some result may be an error type.
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResults;
     
-    // Please refer to NetworkTreeUpdateTimeResponse for details.
-    private long networkTreeGenerationStart;
+    /**
+     * Currently this time-stamp field is used for debugging only.
+     * When Yukon logs the response object when received from NM, this field is also logged.
+     * Thus we can tell the latest time of the route data used for the tree-related query results.
+     * For example, the descendant count is valid until this time-stamp.
+     * 
+     * You may also refer to NetworkTreeUpdateTimeResponse which has the same field.
+     * {@link com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse#getTreeGenerationStartTimeMillis()}
+     */
+    private long treeGenerationStartTimeMillis;
 
     public RfnMetadataMultiResponse(String requestID, int totalSegments, int segmentNumber) {
         super();
@@ -84,14 +92,14 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
         this.queryResults = queryResults;
     }
 
-    public long getNetworkTreeGenerationStart() {
-        return networkTreeGenerationStart;
+    public long getTreeGenerationStartTimeMillis() {
+        return treeGenerationStartTimeMillis;
     }
 
-    public void setNetworkTreeGenerationStart(long networkTreeGenerationStart) {
-        this.networkTreeGenerationStart = networkTreeGenerationStart;
+    public void setTreeGenerationStartTimeMillis(long treeGenerationStartTimeMillis) {
+        this.treeGenerationStartTimeMillis = treeGenerationStartTimeMillis;
     }
-    
+
     public String getRequestID() {
         return requestID;
     }
@@ -100,13 +108,13 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (networkTreeGenerationStart ^ (networkTreeGenerationStart >>> 32));
         result = prime * result + ((queryResults == null) ? 0 : queryResults.hashCode());
         result = prime * result + ((requestID == null) ? 0 : requestID.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
         result = prime * result + segmentNumber;
         result = prime * result + totalSegments;
+        result = prime * result + (int) (treeGenerationStartTimeMillis ^ (treeGenerationStartTimeMillis >>> 32));
         return result;
     }
 
@@ -119,8 +127,6 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
         if (getClass() != obj.getClass())
             return false;
         RfnMetadataMultiResponse other = (RfnMetadataMultiResponse) obj;
-        if (networkTreeGenerationStart != other.networkTreeGenerationStart)
-            return false;
         if (queryResults == null) {
             if (other.queryResults != null)
                 return false;
@@ -142,13 +148,16 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
             return false;
         if (totalSegments != other.totalSegments)
             return false;
+        if (treeGenerationStartTimeMillis != other.treeGenerationStartTimeMillis)
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, networkTreeGenerationStart=%s]",
-                requestID, totalSegments, segmentNumber, responseType, responseMessage, queryResults, networkTreeGenerationStart);
+                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, treeGenerationStartTimeMillis=%s]",
+                requestID, totalSegments, segmentNumber, responseType, responseMessage, queryResults,
+                treeGenerationStartTimeMillis);
     }
 }
