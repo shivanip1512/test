@@ -626,6 +626,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             simulatedNmMappingSettings.setMinHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP));
             simulatedNmMappingSettings.setMaxHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP));
             simulatedNmMappingSettings.setNodesOneHop(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP));
+            simulatedNmMappingSettings.setNumberOfDevicesPerGateway(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_NUM_DEVICES_PER_GW));
+            simulatedNmMappingSettings.setCreateGateways(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_CREATE_GW));
             
             settings = simulatedNmMappingSettings;
         }

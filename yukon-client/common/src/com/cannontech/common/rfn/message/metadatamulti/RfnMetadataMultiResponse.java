@@ -35,7 +35,8 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     // Note: some result may be an error type.
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResults;
     
-    private long lastNetworkTreeUpdateTime;
+    // Please refer to NetworkTreeUpdateTimeResponse for details.
+    private long networkTreeGenerationStart;
 
     public RfnMetadataMultiResponse(String requestID, int totalSegments, int segmentNumber) {
         super();
@@ -83,14 +84,14 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
         this.queryResults = queryResults;
     }
 
-    public long getLastNetworkTreeUpdateTime() {
-        return lastNetworkTreeUpdateTime;
+    public long getNetworkTreeGenerationStart() {
+        return networkTreeGenerationStart;
     }
 
-    public void setLastNetworkTreeUpdateTime(long lastNetworkTreeUpdateTime) {
-        this.lastNetworkTreeUpdateTime = lastNetworkTreeUpdateTime;
+    public void setNetworkTreeGenerationStart(long networkTreeGenerationStart) {
+        this.networkTreeGenerationStart = networkTreeGenerationStart;
     }
-
+    
     public String getRequestID() {
         return requestID;
     }
@@ -99,8 +100,7 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result + (int) (lastNetworkTreeUpdateTime ^ (lastNetworkTreeUpdateTime >>> 32));
+        result = prime * result + (int) (networkTreeGenerationStart ^ (networkTreeGenerationStart >>> 32));
         result = prime * result + ((queryResults == null) ? 0 : queryResults.hashCode());
         result = prime * result + ((requestID == null) ? 0 : requestID.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
@@ -119,7 +119,7 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
         if (getClass() != obj.getClass())
             return false;
         RfnMetadataMultiResponse other = (RfnMetadataMultiResponse) obj;
-        if (lastNetworkTreeUpdateTime != other.lastNetworkTreeUpdateTime)
+        if (networkTreeGenerationStart != other.networkTreeGenerationStart)
             return false;
         if (queryResults == null) {
             if (other.queryResults != null)
@@ -147,14 +147,8 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
 
     @Override
     public String toString() {
-        return String
-            .format("RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, lastNetworkTreeUpdateTime=%s]",
-                    requestID,
-                    totalSegments,
-                    segmentNumber,
-                    responseType,
-                    responseMessage,
-                    queryResults,
-                    lastNetworkTreeUpdateTime);
+        return String.format(
+                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, networkTreeGenerationStart=%s]",
+                requestID, totalSegments, segmentNumber, responseType, responseMessage, queryResults, networkTreeGenerationStart);
     }
 }
