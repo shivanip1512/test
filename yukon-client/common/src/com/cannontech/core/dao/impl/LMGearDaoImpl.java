@@ -29,6 +29,7 @@ import com.cannontech.dr.nest.model.v3.PrepLoadShape;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 import com.cannontech.loadcontrol.gear.model.EcobeeSetpointValues;
+import com.cannontech.loadcontrol.gear.model.HoneywellSetpointValues;
 import com.cannontech.loadcontrol.gear.model.LMThermostatGear;
 import com.google.common.collect.Maps;
 
@@ -279,6 +280,28 @@ public class LMGearDaoImpl implements LMGearDao {
                 EcobeeSetpointValues ecobeeSetpointValues = new EcobeeSetpointValues(setpointOffset, HeatCool.of(heatCool));
 
                 return ecobeeSetpointValues;
+            }
+        });
+    }
+
+    @Override
+    public HoneywellSetpointValues getHoneywellSetpointValues(Integer gearId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Settings, MaxValue, ValueB");
+        sql.append("FROM LMThermostatGear");
+        sql.append("WHERE GearId").eq(gearId);
+
+        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<HoneywellSetpointValues>() {
+            @Override
+            public HoneywellSetpointValues mapRow(YukonResultSet rs) throws SQLException {
+
+                String heatCool = rs.getString("Settings");
+                Integer setpointOffset = rs.getInt("MaxValue");
+                Integer precoolOffset = rs.getInt("ValueB");
+
+                HoneywellSetpointValues honeywellSetpointValues = new HoneywellSetpointValues(setpointOffset, HeatCool.of(heatCool), precoolOffset);
+
+                return honeywellSetpointValues;
             }
         });
     }

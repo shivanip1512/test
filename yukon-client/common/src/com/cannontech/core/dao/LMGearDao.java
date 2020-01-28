@@ -10,6 +10,7 @@ import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 import com.cannontech.loadcontrol.gear.model.EcobeeSetpointValues;
+import com.cannontech.loadcontrol.gear.model.HoneywellSetpointValues;
 import com.cannontech.loadcontrol.gear.model.LMThermostatGear;
 
 public interface LMGearDao {
@@ -104,6 +105,12 @@ public interface LMGearDao {
      */
 
     public EcobeeSetpointValues getEcobeeSetpointValues(Integer gearId);
+
+    /**
+     * Retrieves HoneywellSetpointValues by GearId
+     */
+
+    public HoneywellSetpointValues getHoneywellSetpointValues(Integer gearId);
 
     /**
      * Retrieves LMThermostatGear by GearId

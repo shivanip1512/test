@@ -22,6 +22,7 @@ import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
 import com.cannontech.loadcontrol.gear.model.EcobeeSetpointValues;
+import com.cannontech.loadcontrol.gear.model.HoneywellSetpointValues;
 import com.cannontech.loadcontrol.gear.model.LMThermostatGear;
 
 public class ProgramGearFieldsBuilder {
@@ -47,6 +48,9 @@ public class ProgramGearFieldsBuilder {
                 break;
             case HoneywellCycle:
                 gearFields = getHoneywellCycleGearFields(directGear);
+                break;
+            case HoneywellSetpoint:
+                gearFields = getHoneywellSetpointGearFields(directGear);
                 break;
             case NestCriticalCycle:
                 break;
@@ -87,8 +91,6 @@ public class ProgramGearFieldsBuilder {
                 gearFields = getNoControlGearFields(directGear);
                 break;
             case MeterDisconnect:
-                break;
-            case HoneywellSetpoint:
                 break;
         }
 
@@ -475,6 +477,26 @@ public class ProgramGearFieldsBuilder {
         gearFields.setWhenToChangeFields(changeFields);
         return gearFields;
 
+    }
+
+    /**
+     * Build Honeywell Setpoint gear fields.
+     */
+    private ProgramGearFields getHoneywellSetpointGearFields(LMProgramDirectGear directGear) {
+        HoneywellSetpointGearFields gearFields = new HoneywellSetpointGearFields();
+        gearFields.setHowToStopControl(HowToStopControl.valueOf(directGear.getMethodStopType()));
+        gearFields.setCapacityReduction(directGear.getPercentReduction());
+        gearFields.setMandatory(IlmDefines.OPTION_MANDATORY.equalsIgnoreCase(directGear.getMethodOptionType()));
+        HoneywellSetpointValues setpointValues = gearDao.getHoneywellSetpointValues(directGear.getGearId());
+
+        gearFields.setSetpointOffset(setpointValues.getSetpointOffset());
+        gearFields.setPrecoolOffset(setpointValues.getPrecoolOffset());
+        gearFields.setMode(setpointValues.getHeatCool().getMode());
+
+        WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
+        gearFields.setWhenToChangeFields(changeFields);
+
+        return gearFields;
     }
 
     /**
