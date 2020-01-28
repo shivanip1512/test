@@ -393,12 +393,12 @@ public class MultispeakController {
     private void updatePrimaryVendorGlobalsetting(LiteYukonUser user, MultispeakVendor mspVendor) {
         if (mspVendor.getMspInterfaces() != null) {
 
-            Optional<MultispeakInterface> getFirstMspInterface = mspVendor.getMspInterfaces()
+            Optional<MultispeakInterface> getCBServerMspInterface = mspVendor.getMspInterfaces()
                                                                           .stream()
-                                                                          .filter(mspInterface -> (mspInterface.getMspInterface() != MultispeakDefines.CB_Server_STR))
+                                                                          .filter(mspInterface -> (mspInterface.getMspInterface().equals(MultispeakDefines.CB_Server_STR)))
                                                                           .findFirst();
 
-            if (getFirstMspInterface.isPresent()) {
+            if (getCBServerMspInterface.isEmpty()) {
                 globalSettingUpdateDao.updateSettingValue(GlobalSettingType.MSP_PRIMARY_CB_VENDORID, 0, user);
             }
         }

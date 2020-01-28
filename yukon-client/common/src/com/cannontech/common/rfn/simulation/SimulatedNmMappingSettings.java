@@ -27,8 +27,6 @@ public class SimulatedNmMappingSettings implements Serializable {
     private Integer minHop;
     private Integer maxHop;
     private Integer nodesOneHop;
-    private Integer numberOfDevicesPerGateway;
-    private Boolean createGateways;
     
     public NeighborData getNeighborData() {
         return neighborData;
@@ -107,17 +105,5 @@ public class SimulatedNmMappingSettings implements Serializable {
     }
     public void setNodesOneHop(Integer nodesOneHop) {
         this.nodesOneHop = nodesOneHop;
-    }
-    public Integer getNumberOfDevicesPerGateway() {
-        return numberOfDevicesPerGateway;
-    }
-    public void setNumberOfDevicesPerGateway(Integer numberOfDevicesPerGateway) {
-        this.numberOfDevicesPerGateway = numberOfDevicesPerGateway;
-    }
-    public Boolean getCreateGateways() {
-        return createGateways;
-    }
-    public void setCreateGateways(Boolean createGateways) {
-        this.createGateways = createGateways;
     }
 }

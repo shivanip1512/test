@@ -41,6 +41,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
@@ -839,4 +840,59 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
             return null;
         }
     }
+
+
+    @Override
+    public List<EnrollmentJmsMessage> getEnrollmentSyncMessagesToSend() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        /*First SELECT: Get all current enrollments. 
+        JOIN to remove those where the device or program no longer exists*/
+        sql.append("SELECT lmhg.InventoryID, lmhg.Relay, lmhg.GroupEnrollStart, lmhg.GroupEnrollStop,");
+        sql.append(    "lmhg.ProgramId, lmhg.lmGroupId, lmhg.AccountID");
+        sql.append("FROM LMHardwareControlGroup lmhg");
+        sql.appendFragment(getJoinForProgramAndDeviceExistence());
+        sql.append("WHERE GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NULL");
+        sql.append("UNION");
+        /*Second SELECT: Get One Unenrollment per relay that does not have a current enrollment
+        JOINs to remove those where the device or program no longer exists*/
+        sql.append("SELECT InventoryID, Relay, GroupEnrollStart, GroupEnrollStop, ProgramId, lmGroupId, AccountID");
+        sql.append("FROM");
+        sql.append(    "(SELECT lmhg.InventoryID, lmhg.Relay, lmhg.GroupEnrollStart, lmhg.GroupEnrollStop, lmhg.ProgramId, lmhg.lmGroupId, lmhg.AccountID,");
+        sql.append(        "ROW_NUMBER() OVER (PARTITION BY inventoryid, Relay ORDER BY GroupEnrollStop DESC) AS rn");
+        sql.append(    "FROM LMHardwareControlGroup lmhg");
+        sql.appendFragment(getJoinForProgramAndDeviceExistence());
+        sql.append(    "WHERE GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NOT NULL");
+        /* This is checking for a current enrollment for a inventory/relay pair and removing anything with a current enrollment */
+        sql.append(    "AND NOT EXISTS (SELECT 1 FROM LMHardwareControlGroup lmhg2");
+        sql.append(                     "WHERE lmhg2.InventoryID = lmhg.InventoryID");
+        sql.append(                     "AND lmhg2.Relay = lmhg.Relay");
+        sql.append(                     "AND GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NULL)");
+        sql.append(     ") AS t");
+        sql.append("WHERE rn").eq_k(1);
+        return yukonJdbcTemplate.query(sql, enrollmentMessageRowMapper);
+    }
+
+    private SqlFragmentSource getJoinForProgramAndDeviceExistence() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("JOIN LMProgramWebPublishing lmwp ON lmwp.ProgramID = lmhg.ProgramId");
+        sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectID = lmwp.DeviceID");
+        sql.append("JOIN YukonPAObject lgPao ON lgPao.paobjectId = lmhg.lmGroupId");
+        return sql;
+    }
+
+    private final static YukonRowMapper<EnrollmentJmsMessage> enrollmentMessageRowMapper = new YukonRowMapper<EnrollmentJmsMessage>() {
+        @Override
+        public EnrollmentJmsMessage mapRow(YukonResultSet rs) throws SQLException {
+            int inventoryId = rs.getInt("InventoryID");
+            int relay = rs.getInt("Relay");
+            int programId = rs.getInt("ProgramId");
+            int loadGroupId = rs.getInt("lmGroupId");
+            int accountId = rs.getInt("AccountID");
+            Instant enrollmentStartTime = rs.getInstant("GroupEnrollStart");
+            Instant enrollmentStopTime = rs.getInstant("GroupEnrollStop");
+            EnrollmentJmsMessage enrollmentMessage = new EnrollmentJmsMessage(inventoryId, accountId, loadGroupId,
+                    relay, programId, enrollmentStartTime, enrollmentStopTime);
+            return enrollmentMessage;
+        }
+    };
 }

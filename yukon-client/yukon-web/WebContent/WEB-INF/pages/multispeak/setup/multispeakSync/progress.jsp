@@ -1,7 +1,7 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="multispeakSyncProgress">
 
@@ -49,16 +49,16 @@
                 <c:otherwise>
                     <%-- status --%>
                     <tags:nameValue2 nameKey=".infoLabel.status">
-                        <!-- TO DO - Replace it with updaters -->
-                        <i:inline key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.RUNNING"/>
+                        <cti:classUpdater type="MSP_ENROLLMENT_SYNC" identifier="STATUS_CLASS">
+                            <cti:dataUpdaterValue type="MSP_ENROLLMENT_SYNC" identifier="STATUS_TEXT"/>
+                        </cti:classUpdater>
                     </tags:nameValue2>
 
                     <%-- progress bar --%>
                     <tags:nameValue2 nameKey=".infoLabel.progress">
-                        <!-- TO DO - Replace it with enrollment updaters -->
                         <tags:updateableProgressBar totalCount="${totalCount}" 
-                                                    countKey="MSP_DEVICE_GROUP_SYNC/METERS_PROCESSED_COUNT"
-                                                    isAbortedKey="MSP_DEVICE_GROUP_SYNC/IS_ABORTED"
+                                                    countKey="MSP_ENROLLMENT_SYNC/ENROLLMENT_MESSAGE_SENT_COUNT"
+                                                    isAbortedKey="MSP_ENROLLMENT_SYNC/IS_ABORTED"
                                                     hideCount="false"/>
                     </tags:nameValue2>
 
@@ -68,23 +68,36 @@
         </tags:nameValueContainer2>
         <br>
 
-        <%-- BACK/CANCEL BUTTONS --%>
+        <%-- BACK BUTTON --%>
         <cti:url var="backUrl" value="/multispeak/setup/multispeakSync/done"/>
         <form id="backToHomeForm" action="${backUrl}" method="post">
             <cti:csrfToken/>
             <button name="backToHome" class="button">
                 <i:inline key=".backToHomeButton"/>
             </button>
-            
+        </form>
+
+        <%-- CANCEL BUTTON --%>
+        <cti:url var="cancelUrl" value="/multispeak/setup/multispeakSync/cancel"/>
+        <form action="${cancelUrl}" method="post">
+            <cti:csrfToken/>
+            <input type="hidden" name="multispeakSyncType" value="${progress.type}">
             <button name="cancel" class="button" id="cancelButton">
                 <i:inline key=".cancelButton"/>
             </button>
-            
-           </form>
-    
+        </form>
+
     </tags:sectionContainer2>
-    
-    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
-    <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
+
+<c:choose>
+    <c:when test="${!isEnrollmentSelected}">
+        <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
+        <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
+    </c:when>
+    <c:otherwise>
+        <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_ENROLLMENT_SYNC/IS_RUNNING" />
+        <cti:dataUpdaterCallback function="yukon.ui.progressbar.toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_ENROLLMENT_SYNC/IS_NOT_RUNNING" />
+    </c:otherwise>
+</c:choose>
 
 </cti:standardPage>

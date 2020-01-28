@@ -392,7 +392,7 @@ public class CollectionActionResult {
 
             logger.debug("---Results---");
             logger.debug("executionExceptionText=" + executionExceptionText);
-            logger.debug("isCancelable:" + isCancelable());
+            logger.debug("Cancel:" + isCancelable());
             logger.debug("Progress=" + getCounts().getPercentCompleted() + "%");
             
             getCounts().getPercentages().keySet().forEach(detail -> {

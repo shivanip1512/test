@@ -133,18 +133,6 @@
                 <tags:input path="maxHop" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
-      </tags:sectionContainer>
-      <tags:sectionContainer title="Populate Database Settings">
-        <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="# of Devices per Gateway">
-                <tags:input path="numberOfDevicesPerGateway" size="5"/>
-            </tags:nameValue>
-        </tags:nameValueContainer>
-        <tags:nameValueContainer tableClass="natural-width">
-         	<tags:nameValue name="Create Gateways">
-            	<tags:checkbox path="createGateways"/>
-            </tags:nameValue>
-        </tags:nameValueContainer>
     </tags:sectionContainer>
     
     </div>

@@ -995,7 +995,6 @@ public class NmIntegrationController {
     @RequestMapping(value="populateMappingDatabase", method = RequestMethod.POST)
     public String populateMappingDatabase(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
         retrieveFlagSettings(currentSettings, request);
-        updateSettings(flash, currentSettings);
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.SETUP);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated"), flash);
         return "redirect:viewMappingSimulator";
@@ -1004,20 +1003,14 @@ public class NmIntegrationController {
     @RequestMapping(value="updateMappingSettings", method = RequestMethod.POST)
     public String updateMappingSettings(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
         retrieveFlagSettings(currentSettings, request);
-        updateSettings(flash, currentSettings);
-        model.addAttribute("simulatorRunning", true);
-        return "redirect:viewMappingSimulator";
-    }
-
-    private void updateSettings(FlashScope flash, SimulatedNmMappingSettings currentSettings) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL, currentSettings.getEmptyNullPercent());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP, currentSettings.getMinHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP, currentSettings.getMaxHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP, currentSettings.getNodesOneHop());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_NUM_DEVICES_PER_GW, currentSettings.getNumberOfDevicesPerGateway());
-        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_CREATE_GW, currentSettings.getCreateGateways());
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.UPDATE_SETTINGS);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated"), flash);
+        model.addAttribute("simulatorRunning", true);
+        return "redirect:viewMappingSimulator";
     }
         
     @RequestMapping(value="startMappingSimulator", method = RequestMethod.POST)
