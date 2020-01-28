@@ -24,7 +24,11 @@ public class MultispeakEnrollmentSyncHelper {
         int unenrollmentMessageCount = 0;
         log.info("Sending " + enrollmentMessages.size() + " enrollment message for multispeak sync process.");
         for (EnrollmentJmsMessage msg : enrollmentMessages) {
-            if(msg.getMessageType() == DrJmsMessageType.ENROLLMENT) {
+            if (callback.isCanceled()) {
+                log.info("Multispeak enrollment sync process is canceled");
+                break;
+            }
+            if (msg.getMessageType() == DrJmsMessageType.ENROLLMENT) {
                 drJmsMessageService.enrollmentNotification(msg);
                 enrollmentMessageCount++;
             } else {
@@ -33,7 +37,8 @@ public class MultispeakEnrollmentSyncHelper {
             }
             callback.enrollmentMessageSent();
         }
-        log.info(enrollmentMessageCount + " enrollment and " + unenrollmentMessageCount + " unenrollment message sent for multispeak sync process.");
+        log.info(enrollmentMessageCount + " enrollment and " + unenrollmentMessageCount
+                + " unenrollment message sent for multispeak sync process.");
         // Call finish if all enrollment call is done.
         callback.finish();
     }
