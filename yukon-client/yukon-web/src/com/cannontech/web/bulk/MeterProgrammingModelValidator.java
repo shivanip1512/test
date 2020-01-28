@@ -9,6 +9,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 @Service
 public class MeterProgrammingModelValidator extends SimpleValidator<MeterProgrammingModel> {
 
+    private final static int MAX_PASSWORD_LENGTH = 30;
 
     public MeterProgrammingModelValidator() {
         super(MeterProgrammingModel.class);
@@ -20,6 +21,10 @@ public class MeterProgrammingModelValidator extends SimpleValidator<MeterProgram
         if (config.isNewProgram()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "paoType", "yukon.web.error.isBlank");
+            YukonValidationUtils.checkExceedsMaxLength(errors,
+                                                       "password",
+                                                       config.getPassword(),
+                                                       MAX_PASSWORD_LENGTH);
         } else {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "existingProgramGuid", "yukon.web.error.isBlank");
         }
