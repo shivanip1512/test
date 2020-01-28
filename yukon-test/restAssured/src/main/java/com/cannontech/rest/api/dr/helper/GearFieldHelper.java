@@ -10,6 +10,7 @@ import com.cannontech.rest.api.gear.fields.MockEcobeeSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.gear.fields.MockGroupSelectionMethod;
 import com.cannontech.rest.api.gear.fields.MockHoneywellCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockHoneywellSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockHowToStopControl;
 import com.cannontech.rest.api.gear.fields.MockItronCycleGearFields;
 import com.cannontech.rest.api.gear.fields.MockItronCycleType;

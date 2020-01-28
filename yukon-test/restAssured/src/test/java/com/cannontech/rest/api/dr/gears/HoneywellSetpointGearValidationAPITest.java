@@ -1,9 +1,9 @@
 package com.cannontech.rest.api.dr.gears;
 
+import static org.testng.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
@@ -13,8 +13,8 @@ import com.cannontech.rest.api.constraint.request.MockProgramConstraint;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.dr.helper.LoadProgramSetupHelper;
 import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
-import com.cannontech.rest.api.gear.fields.MockHoneywellSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
+import com.cannontech.rest.api.gear.fields.MockHoneywellSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockWhenToChange;
 import com.cannontech.rest.api.loadProgram.request.MockLoadProgram;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
@@ -210,7 +210,7 @@ public class HoneywellSetpointGearValidationAPITest {
     public void gearValidation_10_WhenToChangePriorityGreaterThanMaxValue() {
 
         mockLoadProgram = buildMockLoadProgram();
-        MockHoneywellSetpointGearFields mockHoneywellSetpointGearFields = (MockHoneywellASetpointGearFields) mockLoadProgram.getGears()
+        MockHoneywellSetpointGearFields mockHoneywellSetpointGearFields = (MockHoneywellSetpointGearFields) mockLoadProgram.getGears()
                 .get(0).getFields();
 
         mockHoneywellSetpointGearFields.getWhenToChangeFields().setWhenToChange(MockWhenToChange.Priority);

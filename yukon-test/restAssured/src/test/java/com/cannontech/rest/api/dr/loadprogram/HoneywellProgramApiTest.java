@@ -1,5 +1,6 @@
 package com.cannontech.rest.api.dr.loadprogram;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertTrue;
 

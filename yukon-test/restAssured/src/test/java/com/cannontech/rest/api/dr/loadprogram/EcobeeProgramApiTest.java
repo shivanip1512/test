@@ -1,14 +1,18 @@
 package com.cannontech.rest.api.dr.loadprogram;
 
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.testng.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.testng.ITestContext;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
@@ -197,8 +201,8 @@ public class EcobeeProgramApiTest {
     @DataProvider(name = "TriggerOffsetData")
     public Object[][] getTriggerOffsetData() {
 
-        return new Object[][] { { (Double) 100000.0, "Must be between 0 and 100,000.", 422 }, // Max Range
-                { (Double) (-1.0), "Must be between 0 and 100,000.", 422 } // Min Range
+        return new Object[][] { { 100000.0, "Must be between 0 and 100,000.", 422 }, // Max Range
+                { -1.0, "Must be between 0 and 100,000.", 422 } // Min Range
         };
     }
 
