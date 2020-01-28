@@ -21,15 +21,15 @@
     <c:choose>
         <c:when test="${lastRunTimestampValue.type.enrollmentType}">
             <cti:url var="enrollmentProgressUrl" value="/multispeak/setup/multispeakSync/enrollmentProgress"/>
-                <a href="${enrollmentProgressUrl}">
-                    <cti:dataUpdaterValue type="MSP_ENROLLMENT_SYNC" identifier="STATUS_TEXT_OR_LAST_SYNC_ENROLLMENT"/>
-                </a>
+            <a href="${enrollmentProgressUrl}">
+                <cti:dataUpdaterValue type="MSP_ENROLLMENT_SYNC" identifier="STATUS_TEXT_OR_LAST_SYNC_ENROLLMENT"/>
+            </a>
         </c:when>
         <c:otherwise>
             <cti:url var="progressUrl" value="/multispeak/setup/multispeakSync/progress"/>
-                <a href="${progressUrl}">
-                    <cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT_OR_LAST_SYNC_${lastRunTimestampValue.type}"/>
-                </a>
+            <a href="${progressUrl}">
+                <cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT_OR_LAST_SYNC_${lastRunTimestampValue.type}"/>
+            </a>
         </c:otherwise>
     </c:choose>
 </span>

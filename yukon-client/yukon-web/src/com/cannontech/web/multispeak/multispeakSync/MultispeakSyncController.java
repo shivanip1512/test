@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -151,7 +152,7 @@ public class MultispeakSyncController {
     /**
      * This will show the synchronization progress for enrollment.
      */
-    @RequestMapping("enrollmentProgress")
+    @GetMapping("enrollmentProgress")
     public String enrollmentProgress(ModelMap modelMap, FlashScope flashScope) {
         MultispeakEnrollmentSyncProgress progress = null;
         MultispeakEnrollmentSyncService service = mspHandler.getMultispeakEnrollmentSyncService();
