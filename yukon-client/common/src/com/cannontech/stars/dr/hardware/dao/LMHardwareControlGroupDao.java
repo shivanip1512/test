@@ -13,6 +13,7 @@ import com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl.D
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.google.common.collect.Multimap;
 
 public interface LMHardwareControlGroupDao {
@@ -146,5 +147,11 @@ public interface LMHardwareControlGroupDao {
      */
     LMHardwareControlGroup findCurrentEnrollmentByInventoryIdAndRelayAndAccountId(int inventoryId, int relay,
             int accountId);
+    
+    /**
+     *  Return a list of enrollment messages (EnrollmentJmsMessage) per device and relay combination that has ever had an enrollment.
+     *  When relays have had more than one enrollment return the message with latest timestamp.
+     */
+    public List<EnrollmentJmsMessage> getEnrollmentSyncMessagesToSend();
 
 }
