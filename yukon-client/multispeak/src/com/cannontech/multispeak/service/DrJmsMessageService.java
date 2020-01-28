@@ -1,13 +1,11 @@
 package com.cannontech.multispeak.service;
 
-import javax.jms.MessageListener;
-
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 
-public interface DrJmsMessageService extends MessageListener {
+public interface DrJmsMessageService {
 
     /**
      * Sending enrollment notification messages to configured vendors.

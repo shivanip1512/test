@@ -18,7 +18,7 @@
             <input type="hidden" class="js-deltaF-lbl" value="${deltaFLbl}"/>
             
             <c:choose>
-                <c:when test="${programGear.fields.absoluteOrDelta == 'ABSOLUTE'}">
+                <c:when test="${programGear.fields.setpoint == 'ABSOLUTE'}">
                     <c:set var="valueBLblKey" value=".absB"/>
                     <c:set var="valueDLblKey" value=".absD"/>
                     <c:set var="valueFLblKey" value=".absF"/>
@@ -33,8 +33,8 @@
             <tags:sectionContainer2 nameKey="controlParameters" styleClass="js-thermostat-ramping-ctrl-prms">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".mode">
-                        <cti:msg2 var="heatBtnLbl" key=".mode.heat"/>
-                        <cti:msg2 var="coolBtnLbl" key=".mode.cool"/>
+                        <cti:msg2 var="heatBtnLbl" key=".isHeatMode"/>
+                        <cti:msg2 var="coolBtnLbl" key=".isCoolMode"/>
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <div class="button-group">
                                 <tags:check path="fields.isHeatMode" label="${heatBtnLbl}" classes="ML0"/>
@@ -58,7 +58,7 @@
                             </c:choose>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".unit">
+                    <tags:nameValue2 nameKey=".tempMeasureUnit">
                         <cti:displayForPageEditModes modes="CREATE,EDIT">
                             <c:forEach var="unit" items="${units}" varStatus="status">
                                 <c:choose>
@@ -72,11 +72,11 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.measureUnit" value="${unit}" classes="${css}" key=".${unit}" />
+                                <tags:radio path="fields.tempMeasureUnit" value="${unit}" classes="${css}" key=".${unit}" />
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.measureUnit}"/>
+                            <i:inline key=".${programGear.fields.tempMeasureUnit}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".setpoint">
@@ -93,45 +93,45 @@
                                         <c:set var="css" value="middle yes"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <tags:radio path="fields.absoluteOrDelta" value="${setpoint}" classes="${css}"
+                                <tags:radio path="fields.setpoint" value="${setpoint}" classes="${css}"
                                             key=".${setpoint}" inputClass="js-setpoint-input"/>
                             </c:forEach>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key=".${programGear.fields.absoluteOrDelta}"/>
+                            <i:inline key=".${programGear.fields.setpoint}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".minimumTemperature">
+                    <tags:nameValue2 nameKey=".minValue">
                         <tags:input path="fields.minValue"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".maximumTempreature">
+                    <tags:nameValue2 nameKey=".maxValue">
                         <tags:input path="fields.maxValue"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".randomOffsetTime">
+                    <tags:nameValue2 nameKey=".random">
                         <tags:input path="fields.random"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".ta">
+                    <tags:nameValue2 nameKey=".valueTa">
                         <tags:input path="fields.valueTa" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".tb">
+                    <tags:nameValue2 nameKey=".valueTb">
                         <tags:input path="fields.valueTb" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="${valueBLblKey}" nameClass="js-value-b">
                         <tags:input path="fields.valueB" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".tc">
+                    <tags:nameValue2 nameKey=".valueTc">
                         <tags:input path="fields.valueTc" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".td">
+                    <tags:nameValue2 nameKey=".valueTd">
                         <tags:input path="fields.valueTd" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="${valueDLblKey}" nameClass="js-value-d">
                         <tags:input path="fields.valueD" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".te">
+                    <tags:nameValue2 nameKey=".valueTe">
                         <tags:input path="fields.valueTe" size="3"/>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".tf">
+                    <tags:nameValue2 nameKey=".valueTf">
                         <tags:input path="fields.valueTf" size="3"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="${valueFLblKey}" nameClass="js-value-f">
@@ -143,7 +143,7 @@
         <div class="column two nogutter"> 
             <tags:sectionContainer2 nameKey="optionalAttributes">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".groupCapacityReduction">
+                    <tags:nameValue2 nameKey=".capacityReduction">
                         <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                         <tags:numeric path="fields.capacityReduction" units="${percent}" size="5" minValue="0" maxValue="100" />
                     </tags:nameValue2>

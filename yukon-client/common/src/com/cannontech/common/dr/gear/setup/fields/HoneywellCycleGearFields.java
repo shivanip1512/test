@@ -9,13 +9,12 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class HoneywellCycleGearFields implements ProgramGearFields {
 
-    private Boolean rampInOut;
     private Integer controlPercent;
     private Integer cyclePeriodInMinutes;
-
     private HowToStopControl howToStopControl;
-    private Integer capacityReduction;
+    private Boolean rampInOut;
 
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getControlPercent() {

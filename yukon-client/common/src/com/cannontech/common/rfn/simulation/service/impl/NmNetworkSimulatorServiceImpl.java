@@ -439,6 +439,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     routeData.setRouteFlags(new HashSet<RouteFlag>(flags));
                     routeData.setRouteTimeout(settings.getRouteData().getRouteTimeout());
                     routeData.setTotalCost(settings.getRouteData().getTotalCost());
+                    int max = getRandomNumberInRange(2, 3);
+                    List<RfnDevice> neighbors = getNeighbors(rfnDevice, max);
+                    routeData.setNextHopRfnIdentifier(neighbors.get(0).getRfnIdentifier());
                     result.getMetadatas().put(multi, routeData);
                 }
             }

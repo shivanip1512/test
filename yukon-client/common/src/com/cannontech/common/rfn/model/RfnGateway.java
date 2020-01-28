@@ -225,11 +225,11 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
 
         return this;
     }
-    
+
     public boolean isDataStreamingSupported() {
-        return getPaoIdentifier().getPaoType() == PaoType.GWY800;
+        return false;
     }
-    
+
     public String getNameWithIPAddress() {
         String ipAddress = Optional.ofNullable(data)
                                    .map(RfnGatewayData::getIpAddress)

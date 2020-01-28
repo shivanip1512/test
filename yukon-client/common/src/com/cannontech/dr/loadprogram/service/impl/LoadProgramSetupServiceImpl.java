@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.gear.setup.OperationalState;
+import com.cannontech.common.dr.gear.setup.fields.ProgramGearFields;
+import com.cannontech.common.dr.gear.setup.fields.ProgramGearFieldsBuilder;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.program.setup.model.LoadProgram;
 import com.cannontech.common.dr.program.setup.model.LoadProgramCopy;
@@ -76,6 +78,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ProgramDao programDao;
     @Autowired private LMGearDao lmGearDao;
+    @Autowired private ProgramGearFieldsBuilder programGearFieldsBuilder;
 
     @Override
     @Transactional
@@ -846,5 +849,19 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Override
     public List<LiteGear> getGearsForProgram(int programId) {
         return lmGearDao.getAllLiteGears(programId);
+    }
+
+    @Override
+    public ProgramGear getProgramGear(Integer gearId) {
+        com.cannontech.loadcontrol.data.LMProgramDirectGear directGear = lmGearDao.getByGearId(gearId);
+        ProgramGearFields fields = programGearFieldsBuilder.getProgramGearFields(directGear);
+
+        ProgramGear gear = new ProgramGear();
+        gear.setControlMethod(directGear.getControlMethod());
+        gear.setGearId(directGear.getGearId());
+        gear.setGearName(directGear.getGearName());
+        gear.setGearNumber(directGear.getGearNumber());
+        gear.setFields(fields);
+        return gear;
     }
 }

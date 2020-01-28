@@ -12,25 +12,22 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class TimeRefreshGearFields implements ProgramGearFields {
 
-    private CycleCountSendType refreshShedTime;
+    private CycleCountSendType refreshShedType;
     private Integer shedTime;
-    private Integer numberOfGroups;
     private Integer sendRate;
-
+    private Integer numberOfGroups;
     private GroupSelectionMethod groupSelectionMethod;
 
     private Integer rampInPercent;
     private Integer rampInIntervalInSeconds;
-
-    private HowToStopControl howToStopControl;
-    private StopOrder stopOrder;
-
     private Integer rampOutPercent;
     private Integer rampOutIntervalInSeconds;
 
+    private HowToStopControl howToStopControl;
+    private StopOrder stopOrder;
     private Integer stopCommandRepeat;
-    private Integer capacityReduction;
 
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getShedTime() {
@@ -137,12 +134,12 @@ public class TimeRefreshGearFields implements ProgramGearFields {
         this.stopOrder = stopOrder;
     }
 
-    public CycleCountSendType getRefreshShedTime() {
-        return refreshShedTime;
+    public CycleCountSendType getRefreshShedType() {
+        return refreshShedType;
     }
 
-    public void setRefreshShedTime(CycleCountSendType refreshShedTime) {
-        this.refreshShedTime = refreshShedTime;
+    public void setRefreshShedType(CycleCountSendType refreshShedType) {
+        this.refreshShedType = refreshShedType;
     }
 
     @Override
@@ -185,9 +182,9 @@ public class TimeRefreshGearFields implements ProgramGearFields {
         setNumberOfGroups(timeRefreshGear.getNumberOfGroups());
 
         if (timeRefreshGear.getMethodOptionType().compareTo(LMProgramDirectGear.OPTION_COUNT_DOWN) == 0) {
-            setRefreshShedTime(CycleCountSendType.valueOf(LMProgramDirectGear.OPTION_DYNAMIC_SHED));
+            setRefreshShedType(CycleCountSendType.valueOf(LMProgramDirectGear.OPTION_DYNAMIC_SHED));
         } else {
-            setRefreshShedTime(CycleCountSendType.valueOf(LMProgramDirectGear.OPTION_FIXED_SHED));
+            setRefreshShedType(CycleCountSendType.valueOf(LMProgramDirectGear.OPTION_FIXED_SHED));
         }
 
         setSendRate(timeRefreshGear.getRefreshRate());
@@ -237,7 +234,7 @@ public class TimeRefreshGearFields implements ProgramGearFields {
             timeRefreshGear.setRampInPercent(getRampInPercent());
         }
 
-        if (getRefreshShedTime() == CycleCountSendType.DynamicShedTime) {
+        if (getRefreshShedType() == CycleCountSendType.DynamicShedTime) {
             timeRefreshGear.setMethodOptionType(LMProgramDirectGear.OPTION_COUNT_DOWN);
         } else {
             timeRefreshGear.setMethodOptionType(LMProgramDirectGear.OPTION_FIXED_COUNT);

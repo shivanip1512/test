@@ -1283,7 +1283,11 @@
                 <link>/stars/gateways</link>
                 <pages>
                     <page name="gateways.detail" type="DETAIL">
+                        <link>/stars/gateways/${gateway.id}</link>
                         <labelArgument>${gateway.name}</labelArgument>
+                        <pages>
+                            <page name="wifiConnection" type="BASIC"/>
+                        </pages>
                     </page>
                 </pages>
             </page>

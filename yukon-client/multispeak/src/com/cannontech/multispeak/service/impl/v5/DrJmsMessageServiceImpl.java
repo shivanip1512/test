@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
@@ -114,7 +115,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
-public class DrJmsMessageListener implements DrJmsMessageService {
+public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageListener {
 
     @Autowired private NOTClient notClient;
     @Autowired private MultispeakFuncs multispeakFuncs;
@@ -127,7 +128,7 @@ public class DrJmsMessageListener implements DrJmsMessageService {
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
 
-    private static final Logger log = YukonLogManager.getLogger(DrJmsMessageListener.class);
+    private static final Logger log = YukonLogManager.getLogger(DrJmsMessageServiceImpl.class);
     private AtomicLong atomicLong = new AtomicLong();
     private Executor executor = Executors.newCachedThreadPool();
 
@@ -267,19 +268,10 @@ public class DrJmsMessageListener implements DrJmsMessageService {
                     case STOPOPTOUT:
                         optInNotification((OptOutOptInJmsMessage) drMessage);
                         break;
-                    case RELAYDATA:
-                        intervalDataNotification((DrAttributeDataJmsMessage) drMessage);
-                        break;
-                    case VOLTAGEDATA:
-                        voltageMeterReadingsNotification((DrAttributeDataJmsMessage) drMessage);
-                        break;
                     case EVENT:
                         break;
                     case PROGRAMSTATUS:
                         programStatusNotification((DrProgramStatusJmsMessage) drMessage);
-                        break;
-                    case ALARMANDEVENT:
-                        alarmAndEventNotification((DrAttributeDataJmsMessage) drMessage);
                         break;
                     default:
                         log.debug("Unable to find proper multispeak Dr message type i.e: " + drMessage.getMessageType());

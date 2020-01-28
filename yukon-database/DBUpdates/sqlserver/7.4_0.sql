@@ -164,11 +164,13 @@ INSERT INTO DBUpdates VALUES ('YUK-20689', '7.4.0', GETDATE());
 /* @end YUK-20689 */
 
 /* @start YUK-20819 */
+/* @error ignore-begin */
 ALTER TABLE DeviceMacAddress
 ADD SecondaryMacAddress varchar(255) null;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-20819', '7.3.2', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-20819', '7.4.0', GETDATE());
+/* @error ignore-end */
 /* @end YUK-20819 */
 
 /* @start YUK-20788 */

@@ -19,13 +19,12 @@ public class SimpleThermostatRampingGearFields implements ProgramGearFields {
     private Integer preOpTemp;
     private Integer preOpTimeInMinutes;
     private Integer preOpHoldInMinutes;
+    private Integer maxRuntimeInMinutes;
     private Float rampPerHour;
     // Better variable name can be used
     private Integer max;
 
     private Integer rampOutTimeInMinutes;
-    private Integer maxRuntimeInMinutes;
-
     private HowToStopControl howToStopControl;
 
     private WhenToChangeFields whenToChangeFields;

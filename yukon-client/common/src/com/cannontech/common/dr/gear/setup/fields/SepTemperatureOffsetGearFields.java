@@ -16,15 +16,14 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
 
     private Boolean rampIn;
     private Boolean rampOut;
-    public TemperatureMeasureUnit celsiusOrFahrenheit;
     public Mode mode;
+    public TemperatureMeasureUnit tempMeasureUnit;
     private Double offset;
     private Integer criticality;
 
-    private HowToStopControl howToStopControl;
     private Integer capacityReduction;
-
     private WhenToChangeFields whenToChangeFields;
+    private HowToStopControl howToStopControl;
 
     public Boolean getRampIn() {
         return rampIn;
@@ -86,12 +85,12 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
         this.whenToChangeFields = whenToChangeFields;
     }
 
-    public TemperatureMeasureUnit getCelsiusOrFahrenheit() {
-        return celsiusOrFahrenheit;
+    public TemperatureMeasureUnit getTempMeasureUnit() {
+        return tempMeasureUnit;
     }
 
-    public void setCelsiusOrFahrenheit(TemperatureMeasureUnit celsiusOrFahrenheit) {
-        this.celsiusOrFahrenheit = celsiusOrFahrenheit;
+    public void setTempMeasureUnit(TemperatureMeasureUnit tempMeasureUnit) {
+        this.tempMeasureUnit = tempMeasureUnit;
     }
 
     public Mode getMode() {
@@ -126,9 +125,9 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
         }
 
         if (sepTemperatureOffsetGear.getSettings().charAt(1) == 'C') {
-            setCelsiusOrFahrenheit(TemperatureMeasureUnit.CELSIUS);
+            setTempMeasureUnit(TemperatureMeasureUnit.CELSIUS);
         } else {
-            setCelsiusOrFahrenheit(TemperatureMeasureUnit.FAHRENHEIT);
+            setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         }
 
         setCriticality(sepTemperatureOffsetGear.getCriticality());
@@ -147,7 +146,7 @@ public class SepTemperatureOffsetGearFields implements ProgramGearFields {
 
         temperatureOffsetGear.setMethodStopType(getHowToStopControl().name());
         temperatureOffsetGear.getSettings().setCharAt(1,
-            getCelsiusOrFahrenheit() == TemperatureMeasureUnit.FAHRENHEIT ? 'F' : 'C');
+            getTempMeasureUnit() == TemperatureMeasureUnit.FAHRENHEIT ? 'F' : 'C');
 
         temperatureOffsetGear.setFrontRampEnabled(getRampIn());
         temperatureOffsetGear.setBackRampEnabled(getRampOut());
