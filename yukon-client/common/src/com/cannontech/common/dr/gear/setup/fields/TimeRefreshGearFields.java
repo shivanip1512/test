@@ -14,23 +14,20 @@ public class TimeRefreshGearFields implements ProgramGearFields {
 
     private CycleCountSendType refreshShedType;
     private Integer shedTime;
-    private Integer numberOfGroups;
     private Integer sendRate;
-
+    private Integer numberOfGroups;
     private GroupSelectionMethod groupSelectionMethod;
 
     private Integer rampInPercent;
     private Integer rampInIntervalInSeconds;
-
-    private HowToStopControl howToStopControl;
-    private StopOrder stopOrder;
-
     private Integer rampOutPercent;
     private Integer rampOutIntervalInSeconds;
 
+    private HowToStopControl howToStopControl;
+    private StopOrder stopOrder;
     private Integer stopCommandRepeat;
-    private Integer capacityReduction;
 
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getShedTime() {

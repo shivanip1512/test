@@ -17,14 +17,13 @@ public class MasterCycleGearFields implements ProgramGearFields {
 
     private Integer rampInPercent;
     private Integer rampInIntervalInSeconds;
+    private Integer rampOutPercent;
+    private Integer rampOutIntervalInSeconds;
 
     private HowToStopControl howToStopControl;
     private StopOrder stopOrder;
-    private Integer rampOutPercent;
-    private Integer rampOutIntervalInSeconds;;
 
     private Integer capacityReduction;
-
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getControlPercent() {

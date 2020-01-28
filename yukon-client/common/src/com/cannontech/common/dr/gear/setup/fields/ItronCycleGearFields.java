@@ -11,13 +11,14 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ItronCycleGearFields implements ProgramGearFields {
 
     private ItronCycleType dutyCycleType;
-    private Boolean rampIn;
-    private Boolean rampOut;
     private Integer dutyCyclePercent;
     private Integer dutyCyclePeriodInMinutes;
     private Integer criticality;
-    private Integer capacityReduction;
     private HowToStopControl howToStopControl;
+    private Boolean rampIn;
+    private Boolean rampOut;
+
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getCriticality() {

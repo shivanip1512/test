@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
-@JsonPropertyOrder({ "noRamp", "controlPercent", "cyclePeriod", "cycleCountSendType", "maxCycleCount",
-    "startingPeriodCount", "sendRate", "stopCommandRepeat", "howToStopControl", "capacityReduction", "kWReduction",
+@JsonPropertyOrder({ "controlPercent", "cyclePeriod", "cycleCountSendType", "maxCycleCount",
+    "startingPeriodCount", "sendRate", "noRamp", "stopCommandRepeat", "howToStopControl", "capacityReduction", "kWReduction",
     "whenToChangeFields" })
 public class TargetCycleGearFields extends TrueCycleGearFields {
 

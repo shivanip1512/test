@@ -11,26 +11,25 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class ThermostatSetbackGearFields implements ProgramGearFields {
 
-    private Setpoint setpoint;
-    private TemperatureMeasureUnit tempMeasureUnit;
-
     public Boolean isHeatMode;
     public Boolean isCoolMode;
+    private TemperatureMeasureUnit tempMeasureUnit;
+    private Setpoint setpoint;
 
     private Integer minValue;
     private Integer maxValue;
-    private Integer valueB;
-    private Integer valueD;
 
-    private Integer valueF;
     private Integer random;
 
     private Integer valueTa;
     private Integer valueTb;
+    private Integer valueB;
     private Integer valueTc;
     private Integer valueTd;
+    private Integer valueD;
     private Integer valueTe;
     private Integer valueTf;
+    private Integer valueF;
 
     private HowToStopControl howToStopControl;
     private Integer capacityReduction;

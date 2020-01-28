@@ -61,7 +61,7 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
     private static Set<String> gearFieldsInDHMSFormat = Set.of("sendRate", "shedTime");
     private static Set<String> gearFieldsInSecondsFormat = Set.of("rampInIntervalInSeconds", "rampOutIntervalInSeconds");
     private static Set<String> gearFieldsInMinutesFormat = Set.of("whenToChangeFields.changeDurationInMinutes");
-    private static Set<String> gearFieldsInPercentFormat = Set.of("controlPercent", "rampInPercent", "rampOutPercent");
+    private static Set<String> gearFieldsInPercentFormat = Set.of("controlPercent", "rampInPercent", "rampOutPercent", "dutyCyclePercent");
     private static Set<String> gearFieldsInFahrenheitFormat = Set.of("setpointOffset");
     private static Set<String> noneSupportedGearFields = Set.of("sendRate", "maxCycleCount");
 
@@ -133,10 +133,8 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
 
         String fieldsString = fieldValueMap.entrySet()
                                            .stream()
-                                           .sorted(Map.Entry.comparingByKey())
                                            .filter(entry -> !excludeGearFields.contains(entry.getKey()))
                                            .map(entry -> getField(controlMethod, entry.getKey(), entry.getValue(), userContext, stringValueTypeFields, fieldValueMap))
-                                           .sorted()
                                            .collect(Collectors.joining(", "));
 
         return fieldsString;
