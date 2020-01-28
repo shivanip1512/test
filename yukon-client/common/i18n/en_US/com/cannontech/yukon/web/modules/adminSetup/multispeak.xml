@@ -172,10 +172,10 @@
     <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncTypeProcessorType.BILLING_CYCLE">Billing Cycle</entry>
     <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncTypeProcessorType.ENROLLMENT">Enrollment</entry>
     
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.RUNNING">In Progress...</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FAILED">Error</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.CANCELED">Canceled</entry>
-    <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FINISHED">Complete</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.RUNNING">In Progress...</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.FAILED">Error</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.CANCELED">Canceled</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSync.multispeakSyncProgressStatus.FINISHED">Complete</entry>
     
     <!-- sync home.jsp -->
     <entry key="yukon.web.modules.adminSetup.multispeakSyncHome.pageName">MultiSpeak</entry>
@@ -195,30 +195,35 @@
         <br>
         Select a synchronization type from the list, then click "Sync Now".
         <br><br>
-        
+
         <ul class="instructions">
-        
+
             <li>
                 Synchronizing CIS device groups will retrieve meters from the Primary CIS Vendor. 
                 <br>
                 Meters that exist in Yukon will be added to their corresponding CIS device group based on the name of the sync type property received from the Primary CIS Vendor.
             </li>
-            
+
+            <li>
+                Synchronizing enrollment will send the current device enrollment/unenrollment status to all vendors supporting NOT_Server(DR), DRProgramEnrollmentsNotification, and DRProgramUnenrollmentsNotification.
+            </li>
+
             <li>
                 If a meter already exists in a CIS device group that does not correspond to the sync type property name received from the Primary CIS Vendor,
                 <br>
                 then the meter will be removed from that device group and will be placed in the updated CIS device group.
             </li>
-            
+
             <li>
                 Examples:
                 <br><br>
-                
+
                 <table class="compact-results-table">
                     <thead>
                         <tr>
                             <th>Substation</th>
                             <th>Billing Cycle</th>
+                            <th>Enrollment</th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -232,7 +237,7 @@
                                     <li>"Meter 12345" will be removed from any other device groups under "/Groups/Meters/CIS Substation/" that it may belong to.</li>
                                 </ol>
                             </td>
-                            
+
                             <td>
                                 <ol class="examples">
                                     <li>Primary CIS vendor has meter "Meter 12345" whose Billing Cycle name is "Cycle XYZ".</li>
@@ -243,6 +248,14 @@
                                     <li>"Meter 12345" will be removed from any other device groups under "<i><b>MSP_BILLING_CYCLE_GROUP</b></i>" that it may belong to.</li>
                                 </ol>
                             </td>
+
+                            <td>
+                                <ol class="examples">
+                                    <li>"Vendor1" has 1 account with 1 enrolled program having 3 devices ("Device1", "Device2" and "Device3").</li>
+                                    <li>The "Device1" and "Device2" are enrolled and "Device3" is unenrolled.</li>
+                                    <li>2 enrollment messages and 1 unenrollment message will be sent to "Vendor1" upon synchronization.</li>
+                                </ol>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -250,15 +263,15 @@
             
             <li>
                 <span class="error" style="font-weight:bold;">Note:</span> 
-                Retrieving meters from the Primary CIS Vendor may take some time.
+                Synchronization process may take several minutes to complete.
                 You may leave this page after initiating a synchronization and come back later to check for results.
             </li>
-            
+
         </ul>
     ]]></entry>
     
     <!-- sync progress.jsp -->
-    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.pageName">Multispeak Progress</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.pageName">MultiSpeak Sync Progress</entry>
     <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.cancelButton">Cancel Sync</entry>
     <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.backToHomeButton">Back To Main Page</entry>
     <entry key="yukon.web.modules.adminSetup.multispeakSyncProgress.cancelOk">Synchronization successfully canceled.</entry>

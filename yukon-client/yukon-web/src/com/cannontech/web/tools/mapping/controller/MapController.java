@@ -57,6 +57,9 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.DistanceUnit;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -94,6 +97,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
+import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -130,6 +134,8 @@ public class MapController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private NmNetworkService nmNetworkService;
+    @Autowired private PaoLocationDao paoLocationDao;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -176,6 +182,10 @@ public class MapController {
 
         }
         
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        
         return "map/map.jsp";
     }
 
@@ -198,6 +208,10 @@ public class MapController {
         model.addAttribute("filteredCollection", filteredCollection);
         filter.setTempDeviceGroupName(groupName);
         model.addAttribute("filter", filter);
+        
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
         
         return "map/map.jsp";
     }
@@ -308,6 +322,13 @@ public class MapController {
                                     flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlagType." + flagType.name()));
                                 });
                                 model.addAttribute("routeFlags", String.join(", ", flags));
+                                //get distance to next hop
+                                RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
+                                RfnDevice nextHopDevice = rfnDeviceDao.getDeviceForExactIdentifier(nextHop);
+                                PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
+                                PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
+                                double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
+                                model.addAttribute("nextHopDistance", distanceTo);
                             }
                         }
                     }

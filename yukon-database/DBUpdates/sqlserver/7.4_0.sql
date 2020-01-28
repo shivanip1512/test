@@ -164,11 +164,13 @@ INSERT INTO DBUpdates VALUES ('YUK-20689', '7.4.0', GETDATE());
 /* @end YUK-20689 */
 
 /* @start YUK-20819 */
+/* @error ignore-begin */
 ALTER TABLE DeviceMacAddress
 ADD SecondaryMacAddress varchar(255) null;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-20819', '7.3.2', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-20819', '7.4.0', GETDATE());
+/* @error ignore-end */
 /* @end YUK-20819 */
 
 /* @start YUK-20788 */
@@ -291,6 +293,22 @@ AND DeviceId IN
 
 INSERT INTO DBUpdates VALUES('YUK-21378', '7.4.0', GETDATE());
 /* @end YUK-21378 */
+
+/* @start YUK-21216 */
+INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
+
+UPDATE PointUnit
+SET UomId = 57
+WHERE UomId = 54
+AND PointId IN
+    (SELECT PointId FROM Point p
+     JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+     WHERE PointType = 'Analog' 
+     AND PointOffset = 394
+     AND Type in ('WRL-420cD', 'WRL-420cL'));
+
+INSERT INTO DBUpdates VALUES('YUK-21216', '7.4.0', GETDATE());
+/* @end YUK-21216 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

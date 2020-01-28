@@ -13,10 +13,9 @@ public class EcobeeSetpointGearFields implements ProgramGearFields {
     private Boolean mandatory;
     private Integer setpointOffset;
     private Mode mode;
-    
     private HowToStopControl howToStopControl;
-    private Integer capacityReduction;
     
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
     
     public Integer getSetpointOffset() {

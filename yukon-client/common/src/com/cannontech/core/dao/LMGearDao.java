@@ -5,8 +5,13 @@ import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.ThermostatRampRateValues;
+import com.cannontech.dr.itron.model.ItronCycleType;
+import com.cannontech.dr.nest.model.v3.LoadShapingOptions;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.gear.model.BeatThePeakGearContainer;
+import com.cannontech.loadcontrol.gear.model.EcobeeSetpointValues;
+import com.cannontech.loadcontrol.gear.model.HoneywellSetpointValues;
+import com.cannontech.loadcontrol.gear.model.LMThermostatGear;
 
 public interface LMGearDao {
     /**
@@ -83,4 +88,33 @@ public interface LMGearDao {
      * Retrieves all the gears for the program with specified programId.
      */
     List<LiteGear> getAllLiteGears(Integer programID);
+
+    /**
+     * Retrieves LoadShapingOptions by GearId
+     */
+    public LoadShapingOptions getLoadShapingOptions(Integer gearId);
+
+    /**
+     * Retrieves ItronCycleType by GearId
+     */
+
+    public ItronCycleType getItronCycleType(Integer gearId);
+
+    /**
+     * Retrieves EcobeeSetpointValues by GearId
+     */
+
+    public EcobeeSetpointValues getEcobeeSetpointValues(Integer gearId);
+
+    /**
+     * Retrieves HoneywellSetpointValues by GearId
+     */
+
+    public HoneywellSetpointValues getHoneywellSetpointValues(Integer gearId);
+
+    /**
+     * Retrieves LMThermostatGear by GearId
+     */
+
+    public LMThermostatGear getLMThermostatGear(Integer gearId);
 }

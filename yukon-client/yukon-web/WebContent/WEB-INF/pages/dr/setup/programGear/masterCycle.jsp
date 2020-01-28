@@ -9,7 +9,7 @@
                          <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                          <tags:numeric path="fields.controlPercent" units="${percent}" size="10" minValue="5" maxValue="100"/>
                      </tags:nameValue2>
-                     <tags:nameValue2 nameKey=".cyclePeriod"> 
+                     <tags:nameValue2 nameKey=".cyclePeriodInMinutes"> 
                          <tags:numeric path="fields.cyclePeriodInMinutes" size="10" minValue="5" maxValue="945"/>
                      </tags:nameValue2>
                      <tags:nameValue2 nameKey=".groupSelectionMethod">
@@ -25,7 +25,7 @@
              
              <tags:sectionContainer2 nameKey="optionalAttributes">
                  <tags:nameValueContainer2>
-                     <tags:nameValue2 nameKey=".groupCapacityReduction">
+                     <tags:nameValue2 nameKey=".capacityReduction">
                          <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                          <tags:numeric path="fields.capacityReduction" units="${percent}" size="10" minValue="0" maxValue="100"/>
                      </tags:nameValue2>
@@ -55,7 +55,7 @@
                          <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                          <tags:numeric inputClass="js-rampInPercent" path="fields.rampInPercent" units="${percent}" size="10" minValue="0" maxValue="100"/>
                      </tags:nameValue2>
-                     <tags:nameValue2 nameKey=".rampInInterval" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
+                     <tags:nameValue2 nameKey=".rampInIntervalInSeconds" data-toggle-group="rampInWindow" rowClass="${rampInFieldClass}">
                          <cti:msg2 var="rampInIntervalUnit" key="yukon.common.units.SECONDS"/>
                          <tags:numeric inputClass="js-rampInInterval" path="fields.rampInIntervalInSeconds" units="${rampInIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
                      </tags:nameValue2>
@@ -86,7 +86,7 @@
                          <cti:msg2 var="percent" key="yukon.common.units.PERCENT"/>
                          <tags:numeric path="fields.rampOutPercent" units="${percent}" size="10" minValue="0" maxValue="100"/> 
                      </tags:nameValue2>
-                     <tags:nameValue2 id="js-rampOutInterval-row" nameKey=".rampOutInterval" rowClass="dn">
+                     <tags:nameValue2 id="js-rampOutInterval-row" nameKey=".rampOutIntervalInSeconds" rowClass="dn">
                          <cti:msg2 var="rampOutIntervalUnit" key="yukon.common.units.SECONDS"/>
                          <tags:numeric path="fields.rampOutIntervalInSeconds" units="${rampOutIntervalUnit}" size="10" minValue="-99999" maxValue="99999"/>
                      </tags:nameValue2>

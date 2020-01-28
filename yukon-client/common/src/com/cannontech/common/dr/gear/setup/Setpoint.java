@@ -2,7 +2,7 @@ package com.cannontech.common.dr.gear.setup;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum AbsoluteOrDelta implements DisplayableEnum {
+public enum Setpoint implements DisplayableEnum {
 
     ABSOLUTE,
     DELTA;

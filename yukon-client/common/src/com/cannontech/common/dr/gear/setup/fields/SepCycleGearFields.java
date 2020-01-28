@@ -9,15 +9,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class SepCycleGearFields implements ProgramGearFields {
 
-    private Boolean rampIn;
-    private Boolean rampOut;
-    private Boolean trueCycle;
-
     private Integer controlPercent;
     private Integer criticality;
-    private HowToStopControl howToStopControl;
-    private Integer capacityReduction;
+    private Boolean trueCycle;
 
+    private Boolean rampIn;
+    private Boolean rampOut;
+    private HowToStopControl howToStopControl;
+
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
 
     public Boolean getRampIn() {

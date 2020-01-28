@@ -3,7 +3,7 @@ package com.cannontech.web.api.dr.gear.setup.fields.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
+import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.fields.ThermostatSetbackGearFields;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.device.lm.GearControlMethod;
@@ -31,11 +31,11 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
     protected void doValidation(ThermostatSetbackGearFields thermostatSetBackCycleGear, Errors errors) {
 
         //Check for Absolutes or Deltas
-        lmValidatorHelper.checkIfFieldRequired("absoluteOrDelta", errors, thermostatSetBackCycleGear.getAbsoluteOrDelta(),
+        lmValidatorHelper.checkIfFieldRequired("setpoint", errors, thermostatSetBackCycleGear.getSetpoint(),
                 "Absolute Or Delta");
 
         // Check for Fahrenheit or Celsius
-        lmValidatorHelper.checkIfFieldRequired("measureUnit", errors, thermostatSetBackCycleGear.getMeasureUnit(),
+        lmValidatorHelper.checkIfFieldRequired("tempMeasureUnit", errors, thermostatSetBackCycleGear.getTempMeasureUnit(),
                 "Temperature Measure Unit");
 
         // Check for Heat Mode
@@ -71,7 +71,7 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
 
         // Check for Abs or Delta B
         lmValidatorHelper.checkIfFieldRequired("valueB", errors, thermostatSetBackCycleGear.getValueB(),
-            (thermostatSetBackCycleGear.getAbsoluteOrDelta() == AbsoluteOrDelta.DELTA) ? "Delta B" : "Abs B");
+            (thermostatSetBackCycleGear.getSetpoint() == Setpoint.DELTA) ? "Delta B" : "Abs B");
         if (!errors.hasFieldErrors("valueB")) {
             YukonValidationUtils.checkRange(errors, "valueB", thermostatSetBackCycleGear.getValueB(), Integer.MIN_VALUE,
                 Integer.MAX_VALUE, false);
@@ -79,7 +79,7 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
 
         // Check for Abs or Delta D
         lmValidatorHelper.checkIfFieldRequired("valueD", errors, thermostatSetBackCycleGear.getValueD(),
-            (thermostatSetBackCycleGear.getAbsoluteOrDelta() == AbsoluteOrDelta.DELTA) ? "Delta D" : "Abs D");
+            (thermostatSetBackCycleGear.getSetpoint() == Setpoint.DELTA) ? "Delta D" : "Abs D");
         if (!errors.hasFieldErrors("valueD")) {
             YukonValidationUtils.checkRange(errors, "valueD", thermostatSetBackCycleGear.getValueD(), Integer.MIN_VALUE,
                 Integer.MAX_VALUE, false);
@@ -87,7 +87,7 @@ public class ThermostatSetbackGearFieldsValidator extends ProgramGearFieldsValid
 
         // Check for Abs or Delta F
         lmValidatorHelper.checkIfFieldRequired("valueF", errors, thermostatSetBackCycleGear.getValueF(),
-            (thermostatSetBackCycleGear.getAbsoluteOrDelta() == AbsoluteOrDelta.DELTA) ? "Delta F" : "Abs F");
+            (thermostatSetBackCycleGear.getSetpoint() == Setpoint.DELTA) ? "Delta F" : "Abs F");
         if (!errors.hasFieldErrors("valueF")) {
             YukonValidationUtils.checkRange(errors, "valueF", thermostatSetBackCycleGear.getValueF(), Integer.MIN_VALUE,
                 Integer.MAX_VALUE, false);

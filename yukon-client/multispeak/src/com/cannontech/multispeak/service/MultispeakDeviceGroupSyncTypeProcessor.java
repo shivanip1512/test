@@ -10,7 +10,7 @@ public interface MultispeakDeviceGroupSyncTypeProcessor {
      * Starts synchronization process.
      * 
      * @param deviceGroupSyncValue - {substationName} or {billingCycleName} based on synchronization type
-     *        selected i.e MultispeakDeviceGroupSyncTypeProcessorType enum value.
+     *        selected i.e MultispeakSyncTypeProcessorType enum value.
      * @return true if substationGroup or BillingCyle updated.
      */
 

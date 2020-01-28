@@ -15,8 +15,8 @@ public class RotationGearFields implements ProgramGearFields {
     private Integer sendRate;
     private GroupSelectionMethod groupSelectionMethod;
     private HowToStopControl howToStopControl;
+    
     private Integer capacityReduction;
-
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getSendRate() {

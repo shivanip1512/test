@@ -1927,7 +1927,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     <point offset="394" type="Analog">
         <name>RSSI</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"/>
+        <unitofmeasure value="DBM"/>
         <decimalplaces value="0"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

@@ -128,6 +128,7 @@
 <entry key="yukon.common.failed">Failed</entry>
 <entry key="yukon.common.failures.view">View Failures</entry>
 <entry key="yukon.common.fahrenheit">°F</entry>
+<entry key="yukon.common.fahrenheitWithValue">{0}°F</entry>
 <entry key="yukon.common.false">False</entry>
 <entry key="yukon.common.file">File</entry>
 <entry key="yukon.common.file1">File 1</entry>

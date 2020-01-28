@@ -37,6 +37,10 @@
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
     <c:if test="${not empty mappingColors}"><cti:toJson id="mappingColorJson" object="${mappingColors}"/></c:if>
     
+    <input id="gatewayTypes" type="hidden" value="${gatewayPaoTypes}"/>
+    <input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
+    <input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
+    
     <div id="map-container" style="height:100%;width:100%;background:white;">
 
         <div class="column-10-14 clearfix stacked">

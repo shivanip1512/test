@@ -10,14 +10,15 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class ItronCycleGearFields implements ProgramGearFields {
 
-    private ItronCycleType cycleType;
-    private Boolean rampIn;
-    private Boolean rampOut;
+    private ItronCycleType dutyCycleType;
     private Integer dutyCyclePercent;
     private Integer dutyCyclePeriodInMinutes;
     private Integer criticality;
-    private Integer capacityReduction;
     private HowToStopControl howToStopControl;
+    private Boolean rampIn;
+    private Boolean rampOut;
+
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
 
     public Integer getCriticality() {
@@ -28,12 +29,12 @@ public class ItronCycleGearFields implements ProgramGearFields {
         this.criticality = criticality;
     }
 
-    public ItronCycleType getCycleType() {
-        return cycleType;
+    public ItronCycleType getDutyCycleType() {
+        return dutyCycleType;
     }
 
-    public void setCycleType(ItronCycleType cycleType) {
-        this.cycleType = cycleType;
+    public void setDutyCycleType(ItronCycleType dutyCycleType) {
+        this.dutyCycleType = dutyCycleType;
     }
 
     public Integer getDutyCyclePeriodInMinutes() {
@@ -103,7 +104,7 @@ public class ItronCycleGearFields implements ProgramGearFields {
         setRampOut(itronCycleGear.isBackRampEnabled());
         setCriticality(itronCycleGear.getCriticality());
         setDutyCyclePeriodInMinutes(itronCycleGear.getCyclePeriod());
-        setCycleType(ItronCycleType.of(itronCycleGear.getCycleType()));
+        setDutyCycleType(ItronCycleType.of(itronCycleGear.getCycleType()));
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
         whenToChangeFields.buildModel(programDirectGear);
@@ -121,7 +122,7 @@ public class ItronCycleGearFields implements ProgramGearFields {
         itronCycleGear.setBackRampEnabled(getRampOut());
         itronCycleGear.setCriticality(getCriticality());
         itronCycleGear.setCyclePeriod(getDutyCyclePeriodInMinutes());
-        itronCycleGear.setCycleType(getCycleType().toString());
+        itronCycleGear.setCycleType(getDutyCycleType().toString());
 
         whenToChangeFields.buildDBPersistent(programDirectGear);
         
