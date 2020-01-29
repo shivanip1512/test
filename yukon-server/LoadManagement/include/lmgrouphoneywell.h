@@ -30,6 +30,13 @@ public:
                            const long controlDurationSeconds,
                            const bool rampInOutOption ) override;
 
+    bool sendSetpointControl( const long programID,
+                              const bool temperatureOption,
+                              const bool mandatory,
+                              const int  temperatureOffset,
+                              const int  preTemperatureOffset,
+                              const int  controlDurationSeconds ) override;
+
     //Unused
     CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const override;
     CtiRequestMsg* createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const override;
