@@ -792,7 +792,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         nonIntervalAttributes = ImmutableSet.of(
                 MAXIMUM_VOLTAGE,
+                MAXIMUM_VOLTAGE_DAILY,
                 MINIMUM_VOLTAGE,
+                MINIMUM_VOLTAGE_DAILY,
                 PEAK_DEMAND,
                 PEAK_DEMAND_DAILY,
                 PEAK_DEMAND_FROZEN,
@@ -1006,7 +1008,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static void buildVoltageAttributes() {
 
         voltageAttributes = ImmutableSet.of(MINIMUM_VOLTAGE, 
+                                            MINIMUM_VOLTAGE_DAILY, 
                                             MAXIMUM_VOLTAGE, 
+                                            MAXIMUM_VOLTAGE_DAILY, 
                                             AVERAGE_VOLTAGE);
     }
     
