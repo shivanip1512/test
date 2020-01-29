@@ -118,6 +118,7 @@
     <entry key="yukon.web.modules.operator.gateways.collect.data.title">Collect Data: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.error.comm">Network Manager connection failed.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_UNKNOWN_GATEWAY">Gateway does not exist in Network Manager.</entry>
+    <entry key="yukon.web.modules.operator.gateways.error.FAILED_DUPLICATE_GATEWAY">Gateway already exists in Network Manager.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_INCORRECT_AUTH">Unable to connect to gateway with specified credentials.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_BAD_IP">Unable to connect to gateway at specified IP.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED">An internal error occurred in Network Manager.</entry>
