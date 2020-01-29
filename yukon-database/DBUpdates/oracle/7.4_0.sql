@@ -260,7 +260,7 @@ WHERE PAObjectID IN
     (SELECT DISTINCT DeviceId 
      FROM RfnAddress 
      WHERE Model IN
-        ('VGW', 'RFVirtualGateway'))
+        ('VGW', 'RFVirtualGateway'));
 
 UPDATE RfnAddress 
 SET Model = 'VGW' 
@@ -269,7 +269,7 @@ AND DeviceId IN
     (SELECT DISTINCT PaobjectId 
      FROM YukonPaobject 
      WHERE Type = 'Virtual Gateway' 
-     and PaoClass = 'RFMESH')
+     and PaoClass = 'RFMESH');
 
 INSERT INTO DBUpdates VALUES('YUK-21378', '7.4.0', SYSDATE);
 /* @end YUK-21378 */
