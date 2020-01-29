@@ -24,7 +24,7 @@ public class ReportsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
 
         Assert.assertEquals(reportPage.getTitle(), "Report Selection");
     }

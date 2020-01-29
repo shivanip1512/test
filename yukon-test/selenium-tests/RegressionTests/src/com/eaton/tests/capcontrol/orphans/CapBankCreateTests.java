@@ -5,7 +5,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
-import com.eaton.pages.capcontrol.orphans.CapBankCreatePage;
+import com.eaton.pages.capcontrol.CapBankCreatePage;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -25,7 +25,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
 
         Assert.assertEquals(this.createPage.getTitle(), "Create CapBank");
     }

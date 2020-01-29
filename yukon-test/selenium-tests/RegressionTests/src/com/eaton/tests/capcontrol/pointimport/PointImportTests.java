@@ -25,7 +25,7 @@ public class PointImportTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { "smoketest", "SmokeTEst_CapControl" })
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
 
         Assert.assertEquals(this.importPage.getTitle(), "Point Import");
     }

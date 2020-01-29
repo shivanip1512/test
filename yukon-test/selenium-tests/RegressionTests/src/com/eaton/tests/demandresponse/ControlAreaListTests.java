@@ -8,11 +8,13 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import com.eaton.elements.ColumnHeader;
+import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaListPage;
 
+@Test(groups = TestNgGroupConstants.DEMAND_REPONSE)
 public class ControlAreaListTests extends SeleniumTestSetup {
 
     private ControlAreaListPage listPage;
@@ -32,15 +34,15 @@ public class ControlAreaListTests extends SeleniumTestSetup {
     @Test
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = listPage.getTable().getColumnHeaders();
+        List<WebTableColumnHeader> headers = listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
-        for (ColumnHeader header : headers) {
+        for (WebTableColumnHeader header : headers) {
             headerList.add(header.getColumnName());
         }
 
-        Assert.assertEquals(headerList.size(), 9);
+        Assert.assertEquals(headerList.size(), 8);
         softAssertion.assertTrue(headerList.contains("Name"));
         softAssertion.assertTrue(headerList.contains("State"));
         softAssertion.assertTrue(headerList.contains("Value / Threshold"));
@@ -48,10 +50,9 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         softAssertion.assertTrue(headerList.contains("ATKU"));
         softAssertion.assertTrue(headerList.contains("Priority"));
         softAssertion.assertTrue(headerList.contains("Time Window"));
-        softAssertion.assertTrue(headerList.contains("kW Savings (Max/Now)"));
     }
 
-    @Test(groups = { "smoketest", "SmokeTest_DemandResponse" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS })
     public void pageTitleCorrect() {
         Assert.assertEquals(listPage.getTitle(), "Control Areas");
     }

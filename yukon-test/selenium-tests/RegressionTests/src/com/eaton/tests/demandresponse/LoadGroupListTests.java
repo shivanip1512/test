@@ -9,7 +9,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import com.eaton.elements.ColumnHeader;
+import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupListPage;
@@ -31,7 +31,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     }
 
     @Test
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
 
         Assert.assertEquals(this.listPage.getTitle(), "Load Groups");
     }
@@ -39,11 +39,11 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     @Test
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = listPage.getTable().getColumnHeaders();
+        List<WebTableColumnHeader> headers = listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
-        for (ColumnHeader header : headers) {
+        for (WebTableColumnHeader header : headers) {
             headerList.add(header.getColumnName());
         }
 

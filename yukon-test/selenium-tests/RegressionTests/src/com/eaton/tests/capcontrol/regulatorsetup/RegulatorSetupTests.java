@@ -24,7 +24,7 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { "smoketest", "SmokeTest_CapControl" })
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
 
         Assert.assertEquals(this.regulatorSetupPage.getTitle(), "Regulator Setup");
     }

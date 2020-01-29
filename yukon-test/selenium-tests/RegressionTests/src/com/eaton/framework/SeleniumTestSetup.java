@@ -12,6 +12,7 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.drivers.DriverFactory;
+import com.eaton.pages.ISeleniumPage;
 import com.eaton.pages.LoginPage;
 import com.eaton.pages.PageBase;
 
@@ -37,7 +38,7 @@ public class SeleniumTestSetup {
             navigateToLoginPage();
             login();
         } catch (Exception ex) {
-            logger.fine(EXCEPTION_MSG + ex);            
+            logger.fine(EXCEPTION_MSG + ex);
         }
     }
 
@@ -48,7 +49,6 @@ public class SeleniumTestSetup {
 
             setBaseUrl(configFileReader.getApplicationUrl());
 
-            // Change this to get the parameters from a config file
             setDriver(new DriverFactory().getWebDriver(configFileReader.getBrowser(),
                     Boolean.parseBoolean(configFileReader.getUseRemoteDriver()), configFileReader.getDriverPath(),
                     Boolean.parseBoolean(configFileReader.getRunHeadless())));
@@ -129,6 +129,34 @@ public class SeleniumTestSetup {
 
     public static Logger getLogger() {
         return logger;
+    }
+
+    public void waitForUrlToLoad(String expectedUrl) {
+        long startTime = System.currentTimeMillis();
+
+        boolean expectedUrlLoaded = false;
+        while (!expectedUrlLoaded || System.currentTimeMillis() - startTime < 2000) {
+            String currentUrl = driver.getCurrentUrl();
+
+            expectedUrlLoaded = currentUrl.contains(expectedUrl);
+        }
+
+        // add code to throw an exception if the url is not loaded
+    }
+
+    public void refreshPage(PageBase page) {
+
+        if (page != null) {
+            navigate(page.getPageUrl());
+        } else {
+            driver.navigate().refresh();
+        }
+    }
+
+    private void navigate(String url) {
+        SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
+
+        waitForUrlToLoad(url);
     }
 
     @AfterSuite(alwaysRun = true)

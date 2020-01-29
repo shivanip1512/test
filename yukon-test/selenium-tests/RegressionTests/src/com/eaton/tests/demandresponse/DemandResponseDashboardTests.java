@@ -25,8 +25,8 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
         demandPage = new DemandResponseDashboardPage(driver, getBaseUrl());
     }
 
-    @Test
-    public void titleCorrect() {
+    @Test(groups = { "smoketest", "SM03_02_NavigateToLinks" })
+    public void pageTitleCorrect() {
 
         Assert.assertEquals(demandPage.getTitle(), "DR Dashboard");
     }
@@ -51,6 +51,12 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
 
         Assert.assertTrue(url.contains("/dr/loadGroup/list?state=active"));
     }
+    
+    @Test()
+    public void actionsBtnDisplayedAndEnabled() {
+        Assert.assertTrue(demandPage.actionBtn.isEnabled());
+        Assert.assertTrue(demandPage.actionBtn.isDisplayed());
+    }    
 
     @Test(enabled = false)
     public void resetSeasonControlHoursModelTitleCorrect() {

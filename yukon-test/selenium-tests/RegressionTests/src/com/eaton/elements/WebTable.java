@@ -9,22 +9,28 @@ import org.openqa.selenium.WebElement;
 
 public class WebTable {
 
-    WebDriver driver;
+    private WebDriver driver;
     private String tableClassName;
-    private List<ColumnHeader> columnHeaders = null;
-    private List<WebRow> dataRows;
+    private List<WebTableColumnHeader> columnHeaders = null;
+    private List<WebTableRow> dataRows;
+    public WebTableFilter filter;    
+    public WebElement table;
 
     public WebTable(WebDriver driver, String tableClassName) {
         this.driver = driver;
         this.tableClassName = tableClassName;
-        getTable();
+        setTable();
+    }
+    
+    private void setTable() {
+        this.table = this.driver.findElement(By.cssSelector("." + this.tableClassName));
     }
 
     private WebElement getTable() {
-        return this.driver.findElement(By.cssSelector("." + this.tableClassName));
+        return this.table;
     }
 
-    public List<ColumnHeader> getColumnHeaders() {
+    public List<WebTableColumnHeader> getColumnHeaders() {
 
         if (this.columnHeaders == null) {
             findColumnHeaders();
@@ -33,24 +39,40 @@ public class WebTable {
         return this.columnHeaders;
     }
 
-    public List<WebRow> dataRow() {
+    public List<WebTableRow> getDataRow() {
 
         findDataRows();
 
         return this.dataRows;
-    }
+    }    
 
     public void waitForLoadToComplete() {
-        // determine how to wait for table to finish loading...
+        // TODO determine how to wait for table to finish loading...
+    }
+    
+    public void filterTable(String filter) {
+        filter().enterFilterCritera(filter);
+        //TODO add code to wait for table to filter
+    }
+    
+    public void clearFilter() {
+        filter().clearFilterCriteria();
+        //TODO add code to wait for table to filter
+    }
+    
+    private WebTableFilter filter() {
+        WebElement filterElement = this.driver.findElement(By.cssSelector(".filter-section"));
+        
+        return new WebTableFilter(filterElement, this.driver);
     }
 
     private void findDataRows() {
         List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
 
-        List<WebRow> newList = new ArrayList<>();
+        List<WebTableRow> newList = new ArrayList<>();
         for (WebElement element : rowList) {
 
-            newList.add(new WebRow(element));
+            newList.add(new WebTableRow(element));
         }
     }
 
@@ -61,7 +83,7 @@ public class WebTable {
         this.columnHeaders = new ArrayList<>();
         for (WebElement element : headerList) {
 
-            this.columnHeaders.add(new ColumnHeader(element));
+            this.columnHeaders.add(new WebTableColumnHeader(element));
         }
     }
 }

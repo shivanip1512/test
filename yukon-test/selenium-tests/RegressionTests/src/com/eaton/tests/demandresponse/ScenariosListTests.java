@@ -9,7 +9,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import com.eaton.elements.ColumnHeader;
+import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ScenariosListPage;
@@ -39,17 +39,16 @@ public class ScenariosListTests extends SeleniumTestSetup {
     @Test
     public void columnHeadersCorrect() {
 
-        List<ColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
+        List<WebTableColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
 
-        for (ColumnHeader header : headers) {
+        for (WebTableColumnHeader header : headers) {
             headerList.add(header.getColumnName());
         }
 
-        Assert.assertEquals(headerList.size(), 3);
+        Assert.assertEquals(headerList.size(), 2);
         this.softAssertion.assertTrue(headerList.contains("Name"));
-        this.softAssertion.assertTrue(headerList.contains("kW Savings (Max/Now)"));
     }
 
     @Test(enabled = false)
