@@ -70,7 +70,7 @@
                 <cm:criteria key=".infrastructure">
                     <cm:criteriaOption classes="js-all-gateways" key=".infrastructure.allGateways"/>
                     <cm:criteriaOption classes="js-all-relays" key=".infrastructure.allRelays"/>
-                    <cm:criteriaOption classes="js-all-routes" key=".infrastructure.allPrimaryRoutes"/>
+                    <cm:criteriaOption classes="js-all-routes-comprehensive js-all-routes" key=".infrastructure.allPrimaryRoutes"/>
                 </cm:criteria>
             </span>
         </div>
