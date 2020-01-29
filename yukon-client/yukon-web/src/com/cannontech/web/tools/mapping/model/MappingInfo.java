@@ -16,7 +16,7 @@ public abstract class MappingInfo {
 
     private RfnDevice device;
     private FeatureCollection location;
-    private NodeCommStatus status = NodeCommStatus.NOT_READY;
+    private NodeCommStatus status;
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private double distanceInMiles;
     private double distanceInKm;

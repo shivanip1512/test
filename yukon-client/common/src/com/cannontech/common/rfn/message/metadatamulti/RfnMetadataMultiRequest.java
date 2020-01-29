@@ -9,12 +9,12 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 
 /**
  * RfnMetadataMultiRequest provides some new features for a better performance.
- * 1. You can specify 1 or more metadata.
- * 2. You can specify 1 or more rfnIdentifiers which can contain any RfnIdentifier (gateway, node, relay, etc.).
- * 3. You can specify 1 or more primaryNodesForGatewayRfnIdentifiers as "group" names of rfnIdentifiers.
- *    Request is for all nodes having this gateway(s) as their primary gateways.
- * 4. You can specify 1 or more primaryForwardNodesForGatewayRfnIdentifiers as "group" names of rfnIdentifiers.
- *    Request is for all nodes having this gateway(s) as their primary forward gateways.
+ * <ul>
+ * <li> You can specify 1 or more metadata.
+ * <li> You can specify 1 or more rfnIdentifiers including gateway, node, relay, etc.
+ * <li> You can specify 1 or more primaryForwardNodesForGatewayRfnIdentifiers as "group" names of rfnIdentifiers.
+ *      All nodes under the gateway (but not gateway itself) will be added to rfnIdentifiers.
+ * </ul>
  * 
  * JMS Queue name:
  *     com.eaton.eas.yukon.networkmanager.metadatamulti.request
@@ -25,9 +25,9 @@ public class RfnMetadataMultiRequest implements Serializable {
     
     private String requestID; // to correlate response to request
     
-    // NM first retrieves primary nodes from primaryNodesForGatewayRfnIdentifiers
+    // NM first retrieves primary nodes from primaryForwardNodesForGatewayRfnIdentifiers
     //     and added to rfnIdentifiers.
-    // You can think primaryNodesForGatewayRfnIdentifiers are just "group" names for rfnIdentifiers.
+    // You can think primaryForwardNodesForGatewayRfnIdentifiers are just "group" names for rfnIdentifiers.
     //
     // Usually you will specify either groups or rfnIdentifiers.
     // However you can also combine them (not usual) as you want.
@@ -41,10 +41,6 @@ public class RfnMetadataMultiRequest implements Serializable {
     private Set<RfnIdentifier> rfnIdentifiers;
         // Request applies to all devices or gateways in specified rfnIdentifiers.
     
-    private Set<RfnIdentifier> primaryNodesForGatewayRfnIdentifiers;
-        // Request applies to all devices using primaryNodesForGatewayRfnIdentifiers
-        // as their primary gateways.
-    
     private Set<RfnIdentifier> primaryForwardNodesForGatewayRfnIdentifiers;
         // Request applies to all devices using primaryForwardNodesForGatewayRfnIdentifiers
         // as their primary forward gateways.
@@ -57,10 +53,6 @@ public class RfnMetadataMultiRequest implements Serializable {
         setRfnIdentifiers(new HashSet<>(Arrays.asList(rfnIdentifiers)));
     }
     
-    public void setPrimaryNodesForGatewayRfnIdentifiers(RfnIdentifier... rfnIdentifiers) {
-        setPrimaryNodesForGatewayRfnIdentifiers(new HashSet<>(Arrays.asList(rfnIdentifiers)));
-    }
-
     public void setPrimaryForwardNodesForGatewayRfnIdentifiers(RfnIdentifier... rfnIdentifiers) {
         setPrimaryForwardNodesForGatewayRfnIdentifiers(new HashSet<>(Arrays.asList(rfnIdentifiers)));
     }
@@ -89,14 +81,6 @@ public class RfnMetadataMultiRequest implements Serializable {
         this.rfnIdentifiers = rfnIdentifiers;
     }
 
-    public Set<RfnIdentifier> getPrimaryNodesForGatewayRfnIdentifiers() {
-        return primaryNodesForGatewayRfnIdentifiers;
-    }
-
-    public void setPrimaryNodesForGatewayRfnIdentifiers(Set<RfnIdentifier> primaryNodesForGatewayRfnIdentifiers) {
-        this.primaryNodesForGatewayRfnIdentifiers = primaryNodesForGatewayRfnIdentifiers;
-    }
-
     public Set<RfnIdentifier> getPrimaryForwardNodesForGatewayRfnIdentifiers() {
         return primaryForwardNodesForGatewayRfnIdentifiers;
     }
@@ -108,8 +92,7 @@ public class RfnMetadataMultiRequest implements Serializable {
     @Override
     public String toString() {
         return String.format(
-                "RfnMetadataMultiRequest [requestID=%s, rfnMetadatas=%s, rfnIdentifiers=%s, primaryNodesForGatewayRfnIdentifiers=%s, primaryForwardNodesForGatewayRfnIdentifiers=%s]",
-                requestID, rfnMetadatas, rfnIdentifiers, primaryNodesForGatewayRfnIdentifiers,
-                primaryForwardNodesForGatewayRfnIdentifiers);
+                "RfnMetadataMultiRequest [requestID=%s, rfnMetadatas=%s, rfnIdentifiers=%s, primaryForwardNodesForGatewayRfnIdentifiers=%s]",
+                requestID, rfnMetadatas, rfnIdentifiers, primaryForwardNodesForGatewayRfnIdentifiers);
     }
 }

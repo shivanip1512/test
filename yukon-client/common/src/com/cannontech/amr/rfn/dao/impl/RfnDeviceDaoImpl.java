@@ -621,7 +621,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         }
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
-        
+            
     @Override
     public List<RfnIdentifier> getRfnIdentifiersForGateway(int gatewayId, int rowLimit) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
@@ -651,6 +651,31 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                 return rfnIdentifier;
             }
         });
+    }
+    
+    @Override
+    public Map<RfnIdentifier, RfnIdentifier> getDeviceToGatewayMap() {
+        Map<RfnIdentifier, RfnIdentifier> deviceToGatewayMap = new HashMap<>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT deviceIdent.SerialNumber as dSerialNumber, deviceIdent.Manufacturer as dManufacture, deviceIdent.Model as dModel,");
+        sql.append("       gatewayIdent.SerialNumber as gSerialNumber, gatewayIdent.Manufacturer as gManufacture, gatewayIdent.Model as gModel");
+        sql.append("FROM DynamicRfnDeviceData dd");
+        sql.append("JOIN RfnAddress deviceIdent on dd.DeviceId = deviceIdent.DeviceId");
+        sql.append("JOIN RfnAddress gatewayIdent on dd.GatewayId = gatewayIdent.DeviceId");
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                deviceToGatewayMap.put(new RfnIdentifier(
+                        rs.getStringSafe("dSerialNumber"),
+                        rs.getStringSafe("dManufacture"),
+                        rs.getStringSafe("dModel")),
+                        new RfnIdentifier(
+                                rs.getStringSafe("gSerialNumber"),
+                                rs.getStringSafe("gManufacture"),
+                                rs.getStringSafe("gModel")));
+            }
+        });
+        return deviceToGatewayMap;
     }
     
     @Override

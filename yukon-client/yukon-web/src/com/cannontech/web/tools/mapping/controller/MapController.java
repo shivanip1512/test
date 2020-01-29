@@ -68,6 +68,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResu
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.message.node.NodeComm;
+import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.message.route.RouteFlag;
@@ -255,9 +256,9 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
-                Set<RfnMetadataMulti> requestData = Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA);
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
                 if (includePrimaryRoute) {
-                    requestData = Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                    requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
                 }
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
@@ -268,17 +269,17 @@ public class MapController {
                             + " for device:" + rfnDevice);
                         model.addAttribute("errorMsg", nmError);
                     } else {
-                        if(metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)) {
-                            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-                            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getGatewayRfnIdentifier());
-                            RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
-                            String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
-                            model.addAttribute("deviceStatus", statusString);
+                        
+                        String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
+                        NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
+                        if(status != null) {
+                            statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
+                        }
+                        model.addAttribute("deviceStatus", statusString);
+                        RfnGateway rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                        if(rfnGateway != null) {
                             model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
-                            model.addAttribute("primaryGateway", gateway);
-                        } else {
-                            // ignore, status will be set to "UNKNOWN"
-                            log.error("NM didn't return communication status for " + rfnDevice);
+                            model.addAttribute("primaryGateway", rfnGateway);
                         }
                         if(metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
                             NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);

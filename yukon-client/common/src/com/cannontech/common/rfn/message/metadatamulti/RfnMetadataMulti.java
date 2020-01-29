@@ -69,12 +69,6 @@ public enum RfnMetadataMulti implements Serializable {
         
     // The following query will replace the legacy network.RfnNeighborDataRequest eventually
     // NEIGHBOR(Neighbor.class, 1000, EntityType.GATEWAY, EntityType.NODE),
-
-    // Note: the following query uses the legacy NM-decided primary gateway,
-    // Since it may be different from the primary forward route gateway, it should not be used for any RF-Mapping query.
-    // Once Yukon replaces it with PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_ROUTE and PRIMARY_FORWARD_TREE,
-    // I am going to remove this value.
-    PRIMARY_GATEWAY_NODES(GatewayNodes.class, 1000, EntityType.GATEWAY),
     ;
    
     private final Class<?> constantClass;

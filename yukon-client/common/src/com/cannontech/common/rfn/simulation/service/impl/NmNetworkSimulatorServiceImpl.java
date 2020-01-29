@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.CollectionUtils;
 
@@ -57,7 +56,6 @@ import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
-import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
@@ -84,9 +82,9 @@ import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.node.NodeType;
 import com.cannontech.common.rfn.message.node.WifiSecurityType;
 import com.cannontech.common.rfn.message.node.WifiSuperMeterData;
+import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
-import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -100,8 +98,6 @@ import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
-import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -125,7 +121,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private IDatabaseCache databaseCache;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private AttributeService attributeService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private PaoLocationSimulatorService paoLocationSimulatorService;
@@ -301,7 +296,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
                         RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
                         log.info("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
-                            request.getRequestID(), request.getPrimaryNodesForGatewayRfnIdentifiers().size(),
+                            request.getRequestID(), request.getPrimaryForwardNodesForGatewayRfnIdentifiers().size(),
                             request.getRfnIdentifiers().size(), request.getRfnMetadatas());
 
                         for (RfnMetadataMultiResponse reply : getPartitionedMetadataMultiResponse(request)) {
@@ -337,14 +332,121 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     }
     
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> getResults(RfnMetadataMultiRequest request) {
-        List<RfnGateway> allGateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = new HashMap<>();
+        Set<RfnIdentifier> rfnIdentifiers = getRfnIdentifiers(request);
+
+        Map<RfnIdentifier, RfnIdentifier> devicesToGatewayMap = rfnDeviceDao.getDeviceToGatewayMap();
+        log.debug("devicesToGatewayMap size {}", devicesToGatewayMap.size());
+
+        for (RfnIdentifier device : rfnIdentifiers) {
+            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
+            RfnIdentifier gateway = devicesToGatewayMap.get(device);
+            for (RfnMetadataMulti multi : request.getRfnMetadatas()) {
+                if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM && gateway != null) {
+                    addObjectToResult(results, device, multi, getNodeComm(device, gateway));
+                } else if (multi == RfnMetadataMulti.NODE_DATA) {
+                    addObjectToResult(results, device, multi, getNodeData(rfnDevice));
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY && gateway != null) {
+                    addObjectToResult(results, device, multi, gateway);
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA) {
+                    addObjectToResult(results, device, multi, getNeighborData());
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
+                    addObjectToResult(results, device, multi, getVertex(rfnDevice));
+                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA) {
+                    addObjectToResult(results, device, multi, getRouteData(rfnDevice));
+                }
+            }
+        }
+        return results;
+    }
+
+    private void addObjectToResult(Map<RfnIdentifier, RfnMetadataMultiQueryResult> results, RfnIdentifier device,
+            RfnMetadataMulti multi, Object object) {
+        if (!results.containsKey(device)) {
+            RfnMetadataMultiQueryResult newResult = new RfnMetadataMultiQueryResult();
+            newResult.setResultType(RfnMetadataMultiQueryResultType.OK);
+            newResult.setMetadatas(new HashMap<>());
+            results.put(device, newResult);
+        }
+        RfnMetadataMultiQueryResult result = results.get(device);
+        result.getMetadatas().put(multi, object);
+    }
+
+    private com.cannontech.common.rfn.message.route.RouteData getRouteData(RfnDevice rfnDevice) {
+        com.cannontech.common.rfn.message.route.RouteData routeData = new com.cannontech.common.rfn.message.route.RouteData();
+        routeData.setDestinationAddress(settings.getRouteData().getDestinationAddress());
+        routeData.setHopCount(settings.getRouteData().getHopCount());
+        routeData.setNextHopAddress(settings.getRouteData().getNextHopAddress());
+        routeData.setRouteColor(settings.getRouteData().getRouteColor());
+        routeData.setRouteDataTimeStamp(settings.getRouteData().getRouteDataTimestamp());
+        routeData.setRouteFlags(getRouteFlags());
+        routeData.setRouteTimeout(settings.getRouteData().getRouteTimeout());
+        routeData.setTotalCost(settings.getRouteData().getTotalCost());
+        int max = getRandomNumberInRange(2, 3);
+        List<RfnDevice> neighbors = getNeighbors(rfnDevice, max);
+        routeData.setNextHopRfnIdentifier(neighbors.get(0).getRfnIdentifier());
+        return routeData;
+    }
+
+    private NeighborData getNeighborData() {
+        NeighborData neighborData = new NeighborData();
+        List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
+        int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
+        neighborData.setNeighborLinkCost((float) randomElement);
+        //Generates random short between 1 and 6 for the ExtBand
+        short randomEtxBand = (short)(Math.random() * (5) + 1);
+        neighborData.setEtxBand(randomEtxBand);
+        List<Integer> numSamples = Arrays.asList(49, 50, 51);
+        randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
+        neighborData.setNumSamples(randomElement);
+        return neighborData;
+    }
+
+    private NodeData getNodeData(RfnDevice rfnDevice) {
+        NodeData node = new NodeData();
+        node.setFirmwareVersion("Simulated Firmware Version");
+        node.setHardwareVersion("1.1.1 (Sim)");
+        node.setInNetworkTimestamp(1517588257267L);
+        node.setMacAddress("11:22:33:44:91:11");
+        node.setNetworkAddress("00C36E09081400");
+        node.setNodeSerialNumber(settings.getRouteData().getSerialNumber());
+        node.setNodeType(NodeType.ELECTRIC_NODE);
+        node.setProductNumber("123456789 (Sim)");
+        if(wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
+            node.setWifiSuperMeterData(getSuperMeterData());
+        }
+        return node;
+    }
+
+    private Set<RouteFlag> getRouteFlags() {
+        Set<RouteFlag> flags = new HashSet<>();
+        for (RouteFlagType flag : settings.getRouteData().getRouteFlags()) {
+            if (flag == RouteFlagType.BR) {
+                flags.add(RouteFlag.ROUTE_FLAG_BATTERY);
+            } else if (flag == RouteFlagType.GC) {
+                flags.add(RouteFlag.ROUTE_FLAG_ROUTE_START_GC);
+            } else if (flag == RouteFlagType.IR) {
+                flags.add(RouteFlag.ROUTE_FLAG_IGNORED);
+            } else if (flag == RouteFlagType.PF) {
+                flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_FORWARD);
+            } else if (flag == RouteFlagType.PR) {
+                flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_REVERSE);
+            } else if (flag == RouteFlagType.RU) {
+                flags.add(RouteFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE);
+            } else if (flag == RouteFlagType.TO) {
+                flags.add(RouteFlag.ROUTE_FLAG_TIMED_OUT);
+            } else if (flag == RouteFlagType.VR) {
+                flags.add(RouteFlag.ROUTE_FLAG_VALID);
+            }
+        }
+        return flags;
+    }
+
+    private Set<RfnIdentifier> getRfnIdentifiers(RfnMetadataMultiRequest request) {
         Set<RfnIdentifier> rfnIdentifiers = new HashSet<>();
         //by gateway identifier
-        if (!CollectionUtils.isEmpty(request.getPrimaryNodesForGatewayRfnIdentifiers())) {
-            //remove all gateways that are not in request
-            allGateways.removeIf(gateway -> !request.getPrimaryNodesForGatewayRfnIdentifiers().contains(gateway.getRfnIdentifier()));
-            for (RfnIdentifier device : request.getPrimaryNodesForGatewayRfnIdentifiers()) {
+        if (!CollectionUtils.isEmpty(request.getPrimaryForwardNodesForGatewayRfnIdentifiers())) {
+            for (RfnIdentifier device : request.getPrimaryForwardNodesForGatewayRfnIdentifiers()) {
                 RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(device);
                 // find nodes and add to the identifiers for lookup
                 List<RfnIdentifier> devices = getDevicesForGateway(gateway);
@@ -353,100 +455,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         } else if (!CollectionUtils.isEmpty(request.getRfnIdentifiers())) {
             rfnIdentifiers.addAll(request.getRfnIdentifiers());
         }
-        
-        Map<RfnIdentifier, RfnGateway> devicesToGateways = new HashMap<>();
-
-        for (RfnIdentifier device: rfnIdentifiers) {
-            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
-            for(RfnMetadataMulti multi: request.getRfnMetadatas()) {
-                if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM) {
-                    populateDeviceToGatewayMapping(allGateways, devicesToGateways);
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    RfnGateway gateway = devicesToGateways.get(device);
-                    if(gateway != null) {
-                        result.getMetadatas().put(multi, getNodeComm(device, gateway.getRfnIdentifier()));
-                    }
-                } else if (multi == RfnMetadataMulti.NODE_DATA) {
-                    NodeData node = new NodeData();
-                    node.setFirmwareVersion("Simulated Firmware Version");
-                    node.setHardwareVersion("1.1.1 (Sim)");
-                    node.setInNetworkTimestamp(1517588257267L);
-                    node.setMacAddress("11:22:33:44:91:11");
-                    node.setNetworkAddress("00C36E09081400");
-                    node.setNodeSerialNumber(settings.getRouteData().getSerialNumber());
-                    node.setNodeType(NodeType.ELECTRIC_NODE);
-                    node.setProductNumber("123456789 (Sim)");
-                    if(wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
-                        node.setWifiSuperMeterData(getSuperMeterData());
-                    }
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    result.getMetadatas().put(multi, node);
-                } else if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODES) {
-                    GatewayNodes nodes = new GatewayNodes();
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(device);
-                    List<RfnIdentifier> devices = getDevicesForGateway(gateway);
-                    Map<RfnIdentifier, NodeComm> nodeComms = devices.stream().collect(
-                        Collectors.toMap(Function.identity(), d -> getNodeComm(d, device)));
-                    nodes.setGatewayRfnIdentifier(device);
-                    nodes.setNodeComms(nodeComms);
-                    result.getMetadatas().put(multi, nodes);
-                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA) {
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    // Populate all fields
-                    NeighborData neighborData = new NeighborData();
-                    List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
-                    int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
-                    neighborData.setNeighborLinkCost((float) randomElement);
-                    //Generates random short between 1 and 6 for the ExtBand
-                    short randomEtxBand = (short)(Math.random() * (5) + 1);
-                    neighborData.setEtxBand(randomEtxBand);
-                    List<Integer> numSamples = Arrays.asList(49, 50, 51);
-                    randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
-                    neighborData.setNumSamples(randomElement);
-                    result.getMetadatas().put(multi, neighborData);
-                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi); 
-                    result.getMetadatas().put(multi, getVertex(rfnDevice));
-                } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA) {
-                    RfnMetadataMultiQueryResult result = getResult(results, device, multi);
-                    com.cannontech.common.rfn.message.route.RouteData routeData = new com.cannontech.common.rfn.message.route.RouteData();
-                    routeData.setDestinationAddress(settings.getRouteData().getDestinationAddress());
-                    routeData.setHopCount(settings.getRouteData().getHopCount());
-                    routeData.setNextHopAddress(settings.getRouteData().getNextHopAddress());
-                    routeData.setRouteColor(settings.getRouteData().getRouteColor());
-                    routeData.setRouteDataTimeStamp(settings.getRouteData().getRouteDataTimestamp());
-                    List<RouteFlag> flags = new ArrayList<>();
-                    for (RouteFlagType flag : settings.getRouteData().getRouteFlags()) {
-                        if (flag == RouteFlagType.BR) {
-                            flags.add(RouteFlag.ROUTE_FLAG_BATTERY);
-                        } else if (flag == RouteFlagType.GC) {
-                            flags.add(RouteFlag.ROUTE_FLAG_ROUTE_START_GC);
-                        } else if (flag == RouteFlagType.IR) {
-                            flags.add(RouteFlag.ROUTE_FLAG_IGNORED);
-                        } else if (flag == RouteFlagType.PF) {
-                            flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_FORWARD);
-                        } else if (flag == RouteFlagType.PR) {
-                            flags.add(RouteFlag.ROUTE_FLAG_PRIMARY_REVERSE);
-                        } else if (flag == RouteFlagType.RU) {
-                            flags.add(RouteFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE);
-                        } else if (flag == RouteFlagType.TO) {
-                            flags.add(RouteFlag.ROUTE_FLAG_TIMED_OUT);
-                        } else if (flag == RouteFlagType.VR) {
-                            flags.add(RouteFlag.ROUTE_FLAG_VALID);
-                        }
-                    }
-                    routeData.setRouteFlags(new HashSet<RouteFlag>(flags));
-                    routeData.setRouteTimeout(settings.getRouteData().getRouteTimeout());
-                    routeData.setTotalCost(settings.getRouteData().getTotalCost());
-                    int max = getRandomNumberInRange(2, 3);
-                    List<RfnDevice> neighbors = getNeighbors(rfnDevice, max);
-                    routeData.setNextHopRfnIdentifier(neighbors.get(0).getRfnIdentifier());
-                    result.getMetadatas().put(multi, routeData);
-                }
-            }
-        }
-        return results;
+        return rfnIdentifiers;
     }
     
     private RfnVertex getVertex(RfnDevice gateway) {
@@ -458,15 +467,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         return vertex;
     }
 
-    private void populateDeviceToGatewayMapping(List<RfnGateway> allGateways,
-            Map<RfnIdentifier, RfnGateway> devicesToGateways) {
-        if(devicesToGateways.isEmpty()) {
-            allGateways.forEach(gateway -> {
-                List<RfnDevice> devices = rfnDeviceDao.getDevicesForGateway(gateway.getId());
-                devices.forEach(device -> devicesToGateways.put(device.getRfnIdentifier(), gateway));
-            });
-        }
-    }
 
     private WifiSuperMeterData getSuperMeterData() {
         WifiSuperMeterData superMeterData = new WifiSuperMeterData();
@@ -477,30 +477,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setVirtualGatewayIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         return superMeterData;
     }
-
-    /**
-     * Returns empty success result
-     * @param device 
-     * @param results 
-     */
-    private RfnMetadataMultiQueryResult getResult(Map<RfnIdentifier, RfnMetadataMultiQueryResult> results, RfnIdentifier device, RfnMetadataMulti multi) {
-        
-        if(results.containsKey(device)){
-            return results.get(device);
-        }
-        RfnMetadataMultiQueryResult result = new RfnMetadataMultiQueryResult();
-        result.setResultType(RfnMetadataMultiQueryResultType.OK);
-        result.setMetadatas(new HashMap<>());
-        results.put(device, result);
-        return result;
-    }
     
     private List<RfnIdentifier> getDevicesForGateway(RfnDevice gateway) {
-        int connectedNodesWarningLimit = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD);
-        return rfnDeviceDao.getRfnIdentifiersForGateway(gateway.getPaoIdentifier().getPaoId(), connectedNodesWarningLimit);
+        // int connectedNodesWarningLimit =
+        // globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD);
+        //since mapping simulator is now configurable (we can map the # of devices to gateway), the limitation is removed here
+        return rfnDeviceDao.getRfnIdentifiersForGateway(gateway.getPaoIdentifier().getPaoId(), 100000);
     }
     
-    private NodeComm getNodeComm(RfnIdentifier device, RfnIdentifier gateway) {
+   private NodeComm getNodeComm(RfnIdentifier device, RfnIdentifier gateway) {
         boolean isReady = new Random().nextBoolean();
         NodeComm comm = new NodeComm();
         comm.setNodeCommStatusTimestamp(1517588257267L);
