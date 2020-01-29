@@ -6,11 +6,14 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.springframework.context.MessageSourceResolvable;
@@ -45,6 +48,24 @@ public class BuiltInAttributeTest {
             .ifPresent(attributes -> 
                 fail("[" + attributes + "] in BuiltInAttribute.values() " + 
                      "but not included in any attribute group. Add to an existing or new group."));
+    }
+    
+    @Test
+    public void testAllGroupedStatusTypeAttributes() {
+        Map<AttributeGroup, Set<BuiltInAttribute>> groupedStatusTypeAttributes = BuiltInAttribute.getAllGroupedStatusTypeAttributes();
+        
+        //  Use EnumMap to guarantee iteration order
+        var orderedMap = new EnumMap<>(groupedStatusTypeAttributes);
+        
+        String orderedElements = 
+            orderedMap.entrySet().stream()
+                //  Same here, use EnumSet to guarantee iteration order
+                .map(e -> e.getKey().name() + EnumSet.copyOf(e.getValue()))
+                .collect(Collectors.joining(","));
+
+        assertEquals("Grouped status type attributes mismatch", 
+                "a84998849ca1cb0d35445286c70c2676b1a46de8340f1f24505c27b98bad28bb0fd088daee7db6584e3be36c7edc414a9084747e758d45139df522f7b9ecf13c", 
+                DigestUtils.sha512Hex(orderedElements));
     }
     
     @Test
