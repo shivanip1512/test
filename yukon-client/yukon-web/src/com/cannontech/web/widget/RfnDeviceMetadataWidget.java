@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,13 +16,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
+import com.cannontech.common.rfn.message.node.NodeCommStatus;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.rfn.service.WaitableDataCallback;
 import com.cannontech.common.util.Pair;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.google.common.collect.ImmutableSet;
@@ -34,6 +43,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnDeviceMetadataService metadataService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
+    @Autowired private NmNetworkService nmNetworkService;
     
     private String keyPrefix = "yukon.web.widgets.RfnDeviceMetadataWidget.";
     private static final ImmutableSet<RfnMetadata> csrSubset = ImmutableSet.of(
@@ -44,7 +55,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                                                                                RfnMetadata.NODE_SERIAL_NUMBER,
                                                                                RfnMetadata.PRIMARY_GATEWAY,
                                                                                RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT);
-    
+
+       
     @Autowired
     public RfnDeviceMetadataWidget(@Qualifier("widgetInput.deviceId")
                 SimpleWidgetInput simpleWidgetInput) {
@@ -58,6 +70,26 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         model.addAttribute("device", device);
+        
+
+        
+        try {
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+            RfnMetadataMultiQueryResult metadata = metaData.get(device.getRfnIdentifier());
+            //if status is null display unknown
+            NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadata);
+            //gateway can be null if replay from NM didn't contain gateway info
+            RfnGateway gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadata);
+            
+        } catch (NmCommunicationException e) {
+          
+        }
+        
+       
+            
+            
+            
         
         WaitableDataCallback<Map<RfnMetadata, Object>> waitableCallback = new WaitableDataCallback<Map<RfnMetadata, Object>>() {
             

@@ -138,7 +138,7 @@ public interface RfnDeviceDao {
     Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier);
 
     /**
-     * Returns gateway ids for the set of devices
+     * Returns device to gateway identifier map
      */
-    Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds);
+    Map<RfnIdentifier, RfnIdentifier> getDeviceToGatewayMap();
 }

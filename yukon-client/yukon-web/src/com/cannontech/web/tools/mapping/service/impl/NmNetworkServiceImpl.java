@@ -1,7 +1,7 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODES;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM;
 import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.GATEWAY;
 import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.LINK_QUALITY;
@@ -36,7 +36,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.metadatamulti.GatewayNodes;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
@@ -53,6 +52,7 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.node.NodeComm;
+import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -80,9 +80,11 @@ import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class NmNetworkServiceImpl implements NmNetworkService {
@@ -101,6 +103,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
  
+    @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PaoLocationDao paoLocationDao;
@@ -111,7 +114,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MeterDao meterDao;
-    @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache dbCache;
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
@@ -401,7 +403,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(devicesOtherThenGatways,
-                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA));
+                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
@@ -445,26 +447,71 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 info.setErrorMsg(info.getAccessor().getMessage(metadataErrorKey));
                 return;
             }
-          
-            if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)) {
-                NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-                info.setStatus(comm.getNodeCommStatus());
-                RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(
-                        rfnDeviceCreationService.createIfNotFound(comm.getGatewayRfnIdentifier()).getPaoIdentifier().getPaoId());
-                info.setPrimaryGateway(gateway.getNameWithIPAddress());
-                info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
-            } else {
-                // ignore, status will be set to "NOT_READY"
-                log.error("NM didn't return communication status for " + info.getDevice());
-            }
-
-            if (metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
-                NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-                info.setMacAddress(nodeData.getMacAddress());
-            } else {
-                log.error("NM didn't return node data for " + info.getDevice());
-            }
+            setNodeCommStatus(info, metadata);
+            setPrimaryForwardGatewayInfo(info, metadata);
+            setMacAddress(info, metadata);
         }
+    }
+
+    private void setPrimaryForwardGatewayInfo(MappingInfo info, RfnMetadataMultiQueryResult metadata) {
+        RfnGateway gateway = getPrimaryForwardGatewayFromMultiQueryResult(info.getDevice(), metadata);
+        if(gateway != null) {
+            info.setPrimaryGateway(gateway.getNameWithIPAddress());
+            info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
+        }
+    }
+
+    @Override
+    public RfnGateway getPrimaryForwardGatewayFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
+        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY)) {
+            RfnIdentifier gatewayIdentifier = (RfnIdentifier) metadata.getMetadatas()
+                    .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
+            return rfnGatewayService.getGatewayByPaoId(
+                    rfnDeviceCreationService.createIfNotFound(gatewayIdentifier).getPaoIdentifier().getPaoId());
+        } else {
+            log.error("NM didn't return PRIMARY_FORWARD_GATEWAY for {} ", rfnDevice);
+        }
+        return null;
+    }
+
+    private void setMacAddress(MappingInfo info, RfnMetadataMultiQueryResult metadata) {
+        if (metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
+            NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
+            info.setMacAddress(nodeData.getMacAddress());
+        } else {
+            log.error("NM didn't return NODE_DATA for {}", info.getDevice());
+        }
+    }
+    
+    /**
+     * To get the NodeCommStatus (Ready/Not-Ready) we compare PRIMARY_GATEWAY_NODE_COMM and with PRIMARY_FORWARD_GATEWAY.
+     * If they match, we can use the NodeCommStatus from PRIMARY_GATEWAY_NODE_COMM. If they don't match we will have to use
+     * Unknown.
+     */
+    private void setNodeCommStatus(MappingInfo info, RfnMetadataMultiQueryResult metadata) {
+        NodeCommStatus status = getNodeCommStatusFromMultiQueryResult(info.getDevice(), metadata);
+        info.setStatus(status);
+    }
+
+    @Override
+    public NodeCommStatus getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
+        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)
+                && metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY)) {
+            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+            RfnIdentifier primaryForwardGateway = (RfnIdentifier) metadata.getMetadatas()
+                    .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
+            if (comm.getGatewayRfnIdentifier() == primaryForwardGateway) {
+                return comm.getNodeCommStatus();
+            } else {
+                log.info("NM didn't return comm gateway {}, primary forward gateway {} for {}, unable to determaine comm status",
+                        comm.getGatewayRfnIdentifier(), primaryForwardGateway, rfnDevice);
+            }
+        } else {
+            log.error(
+                    "NM didn't return PRIMARY_GATEWAY_NODE_COMM or PRIMARY_FORWARD_GATEWAY for {}, unable to determaine comm status",
+                    rfnDevice);
+        }
+        return null;
     }
 
     /**
@@ -550,10 +597,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             } else if (filter.getColorCodeBy() == GATEWAY) {
                 if(filter.getLinkQuality().isEmpty()) {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadataForDeviceRfnIdentifiers(gatewayIdentifiers, Set.of(PRIMARY_GATEWAY_NODES));
+                        metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayIdentifiers, Set.of(PRIMARY_FORWARD_GATEWAY));
                     
                     log.debug("Received primary gateway nodes from NM for {} devices", metaData.size());
-                    loadMapColorCodedByLinkQuality(Sets.newHashSet(gateways.keySet()), map, metaData);
+                    loadMapColorCodedByGateway(Sets.newHashSet(gateways.keySet()), map, metaData);
                     
                 }else {
                     log.debug("Getting data for {} gateways", gateways.size());
@@ -606,28 +653,36 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     /**
      * Adding devices received from NM to map
      */
-    private void loadMapColorCodedByLinkQuality(Set<RfnIdentifier> allFilteredGateways, NetworkMap map, Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
+    private void loadMapColorCodedByGateway(Set<RfnIdentifier> allFilteredGateways, NetworkMap map,
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
+
+        Map<RfnIdentifier, Collection<RfnIdentifier>> gatewayToDeviceMap = getGatewayToDeviceMap(metaData);
         AtomicInteger i = new AtomicInteger(0);
         log.debug("Loading map filtered by gateway");
-        metaData.forEach((gatewayPao, queryResult) -> {
-            if (queryResult.isValidResultForMulti(PRIMARY_GATEWAY_NODES)) {
-                GatewayNodes gatewayNodes =
-                    (GatewayNodes) queryResult.getMetadatas().get(PRIMARY_GATEWAY_NODES);
-                Color color = Color.values()[i.getAndIncrement()];
-                RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayPao);
-                Set<RfnIdentifier> devices = Sets.newHashSet(gatewayNodes.getNodeComms().keySet());
-                log.debug("Gateway {} devices {}", gateway, devices);
-                devices.add(gatewayPao);
-                //remove gateway that had data
-                allFilteredGateways.remove(gateway.getRfnIdentifier());
-                addDevicesToMap(map, color, gateway.getName(), devices);
-            } else {
-                log.debug("Result {} is not valid for PRIMARY_GATEWAY_NODES", queryResult);
+        for (RfnIdentifier gatewayIdentifier : gatewayToDeviceMap.keySet()) {
+            Color color = Color.values()[i.getAndIncrement()];
+            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayIdentifier);
+            Set<RfnIdentifier> devices = Sets.newHashSet(gatewayToDeviceMap.get(gatewayIdentifier));
+            log.debug("Gateway {} devices {}", gateway, devices);
+            devices.add(gatewayIdentifier);
+            // remove gateway that had data
+            allFilteredGateways.remove(gateway.getRfnIdentifier());
+            addDevicesToMap(map, color, gateway.getName(), devices);
+        }
+        // add gateways that have no data
+        addDevicesToMap(map, "#ffffff", allFilteredGateways);
+    }
+
+    private Map<RfnIdentifier, Collection<RfnIdentifier>> getGatewayToDeviceMap(
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
+        Multimap<RfnIdentifier, RfnIdentifier> gatewaysToDevices = ArrayListMultimap.create();
+        metaData.forEach((deviceRfnIdentifier, queryResult) -> {
+            if (queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
+                RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
+                gatewaysToDevices.put(gatewayRfnIdentifier, deviceRfnIdentifier);
             }
         });
-        //add gateways that have no data
-        addDevicesToMap(map, "#ffffff", allFilteredGateways);
-          
+        return gatewaysToDevices.asMap();
     }
 
     /**

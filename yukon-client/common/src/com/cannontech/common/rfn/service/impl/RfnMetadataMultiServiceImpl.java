@@ -66,7 +66,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     public Map<RfnIdentifier, RfnMetadataMultiQueryResult> getMetadataForGatewayRfnIdentifiers(Set<RfnIdentifier> identifiers,
             Set<RfnMetadataMulti> requests) throws NmCommunicationException {
         RfnMetadataMultiRequest request = getRequest(requests);
-        request.getPrimaryNodesForGatewayRfnIdentifiers().addAll(identifiers);
+        request.getPrimaryForwardNodesForGatewayRfnIdentifiers().addAll(identifiers);
         return sendMetadataRequest(request);
     }
     
@@ -80,7 +80,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
             String requestIdentifier = String.valueOf(nextValueHelper.getNextValue("RfnMetadataMultiRequest"));
             request.setRequestID(requestIdentifier);
             log.debug("RfnMetadataMultiRequest identifier {} metadatas {} device ids {} gateway ids {}", requestIdentifier, request.getRfnMetadatas(),
-                request.getRfnIdentifiers().size(), request.getPrimaryNodesForGatewayRfnIdentifiers().size());
+                request.getRfnIdentifiers().size(), request.getPrimaryForwardNodesForGatewayRfnIdentifiers().size());
             
             // Send request
             BlockingJmsMultiReplyHandler<RfnMetadataMultiResponse> replyHandler = 
@@ -104,7 +104,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     private RfnMetadataMultiRequest getRequest(Set<RfnMetadataMulti> multi) {
         RfnMetadataMultiRequest request = new RfnMetadataMultiRequest();
         request.setRfnIdentifiers(new HashSet<>());
-        request.setPrimaryNodesForGatewayRfnIdentifiers(new HashSet<>());
+        request.setPrimaryForwardNodesForGatewayRfnIdentifiers(new HashSet<>());
         request.setRfnMetadatas(multi);
         return request;
     }
