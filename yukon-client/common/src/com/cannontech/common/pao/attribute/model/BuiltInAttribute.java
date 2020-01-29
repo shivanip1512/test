@@ -4,11 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -792,7 +794,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         nonIntervalAttributes = ImmutableSet.of(
                 MAXIMUM_VOLTAGE,
+                MAXIMUM_VOLTAGE_DAILY,
                 MINIMUM_VOLTAGE,
+                MINIMUM_VOLTAGE_DAILY,
                 PEAK_DEMAND,
                 PEAK_DEMAND_DAILY,
                 PEAK_DEMAND_FROZEN,
@@ -938,22 +942,19 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
      * 
      */
     private static void buildAllStatusTypeAttributeGroups() {
-        ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> allGroupedStatusTypeBuilder =
-            ImmutableMap.builder();
-
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_CURRENT_EVENT, lookupByGroup.get(AttributeGroup.RFN_CURRENT_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_VOLTAGE_EVENT, lookupByGroup.get(AttributeGroup.RFN_VOLTAGE_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_OTHER_EVENT, lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_METERING_EVENT, lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.STATUS, lookupByGroup.get(AttributeGroup.STATUS));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
-
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
-        allGroupedStatusTypeAttributes = allGroupedStatusTypeBuilder.build();
-
+        allGroupedStatusTypeAttributes = Collections.unmodifiableMap(
+                Stream.of(
+                        AttributeGroup.RFN_CURRENT_EVENT,
+                        AttributeGroup.RFN_VOLTAGE_EVENT,
+                        AttributeGroup.RFN_DEMAND_EVENT,
+                        AttributeGroup.RFN_OTHER_EVENT,
+                        AttributeGroup.RFN_METERING_EVENT,
+                        AttributeGroup.STATUS,
+                        AttributeGroup.RFN_HARDWARE_EVENT,
+                        AttributeGroup.RFN_SOFTWARE_EVENT)
+                        .collect(StreamUtils.mapSelfTo(lookupByGroup::get)));
     }
 
     /**
@@ -1006,7 +1007,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static void buildVoltageAttributes() {
 
         voltageAttributes = ImmutableSet.of(MINIMUM_VOLTAGE, 
+                                            MINIMUM_VOLTAGE_DAILY, 
                                             MAXIMUM_VOLTAGE, 
+                                            MAXIMUM_VOLTAGE_DAILY, 
                                             AVERAGE_VOLTAGE);
     }
     
