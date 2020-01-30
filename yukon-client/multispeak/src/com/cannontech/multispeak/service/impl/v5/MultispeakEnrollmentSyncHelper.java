@@ -22,24 +22,34 @@ public class MultispeakEnrollmentSyncHelper {
         List<EnrollmentJmsMessage> enrollmentMessages = lmHardwareControlGroupDao.getEnrollmentSyncMessagesToSend();
         int enrollmentMessageCount = 0;
         int unenrollmentMessageCount = 0;
+        int errorCount = 0;
         log.info("Sending " + enrollmentMessages.size() + " enrollment message for multispeak sync process.");
         for (EnrollmentJmsMessage msg : enrollmentMessages) {
             if (callback.isCanceled()) {
                 log.info("Multispeak enrollment sync process is canceled");
                 break;
             }
-            if (msg.getMessageType() == DrJmsMessageType.ENROLLMENT) {
-                drJmsMessageService.enrollmentNotification(msg);
-                enrollmentMessageCount++;
-            } else {
-                drJmsMessageService.unenrollmentNotification(msg);
-                unenrollmentMessageCount++;
+            try {
+                if (msg.getMessageType() == DrJmsMessageType.ENROLLMENT) {
+                    drJmsMessageService.enrollmentNotification(msg);
+                    enrollmentMessageCount++;
+                } else {
+                    drJmsMessageService.unenrollmentNotification(msg);
+                    unenrollmentMessageCount++;
+                }
+            } catch (Exception ex) {
+                errorCount++;
             }
             callback.enrollmentMessageSent();
         }
         log.info(enrollmentMessageCount + " enrollment and " + unenrollmentMessageCount
                 + " unenrollment message sent for multispeak sync process.");
+        if (errorCount > 0) {
+            log.info(errorCount + " error found while sending enrollment/unenrollment sync messages.");
+        }
         // Call finish if all enrollment call is done.
-        callback.finish();
+        if (!callback.isCanceled()) {
+            callback.finish();
+        }
     }
 }
