@@ -38,12 +38,6 @@ public enum ItronDataEventType {
     EVENT_STOPPED(0x000F, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
     EVENT_CANCELED(0x0010, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
     MEMORY_MAP_LOST(0x8081, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
-    MAX_CONTROL_EXCEEDED(0x8085, BuiltInAttribute.MAX_CONTROL_EXCEEDED, 0, 0, 1),
-    NETWORK_TIMEOUT_CANCEL(0x8086, BuiltInAttribute.NETWORK_TIMEOUT_CANCEL, 0, 0, 1),
-    CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1),
-    TLS_FAIL(0x801F, BuiltInAttribute.TLS_FAIL, 0, 0, 1),
-    BAD_HDLC(0x0020, BuiltInAttribute.BAD_HDLC, 0, 0, 1),
-    FLUSH_LOG(0x8095, BuiltInAttribute.FLUSH_LOG, 0, 0, 1),
     
     //Events where the Relay Number for the Attribute is obtained from the payload.
     LOAD_ON(0x0014, null, 0, 1, 3),
@@ -55,23 +49,9 @@ public enum ItronDataEventType {
 
     //Events where the values are obtained from the payload.
     AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null),
-    EVENT_SUPERSEDED(0x0012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null),
     FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
-    TIME_SYNC(0x8082, BuiltInAttribute.TIME_SYNC, 0, 4, null),
-    COLD_START(0x0001, BuiltInAttribute.COLD_START, 0, 1, null),
-    CONFIGURATION_PROCESSED(0x8087, BuiltInAttribute.CONFIGURATION_PROCESSED, 0, 4, null),
-    TIME_LOST(0x8088, BuiltInAttribute.TIME_LOST, 0, 4, null),
-    SELF_CHECK_FAIL(0x0002, BuiltInAttribute.SELF_CHECK_FAIL, 0, 4, null),
-    INACTIVE_APPLIANCE(0x0017, BuiltInAttribute.INACTIVE_APPLIANCE, 0, 1, null),
     RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null),
-    INCORRECT_TLS_IDENTITY(0x808F, BuiltInAttribute.INCORRECT_TLS_IDENTITY, 0, 2, null),
-    KEY_UPDATE(0x001C, BuiltInAttribute.KEY_UPDATE, 0, 2, null),
-    KEY_UPDATE_FAIL(0x001D, BuiltInAttribute.KEY_UPDATE_FAIL, 0, 2, null),
-    TLS_ALERT(0x0021, BuiltInAttribute.TLS_ALERT, 0, 1, null),
-    OPTIMIZE_INTELLIGENT_CONTROL(0x8094, BuiltInAttribute.OPTIMIZE_INTELLIGENT_CONTROL, 0, 2, null),
-    SNAP_TO_GOLD(0x8096, BuiltInAttribute.SNAP_TO_GOLD, 0, 4, null),
     EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null),
-    LOAD_STATUS(0x809A, BuiltInAttribute.LOAD_STATUS, 0, 1, null),
 
     //Events where the values increment current count
     POWER_FAIL(0x8000, BuiltInAttribute.BLINK_COUNT, 0, 1, null),
@@ -102,8 +82,7 @@ public enum ItronDataEventType {
         controlEventTypes = ImmutableSet.of(
                                             EVENT_STARTED,
                                             EVENT_STOPPED,
-                                            EVENT_CANCELED,
-                                            EVENT_SUPERSEDED);
+                                            EVENT_CANCELED);
     }
     
     private static Map<Long, ItronDataEventType> ItronEventTypeFromHexMap = new HashMap<>();
