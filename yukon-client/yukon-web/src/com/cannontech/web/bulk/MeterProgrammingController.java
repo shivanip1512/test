@@ -50,8 +50,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class MeterProgrammingController {
     private final static Logger log = YukonLogManager.getLogger(MeterProgrammingController.class);
     private final static String baseKey = "yukon.web.modules.tools.bulk.meterProgramming.";
-    private final static Integer MINIMUM_VALID_FILE_SIZE = 286; // Minumum meter programming file size in bytes
-    private final static Integer MAXIMUM_ALLOWED_FILE_SIZE = 49152; // 48 kibibyte
+    private final static Integer maxFileSizeInBytes = 1048576;
 
     @Autowired protected CollectionActionService collectionActionService;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
@@ -105,11 +104,8 @@ public class MeterProgrammingController {
             if (isMultipart) {
                 MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
                 dataFile = mRequest.getFile("dataFile");
-                if (dataFile.getSize() < MINIMUM_VALID_FILE_SIZE) {
-                    model.addAttribute("errorMsg", accessor.getMessage(baseKey + "selectedFileTooSmall"));
-                    return errorView(response, model, deviceCollection);
-                } else if (dataFile.getSize() > MAXIMUM_ALLOWED_FILE_SIZE) {
-                    model.addAttribute("errorMsg", accessor.getMessage(baseKey + "selectedFileTooLarge"));
+                if (dataFile.isEmpty() || dataFile.getSize() > maxFileSizeInBytes) {
+                    model.addAttribute("errorMsg", accessor.getMessage(baseKey + "invalidFileSize"));
                     return errorView(response, model, deviceCollection);
                 }
                 try {
