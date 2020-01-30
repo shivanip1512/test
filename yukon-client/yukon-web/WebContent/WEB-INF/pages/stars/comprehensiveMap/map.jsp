@@ -36,17 +36,21 @@
                 <tags:selectWithItems items="${gateways}" path="selectedGatewayIds" itemLabel="name" itemValue="id"
                     inputClass="js-selected-gateways" dataPlaceholder="${gatewayPlaceholder}"/>&nbsp;&nbsp;
                     
-                <cti:msg2 var="linkQualityPlaceholder" key=".selectLinkQuality"/>
-                <tags:selectWithItems items="${linkQualityOptions}" path="linkQuality" inputClass="js-selected-link-qualities" dataPlaceholder="${linkQualityPlaceholder}"/>&nbsp;&nbsp;
+                <i:inline key=".colorCodeBy.LINK_QUALITY"/>:&nbsp;
+                <cti:msg2 var="allPlaceholder" key="yukon.common.all"/>
+                <tags:selectWithItems items="${linkQualityOptions}" path="linkQuality" inputClass="js-selected-link-qualities" dataPlaceholder="${allPlaceholder}"/>&nbsp;&nbsp;
                 
-                <cti:msg2 var="descendantCountPlaceholder" key=".selectDescendantCount"/>
-                <tags:selectWithItems items="${descendantCountOptions}" path="descendantCount" inputClass="js-selected-descendant-count" dataPlaceholder="${descendantCountPlaceholder}"/>
-                
+                <i:inline key=".colorCodeBy.DESCENDANT_COUNT"/>:&nbsp;
+                <tags:selectWithItems items="${descendantCountOptions}" path="descendantCount" inputClass="js-selected-descendant-count" dataPlaceholder="${allPlaceholder}"/>
+                                
                 <span class="fr cp"><cti:icon icon="icon-help" data-popup="#map-help"/></span>
                 <cti:msg2 var="helpTitle" key=".helpTitle"/>
                 <div id="map-help" class="dn" data-width="600" data-height="360" data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div><br/>
+
+                <div style="padding-top:5px;padding-left:60px;">
+                    <i:inline key=".colorCodeBy.HOP_COUNT"/>:&nbsp;
+                    <tags:selectWithItems items="${hopCountOptions}" path="hopCount" inputClass="js-selected-hop-count" dataPlaceholder="${allPlaceholder}"/>&nbsp;&nbsp;
                 
-                <div style="padding-top:5px">
                     <i:inline key=".colorCodeBy"/>&nbsp;
                     <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>
                     
