@@ -68,6 +68,7 @@ import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.DescendantCount;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.HopCount;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NetworkTreeService;
@@ -117,6 +118,7 @@ public class ComprehensiveMapController {
         model.addAttribute("colorCodeByOptions", ColorCodeBy.values());
         model.addAttribute("linkQualityOptions", LinkQuality.values());
         model.addAttribute("descendantCountOptions", DescendantCount.values());
+        model.addAttribute("hopCountOptions", HopCount.values());
         model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
         model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
         model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());

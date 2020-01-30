@@ -279,13 +279,14 @@ yukon.map.comprehensive = (function () {
             
             if (_initialized) return;
             
-            $(".js-selected-gateways").chosen({width: "400px", max_selected_options: 5});
+            $(".js-selected-gateways").chosen({width: "350px", max_selected_options: 5});
             $(".js-selected-gateways").bind("chosen:maxselected", function () {
                 var gatewayError = $('#tooManyGatewaysError').val();
                 yukon.ui.alertError(gatewayError);
             }); 
-            $(".js-selected-link-qualities").chosen({width: "200px"});
-            $(".js-selected-descendant-count").chosen({width: "200px"});
+            $(".js-selected-link-qualities").chosen({width: "150px"});
+            $(".js-selected-descendant-count").chosen({width: "150px"});
+            $(".js-selected-hop-count").chosen({width: "150px"});
 
             /** Setup the openlayers map. */
             _map = new ol.Map({
