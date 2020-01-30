@@ -310,6 +310,40 @@ AND PointId IN
 INSERT INTO DBUpdates VALUES('YUK-21216', '7.4.0', GETDATE());
 /* @end YUK-21216 */
 
+/* @start YUK-21060 */
+DELETE FROM DYNAMICPOINTDISPATCH WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+INSERT INTO DBUpdates VALUES ('YUK-21060', '7.4.0', GETDATE());
+/* @end YUK-21060 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
