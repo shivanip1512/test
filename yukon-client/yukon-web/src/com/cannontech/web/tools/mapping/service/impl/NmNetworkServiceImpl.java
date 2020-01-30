@@ -351,16 +351,28 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.error(commsError, e);
             throw new NmNetworkException(commsError, e, "commsError");
         }
+        
+        AtomicInteger deviceCreationFailedCount = new AtomicInteger(0);
+        Map<com.cannontech.common.rfn.message.network.NeighborData, RfnDevice> dataToDevice = new HashMap<>();
+        response.getNeighborData().stream().forEach(data -> {
+            RfnDevice rfnDevice = rfnDeviceCreationService
+                    .createIfNotFound(data.getRfnIdentifier());
+            if (rfnDevice == null)
+                deviceCreationFailedCount.getAndIncrement();
+            else {
+                dataToDevice.put(data, rfnDevice);
+            }
+        });
+        if (deviceCreationFailedCount.intValue() > 0) {
+            errorMsg = accessor.getMessage("yukon.web.modules.operator.mapNetwork.neighbor.deviceCreation.failed",
+                    deviceCreationFailedCount.intValue());
+        }
 
-        Map<com.cannontech.common.rfn.message.network.NeighborData, RfnDevice>  dataToDevice = response.getNeighborData().stream()
-            .collect(Collectors.toMap(data -> data, data ->  rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier())));
-        
-        
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         try {
             metaData = getMetaData(dataToDevice.values());
         } catch (NmNetworkException e) {
-            errorMsg = accessor.getMessage(metadataErrorKey);
+            errorMsg += accessor.getMessage(metadataErrorKey);
         }
         
         Set<PaoLocation> allLocations = paoLocationDao.getLocations(dataToDevice.values());
