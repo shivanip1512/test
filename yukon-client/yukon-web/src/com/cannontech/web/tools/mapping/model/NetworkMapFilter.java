@@ -61,7 +61,24 @@ public class NetworkMapFilter {
         BLUE("#4d90fe", 2),
         ORANGE("#ec971f", 3),
         GREY("#888", 4),
-        YELLOW("#f0cb2f", 5);
+        YELLOW("#f0cb2f", 5),
+        TEAL("#00b2a9", 6),
+        WINE("#ba5670", 7),
+        LIGHT_GREEN("#79ae72", 8),
+        LIGHT_ORANGE("#f1b16b", 9),
+        PURPLE("#b779f4", 10),
+        BROWN("#a37e19", 11),
+        CRIMSON("#da3227", 12),
+        CITRON("#bcc92d", 13),
+        PINE("#2e6750", 14),
+        NAVY("#004672", 15),
+        SKY("#87c6d4", 16),
+        SAGE("#b2c98d", 17),
+        CREAM("#fedd76", 18),
+        PINK("#e59e9e", 19),
+        LIGHT_GRAY("#b9bfc2", 20),
+        SUNSET("#c55f1e", 21);
+        
         
         private Color(String hexColor, int order) {
             this.hexColor = hexColor;

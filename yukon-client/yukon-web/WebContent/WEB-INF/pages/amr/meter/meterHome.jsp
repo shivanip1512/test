@@ -138,7 +138,10 @@
                 
                 <c:if test="${showWifiConnection}"><tags:widget bean="wifiConnectionWidget"/></c:if>
                 
-                <c:if test="${showRfMetadata}"><tags:widget bean="rfnDeviceMetadataWidget"/></c:if>
+                <c:if test="${showRfMetadata}">
+                    <cti:msg var="widgetHelpText" key="yukon.web.widgets.rfnDeviceMetadataWidget.helpText"/>
+                    <tags:widget bean="rfnDeviceMetadataWidget" helpText="${widgetHelpText}"/>
+                </c:if>
                 <c:if test="${showCis}"><tags:widget bean="${cisInfoWidgetName}"/></c:if>
                 <tags:widget bean="paoNotesWidget"/>
                 

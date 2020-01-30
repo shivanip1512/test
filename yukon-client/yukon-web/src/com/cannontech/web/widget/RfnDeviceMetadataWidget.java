@@ -20,6 +20,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
+import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -77,6 +78,10 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
                 Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
             RfnMetadataMultiQueryResult metadata = metaData.get(device.getRfnIdentifier());
+            
+            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+            RfnIdentifier reverseGateway = comm.getGatewayRfnIdentifier();
+
             //if status is null display unknown
             NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadata);
             //gateway can be null if replay from NM didn't contain gateway info

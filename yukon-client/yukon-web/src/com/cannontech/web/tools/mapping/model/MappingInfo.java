@@ -16,6 +16,7 @@ public abstract class MappingInfo {
 
     private RfnDevice device;
     private FeatureCollection location;
+    @JsonIgnore
     private NodeCommStatus status;
     private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private double distanceInMiles;
@@ -88,7 +89,11 @@ public abstract class MappingInfo {
         if (isGatewayType()) {
             statusDisplay = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + connectionStatus.toString());
         } else {
-            statusDisplay = accessor.getMessage(nameKey + "status." + status.name());
+            if (status == null) {
+                statusDisplay = accessor.getMessage(nameKey + "status.UNKNOWN");
+            } else {
+                statusDisplay = accessor.getMessage(nameKey + "status." + status.name());
+            }
         }
         return statusDisplay;
     }
