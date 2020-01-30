@@ -15,6 +15,7 @@ public class NetworkMapFilter {
     private List<Integer> selectedGatewayIds;
     private ColorCodeBy colorCodeBy;
     private List<LinkQuality> linkQuality;
+    private List<DescendantCount> descendantCount;
 
     public List<Integer> getSelectedGatewayIds() {
         return selectedGatewayIds;
@@ -46,9 +47,18 @@ public class NetworkMapFilter {
             + System.getProperty("line.separator");
     }
     
+    public List<DescendantCount> getDescendantCount() {
+        return descendantCount;
+    }
+
+    public void setDescendantCount(List<DescendantCount> descendantCount) {
+        this.descendantCount = descendantCount;
+    }
+
     public enum ColorCodeBy implements DisplayableEnum {
         GATEWAY,
-        LINK_QUALITY,;
+        LINK_QUALITY,
+        DESCENDANT_COUNT;
 
         @Override
         public String getFormatKey() {
@@ -110,6 +120,27 @@ public class NetworkMapFilter {
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.operator.comprehensiveMap.linkQuality." + this;
+        }
+    }
+    
+    public enum DescendantCount implements DisplayableEnum {
+        EXCELLENT(Color.GREEN),     // <= 40
+        GOOD(Color.BLUE),           // 41 - 80
+        AVERAGE(Color.ORANGE),      // 81 - 120
+        BELOW_AVERAGE(Color.GREY);  // > 120
+        
+        private Color color;
+        
+        DescendantCount(Color color) {
+            this.color = color;
+        }
+        public Color getColor() {
+            return color;
+        }
+        
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.comprehensiveMap.descendantCount." + this;
         }
     }
     

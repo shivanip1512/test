@@ -285,7 +285,8 @@ yukon.map.comprehensive = (function () {
                 yukon.ui.alertError(gatewayError);
             }); 
             $(".js-selected-link-qualities").chosen({width: "200px"});
-            
+            $(".js-selected-descendant-count").chosen({width: "200px"});
+
             /** Setup the openlayers map. */
             _map = new ol.Map({
                 controls: [
