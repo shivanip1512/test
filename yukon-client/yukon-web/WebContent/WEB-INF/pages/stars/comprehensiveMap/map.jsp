@@ -37,7 +37,10 @@
                     inputClass="js-selected-gateways" dataPlaceholder="${gatewayPlaceholder}"/>&nbsp;&nbsp;
                     
                 <cti:msg2 var="linkQualityPlaceholder" key=".selectLinkQuality"/>
-                <tags:selectWithItems items="${linkQualityOptions}" path="linkQuality" inputClass="js-selected-link-qualities" dataPlaceholder="${linkQualityPlaceholder}"/>
+                <tags:selectWithItems items="${linkQualityOptions}" path="linkQuality" inputClass="js-selected-link-qualities" dataPlaceholder="${linkQualityPlaceholder}"/>&nbsp;&nbsp;
+                
+                <cti:msg2 var="descendantCountPlaceholder" key=".selectDescendantCount"/>
+                <tags:selectWithItems items="${descendantCountOptions}" path="descendantCount" inputClass="js-selected-descendant-count" dataPlaceholder="${descendantCountPlaceholder}"/>
                 
                 <span class="fr cp"><cti:icon icon="icon-help" data-popup="#map-help"/></span>
                 <cti:msg2 var="helpTitle" key=".helpTitle"/>

@@ -29,10 +29,18 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy">Color Code By:</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.GATEWAY">Gateway</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY">Link Quality</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT">Descendant Count</entry>
+    
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.EXCELLENT">Excellent</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.AVERAGE">Average</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.BELOW_AVERAGE">Below Average</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.EVALUATING">Evaluating</entry>
+    
+    <entry key="yukon.web.modules.operator.comprehensiveMap.selectDescendantCount">All Descendant Counts</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.EXCELLENT">&lt;= 40</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.GOOD">41 - 80</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.AVERAGE">81 - 120</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.BELOW_AVERAGE">&gt; 120</entry>
     
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure">Infrastructure</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways">All Gateways</entry>
