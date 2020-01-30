@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.joda.time.Instant;
@@ -46,7 +47,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
-import com.cannontech.common.rfn.message.node.NodeComm;
+import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -74,8 +75,6 @@ import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.apache.commons.lang3.tuple.Pair;
 
 @RequestMapping("/comprehensiveMap/*")
 @Controller
@@ -216,14 +215,11 @@ public class ComprehensiveMapController {
         try {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
+                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY,
                                                                                          RfnMetadataMulti.NODE_DATA));
         } catch (NmCommunicationException e1) {
             log.warn("caught exception in download", e1);
         } 
-
-        Map<String, String> gatewayNames = rfnGatewayService.getAllGateways()
-                .stream()
-                .collect(Collectors.toMap(g -> g.getRfnIdentifier().getCombinedIdentifier(), g-> g.getName()));
         
         Map<Integer, PaoLocation> locations = paoLocationDao.getLocations(collection.getDeviceList()).stream()
                 .collect(Collectors.toMap(l -> l.getPaoIdentifier().getPaoId(), l->l));
@@ -231,28 +227,35 @@ public class ComprehensiveMapController {
         List<String[]> dataRows = Lists.newArrayList();
         log.debug("Got data from NM for {} devices", metaData.keySet().size());
         for (RfnIdentifier device : metaData.keySet()) {
-            int paoId = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(Sets.newHashSet(device)).iterator().next();
+            RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
             String[] dataRow = new String[11];
-            LiteYukonPAObject rfnDevice = cache.getAllPaosMap().get(paoId);
-            dataRow[0] = rfnDevice.getPaoName();
-            SimpleMeter meter = cache.getAllMeters().get(paoId);
+            LiteYukonPAObject pao = cache.getAllPaosMap().get(rfnDevice.getPaoIdentifier().getPaoId());
+            dataRow[0] = pao.getPaoName();
+            SimpleMeter meter = cache.getAllMeters().get(rfnDevice.getPaoIdentifier().getPaoId());
             if(meter != null) {
                 dataRow[1] = meter.getMeterNumber();
             }
-            dataRow[2] = rfnDevice.getPaoType().getPaoTypeName();
+            dataRow[2] = pao.getPaoType().getPaoTypeName();
             dataRow[3] = device.getSensorSerialNumber();
-            PaoLocation location = locations.get(paoId);
+            PaoLocation location = locations.get(rfnDevice.getPaoIdentifier().getPaoId());
             if(location != null) {
                 dataRow[4] = String.valueOf(location.getLatitude());
                 dataRow[5] = String.valueOf(location.getLongitude());
             }
             RfnMetadataMultiQueryResult metadata = metaData.get(device);
             if (metadata != null) {
-                if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)) {
-                    NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-                    dataRow[6] = gatewayNames.get(comm.getGatewayRfnIdentifier().getCombinedIdentifier());
-                    dataRow[7] = accessor.getMessage(baseKey + "status." + comm.getNodeCommStatus());
+                String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
+                NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
+                if(status != null) {
+                    statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
                 }
+                dataRow[7] = statusString;
+        
+                RfnGateway rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                if(rfnGateway != null) {
+                    dataRow[6] = rfnGateway.getName();
+                }
+                
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
                     NodeData data = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
                     dataRow[8] = data.getMacAddress();
