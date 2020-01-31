@@ -68,7 +68,6 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
-import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
@@ -79,7 +78,6 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
-import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -99,6 +97,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
+import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -134,8 +133,8 @@ public class MapController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private NmNetworkService nmNetworkService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
