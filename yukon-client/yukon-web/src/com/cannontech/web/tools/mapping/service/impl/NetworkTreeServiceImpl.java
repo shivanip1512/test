@@ -45,6 +45,7 @@ import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.NmCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
@@ -273,9 +274,13 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             //NN returned null rfnIdentifier
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        
+        RfnDevice device  = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+        if(device  == null) {
+            //failed to create device
+            return new Node<Pair<Integer, FeatureCollection>>(null);
+        }
         //if device is not found create device
-        int deviceId = rfnDeviceCreationService.createIfNotFound(rfnIdentifier).getPaoIdentifier().getPaoId();
+        int deviceId = device.getPaoIdentifier().getPaoId();
         PaoLocation location = locations.get(deviceId);
         //if no location in Yukon database featureCollection will be null
         FeatureCollection featureCollection = location == null ? null : paoLocationService.getFeatureCollection(location);
