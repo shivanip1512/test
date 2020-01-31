@@ -59,6 +59,12 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
                 errors.rejectValue("ipAddress", baseKey + "ipAddress.invalid");
             }
         }
+        if (!settings.isVirtual()) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "port", baseKey + "port.required");
+            if (!errors.hasFieldErrors("port")) {
+                YukonValidationUtils.validatePort(errors, "port", settings.getPort().toString());
+            }
+        }
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "admin.username", baseKey + "username.required");
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdmin.username", baseKey + "username.required");

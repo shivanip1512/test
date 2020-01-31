@@ -41,7 +41,7 @@
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".virtual">
             <tags:switchButton path="virtual" onNameKey=".yes.label" offNameKey=".no.label" 
-                toggleGroup="virtual-gateway" toggleAction="invisible"/>
+                toggleGroup="virtual-gateway" toggleAction="invisible" toggleInverse="true"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".virtual.port" data-toggle-group="virtual-gateway">
             <tags:input path="port" maxlength="5" size="5" tabindex="3"/>

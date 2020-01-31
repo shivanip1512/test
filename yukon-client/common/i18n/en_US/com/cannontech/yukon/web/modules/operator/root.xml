@@ -133,6 +133,7 @@
     <entry key="yukon.web.modules.operator.gateways.updateserver.url.required">Server URL is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.username.required">Username is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.port.required">Port is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.invalid">Not a valid IP Address.</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude.invalid">Latitude must be between -90 and 90.</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude.required">Latitude cannot be empty.</entry>
@@ -165,7 +166,7 @@
     <entry key="yukon.web.modules.operator.gateways.appMode.failsafe">Fail-Safe</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType">Connection Type</entry>
     <entry key="yukon.web.modules.operator.gateways.ipaddress">IP Address</entry>
-    <entry key="yukon.web.modules.operator.gateways.virtual">Virtual</entry>
+    <entry key="yukon.web.modules.operator.gateways.virtual">Use Default Port</entry>
     <entry key="yukon.web.modules.operator.gateways.virtual.port">Port</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionStatus">Connection Status</entry>
     <entry key="yukon.web.modules.operator.gateways.firmwareVersion">Firmware Version</entry>
