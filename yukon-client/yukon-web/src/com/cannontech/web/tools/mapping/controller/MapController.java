@@ -323,11 +323,13 @@ public class MapController {
                                 model.addAttribute("routeFlags", String.join(", ", flags));
                                 //get distance to next hop
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
-                                RfnDevice nextHopDevice = rfnDeviceDao.getDeviceForExactIdentifier(nextHop);
-                                PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
-                                PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
-                                double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
-                                model.addAttribute("nextHopDistance", distanceTo);
+                                if (nextHop != null) {
+                                    RfnDevice nextHopDevice = rfnDeviceDao.getDeviceForExactIdentifier(nextHop);
+                                    PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
+                                    PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
+                                    double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
+                                    model.addAttribute("nextHopDistance", distanceTo);
+                                }
                             }
                         }
                     }

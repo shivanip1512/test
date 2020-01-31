@@ -25,8 +25,10 @@ import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.service.WaitableDataCallback;
 import com.cannontech.common.util.Pair;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -46,15 +48,16 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private NmNetworkService nmNetworkService;
+    @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     
     private String keyPrefix = "yukon.web.widgets.RfnDeviceMetadataWidget.";
     private static final ImmutableSet<RfnMetadata> csrSubset = ImmutableSet.of(
-                                                                               RfnMetadata.COMM_STATUS,
-                                                                               RfnMetadata.COMM_STATUS_TIMESTAMP,
+                                                                               //RfnMetadata.COMM_STATUS,
+                                                                               //RfnMetadata.COMM_STATUS_TIMESTAMP,
                                                                                RfnMetadata.GROUPS,
                                                                                RfnMetadata.NEIGHBOR_COUNT,
                                                                                RfnMetadata.NODE_SERIAL_NUMBER,
-                                                                               RfnMetadata.PRIMARY_GATEWAY,
+                                                                               //RfnMetadata.PRIMARY_GATEWAY,
                                                                                RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT);
 
        
@@ -71,30 +74,36 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         model.addAttribute("device", device);
-        
 
-        
         try {
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
                 Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
             RfnMetadataMultiQueryResult metadata = metaData.get(device.getRfnIdentifier());
             
-            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-            RfnIdentifier reverseGateway = comm.getGatewayRfnIdentifier();
-
-            //if status is null display unknown
-            NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadata);
             //gateway can be null if replay from NM didn't contain gateway info
             RfnGateway gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadata);
+            model.addAttribute("primaryForward", gateway.getName());
+            
+            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+            RfnIdentifier reverseIdentifier = comm.getGatewayRfnIdentifier();
+            
+            RfnDevice reverseGateway = rfnDeviceCreationService.createIfNotFound(reverseIdentifier);
+            model.addAttribute("reverseLookup", reverseGateway.getName());
+            
+            final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+
+            String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
+            NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadata);
+            if(status != null) {
+                statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
+                model.addAttribute("commStatusTimestamp", comm.getNodeCommStatusTimestamp());
+            }
+            model.addAttribute("commStatus", statusString);
             
         } catch (NmCommunicationException e) {
           
         }
         
-       
-            
-            
-            
         
         WaitableDataCallback<Map<RfnMetadata, Object>> waitableCallback = new WaitableDataCallback<Map<RfnMetadata, Object>>() {
             
