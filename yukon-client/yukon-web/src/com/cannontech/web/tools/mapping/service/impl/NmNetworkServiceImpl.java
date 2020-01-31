@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -271,17 +272,19 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         log.debug("response: " + response);
 
-        Map<RouteData, RfnDevice>  dataToDevice = response.getRouteData().stream()
-                .collect(Collectors.toMap(data -> data, data -> rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier())));
-                    
+        Map<RfnIdentifier, RfnDevice> devices = response.getRouteData().stream()
+                .map(data -> rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
+
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         try {
-            metaData = getMetaData(dataToDevice.values());
+            metaData = getMetaData(devices.values());
         } catch (NmNetworkException e) {
             errorMsg = accessor.getMessage(metadataErrorKey);
         }
 
-        Set<PaoLocation> allLocations = paoLocationDao.getLocations(dataToDevice.values());
+        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
         PaoLocation nextHopLocation = null;
         List<RouteInfo> routes = new ArrayList<>();
@@ -289,7 +292,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         
         for (int i = 0; i < response.getRouteData().size(); i++) {
             RouteData data = response.getRouteData().get(i);
-            RfnDevice routeDevice = dataToDevice.get(data);
+            RfnDevice routeDevice = devices.get(data.getRfnIdentifier());
+            if(routeDevice == null) {
+                log.error("Device {} was not found", data.getRfnIdentifier());
+                continue;
+            }
             PaoLocation paoLocation = locations.get(routeDevice.getPaoIdentifier());
             if (paoLocation != null) {
                 FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
@@ -299,7 +306,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 // only the last element has no distance, because it has no "next hop"
                 if (i < response.getRouteData().size() - 1) {
                     RouteData nextHop = response.getRouteData().get(i + 1);
-                    RfnDevice nextHopDevice = dataToDevice.get(nextHop);
+                    RfnDevice nextHopDevice = devices.get(nextHop.getRfnIdentifier());
+                    if(nextHopDevice == null)
+                    {
+                        log.error("Device {} was not found", nextHop.getRfnIdentifier());
+                        break;
+                    }
                     PaoIdentifier nextHopPaoIdentifier = nextHopDevice.getPaoIdentifier();
                     nextHopLocation = locations.get(nextHopPaoIdentifier);
                     if(nextHopLocation == null){
@@ -351,53 +363,44 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.error(commsError, e);
             throw new NmNetworkException(commsError, e, "commsError");
         }
-        
-        AtomicInteger deviceCreationFailedCount = new AtomicInteger(0);
-        Map<com.cannontech.common.rfn.message.network.NeighborData, RfnDevice> dataToDevice = new HashMap<>();
-        response.getNeighborData().stream().forEach(data -> {
-            RfnDevice rfnDevice = rfnDeviceCreationService
-                    .createIfNotFound(data.getRfnIdentifier());
-            if (rfnDevice == null)
-                deviceCreationFailedCount.getAndIncrement();
-            else {
-                dataToDevice.put(data, rfnDevice);
-            }
-        });
-        if (deviceCreationFailedCount.intValue() > 0) {
-            errorMsg = accessor.getMessage("yukon.web.modules.operator.mapNetwork.neighbor.deviceCreation.failed",
-                    deviceCreationFailedCount.intValue());
-        }
+
+        Map<RfnIdentifier, RfnDevice> devices = response.getNeighborData().stream()
+                .map(data -> rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         try {
-            metaData = getMetaData(dataToDevice.values());
+            metaData = getMetaData(devices.values());
         } catch (NmNetworkException e) {
-            errorMsg += accessor.getMessage(metadataErrorKey);
+            errorMsg = accessor.getMessage(metadataErrorKey);
         }
         
-        Set<PaoLocation> allLocations = paoLocationDao.getLocations(dataToDevice.values());
+        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
         List<RfnDevice> neighborsWithoutLocation = new ArrayList<>();
-        List<Neighbor> neighbors = new ArrayList<>();        
+        List<Neighbor> neighbors = new ArrayList<>();
+
         for (com.cannontech.common.rfn.message.network.NeighborData data : response.getNeighborData()) {
-            RfnDevice neighborDevice = dataToDevice.get(data);
-            if (neighborDevice != null) {
-                PaoLocation neighborLocation = locations.get(neighborDevice.getPaoIdentifier());
-                if (neighborLocation != null) {
-                    FeatureCollection location =
-                        paoLocationService.getFeatureCollection(Lists.newArrayList(neighborLocation));
-                    Neighbor neighbor = new Neighbor(neighborDevice, location, data, accessor);
-                    neighbor.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(neighborDevice));
-                    addMappingInfo(metaData, neighbor);
-                    // distance is from device to each neighbor
-                    addDistance(neighbor, deviceLocation, neighborLocation);
-                    log.debug(neighbor);
-                    log.debug("-----" + deviceLocation + "-" + neighborLocation);
-                    neighbors.add(neighbor);
-                } else {
-                    neighborsWithoutLocation.add(neighborDevice);
-                    log.error("Location is not found for " + neighborDevice);
-                }
+            RfnDevice neighborDevice = devices.get(data.getRfnIdentifier());
+            if (neighborDevice == null) {
+                log.error("Device {} wan not found", data.getRfnIdentifier());
+                continue;
+            }
+            PaoLocation neighborLocation = locations.get(neighborDevice.getPaoIdentifier());
+            if (neighborLocation != null) {
+                FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(neighborLocation));
+                Neighbor neighbor = new Neighbor(neighborDevice, location, data, accessor);
+                neighbor.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(neighborDevice));
+                addMappingInfo(metaData, neighbor);
+                // distance is from device to each neighbor
+                addDistance(neighbor, deviceLocation, neighborLocation);
+                log.debug(neighbor);
+                log.debug("-----" + deviceLocation + "-" + neighborLocation);
+                neighbors.add(neighbor);
+            } else {
+                neighborsWithoutLocation.add(neighborDevice);
+                log.error("Location is not found for " + neighborDevice);
             }
         }
         return new Neighbors(neighbors, neighborsWithoutLocation, errorMsg);
@@ -478,8 +481,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY)) {
             RfnIdentifier gatewayIdentifier = (RfnIdentifier) metadata.getMetadatas()
                     .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
-            return rfnGatewayService.getGatewayByPaoId(
-                    rfnDeviceCreationService.createIfNotFound(gatewayIdentifier).getPaoIdentifier().getPaoId());
+            RfnDevice gateway = rfnDeviceCreationService.createIfNotFound(gatewayIdentifier);
+            if(gateway != null) {
+                return rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
+            }
         } else {
             log.error("NM didn't return PRIMARY_FORWARD_GATEWAY for {} ", rfnDevice);
         }
