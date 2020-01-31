@@ -35,7 +35,7 @@
                     <tags:input path="name"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".password" rowClass="js-new-program ${newProgramDisplay}">
-                    <tags:password path="password" showPassword="true" includeShowHideButton="true"/>
+                    <tags:password path="password" showPassword="true" includeShowHideButton="true" maxlength="30"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".meterProgram" rowClass="js-new-program ${newProgramDisplay}">
                     <tags:file buttonKey="yukon.common.upload"/>

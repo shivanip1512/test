@@ -191,7 +191,7 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
             //    return separate message types for requests vs responses.
             message.nodeOriginated = true;
 
-            if( message.code != COAP_REQUEST_GET )
+            if( message.code != COAP_REQUEST_GET && message.code != COAP_REQUEST_POST )
             {
                 CTILOG_WARN(dout, "Unknown request method " << message.code << " (" << indication_pdu->hdr->id << ") for endpointId " << endpointId);
 
@@ -201,7 +201,7 @@ auto E2eDataTransferProtocol::handleIndication(const Bytes& raw_indication_pdu, 
             message.confirmable = indication_pdu->hdr->type == COAP_MESSAGE_CON;
             const auto type = message.confirmable ? "CONfirmable" : "NONconfirmable";
 
-            CTILOG_INFO(dout, "Received " << type << " packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
+            CTILOG_INFO(dout, "Received " << type << " packet (" << indication_pdu->hdr->id << ") with request method (" << message.code << ") for endpointId "<< endpointId);
 
             if( indication_pdu->hdr->id == mapFind(_inboundIds, endpointId) )
             {

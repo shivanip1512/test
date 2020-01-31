@@ -15,6 +15,8 @@ public class NetworkMapFilter {
     private List<Integer> selectedGatewayIds;
     private ColorCodeBy colorCodeBy;
     private List<LinkQuality> linkQuality;
+    private List<DescendantCount> descendantCount;
+    private List<HopCount> hopCount;
 
     public List<Integer> getSelectedGatewayIds() {
         return selectedGatewayIds;
@@ -46,9 +48,27 @@ public class NetworkMapFilter {
             + System.getProperty("line.separator");
     }
     
+    public List<DescendantCount> getDescendantCount() {
+        return descendantCount;
+    }
+
+    public void setDescendantCount(List<DescendantCount> descendantCount) {
+        this.descendantCount = descendantCount;
+    }
+
+    public List<HopCount> getHopCount() {
+        return hopCount;
+    }
+
+    public void setHopCount(List<HopCount> hopCount) {
+        this.hopCount = hopCount;
+    }
+
     public enum ColorCodeBy implements DisplayableEnum {
         GATEWAY,
-        LINK_QUALITY,;
+        LINK_QUALITY,
+        DESCENDANT_COUNT,
+        HOP_COUNT;
 
         @Override
         public String getFormatKey() {
@@ -64,21 +84,9 @@ public class NetworkMapFilter {
         YELLOW("#f0cb2f", 5),
         TEAL("#00b2a9", 6),
         WINE("#ba5670", 7),
-        LIGHT_GREEN("#79ae72", 8),
-        LIGHT_ORANGE("#f1b16b", 9),
-        PURPLE("#b779f4", 10),
-        BROWN("#a37e19", 11),
-        CRIMSON("#da3227", 12),
-        CITRON("#bcc92d", 13),
-        PINE("#2e6750", 14),
-        NAVY("#004672", 15),
-        SKY("#87c6d4", 16),
-        SAGE("#b2c98d", 17),
-        CREAM("#fedd76", 18),
-        PINK("#e59e9e", 19),
-        LIGHT_GRAY("#b9bfc2", 20),
-        SUNSET("#c55f1e", 21);
-        
+        PURPLE("#b779f4", 8),
+        LIGHT_GREEN("#b2c98d", 9),
+        LIGHT_ORANGE("#f1b16b", 10);
         
         private Color(String hexColor, int order) {
             this.hexColor = hexColor;
@@ -127,6 +135,89 @@ public class NetworkMapFilter {
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.operator.comprehensiveMap.linkQuality." + this;
+        }
+    }
+    
+    public enum DescendantCount implements DisplayableEnum {
+        EXCELLENT(Color.GREEN),     // <= 40
+        GOOD(Color.BLUE),           // 41 - 80
+        AVERAGE(Color.ORANGE),      // 81 - 120
+        BELOW_AVERAGE(Color.GREY);  // > 120
+        
+        private Color color;
+        
+        DescendantCount(Color color) {
+            this.color = color;
+        }
+        public Color getColor() {
+            return color;
+        }
+        
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.comprehensiveMap.descendantCount." + this;
+        }
+    }
+    
+    public enum HopCount implements DisplayableEnum {
+        REALLY_LOW(),   // 1 - 8
+        LOW(),          // 9 - 12
+        AVERAGE(),      // 13 - 16
+        HIGH(),         // 17 - 20
+        REALLY_HIGH();  // > 20
+                
+        HopCount() {
+        }
+        
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.operator.comprehensiveMap.hopCount." + this;
+        }
+    }
+    
+    public enum HopCountColors {
+        ONE(Color.GREEN, HopCount.REALLY_LOW, 1),
+        TWO(Color.BLUE, HopCount.REALLY_LOW, 2),         
+        THREE(Color.ORANGE, HopCount.REALLY_LOW, 3),      
+        FOUR(Color.GREY, HopCount.REALLY_LOW, 4),        
+        FIVE(Color.YELLOW, HopCount.REALLY_LOW, 5),
+        SIX(Color.TEAL, HopCount.REALLY_LOW, 6),
+        SEVEN(Color.WINE, HopCount.REALLY_LOW, 7),
+        EIGHT(Color.PURPLE, HopCount.REALLY_LOW, 8),
+        NINE(Color.LIGHT_GREEN, HopCount.LOW, 9),
+        TEN(Color.LIGHT_ORANGE, HopCount.LOW, 10),
+        ELEVEN(Color.GREEN, HopCount.LOW, 11),
+        TWELVE(Color.BLUE, HopCount.LOW, 12),
+        THIRTEEN(Color.ORANGE, HopCount.AVERAGE, 13),
+        FOURTEEN(Color.GREY, HopCount.AVERAGE, 14),
+        FIFTEEN(Color.YELLOW, HopCount.AVERAGE, 15),
+        SIXTEEN(Color.TEAL, HopCount.AVERAGE, 16),
+        SEVENTEEN(Color.WINE, HopCount.HIGH, 17),
+        EIGHTEEN(Color.PURPLE, HopCount.HIGH, 18),
+        NINETEEN(Color.LIGHT_GREEN, HopCount.HIGH, 19),
+        TWENTY(Color.LIGHT_ORANGE, HopCount.HIGH, 20),
+        OVER_TWENTY(Color.GREY, HopCount.REALLY_HIGH, 21);
+        
+        private Color color;
+        private HopCount hopCountRange;
+        private int number;
+                
+        HopCountColors(Color color, HopCount hopCountRange, int number) {
+            this.color = color;
+            this.hopCountRange = hopCountRange;
+            this.number = number;
+        }
+        
+        public Color getColor() {
+            return color;
+        }
+        
+        public HopCount getHopCountRange() {
+            return hopCountRange;
+        }
+        
+        public int getNumber() {
+            return number;
         }
     }
     

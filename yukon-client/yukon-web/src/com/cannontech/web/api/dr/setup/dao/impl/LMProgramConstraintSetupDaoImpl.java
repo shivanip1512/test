@@ -86,7 +86,7 @@ public class LMProgramConstraintSetupDaoImpl extends AbstractLMSetupDaoImpl<Prog
         statementBuilder.append("FROM LMProgramConstraints");
 
         if (StringUtils.isNotEmpty(filter.getName())) {
-            statementBuilder.append("AND UPPER(ConstraintName)").contains(filter.getName().toUpperCase());
+            statementBuilder.append("WHERE UPPER(ConstraintName)").contains(filter.getName().toUpperCase());
         }
 
         return statementBuilder;

@@ -84,6 +84,10 @@ public class HoneywellSetpointGearFields implements ProgramGearFields {
         setSetpointOffset(honeywellSetpointGear.getSetpointOffset());
         setPrecoolOffset(honeywellSetpointGear.getPrecoolOffset());
         setMode(honeywellSetpointGear.getHeatCool().getMode());
+
+        WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
+        whenToChangeFields.buildModel(programDirectGear);
+        setWhenToChangeFields(whenToChangeFields);
     }
     
     @Override

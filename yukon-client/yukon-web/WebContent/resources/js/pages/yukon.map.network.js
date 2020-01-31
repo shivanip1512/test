@@ -23,7 +23,7 @@ yukon.map.network = (function () {
     _routeColor = yukon.mapping.getRouteColor(),
     //grey
     _focusRouteColor = "#808080",
-    _largerScale = 1.3,
+    _largerScale = 1.1,
     
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,

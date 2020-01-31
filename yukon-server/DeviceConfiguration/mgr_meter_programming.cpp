@@ -123,6 +123,7 @@ auto MeterProgrammingManager::loadProgram(const std::string guid) -> Bytes
 
     CTILOG_DEBUG(dout, "Converted meter program" << FormattedList::of(
         "GUID", guid,
+        "MD5", arrayToRange(calculateMd5Digest(globalBuffer)),
         "Converted size", globalBuffer.size()));
 
     return _programs[guid] = convertedBuffer;

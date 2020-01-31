@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -98,7 +99,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
-import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -135,7 +135,6 @@ public class MapController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private NmNetworkService nmNetworkService;
     @Autowired private PaoLocationDao paoLocationDao;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
@@ -423,6 +422,13 @@ public class MapController {
         FeatureCollection locations = paoLocationService.getLocationsAsGeoJson(deviceCollection.getDeviceList());
         
         return locations;
+    }
+    
+    @GetMapping("/map/selectedGateways")
+    public @ResponseBody Set<Integer> selectedGateways(DeviceCollection deviceCollection) {
+        Set<Integer> deviceIds = new HashSet<>();
+        deviceCollection.getDeviceList().forEach(device -> deviceIds.add(device.getDeviceId()));
+       return rfnDeviceDao.getGatewayIdsForDevices(deviceIds);
     }
     
     @GetMapping("/map/filter/state-groups")
