@@ -5,11 +5,9 @@
 #include "smartgearbase.h"
 
 
-class HoneywellSetpointGear : public SmartGearBase,
-                              public CtiLMProgramThermostatGear
+struct HoneywellSetpointGear : SmartGearBase,
+                               CtiLMProgramThermostatGear
 {
-public:
-
     HoneywellSetpointGear( Cti::RowReader & rdr );
 
     CtiLMProgramDirectGear * replicate() const override;

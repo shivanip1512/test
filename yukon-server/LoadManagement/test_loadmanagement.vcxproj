@@ -471,6 +471,7 @@
     <ClCompile Include="septempoffsetgear.cpp">
     </ClCompile>
     <ClCompile Include="SmartGroupBase.cpp" />
+    <ClCompile Include="test_lmobjects_honeywell.cpp" />
     <ClCompile Include="test_lm_constraintviolations.cpp">
     </ClCompile>
     <ClCompile Include="test_lmobjects.cpp">

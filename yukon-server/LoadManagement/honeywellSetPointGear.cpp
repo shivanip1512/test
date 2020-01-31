@@ -27,7 +27,7 @@ bool HoneywellSetpointGear::attemptControl( CtiLMGroupPtr currentLMGroup,
                                             DOUBLE      & expectedLoadReduced )
 {
 
-    if ( auto controllableGroup = boost::dynamic_pointer_cast<HoneywellControlInterface>( currentLMGroup ) )
+    if ( auto controllableGroup = dynamic_cast<HoneywellControlInterface*>( currentLMGroup.get() ) )
     {
         expectedLoadReduced += calculateLoadReduction( currentLMGroup->getKWCapacity() );
 
@@ -48,7 +48,7 @@ bool HoneywellSetpointGear::attemptControl( CtiLMGroupPtr currentLMGroup,
 
 bool HoneywellSetpointGear::stopControl( CtiLMGroupPtr currentLMGroup )
 {
-    if ( auto controllableGroup = boost::dynamic_pointer_cast<GroupControlInterface>( currentLMGroup ) )
+    if ( auto controllableGroup = dynamic_cast<GroupControlInterface*>( currentLMGroup.get() ) )
     {
         if ( ciStringEqual( getMethodStopType(), CtiLMProgramDirectGear::RestoreStopType ) )
         {

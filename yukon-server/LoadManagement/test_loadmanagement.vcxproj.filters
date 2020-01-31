@@ -221,6 +221,9 @@
     <ClCompile Include="honeywellSetPointGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_lmobjects_honeywell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lmgroupnest.h">
