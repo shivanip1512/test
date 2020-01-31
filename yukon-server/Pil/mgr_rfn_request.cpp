@@ -132,13 +132,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             {
                 const auto message = handleE2eDtIndication(indication.payload, indication.rfnIdentifier);
 
-                if( message.nodeOriginated )
-                {
-                    CTILOG_INFO(dout, "Node-originated indication received for device " << indication.rfnIdentifier);
-
-                    handleNodeOriginated(Now, indication.rfnIdentifier, message, indication.asid);
-                }
-                else if( auto response = handleResponse(Now, indication.rfnIdentifier, message) )
+                if( auto response = handleResponse(Now, indication.rfnIdentifier, message) )
                 {
                     CTILOG_INFO(dout, "Results for device " << indication.rfnIdentifier << std::endl
                          << boost::join(response->commandResults
@@ -149,6 +143,12 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                     _resultsPerTick.emplace_back(std::move(*response));
 
                     completedDevices.insert(indication.rfnIdentifier);
+                }
+                else if( message.nodeOriginated )
+                {
+                    CTILOG_INFO(dout, "Node-originated indication received for device " << indication.rfnIdentifier);
+
+                    handleNodeOriginated(Now, indication.rfnIdentifier, message, indication.asid);
                 }
             }
             catch( const Protocols::E2e::E2eException &ex )
