@@ -39,6 +39,7 @@ public class MultispeakEnrollmentSyncHelper {
                 }
             } catch (Exception ex) {
                 errorCount++;
+                log.debug("Error found for " + msg.getInventoryId() + " when sending " + msg.getMessageType() + " sync message." + ex);
             }
             callback.enrollmentMessageSent();
         }
