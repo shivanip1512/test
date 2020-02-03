@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +25,7 @@ import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.multispeak.service.DrJmsMessageService;
 import com.cannontech.stars.dr.jms.message.DrAttributeData;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
+import com.cannontech.stars.dr.jms.message.DrJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
 import com.google.common.collect.Sets;
 
@@ -39,20 +43,22 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     List<DrAttributeDataJmsMessage> relayDataAvailable = Collections.synchronizedList(new ArrayList<>());
     List<DrAttributeDataJmsMessage> voltageDataAvailable = Collections.synchronizedList(new ArrayList<>());
     List<DrAttributeDataJmsMessage> alarmDataAvailable = Collections.synchronizedList(new ArrayList<>());
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+
     private static final Logger log = YukonLogManager.getLogger(DrAttributeDataJmsListener.class);
 
     @PostConstruct
     public void startSchedulers() {
         log.debug("Started schedulers to push data");
-        executor.scheduleAtFixedRate(() -> {
+        scheduler.scheduleAtFixedRate(() -> {
             sendRelayData();
         }, 10, 10, TimeUnit.SECONDS);
 
-        executor.scheduleAtFixedRate(() -> {
+        scheduler.scheduleAtFixedRate(() -> {
             sendVoltageData();
         }, 10, 10, TimeUnit.SECONDS);
 
-        executor.scheduleAtFixedRate(() -> {
+        scheduler.scheduleAtFixedRate(() -> {
             sendAlarmData();
         }, 10, 10, TimeUnit.SECONDS);
     }
@@ -104,67 +110,54 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     /**
      * Push data to generate multispeak messages
      */
-    private void sendRelayData() {
-        if (!relayDataAvailable.isEmpty()) {
-            ArrayList<DrAttributeDataJmsMessage> relayDataToSend;
-            synchronized (relayDataAvailable) {
-                if (relayDataAvailable.size() >= POINT_DATA_TO_SEND_AT_ONCE) {
-                    relayDataToSend = new ArrayList<>(relayDataAvailable.subList(0, POINT_DATA_TO_SEND_AT_ONCE));
-                    relayDataAvailable.subList(0, POINT_DATA_TO_SEND_AT_ONCE).clear();
-                } else {
-                    relayDataToSend = new ArrayList<>(relayDataAvailable.subList(0, relayDataAvailable.size()));
-                    relayDataAvailable.subList(0, relayDataAvailable.size()).clear();
+    private <T extends DrJmsMessage> void sendData(List<T> messageList, Consumer<List<T>> messageConsumer,
+            DrJmsMessageType dataType) {
+        try {
+            if (!messageList.isEmpty()) {
+                ArrayList<T> dataToSend = new ArrayList<>();
+                synchronized (messageList) {
+                    dataToSend.addAll(messageList);
+                    messageList.clear();
+                }
+                log.debug("Sending " + dataType + " data " + dataToSend.size());
+                while (!dataToSend.isEmpty()) {
+                    ArrayList<T> sendNow;
+                    if (dataToSend.size() >= POINT_DATA_TO_SEND_AT_ONCE) {
+                        sendNow = new ArrayList<>(dataToSend.subList(0, POINT_DATA_TO_SEND_AT_ONCE));
+                        dataToSend.subList(0, POINT_DATA_TO_SEND_AT_ONCE).clear();
+                    } else {
+                        sendNow = new ArrayList<>(dataToSend.subList(0, dataToSend.size()));
+                        dataToSend.subList(0, dataToSend.size()).clear();
+                    }
+                    new Thread(() -> {
+                        messageConsumer.accept(sendNow);
+                    }).start();
                 }
             }
-            log.debug("Sending relay data " + relayDataToSend.size());
-            new Thread(() -> {
-                drJmsMessageService.intervalDataNotification(relayDataToSend);
-            }).start();
+        } catch (Exception e) {
+            log.error("Exception while sending data " + e);
         }
     }
 
     /**
-     * Push voltage data to generate multispeak messages
+     * Sending relay data.
+     */
+    private void sendRelayData() {
+        sendData(relayDataAvailable, drJmsMessageService::intervalDataNotification, DrJmsMessageType.RELAYDATA);
+    }
+
+    /**
+     * Sending voltage data.
      */
     private void sendVoltageData() {
-        if (!voltageDataAvailable.isEmpty()) {
-            ArrayList<DrAttributeDataJmsMessage> voltageDataToSend;
-            synchronized (voltageDataAvailable) {
-                if (voltageDataAvailable.size() >= POINT_DATA_TO_SEND_AT_ONCE) {
-                    voltageDataToSend = new ArrayList<>(voltageDataAvailable.subList(0, POINT_DATA_TO_SEND_AT_ONCE));
-                    voltageDataAvailable.subList(0, POINT_DATA_TO_SEND_AT_ONCE).clear();
-                } else {
-                    voltageDataToSend = new ArrayList<>(voltageDataAvailable.subList(0, voltageDataAvailable.size()));
-                    voltageDataAvailable.subList(0, voltageDataAvailable.size()).clear();
-                }
-            }
-            log.debug("Sending voltage data " + voltageDataToSend.size());
-            new Thread(() -> {
-                drJmsMessageService.voltageMeterReadingsNotification(voltageDataToSend);
-            }).start();
-        }
+        sendData(voltageDataAvailable, drJmsMessageService::voltageMeterReadingsNotification, DrJmsMessageType.VOLTAGEDATA);
     }
 
     /**
-     * Push alarm data to generate multispeak messages
+     * Sending alarm data.
      */
     private void sendAlarmData() {
-        if (!alarmDataAvailable.isEmpty()) {
-            ArrayList<DrAttributeDataJmsMessage> alarmDataToSend;
-            synchronized (alarmDataAvailable) {
-                if (alarmDataAvailable.size() >= POINT_DATA_TO_SEND_AT_ONCE) {
-                    alarmDataToSend = new ArrayList<>(alarmDataAvailable.subList(0, POINT_DATA_TO_SEND_AT_ONCE));
-                    alarmDataAvailable.subList(0, POINT_DATA_TO_SEND_AT_ONCE).clear();
-                } else {
-                    alarmDataToSend = new ArrayList<>(alarmDataAvailable.subList(0, alarmDataAvailable.size()));
-                    alarmDataAvailable.subList(0, alarmDataAvailable.size()).clear();
-                }
-            }
-            log.debug("Sending alarm data " + alarmDataToSend.size());
-            new Thread(() -> {
-                drJmsMessageService.alarmAndEventNotification(alarmDataToSend);
-            }).start();
-        }
+        sendData(alarmDataAvailable, drJmsMessageService::alarmAndEventNotification, DrJmsMessageType.ALARMANDEVENT);
     }
 
     /*
@@ -173,10 +166,10 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     private void setMessageTypeForAttribute(Set<BuiltInAttribute> supportedAttributes,
             DrAttributeDataJmsMessage attributeDataJmsMessage) {
 
-        Boolean isVoltageAttribute = BuiltInAttribute.getVoltageAttributes().stream()
+        boolean isVoltageAttribute = BuiltInAttribute.getVoltageAttributes().stream()
                 .anyMatch(attributeType -> supportedAttributes.contains(attributeType));
 
-        Boolean isRelayAttribute = BuiltInAttribute.getRelayDataAttributes().stream()
+        boolean isRelayAttribute = BuiltInAttribute.getRelayDataAttributes().stream()
                 .anyMatch(attributeType -> supportedAttributes.contains(attributeType));
 
         if (isVoltageAttribute) {
