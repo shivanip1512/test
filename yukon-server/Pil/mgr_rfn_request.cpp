@@ -715,6 +715,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             logItems.add("priority")         << newRequest.request.parameters.priority;
             logItems.add("rfnIdentifier")    << newRequest.request.parameters.rfnIdentifier;
             logItems.add("rfnRequestId")     << CtiNumStr(newRequest.request.rfnRequestId).xhex().zpad(8);
+            logItems.add("ASID")             << static_cast<uint8_t>(newRequest.request.command->getApplicationServiceId());
             logItems.add("userMessageId")    << newRequest.request.parameters.userMessageId;
             logItems.add("current message")          << newRequest.currentPacket.payloadSent;
             logItems.add("retransmission delay")     << newRequest.currentPacket.retransmissionDelay;

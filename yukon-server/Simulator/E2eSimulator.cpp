@@ -45,7 +45,29 @@ namespace Cti::Messaging::Rfn {
 DLLIMPORT MessageFactory<E2eMsg> e2eMessageFactory;
 DLLIMPORT MessageFactory<NetworkManagerBase> nmMessageFactory;
 }
-    
+
+namespace {
+const std::set<std::pair<std::string, std::string>> rfDaManufacturerModels {
+    { "CPS", "CBC-8000" },
+    { "CPS", "CBC-GEN" },
+    { "CPS", "VR-CL7" },
+    { "CPS", "VR-GEN" },
+    { "CPS", "RECL-F4D" },
+    { "CPS", "RECL-GEN" },
+    { "CPS", "GEN-DA" },
+    { "NON-CPS", "CBC-GEN" },
+    { "NON-CPS", "VR-GEN" },
+    { "NON-CPS", "RECL-GEN" },
+    { "NON-CPS", "GEN-DA" },
+};
+
+bool isRfDa(const Cti::RfnIdentifier rfnIdentifier)
+{
+    return rfDaManufacturerModels.count({ rfnIdentifier.manufacturer,
+                                          rfnIdentifier.model });
+}
+}
+
 namespace Cti::Simulator {
 
 E2eSimulator::~E2eSimulator() = default;
@@ -163,6 +185,21 @@ void E2eSimulator::delayProcessing(float delay, const E2eDataRequestMsg requestM
 
 void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
 {
+    const auto requestSender = [this](const E2eDataRequestMsg &requestMsg, const e2edt_request_packet& request) {
+        if( auto serializedE2eRequest = buildE2eDtRequest(request);
+            ! serializedE2eRequest.empty() )
+        {
+            sendE2eDataIndication(requestMsg, serializedE2eRequest);
+        }
+    };
+    const auto replySender = [this](const E2eDataRequestMsg &requestMsg, const e2edt_reply_packet& reply) {
+        if( auto serializedE2eReply = buildE2eDtReply(reply);
+            ! serializedE2eReply.empty() )
+        {
+            sendE2eDataIndication(requestMsg, serializedE2eReply);
+        }
+    };
+
     if( isAsid_E2eDt(requestMsg.applicationServiceId) )
     {
         auto msgPtr = parseE2eDtRequestPayload(requestMsg.payload, requestMsg.rfnIdentifier);
@@ -189,19 +226,24 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
                 return;
             }
 
-            if( const auto replyPacket = buildResponse(*e2edtRequest, requestMsg.applicationServiceId, requestMsg.rfnIdentifier); 
-                ! replyPacket.empty() )
+            if( isRfDa(requestMsg.rfnIdentifier) )
             {
-                sendE2eDataIndication(requestMsg, replyPacket);
+                RfDa::processRequest({ replySender }, *e2edtRequest, requestMsg);
+            }
+            else
+            {
+                RfnMeter::processRequest({ requestSender }, { replySender }, *e2edtRequest, requestMsg);
             }
         }
         else if( auto e2edtReply = dynamic_cast<const e2edt_reply_packet*>(msgPtr.get()) )
         {
-            if( auto request = RfnMeter::processReply(*e2edtReply, requestMsg.rfnIdentifier) )
+            if( isRfDa(requestMsg.rfnIdentifier) )
             {
-                const auto e2edtRequest = buildE2eDtRequest(*request);
-
-                sendE2eDataIndication(requestMsg, e2edtRequest);
+                CTILOG_INFO(dout, "Reply packet received for RfDa device type " << requestMsg.rfnIdentifier << ", discarding");
+            }
+            else
+            {
+                RfnMeter::processReply({ requestSender }, *e2edtReply, requestMsg);
             }
         }
         else
@@ -413,65 +455,6 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
     bytesMsg->writeBytes(indicationBytes);
 
     indicationProducer->send(bytesMsg.get());
-}
-
-
-auto E2eSimulator::buildResponse(const e2edt_request_packet& request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId) -> Bytes
-{
-    switch( request.method )
-    {
-        case Protocols::Coap::RequestMethod::Get:
-        {
-            using ASIDs = ApplicationServiceIdentifiers;
-
-            //  Eventually we will split to RfnMeter vs RfDa based on model/manufacturer
-            static std::map<ASIDs, std::function<Bytes (Bytes, const RfnIdentifier&)>>
-                asidHandlers {
-                    { ASIDs::ChannelManager, &RfnMeter::doChannelManagerRequest },
-                    { ASIDs::HubMeterCommandSet, &RfDa::doHubMeterRequest } };
-
-            if( auto handler = mapFind(asidHandlers, asid) )
-            {
-                e2edt_reply_packet replyPacket;
-
-                replyPacket.id = request.id;
-                replyPacket.token = request.token;
-                replyPacket.payload = (*handler)(request.payload, rfnId);
-                replyPacket.status = Protocols::Coap::ResponseCode::Content;
-
-                return buildE2eDtReply(replyPacket);
-            }
-
-            CTILOG_INFO(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << rfnId);
-            return {};
-        }
-        case Protocols::Coap::RequestMethod::Post:
-        {
-            //  The only POST we process at present is the Set Meter Configuration request, which results in a GET request back to Yukon.
-            return processRfnPostRequest(request, asid, rfnId);
-        }
-        default:
-        {
-            CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << rfnId);
-            return {};
-        }
-    }
-}
-
-auto E2eSimulator::processRfnPostRequest(const e2edt_request_packet& post_request, const ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId) -> Bytes
-{
-    switch( asid )
-    {
-        case ApplicationServiceIdentifiers::ChannelManager:
-        {
-            if( auto request = RfnMeter::processChannelManagerPost(post_request, rfnId) )
-            {
-                return buildE2eDtRequest(*request);
-            }
-        }
-    }
-
-    return {};
 }
 
 }

@@ -5,7 +5,7 @@
 
 namespace Cti::Messaging::Rfn {
 
-enum class IM_EX_MSG ApplicationServiceIdentifiers : unsigned char
+enum class ApplicationServiceIdentifiers : unsigned char
 {
     //Reserved = 0,
     //C1218PassThrough = 1,
