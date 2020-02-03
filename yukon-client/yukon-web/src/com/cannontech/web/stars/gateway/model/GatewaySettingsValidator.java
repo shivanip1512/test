@@ -59,7 +59,7 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
                 errors.rejectValue("ipAddress", baseKey + "ipAddress.invalid");
             }
         }
-        if (!settings.isVirtual()) {
+        if (!settings.isuseDefaultPort()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "port", baseKey + "port.required");
             if (!errors.hasFieldErrors("port")) {
                 YukonValidationUtils.validatePort(errors, "port", settings.getPort().toString());
@@ -78,7 +78,7 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
     }
     
     public static void validateUpdateServer(GatewaySettings settings, Errors errors) {
-        if (settings.isUseDefault()) {
+        if (settings.isUseDefaultUpdateServer()) {
             // Default settings will be used, no need to validate other fields
         } else {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "updateServerUrl", baseKey + "updateserver.url.required");

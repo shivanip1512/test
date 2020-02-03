@@ -7,7 +7,7 @@ public class GatewaySettings {
     private Integer id;
     private String name;
     private String ipAddress;
-    private boolean virtual;
+    private boolean useDefaultPort;
     private Integer port;
     private Authentication admin;
     private Authentication superAdmin;
@@ -15,7 +15,7 @@ public class GatewaySettings {
     private Double longitude;
     private String updateServerUrl;
     private Authentication updateServerLogin;
-    private boolean useDefault;
+    private boolean useDefaultUpdateServer;
 
     public Integer getId() {
         return id;
@@ -41,12 +41,12 @@ public class GatewaySettings {
         this.ipAddress = ipAddress;
     }
 
-    public boolean isVirtual() {
-        return virtual;
+    public boolean isuseDefaultPort() {
+        return useDefaultPort;
     }
 
-    public void setVirtual(boolean virtual) {
-        this.virtual = virtual;
+    public void setuseDefaultPort(boolean useDefaultPort) {
+        this.useDefaultPort = useDefaultPort;
     }
 
     public Integer getPort() {
@@ -105,19 +105,19 @@ public class GatewaySettings {
         this.updateServerLogin = updateServerLogin;
     }
 
-    public boolean isUseDefault() {
-        return useDefault;
+    public boolean isUseDefaultUpdateServer() {
+        return useDefaultUpdateServer;
     }
 
-    public void setUseDefault(boolean useDefault) {
-        this.useDefault = useDefault;
+    public void setUseDefaultUpdateServer(boolean useDefaultUpdateServer) {
+        this.useDefaultUpdateServer = useDefaultUpdateServer;
     }
 
     @Override
     public String toString() {
         return String.format(
                 "GatewaySettings [id=%s, name=%s, ipAddress=%s, port=%s, admin=%s, superAdmin=%s, latitude=%s, longitude=%s, updateServerUrl=%s, updateServerLogin=%s, useDefault=%s]",
-                id, name, ipAddress, port, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin,useDefault);
+                id, name, ipAddress, port, admin, superAdmin, latitude, longitude, updateServerUrl, updateServerLogin,useDefaultUpdateServer);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class GatewaySettings {
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((updateServerLogin == null) ? 0 : updateServerLogin.hashCode());
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
-        result = prime * result + (useDefault ? 1231 : 1237);
+        result = prime * result + (useDefaultUpdateServer ? 1231 : 1237);
         return result;
     }
 
@@ -197,7 +197,7 @@ public class GatewaySettings {
                 return false;
         } else if (!updateServerUrl.equals(other.updateServerUrl))
             return false;
-        if (useDefault != other.useDefault)
+        if (useDefaultUpdateServer != other.useDefaultUpdateServer)
             return false;
         return true;
     }
