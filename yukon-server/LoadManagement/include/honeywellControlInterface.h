@@ -16,7 +16,6 @@ struct HoneywellControlInterface
                                       const bool temperatureOption,
                                       const bool mandatory,
                                       const int  temperatureOffset,
-                                      const int  preTemperatureOffset,
                                       const int  controlDurationSeconds ) = 0;
 };
 

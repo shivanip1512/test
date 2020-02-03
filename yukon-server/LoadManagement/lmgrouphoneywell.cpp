@@ -73,7 +73,6 @@ bool LMGroupHoneywell::sendSetpointControl( const long programID,
                                             const bool temperatureOption,
                                             const bool mandatory,
                                             const int  temperatureOffset,
-                                            const int  preTemperatureOffset,
                                             const int  controlDurationSeconds )
 {
     using namespace Cti::Messaging;
@@ -90,7 +89,6 @@ bool LMGroupHoneywell::sendSetpointControl( const long programID,
             temperatureOption,
             mandatory,
             temperatureOffset,
-            preTemperatureOffset,
             now.seconds(),
             controlDurationSeconds ) );
 
@@ -98,8 +96,7 @@ bool LMGroupHoneywell::sendSetpointControl( const long programID,
     {
         CTILOG_DEBUG(dout, "Sending Honeywell Setpoint command, LM Group: " << getPAOName()
                                 << ", control minutes: " << ( controlDurationSeconds / 60 )
-                                << ", control: pre-"
-                                << ( temperatureOption ? "HEAT " : "COOL " ) << preTemperatureOffset << " degrees, "
+                                << ", control: "
                                 << ( temperatureOption ? "HEAT " : "COOL " ) << temperatureOffset << " degrees" );
     }
 

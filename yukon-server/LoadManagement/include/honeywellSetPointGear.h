@@ -28,6 +28,5 @@ struct HoneywellSetpointGear : SmartGearBase,
     bool isHeatControl() const;
     bool isMandatory() const;
     int  getSetpointOffset() const;
-    int  getSetpointPreOffset() const;
 };
 

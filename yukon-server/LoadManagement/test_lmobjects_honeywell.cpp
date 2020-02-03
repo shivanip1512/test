@@ -345,7 +345,6 @@ BOOST_AUTO_TEST_CASE(test_lmobjects_honeywell_setpoint_gear)
     BOOST_CHECK( gear.isMandatory() );
 
     BOOST_CHECK_EQUAL( gear.getSetpointOffset(), 4 );
-    BOOST_CHECK_EQUAL( gear.getSetpointPreOffset(), 6 );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -39,7 +39,6 @@ LMHoneywellSetpointControlMessage::LMHoneywellSetpointControlMessage( const int 
                                                                       const bool temperatureOption,
                                                                       const bool mandatory,
                                                                       const int  temperatureOffset,
-                                                                      const int  preTemperatureOffset,
                                                                       const long long startTime,
                                                                       const int  controlDuration )
     :   _programId( programId ),
@@ -47,7 +46,6 @@ LMHoneywellSetpointControlMessage::LMHoneywellSetpointControlMessage( const int 
         _temperatureOption( temperatureOption ),
         _mandatory( mandatory ),
         _temperatureOffset( temperatureOffset ),
-        _preTemperatureOffset( preTemperatureOffset ),
         _startTime( startTime ),
         _stopTime( startTime + controlDuration )
 {
@@ -61,7 +59,6 @@ void LMHoneywellSetpointControlMessage::streamInto(cms::StreamMessage & message)
     message.writeByte( _temperatureOption );
     message.writeByte( _mandatory );
     message.writeInt( _temperatureOffset );
-    message.writeInt( _preTemperatureOffset );
     message.writeLong( _startTime );
     message.writeLong( _stopTime );
 }

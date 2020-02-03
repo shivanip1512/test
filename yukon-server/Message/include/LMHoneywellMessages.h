@@ -39,7 +39,6 @@ public:
                                        const bool temperatureOption,
                                        const bool mandatory,
                                        const int  temperatureOffset,
-                                       const int  preTemperatureOffset,
                                        const long long startTime,
                                        const int  controlDuration );
 
@@ -52,7 +51,6 @@ private:
     char _temperatureOption;
     char _mandatory;
     int  _temperatureOffset;
-    int  _preTemperatureOffset;
     long long _startTime;
     long long _stopTime;
 };

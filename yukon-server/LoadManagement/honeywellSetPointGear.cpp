@@ -35,7 +35,6 @@ bool HoneywellSetpointGear::attemptControl( CtiLMGroupPtr currentLMGroup,
                                                        isHeatControl(),
                                                        isMandatory(),
                                                        getSetpointOffset(),
-                                                       getSetpointPreOffset(),
                                                        controlSeconds );
         return true;
     }
@@ -101,13 +100,6 @@ int HoneywellSetpointGear::getSetpointOffset() const
     return validateOffset( isHeatControl() ? "HEAT" : "COOL",
                            -10L, 10L,
                            getProfileSettings().maxValue );
-}
-
-int HoneywellSetpointGear::getSetpointPreOffset() const
-{
-    return validateOffset( isHeatControl() ? "pre-HEAT" : "pre-COOL",
-                           -10L, 10L,
-                           getProfileSettings().valueB );
 }
 
 double HoneywellSetpointGear::calculateLoadReduction( double groupCapacity ) const
