@@ -580,8 +580,8 @@ public class ProgramGearFieldsBuilder {
         boolean isBackRampEnabled = backRampOption.compareTo(IlmDefines.RAMP_RANDOM) == 0;
         gearFields.setRampOut(isBackRampEnabled);
         LMThermostatGear thermostatGear = gearDao.getLMThermostatGear(directGear.getGearId());
-        Integer valueTa = thermostatGear.getValueTa();
-        Integer valueTb = thermostatGear.getValueTb();
+        double valueTa = thermostatGear.getValueTa();
+        double valueTb = thermostatGear.getValueTb();
 
         double heatingOffset = valueTa / 10;
         double coolingOffset = valueTb / 10;
