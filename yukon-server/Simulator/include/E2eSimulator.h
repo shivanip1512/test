@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rfn_asid.h"
-
 namespace cms {
 class Session;
 class Message;
@@ -70,9 +68,6 @@ private:
     Bytes buildE2eRequestNotAcceptable(unsigned id, unsigned long token) const;
 
     void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const Bytes&);
-
-    Bytes buildResponse(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
-    Bytes processRfnPostRequest(const e2edt_request_packet& request, const Messaging::Rfn::ApplicationServiceIdentifiers asid, const RfnIdentifier& rfnId);
 };
 
 }
