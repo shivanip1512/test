@@ -42,7 +42,7 @@ public abstract class RfnOutageLogEventConditionDataProcessorHelper extends RfnE
             log.debug("OutageLog processed {} for Device: {} Event: {} Start: {} End: {} Duration: {} ", rfnConditionType,
                     device,
                     event, eventStart,
-                    eventInstant, new Instant(durationInSeconds));
+                    new Instant(end), durationInSeconds);
         } catch (InvalidEventMessageException e) {
             // Old firmware and "compact aggregated restoration alarms" don't include the EVENT_START_TIME
             // meta-data, so don't create the outage log if we get here
