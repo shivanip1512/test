@@ -50,7 +50,7 @@ public class HoneywellWifiMessageListener {
             }
 
             // Send DR message to HoneywellWifi server
-            honeywellCommunicationService.sendDREventForGroup(parameters);
+            honeywellCommunicationService.sendDRDutyCycleEventForGroup(parameters);
             recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getEndTime());
             // Store the most recent dr handle for each group, so we can cancel
@@ -83,6 +83,19 @@ public class HoneywellWifiMessageListener {
                 return;
             }
             log.debug("Parameters built {} Ready to send Honeywell Message", parameters);
+            
+            // Send DR message to HoneywellWifi server
+            honeywellCommunicationService.sendDRSetpointEventForGroup(parameters);
+            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
+                parameters.getStartTime(), parameters.getStopTime());
+            // Store the most recent dr handle for each group, so we can cancel
+            groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
+            controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(),
+                                                                parameters.getStartTime(),
+                                                                ControlType.HONEYWELLWIFI,
+                                                                null,
+                                                                parameters.getDurationSeconds(),
+                                                                100);
         }
     }
 
@@ -180,8 +193,7 @@ public class HoneywellWifiMessageListener {
      * 2.  Group ID        : signed int  (32 bits)
      * 3.  Temp Option     : signed char (8 bits)  [0 == cool, 1 == heat]
      * 4.  Mandatory       : signed char (8 bits)  [0 == optional, 1 == mandatory]
-     * 5.  Temp Offset     : signed int  (32 bits) [-10,10]
-     * 6.  Pre Temp Offset : signed int  (32 bits) [-10,10]
+     * 5.  Temp Offset     : signed int  (32 bits) [-10,10] F
      * 7.  Start time      : signed long (64 bits) [seconds from 1970.01.01:UTC]
      * 8.  End time        : signed long (64 bits) [seconds from 1970.01.01:UTC]
      */
@@ -192,8 +204,8 @@ public class HoneywellWifiMessageListener {
         int groupId = message.readInt();
         byte tempOptionByte = message.readByte();
         byte mandatoryByte = message.readByte();
-        int tempOffset = message.readInt();
-        int preTempOffset = message.readInt();
+        // Temp comes in as F, convert and store as C for message sending
+        Double tempOffsetC = ((message.readInt() * 5) / 9.0);
         long utcStartTimeSeconds = message.readLong();
         long utcEndTimeSeconds = message.readLong();
 
@@ -201,15 +213,17 @@ public class HoneywellWifiMessageListener {
         boolean tempOptionHeat = (tempOptionByte == 1);
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
+        Duration controlDuration = new Duration(startTime, endTime);
+        int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
         boolean optional = (mandatoryByte == 0);
+        int eventId = nextValueHelper.getNextValue("HoneywellDREvent");
         log.trace(
-                "Parsed setpoint dr parameters. ProgramId: {} GroupId: {} Start time: {} ({}) End time: {} ({}) Optional: {}({}) Heat: {}({}) Offset: {} PreOffset: {}",
-                programId, groupId, startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, optional, mandatoryByte,
-                tempOptionHeat, tempOptionByte, tempOffset, preTempOffset);
+                "Parsed setpoint dr parameters. ProgramId: {} EventId: {} GroupId: {} Start time: {} ({}) End time: {} ({}) Duration: {}S Optional: {}({}) Heat: {}({}) Offset C: {}",
+                programId, eventId, groupId, startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, controlDurationSeconds,
+                optional, mandatoryByte, tempOptionHeat, tempOptionByte, tempOffsetC);
 
-        return new HoneywellWiFiSetpointDrParameters(programId, groupId, tempOptionHeat, optional, tempOffset, preTempOffset,
-                startTime,
-                endTime);
+        return new HoneywellWiFiSetpointDrParameters(programId, eventId, groupId, tempOptionHeat, optional, tempOffsetC,
+                startTime, endTime, controlDurationSeconds);
     }
 
 }
