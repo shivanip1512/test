@@ -678,7 +678,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 {
                     for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                     {
-                        LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+                        LONG shedTime = getShedTimeForSmartGears();
 
                         // .checkControl below can modify (shorten) the shed time
                         CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, currentTime);
@@ -1270,7 +1270,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
             {
                 for each( CtiLMGroupPtr currentLMGroup in _lmprogramdirectgroups )
                 {
-                    LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+                    LONG shedTime = getShedTimeForSmartGears();
 
                     // .checkControl below can modify (shorten) the shed time
                     CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, currentTime);
@@ -2665,7 +2665,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForAutomaticGearChange(CtiTime cu
     {
         if( SmartGearBase *smartGearObject = dynamic_cast<SmartGearBase *>(currentGearObject) )
         {
-            LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+            LONG shedTime = getShedTimeForSmartGears();
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
@@ -3626,6 +3626,23 @@ BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
     return _controlActivatedByStatusTrigger;
 }
 
+/*
+   Smart gears will have a 25 hour maximum automated control.
+   Control can go beyond 25 hours if the end time is specified in manual control.
+   Will never return a negative number, if stop time is before start this returns 0.
+*/
+LONG CtiLMProgramDirect::getShedTimeForSmartGears()
+{
+    static const LONG CONTROL_25_HOURS = 25*60*60;
+    CtiTime now = CtiTime::now();
+
+    if ( getDirectStopTime() == gInvalidCtiTime ) {
+        // Special case, we return 25 hours.
+        return CONTROL_25_HOURS;
+    } else
+        return getDirectStopTime() > now ? getDirectStopTime().seconds() - now.seconds() : 0;
+}
+
 /*---------------------------------------------------------------------------
     refreshStandardProgramControl
 
@@ -3650,7 +3667,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(CtiTime currentTime, CtiM
             {
                 if( currentLMGroup->readyToControlAt(currentTime) )
                 {
-                    LONG shedTime = getDirectStopTime().seconds() - CtiTime::now().seconds();
+                    LONG shedTime = getShedTimeForSmartGears();
 
                     // .checkControl below can modify (shorten) the shed time
                     CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, currentTime);
