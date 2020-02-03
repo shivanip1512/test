@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class HoneywellSetpointGearFields implements ProgramGearFields {
     private Boolean mandatory;
     private Integer setpointOffset;
-    private Integer precoolOffset;
     private Mode mode;
     private HowToStopControl howToStopControl;
     private Integer capacityReduction;
@@ -24,14 +23,6 @@ public class HoneywellSetpointGearFields implements ProgramGearFields {
     
     public void setSetpointOffset(Integer setpointOffset) {
         this.setpointOffset = setpointOffset;
-    }
-    
-    public Integer getPrecoolOffset() {
-        return precoolOffset;
-    }
-    
-    public void setPrecoolOffset(Integer precoolOffset) {
-        this.precoolOffset = precoolOffset;
     }
     
     public Boolean getMandatory() {
@@ -82,7 +73,6 @@ public class HoneywellSetpointGearFields implements ProgramGearFields {
         setCapacityReduction(honeywellSetpointGear.getPercentReduction());
         setMandatory(honeywellSetpointGear.isMandatorySelected(honeywellSetpointGear.getMethodOptionType()));
         setSetpointOffset(honeywellSetpointGear.getSetpointOffset());
-        setPrecoolOffset(honeywellSetpointGear.getPrecoolOffset());
         setMode(honeywellSetpointGear.getHeatCool().getMode());
 
         WhenToChangeFields whenToChangeFields = new WhenToChangeFields();
@@ -98,7 +88,6 @@ public class HoneywellSetpointGearFields implements ProgramGearFields {
         honeywellSetpointGear.setPercentReduction(getCapacityReduction());
         honeywellSetpointGear.setMethodOptionType(getMandatory());
         honeywellSetpointGear.setSetpointOffset(getSetpointOffset());
-        honeywellSetpointGear.setPrecoolOffset(getPrecoolOffset());
         honeywellSetpointGear.setHeatCool(HeatCool.fromMode(getMode()));
         
         whenToChangeFields.buildDBPersistent(honeywellSetpointGear);

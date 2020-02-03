@@ -297,9 +297,8 @@ public class LMGearDaoImpl implements LMGearDao {
 
                 String heatCool = rs.getString("Settings");
                 Integer setpointOffset = rs.getInt("MaxValue");
-                Integer precoolOffset = rs.getInt("ValueB");
 
-                HoneywellSetpointValues honeywellSetpointValues = new HoneywellSetpointValues(setpointOffset, HeatCool.of(heatCool), precoolOffset);
+                HoneywellSetpointValues honeywellSetpointValues = new HoneywellSetpointValues(setpointOffset, HeatCool.of(heatCool));
 
                 return honeywellSetpointValues;
             }

@@ -403,8 +403,6 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.Close">CLOSE (RawState: 1)</entry>
 <entry key="yukon.web.modules.dr.setup.gear.allOfThem">All Of Them</entry>
 <entry key="yukon.web.modules.dr.setup.gear.setpointOffset">Setpoint Offset</entry>
-<entry key="yukon.web.modules.dr.setup.gear.preheatOffset">Preheat Offset</entry>
-<entry key="yukon.web.modules.dr.setup.gear.precoolOffset">Precool Offset</entry>
 
 <!-- Program Constraint -->
 <entry key="yukon.web.modules.dr.setup.constraint.error.used">{0} because it is in use by a Program.</entry>
