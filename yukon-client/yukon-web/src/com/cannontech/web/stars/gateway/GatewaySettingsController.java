@@ -79,7 +79,7 @@ public class GatewaySettingsController {
         auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
 
         settings.setUpdateServerLogin(auth);
-        settings.setuseDefaultPort(true);
+        settings.setUseDefaultPort(true);
         settings.setUseDefaultUpdateServer(true);
         settings.setPort(DEFAULT_PORT);
         

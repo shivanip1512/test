@@ -45,7 +45,7 @@ public class GatewaySettings {
         return useDefaultPort;
     }
 
-    public void setuseDefaultPort(boolean useDefaultPort) {
+    public void setUseDefaultPort(boolean useDefaultPort) {
         this.useDefaultPort = useDefaultPort;
     }
 
