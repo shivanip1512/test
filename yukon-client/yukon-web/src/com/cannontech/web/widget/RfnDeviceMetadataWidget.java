@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
@@ -15,8 +16,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -28,7 +31,6 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
-import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.service.WaitableDataCallback;
 import com.cannontech.common.util.Pair;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -43,6 +45,8 @@ import com.google.common.collect.Lists;
 @RequestMapping("/rfnDeviceMetadataWidget/*")
 public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     
+    private static final Logger log = YukonLogManager.getLogger(RfnDeviceMetadataWidget.class);
+    
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnDeviceMetadataService metadataService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
@@ -52,12 +56,12 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     
     private String keyPrefix = "yukon.web.widgets.RfnDeviceMetadataWidget.";
     private static final ImmutableSet<RfnMetadata> csrSubset = ImmutableSet.of(
-                                                                               //RfnMetadata.COMM_STATUS,
-                                                                               //RfnMetadata.COMM_STATUS_TIMESTAMP,
+                                                                               RfnMetadata.COMM_STATUS,
+                                                                               RfnMetadata.COMM_STATUS_TIMESTAMP,
                                                                                RfnMetadata.GROUPS,
                                                                                RfnMetadata.NEIGHBOR_COUNT,
                                                                                RfnMetadata.NODE_SERIAL_NUMBER,
-                                                                               //RfnMetadata.PRIMARY_GATEWAY,
+                                                                               RfnMetadata.PRIMARY_GATEWAY,
                                                                                RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT);
 
        
@@ -75,36 +79,6 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         model.addAttribute("device", device);
 
-        try {
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
-                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
-            RfnMetadataMultiQueryResult metadata = metaData.get(device.getRfnIdentifier());
-            
-            //gateway can be null if replay from NM didn't contain gateway info
-            RfnGateway gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadata);
-            model.addAttribute("primaryForward", gateway.getName());
-            
-            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-            RfnIdentifier reverseIdentifier = comm.getGatewayRfnIdentifier();
-            
-            RfnDevice reverseGateway = rfnDeviceCreationService.createIfNotFound(reverseIdentifier);
-            model.addAttribute("reverseLookup", reverseGateway.getName());
-            
-            final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-
-            String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
-            NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadata);
-            if(status != null) {
-                statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
-                model.addAttribute("commStatusTimestamp", comm.getNodeCommStatusTimestamp());
-            }
-            model.addAttribute("commStatus", statusString);
-            
-        } catch (NmCommunicationException e) {
-          
-        }
-        
-        
         WaitableDataCallback<Map<RfnMetadata, Object>> waitableCallback = new WaitableDataCallback<Map<RfnMetadata, Object>>() {
             
             @Override
@@ -114,7 +88,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
             
             @Override
             public void receivedData(Map<RfnMetadata, Object> metadata) {
-                addMetadata(metadata, model, context);
+                addMetadata(metadata, model, context, device);
             }
             
             @Override
@@ -136,7 +110,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         return "rfnDeviceMetadataWidget/render.jsp";
     }
     
-    private void addMetadata(Map<RfnMetadata, Object> metadata, ModelMap model, final YukonUserContext context) {
+    private void addMetadata(Map<RfnMetadata, Object> metadata, ModelMap model, final YukonUserContext context, RfnDevice device) {
         final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         List<Pair<RfnMetadata, Object>> metadataPairs = Lists.newArrayList();
         List<Pair<RfnMetadata, Object>> csrMetadataPairs = Lists.newArrayList();
@@ -145,6 +119,34 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         if(objWifiMetaData != null) {
             metadata.remove(RfnMetadata.WIFI_SUPER_METER_DATA);
             model.addAttribute("wifiSuperMeterData", objWifiMetaData);
+        }
+
+        try {
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+            RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
+            
+            //gateway can be null if replay from NM didn't contain gateway info
+            RfnGateway gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadataMulti);
+            metadata.put(RfnMetadata.PRIMARY_GATEWAY, gateway.getName());
+            
+            NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+            RfnIdentifier reverseIdentifier = comm.getGatewayRfnIdentifier();
+            
+            RfnDevice reverseGateway = rfnDeviceCreationService.createIfNotFound(reverseIdentifier);
+            model.addAttribute("reverseLookup", reverseGateway.getName());
+            
+            NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadataMulti);
+            if (status == null) {
+                //primary forward and reverse lookup are not the same, set comm status to unknown
+                metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.UNKNOWN);
+                metadata.remove(RfnMetadata.COMM_STATUS_TIMESTAMP);
+            }
+            
+        } catch (NmCommunicationException e) {
+            String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.commsError");
+            model.addAttribute("error", nmError);
+            log.error("Failed to get metadata for " + device.getPaoIdentifier().getPaoId(), e);
         }
         
         List<RfnMetadata> metadataTypes = Lists.newArrayList(metadata.keySet());

@@ -12,6 +12,11 @@
         <c:forEach var="pair" items="${metadata}">
             <%@ include file="metadataRow.jspf" %>
         </c:forEach>
+        
+        <c:if test="${!empty reverseLookup}">
+            <cti:msg2 var="reverseLookupLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.REVERSE_LOOKUP"/>
+            <tags:nameValue name="${reverseLookupLabel}">${fn:escapeXml(reverseLookup)}</tags:nameValue>
+        </c:if>
 
         <c:if test="${!empty wifiSuperMeterData}">
             <cti:msgScope paths="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData">
@@ -38,21 +43,9 @@
     <c:otherwise>
         <div id="metadata_csrView">
             <tags:nameValueContainer altRowOn="true">
-                 <c:if test="${!empty commStatus}">
-                    <cti:msg2 var="commStatusLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS"/>
-                    <tags:nameValue name="${commStatusLabel}">${fn:escapeXml(commStatus)}</tags:nameValue>
-                </c:if>
-                <c:if test="${!empty commStatusTimestamp}">
-                    <cti:msg2 var="timestampLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS_TIMESTAMP"/>
-                    <tags:nameValue name="${timestampLabel}"><cti:formatDate type="DATEHM" value="${commStatusTimestamp}"/></tags:nameValue>
-                </c:if>
                 <c:forEach var="pair" items="${csrMetadata}">
                     <%@ include file="metadataRow.jspf" %>
                 </c:forEach>
-                <c:if test="${!empty primaryForward}">
-                    <cti:msg2 var="primaryForwardLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_GATEWAY"/>
-                    <tags:nameValue name="${primaryForwardLabel}">${fn:escapeXml(primaryForward)}</tags:nameValue>
-                </c:if>
                 <c:if test="${!empty reverseLookup}">
                     <cti:msg2 var="reverseLookupLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.REVERSE_LOOKUP"/>
                     <tags:nameValue name="${reverseLookupLabel}">${fn:escapeXml(reverseLookup)}</tags:nameValue>
