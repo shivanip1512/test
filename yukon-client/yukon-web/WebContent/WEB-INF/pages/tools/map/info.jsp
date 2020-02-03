@@ -82,9 +82,11 @@
         <tags:nameValue2 nameKey=".totalCost">${fn:escapeXml(routeData.totalCost)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".hopCount">${fn:escapeXml(routeData.hopCount)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".flags">${fn:escapeXml(routeFlags)}</tags:nameValue2>
-        <tags:nameValue2 nameKey=".distanceToNextHop">
-            <fmt:formatNumber value="${nextHopDistance}" maxFractionDigits="4"/>&nbsp;<i:inline key=".distance.miles"/>
-        </tags:nameValue2>
+        <c:if test="${!empty nextHopDistance}">
+            <tags:nameValue2 nameKey=".distanceToNextHop">
+                <fmt:formatNumber value="${nextHopDistance}" maxFractionDigits="4"/>&nbsp;<i:inline key=".distance.miles"/>
+            </tags:nameValue2>
+        </c:if>
     </c:if>
     <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span><i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>
