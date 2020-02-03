@@ -131,6 +131,16 @@ public class ComprehensiveMapController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         NetworkMap map = null;
+        //empty filters mean all
+        if(filter.getLinkQuality().isEmpty()) {
+            filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
+        }
+        if(filter.getDescendantCount().isEmpty()) {
+            filter.setDescendantCount(Lists.newArrayList(DescendantCount.values()));
+        }
+        if(filter.getHopCount().isEmpty()) {
+            filter.setHopCount(Lists.newArrayList(HopCount.values()));
+        }
         try {
             map = nmNetworkService.getNetworkMap(filter, accessor);
             log.debug("Devices in map {}", map.getTotalDevices());

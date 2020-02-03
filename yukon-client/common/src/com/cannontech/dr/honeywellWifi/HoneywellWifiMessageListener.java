@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWiFiSetpointDrParameters;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.dr.service.ControlHistoryService;
@@ -65,6 +66,24 @@ public class HoneywellWifiMessageListener {
 
         }
 
+    }
+
+    /**
+     * Processes LMHoneywellWifi Setpoint DR messages.
+     */
+    public void handleLMHoneywellSetpointControlMessage(Message message) {
+        log.debug("Received message on yukon.notif.stream.dr.HoneywellSetpointControlMessage queue.");
+
+        HoneywellWiFiSetpointDrParameters parameters;
+        if (message instanceof StreamMessage) {
+            try {
+                parameters = buildSetpointDrParameters((StreamMessage) message);
+            } catch (JMSException e) {
+                log.error("Exception parsing StreamMessage for duty cycle DR event.", e);
+                return;
+            }
+            log.debug("Parameters built {} Ready to send Honeywell Message", parameters);
+        }
     }
 
     /**
@@ -151,6 +170,46 @@ public class HoneywellWifiMessageListener {
                                                       randomizationInterval,
                                                       groupId,
                                                       controlDurationSeconds);
+    }
+
+    /**
+     * Takes the StreamMessage from Load Management and parses out the values into an HoneywellWiFiSetpointDrParameters object.
+     *
+     * Load Management sends
+     * 1.  Program ID      : signed int  (32 bits)
+     * 2.  Group ID        : signed int  (32 bits)
+     * 3.  Temp Option     : signed char (8 bits)  [0 == cool, 1 == heat]
+     * 4.  Mandatory       : signed char (8 bits)  [0 == optional, 1 == mandatory]
+     * 5.  Temp Offset     : signed int  (32 bits) [-10,10]
+     * 6.  Pre Temp Offset : signed int  (32 bits) [-10,10]
+     * 7.  Start time      : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     * 8.  End time        : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     */
+    private HoneywellWiFiSetpointDrParameters buildSetpointDrParameters(StreamMessage message)
+            throws JMSException {
+        // Get the raw values
+        int programId = message.readInt();
+        int groupId = message.readInt();
+        byte tempOptionByte = message.readByte();
+        byte mandatoryByte = message.readByte();
+        int tempOffset = message.readInt();
+        int preTempOffset = message.readInt();
+        long utcStartTimeSeconds = message.readLong();
+        long utcEndTimeSeconds = message.readLong();
+
+        // Massage the data into the form we want
+        boolean tempOptionHeat = (tempOptionByte == 1);
+        Instant startTime = new Instant(utcStartTimeSeconds * 1000);
+        Instant endTime = new Instant(utcEndTimeSeconds * 1000);
+        boolean optional = (mandatoryByte == 0);
+        log.trace(
+                "Parsed setpoint dr parameters. ProgramId: {} GroupId: {} Start time: {} ({}) End time: {} ({}) Optional: {}({}) Heat: {}({}) Offset: {} PreOffset: {}",
+                programId, groupId, startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, optional, mandatoryByte,
+                tempOptionHeat, tempOptionByte, tempOffset, preTempOffset);
+
+        return new HoneywellWiFiSetpointDrParameters(programId, groupId, tempOptionHeat, optional, tempOffset, preTempOffset,
+                startTime,
+                endTime);
     }
 
 }
