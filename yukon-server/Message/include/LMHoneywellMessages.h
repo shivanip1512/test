@@ -4,9 +4,8 @@
 
 #include "dlldefs.h"
 
-namespace Cti {
-namespace Messaging {
-namespace LoadManagement {
+namespace Cti::Messaging::LoadManagement
+{
 
 class IM_EX_MSG LMHoneywellCyclingControlMessage : public StreamableMessage
 {
@@ -31,6 +30,31 @@ private:
     int  _stopTime;
 };
 
+class IM_EX_MSG LMHoneywellSetpointControlMessage : public StreamableMessage
+{
+public:
+
+    LMHoneywellSetpointControlMessage( const int  programId,
+                                       const int  groupId,
+                                       const bool temperatureOption,
+                                       const bool mandatory,
+                                       const int  temperatureOffset,
+                                       const long long startTime,
+                                       const int  controlDuration );
+
+    void streamInto(cms::StreamMessage & message) const;
+
+private:
+
+    int  _programId;
+    int  _groupId;
+    char _temperatureOption;
+    char _mandatory;
+    int  _temperatureOffset;
+    long long _startTime;
+    long long _stopTime;
+};
+
 class IM_EX_MSG LMHoneywellRestoreMessage : public StreamableMessage
 {
 public:
@@ -46,7 +70,5 @@ private:
     int _restoreTime;
 };
 
-}
-}
 }
 

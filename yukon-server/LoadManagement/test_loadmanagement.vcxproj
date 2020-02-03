@@ -341,6 +341,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\ecobeeSetpointGear.h" />
+    <ClInclude Include="include\honeywellControlInterface.h" />
     <ClInclude Include="include\ItronControlInterface.h" />
     <ClInclude Include="include\ItronCycleGear.h" />
     <ClInclude Include="include\lmgroupitron.h" />
@@ -369,6 +370,7 @@
     <ClCompile Include="executor.cpp">
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
+    <ClCompile Include="honeywellSetPointGear.cpp" />
     <ClCompile Include="ItronCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
     <ClCompile Include="lmgroupitron.cpp" />
@@ -469,6 +471,7 @@
     <ClCompile Include="septempoffsetgear.cpp">
     </ClCompile>
     <ClCompile Include="SmartGroupBase.cpp" />
+    <ClCompile Include="test_lmobjects_honeywell.cpp" />
     <ClCompile Include="test_lm_constraintviolations.cpp">
     </ClCompile>
     <ClCompile Include="test_lmobjects.cpp">
