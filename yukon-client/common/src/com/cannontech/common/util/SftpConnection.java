@@ -33,7 +33,6 @@ public class SftpConnection implements AutoCloseable {
     private final String username;
     private final String password;
     private File privateKeyFile;
-    private File publicKeyFile;
     
     public SftpConnection(String domain, String port, Optional<YukonHttpProxy> proxy, String username, String password, 
                        String privateKey) throws IOException {
@@ -99,7 +98,6 @@ public class SftpConnection implements AutoCloseable {
     @Override
     public void close() {
         try {
-            Files.delete(publicKeyFile.toPath());
             Files.delete(privateKeyFile.toPath());
         } catch (Exception e) {
             log.debug("Error deleting key file", e);
