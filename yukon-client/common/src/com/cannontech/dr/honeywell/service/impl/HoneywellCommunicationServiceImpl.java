@@ -218,7 +218,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void sendDRDutyCycleEventForGroup(HoneywellWifiDutyCycleDrParameters parameters) {
-        log.debug("Sending DR Duty Cycle event for yukon LM group " + parameters.getGroupId());
+        log.debug("Sending DR Duty Cycle event for yukon LM group {}", parameters.getGroupId());
         try {
 
             int honeywellGroupId = honeywellDao.getHoneywellGroupId(parameters.getGroupId());
@@ -241,9 +241,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             if (log.isDebugEnabled()) {
                 try {
-                    log.debug("Sending honeywell duty cycle DR:");
-                    log.debug("Headers: " + requestEntity.getHeaders());
-                    log.debug("Body: " + JsonUtils.toJson(request));
+                    log.debug("Sending honeywell duty cycle DR: Headers: {} - Body: {}.", requestEntity.getHeaders(), JsonUtils.toJson(request));
                 } catch (JsonProcessingException e) {
                     log.warn("Error parsing json in debug.", e);
                 }
@@ -262,7 +260,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void sendDRSetpointEventForGroup(HoneywellWiFiSetpointDrParameters parameters) {
-        log.debug("Sending DR Setpoint event for yukon LM group " + parameters.getGroupId());
+        log.debug("Sending DR Setpoint event for yukon LM group {}", parameters.getGroupId());
         try {
 
             int honeywellGroupId = honeywellDao.getHoneywellGroupId(parameters.getGroupId());
@@ -281,7 +279,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                                                 parameters.isOptional(), // allow opt-out on Honeywell portal & device
                                                 1, // Randomization Interval
                                                 DutyCyclePeriod.HALFHOUR,
-                                                1,
+                                                1, // Sequence Number
                                                 heatDeltaC,
                                                 coolDeltaC,
                                                 parameters.getDurationSeconds());
@@ -294,9 +292,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             if (log.isDebugEnabled()) {
                 try {
-                    log.debug("Sending honeywell setpoint DR:");
-                    log.debug("Headers: " + requestEntity.getHeaders());
-                    log.debug("Body: " + JsonUtils.toJson(request));
+                    log.debug("Sending honeywell setpoint DR: Headers: {} - Body: {}.", requestEntity.getHeaders(), JsonUtils.toJson(request));
                 } catch (JsonProcessingException e) {
                     log.warn("Error parsing json in debug.", e);
                 }
