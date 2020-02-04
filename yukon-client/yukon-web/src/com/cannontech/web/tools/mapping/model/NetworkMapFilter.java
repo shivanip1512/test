@@ -1,5 +1,7 @@
 package com.cannontech.web.tools.mapping.model;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -9,6 +11,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Range;
 
 public class NetworkMapFilter {
 
@@ -139,18 +142,31 @@ public class NetworkMapFilter {
     }
     
     public enum DescendantCount implements DisplayableEnum {
-        EXCELLENT(Color.GREEN),     // <= 40
-        GOOD(Color.BLUE),           // 41 - 80
-        AVERAGE(Color.ORANGE),      // 81 - 120
-        BELOW_AVERAGE(Color.GREY);  // > 120
+        EXCELLENT(Color.GREEN, Range.atMost(40)),     // <= 40
+        GOOD(Color.BLUE, Range.closed(41, 80)),           // 41 - 80
+        AVERAGE(Color.ORANGE, Range.closed(81, 120)),      // 81 - 120
+        BELOW_AVERAGE(Color.GREY, Range.atLeast(121));  // > 120
         
         private Color color;
+        private Range<Integer> range;
         
-        DescendantCount(Color color) {
+        DescendantCount(Color color, Range<Integer> range) {
             this.color = color;
+            this.range = range;
         }
         public Color getColor() {
             return color;
+        }
+        
+        public Range<Integer> getRange() {
+            return range;
+        }
+        
+        public static DescendantCount getDescendantCount(int value) {
+            return Lists.newArrayList(DescendantCount.values())
+                    .stream().filter(range -> range.getRange().contains(value))
+                    .findFirst()
+                    .orElseThrow(() -> new UnsupportedOperationException("Undefined Descendant Count " + value));
         }
         
         @Override
@@ -160,13 +176,27 @@ public class NetworkMapFilter {
     }
     
     public enum HopCount implements DisplayableEnum {
-        REALLY_LOW(),   // 1 - 8
-        LOW(),          // 9 - 12
-        AVERAGE(),      // 13 - 16
-        HIGH(),         // 17 - 20
-        REALLY_HIGH();  // > 20
-                
-        HopCount() {
+        REALLY_LOW(Range.closed(1, 8)),   // 1 - 8
+        LOW(Range.closed(9, 12)),          // 9 - 12
+        AVERAGE(Range.closed(13, 16)),      // 13 - 16
+        HIGH(Range.closed(17, 20)),         // 17 - 20
+        REALLY_HIGH(Range.atLeast(21));  // > 20
+        
+        private Range<Integer> range;
+
+        HopCount(Range<Integer> range) {
+            this.range = range;
+        }
+        
+        public Range<Integer> getRange() {
+            return range;
+        }
+        
+        public static HopCount getHopCount(int value) {
+            return Lists.newArrayList(HopCount.values())
+                    .stream().filter(range -> range.getRange().contains(value))
+                    .findFirst()
+                    .orElseThrow(() -> new UnsupportedOperationException("Undefined Hop Count" + value));
         }
         
         @Override
@@ -218,6 +248,19 @@ public class NetworkMapFilter {
         
         public int getNumber() {
             return number;
+        }
+        
+        public static HopCountColors getHopCountColor(int value) {
+            return Arrays.stream(HopCountColors.values())
+                    .filter(color -> color.number == value)
+                    .findFirst()
+                    .orElse(HopCountColors.OVER_TWENTY);
+        }
+        
+        public static HopCountColors getHopCountColorsWithMaxNumber() {
+            return Arrays.stream(HopCountColors.values())
+                    .max(Comparator.comparing(HopCountColors::getNumber))
+                    .get();
         }
     }
     

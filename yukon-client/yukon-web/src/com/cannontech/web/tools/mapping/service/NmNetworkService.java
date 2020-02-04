@@ -72,5 +72,5 @@ public interface NmNetworkService {
     /**
      * Parses the result we received from NM to get Primary Forward Gateway
      */
-    RfnGateway getPrimaryForwardGatewayFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata);
+    RfnDevice getPrimaryForwardGatewayFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata);
 }

@@ -127,7 +127,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
             RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
             
             //gateway can be null if replay from NM didn't contain gateway info
-            RfnGateway gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadataMulti);
+            RfnDevice gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadataMulti);
             metadata.put(RfnMetadata.PRIMARY_GATEWAY, gateway.getName());
             
             NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);

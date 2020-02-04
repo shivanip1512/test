@@ -91,17 +91,12 @@ public interface RfnDeviceDao {
      * @return The updated gateway.
      */
     RfnDevice updateGatewayType(RfnDevice device);
+    
+    /**
+     * Creates mappings for gateway to device.
+     */
+    void saveDynamicRfnDeviceData(Map<RfnIdentifier, RfnIdentifier> deviceToGateway);
 
-    /**
-     * Creates mappings for gateway to device
-     */
-    void saveDynamicRfnDeviceData(List<NodeComm> nodes);
-    
-    /**
-     * Creates mappings for gateway to device. Returns reference ids to be send to NM for acknowledgement
-     */
-    Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes);
-    
     /**
      * Returns list of devices for gateway
      */

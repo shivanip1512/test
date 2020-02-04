@@ -9,7 +9,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.util.MethodNotImplementedException;
@@ -115,16 +114,6 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIdsList, Iterable<PaoType> paoTypes) {
         throw new MethodNotImplementedException();
     }
@@ -136,6 +125,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
     @Override
     public Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public void saveDynamicRfnDeviceData(Map<RfnIdentifier, RfnIdentifier> nodes) {
         throw new MethodNotImplementedException();
     }
 }
