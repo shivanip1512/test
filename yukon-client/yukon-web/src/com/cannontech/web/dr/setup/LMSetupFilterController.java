@@ -99,7 +99,7 @@ public class LMSetupFilterController {
                         .sorted(Comparator.comparing(PaoType::getDbString, String.CASE_INSENSITIVE_ORDER))
                         .collect(Collectors.toList()));
         model.addAttribute("loadProgramTypes", PaoType.getDirectLMProgramTypes().stream()
-                        .sorted(Comparator.comparing(PaoType::getDbString, String.CASE_INSENSITIVE_ORDER))
+                        .sorted(Comparator.comparing(PaoType::name, String.CASE_INSENSITIVE_ORDER))
                         .collect(Collectors.toList()));
         model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(PaoType.getDirectLMProgramTypes())
                         .stream().sorted(Comparator.comparing(GearControlMethod::getDisplayName, String.CASE_INSENSITIVE_ORDER))
