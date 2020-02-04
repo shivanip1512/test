@@ -392,7 +392,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewayCreateRequest request = new GatewayCreateRequest();
         GatewaySaveData data = new GatewaySaveData();
         data.setIpAddress(settings.getIpAddress());
-        if (!settings.isuseDefaultPort()) {
+        if (!settings.isUseDefaultPort()) {
             data.setPort(settings.getPort());
         }
         data.setName(settings.getName());

@@ -228,7 +228,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             
             gateway.setName(settings.getName());
             
-            if(settings.isUseDefaultUpdateServer()) {
+            if (settings.isUseDefaultUpdateServer()) {
                 updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
                 auth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
                 auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));

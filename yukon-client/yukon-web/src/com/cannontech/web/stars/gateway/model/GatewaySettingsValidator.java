@@ -59,7 +59,7 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
                 errors.rejectValue("ipAddress", baseKey + "ipAddress.invalid");
             }
         }
-        if (!settings.isuseDefaultPort()) {
+        if (!settings.isUseDefaultPort()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "port", baseKey + "port.required");
             if (!errors.hasFieldErrors("port")) {
                 YukonValidationUtils.validatePort(errors, "port", settings.getPort().toString());

@@ -41,7 +41,7 @@ public class GatewaySettings {
         this.ipAddress = ipAddress;
     }
 
-    public boolean isuseDefaultPort() {
+    public boolean isUseDefaultPort() {
         return useDefaultPort;
     }
 
