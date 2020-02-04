@@ -34,6 +34,10 @@ import com.google.common.collect.Multimap;
  */
 public interface RfnGatewayService {
     
+    int RFN_GATEWAY_DEFAULT_PORT = 32030;
+    
+    int VIRTUAL_GATEWAY_DEFAULT_PORT = 32035;
+    
     /**
      * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not
      * cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate thread.
