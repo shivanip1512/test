@@ -40,6 +40,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
@@ -125,7 +126,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     
     @Override
     public boolean isNetworkTreeUpdated(Instant lastUpdateTime) {
-        return treeUpdateResponse != null
+        return treeUpdateResponse != null && lastUpdateTime != null
                 && lastUpdateTime.isBefore(new Instant(treeUpdateResponse.getTreeGenerationEndTimeMillis()));
     }
     
@@ -326,7 +327,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                                 format(response.getTreeGenerationEndTimeMillis()),
                                 format(response.getNextScheduledRefreshTimeMillis()),
                                 format(response.getNoForceRefreshBeforeTimeMillis()));
+                        //Reloads only cached trees
                         reloadNetworkTrees();
+                        updateDeviceToGatewayMapping();
                     }
                     treeUpdateResponse = response;
                    
@@ -337,6 +340,23 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         }   
     }
     
+    /**
+     * Sends message to NM to get device to gateway mapping information for all gateways. When message is received the device to
+     * gateway mapping is persisted in DynamicRfnDeviceData.
+     */
+    private void updateDeviceToGatewayMapping() {
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        log.info("Sending request to NM for device to gateway mapping information for {}",
+                gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(",")));
+        Set<RfnIdentifier> ids = gateways.stream().map(gateway -> gateway.getRfnIdentifier()).collect(Collectors.toSet());
+        try {
+            metadataMultiService
+                    .getMetadataForGatewayRfnIdentifiers(ids, Set.of(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+        } catch (NmCommunicationException e) {
+            log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
+        }
+    }
+
     private String format(long millis) {
         return new Instant(millis).toString(df.withZone(DateTimeZone.getDefault()));
     }

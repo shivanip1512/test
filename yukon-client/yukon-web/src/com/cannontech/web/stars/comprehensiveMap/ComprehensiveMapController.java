@@ -102,6 +102,7 @@ public class ComprehensiveMapController {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
+    private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
     
@@ -265,7 +266,7 @@ public class ComprehensiveMapController {
                 }
                 dataRow[7] = statusString;
         
-                RfnGateway rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                RfnDevice rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
                 if(rfnGateway != null) {
                     dataRow[6] = rfnGateway.getName();
                 }
@@ -309,6 +310,7 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();  
         try {
             List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
+            networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
             json.put("tree", tree);
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
