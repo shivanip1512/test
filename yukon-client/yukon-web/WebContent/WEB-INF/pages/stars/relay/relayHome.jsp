@@ -47,12 +47,13 @@
                 <tags:widget bean="relayInformationWidget"/>
                 <tags:widget bean="rfnDeviceMetadataWidget"/>
                 <tags:widget bean="paoNotesWidget"/>
-                <tags:widget bean="rfnOutagesWidget"/>
+                <tags:widget bean="deviceGroupWidget"/>
             </div>
             <div class="column two nogutter">
 
                 <cti:msg2 var="eventsTitle" key=".relayDetail.relayEvents"/>
                 <tags:widget bean="meterEventsWidget" title="${eventsTitle}"/>
+                <tags:widget bean="rfnOutagesWidget"/>
                 <cti:msg2 var="warningsTitle" key="yukon.web.widgets.infrastructureWarningsWidget"/>
                 <tags:widget bean="deviceInfrastructureWarningsWidget" title="${warningsTitle}" deviceId="${deviceId}"/>
                 <!-- Including deviceGroupWidget's resources here since this particular
@@ -60,7 +61,6 @@
                 <cti:includeScript link="JQUERY_TREE"/>
                 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
                 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
-                <tags:widget bean="deviceGroupWidget"/>
             </div>
         </div>
     </tags:widgetContainer>
