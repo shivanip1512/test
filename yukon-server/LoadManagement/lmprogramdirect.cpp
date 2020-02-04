@@ -3631,9 +3631,9 @@ BOOL  CtiLMProgramDirect::wasControlActivatedByStatusTrigger()
    Control can go beyond 25 hours if the end time is specified in manual control.
    Will never return a negative number, if stop time is before start this returns 0.
 */
-LONG CtiLMProgramDirect::getShedTimeForSmartGears()
+long CtiLMProgramDirect::getShedTimeForSmartGears()
 {
-    static const LONG CONTROL_25_HOURS = 25*60*60;
+    constexpr long CONTROL_25_HOURS = 25*60*60;
     CtiTime now = CtiTime::now();
 
     if ( getDirectStopTime() == gInvalidCtiTime ) {

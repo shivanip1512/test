@@ -113,7 +113,7 @@ DECLARE_COLLECTABLE( CtiLMProgramDirect );
     bool notifyGroupsOfSchedule(const CtiTime &start, const CtiTime &stop);
     BOOL wasControlActivatedByStatusTrigger();
 
-    LONG getShedTimeForSmartGears();
+    long getShedTimeForSmartGears();
 
     void requestAdjustNotification(const CtiTime& stop_time);
 
