@@ -431,13 +431,8 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             IntervalDataNotification intervalDataNotification = new IntervalDataNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
             
-            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = ArrayListMultimap.create();
-            for (DrAttributeDataJmsMessage message : drAttributeDataJmsMessages) {
-                String serialNumber = StringUtil.EMPTY;
-                PaoIdentifier paoIdentifier = message.getPaoPointIdentifier().getPaoIdentifier();
-                serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
-                serialNumberAttributeDataMapping.put(serialNumber, message);
-            }
+            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = getSerialNumberAttributeDataMapping(
+                    drAttributeDataJmsMessages);
             
             ArrayOfIntervalData arrayOfIntervalData = buildArrayOfIntervalData(serialNumberAttributeDataMapping);
             intervalDataNotification.setArrayOfIntervalData(arrayOfIntervalData);
@@ -473,13 +468,8 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
             meterReadingsNotification.setTransactionID(transactionId);
 
-            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = ArrayListMultimap.create();
-            for (DrAttributeDataJmsMessage message : drAttributeDataJmsMessages) {
-                String serialNumber = StringUtil.EMPTY;
-                PaoIdentifier paoIdentifier = message.getPaoPointIdentifier().getPaoIdentifier();
-                serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
-                serialNumberAttributeDataMapping.put(serialNumber, message);
-            }
+            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = getSerialNumberAttributeDataMapping(
+                    drAttributeDataJmsMessages);
 
             ArrayOfMeterReading arrayOfMeterReading = buildArrayOfMeterReadingsData(serialNumberAttributeDataMapping);
             meterReadingsNotification.setArrayOfMeterReading(arrayOfMeterReading);
@@ -516,14 +506,9 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
 
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
             endDeviceEventsNotification.setTransactionID(transactionId);
-
-            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = ArrayListMultimap.create();
-            for (DrAttributeDataJmsMessage message : drAttributeDataJmsMessages) {
-                String serialNumber = StringUtil.EMPTY;
-                PaoIdentifier paoIdentifier = message.getPaoPointIdentifier().getPaoIdentifier();
-                serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
-                serialNumberAttributeDataMapping.put(serialNumber, message);
-            }
+            
+            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = getSerialNumberAttributeDataMapping(
+                    drAttributeDataJmsMessages);
             
             ArrayOfEndDeviceEventList arrayOfEndDeviceEventList = buildArrayOfAlarmAndEventData(serialNumberAttributeDataMapping);
 
@@ -541,6 +526,21 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
                 log.error("Error sending alarmAndEventDataNotification.", e);
             }
         });
+    }
+    
+    /**
+     * Return mapping for serial number and Attribute data. 
+     */
+    private Multimap<String, DrAttributeDataJmsMessage> getSerialNumberAttributeDataMapping(
+            List<DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
+        Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = ArrayListMultimap.create();
+        for (DrAttributeDataJmsMessage message : drAttributeDataJmsMessages) {
+            String serialNumber = StringUtil.EMPTY;
+            PaoIdentifier paoIdentifier = message.getPaoPointIdentifier().getPaoIdentifier();
+            serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
+            serialNumberAttributeDataMapping.put(serialNumber, message);
+        }
+        return serialNumberAttributeDataMapping;
     }
             
     public void programStatusNotification(DrProgramStatusJmsMessage drProgramStatusJmsMessage) {
