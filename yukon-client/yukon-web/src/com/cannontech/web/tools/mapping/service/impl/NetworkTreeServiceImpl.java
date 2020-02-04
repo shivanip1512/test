@@ -329,9 +329,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                                 format(response.getNoForceRefreshBeforeTimeMillis()));
                         //Reloads only cached trees
                         reloadNetworkTrees();
-                        updateDeviceToGatewayMapping();
                     }
                     treeUpdateResponse = response;
+                    updateDeviceToGatewayMapping();
                    
                 } 
             } catch (JMSException e) {

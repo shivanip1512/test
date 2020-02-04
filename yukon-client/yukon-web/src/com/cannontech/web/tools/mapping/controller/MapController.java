@@ -256,7 +256,7 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
-                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
                 if (includePrimaryRoute) {
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
                 }

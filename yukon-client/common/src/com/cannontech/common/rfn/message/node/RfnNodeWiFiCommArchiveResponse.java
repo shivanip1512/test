@@ -47,6 +47,6 @@ public class RfnNodeWiFiCommArchiveResponse implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnNodeCommArchiveResponse [referenceIDs=%s]", referenceIDs);
+        return String.format("RfnNodeWiFiCommArchiveResponse [referenceIDs=%s]", referenceIDs);
     }
 }
