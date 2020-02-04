@@ -26,6 +26,9 @@ const IM_EX_MSG OutboundQueue
     OutboundQueue::HoneywellCyclingControl
     {"yukon.notif.stream.dr.HoneywellCyclingControlMessage"};
 const IM_EX_MSG OutboundQueue
+    OutboundQueue::HoneywellSetpointControl
+    {"yukon.notif.stream.dr.HoneywellSetpointControlMessage"};
+const IM_EX_MSG OutboundQueue
     OutboundQueue::HoneywellRestore
     {"yukon.notif.stream.dr.HoneywellRestoreMessage"};
 const IM_EX_MSG OutboundQueue

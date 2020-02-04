@@ -207,6 +207,9 @@
     <ClCompile Include="ecobeeSetpointGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="honeywellSetPointGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h">
@@ -426,6 +429,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ecobeeSetpointGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\honeywellSetPointGear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
