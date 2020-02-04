@@ -228,7 +228,7 @@ public class ComprehensiveMapController {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         log.debug("Getting data for download for {} devices", rfnIdentifiers.size());
         try {
-            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
+            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY,
                                                                                          RfnMetadataMulti.NODE_DATA));

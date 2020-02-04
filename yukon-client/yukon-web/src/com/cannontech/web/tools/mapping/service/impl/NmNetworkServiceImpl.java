@@ -416,7 +416,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(devicesOtherThenGatways,
-                    Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA,
+                    Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA,
                             RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
@@ -510,9 +510,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
     @Override
     public NodeCommStatus getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
-        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)
+        if (metadata.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)
                 && metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY)) {
-            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
             RfnIdentifier primaryForwardGateway = (RfnIdentifier) metadata.getMetadatas()
                     .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
             if (comm.getGatewayRfnIdentifier() == primaryForwardGateway) {

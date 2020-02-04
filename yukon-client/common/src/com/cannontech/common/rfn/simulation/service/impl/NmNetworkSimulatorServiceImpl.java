@@ -343,11 +343,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         for (RfnIdentifier device : rfnIdentifiers) {
             try {
                 RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
-                // System.out.println(rfnDevice);
                 RfnIdentifier gateway = devicesToGatewayMap.get(device);
-                // System.out.println(gateway);
                 for (RfnMetadataMulti multi : request.getRfnMetadatas()) {
-                    if (multi == RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM && gateway != null) {
+                    if (multi == RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM && gateway != null) {
                         addObjectToResult(results, device, multi, getNodeComm(device, gateway));
                     } else if (multi == RfnMetadataMulti.NODE_DATA) {
                         addObjectToResult(results, device, multi, getNodeData(rfnDevice));
@@ -367,7 +365,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                 log.error("Error generating results for RfnMetadataMultiQueryResult for {} ", device, e);
             }
         }
-        System.out.println("Results generation ended");
+        log.debug("Results generation ended");
         return results;
     }
 

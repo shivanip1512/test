@@ -28,8 +28,8 @@ public enum RfnMetadataMulti implements Serializable {
     // Replace RfnMetadata.PRIMARY_GATEWAY,
     //         RfnMetadata.COMM_STATUS
     //         RfnMetadata.COMM_STATUS_TIMESTAMP
-    // Note: null indicates the primary gateway is unknown.
-    PRIMARY_GATEWAY_NODE_COMM(NodeComm.class, 1000, EntityType.NODE), // ready for integration test
+    // Note: null indicates the reverse lookup gateway is unknown.
+    REVERSE_LOOKUP_NODE_COMM(NodeComm.class, 1000, EntityType.NODE),
     
     // Replace RfnMetadata.NODE_SERIAL_NUMBER
     //         RfnMetadata.HARDWARE_VERSION
@@ -37,11 +37,11 @@ public enum RfnMetadataMulti implements Serializable {
     //         RfnMetadata.NODE_ADDRESS
     //         RfnMetadata.NODE_FIRMWARE_VERSION
     //         RfnMetadata.NODE_TYPE
-    NODE_DATA(NodeData.class, 1000, EntityType.NODE), // ready for integration test
+    NODE_DATA(NodeData.class, 1000, EntityType.NODE),
 
     // Replace RfnMetadata.NUM_ASSOCIATIONS
     // Note: null indicates the meter doesn't support battery node association.
-    READY_BATTERY_NODE_COUNT(Integer.class, 1000, EntityType.NODE), // ready for integration test
+    READY_BATTERY_NODE_COUNT(Integer.class, 1000, EntityType.NODE),
     
     // Replace RfnMetadata.NEIGHBOR_COUNT
     NEIGHBOR_COUNT(Integer.class, 1000, EntityType.GATEWAY, EntityType.NODE),
@@ -49,12 +49,12 @@ public enum RfnMetadataMulti implements Serializable {
     // Replace RfnMetadata.PRIMARY_NEIGHBOR,
     //         RfnMetadata.PRIMARY_NEIGHBOR_DATA_TIMESTAMP
     //         RfnMetadata.PRIMARY_NEIGHBOR_LINK_COST
-    PRIMARY_FORWARD_NEIGHBOR_DATA(NeighborData.class, 1000, EntityType.NODE), // ready for integration test
+    PRIMARY_FORWARD_NEIGHBOR_DATA(NeighborData.class, 1000, EntityType.NODE),
     
     // Replace RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT
     // RouteData provides totalCost and hopCount to calculate average link quality
     // (YUK-19751, YUK-20063, YUK-20064)
-    PRIMARY_FORWARD_ROUTE_DATA(RouteData.class, 1000, EntityType.NODE), 
+    PRIMARY_FORWARD_ROUTE_DATA(RouteData.class, 1000, EntityType.NODE),
     
     // Support network tree query: descendant count (YUK-20089, YUK-20090) and primary route to Gateway
     PRIMARY_FORWARD_DESCENDANT_COUNT(Integer.class, 1000, EntityType.NODE),
