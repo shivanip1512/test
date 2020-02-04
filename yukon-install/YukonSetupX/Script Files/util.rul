@@ -1092,6 +1092,6 @@ function UpdateYukonFolderPermissionsForLocalServiceAccount(sDir)
 string sProg, sCMD;
 begin
     sProg = "cmd.exe";
-    sCMD = "/c " + "icacls " + sDir + " /grant LocalService:(OI)(CI)F /T";
+    sCMD = "/c " + "icacls " + sDir + " /grant *S-1-5-19:(OI)(CI)F /T";
     LaunchApplication(sProg, sCMD, "", SW_HIDE, 0, LAAW_OPTION_NOWAIT);
 end;
