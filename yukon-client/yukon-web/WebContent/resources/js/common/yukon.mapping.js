@@ -164,7 +164,7 @@ yukon.mapping = (function () {
             $(document).on("click", ".js-request-route-update", function () {
                 $(".js-request-route-update").attr('disabled', true);
                 $.post(yukon.url("/stars/comprehensiveMap/requestNetworkTreeUpdate"), function (response) {
-                    if (response.isUpdateRequesteSent === true) {
+                    if (response.isUpdateRequesteSent) {
                         yukon.ui.alertSuccess(response.msgText);
                     } else {
                         yukon.ui.alertError(response.msgText);
