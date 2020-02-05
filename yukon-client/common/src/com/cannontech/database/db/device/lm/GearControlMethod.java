@@ -1,6 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
 
@@ -135,5 +136,13 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     public static ImmutableSet<GearControlMethod> getGearTypesByProgramType(PaoType programType) {
         return gearTypesByProgramType.get(programType);
     }
-
+    
+    public static ImmutableSet<GearControlMethod> getGearTypesByProgramType(Set<PaoType> programTypes) {
+        ImmutableSet.Builder<GearControlMethod> gearTypes = ImmutableSet.builder(); 
+        PaoType.getDirectLMProgramTypes().forEach(paoType -> {
+            gearTypes.addAll(getGearTypesByProgramType(paoType));
+            
+        });
+        return gearTypes.build();
+    }
 }
