@@ -707,9 +707,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             settings.setPort(RfnGatewayService.VIRTUAL_GATEWAY_DEFAULT_PORT);
         } else if ((gateway.getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY
                 || gateway.getPaoIdentifier().getPaoType() == PaoType.GWY800)
-                        && Integer.valueOf(gateway.getData().getPort()).equals(RfnGatewayService.RFN_GATEWAY_DEFAULT_PORT)) {
+                        && Integer.valueOf(gateway.getData().getPort()).equals(RfnGatewayService.GATEWAY_DEFAULT_PORT)) {
             settings.setUseDefaultPort(true);
-            settings.setPort(RfnGatewayService.RFN_GATEWAY_DEFAULT_PORT);
+            settings.setPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
         } else {
             settings.setPort(Integer.valueOf(gateway.getData().getPort()));
             settings.setUseDefaultPort(false);

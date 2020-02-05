@@ -34,7 +34,7 @@ import com.google.common.collect.Multimap;
  */
 public interface RfnGatewayService {
     
-    int RFN_GATEWAY_DEFAULT_PORT = 32030;
+    int GATEWAY_DEFAULT_PORT = 32030;
     
     int VIRTUAL_GATEWAY_DEFAULT_PORT = 32035;
     

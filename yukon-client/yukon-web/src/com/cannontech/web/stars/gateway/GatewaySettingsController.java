@@ -80,7 +80,7 @@ public class GatewaySettingsController {
         settings.setUpdateServerLogin(auth);
         settings.setUseDefaultPort(true);
         settings.setUseDefaultUpdateServer(true);
-        settings.setPort(RfnGatewayService.RFN_GATEWAY_DEFAULT_PORT);
+        settings.setPort(RfnGatewayService.GATEWAY_DEFAULT_PORT);
         
         model.addAttribute("settings", settings);
         

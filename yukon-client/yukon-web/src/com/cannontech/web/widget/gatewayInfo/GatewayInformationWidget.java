@@ -244,7 +244,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                 if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
                     port = RfnGatewayService.VIRTUAL_GATEWAY_DEFAULT_PORT;
                 } else {
-                    port = RfnGatewayService.RFN_GATEWAY_DEFAULT_PORT;
+                    port = RfnGatewayService.GATEWAY_DEFAULT_PORT;
                 }
             } else {
                 port = settings.getPort();
