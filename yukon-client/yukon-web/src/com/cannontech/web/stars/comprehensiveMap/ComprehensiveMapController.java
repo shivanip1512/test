@@ -333,9 +333,9 @@ public class ComprehensiveMapController {
     public @ResponseBody Map<String, Object> requestNetworkTreeUpdate (YukonUserContext yukonUserContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         Map<String, Object> json = Maps.newHashMap();
-        boolean isUpdateRequesteSent = networkTreeService.requestNetworkTreeUpdate();
-        json.put("isUpdateRequesteSent", isUpdateRequesteSent);
-        if (isUpdateRequesteSent) {
+        boolean isUpdateRequestSent = networkTreeService.requestNetworkTreeUpdate();
+        json.put("isUpdateRequestSent", isUpdateRequestSent);
+        if (isUpdateRequestSent) {
             json.put("msgText", accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.successMsg"));
         } else {
             json.put("msgText", accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg"));
