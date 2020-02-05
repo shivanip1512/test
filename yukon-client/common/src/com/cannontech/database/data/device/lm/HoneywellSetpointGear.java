@@ -6,30 +6,21 @@ import com.cannontech.database.db.device.lm.GearControlMethod;
 
 public class HoneywellSetpointGear extends WifiThermostatSetpointGear {
     private static final long serialVersionUID = 1L;
-    private int precoolOffset = 0;
     
     public HoneywellSetpointGear() {
         setControlMethod(GearControlMethod.HoneywellSetpoint);
     }
     
-    public int getPrecoolOffset() {
-        return precoolOffset;
-    }
-    
-    public void setPrecoolOffset(int precoolOffset) {
-        this.precoolOffset = precoolOffset;
-    }
-    
     @Override
     public void add() throws SQLException {
         super.add();
-        Object[] addValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), precoolOffset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        Object[] addValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         add(TABLE_NAME, addValues);
     }
     
     @Override
     public void addPartial() throws SQLException {
-        Object[] addValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), precoolOffset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        Object[] addValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         add(TABLE_NAME, addValues);
     }
 
@@ -55,7 +46,6 @@ public class HoneywellSetpointGear extends WifiThermostatSetpointGear {
         Object[] constraintValues = {getGearID()};    
         Object[] results = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
         setSetpointOffset((int) results[2]);
-        setPrecoolOffset((int) results[3]);
         setHeatCool(HeatCool.of(results[0]));
     }
     
@@ -71,7 +61,7 @@ public class HoneywellSetpointGear extends WifiThermostatSetpointGear {
             addPartial();
         } catch (SQLException e) {
             // Add failed, do the update instead
-            Object[] setValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), precoolOffset, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            Object[] setValues = {getGearID(), getHeatCool().getDbValue(), 0, getSetpointOffset(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             Object[] constraintValues = {getGearID()};
             update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
         }

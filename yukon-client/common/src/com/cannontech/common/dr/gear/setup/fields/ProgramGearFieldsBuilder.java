@@ -490,7 +490,6 @@ public class ProgramGearFieldsBuilder {
         HoneywellSetpointValues setpointValues = gearDao.getHoneywellSetpointValues(directGear.getGearId());
 
         gearFields.setSetpointOffset(setpointValues.getSetpointOffset());
-        gearFields.setPrecoolOffset(setpointValues.getPrecoolOffset());
         gearFields.setMode(setpointValues.getHeatCool().getMode());
 
         WhenToChangeFields changeFields = getWhenToChangeFields(directGear);
