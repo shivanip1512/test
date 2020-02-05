@@ -33,6 +33,7 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     @Autowired private DrJmsMessageService drJmsMessageService;
     @Autowired private AttributeService attributeService;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
+    @Autowired private DrJmsMessageServiceImpl drJmsMessageServiceImpl;
 
     private static Set<BuiltInAttribute> attributes = Sets.union(
             Sets.union(BuiltInAttribute.getVoltageAttributes(), BuiltInAttribute.getRelayDataAttributes()),
@@ -65,6 +66,9 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
+         if (!drJmsMessageServiceImpl.isVendorMethodSupported()) {
+            return;
+        }
         if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType())) {
             Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(
                     richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
