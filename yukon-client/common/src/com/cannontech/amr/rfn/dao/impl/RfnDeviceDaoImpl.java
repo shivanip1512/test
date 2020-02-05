@@ -405,7 +405,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         List<DynamicRfnDeviceData> data = deviceToGateway.entrySet().stream()
                 .map(entry -> getDynamicRfnDeviceData(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
-        log.info("Saving device to gateway mapping for valid devices {}", data);
+        log.debug("Saving device to gateway mapping for valid devices {}", data.size());
         chunkAndSaveDynamicRfnDeviceData(data);
     }
 
