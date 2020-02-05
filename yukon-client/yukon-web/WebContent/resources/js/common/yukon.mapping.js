@@ -714,6 +714,9 @@ yukon.mapping = (function () {
                         $.getJSON(yukon.url('/stars/comprehensiveMap/getRouteDetails'), function (response) {
                             _setRouteLastUpdatedDateTime(response.routeLastUpdatedDateTime);
                             $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !response.isUpdatePossible);
+                            if (response.updateRoutes) {
+                                yukon.mapping.showHideAllRoutes();
+                            }
                         });
                     }, yg.rp.updater_delay);
                 }
@@ -733,7 +736,7 @@ yukon.mapping = (function () {
                     } else if (json.tree) {
                         _setRouteLastUpdatedDateTime(json.routeLastUpdatedDateTime);
                         $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !json.isUpdatePossible)
-                        
+
                         //gateway is top node
                         for (var x in json.tree) {
                             var currentNode = json.tree[x],

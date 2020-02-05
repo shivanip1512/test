@@ -104,6 +104,7 @@ public class ComprehensiveMapController {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
+    private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
     
@@ -312,8 +313,8 @@ public class ComprehensiveMapController {
         try {
             List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
             json.put("tree", tree);
-            Instant lastUpdateDateTime = networkTreeService.getNetworkTreeUpdateTime();
-            json.put("routeLastUpdatedDateTime", lastUpdateDateTime == null ? null : lastUpdateDateTime.getMillis());
+            networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
+            json.put("routeLastUpdatedDateTime", networkTreeUpdateTime == null ? null : networkTreeUpdateTime.getMillis());
             json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
@@ -327,6 +328,7 @@ public class ComprehensiveMapController {
         Instant lastUpdateDateTime = networkTreeService.getNetworkTreeUpdateTime();
         json.put("routeLastUpdatedDateTime", lastUpdateDateTime == null ? null : lastUpdateDateTime.getMillis());
         json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
+        json.put("updateRoutes", networkTreeService.isNetworkTreeUpdated(networkTreeUpdateTime));
         return json;
     }
 
