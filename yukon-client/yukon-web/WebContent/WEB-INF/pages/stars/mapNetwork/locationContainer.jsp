@@ -19,7 +19,7 @@
             <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}">
                 <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
                 <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
-<%--                 <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/> --%>
+                <cm:criteriaOption classes="js-all-routes js-all-routes-map-network" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
             </cm:criteria>
         </span>
     </c:if>

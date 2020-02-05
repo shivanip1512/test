@@ -360,8 +360,6 @@ yukon.tools.map = (function() {
         iconsLayer.setZIndex(_iconLayerIndex);
         _deviceFocusIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
-        
-        yukon.mapping.updateZoom(_map);
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
@@ -441,8 +439,6 @@ yukon.tools.map = (function() {
         iconsLayer.setZIndex(_iconLayerIndex);
         _deviceFocusIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
-        
-        yukon.mapping.updateZoom(_map);
     },
     
     _addAllPrimaryRoutes = function() {
@@ -451,6 +447,7 @@ yukon.tools.map = (function() {
             var getGatewaysUrl = $('#getGatewaysUrl').val();
             $.getJSON(getGatewaysUrl)
             .done(function (gatewayIds) {
+                yukon.mapping.removeAllRoutesLayers();
                 yukon.mapping.showHideAllRoutes(gatewayIds);
             });
         } else {
@@ -751,6 +748,7 @@ yukon.tools.map = (function() {
                     }
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
+                    _addAllPrimaryRoutes();
                 });
             });
             
@@ -769,6 +767,7 @@ yukon.tools.map = (function() {
                     }
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
+                    _addAllPrimaryRoutes();
                 });
             });
             

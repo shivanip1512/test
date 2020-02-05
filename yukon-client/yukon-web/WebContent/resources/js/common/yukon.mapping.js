@@ -245,12 +245,13 @@ yukon.mapping = (function () {
         },
         
         setScaleForDevice: function(feature) {
-            var currentStyle = feature.getStyle().clone(),
+            var currentStyle = feature.getStyle(),
                 scale = _deviceScale,
                 gatewayTypes = $('#gatewayTypes').val(),
                 relayTypes = $('#relayTypes').val(),
                 wifiTypes = $('#wifiTypes').val(),
                 pao = feature.get('pao');
+            console.log("Setting scale for device " + pao.paoId);
             if (relayTypes.indexOf(pao.paoType) > -1 || wifiTypes.indexOf(pao.paoType) > -1) {
                 scale = _relayScale;
             } else if (gatewayTypes.indexOf(pao.paoType) > -1) {
@@ -492,8 +493,8 @@ yukon.mapping = (function () {
         },
         
         updateZoom: function(map) {
-            var source = map.getLayers().getArray()[_tiles.length].getSource();
-            var features = source.getFeatures();
+            var source = yukon.mapping.getIconLayerSource(),
+                features = source.getFeatures();
             if (features != null && features.length > 0) {
                 if (features.length > 1) {
                     map.getView().fit(source.getExtent(), map.getSize());
