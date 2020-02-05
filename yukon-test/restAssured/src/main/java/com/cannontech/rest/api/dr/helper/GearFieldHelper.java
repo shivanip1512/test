@@ -107,7 +107,6 @@ public class GearFieldHelper {
                 gearFields = MockHoneywellSetpointGearFields.builder()
                                      .mandatory(true)
                                      .setpointOffset(7)
-                                     .precoolOffset(-2)
                                      .mode(MockMode.COOL)
                                      .howToStopControl(MockHowToStopControl.Restore)
                                      .capacityReduction(50)

@@ -19,7 +19,6 @@ public class MockHoneywellSetpointGearFields implements MockProgramGearFields {
 
     private Boolean mandatory;
     private Integer setpointOffset;
-    private Integer precoolOffset;
     private MockMode mode;
 
     private MockHowToStopControl howToStopControl;
