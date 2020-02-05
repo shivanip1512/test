@@ -81,6 +81,9 @@
         <tags:nameValue2 nameKey=".nextHopAddress">${fn:escapeXml(routeData.nextHopAddress)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".totalCost">${fn:escapeXml(routeData.totalCost)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".hopCount">${fn:escapeXml(routeData.hopCount)}</tags:nameValue2>
+        <c:if test="${!empty descendantCount}">
+            <tags:nameValue2 nameKey=".descendantCount">${fn:escapeXml(descendantCount)}</tags:nameValue2>
+        </c:if>
         <tags:nameValue2 nameKey=".flags">${fn:escapeXml(routeFlags)}</tags:nameValue2>
         <c:if test="${!empty nextHopDistance}">
             <tags:nameValue2 nameKey=".distanceToNextHop">
