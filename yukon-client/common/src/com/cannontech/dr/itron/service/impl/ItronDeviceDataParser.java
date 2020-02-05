@@ -197,7 +197,7 @@ public class ItronDeviceDataParser {
                 try {
                     litePoint = attributeService.createAndFindPointForAttribute(pao, attribute);
                 } catch (Exception e) {
-                    log.debug("Cannot get point for " + attribute + " on " + pao, e);
+                    log.debug("Cannot get point for " + attribute + " on " + pao + ". " + e.getMessage());
                     break;
                 }
                 

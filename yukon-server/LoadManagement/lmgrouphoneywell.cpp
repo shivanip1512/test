@@ -69,6 +69,53 @@ bool LMGroupHoneywell::sendCycleControl( const long programID,
     return true;
 }
 
+bool LMGroupHoneywell::sendSetpointControl( const long programID,
+                                            const bool temperatureOption,
+                                            const bool mandatory,
+                                            const int  temperatureOffset,
+                                            const int  controlDurationSeconds )
+{
+    using namespace Cti::Messaging;
+    using namespace Cti::Messaging::LoadManagement;
+    using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
+
+    CtiTime now;
+
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::HoneywellSetpointControl,
+        std::make_unique<LMHoneywellSetpointControlMessage>(
+            programID,
+            getPAOId(),
+            temperatureOption,
+            mandatory,
+            temperatureOffset,
+            now.seconds(),
+            controlDurationSeconds ) );
+
+    if ( _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CTILOG_DEBUG(dout, "Sending Honeywell Setpoint command, LM Group: " << getPAOName()
+                                << ", control minutes: " << ( controlDurationSeconds / 60 )
+                                << ", control: "
+                                << ( temperatureOption ? "HEAT " : "COOL " ) << temperatureOffset << " degrees" );
+    }
+
+    setLastControlSent( now );
+    setLastStopTimeSent( now + controlDurationSeconds );
+
+    if ( getGroupControlState() != CtiLMGroupBase::ActiveState )
+    {
+        setControlStartTime( now );
+        incrementDailyOps();
+        setIsRampingOut( false );
+    }
+
+    setIsRampingIn( false );
+    setGroupControlState( CtiLMGroupBase::ActiveState );
+
+    return true;
+}
+
 bool LMGroupHoneywell::sendStopControl(bool stopImmediately /* unused */)
 {
     using namespace Cti::Messaging;

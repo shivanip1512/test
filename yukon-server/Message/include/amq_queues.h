@@ -18,6 +18,7 @@ public:
     static const OutboundQueue EcobeeSetpointControl;
     static const OutboundQueue EcobeeRestore;
     static const OutboundQueue HoneywellCyclingControl;
+    static const OutboundQueue HoneywellSetpointControl;
     static const OutboundQueue HoneywellRestore;
     static const OutboundQueue NestCyclingControl;
     static const OutboundQueue NestRestore;

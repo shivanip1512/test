@@ -41,7 +41,7 @@ public class LMControlScenarioSetupDaoImpl extends AbstractLMSetupDaoImpl<Contro
         SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
         LMSetupFilter filter = criteria.getFilteringParameters();
 
-        sqlTotalCountQuery.append("SELECT COUNT(*)");
+        sqlTotalCountQuery.append("SELECT COUNT(DISTINCT ypo.PAObjectID)");
         sqlTotalCountQuery.append(getFromAndWhereClause(filter));
 
         int totalHitCount = jdbcTemplate.queryForInt(sqlTotalCountQuery);

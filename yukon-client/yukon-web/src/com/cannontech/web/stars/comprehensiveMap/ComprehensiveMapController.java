@@ -21,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -77,6 +78,7 @@ import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @RequestMapping("/comprehensiveMap/*")
 @Controller
@@ -102,6 +104,7 @@ public class ComprehensiveMapController {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private PaoLocationService paoLocationService;
+    private Instant networkTreeUpdateTime = null;
 
     private static final Logger log = YukonLogManager.getLogger(ComprehensiveMapController.class);
     
@@ -109,9 +112,9 @@ public class ComprehensiveMapController {
     public String home(ModelMap model) {
         
         NetworkMapFilter filter = new NetworkMapFilter();
-        model.addAttribute("filter", filter);                                                                
-                                                                                                              
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());                                                                                                
+        model.addAttribute("filter", filter);
+
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
         
@@ -154,7 +157,7 @@ public class ComprehensiveMapController {
                 deviceGroupMemberEditorDao.addDevices(tempGroup, devices);
             }
             json.put("collectionActionRedirect", CollectionActionUrl.COLLECTION_ACTIONS.getUrl() + "?collectionType=group&group.name=" + tempGroup.getFullName());
-            json.put("collectionGroup", tempGroup.getFullName());             
+            json.put("collectionGroup", tempGroup.getFullName());
         } catch (NmNetworkException | NmCommunicationException e) {
             String errorMsg = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.nmError");
             log.error(errorMsg, e);
@@ -165,7 +168,7 @@ public class ComprehensiveMapController {
     }
     
     @GetMapping("search")
-    public @ResponseBody Map<String, Object> searchForNode(String searchText) {        
+    public @ResponseBody Map<String, Object> searchForNode(String searchText) {
         Map<String, Object> json = new HashMap<>();
         Set<Integer> foundPaoIds = new HashSet<Integer>();
         //search for a Sensor Serial Number with the provided text
@@ -227,7 +230,7 @@ public class ComprehensiveMapController {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         log.debug("Getting data for download for {} devices", rfnIdentifiers.size());
         try {
-            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, 
+            metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY,
                                                                                          RfnMetadataMulti.NODE_DATA));
@@ -265,7 +268,7 @@ public class ComprehensiveMapController {
                 }
                 dataRow[7] = statusString;
         
-                RfnGateway rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                RfnDevice rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
                 if(rfnGateway != null) {
                     dataRow[6] = rfnGateway.getName();
                 }
@@ -309,11 +312,36 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();  
         try {
             List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
+            networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
             json.put("tree", tree);
+            json.put("routeLastUpdatedDateTime", networkTreeService.getNetworkTreeUpdateTime());
+            json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
         }
         return json;
     }
     
+    @GetMapping("getRouteDetails")
+    public @ResponseBody Map<String, Object> getRouteDetails () {
+        Map<String, Object> json = Maps.newHashMap();
+        Instant lastUpdateDateTime = networkTreeService.getNetworkTreeUpdateTime();
+        json.put("routeLastUpdatedDateTime", lastUpdateDateTime);
+        json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
+        return json;
+    }
+
+    @PostMapping("requestNetworkTreeUpdate")
+    public @ResponseBody Map<String, Object> requestNetworkTreeUpdate (YukonUserContext yukonUserContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+        Map<String, Object> json = Maps.newHashMap();
+        boolean isUpdateRequestSent = networkTreeService.requestNetworkTreeUpdate();
+        json.put("isUpdateRequestSent", isUpdateRequestSent);
+        if (isUpdateRequestSent) {
+            json.put("msgText", accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.successMsg"));
+        } else {
+            json.put("msgText", accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg"));
+        }
+        return json;
+    }
 }

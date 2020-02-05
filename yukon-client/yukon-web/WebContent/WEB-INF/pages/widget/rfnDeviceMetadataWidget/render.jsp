@@ -12,6 +12,12 @@
         <c:forEach var="pair" items="${metadata}">
             <%@ include file="metadataRow.jspf" %>
         </c:forEach>
+        
+        <c:if test="${!empty reverseLookup}">
+            <cti:msg2 var="reverseLookupLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.REVERSE_LOOKUP"/>
+            <tags:nameValue name="${reverseLookupLabel}">${fn:escapeXml(reverseLookup)}</tags:nameValue>
+        </c:if>
+
         <c:if test="${!empty wifiSuperMeterData}">
             <cti:msgScope paths="yukon.web.widgets.RfnDeviceMetadataWidget.WifiSuperMeterData">
                 <cti:msg2 var="label" key=".configuredApBssid"/>
@@ -40,6 +46,10 @@
                 <c:forEach var="pair" items="${csrMetadata}">
                     <%@ include file="metadataRow.jspf" %>
                 </c:forEach>
+                <c:if test="${!empty reverseLookup}">
+                    <cti:msg2 var="reverseLookupLabel" key="yukon.web.widgets.RfnDeviceMetadataWidget.REVERSE_LOOKUP"/>
+                    <tags:nameValue name="${reverseLookupLabel}">${fn:escapeXml(reverseLookup)}</tags:nameValue>
+                </c:if>
             </tags:nameValueContainer>
         </div>
     </c:otherwise>

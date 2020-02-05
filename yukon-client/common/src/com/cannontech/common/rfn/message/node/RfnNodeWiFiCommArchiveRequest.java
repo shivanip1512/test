@@ -48,6 +48,6 @@ public class RfnNodeWiFiCommArchiveRequest implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("RfnNodeCommArchiveRequest [nodeComms=%s]", nodeWiFiComms);
+        return String.format("RfnNodeWiFiCommArchiveRequest [nodeComms=%s]", nodeWiFiComms);
     }
 }
