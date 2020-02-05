@@ -53,7 +53,7 @@ yukon.mapping = (function () {
         if (dateTimeInstant == null) {
             $("#js-route-details-container").find(".js-last-update-date-time").text($(".js-loading-text").val());
         } else {
-            $("#js-route-details-container").find(".js-last-update-date-time").text(" " + moment(dateTimeInstant.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
+            $("#js-route-details-container").find(".js-last-update-date-time").text(" " + moment(dateTimeInstant).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
         }
     },
 
@@ -714,9 +714,6 @@ yukon.mapping = (function () {
                         $.getJSON(yukon.url('/stars/comprehensiveMap/getRouteDetails'), function (response) {
                             _setRouteLastUpdatedDateTime(response.routeLastUpdatedDateTime);
                             $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !response.isUpdatePossible);
-                            if (response.updateRoutes) {
-                                yukon.mapping.showHideAllRoutes();
-                            }
                         });
                     }, yg.rp.updater_delay);
                 }
