@@ -238,27 +238,16 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                 auth.setUsername(settings.getUpdateServerLogin().getUsername());
                 auth.setPassword(settings.getUpdateServerLogin().getPassword());
             }
-            
-            Integer port = null;
-            if (settings.isUseDefaultPort()) {
-                if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
-                    port = RfnGatewayService.VIRTUAL_GATEWAY_DEFAULT_PORT;
-                } else {
-                    port = RfnGatewayService.GATEWAY_DEFAULT_PORT;
-                }
-            } else {
-                port = settings.getPort();
-            }
-            
+
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())
            .ipAddress(settings.getIpAddress())
+           .port(String.valueOf(settings.getPort()))
            .name(settings.getName())
            .admin(settings.getAdmin())
            .superAdmin(settings.getSuperAdmin())
            .updateServerUrl(updateServerUrl)
            .updateServerLogin(auth)
-           .port(String.valueOf(port))
            .build();
             
             gateway.setData(data);
