@@ -32,10 +32,7 @@ public class HoneywellSetpointGearFieldsValidator extends ProgramGearFieldsValid
         
         //Check Setpoint
         gearValidatorHelper.checkSetpointOffset(honeywellSetpointGear.getSetpointOffset(), errors);
-        
-        //Check Precool Setpoint
-        gearValidatorHelper.checkPrecoolOffset(honeywellSetpointGear.getPrecoolOffset(), errors);
-        
+
         // Check for How to Stop Control
         gearValidatorHelper.checkHowToStopControl(honeywellSetpointGear.getHowToStopControl(), getControlMethod(), errors);
 

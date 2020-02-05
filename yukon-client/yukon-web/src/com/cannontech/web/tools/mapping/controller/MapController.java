@@ -78,6 +78,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -135,6 +136,7 @@ public class MapController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private NmNetworkService nmNetworkService;
+    @Autowired private RfnGatewayService rfnGatewayService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -254,7 +256,7 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
-                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
                 if (includePrimaryRoute) {
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
                 }
@@ -274,10 +276,13 @@ public class MapController {
                             statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
                         }
                         model.addAttribute("deviceStatus", statusString);
-                        RfnGateway rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
-                        if(rfnGateway != null) {
-                            model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
-                            model.addAttribute("primaryGateway", rfnGateway);
+                        RfnDevice gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                        if(gateway != null) {
+                            RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
+                            if(rfnGateway != null) {
+                                model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
+                                model.addAttribute("primaryGateway", rfnGateway);
+                            }
                         }
                         if(metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
                             NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);

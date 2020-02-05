@@ -14,6 +14,7 @@ yukon.mapping = (function () {
  
     var
     _initialized = false,
+    _updateNetworkTreeInterval,
     
     //Line Color depends on ETX Band 1 - #006622(GREEN), 2 - #669900(LIGHT GREEN), 3 - #CCA300(YELLOW), 4 - #FF6600(ORANGE), 5 and up - #FF0000(RED)
     _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
@@ -48,6 +49,14 @@ yukon.mapping = (function () {
     _allRoutesLineFeatures = [],
     _allRoutesDashedLineFeatures = [],
     
+    _setRouteLastUpdatedDateTime = function (dateTimeInstant) {
+        if (dateTimeInstant == null) {
+            $("#js-route-details-container").find(".js-last-update-date-time").text($(".js-loading-text").val());
+        } else {
+            $("#js-route-details-container").find(".js-last-update-date-time").text(" " + moment(dateTimeInstant.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
+        }
+    },
+
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
     
@@ -152,6 +161,18 @@ yukon.mapping = (function () {
             
             if (_initialized) return;
             
+            $(document).on("click", ".js-request-route-update", function () {
+                $(".js-request-route-update").attr('disabled', true);
+                $.post(yukon.url("/stars/comprehensiveMap/requestNetworkTreeUpdate"), function (response) {
+                    if (response.isUpdateRequestSent) {
+                        yukon.ui.alertSuccess(response.msgText);
+                    } else {
+                        yukon.ui.alertError(response.msgText);
+                    }
+                    $(window).scrollTop($('#user-message').offset().top);
+                });
+            });
+
             /** Redirects to new device map network page **/
             $(document).on('click', '.js-device-map', function() {
                 var deviceId = $(this).data('deviceId');
@@ -664,7 +685,7 @@ yukon.mapping = (function () {
         },
         
         getFeatureFromData: function(node) {
-            var nodeData = Object.keys(node.data).map(function (key) {                
+            var nodeData = Object.keys(node.data).map(function (key) {
                 return node.data[key];
             });
             if (nodeData[0] != null) {
@@ -675,18 +696,47 @@ yukon.mapping = (function () {
         showHideAllRoutes: function(gatewayIds) {
             $('.js-no-location-message').addClass('dn');
             var checked = $('.js-all-routes').find(':checkbox').prop('checked');
+            // TODO: Remove this if condition after adding this functionality support to collection actions and map devices page.
+            if ($("#js-route-details-container").exists()) {
+                $("#js-route-details-container").toggleClass("dn", !checked);
+            }
             if (!checked) {
                 yukon.mapping.removeAllRoutesLayers();
+                // TODO: Remove this if condition after adding this functionality support to collection actions and map devices page.
+                if ($("#js-route-details-container").exists()) {
+                    clearInterval(_updateNetworkTreeInterval);
+                }
             } else {
+                // TODO: Remove this if condition after adding this functionality support to collection actions and map devices page.
+                if ($("#js-route-details-container").exists()) {
+                    _setRouteLastUpdatedDateTime(null); // It may take few seconds to fetch the RouteLastUpdatedDateTime value. Meanwhile display test "Loading..."
+                    _updateNetworkTreeInterval = setInterval(function () {
+                        $.getJSON(yukon.url('/stars/comprehensiveMap/getRouteDetails'), function (response) {
+                            _setRouteLastUpdatedDateTime(response.routeLastUpdatedDateTime);
+                            $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !response.isUpdatePossible);
+                            if (response.updateRoutes) {
+                                yukon.mapping.showHideAllRoutes();
+                            }
+                        });
+                    }, yg.rp.updater_delay);
+                }
+
                 var mapContainer = $('#map-container'),
-                    primaryRoutePreviousPoints;
+                       primaryRoutePreviousPoints;
                 yukon.ui.block(mapContainer);
                 $.getJSON(yukon.url('/stars/comprehensiveMap/allPrimaryRoutes?gatewayIds=' + gatewayIds))
                 .done(function (json) {
                     //check for error
                     if (json.errorMsg) {
                         yukon.ui.alertError(json.errorMsg);
+                        // TODO: Remove this if condition after adding this functionality support to collection actions and map devices page.
+                        if ($("#js-route-details-container").exists()) {
+                            clearInterval(_updateNetworkTreeInterval);
+                        }
                     } else if (json.tree) {
+                        _setRouteLastUpdatedDateTime(json.routeLastUpdatedDateTime);
+                        $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !json.isUpdatePossible)
+                        
                         //gateway is top node
                         for (var x in json.tree) {
                             var currentNode = json.tree[x],
@@ -744,7 +794,6 @@ yukon.mapping = (function () {
                             
                         }
                     }
-
                     yukon.ui.unblock(mapContainer);
                 });
             }

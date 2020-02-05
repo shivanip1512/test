@@ -218,6 +218,12 @@
     <ClCompile Include="ecobeeSetpointGear.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="honeywellSetPointGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="test_lmobjects_honeywell.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lmgroupnest.h">
@@ -248,6 +254,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ecobeeSetpointGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\honeywellControlInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

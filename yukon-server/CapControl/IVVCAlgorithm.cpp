@@ -645,6 +645,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         if (CtiCCCapBankPtr pendingBank = subbus->getPendingCapBank())
         {
+            state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+
             state->setControlledBankId(pendingBank->getPaoId());
             state->setTimeStamp(subbus->getLastOperationTime());
         }

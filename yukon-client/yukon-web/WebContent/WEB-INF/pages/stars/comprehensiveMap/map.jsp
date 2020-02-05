@@ -101,6 +101,7 @@
             <cti:button renderMode="buttonImage" title="${elevation}" icon="icon-trend-up" classes="fr js-elevation-layer"/>
         </div>
         <div id="legend" class="dn" style="min-height:20px;"></div>
+        <%@ include file="routeUpdateDetails.jsp" %>
     </div>
     
     <cti:includeScript link="OPEN_LAYERS"/>

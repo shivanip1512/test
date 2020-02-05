@@ -175,41 +175,20 @@ INSERT INTO YukonRoleProperty VALUES (-20221, -202, 'Device Data Monitor', 'fals
 /* End YUK-11906 */
 
 /* Start YUK-11927 */
-/* @start-block */
-DECLARE 
-    v_regulatorCommReporting VARCHAR2(60);
-    v_capbankCommReporting VARCHAR2(60);
-    v_monitorCommReporting VARCHAR2(60);
-BEGIN
-    /* @start-cparm CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO */
-    v_regulatorCommReporting := '100';
-    /* @end-cparm */
+INSERT INTO CCStrategyTargetSettings
+    SELECT StrategyID, 'Comm Reporting Percentage', '100', 'REGULATOR'
+    FROM CapControlStrategy
+    WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 
-    /* @start-cparm CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO */
-    v_capbankCommReporting := '100';
-    /* @end-cparm */
+INSERT INTO CCStrategyTargetSettings
+    SELECT StrategyID, 'Comm Reporting Percentage', '100', 'CAPBANK'
+    FROM CapControlStrategy
+    WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 
-    /* @start-cparm CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO */
-    v_monitorCommReporting := '100';
-    /* @end-cparm */
-
-    INSERT INTO CCStrategyTargetSettings
-        SELECT StrategyID, 'Comm Reporting Percentage', v_regulatorCommReporting, 'REGULATOR'
-        FROM CapControlStrategy
-        WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
-
-    INSERT INTO CCStrategyTargetSettings
-        SELECT StrategyID, 'Comm Reporting Percentage', v_capbankCommReporting, 'CAPBANK'
-        FROM CapControlStrategy
-        WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
-
-    INSERT INTO CCStrategyTargetSettings
-        SELECT StrategyID, 'Comm Reporting Percentage', v_monitorCommReporting, 'VOLTAGE_MONITOR'
-        FROM CapControlStrategy
-        WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
-END;
-/
-/* @end-block */
+INSERT INTO CCStrategyTargetSettings
+    SELECT StrategyID, 'Comm Reporting Percentage', '100', 'VOLTAGE_MONITOR'
+    FROM CapControlStrategy
+    WHERE ControlUnits = 'INTEGRATED_VOLT_VAR';
 /* End YUK-11927 */
 
 /* Start YUK-11913 */

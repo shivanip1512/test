@@ -138,7 +138,6 @@ public class ItronDeviceDataParser {
             log.info("Unknown Itron data category: {}", rowData[1]);
             return pointValues;
         }
-        
         String eventTime = rowData[3]; //ISO 8601 YYYY-MM-DD
         String source = rowData[5]; //Mac address
         String[] text = rowData[9].split(",");//Tokenized CSV text

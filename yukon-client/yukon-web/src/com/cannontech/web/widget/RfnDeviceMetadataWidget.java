@@ -123,14 +123,14 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
 
         try {
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
-                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+                Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
             RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
             
             //gateway can be null if replay from NM didn't contain gateway info
-            RfnGateway gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadataMulti);
+            RfnDevice gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadataMulti);
             metadata.put(RfnMetadata.PRIMARY_GATEWAY, gateway.getName());
             
-            NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+            NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
             RfnIdentifier reverseIdentifier = comm.getGatewayRfnIdentifier();
             
             RfnDevice reverseGateway = rfnDeviceCreationService.createIfNotFound(reverseIdentifier);

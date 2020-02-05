@@ -1,5 +1,6 @@
 package com.cannontech.common.util.jms.api;
 
+
 import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
 import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
@@ -82,8 +83,6 @@ import com.cannontech.common.rfn.message.network.RfnParentReply;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
-import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
-import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveResponse;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
@@ -1106,20 +1105,6 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
-
-    public static JmsApi<RfnNodeCommArchiveRequest,?,RfnNodeCommArchiveResponse> RFN_NODE_COMM_ARCHIVE =
-            JmsApi.builder(RfnNodeCommArchiveRequest.class, RfnNodeCommArchiveResponse.class)
-                  .name("RFN Node Comm Archive")
-                  .description("A notification from Network Manager to Yukon to archive gateway to node mapping.")
-                  .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnNodeCommArchiveRequest"))
-                  .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnNodeCommArchiveResponse"))
-                  .requestMessage(RfnNodeCommArchiveRequest.class)
-                  .responseMessage(RfnNodeCommArchiveResponse.class)
-                  .sender(NETWORK_MANAGER)
-                  .sender(YUKON_WEBSERVER_DEV_PAGES)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
     
     public static JmsApi<RfnNodeWiFiCommArchiveRequest,?,RfnNodeWiFiCommArchiveResponse> RFN_NODE_WIFI_COMM_ARCHIVE =
             JmsApi.builder(RfnNodeWiFiCommArchiveRequest.class, RfnNodeWiFiCommArchiveResponse.class)
@@ -1250,7 +1235,6 @@ public final class JmsApiDirectory {
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE,
                 RFN_STATUS_ARCHIVE,
-                RFN_NODE_COMM_ARCHIVE,
                 RFN_NODE_WIFI_COMM_ARCHIVE);
         
         addApis(jmsApis, SMART_NOTIFICATION,

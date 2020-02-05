@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -5,9 +6,16 @@
 <tags:nameValueContainer2>
 
     <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.COMM_STATUS">
-        <cti:pointStatus pointId="${wifiData.commStatusPoint.pointID}"/>
-        <cti:pointValue pointId="${wifiData.commStatusPoint.pointID}" format="VALUE"/>&nbsp;
-        <tags:historicalValue pao="${device}" pointId="${wifiData.commStatusPoint.pointID}"/>
+        <c:choose>
+            <c:when test="${wifiData.commStatusPoint.pointID != null}">
+                <cti:pointStatus pointId="${wifiData.commStatusPoint.pointID}"/>
+                <cti:pointValue pointId="${wifiData.commStatusPoint.pointID}" format="VALUE"/>&nbsp;
+                <tags:historicalValue pao="${device}" pointId="${wifiData.commStatusPoint.pointID}"/>
+            </c:when>
+            <c:otherwise>
+                <span class="error"><i:inline key="yukon.common.attributes.pointNotFound"/></span>
+            </c:otherwise>
+        </c:choose>
     </tags:nameValue2>
     
     <tags:nameValue2 nameKey="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">

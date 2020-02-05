@@ -56,6 +56,7 @@ public class GatewaySettingsController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
+    private static final int DEFAULT_PORT = 32030;
     
     @Autowired private CronExpressionTagService cronService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
@@ -78,7 +79,9 @@ public class GatewaySettingsController {
         auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
 
         settings.setUpdateServerLogin(auth);
-        settings.setUseDefault(true);
+        settings.setUseDefaultPort(true);
+        settings.setUseDefaultUpdateServer(true);
+        settings.setPort(DEFAULT_PORT);
         
         model.addAttribute("settings", settings);
         

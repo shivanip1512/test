@@ -1,5 +1,6 @@
 package com.cannontech.web.dr.setup;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -94,9 +95,15 @@ public class LMSetupFilterController {
 
         model.addAttribute("filterByTypes", LmSetupFilterType.values());
         model.addAttribute("lmSetupFilter", lmSetupFilter);
-        model.addAttribute("loadGroupTypes", PaoType.getAllLMGroupTypes());
-        model.addAttribute("loadProgramTypes", PaoType.getDirectLMProgramTypes());
-        model.addAttribute("gearTypes", GearControlMethod.values());
+        model.addAttribute("loadGroupTypes", PaoType.getAllLMGroupTypes().stream()
+                        .sorted(Comparator.comparing(PaoType::getDbString, String.CASE_INSENSITIVE_ORDER))
+                        .collect(Collectors.toList()));
+        model.addAttribute("loadProgramTypes", PaoType.getDirectLMProgramTypes().stream()
+                        .sorted(Comparator.comparing(PaoType::name, String.CASE_INSENSITIVE_ORDER))
+                        .collect(Collectors.toList()));
+        model.addAttribute("gearTypes", GearControlMethod.getGearTypesByProgramType(PaoType.getDirectLMProgramTypes())
+                        .stream().sorted(Comparator.comparing(GearControlMethod::getDisplayName, String.CASE_INSENSITIVE_ORDER))
+                        .collect(Collectors.toList()));
         model.addAttribute("operationalStates", OperationalState.values());
         model.addAttribute("isFilterByGearSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.GEAR);
         model.addAttribute("isFilterByLoadProgramSelected", lmSetupFilter.getFilterByType() == LmSetupFilterType.LOAD_PROGRAM);

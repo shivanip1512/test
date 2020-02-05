@@ -696,6 +696,7 @@ const string CtiLMProgramDirectGear::SEPTempOffsetMethod = "SEPTemperatureOffset
 const string CtiLMProgramDirectGear::EcobeeCycleMethod = "EcobeeCycle";
 const string CtiLMProgramDirectGear::EcobeeSetpointMethod = "EcobeeSetpoint";
 const string CtiLMProgramDirectGear::HoneywellCycleMethod = "HoneywellCycle";
+const string CtiLMProgramDirectGear::HoneywellSetpointMethod = "HoneywellSetpoint";
 const string CtiLMProgramDirectGear::NestCriticalCycleMethod = "NestCriticalCycle";
 const string CtiLMProgramDirectGear::NestStandardCycleMethod = "NestStandardCycle";
 const string CtiLMProgramDirectGear::ItronCycleMethod = "ItronCycle";

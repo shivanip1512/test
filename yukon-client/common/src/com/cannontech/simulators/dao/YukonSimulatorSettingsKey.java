@@ -126,7 +126,7 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIM_TREE_MAX_HOP(9, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_TREE_NODES_ONE_HOP(350, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIM_NUM_DEVICES_PER_GW(5000, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIM_CREATE_GW(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIM_CREATE_GW(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
 
     //IvvcSimulatorSettings
     IVVC_SIMULATOR_INCREASED_SPEED_MODE(false, InputTypeFactory.booleanType(), SimulatorType.IVVC),
