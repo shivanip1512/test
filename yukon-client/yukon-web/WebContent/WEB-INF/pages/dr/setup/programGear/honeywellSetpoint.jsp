@@ -1,20 +1,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:msgScope paths="yukon.web.modules.dr.setup.gear">
-    <cti:msg2 var="precoolOffsetLbl" key=".precoolOffset"/>
-    <cti:msg2 var="preheatOffsetLbl" key=".preheatOffset"/>
-    
-    <input type="hidden" class="js-precool-offset-lbl" value="${precoolOffsetLbl}"/>
-    <input type="hidden" class="js-preheat-offset-lbl" value="${preheatOffsetLbl}"/>
-
-    <c:choose>
-        <c:when test="${programGear.fields.mode == 'HEAT'}">
-            <c:set var="modeLblKey" value=".preheatOffset"/>
-        </c:when>
-        <c:otherwise>
-            <c:set var="modeLblKey" value=".precoolOffset"/>
-        </c:otherwise>
-    </c:choose>
     <div class="column-12-12 clearfix">
         <div class="column one">
             <tags:sectionContainer2 nameKey="controlParameters" styleClass="js-hw-temperature-ctrl-prms">
@@ -47,9 +33,6 @@
                     <tags:nameValue2 nameKey=".setpointOffset">
                         <cti:msg2 var="fahrenheit" key="yukon.common.fahrenheit"/>
                         <tags:numeric path="fields.setpointOffset" units="${fahrenheit}" size="3" minValue="-10" maxValue="10" />
-                    </tags:nameValue2>
-                    <tags:nameValue2 nameKey="${modeLblKey}" nameClass="js-setpoint-mode-td">
-                        <tags:numeric path="fields.precoolOffset" units="${fahrenheit}" size="3" minValue="-10" maxValue="10" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".howToStopControl">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
