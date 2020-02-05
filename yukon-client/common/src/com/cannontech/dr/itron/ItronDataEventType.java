@@ -38,6 +38,7 @@ public enum ItronDataEventType {
     EVENT_STOPPED(0x000F, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
     EVENT_CANCELED(0x0010, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
     MEMORY_MAP_LOST(0x8081, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
+    CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1),
     
     //Events where the Relay Number for the Attribute is obtained from the payload.
     LOAD_ON(0x0014, null, 0, 1, 3),
@@ -49,6 +50,7 @@ public enum ItronDataEventType {
 
     //Events where the values are obtained from the payload.
     AVERAGE_VOLTAGE(0x809D, BuiltInAttribute.AVERAGE_VOLTAGE, 0, 2, null),
+    EVENT_SUPERSEDED(0x0012, BuiltInAttribute.EVENT_SUPERSEDED, 0, 4, null),
     FIRMWARE_UPDATE(0x0009, BuiltInAttribute.FIRMWARE_VERSION, 0, 2, null),
     RADIO_LINK_QUALITY(0x808B, BuiltInAttribute.RADIO_LINK_QUALITY, 0, 1, null),
     EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null),
@@ -82,7 +84,8 @@ public enum ItronDataEventType {
         controlEventTypes = ImmutableSet.of(
                                             EVENT_STARTED,
                                             EVENT_STOPPED,
-                                            EVENT_CANCELED);
+                                            EVENT_CANCELED,
+                                            EVENT_SUPERSEDED);
     }
     
     private static Map<Long, ItronDataEventType> ItronEventTypeFromHexMap = new HashMap<>();

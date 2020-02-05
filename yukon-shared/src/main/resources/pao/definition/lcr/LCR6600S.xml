@@ -64,7 +64,9 @@
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
         
         <pointInfo name="Memory Map Lost" attributes="MEMORY_MAP_LOST"/>
+        <pointInfo name="Configuration Updated Hash" attributes="CONFIGURATION_UPDATED_HASH"/>
         
+        <pointInfo name="Event Superseded" attributes="EVENT_SUPERSEDED"/>
         <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="Time Lost" attributes="TIME_LOST"/>
         <pointInfo name="Radio Link Quality" attributes="RADIO_LINK_QUALITY"/>
