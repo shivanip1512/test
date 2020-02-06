@@ -82,7 +82,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                 return;
             }
 
-            if (oldStatus.getLastUpdate().isBefore(newStatus.getLastUpdate())) {
+            if (oldStatus.getLastUpdate().isAfter(newStatus.getLastUpdate())) {
                 log.info("Status recieved is older then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
                          newStatus,
                          oldStatus);
