@@ -312,9 +312,9 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();  
         try {
             List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
-            networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
             json.put("tree", tree);
-            json.put("routeLastUpdatedDateTime", networkTreeService.getNetworkTreeUpdateTime());
+            networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
+            json.put("routeLastUpdatedDateTime", networkTreeUpdateTime == null ? null : networkTreeUpdateTime.getMillis());
             json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
@@ -326,8 +326,9 @@ public class ComprehensiveMapController {
     public @ResponseBody Map<String, Object> getRouteDetails () {
         Map<String, Object> json = Maps.newHashMap();
         Instant lastUpdateDateTime = networkTreeService.getNetworkTreeUpdateTime();
-        json.put("routeLastUpdatedDateTime", lastUpdateDateTime);
+        json.put("routeLastUpdatedDateTime", lastUpdateDateTime == null ? null : lastUpdateDateTime.getMillis());
         json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
+        json.put("updateRoutes", networkTreeService.isNetworkTreeUpdated(networkTreeUpdateTime));
         return json;
     }
 

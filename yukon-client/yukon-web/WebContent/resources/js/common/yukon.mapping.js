@@ -53,7 +53,7 @@ yukon.mapping = (function () {
         if (dateTimeInstant == null) {
             $("#js-route-details-container").find(".js-last-update-date-time").text($(".js-loading-text").val());
         } else {
-            $("#js-route-details-container").find(".js-last-update-date-time").text(" " + moment(dateTimeInstant.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
+            $("#js-route-details-container").find(".js-last-update-date-time").text(" " + moment(dateTimeInstant).tz(yg.timezone).format(yg.formats.date.both_with_ampm));
         }
     },
 
@@ -736,7 +736,7 @@ yukon.mapping = (function () {
                     } else if (json.tree) {
                         _setRouteLastUpdatedDateTime(json.routeLastUpdatedDateTime);
                         $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !json.isUpdatePossible)
-                        
+
                         //gateway is top node
                         for (var x in json.tree) {
                             var currentNode = json.tree[x],
