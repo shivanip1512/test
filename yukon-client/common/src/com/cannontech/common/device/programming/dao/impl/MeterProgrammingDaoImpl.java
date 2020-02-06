@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.jfree.util.Log;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -89,7 +90,7 @@ public class MeterProgrammingDaoImpl implements MeterProgrammingDao {
     }
     
     @Override
-    public void updateMeterProgramStatusToInitiating(int deviceId, long lastUpdate) {
+    public void updateMeterProgramStatusToInitiating(int deviceId, Instant lastUpdate) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.update("MeterProgramStatus");
         params.addValue("LastUpdate", lastUpdate);

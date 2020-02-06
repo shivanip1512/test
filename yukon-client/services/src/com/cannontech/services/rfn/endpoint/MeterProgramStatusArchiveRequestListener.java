@@ -57,7 +57,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                 return;
             } else {
                 log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
-                meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, request.getTimeStamp());
+                meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, new Instant(request.getTimeStamp()));
                 return;
             }
         }
