@@ -27,6 +27,8 @@ yukon.dr.setup.list = (function() {
             }
             if (!$("#js-gear-types").is(":visible")) {
                 $("#js-gear-types").val("").trigger("chosen:updated");
+                var picker = yukon.pickers['programPicker'];
+                picker.clearSelected();
             }
         }
         $('#setupFilter').submit();
