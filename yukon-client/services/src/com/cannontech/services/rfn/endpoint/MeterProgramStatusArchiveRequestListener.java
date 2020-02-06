@@ -55,14 +55,13 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                 log.info("(Request to initiate download recieved and is older then existing status. Discarding the record. Existing status {}",
                          oldStatus);
                 return;
-            } else {
-                log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
-                meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, request.getTimeStamp());
-                return;
             }
+            log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
+            meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, new Instant(request.getTimeStamp()));
+            return;
         }
         
-        StringBuilder configId = new StringBuilder(request.getConfigurationId().toString());
+        StringBuilder configId = new StringBuilder(request.getConfigurationId());
 
         MeterProgramSource prefix = MeterProgramSource.getByPrefix(Character.toString(configId.charAt(0)));
         configId.deleteCharAt(0);
@@ -71,49 +70,48 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
 
         if (prefix == null) {
             log.error("Configuration Id {} in {} doesn't contain recognizable prefix, discarding response", configId, request);
-        } else {
-            MeterProgramStatus newStatus = getMeterProgramStatus(request, prefix);
-            MeterProgramStatus oldStatus = null;
-            try {
-                oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
-            } catch (@SuppressWarnings("unused") NotFoundException e) {
-                log.info("Creating status. \nNew Status {}", newStatus);
-                meterProgrammingDao.createMeterProgramStatus(newStatus);
-                return;
-            }
-
-            if (oldStatus.getLastUpdate().isBefore(newStatus.getLastUpdate())) {
-                log.info("Status recieved is older then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
-                         newStatus,
-                         oldStatus);
-                return;
-            }
-
-            // If a send is in progress, a failure event should not interrupt
-            // the current upload. Only when the upload is complete (in Waiting
-            // Verification) should failure events be recorded
-            if (newStatus.getStatus() == ProgrammingStatus.FAILED && oldStatus.getStatus() == ProgrammingStatus.UPLOADING) {
-                log.info("Status recieved is failure but existing status is uploading. Discarding the record. \nNew Status {} \nExisting status {}",
-                         newStatus,
-                         oldStatus);
-                return;
-            }
-            MeterProgram program = meterProgrammingDao.getProgramByDeviceId(deviceId);
-            if (!program.getGuid().equals(newStatus.getReportedGuid())) {
-                if (newStatus.getStatus() == ProgrammingStatus.FAILED) {
-                    log.info("Status recieved is failure and guids are mismatched. Discarding the record. \nNew Status {} \nExisting status {}",
-                             newStatus,
-                             oldStatus);
-                    return;
-                } else {
-                    log.info("Status recieved is failure and guids are mismatched. Updating status to mismatched");
-                    newStatus.setStatus(ProgrammingStatus.MISMATCHED);
-                }
-            }
-            log.info("Updating meter program status.  \nNew Status {} \nExisting status {}", newStatus, oldStatus);
-            meterProgrammingDao.updateMeterProgramStatus(newStatus);
+            return;
         }
 
+        MeterProgramStatus newStatus = getMeterProgramStatus(request, prefix);
+        MeterProgramStatus oldStatus = null;
+        try {
+            oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
+        } catch (@SuppressWarnings("unused") NotFoundException e) {
+            log.info("Creating status. \nNew Status {}", newStatus);
+            meterProgrammingDao.createMeterProgramStatus(newStatus);
+            return;
+        }
+
+        if (oldStatus.getLastUpdate().isAfter(newStatus.getLastUpdate())) {
+            log.info("Status recieved is older then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
+                     newStatus,
+                     oldStatus);
+            return;
+        }
+
+        // If a send is in progress, a failure event should not interrupt
+        // the current upload. Only when the upload is complete (in Waiting
+        // Verification) should failure events be recorded
+        if (newStatus.getStatus() == ProgrammingStatus.FAILED && oldStatus.getStatus() == ProgrammingStatus.UPLOADING) {
+            log.info("Status recieved is failure but existing status is uploading. Discarding the record. \nNew Status {} \nExisting status {}",
+                     newStatus,
+                     oldStatus);
+            return;
+        }
+        MeterProgram program = meterProgrammingDao.getProgramByDeviceId(deviceId);
+        if (!program.getGuid().equals(newStatus.getReportedGuid())) {
+            if (newStatus.getStatus() == ProgrammingStatus.FAILED) {
+                log.info("Status recieved is failure and guids are mismatched. Discarding the record. \nNew Status {} \nExisting status {}",
+                         newStatus,
+                         oldStatus);
+                return;
+            }
+            log.info("Status recieved is failure and guids are mismatched. Updating status to mismatched");
+            newStatus.setStatus(ProgrammingStatus.MISMATCHED);
+        }
+        log.info("Updating meter program status.  \nNew Status {} \nExisting status {}", newStatus, oldStatus);
+        meterProgrammingDao.updateMeterProgramStatus(newStatus);
     }
 
     private MeterProgramStatus getMeterProgramStatus(MeterProgramStatusArchiveRequest request, MeterProgramSource prefix) {
