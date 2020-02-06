@@ -729,7 +729,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Color color = Color.values()[i.getAndIncrement()];
             RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayIdentifier);
             Set<RfnIdentifier> devices = Sets.newHashSet(gatewayToDeviceMap.get(gatewayIdentifier));
-            log.debug("Gateway {} devices {}", gateway, devices);
+            log.debug("Gateway {} devices {}", gateway.getName(), devices.size());
             devices.add(gatewayIdentifier);
             addDevicesAndLegendToMap(map, color, gateway.getName(), devices);
         }
