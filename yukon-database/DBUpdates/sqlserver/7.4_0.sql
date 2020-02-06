@@ -364,6 +364,13 @@ DELETE FROM POINT WHERE POINTID IN (
 INSERT INTO DBUpdates VALUES ('YUK-21060', '7.4.0', GETDATE());
 /* @end YUK-21060 */
 
+/* @start YUK-21475 */
+ALTER TABLE MeterProgramStatus
+ALTER COLUMN Status VARCHAR(100) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-21475', '7.4.0', GETDATE());
+/* @end YUK-21475 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
