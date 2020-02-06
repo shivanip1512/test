@@ -20,7 +20,7 @@ public class NetworkTreeUpdateTimeResponse implements Serializable {
      *      which can be used for performance evaluation and statistics collection.</li>
      * <li> By default the network tree is built from 9 days of route data before the StartTime.</li>
      * <li> This is also included in RfnMetadataMultiResponse.</li>
-     * <li> Either StartTime or EndTime can be used as a tree identifier.
+     * <li> Either StartTime or EndTime can be used as a tree identifier.</li>
      * </ul>
      */
     private long treeGenerationStartTimeMillis; 
@@ -28,10 +28,10 @@ public class NetworkTreeUpdateTimeResponse implements Serializable {
     /**
      * EndTime is used in the following cases:
      * <ul>
-     * <li> (EndTime - StartTime): See above
-     * <li> Yukon will disable the refresh button for half an hour from the EndTime.
-     * <li> Either StartTime or EndTime can be used as a tree identifier.
-     * <ul> 
+     * <li> (EndTime - StartTime): See above</li>
+     * <li> Yukon will disable the refresh button for half an hour from the EndTime.</li>
+     * <li> Either StartTime or EndTime can be used as a tree identifier.</li>
+     * </ul> 
      */
     private long treeGenerationEndTimeMillis;
     
