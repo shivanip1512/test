@@ -227,6 +227,9 @@
                 <span class="fr form-control"><i:inline key=".liveUpdate"/></span>
             </c:if>
         </div>
+        <div style="padding-top:30px">
+            <%@ include file="/WEB-INF/pages/stars/comprehensiveMap/routeUpdateDetails.jsp" %>
+        </div>
     
     </div>
 
