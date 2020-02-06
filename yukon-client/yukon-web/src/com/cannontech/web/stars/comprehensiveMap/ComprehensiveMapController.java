@@ -50,6 +50,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResu
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
+import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -201,9 +202,8 @@ public class ComprehensiveMapController {
     public void download(String groupName, YukonUserContext userContext, HttpServletResponse response) throws IOException {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        //device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n, link cost
-        //TODO: eventually add hop count and total link cost??
-        String[] headerRow = new String[11];
+        //device name, meter number, device type, sensor s/n, lat, long, primary gateway, comm status, mac address, node s/n, link cost, hop count, descendant count
+        String[] headerRow = new String[13];
         
         String baseKey = "yukon.web.modules.operator.mapNetwork.";
 
@@ -218,6 +218,8 @@ public class ComprehensiveMapController {
         headerRow[8] = accessor.getMessage(baseKey + "macAddress");
         headerRow[9] = accessor.getMessage(baseKey + "nodeSN");
         headerRow[10] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY");
+        headerRow[11] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.HOP_COUNT");
+        headerRow[12] = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT");
         
         DeviceGroup group = deviceGroupService.findGroupName(groupName);
         DeviceCollection collection = deviceGroupCollectionHelper.buildDeviceCollection(group);
@@ -233,7 +235,9 @@ public class ComprehensiveMapController {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY,
-                                                                                         RfnMetadataMulti.NODE_DATA));
+                                                                                         RfnMetadataMulti.NODE_DATA,
+                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA,
+                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
         } catch (NmCommunicationException e1) {
             log.warn("caught exception in download", e1);
         } 
@@ -245,7 +249,7 @@ public class ComprehensiveMapController {
         log.debug("Got data from NM for {} devices", metaData.keySet().size());
         for (RfnIdentifier device : metaData.keySet()) {
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
-            String[] dataRow = new String[11];
+            String[] dataRow = new String[13];
             LiteYukonPAObject pao = cache.getAllPaosMap().get(rfnDevice.getPaoIdentifier().getPaoId());
             dataRow[0] = pao.getPaoName();
             SimpleMeter meter = cache.getAllMeters().get(rfnDevice.getPaoIdentifier().getPaoId());
@@ -284,6 +288,14 @@ public class ComprehensiveMapController {
                     String linkQualityFormatted = accessor.getMessage(linkQuality.getFormatKey());
                     dataRow[10] = linkQualityFormatted;
                 }
+                if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA)) {
+                    RouteData routeData = (RouteData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                    dataRow[11] = String.valueOf(routeData.getHopCount());
+                }
+                if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+                    dataRow[12] = String.valueOf(metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
+                }
+                
             }
             dataRows.add(dataRow);
         }
@@ -312,9 +324,9 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();  
         try {
             List<Node<Pair<Integer, FeatureCollection>>> tree = networkTreeService.getNetworkTree(Arrays.asList(gatewayIds));
-            networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
             json.put("tree", tree);
-            json.put("routeLastUpdatedDateTime", networkTreeService.getNetworkTreeUpdateTime());
+            networkTreeUpdateTime = networkTreeService.getNetworkTreeUpdateTime();
+            json.put("routeLastUpdatedDateTime", networkTreeUpdateTime == null ? null : networkTreeUpdateTime.getMillis());
             json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
         } catch (NmNetworkException | NmCommunicationException e) {
             json.put("errorMsg", e.getMessage());
@@ -326,8 +338,9 @@ public class ComprehensiveMapController {
     public @ResponseBody Map<String, Object> getRouteDetails () {
         Map<String, Object> json = Maps.newHashMap();
         Instant lastUpdateDateTime = networkTreeService.getNetworkTreeUpdateTime();
-        json.put("routeLastUpdatedDateTime", lastUpdateDateTime);
+        json.put("routeLastUpdatedDateTime", lastUpdateDateTime == null ? null : lastUpdateDateTime.getMillis());
         json.put("isUpdatePossible", networkTreeService.isNetworkTreeUpdatePossible());
+        json.put("updateRoutes", networkTreeService.isNetworkTreeUpdated(networkTreeUpdateTime));
         return json;
     }
 
