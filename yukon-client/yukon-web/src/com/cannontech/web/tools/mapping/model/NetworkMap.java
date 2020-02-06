@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.geojson.FeatureCollection;
 
@@ -20,10 +21,6 @@ public class NetworkMap {
 
     public HashMap<String, FeatureCollection> getMappedDevices() {
         return mappedDevices;
-    }
-
-    public void setMappedDevices(HashMap<String, FeatureCollection> mappedDevices) {
-        this.mappedDevices = mappedDevices;
     }
 
     public List<Legend> getLegend() {
@@ -62,11 +59,16 @@ public class NetworkMap {
     public String toString() {
         StringBuilder builder = new StringBuilder();
         builder.append(System.getProperty("line.separator"));
-        builder.append(legend);
+        builder.append("Legend:"+legend);
+        AtomicInteger total = new AtomicInteger(0);
         mappedDevices.forEach((k, v) -> {
             builder.append(System.getProperty("line.separator"));
             builder.append(" color:" + k + " - devices:" + v.getFeatures().size());
+            total.set(total.get() + v.getFeatures().size());
         });
+        builder.append(System.getProperty("line.separator"));
+        builder.append("Total:" + total.get());
+        builder.append(System.getProperty("line.separator"));
         builder.append("devicesWithoutLocation=" + getDevicesWithoutLocation().size());
         return builder.toString();
     }
