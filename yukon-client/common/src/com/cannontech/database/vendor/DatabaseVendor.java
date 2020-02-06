@@ -21,13 +21,14 @@ public enum DatabaseVendor {
     ORACLE11G("Oracle", 11),
     ORACLE12C("Oracle", 12),
     ORACLE18C("Oracle", 18),
+    ORACLE19C("Oracle", 19),
     ORACLE_UNKNOWN("Oracle"),
     UNKNOWN("");
 
     private static Logger logger = YukonLogManager.getLogger(DatabaseVendor.class);
 
     private static Set<DatabaseVendor> oracleDatabases =
-        ImmutableSet.of(ORACLE10G, ORACLE11G, ORACLE12C, ORACLE18C, ORACLE_UNKNOWN);
+        ImmutableSet.of(ORACLE10G, ORACLE11G, ORACLE12C, ORACLE18C, ORACLE19C, ORACLE_UNKNOWN);
     private static Set<DatabaseVendor> msDatabases =
         ImmutableSet.of(MS2008, MS2012, MS2014, MS2016, MS2017, MS2019, MS_UNKNOWN);
 
