@@ -272,7 +272,6 @@ yukon.mapping = (function () {
                 relayTypes = $('#relayTypes').val(),
                 wifiTypes = $('#wifiTypes').val(),
                 pao = feature.get('pao');
-            console.log("Setting scale for device " + pao.paoId);
             if (relayTypes.indexOf(pao.paoType) > -1 || wifiTypes.indexOf(pao.paoType) > -1) {
                 scale = _relayScale;
             } else if (gatewayTypes.indexOf(pao.paoType) > -1) {

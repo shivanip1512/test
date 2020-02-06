@@ -120,8 +120,7 @@ yukon.map.comprehensive = (function () {
     },
     
     _addPrimaryRouteToMap = function(deviceId, routeInfo) {
-        var iconLayer = yukon.mapping.getIconLayer(),
-            source = iconLayer.getSource();
+        var source = yukon.mapping.getIconLayerSource(),
             focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             routeLineWidth = 2.5;
@@ -193,8 +192,7 @@ yukon.map.comprehensive = (function () {
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
-        var iconLayer = yukon.mapping.getIconLayer(),
-            source = iconLayer.getSource(),
+        var source = yukon.mapping.getIconLayerSource(),
             focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             clonedFocusDevice = focusDevice.clone();
