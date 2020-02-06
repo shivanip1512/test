@@ -721,7 +721,7 @@ yukon.mapping = (function () {
                             _setRouteLastUpdatedDateTime(response.routeLastUpdatedDateTime);
                             $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !response.isUpdatePossible);
                             if (response.updateRoutes) {
-                                yukon.mapping.showHideAllRoutes();
+                                yukon.mapping.showHideAllRoutes(gatewayIds);
                             }
                         });
                     }, yg.rp.updater_delay);
@@ -740,6 +740,7 @@ yukon.mapping = (function () {
                             clearInterval(_updateNetworkTreeInterval);
                         }
                     } else if (json.tree) {
+                        yukon.mapping.removeAllRoutesLayers();
                         _setRouteLastUpdatedDateTime(json.routeLastUpdatedDateTime);
                         $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !json.isUpdatePossible)
 

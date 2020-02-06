@@ -199,9 +199,9 @@ yukon.map.comprehensive = (function () {
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             clonedFocusDevice = focusDevice.clone();
             
-        //clonedFocusDevice.setStyle(focusDevice.getStyle().clone());
-        //clonedFocusDevice.unset("routeInfo");
-        //clonedFocusDevice.unset("neighbor");
+        clonedFocusDevice.setStyle(focusDevice.getStyle().clone());
+        clonedFocusDevice.unset("routeInfo");
+        clonedFocusDevice.unset("neighbor");
             
         _removeDeviceFocusLayers();
         _setIconsBack();
@@ -211,9 +211,6 @@ yukon.map.comprehensive = (function () {
             source.addFeature(clonedFocusDevice);
         }
         _deviceFocusCurrentIcon = focusDevice;
-        //_deviceFocusCurrentIcon = clonedFocusDevice;
-        //_deviceFocusIcons.push(clonedFocusDevice);
-        //source.addFeature(clonedFocusDevice);
 
         for (var x in neighbors) {
             var neighbor = neighbors[x],
@@ -277,7 +274,6 @@ yukon.map.comprehensive = (function () {
     
     _addAllPrimaryRoutes = function() {
         var gatewayIds = $(".js-selected-gateways").chosen().val();
-        yukon.mapping.removeAllRoutesLayers();
         yukon.mapping.showHideAllRoutes(gatewayIds);
     },
     

@@ -529,11 +529,10 @@ yukon.map.network = (function () {
                 },
                 url: yukon.url('/stars/mapNetwork/selectedGateways')
             }).done(function(gatewayIds) {
-                yukon.mapping.removeAllRoutesLayers();
                 yukon.mapping.showHideAllRoutes(gatewayIds);
             });
         } else {
-            yukon.mapping.removeAllRoutesLayers();
+            yukon.mapping.showHideAllRoutes();
         }    
     },
     

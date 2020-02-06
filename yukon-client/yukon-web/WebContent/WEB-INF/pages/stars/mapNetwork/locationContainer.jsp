@@ -68,7 +68,11 @@
             </div>
         </div>
     </div>
+    <div style="padding-top:40px">
+        <%@ include file="/WEB-INF/pages/stars/comprehensiveMap/routeUpdateDetails.jsp" %>
+    </div>
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
+
 </tags:sectionContainer2>
 
 <div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>
