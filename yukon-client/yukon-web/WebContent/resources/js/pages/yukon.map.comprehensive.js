@@ -372,7 +372,7 @@ yukon.map.comprehensive = (function () {
                         $('#legend').empty();
                         for (var i = 0; i < data.map.legend.length; i++) {
                             var legendItem = data.map.legend[i];
-                            $('#legend').append('<span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span>');
+                            $('#legend').append('<span class=dib><span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span></span>');
                         }
                         $('#legend').removeClass('dn');
                         //display devices cog

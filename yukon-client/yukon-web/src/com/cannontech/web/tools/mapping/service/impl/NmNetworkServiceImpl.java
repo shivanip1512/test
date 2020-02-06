@@ -301,6 +301,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             if (paoLocation != null) {
                 FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
                 RouteInfo routeInfo = new RouteInfo(routeDevice, data, location, accessor);
+                if (!metaData.isEmpty()) {
+                    RfnMetadataMultiQueryResult deviceMetadata = metaData.get(data.getRfnIdentifier());
+                    if (deviceMetadata != null) {
+                        if (deviceMetadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+                            Integer descendantCount = (Integer) deviceMetadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
+                            routeInfo.setDescendantCount(descendantCount);
+                        }
+                    }
+                }
                 routeInfo.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(routeDevice));
                 // the first element shows the distance from the first element to the 2nd element
                 // only the last element has no distance, because it has no "next hop"
@@ -418,7 +427,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         try {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(devicesOtherThenGatways,
                     Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA,
-                            RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+                            RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY, RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }

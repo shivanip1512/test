@@ -362,7 +362,9 @@ yukon.mapping = (function () {
             $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost === null);
             $('.js-total-cost').text(routeInfo.route.totalCost);
             $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount === null);
+            $('.js-descendant-count-display').toggleClass('dn', routeInfo.descendantCount === null);
             $('.js-hop-count').text(routeInfo.route.hopCount);
+            $('.js-descendant-count').text(routeInfo.descendantCount);
             $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags === null);
             $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
             $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles === 0);
@@ -472,9 +474,12 @@ yukon.mapping = (function () {
                 routeInfo = properties.routeInfo,
                 nearby = properties.nearby,
                 primaryRoutesExists = $('.js-all-routes').exists(),
+                fromComprehensiveMap = $('.js-all-routes-comprehensive').exists(),
                 includeRouteData = false;
                 if (primaryRoutesExists) {
-                    includeRouteData = $('.js-all-routes').find(':checkbox').prop('checked');
+                    var allRoutesChecked = $('.js-all-routes').find(':checkbox').prop('checked');
+                    //always display route data for comprehensive map
+                    includeRouteData = fromComprehensiveMap ? true : allRoutesChecked;
                 }
             if (parent != null) {
                 mod.displayCommonPopupProperties(parent);
