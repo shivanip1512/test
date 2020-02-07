@@ -113,8 +113,9 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         if(rfnCommsLog.isEnabled(Level.INFO)) {
             rfnCommsLog.log(Level.INFO, "<<< " + response.toString());
         }
-        log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {}", requestId,
-            response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType());
+        int devicesInResponse = response.getQueryResults() != null ? response.getQueryResults().size() : 0;
+        log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {} devices in response {}", requestId,
+            response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType(), devicesInResponse);
         validateResponse(response, requestId);
         updatePrimaryGatewayToDeviceMapping(response);
     }

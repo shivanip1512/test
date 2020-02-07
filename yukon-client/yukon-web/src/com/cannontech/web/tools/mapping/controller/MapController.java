@@ -259,6 +259,7 @@ public class MapController {
                 Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
                 if (includePrimaryRoute) {
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                    requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
                 }
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
@@ -336,6 +337,9 @@ public class MapController {
                                     model.addAttribute("nextHopDistance", distanceTo);
                                 }
                             }
+                        }
+                        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+                            model.addAttribute("descendantCount", metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
                         }
                     }
                     

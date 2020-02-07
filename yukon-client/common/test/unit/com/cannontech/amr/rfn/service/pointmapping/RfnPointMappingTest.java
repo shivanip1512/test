@@ -499,6 +499,9 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FAX, "Sum Peak kVAr");
         missing.put(PaoType.RFN530FAX, "Sum kVAh");
         missing.put(PaoType.RFN530FAX, "Sum kVArh");
+        missing.put(PaoType.RFN530FAX, "Current Angle Phase A");
+        missing.put(PaoType.RFN530FAX, "Current Angle Phase B");
+        missing.put(PaoType.RFN530FAX, "Current Angle Phase C");
         
         missing.put(PaoType.RFN530FRX, "Delivered Peak kVA Frozen");
         missing.put(PaoType.RFN530FRX, "Delivered Peak kVAr Frozen");
@@ -508,6 +511,9 @@ public class RfnPointMappingTest {
         missing.put(PaoType.RFN530FRX, "Power Factor Degrees Phase C");
         missing.put(PaoType.RFN530FRX, "Sum Peak kVA Frozen");
         missing.put(PaoType.RFN530FRX, "Sum Peak kVAr Frozen");
+        missing.put(PaoType.RFN530FRX, "Current Angle Phase A");
+        missing.put(PaoType.RFN530FRX, "Current Angle Phase B");
+        missing.put(PaoType.RFN530FRX, "Current Angle Phase C");
         
         missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase A");
         missing.put(PaoType.RFN530S4EAX, "Avg Voltage Phase B");

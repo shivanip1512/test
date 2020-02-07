@@ -85,11 +85,11 @@ public class NetworkMapFilter {
         ORANGE("#ec971f", 3),
         GREY("#888", 4),
         YELLOW("#f0cb2f", 5),
-        TEAL("#00b2a9", 6),
-        WINE("#ba5670", 7),
-        PURPLE("#b779f4", 8),
-        LIGHT_GREEN("#b2c98d", 9),
-        LIGHT_ORANGE("#f1b16b", 10);
+        WINE("#ce8799", 6),
+        TEAL("#00b2a9", 7),
+        LIGHT_GREEN("#b2c98d", 8),
+        PURPLE("#b779f4", 9),
+        SKY("#abd7e1", 10);
         
         private Color(String hexColor, int order) {
             this.hexColor = hexColor;
@@ -211,21 +211,21 @@ public class NetworkMapFilter {
         THREE(Color.ORANGE, HopCount.REALLY_LOW, 3),      
         FOUR(Color.GREY, HopCount.REALLY_LOW, 4),        
         FIVE(Color.YELLOW, HopCount.REALLY_LOW, 5),
-        SIX(Color.TEAL, HopCount.REALLY_LOW, 6),
-        SEVEN(Color.WINE, HopCount.REALLY_LOW, 7),
-        EIGHT(Color.PURPLE, HopCount.REALLY_LOW, 8),
-        NINE(Color.LIGHT_GREEN, HopCount.LOW, 9),
-        TEN(Color.LIGHT_ORANGE, HopCount.LOW, 10),
+        SIX(Color.WINE, HopCount.REALLY_LOW, 6),
+        SEVEN(Color.TEAL, HopCount.REALLY_LOW, 7),
+        EIGHT(Color.LIGHT_GREEN, HopCount.REALLY_LOW, 8),
+        NINE(Color.PURPLE, HopCount.LOW, 9),
+        TEN(Color.SKY, HopCount.LOW, 10),
         ELEVEN(Color.GREEN, HopCount.LOW, 11),
         TWELVE(Color.BLUE, HopCount.LOW, 12),
         THIRTEEN(Color.ORANGE, HopCount.AVERAGE, 13),
         FOURTEEN(Color.GREY, HopCount.AVERAGE, 14),
         FIFTEEN(Color.YELLOW, HopCount.AVERAGE, 15),
-        SIXTEEN(Color.TEAL, HopCount.AVERAGE, 16),
-        SEVENTEEN(Color.WINE, HopCount.HIGH, 17),
-        EIGHTEEN(Color.PURPLE, HopCount.HIGH, 18),
-        NINETEEN(Color.LIGHT_GREEN, HopCount.HIGH, 19),
-        TWENTY(Color.LIGHT_ORANGE, HopCount.HIGH, 20),
+        SIXTEEN(Color.WINE, HopCount.AVERAGE, 16),
+        SEVENTEEN(Color.TEAL, HopCount.HIGH, 17),
+        EIGHTEEN(Color.LIGHT_GREEN, HopCount.HIGH, 18),
+        NINETEEN(Color.PURPLE, HopCount.HIGH, 19),
+        TWENTY(Color.SKY, HopCount.HIGH, 20),
         OVER_TWENTY(Color.GREY, HopCount.REALLY_HIGH, 21);
         
         private Color color;

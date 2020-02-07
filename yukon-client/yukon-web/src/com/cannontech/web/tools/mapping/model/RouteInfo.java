@@ -17,6 +17,7 @@ public class RouteInfo extends MappingInfo {
 
     private RouteData route;
     private String commaDelimitedRouteFlags;
+    private Integer descendantCount;
 
     public RouteInfo(RfnDevice device, RouteData route, FeatureCollection location, MessageSourceAccessor accessor) {
         super(device, location, accessor);
@@ -34,6 +35,14 @@ public class RouteInfo extends MappingInfo {
 
     public String getCommaDelimitedRouteFlags() {
         return commaDelimitedRouteFlags;
+    }
+    
+    public Integer getDescendantCount() {
+        return descendantCount;
+    }
+    
+    public void setDescendantCount(Integer descendantCount) {
+        this.descendantCount = descendantCount;
     }
     
     @Override

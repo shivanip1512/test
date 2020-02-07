@@ -266,7 +266,7 @@ yukon.mapping = (function () {
         },
         
         setScaleForDevice: function(feature) {
-            var currentStyle = feature.getStyle().clone(),
+            var currentStyle = feature.getStyle(),
                 scale = _deviceScale,
                 gatewayTypes = $('#gatewayTypes').val(),
                 relayTypes = $('#relayTypes').val(),
@@ -362,7 +362,9 @@ yukon.mapping = (function () {
             $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost === null);
             $('.js-total-cost').text(routeInfo.route.totalCost);
             $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount === null);
+            $('.js-descendant-count-display').toggleClass('dn', routeInfo.descendantCount === null);
             $('.js-hop-count').text(routeInfo.route.hopCount);
+            $('.js-descendant-count').text(routeInfo.descendantCount);
             $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags === null);
             $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
             $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles === 0);
@@ -472,9 +474,12 @@ yukon.mapping = (function () {
                 routeInfo = properties.routeInfo,
                 nearby = properties.nearby,
                 primaryRoutesExists = $('.js-all-routes').exists(),
+                fromComprehensiveMap = $('.js-all-routes-comprehensive').exists(),
                 includeRouteData = false;
                 if (primaryRoutesExists) {
-                    includeRouteData = $('.js-all-routes').find(':checkbox').prop('checked');
+                    var allRoutesChecked = $('.js-all-routes').find(':checkbox').prop('checked');
+                    //always display route data for comprehensive map
+                    includeRouteData = fromComprehensiveMap ? true : allRoutesChecked;
                 }
             if (parent != null) {
                 mod.displayCommonPopupProperties(parent);
@@ -513,8 +518,8 @@ yukon.mapping = (function () {
         },
         
         updateZoom: function(map) {
-            var source = map.getLayers().getArray()[_tiles.length].getSource();
-            var features = source.getFeatures();
+            var source = yukon.mapping.getIconLayerSource(),
+                features = source.getFeatures();
             if (features != null && features.length > 0) {
                 if (features.length > 1) {
                     map.getView().fit(source.getExtent(), map.getSize());
@@ -715,7 +720,7 @@ yukon.mapping = (function () {
                             _setRouteLastUpdatedDateTime(response.routeLastUpdatedDateTime);
                             $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !response.isUpdatePossible);
                             if (response.updateRoutes) {
-                                yukon.mapping.showHideAllRoutes();
+                                yukon.mapping.showHideAllRoutes(gatewayIds);
                             }
                         });
                     }, yg.rp.updater_delay);
@@ -734,6 +739,7 @@ yukon.mapping = (function () {
                             clearInterval(_updateNetworkTreeInterval);
                         }
                     } else if (json.tree) {
+                        yukon.mapping.removeAllRoutesLayers();
                         _setRouteLastUpdatedDateTime(json.routeLastUpdatedDateTime);
                         $("#js-route-details-container").find(".js-request-route-update").attr("disabled", !json.isUpdatePossible)
 

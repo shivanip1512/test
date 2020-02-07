@@ -242,7 +242,6 @@ yukon.tools.map = (function() {
             
             //update primary routes if changed
             if (toAdd.length > 0 || toRemove.length > 0 || once) {
-                yukon.mapping.removeAllRoutesLayers();
                 _addAllPrimaryRoutes();  
             }
             
@@ -360,8 +359,6 @@ yukon.tools.map = (function() {
         iconsLayer.setZIndex(_iconLayerIndex);
         _deviceFocusIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
-        
-        yukon.mapping.updateZoom(_map);
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
@@ -376,9 +373,13 @@ yukon.tools.map = (function() {
             
         _removeDeviceFocusLayers();
         _setIconsBack();
-        _deviceFocusCurrentIcon = clonedFocusDevice;
-        _deviceFocusIcons.push(clonedFocusDevice);
-        source.addFeature(clonedFocusDevice);
+        var focusDeviceStillOnMap = yukon.mapping.findFocusDevice(deviceId, true);
+        if (!focusDeviceStillOnMap) {
+            _deviceFocusIcons.push(clonedFocusDevice);
+            source.addFeature(clonedFocusDevice);
+        }
+
+        _deviceFocusCurrentIcon = focusDevice;
 
         for (var x in neighbors) {
             var neighbor = neighbors[x],
@@ -441,8 +442,6 @@ yukon.tools.map = (function() {
         iconsLayer.setZIndex(_iconLayerIndex);
         _deviceFocusIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
-        
-        yukon.mapping.updateZoom(_map);
     },
     
     _addAllPrimaryRoutes = function() {
@@ -454,7 +453,7 @@ yukon.tools.map = (function() {
                 yukon.mapping.showHideAllRoutes(gatewayIds);
             });
         } else {
-            yukon.mapping.removeAllRoutesLayers();
+            yukon.mapping.showHideAllRoutes();
         }  
     },
     
@@ -751,6 +750,7 @@ yukon.tools.map = (function() {
                     }
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
+                    _addAllPrimaryRoutes();
                 });
             });
             
@@ -769,6 +769,7 @@ yukon.tools.map = (function() {
                     }
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
+                    _addAllPrimaryRoutes();
                 });
             });
             

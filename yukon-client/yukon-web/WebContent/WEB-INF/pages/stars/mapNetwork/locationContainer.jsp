@@ -19,7 +19,7 @@
             <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}">
                 <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
                 <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
-<%--                 <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/> --%>
+                <cm:criteriaOption classes="js-all-routes js-all-routes-map-network" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
             </cm:criteria>
         </span>
     </c:if>
@@ -68,7 +68,11 @@
             </div>
         </div>
     </div>
+    <div style="padding-top:40px">
+        <%@ include file="/WEB-INF/pages/stars/comprehensiveMap/routeUpdateDetails.jsp" %>
+    </div>
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
+
 </tags:sectionContainer2>
 
 <div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>

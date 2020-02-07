@@ -120,8 +120,7 @@ yukon.map.comprehensive = (function () {
     },
     
     _addPrimaryRouteToMap = function(deviceId, routeInfo) {
-        var iconLayer = yukon.mapping.getIconLayer(),
-            source = iconLayer.getSource();
+        var source = yukon.mapping.getIconLayerSource(),
             focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             routeLineWidth = 2.5;
@@ -193,8 +192,7 @@ yukon.map.comprehensive = (function () {
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
-        var iconLayer = yukon.mapping.getIconLayer(),
-            source = iconLayer.getSource();
+        var source = yukon.mapping.getIconLayerSource(),
             focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             clonedFocusDevice = focusDevice.clone();
@@ -205,9 +203,12 @@ yukon.map.comprehensive = (function () {
             
         _removeDeviceFocusLayers();
         _setIconsBack();
-        _deviceFocusCurrentIcon = clonedFocusDevice;
-        _deviceFocusIcons.push(clonedFocusDevice);
-        source.addFeature(clonedFocusDevice);
+        var focusDeviceStillOnMap = yukon.mapping.findFocusDevice(deviceId, true);
+        if (!focusDeviceStillOnMap) {
+            _deviceFocusIcons.push(clonedFocusDevice);
+            source.addFeature(clonedFocusDevice);
+        }
+        _deviceFocusCurrentIcon = focusDevice;
 
         for (var x in neighbors) {
             var neighbor = neighbors[x],
@@ -267,6 +268,11 @@ yukon.map.comprehensive = (function () {
         var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
         _deviceFocusIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
+    },
+    
+    _addAllPrimaryRoutes = function() {
+        var gatewayIds = $(".js-selected-gateways").chosen().val();
+        yukon.mapping.showHideAllRoutes(gatewayIds);
     },
     
     mod = {
@@ -372,7 +378,7 @@ yukon.map.comprehensive = (function () {
                         $('#legend').empty();
                         for (var i = 0; i < data.map.legend.length; i++) {
                             var legendItem = data.map.legend[i];
-                            $('#legend').append('<span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span>');
+                            $('#legend').append('<span class=dib><span class=small-circle style=margin-left:5px;margin-bottom:5px;background:' + legendItem.hexColor + '></span><span style=margin-left:5px;>' + legendItem.text + '</span></span>');
                         }
                         $('#legend').removeClass('dn');
                         //display devices cog
@@ -472,6 +478,7 @@ yukon.map.comprehensive = (function () {
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
                 });
+                _addAllPrimaryRoutes();
             });
             
             /** Gets the neighbor data from Network Manager **/
@@ -490,12 +497,12 @@ yukon.map.comprehensive = (function () {
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
                 });
+                _addAllPrimaryRoutes();
             });
             
             /** Add all primary routes to the map **/
             $(document).on('change', '.js-all-routes-comprehensive', function() {
-                var gatewayIds = $(".js-selected-gateways").chosen().val();
-                yukon.mapping.showHideAllRoutes(gatewayIds);
+                _addAllPrimaryRoutes();
             });
             
             /** Add an elevation layer to the map **/
