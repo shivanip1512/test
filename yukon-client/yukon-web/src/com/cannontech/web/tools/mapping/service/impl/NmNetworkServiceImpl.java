@@ -514,26 +514,30 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Unknown.
      */
     private void setNodeCommStatus(MappingInfo info, RfnMetadataMultiQueryResult metadata) {
-        NodeCommStatus status = getNodeCommStatusFromMultiQueryResult(info.getDevice(), metadata);
-        info.setStatus(status);
+        NodeComm status = getNodeCommStatusFromMultiQueryResult(info.getDevice(), metadata);
+        if (status != null) {
+            info.setStatus(status.getNodeCommStatus());
+        }
     }
 
     @Override
-    public NodeCommStatus getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
+    public NodeComm getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
         if (metadata.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)
                 && metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY)) {
             NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
             RfnIdentifier primaryForwardGateway = (RfnIdentifier) metadata.getMetadatas()
                     .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
-            if (comm.getGatewayRfnIdentifier() == primaryForwardGateway) {
-                return comm.getNodeCommStatus();
+            RfnIdentifier reverseGateway = comm.getGatewayRfnIdentifier();
+            log.debug("reverse gateway {} primary forward gateway {}", reverseGateway, primaryForwardGateway);
+            if (reverseGateway != null && primaryForwardGateway != null && reverseGateway.equals(primaryForwardGateway)) {
+                return comm;
             } else {
-                log.info("NM didn't return comm gateway {}, primary forward gateway {} for {}, unable to determaine comm status",
-                        comm.getGatewayRfnIdentifier(), primaryForwardGateway, rfnDevice);
+                log.info("NM comm reverse gateway {} doesn't match primary forward gateway {} for {}, unable to determine comm status",
+                        reverseGateway, primaryForwardGateway, rfnDevice);
             }
         } else {
             log.error(
-                    "NM didn't return PRIMARY_GATEWAY_NODE_COMM or PRIMARY_FORWARD_GATEWAY for {}, unable to determaine comm status",
+                    "NM didn't return PRIMARY_GATEWAY_NODE_COMM or PRIMARY_FORWARD_GATEWAY for {}, unable to determine comm status",
                     rfnDevice);
         }
         return null;
