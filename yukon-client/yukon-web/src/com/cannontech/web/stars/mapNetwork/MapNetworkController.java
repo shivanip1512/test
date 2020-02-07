@@ -110,6 +110,7 @@ public class MapNetworkController {
         model.addAttribute("displayParentNodeLayer", displayParentNodeLayer);
         model.addAttribute("displayPrimaryRouteLayer", displayPrimaryRouteLayer);
         model.addAttribute("displayNearbyLayer", displayNearbyLayer);
+        model.addAttribute("displayInfrastructure", !isPlc);
         
         int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
         model.addAttribute("numLayers", numLayers);

@@ -140,6 +140,7 @@
         <div class="column two nogutter">
             <c:if test="${!isVirtualGateway}">
                 <c:set var="infrastructureLabelWidth" value="90px"/>
+                <c:set var="displayInfrastructure" value="true"/>
                 <%@ include file="/WEB-INF/pages/stars/mapNetwork/locationContainer.jsp" %>
             </c:if>
             

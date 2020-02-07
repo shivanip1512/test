@@ -13,7 +13,7 @@
 <cti:msg2 var="locationHelp" key=".mapNetwork.location.helpText"/>
 <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
     <%@ include file="locationInput.jspf"%>
-    <c:if test="${!empty coordinates.latitude}">
+    <c:if test="${!empty coordinates.latitude && displayInfrastructure}">
         <span class="fr js-infrastructure">
             <c:set var="labelWidth" value="${!empty infrastructureLabelWidth ? infrastructureLabelWidth : '150px'}"/>
             <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}">
