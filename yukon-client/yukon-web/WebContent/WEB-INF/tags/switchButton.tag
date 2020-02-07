@@ -13,7 +13,7 @@
 <%@ attribute name="disabled" type="java.lang.Boolean" description="If 'true' switch will be disabled.  Default: false." %>
 <%@ attribute name="inverse" type="java.lang.Boolean" description="If true, when the checkbox is checked, the red button 
                                                                    will be toggled on instead of the green button." %>
-                                                                   
+
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
 <%@ attribute name="toggleInverse" type="java.lang.Boolean" description="Use the opposite of the checked status for toggling other inputs" %>
 <%@ attribute name="toggleAction" description="Action to perform to other inputs. Options: disable,hide,invisible Default: disable" %>
@@ -77,7 +77,7 @@
     </label>
 </cti:displayForPageEditModes>
 <cti:displayForPageEditModes modes="VIEW">
-    <c:if test="${empty name}">
+    <c:if test="${empty pageScope.name}">
         <spring:bind path="${path}">
             <c:set var="checked" value="${status.actualValue}" />
         </spring:bind>
