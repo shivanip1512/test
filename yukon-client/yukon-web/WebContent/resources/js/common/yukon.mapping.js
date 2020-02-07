@@ -800,6 +800,7 @@ yukon.mapping = (function () {
                             
                         }
                     }
+                }).always(function () {
                     yukon.ui.unblock(mapContainer);
                 });
             }
