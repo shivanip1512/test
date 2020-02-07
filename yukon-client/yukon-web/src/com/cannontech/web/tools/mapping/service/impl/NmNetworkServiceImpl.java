@@ -515,7 +515,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void setNodeCommStatus(MappingInfo info, RfnMetadataMultiQueryResult metadata) {
         NodeComm status = getNodeCommStatusFromMultiQueryResult(info.getDevice(), metadata);
-        info.setStatus(status.getNodeCommStatus());
+        if(status != null) {
+            info.setStatus(status.getNodeCommStatus());
+        }
     }
 
     @Override

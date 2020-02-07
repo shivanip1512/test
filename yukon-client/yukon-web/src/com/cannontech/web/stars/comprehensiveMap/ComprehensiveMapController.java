@@ -267,7 +267,7 @@ public class ComprehensiveMapController {
             if (metadata != null) {
                 String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
                 NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
-                if(comm != null) {
+                if(comm != null && comm.getNodeCommStatus() != null) {
                     statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                 }
                 dataRow[7] = statusString;

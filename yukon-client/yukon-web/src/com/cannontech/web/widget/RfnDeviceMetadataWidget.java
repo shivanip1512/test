@@ -143,7 +143,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
             }
 
             NodeComm commStatus = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadataMulti);
-            if (commStatus == null) {
+            if (commStatus == null || commStatus.getNodeCommStatus() == null) {
                 // primary forward and reverse lookup are not the same, set comm status to unknown
                 metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.UNKNOWN);
                 metadata.remove(RfnMetadata.COMM_STATUS_TIMESTAMP);

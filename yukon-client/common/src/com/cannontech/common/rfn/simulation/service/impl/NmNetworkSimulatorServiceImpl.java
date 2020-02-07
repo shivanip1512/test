@@ -497,8 +497,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         boolean isReady = new Random().nextBoolean();
         NodeComm comm = new NodeComm();
         comm.setNodeCommStatusTimestamp(1517588257267L);
-        //comm.setNodeCommStatus(isReady ? NodeCommStatus.READY : NodeCommStatus.NOT_READY);
-        comm.setNodeCommStatus(NodeCommStatus.NOT_READY);
+        comm.setNodeCommStatus(isReady ? NodeCommStatus.READY : NodeCommStatus.NOT_READY);
         comm.setGatewayRfnIdentifier(gateway);
         comm.setDeviceRfnIdentifier(device);
         return comm;
