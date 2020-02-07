@@ -76,6 +76,7 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -125,6 +126,7 @@ public class MapController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
+    @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
@@ -330,7 +332,7 @@ public class MapController {
                                 //get distance to next hop
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                                 if (nextHop != null) {
-                                    RfnDevice nextHopDevice = rfnDeviceDao.getDeviceForExactIdentifier(nextHop);
+                                    RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
                                     PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
                                     PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
                                     if (deviceLocation != null && nextHopLocation != null) {
