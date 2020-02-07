@@ -145,7 +145,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             if (inventoryIdentifier.getHardwareType().isItron() && liteInv.getDeviceID() > 0) {
                 AccountDto account = accountService.getAccountDto(liteInv.getAccountID(), energyCompany.getEnergyCompanyId());
                 String macAddress = deviceDao.getDeviceMacAddress(liteInv.getDeviceID());
-                itronCommunicationService.addServicePoint(account, macAddress);
+                itronCommunicationService.addServicePoint(account, liteInv.getAccountID(), macAddress);
             }
             
             // add install hardware event here

@@ -62,7 +62,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
                 hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
             deviceDao.updateDeviceMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
-            itronCommunicationService.addDevice(hardware, account);
+            itronCommunicationService.addDevice(hardware, account, hardware.getAccountId());
             hardware.setDeviceId(pao.getDeviceId());
             itronCommunicationService.saveSecondaryMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
         } catch (ItronCommunicationException e) {

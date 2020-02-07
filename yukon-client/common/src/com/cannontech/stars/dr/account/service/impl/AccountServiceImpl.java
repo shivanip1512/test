@@ -69,6 +69,7 @@ import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.IllegalAccountNumberModificationException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.InvalidAddressException;
 import com.cannontech.stars.dr.account.exception.InvalidLoginGroupException;
@@ -566,6 +567,19 @@ public class AccountServiceImpl implements AccountService {
         updateAccount(updatableAccount, accountId, user);
     }
 
+    private void checkForAssignedItronDevices(int accountId) {
+        inventoryDao.getAllHardwareSummaryForAccount(accountId)
+                    .stream()
+                    .filter(summary -> summary.getHardwareType().isItron())
+                    .findAny()
+                    .ifPresent(summary -> {
+                        log.error("Account ID {} could not be updated: Account number cannot be changed when Itron LCR " 
+                                  + "is on the account.", accountId);
+                        throw new IllegalAccountNumberModificationException("The account number cannot be changed when hardware " +
+                                  "that communicates over the Itron network is present.");
+                    });
+    }
+    
     // UPDATE ACCOUNT
     @Transactional
     @Override
@@ -590,7 +604,9 @@ public class AccountServiceImpl implements AccountService {
         boolean accountNumberUpdate = false;
         String updatedAccountNumber = accountDto.getAccountNumber();
         if (StringUtils.isNotBlank(updatedAccountNumber) && !updatedAccountNumber.equals(accountNumber)) {
-
+            
+            checkForAssignedItronDevices(accountId);
+            
             try {
                 CustomerAccount customerAccount =
                     customerAccountDao.getByAccountNumber(updatedAccountNumber,

@@ -133,13 +133,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
     @Transactional
     @Override
-    public void addDevice(Hardware hardware, AccountDto account) {
+    public void addDevice(Hardware hardware, AccountDto account, Integer accountId) {
         String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
         AddHANDeviceRequest request = null;
         if (account != null) {
             log.debug("ITRON-addDevice url:{} account:{} mac address:{}.", url, account.getAccountNumber(),
                 hardware.getMacAddress());
-            addServicePoint(account);
+            addServicePoint(account, accountId);
             request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware.getMacAddress(), account);
         } else {
             log.debug("ITRON-addDevice url:{} mac address:{}.", url, hardware.getMacAddress());
@@ -212,8 +212,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     @Transactional
     @Override
-    public void addServicePoint(AccountDto account, String macAddress) {
-        addServicePoint(account);
+    public void addServicePoint(AccountDto account, Integer accountId, String macAddress) {
+        addServicePoint(account, accountId);
         addDeviceToServicePoint(macAddress, account);
     }
     
@@ -874,7 +874,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends request to itron to add service point
      */
-    private void addServicePoint(AccountDto account) {
+    private void addServicePoint(AccountDto account, int accountId) {
         
         /*
          * Note: The newly created Service Point is not available in the user interface until an ESI is
@@ -882,7 +882,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
          */
         String url = ItronEndpointManager.SERVICE_POINT.getUrl(settingDao);
 
-        AddServicePointRequest request = ServicePointManagerHelper.buildAddRequest(account);
+        AddServicePointRequest request = ServicePointManagerHelper.buildAddRequest(account, accountId);
         log.debug("ITRON-addServicePoint url:{} account number:{}.", url, account.getAccountNumber());
         log.debug(XmlUtils.getPrettyXml(request));
         try {
@@ -891,7 +891,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
             itronEventLogService.addServicePoint(account.getAccountNumber(), account.getUserName());
             log.debug(XmlUtils.getPrettyXml(response));
-            log.debug("ITRON-addServicePoint url:{} account number:{} result:{}.", url, account.getAccountNumber());
+            log.debug("ITRON-addServicePoint url:{} account number:{} service point ID:{}.", url, account.getAccountNumber(), response.getUtilServicePointID());
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.SERVICE_POINT);
         }

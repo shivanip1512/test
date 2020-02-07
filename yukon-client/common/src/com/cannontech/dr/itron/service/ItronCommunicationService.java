@@ -18,7 +18,7 @@ public interface ItronCommunicationService {
      * customers to add a ZigBee, Direct-to-Grid, or ESI devices
      * from the utility's web portal,
      */
-    void addDevice(Hardware hardware, AccountDto account);
+    void addDevice(Hardware hardware, AccountDto account, Integer accountId);
 
     /**
      * Request the secondary (LCR) mac address for a device, given the primary (ESI) mac address.
@@ -30,7 +30,7 @@ public interface ItronCommunicationService {
      * Use to create and add a service point, which can include customer's
      * Account and Location information.
      */
-    void addServicePoint(AccountDto account, String macAddress);
+    void addServicePoint(AccountDto account, Integer accountId, String macAddress);
 
     /**
      * Removes existing Device from Service Point
