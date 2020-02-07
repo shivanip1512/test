@@ -7,6 +7,7 @@ import org.joda.time.Instant;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
+import com.cannontech.dr.itron.service.impl.ItronLoadControlEventStatus;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationDetail;
 import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationStats;
@@ -17,12 +18,18 @@ public interface RecentEventParticipationService {
      * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
      * received.
      */
-    public void updateDeviceControlEvent(int eventId, int deviceId, EventPhase eventPhase, Instant deviceReceivedTime);
+    void updateDeviceControlEvent(int eventId, int deviceId, EventPhase eventPhase, Instant deviceReceivedTime);
+
+    /**
+     * Update device status (({@link ControlEventDeviceStatus}, deviceReceivedTime)) for which response is
+     * received.
+     */
+    void updateDeviceControlEvent(int eventId, int deviceId, ItronLoadControlEventStatus eventStatus, Instant deviceReceivedTime);
 
     /**
      * Creates new control event associated with the specified load program & group
      */
-    public void createDeviceControlEvent(int programId, long eventId, int groupId, Instant startTime, Instant stopTime);
+    void createDeviceControlEvent(int programId, long eventId, int groupId, Instant startTime, Instant stopTime);
     
     /**
      * Retrieves as a list of RecentEventParticipationSummary associated with the specified event IDs.

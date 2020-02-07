@@ -1,5 +1,6 @@
 package com.cannontech.dr.itron.service.impl;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.AbstractMap;
@@ -31,7 +32,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
-import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.cannontech.dr.itron.ItronDataEventType;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.message.dispatch.message.PointData;
@@ -51,6 +51,8 @@ public class ItronDeviceDataParser {
     @Autowired private RecentEventParticipationService recentEventParticipationService;
 
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
+    private static final String eventIdKey = "load control event status update - event";
+    private static final String statusKey = "status";
 
     public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
         if(zip == null) {
@@ -68,8 +70,7 @@ public class ItronDeviceDataParser {
                 InputStream stream = zip.getInputStream(file);
                 try {
                     Multimap<PaoIdentifier, PointData> pointValues = parseData(stream);
-                    log.debug("Parsed " + pointValues.values().size() + " point values for " + 
-                              pointValues.keySet().size() + " devices.");
+                    log.debug("Parsed {} point values for {} devices.", pointValues.values().size(), pointValues.keySet().size());
                     dataSource.putValues(pointValues.values());
                     allPointValues.putAll(pointValues);
                     hasData = true;
@@ -87,8 +88,10 @@ public class ItronDeviceDataParser {
     }
     /**
      * Functional core of the parsing functionality of this file.
+     * @throws IOException 
+     * @throws EmptyImportFileException 
      */
-    private Multimap<PaoIdentifier, PointData> parseData(InputStream stream) throws Exception {
+    private Multimap<PaoIdentifier, PointData> parseData(InputStream stream) throws IOException, EmptyImportFileException {
         
       Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
 
@@ -124,7 +127,7 @@ public class ItronDeviceDataParser {
      */
     public Multimap<PaoIdentifier, PointData> generatePointData(String[] rowData) {
         if (log.isTraceEnabled()) {
-            log.trace("Parsing row data: [" + String.join(",", Arrays.asList(rowData)) + "]");
+            log.trace("Parsing row data: [{}]", String.join(",", Arrays.asList(rowData)));
         }
         
         Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
@@ -132,103 +135,154 @@ public class ItronDeviceDataParser {
         try {
             category = ItronDataCategory.valueOf(rowData[1]);
         } catch (IllegalArgumentException e) {
-            log.info("Unknown Itron data category: " + rowData[1]);
+            log.info("Unknown Itron data category: {}", rowData[1]);
             return pointValues;
         }
-        String eventTime = rowData[3];//ISO 8601 YYYY-MM-DD
-        String source = rowData[5];//Mac address
+        String eventTime = rowData[3]; //ISO 8601 YYYY-MM-DD
+        String source = rowData[5]; //Mac address
         String[] text = rowData[9].split(",");//Tokenized CSV text
-        long eventId = 0;
         
         switch(category) {
-        case EVENT_CAT_NIC_EVENT:
-            byte[] decodedData = null;
-            for(int i = 0; i < text.length; i++) {
-                Map.Entry<String, String> entry = getEntry(text[i]);
-                if (entry.getKey().equals("log event id")) {
-                    //sample: text = log event ID: 32907 (0x808b)
-                    //tuple (log event ID, 32907 (0x808b)
-                    eventId = Long.parseLong(entry.getValue().trim().split(" ")[0]);
-                } else if (entry.getKey().equals("payload")) {
-                    //sample: payload: data(0500000000)
-                    //sample: payload: Event ID (5250009) data(00501BD900)
-                    //Entry ["payload", "sometimes-present-ignored-text data(0500000000)"];
-                    try {
-                        String[] data = entry.getValue().split("data\\(");
-                        if (data.length >= 2) {
-                            String hexString = data[1].trim().replaceAll("[^0-9a-fA-F]+", "");
-                            decodedData = Hex.decodeHex(hexString.toCharArray());
-                        } else {
-                            log.trace("Ignoring payload with no data.");
-                        }
-                    } catch (Exception e) {
-                        if (log.isTraceEnabled()) {
-                            log.trace("Caught exception in generatePointData", e);
-                        } else {
-                            log.warn("Caught exception in generatePointData: " + e.getMessage() + ". Enable TRACE logging for details.");
-                        }
-                    }
-                }
-            }
-            
-            ItronDataEventType event = ItronDataEventType.getFromHex(eventId); //This could be null if the mapping doesn't exist.
-            if (event != null) {
-                // Get the device from the Mac Address
-                LiteYukonPAObject pao;
-                try {
-                    int deviceId = deviceDao.getDeviceIdFromMacAddress(source);
-                    pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
-                } catch (NotFoundException e) {
-                    log.debug("Ignoring data for unknown device with MAC " + source);
-                    log.trace("Exception: ", e);
-                    break;
-                }
-                
-                // Determine the appropriate attribute, and find or create the related point
-                BuiltInAttribute attribute = null;
-                try {
-                    attribute = event.getAttribute(decodedData);
-                } catch (IllegalArgumentException e) {
-                    log.warn("No attribute matches " + event + " with data " + Arrays.toString(decodedData) + ". Ignoring.");
-                    break;
-                }
-                
-                LitePoint litePoint;
-                try {
-                    litePoint = attributeService.createAndFindPointForAttribute(pao, attribute);
-                } catch (Exception e) {
-                    log.debug("Cannot get point for " + attribute + " on " + pao + ". " + e.getMessage());
-                    break;
-                }
-                
-                // Update Asset Availability and Recent Event Participation, then add the point data to the list to
-                // return.
-                double currentValue = dataSource.getPointValue(litePoint.getPointID()).getValue();
-                try {
-                    Optional<PointData> optionalPointData = event.getPointData(decodedData, currentValue, eventTime , litePoint);
-                    final byte[] decodedFinal = decodedData;
-                    optionalPointData.ifPresent(pointData -> {
-                        updateRecentEventParticipation(pointData, event, pao, decodedFinal);
-                        updateAssetAvailability(pointData, pao);
-                        updatePointDataWithLitePointSettings(pointData, litePoint);
-                        pointValues.put(pao.getPaoIdentifier(), pointData);
-                    });
-                } catch (Exception e) {
-                    log.error("Error processing point data: " + Arrays.toString(decodedData) + " for point " + litePoint, e);
-                }
-            } else if (log.isTraceEnabled()){
-                log.trace("No mapping for event ID " + eventId);
-            }
-            break;
-        case EVENT_CAT_PROGRAM_EVENTS:
-            //This event type is sent from Itron, but we are not parsing it because we can get the same information from EVENT_CAT_NIC_EVENTs
-            break;
-        case EVENT_CAT_ESP:
-            //This event type is not used.
-            break;
+            case EVENT_CAT_NIC_EVENT:
+                pointValues = parseNicEvent(source, text, eventTime);
+                break;
+            case EVENT_CAT_PROGRAM_EVENTS:
+                parseLoadControlEvent(source, text, eventTime);
+                break;
+            case EVENT_CAT_ESP:
+                //This event type is not used.
+                break;
         }
         
         return pointValues;
+    }
+    
+    private Multimap<PaoIdentifier, PointData> parseNicEvent(String source, String[] text, String eventTime) {
+        long eventId = 0;
+        byte[] decodedData = null;
+        Multimap<PaoIdentifier, PointData> pointValues = HashMultimap.create();
+        
+        for(int i = 0; i < text.length; i++) {
+            Map.Entry<String, String> entry = getEntry(text[i]);
+            if (keyMatches(entry, "log event id")) {
+                //sample: text = log event ID: 32907 (0x808b)
+                //tuple (log event ID, 32907 (0x808b)
+                String[] chunkedData = entry.getValue().trim().split(" ");
+                eventId = Long.parseLong(chunkedData[0]);
+            } else if (keyMatches(entry, "payload")) {
+                String[] data = entry.getValue().split("data\\(");
+                decodedData = decodeData(data);
+            }
+        }
+        
+        ItronDataEventType event = ItronDataEventType.getFromHex(eventId); //This could be null if the mapping doesn't exist.
+        if (event != null) {
+            // Get the device from the Mac Address
+            Optional<LiteYukonPAObject> paoFromMac = getPaoFromMac(source);
+            if (paoFromMac.isEmpty()) {
+                log.debug("Ignoring data for unknown device with MAC {}", source);
+                return pointValues;
+            }
+            LiteYukonPAObject pao = paoFromMac.get();
+            
+            // Determine the appropriate attribute, and find or create the related point
+            BuiltInAttribute attribute = null;
+            try {
+                attribute = event.getAttribute(decodedData);
+            } catch (IllegalArgumentException e) {
+                log.warn("No attribute matches {} with data {}. Ignoring.", event, Arrays.toString(decodedData));
+                return pointValues;
+            }
+            
+            LitePoint litePoint;
+            try {
+                litePoint = attributeService.createAndFindPointForAttribute(pao, attribute);
+            } catch (Exception e) {
+                log.debug("Cannot get point for {} on {}. {}", attribute, pao, e.getMessage());
+                return pointValues;
+            }
+            
+            // Update Asset Availability, then add the point data to the list to return.
+            double currentValue = dataSource.getPointValue(litePoint.getPointID()).getValue();
+            try {
+                Optional<PointData> optionalPointData = event.getPointData(decodedData, currentValue, eventTime , litePoint);
+                
+                optionalPointData.ifPresent(pointData -> {
+                    updateAssetAvailability(pointData, pao);
+                    updatePointDataWithLitePointSettings(pointData, litePoint);
+                    pointValues.put(pao.getPaoIdentifier(), pointData);
+                });
+            } catch (Exception e) {
+                log.error("Error processing point data: " + Arrays.toString(decodedData) + " for point " + litePoint, e);
+            }
+        } else if (log.isTraceEnabled()){
+            log.trace("No mapping for event ID {}", eventId);
+        }
+        return pointValues;
+    }
+    
+    private byte[] decodeData(String[] data) {
+        //sample: payload: data(0500000000)
+        //sample: payload: Event ID (5250009) data(00501BD900)
+        //Entry ["payload", "sometimes-present-ignored-text data(0500000000)"];
+        try {
+            if (data.length >= 2) {
+                String hexString = data[1].trim().replaceAll("[^0-9a-fA-F]+", "");
+                return Hex.decodeHex(hexString.toCharArray());
+            }
+            log.trace("Ignoring payload with no data.");
+        } catch (Exception e) {
+            if (log.isTraceEnabled()) {
+                log.trace("Caught exception in generatePointData", e);
+            } else {
+                log.warn("Caught exception in generatePointData: {}. Enable TRACE logging for details.", e.getMessage());
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Parse load control events. Example events look like:
+     *  Load Control Event status update - Event: 344, HAN Device: 00:0c:c1:00:01:00:03:c1, ESI: 00:13:50:05:00:92:86:41, Status: Event Received. 
+     *  Load Control Event status update - Event: 344, HAN Device: 00:0c:c1:00:01:00:03:c8, ESI: 00:13:50:05:00:92:84:42, Status: Event Started. 
+     *  Load Control Event status update - Event: 344, HAN Device: 00:0c:c1:00:01:00:03:c1, ESI: 00:13:50:05:00:92:86:41, Status: Event cancelled.
+     *  Load Control Event status update - Event: 361, HAN Device: 00:0c:c1:00:01:00:03:c1, ESI: 00:13:50:05:00:92:86:41, Status: Event Completed.
+     * There are additional statuses that we are not handling, such as "event rejected" and "event state unknown".
+     */
+    private void parseLoadControlEvent(String mac, String[] data, String eventTimeString) {
+        Optional<ItronLoadControlEventStatus> eventStatus = Optional.empty();
+        Optional<Integer> eventId = Optional.empty();
+        for(int i = 0; i < data.length; i++) {
+            Map.Entry<String, String> entry = getEntry(data[i]);
+            if (keyMatches(entry, statusKey)) {
+                eventStatus = ItronLoadControlEventStatus.fromValue(entry.getValue());
+            } else if (keyMatches(entry, eventIdKey)) {
+                eventId = Optional.of(Integer.parseInt(entry.getValue().trim()));
+            }
+        }
+        
+        Instant eventTime = new Instant(eventTimeString);
+        Optional<LiteYukonPAObject> pao = getPaoFromMac(mac);
+        
+        if (pao.isPresent() && eventStatus.isPresent() && eventId.isPresent()) {
+            updateRecentEventParticipation(eventId.get(), eventStatus.get(), pao.get(), eventTime);
+        } else {
+            log.debug("Ignored load control event due to missing info. Pao: {}, eventStatus: {}, eventId: {}", pao, eventStatus, eventId);
+        }
+    }
+    
+    /**
+     * Attempt to retrieve a pao based on its mac address.
+     */
+    private Optional<LiteYukonPAObject> getPaoFromMac(String mac) {
+        try {
+            int deviceId = deviceDao.getDeviceIdFromMacAddress(mac);
+            return Optional.ofNullable(serverDatabaseCache.getAllPaosMap().get(deviceId));
+        } catch (NotFoundException e) {
+            log.debug("Ignoring data for unknown device with MAC {}", mac);
+            log.trace("Exception: ", e);
+            return Optional.empty();
+        }
     }
     
     /**
@@ -251,22 +305,18 @@ public class ItronDeviceDataParser {
     }
     
     /**
-     * If the event is a control event (control start or control stop), this updates the recent event participation data 
-     * for the PAO.
+     * Updates the Recent Event Participation based on a load control event.
      */
-    private void updateRecentEventParticipation(PointData pointData, ItronDataEventType event, LiteYukonPAObject pao, byte[] data) {
-        if (event.isControlEventType()) {
-            log.debug("EventId: " + event.decode(data) + ", EventType: "
-                      + event.name() + ", deviceId: " + pao.getPaoIdentifier().getPaoId());
-            EventPhase phase = EventPhase.COMPLETED;
-            if (event == ItronDataEventType.EVENT_STARTED) {
-                phase = EventPhase.PHASE_1;
-            }
-            recentEventParticipationService.updateDeviceControlEvent((int) event.decode(data),
-                                                                     pao.getPaoIdentifier().getPaoId(),
-                                                                     phase, 
-                                                                     new Instant(pointData.getMillis()));
-        }
+    private void updateRecentEventParticipation(int eventId, ItronLoadControlEventStatus eventStatus, LiteYukonPAObject pao, Instant timestamp) {
+        int paoId = pao.getPaoIdentifier().getPaoId();
+        recentEventParticipationService.updateDeviceControlEvent(eventId, paoId, eventStatus, timestamp);
+    }
+    
+    /**
+     * Checks to see if the key String of the entry matches an expected key.
+     */
+    private boolean keyMatches(Map.Entry<String, String> entry, String expectedKey) {
+        return entry.getKey().equalsIgnoreCase(expectedKey);
     }
     
     /**
