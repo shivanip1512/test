@@ -290,6 +290,100 @@ AND PointId IN
 INSERT INTO DBUpdates VALUES('YUK-21216', '7.4.0', SYSDATE);
 /* @end YUK-21216 */
 
+/* @start YUK-21149 */
+DELETE FROM PointControl WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointAnalog WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointUnit WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointLimits WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM GraphDataSeries WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM CalcComponent WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Display2WayData WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Point WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointStatusControl WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointControl WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointStatus WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM GraphDataSeries WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM CalcComponent WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Display2WayData WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointUnit WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Point WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+INSERT INTO DBUpdates VALUES ('YUK-21149', '7.4.0', SYSDATE);
+/* @end YUK-21149 */
+
 /* @start YUK-21060 */
 DELETE FROM POINTUNIT WHERE POINTID IN (
     SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID

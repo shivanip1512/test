@@ -646,27 +646,9 @@ public:
 
     static const Attribute  EventSuperseded;
     static const Attribute  MemoryMapLost;
-    static const Attribute  TimeSync;
-    static const Attribute  ColdStart;
-    static const Attribute  MaxControlExceeded;
-    static const Attribute  NetworkTimeoutCancel;
     static const Attribute  ConfigurationUpdatedHash;
-    static const Attribute  ConfigurationProcessed;
-    static const Attribute  TimeLost;
-    static const Attribute  SelfCheckFail;
-    static const Attribute  InactiveAppliance;
     static const Attribute  RadioLinkQuality;
-    static const Attribute  IncorrectTLSIdentity;
-    static const Attribute  KeyUpdate;
-    static const Attribute  KeyUpdateFail;
-    static const Attribute  TLSFail;
-    static const Attribute  BadHDLC;
-    static const Attribute  TLSAlert;
-    static const Attribute  OptimizeIntelligentControl;
-    static const Attribute  FlushLog;
-    static const Attribute  SnapToGold;
     static const Attribute  EventReceived;
-    static const Attribute  LoadStatus;
 };
 
 

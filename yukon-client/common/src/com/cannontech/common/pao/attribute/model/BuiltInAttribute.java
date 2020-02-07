@@ -659,27 +659,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     EVENT_SUPERSEDED("Event Superseded", AttributeGroup.ITRON, false),
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
-    TIME_SYNC("Time Sync", AttributeGroup.ITRON, false),
-    COLD_START("Cold Start", AttributeGroup.ITRON, false),
-    MAX_CONTROL_EXCEEDED("Max Control Exceeded", AttributeGroup.ITRON, false),
-    NETWORK_TIMEOUT_CANCEL("Network Timeout Cancel", AttributeGroup.ITRON, false),
     CONFIGURATION_UPDATED_HASH("Configuration Updated Hash", AttributeGroup.ITRON, false),
-    CONFIGURATION_PROCESSED("Configuration Processed", AttributeGroup.ITRON, false),
-    TIME_LOST("Time Lost", AttributeGroup.ITRON, false),
-    SELF_CHECK_FAIL("Self Check Fail", AttributeGroup.ITRON, false),
-    INACTIVE_APPLIANCE("Inactive Appliance", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
-    INCORRECT_TLS_IDENTITY("Incorrect TLS Identity", AttributeGroup.ITRON, false),
-    KEY_UPDATE("Key Update", AttributeGroup.ITRON, false),
-    KEY_UPDATE_FAIL("Key Update Fail", AttributeGroup.ITRON, false),
-    TLS_FAIL("TLS Fail", AttributeGroup.ITRON, false),
-    BAD_HDLC("Bad HDLC", AttributeGroup.ITRON, false),
-    TLS_ALERT("TLS Alert", AttributeGroup.ITRON, false),
-    OPTIMIZE_INTELLIGENT_CONTROL("Optimize Intelligent Control", AttributeGroup.ITRON, false),
-    FLUSH_LOG("Flush Log", AttributeGroup.ITRON, false),
-    SNAP_TO_GOLD("Snap To Gold", AttributeGroup.ITRON, false),
     EVENT_RECEIVED("Event Received", AttributeGroup.ITRON, false),
-    LOAD_STATUS("Load Status", AttributeGroup.ITRON, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";

@@ -13,7 +13,6 @@
         <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
         <pointInfo name="Minimum Voltage" init="true" attributes="MINIMUM_VOLTAGE"/>
         <pointInfo name="Maximum Voltage" init="true" attributes="MAXIMUM_VOLTAGE"/>
-        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         
         <pointInfo name="Relay 1 Call for Cool" init="true" attributes="RELAY_1_CALL_FOR_COOL"/>
         <pointInfo name="Relay 1 Relay State" init="true" attributes="RELAY_1_RELAY_STATE"/>
@@ -44,30 +43,12 @@
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
         
         <pointInfo name="Memory Map Lost" attributes="MEMORY_MAP_LOST"/>
-        <pointInfo name="Max Control Exceeded" attributes="MAX_CONTROL_EXCEEDED"/>
-        <pointInfo name="Network Timeout Cancel" attributes="NETWORK_TIMEOUT_CANCEL"/>
         <pointInfo name="Configuration Updated Hash" attributes="CONFIGURATION_UPDATED_HASH"/>
-        <pointInfo name="TLS Fail" attributes="TLS_FAIL"/>
-        <pointInfo name="Bad HDLC" attributes="BAD_HDLC"/>
-        <pointInfo name="Flush Log" attributes="FLUSH_LOG"/>
         
         <pointInfo name="Event Superseded" attributes="EVENT_SUPERSEDED"/>
         <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
-        <pointInfo name="Time Sync" attributes="TIME_SYNC"/>
-        <pointInfo name="Cold Start" attributes="COLD_START"/>
-        <pointInfo name="Configuration Processed" attributes="CONFIGURATION_PROCESSED"/>
-        <pointInfo name="Time Lost" attributes="TIME_LOST"/>
-        <pointInfo name="Self Check Fail" attributes="SELF_CHECK_FAIL"/>
-        <pointInfo name="Inactive Appliance" attributes="INACTIVE_APPLIANCE"/>
         <pointInfo name="Radio Link Quality" attributes="RADIO_LINK_QUALITY"/>
-        <pointInfo name="Incorrect TLS Identity" attributes="INCORRECT_TLS_IDENTITY"/>
-        <pointInfo name="Key Update" attributes="KEY_UPDATE"/>
-        <pointInfo name="Key Update Fail" attributes="KEY_UPDATE_FAIL"/>
-        <pointInfo name="TLS Alert" attributes="TLS_ALERT"/>
-        <pointInfo name="Optimize Intelligent Control" attributes="OPTIMIZE_INTELLIGENT_CONTROL"/>
-        <pointInfo name="Snap to Gold" attributes="SNAP_TO_GOLD"/>
         <pointInfo name="Event Received" attributes="EVENT_RECEIVED"/>
-        <pointInfo name="Load Status" attributes="LOAD_STATUS"/>
     </pointInfos>
 </pao>
 

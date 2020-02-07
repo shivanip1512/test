@@ -655,27 +655,9 @@ INIT_ATTRIBUTE( ReverseFlowIndicator,                               "REVERSE_FLO
 
 INIT_ATTRIBUTE( EventSuperseded,                                    "EVENT_SUPERSEDED" );
 INIT_ATTRIBUTE( MemoryMapLost,                                      "MEMORY_MAP_LOST" );
-INIT_ATTRIBUTE( TimeSync,                                           "TIME_SYNC" );
-INIT_ATTRIBUTE( ColdStart,                                          "COLD_START" );
-INIT_ATTRIBUTE( MaxControlExceeded,                                 "MAX_CONTROL_EXCEEDED" );
-INIT_ATTRIBUTE( NetworkTimeoutCancel,                               "NETWORK_TIMEOUT_CANCEL" );
 INIT_ATTRIBUTE( ConfigurationUpdatedHash,                           "CONFIGURATION_UPDATED_HASH" );
-INIT_ATTRIBUTE( ConfigurationProcessed,                             "CONFIGURATION_PROCESSED" );
-INIT_ATTRIBUTE( TimeLost,                                           "TIME_LOST" );
-INIT_ATTRIBUTE( SelfCheckFail,                                      "SELF_CHECK_FAIL" );
-INIT_ATTRIBUTE( InactiveAppliance,                                  "INACTIVE_APPLIANCE" );
 INIT_ATTRIBUTE( RadioLinkQuality,                                   "RADIO_LINK_QUALITY" );
-INIT_ATTRIBUTE( IncorrectTLSIdentity,                               "INCORRECT_TLS_IDENTITY" );
-INIT_ATTRIBUTE( KeyUpdate,                                          "KEY_UPDATE" );
-INIT_ATTRIBUTE( KeyUpdateFail,                                      "KEY_UPDATE_FAIL" );
-INIT_ATTRIBUTE( TLSFail,                                            "TLS_FAIL" );
-INIT_ATTRIBUTE( BadHDLC,                                            "BAD_HDLC" );
-INIT_ATTRIBUTE( TLSAlert,                                           "TLS_ALERT" );
-INIT_ATTRIBUTE( OptimizeIntelligentControl,                         "OPTIMIZE_INTELLIGENT_CONTROL" );
-INIT_ATTRIBUTE( FlushLog,                                           "FLUSH_LOG" );
-INIT_ATTRIBUTE( SnapToGold,                                         "SNAP_TO_GOLD" );
 INIT_ATTRIBUTE( EventReceived,                                      "EVENT_RECEIVED" );
-INIT_ATTRIBUTE( LoadStatus,                                         "LOAD_STATUS" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {
