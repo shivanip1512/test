@@ -127,10 +127,9 @@ begin
 	pEnv = &sEnv;
 	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 	
-	// Add Local service access to Yukon root directory.
-    AllowWriteAccessForUsers(TARGETDIR ^ "\\Server\\Config\\master.cfg");
-    AllowWriteAccessForUsers(TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml");
-    AllowWriteAccessForUsers(TARGETDIR ^ "\\Server\\Config\\yukonLogging.xml");
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\master.cfg");
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\remoteLogging.xml");
+    AllowWriteAccessForUsers(TARGETDIR ^ "Server\\Config\\yukonLogging.xml");
     
     Dialog_MasterConfig:
     Disable(BACKBUTTON);
@@ -150,6 +149,7 @@ begin
 
     //Install windows task : Yukon Startup
     InstallYukonStartupTask();
+    // Add Local service access to Yukon root directory.
     UpdateYukonFolderPermissionsForLocalServiceAccount(TARGETDIR);
     Dialog_DBToolsFrame:
     bOptYes = TRUE;
