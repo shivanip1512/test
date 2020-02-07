@@ -274,7 +274,7 @@ public class MapController {
                         
                         String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
                         NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
-                        if (comm.getNodeCommStatus() != null && comm.getNodeCommStatus() != null) {
+                        if (comm != null && comm.getNodeCommStatus() != null) {
                             statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                         }
                         model.addAttribute("deviceStatus", statusString);
