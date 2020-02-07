@@ -333,8 +333,10 @@ public class MapController {
                                     RfnDevice nextHopDevice = rfnDeviceDao.getDeviceForExactIdentifier(nextHop);
                                     PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
                                     PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
-                                    double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
-                                    model.addAttribute("nextHopDistance", distanceTo);
+                                    if (deviceLocation != null && nextHopLocation != null) {
+                                        double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
+                                        model.addAttribute("nextHopDistance", distanceTo);
+                                    }
                                 }
                             }
                         }
