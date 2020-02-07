@@ -95,7 +95,7 @@ public:
     static const Attribute  MinimumVoltageDaily;
     static const Attribute  MinimumVoltageFrozen;
     static const Attribute  OutageLog;
-	static const Attribute  OutageStatus;
+    static const Attribute  OutageStatus;
     static const Attribute  OutofVoltage;
     static const Attribute  VoltageOutofLimits;
     static const Attribute  OverVoltage;
