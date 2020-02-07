@@ -2,11 +2,9 @@ package com.cannontech.web.tools.mapping.service;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
-import com.cannontech.common.rfn.message.node.NodeCommStatus;
+import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.web.tools.mapping.model.MappingInfo;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
@@ -67,7 +65,7 @@ public interface NmNetworkService {
     /**
      * Parses the result we received from NM to get Node Comm Status
      */
-    NodeCommStatus getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata);
+    NodeComm getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata);
 
     /**
      * Parses the result we received from NM to get Primary Forward Gateway

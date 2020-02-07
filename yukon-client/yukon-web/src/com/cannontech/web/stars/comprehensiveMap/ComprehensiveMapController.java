@@ -48,7 +48,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
-import com.cannontech.common.rfn.message.node.NodeCommStatus;
+import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -266,9 +266,9 @@ public class ComprehensiveMapController {
             RfnMetadataMultiQueryResult metadata = metaData.get(device);
             if (metadata != null) {
                 String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
-                NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
-                if(status != null) {
-                    statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
+                NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
+                if(comm != null) {
+                    statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                 }
                 dataRow[7] = statusString;
         

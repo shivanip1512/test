@@ -122,33 +122,45 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
         }
 
         try {
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
-                Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                            Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
             RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
-            
-            //gateway can be null if replay from NM didn't contain gateway info
+
+            // gateway can be null if replay from NM didn't contain gateway info
             RfnDevice gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(device, metadataMulti);
-            metadata.put(RfnMetadata.PRIMARY_GATEWAY, gateway.getName());
-            
-            NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
-            RfnIdentifier reverseIdentifier = comm.getGatewayRfnIdentifier();
-            
-            RfnDevice reverseGateway = rfnDeviceCreationService.createIfNotFound(reverseIdentifier);
-            model.addAttribute("reverseLookup", reverseGateway.getName());
-            
-            NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadataMulti);
-            if (status == null) {
-                //primary forward and reverse lookup are not the same, set comm status to unknown
+            if (gateway != null) {
+                metadata.put(RfnMetadata.PRIMARY_GATEWAY, gateway.getName());
+            }
+
+            if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)) {
+                NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
+                RfnIdentifier reverseIdentifier = comm.getGatewayRfnIdentifier();
+                RfnDevice reverseGateway = rfnDeviceCreationService.createIfNotFound(reverseIdentifier);
+                model.addAttribute("reverseLookup", reverseGateway.getName());
+            } else {
+                log.error("NM didn't return REVERSE_LOOKUP_NODE_COMM for {} ", device.getName());
+            }
+
+            NodeComm commStatus = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadataMulti);
+            if (commStatus == null) {
+                // primary forward and reverse lookup are not the same, set comm status to unknown
                 metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.UNKNOWN);
                 metadata.remove(RfnMetadata.COMM_STATUS_TIMESTAMP);
+            } else {
+                if (commStatus.getNodeCommStatus() == NodeCommStatus.NOT_READY) {
+                    metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.NOT_READY);
+                } else if (commStatus.getNodeCommStatus() == NodeCommStatus.READY) {
+                    metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.READY);
+                }
+                metadata.put(RfnMetadata.COMM_STATUS_TIMESTAMP, commStatus.getNodeCommStatusTimestamp());
             }
-            
         } catch (NmCommunicationException e) {
             String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.commsError");
             model.addAttribute("error", nmError);
             log.error("Failed to get metadata for " + device.getPaoIdentifier().getPaoId(), e);
         }
-        
+
         List<RfnMetadata> metadataTypes = Lists.newArrayList(metadata.keySet());
         final Collator collator = Collator.getInstance(context.getLocale());
         Collections.sort(metadataTypes, new Comparator<RfnMetadata>() {

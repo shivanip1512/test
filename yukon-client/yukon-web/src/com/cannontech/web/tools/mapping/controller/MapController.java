@@ -68,6 +68,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
@@ -272,9 +273,9 @@ public class MapController {
                     } else {
                         
                         String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
-                        NodeCommStatus status = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
-                        if(status != null) {
-                            statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
+                        NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
+                        if(comm.getNodeCommStatus() != null) {
+                            statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                         }
                         model.addAttribute("deviceStatus", statusString);
                         RfnDevice gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
