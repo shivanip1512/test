@@ -68,7 +68,6 @@
         
         <pointInfo name="Event Superseded" attributes="EVENT_SUPERSEDED"/>
         <pointInfo name="Firmware Version" attributes="FIRMWARE_VERSION"/>
-        <pointInfo name="Time Lost" attributes="TIME_LOST"/>
         <pointInfo name="Radio Link Quality" attributes="RADIO_LINK_QUALITY"/>
         <pointInfo name="Event Received" attributes="EVENT_RECEIVED"/>
     </pointInfos>
