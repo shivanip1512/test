@@ -3,19 +3,25 @@ package com.cannontech.watchdogs.impl;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.transform.Source;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ws.WebServiceException;
+import org.springframework.ws.soap.SoapFaultDetail;
+import org.springframework.ws.soap.SoapFaultDetailElement;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceGroupType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRequestType;
+import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ErrorFault;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ObjectFactory;
+import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.impl.ItronEndpointManager;
+import com.cannontech.dr.itron.simulator.model.ItronBasicError;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
@@ -56,18 +62,16 @@ public class ItronServiceWatcher extends ServiceStatusWatchdogImpl {
                 request = new ObjectFactory().createEditESIGroupRequest(requestType);
                 ItronEndpointManager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);
             } catch (Exception e) {
+                if (e instanceof SoapFaultClientException) {
+                    handleSoapFault((SoapFaultClientException) e);
+                }
                 log.info("Editing Itron group failed, attempting to create group.");
                 request = new ObjectFactory().createAddESIGroupRequest(requestType);
                 ItronEndpointManager.DEVICE.getTemplate(settingDao).marshalSendAndReceive(url, request);
-
             }
         } catch (Exception ex) {
-            if (ex instanceof WebServiceException && ex instanceof SoapFaultClientException) {
-                log.error("Communication error:", ex);
-                return ServiceStatus.UNKNOWN;
-            } else {
-                return ServiceStatus.STOPPED;
-            }
+            log.error("Communication error:", ex);
+            return ServiceStatus.STOPPED;
         }
         return ServiceStatus.RUNNING;
     }
@@ -92,5 +96,23 @@ public class ItronServiceWatcher extends ServiceStatusWatchdogImpl {
     @Override
     public boolean shouldRun() {
         return watcherService.isServiceRequired(getServiceName());
+    }
+    
+    /**
+     * Handle SOAP fault for Authorization Failure.
+     */
+    private void handleSoapFault(SoapFaultClientException e) {
+        SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
+        soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
+            SoapFaultDetailElement detailElementChild = soapFaultDetail.getDetailEntries().next();
+            Source detailSource = detailElementChild.getSource();
+            ErrorFault fault = (ErrorFault) ItronEndpointManager.DEVICE.getMarshaller().unmarshal(detailSource);
+
+            fault.getErrors().forEach(errorType -> {
+                if (errorType.getErrorCode().equalsIgnoreCase(ItronBasicError.AUTHORIZATION_FAILURE.toString())) {
+                    throw new ItronCommunicationException("Authorization failure: " + errorType.getErrorCode() + ":" + errorType.getErrorMessage());
+                }
+            });
+        });
     }
 }
