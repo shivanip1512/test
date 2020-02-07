@@ -2,8 +2,8 @@
 <cti:msg2 var="longitudeLabel" key=".mapNetwork.location.longitude"/>
 <cti:msg2 var="notSetLabel" key=".mapNetwork.location.notSet"/>
 <div class="dib js-view-display" style="padding-bottom:10px;">
-    <span style="padding-right:15px;">${latitudeLabel}:  <c:choose><c:when test="${coordinates.latitude != null}">${coordinates.latitude}</c:when><c:otherwise>${notSetLabel}</c:otherwise></c:choose> </span>
-    <span>${longitudeLabel}:  <c:choose><c:when test="${coordinates.longitude != null}">${coordinates.longitude}</c:when><c:otherwise>${notSetLabel}</c:otherwise></c:choose> </span>
+    <span class="PR5">${latitudeLabel}:&nbsp;<c:choose><c:when test="${coordinates.latitude != null}">${coordinates.latitude}</c:when><c:otherwise>${notSetLabel}</c:otherwise></c:choose> </span>
+    <span class="PR5">${longitudeLabel}:&nbsp;<c:choose><c:when test="${coordinates.longitude != null}">${coordinates.longitude}</c:when><c:otherwise>${notSetLabel}</c:otherwise></c:choose></span>
     <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="INTERACT">
         <cti:button renderMode="buttonImage" icon="icon-pencil" classes="fr js-edit-coordinates"/><br/>
     </cti:checkRolesAndProperties>
