@@ -60,7 +60,10 @@ yukon.dr.setup.list = (function() {
             $(document).on("yukon:gear:filter:programSelected", function (event) {
                 _filterResults(false);
             });
-            
+
+            $('.js-program-container').find('span.b-label').css("maxWidth", "180px");
+            $('.js-program-container').find('span.b-label').addClass("wrbw");
+
             $(document).on("click", ".js-gear-link", function (event) {
                  event.preventDefault();
                  var dialogDivJson = {
