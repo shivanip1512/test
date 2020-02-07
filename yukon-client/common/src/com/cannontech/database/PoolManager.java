@@ -69,6 +69,7 @@ public class PoolManager {
 	private enum DatabaseVendor { 
 	    ORACLE_DATABASE(":"), 
 	    ORACLE12_DATABASE("/"),
+	    ORACLE18_DATABASE("/"),
 	    ORACLE19_DATABASE("/"),
 	    MSSQL_DATABASE(""),        //MS SQL Server doesn't use this URL style in the JDBC string.
 	    ;
@@ -100,6 +101,8 @@ public class PoolManager {
             dbType = DatabaseVendor.ORACLE_DATABASE;
         } else if ("oracle12".equalsIgnoreCase(dbTypeName)) {
             dbType = DatabaseVendor.ORACLE12_DATABASE;
+        } else if ("oracle18".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.ORACLE18_DATABASE;    
         } else if ("oracle19".equalsIgnoreCase(dbTypeName)) {
             dbType = DatabaseVendor.ORACLE19_DATABASE;
         } else {
@@ -151,6 +154,7 @@ public class PoolManager {
                 return new ConnectionDescription(url.toString(), dbType);
             case ORACLE_DATABASE:
             case ORACLE12_DATABASE:
+            case ORACLE18_DATABASE:
             case ORACLE19_DATABASE:
                 // Configure using SID, which is used by Oracle 9, 10, and 11. 
                 // format: jdbc:oracle:thin:@<host>:<port>:<SID>
@@ -203,6 +207,7 @@ public class PoolManager {
         switch (connectionDescription.type) {
         case ORACLE_DATABASE:
         case ORACLE12_DATABASE:
+        case ORACLE18_DATABASE:
         case ORACLE19_DATABASE:
             defaultValidationQuery = "select 1 from dual";
             break;
