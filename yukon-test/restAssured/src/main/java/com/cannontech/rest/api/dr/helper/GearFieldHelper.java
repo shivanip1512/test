@@ -10,6 +10,7 @@ import com.cannontech.rest.api.gear.fields.MockEcobeeSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.gear.fields.MockGroupSelectionMethod;
 import com.cannontech.rest.api.gear.fields.MockHoneywellCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockHoneywellSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockHowToStopControl;
 import com.cannontech.rest.api.gear.fields.MockItronCycleGearFields;
 import com.cannontech.rest.api.gear.fields.MockItronCycleType;
@@ -102,6 +103,15 @@ public class GearFieldHelper {
                                                      .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                      .build();
             break;
+        case HoneywellSetpoint:
+                gearFields = MockHoneywellSetpointGearFields.builder()
+                                     .mandatory(true)
+                                     .setpointOffset(7)
+                                     .mode(MockMode.COOL)
+                                     .howToStopControl(MockHowToStopControl.Restore)
+                                     .capacityReduction(50)
+                                     .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
+                                     .build();
         case ItronCycle:
                 gearFields = MockItronCycleGearFields.builder()
                                                  .cycleType(MockItronCycleType.STANDARD)
