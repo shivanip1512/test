@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.inventory.Hardware;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
 import com.cannontech.dr.itron.simulator.model.AddProgramError;
@@ -18,7 +17,6 @@ import com.cannontech.dr.itron.simulator.model.ESIGroupError;
 import com.cannontech.dr.itron.simulator.model.EditHANDeviceError;
 import com.cannontech.dr.itron.simulator.model.ItronBasicError;
 import com.cannontech.dr.itron.simulator.model.SimulatedItronSettings;
-import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.web.security.annotation.CheckCparm;
 
 @Controller
@@ -42,6 +40,8 @@ public class ItronSimulatorController {
         return "itronSimulator.jsp";
     }
     
+    //TODO: clear this all out, just have a simple info page for SoapUI simulator setup.
+    
     @GetMapping("test")
     public String test() {
         Hardware hardware = new Hardware();
@@ -49,9 +49,9 @@ public class ItronSimulatorController {
        // AccountDto account = new AccountDto();
        // account.setAccountNumber("123456789");
         try {
-            itronCommunicationService.addDevice(hardware, null);
-           // LiteYukonPAObject group = new LiteYukonPAObject(354110);
-           // group.setPaoName("itron load group test");
+            //itronCommunicationService.addDevice(hardware, null);
+            // LiteYukonPAObject group = new LiteYukonPAObject(354110);
+            // group.setPaoName("itron load group test");
         } catch(ItronCommunicationException e) {
             System.out.println(e.getMessage());
         }
