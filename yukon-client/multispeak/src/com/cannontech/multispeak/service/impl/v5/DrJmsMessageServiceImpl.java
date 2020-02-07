@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executor;
@@ -31,6 +32,7 @@ import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -111,9 +113,11 @@ import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import com.microsoft.azure.servicebus.primitives.StringUtil;
 
 public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageListener {
 
@@ -209,6 +213,14 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         vendorsToSendProgramStatusMsg = supportsProgramStatus.build();
     }
 
+    @Override
+    public boolean isVendorMethodSupported() {
+        if (isVendorsConfigured(vendorsToSendIntervalDataMsg) || isVendorsConfigured(vendorsToSendVoltageDataMsg)
+                || isVendorsConfigured(vendorsToSendAlarmAndEventDataMsg)) {
+            return true;
+        }
+        return false;
+    }
     /**
      * Add into supportedVendors if Methods received from response are supported.
      */
@@ -416,42 +428,43 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     
 
     @Override
-    public void intervalDataNotification(DrAttributeDataJmsMessage drDataJmsMessage) {
+    public void intervalDataNotification(List<DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
         if (!isVendorsConfigured(vendorsToSendIntervalDataMsg)) {
             return;
         }
 
         vendorsToSendIntervalDataMsg.forEach(mspVendor -> {
-
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
-
-            PaoIdentifier paoIdentifier = drDataJmsMessage.getPaoPointIdentifier().getPaoIdentifier();
-            String serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
-
-            log.info("Sending " + INTERVALDATA_METHOD + ", Serial Number : " + serialNumber + " with Message Type : "  + drDataJmsMessage.getMessageType() +  " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
 
             IntervalDataNotification intervalDataNotification = new IntervalDataNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
-
-            ArrayOfIntervalData arrayOfIntervalData = buildArrayOfIntervalData(drDataJmsMessage, serialNumber);
+            
+            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = getSerialNumberAttributeDataMapping(
+                    drAttributeDataJmsMessages);
+            
+            ArrayOfIntervalData arrayOfIntervalData = buildArrayOfIntervalData(serialNumberAttributeDataMapping);
             intervalDataNotification.setArrayOfIntervalData(arrayOfIntervalData);
             intervalDataNotification.setTransactionID(transactionId);
 
+            String serialNumbers = StringUtils.toStringList(serialNumberAttributeDataMapping.keySet());
+            log.info("Sending " + INTERVALDATA_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : "
+                    + DrJmsMessageType.RELAYDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
                 notClient.intervalDataNotification(mspVendor, endpointUrl, intervalDataNotification);
-
-                logEvent(serialNumber, drDataJmsMessage.getMessageType().toString(), INTERVALDATA_METHOD, mspVendor, transactionId, endpointUrl);
-
+                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
+                    logEvent(serialNo, DrJmsMessageType.RELAYDATA.toString(), INTERVALDATA_METHOD, mspVendor, transactionId,
+                            endpointUrl);
+                }
             } catch (MultispeakWebServiceClientException e) {
-                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, INTERVALDATA_METHOD, drDataJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, INTERVALDATA_METHOD,
+                        DrJmsMessageType.RELAYDATA, mspVendor.getCompanyName());
                 log.error("Error sending intervalDataNotification.", e);
             }
         });
-
     }
 
     @Override
-    public void voltageMeterReadingsNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
+    public void voltageMeterReadingsNotification(List<DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
         if (!isVendorsConfigured(vendorsToSendVoltageDataMsg)) {
             return;
         }
@@ -459,32 +472,36 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         vendorsToSendVoltageDataMsg.forEach(mspVendor -> {
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
 
-            PaoIdentifier paoIdentifier = drAttributeDataJmsMessage.getPaoPointIdentifier().getPaoIdentifier();
-            String serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
-
-            log.info("Sending " + VOLTAGEREADINGS_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + drAttributeDataJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
-
             MeterReadingsNotification meterReadingsNotification = new MeterReadingsNotification();
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
             meterReadingsNotification.setTransactionID(transactionId);
 
-            ArrayOfMeterReading arrayOfMeterReading = buildArrayOfMeterReadingsData(drAttributeDataJmsMessage, serialNumber);
+            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = getSerialNumberAttributeDataMapping(
+                    drAttributeDataJmsMessages);
+
+            ArrayOfMeterReading arrayOfMeterReading = buildArrayOfMeterReadingsData(serialNumberAttributeDataMapping);
             meterReadingsNotification.setArrayOfMeterReading(arrayOfMeterReading);
 
+            String serialNumbers = StringUtils.toStringList(serialNumberAttributeDataMapping.keySet());
+            log.info("Sending " + VOLTAGEREADINGS_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : "
+                    + DrJmsMessageType.VOLTAGEDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
                 notClient.meterReadingsNotification(mspVendor, endpointUrl, meterReadingsNotification);
 
-                logEvent(serialNumber, drAttributeDataJmsMessage.getMessageType().toString(), VOLTAGEREADINGS_METHOD, mspVendor, transactionId, endpointUrl);
+                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
+                    logEvent(serialNo, DrJmsMessageType.VOLTAGEDATA.toString(), VOLTAGEREADINGS_METHOD, mspVendor, transactionId,
+                            endpointUrl);
+                }
             } catch (MultispeakWebServiceClientException e) {
-                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, VOLTAGEREADINGS_METHOD, drAttributeDataJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, VOLTAGEREADINGS_METHOD,
+                        DrJmsMessageType.VOLTAGEDATA, mspVendor.getCompanyName());
                 log.error("Error sending voltageMeterReadingsNotification.", e);
             }
         });
-
     }
 
     @Override
-    public void alarmAndEventNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage) {
+    public void alarmAndEventNotification(List<DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
 
         if (!isVendorsConfigured(vendorsToSendAlarmAndEventDataMsg)) {
             return;
@@ -493,28 +510,45 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         vendorsToSendAlarmAndEventDataMsg.forEach(mspVendor -> {
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
 
-            PaoIdentifier paoIdentifier = drAttributeDataJmsMessage.getPaoPointIdentifier().getPaoIdentifier();
-            String serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
-
-            log.info("Sending " + ALARMANDEVENTDATA_METHOD + ", Serial Number : " + serialNumber + " with Message Type : " + drAttributeDataJmsMessage.getMessageType() + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
-
             EndDeviceEventsNotification endDeviceEventsNotification = new EndDeviceEventsNotification();
 
             String transactionId = String.valueOf(atomicLong.getAndIncrement());
             endDeviceEventsNotification.setTransactionID(transactionId);
-
-            ArrayOfEndDeviceEventList arrayOfEndDeviceEventList = buildArrayOfAlarmAndEventData(drAttributeDataJmsMessage, serialNumber);
+            
+            Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = getSerialNumberAttributeDataMapping(
+                    drAttributeDataJmsMessages);
+            
+            ArrayOfEndDeviceEventList arrayOfEndDeviceEventList = buildArrayOfAlarmAndEventData(serialNumberAttributeDataMapping);
 
             endDeviceEventsNotification.setArrayOfEndDeviceEventList(arrayOfEndDeviceEventList);
+            
+            String serialNumbers = StringUtils.toStringList(serialNumberAttributeDataMapping.keySet());
+            log.info("Sending " + ALARMANDEVENTDATA_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : " + DrJmsMessageType.ALARMANDEVENT + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
                 notClient.alarmAndEventDataNotification(mspVendor, endpointUrl, endDeviceEventsNotification);
-
-                logEvent(serialNumber, drAttributeDataJmsMessage.getMessageType().toString(), ALARMANDEVENTDATA_METHOD, mspVendor, transactionId, endpointUrl);
+                for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
+                logEvent(serialNo, DrJmsMessageType.ALARMANDEVENT.toString(), ALARMANDEVENTDATA_METHOD, mspVendor, transactionId, endpointUrl);
+                }
             } catch (MultispeakWebServiceClientException e) {
-                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, ALARMANDEVENTDATA_METHOD, drAttributeDataJmsMessage.getMessageType(), mspVendor.getCompanyName());
+                log.error("TargetService: {} - {} with type {} ({}).", endpointUrl, ALARMANDEVENTDATA_METHOD, DrJmsMessageType.ALARMANDEVENT, mspVendor.getCompanyName());
                 log.error("Error sending alarmAndEventDataNotification.", e);
             }
         });
+    }
+    
+    /**
+     * Return mapping for serial number and Attribute data. 
+     */
+    private Multimap<String, DrAttributeDataJmsMessage> getSerialNumberAttributeDataMapping(
+            List<DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
+        Multimap<String, DrAttributeDataJmsMessage> serialNumberAttributeDataMapping = ArrayListMultimap.create();
+        for (DrAttributeDataJmsMessage message : drAttributeDataJmsMessages) {
+            String serialNumber = StringUtil.EMPTY;
+            PaoIdentifier paoIdentifier = message.getPaoPointIdentifier().getPaoIdentifier();
+            serialNumber = lmHardwareBaseDao.getSerialNumberForDevice(paoIdentifier.getPaoId());
+            serialNumberAttributeDataMapping.put(serialNumber, message);
+        }
+        return serialNumberAttributeDataMapping;
     }
             
     public void programStatusNotification(DrProgramStatusJmsMessage drProgramStatusJmsMessage) {
@@ -560,6 +594,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         });
     }
 
+    
     /**
      * Building ArrayOfDRProgramEnrollment that includes building of request fields from enrollmentJmsMessage.
      */
@@ -623,19 +658,20 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     /**
      * Building ArrayOfEndDeviceEventList that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private ArrayOfEndDeviceEventList buildArrayOfAlarmAndEventData(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
+    private ArrayOfEndDeviceEventList buildArrayOfAlarmAndEventData(
+            Multimap<String, DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
 
         ArrayOfEndDeviceEventList arrayOfEndDeviceEventList = new ArrayOfEndDeviceEventList();
         List<EndDeviceEventList> listOfendDeviceEventList = arrayOfEndDeviceEventList.getEndDeviceEventList();
 
-        EndDeviceEventList endDeviceEventList = new EndDeviceEventList();
-        EndDeviceEvents endDeviceEvents = getEndDeviceEvents(drAttributeDataJmsMessage, serialNumber);
+        for (Entry<String, DrAttributeDataJmsMessage> drAttributeDataJmsMessage : drAttributeDataJmsMessages.entries()) {
+            EndDeviceEventList endDeviceEventList = new EndDeviceEventList();
 
-        endDeviceEventList.setEndDeviceEvents(endDeviceEvents);
-        endDeviceEventList.setReferableID(serialNumber);
-
-        listOfendDeviceEventList.add(endDeviceEventList);
-
+            EndDeviceEvents endDeviceEvents = getEndDeviceEvents(drAttributeDataJmsMessage.getValue(),
+                    drAttributeDataJmsMessage.getKey());
+            endDeviceEventList.setEndDeviceEvents(endDeviceEvents);
+            listOfendDeviceEventList.add(endDeviceEventList);
+        }
         return arrayOfEndDeviceEventList;
     }
 
@@ -701,33 +737,35 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     /**
      * Building ArrayOfIntervalData that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private ArrayOfIntervalData buildArrayOfIntervalData(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
-
-        Set<BuiltInAttribute> attributes = getBuiltInAttributesFromDrMessage(drAttributeDataJmsMessage);
-
-        Multimap<RelayLogInterval, BuiltInAttribute> intervalAttributesMap = HashMultimap.create();
-
-        attributes.forEach(relayAttribute -> {
-            RelayIntervalData relayIntervalData = RelayIntervalData.getRelayIntervalData(relayAttribute);
-            RelayLogInterval logInterval = relayIntervalData.getRelayLogInterval(relayAttribute);
-            intervalAttributesMap.put(logInterval, relayAttribute);
-        });
+    private ArrayOfIntervalData buildArrayOfIntervalData(Multimap<String, DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
 
         ArrayOfIntervalData arrayOfIntervalData = new ArrayOfIntervalData();
         List<IntervalData> intervalDataList = arrayOfIntervalData.getIntervalData();
 
-        IntervalData intervalData = new IntervalData();
+        for (Entry<String, DrAttributeDataJmsMessage> drAttributeDataJmsMessage : drAttributeDataJmsMessages.entries()) {
+            Set<BuiltInAttribute> attributes = getBuiltInAttributesFromDrMessage(drAttributeDataJmsMessage.getValue());
 
-        Profiles profiles = getProfiles(intervalAttributesMap.asMap());
-        intervalData.setProfiles(profiles);
+            Multimap<RelayLogInterval, BuiltInAttribute> intervalAttributesMap = HashMultimap.create();
 
-        Blocks blocks = getBlocks(drAttributeDataJmsMessage, serialNumber);
-        intervalData.setBlocks(blocks);
- 
-      //  intervalData.setIntervalDelimiter(",");
-      //  intervalData.setStatusDelimiter("^");
+            attributes.forEach(relayAttribute -> {
+                RelayIntervalData relayIntervalData = RelayIntervalData.getRelayIntervalData(relayAttribute);
+                RelayLogInterval logInterval = relayIntervalData.getRelayLogInterval(relayAttribute);
+                intervalAttributesMap.put(logInterval, relayAttribute);
+            });
 
-        intervalDataList.add(intervalData);
+            IntervalData intervalData = new IntervalData();
+
+            Profiles profiles = getProfiles(intervalAttributesMap.asMap());
+            intervalData.setProfiles(profiles);
+
+            Blocks blocks = getBlocks(drAttributeDataJmsMessage.getValue(), drAttributeDataJmsMessage.getKey());
+            intervalData.setBlocks(blocks);
+
+            // intervalData.setIntervalDelimiter(",");
+            // intervalData.setStatusDelimiter("^");
+
+            intervalDataList.add(intervalData);
+        }
         return arrayOfIntervalData;
 
     }
@@ -842,24 +880,26 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     /**
      * Building ArrayOfMeterReading that includes building of request fields from drAttributeDataJmsMessage.
      */
-    private ArrayOfMeterReading buildArrayOfMeterReadingsData(DrAttributeDataJmsMessage drAttributeDataJmsMessage, String serialNumber) {
+    private ArrayOfMeterReading buildArrayOfMeterReadingsData(Multimap<String, DrAttributeDataJmsMessage> drAttributeDataJmsMessages) {
 
         ArrayOfMeterReading arrayOfMeterReading = new ArrayOfMeterReading();
         List<MeterReading> meterReadingList = arrayOfMeterReading.getMeterReading();
 
-        MeterReading meterReading = new MeterReading();
+        for (Entry<String, DrAttributeDataJmsMessage> drAttributeDataJmsMessage : drAttributeDataJmsMessages.entries()) {
+            MeterReading meterReading = new MeterReading();
 
-        MeterID meterId = MultispeakFuncs.getDrMeterID(serialNumber);
-        meterReading.setMeterID(meterId);
+            MeterID meterId = MultispeakFuncs.getDrMeterID(drAttributeDataJmsMessage.getKey());
+            meterReading.setMeterID(meterId);
 
-        ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(drAttributeDataJmsMessage, meterReading);
-        meterReading.setReadingTypeCodeItems(readingTypeCodeItems);
+            ReadingTypeCodeItems readingTypeCodeItems = getReadingTypeCodeItems(drAttributeDataJmsMessage.getValue(),
+                    meterReading);
+            meterReading.setReadingTypeCodeItems(readingTypeCodeItems);
 
-        ReadingValues readingValues = getReadingValues(drAttributeDataJmsMessage, meterReading);
-        meterReading.setReadingValues(readingValues);
+            ReadingValues readingValues = getReadingValues(drAttributeDataJmsMessage.getValue(), meterReading);
+            meterReading.setReadingValues(readingValues);
 
-        meterReadingList.add(meterReading);
-
+            meterReadingList.add(meterReading);
+        }
         return arrayOfMeterReading;
     }
 

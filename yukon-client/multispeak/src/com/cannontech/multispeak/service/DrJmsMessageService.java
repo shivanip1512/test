@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.service;
 
+import java.util.List;
+
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
@@ -33,12 +35,12 @@ public interface DrJmsMessageService {
     /**
      * Sending interval Data notification messages to configured vendors.
      */
-    public void intervalDataNotification(DrAttributeDataJmsMessage drDataJmsMessage);
+    public void intervalDataNotification(List<DrAttributeDataJmsMessage> drDataJmsMessage);
 
     /**
      * Sending voltage notification messages to configured vendors.
      */
-    public void voltageMeterReadingsNotification(DrAttributeDataJmsMessage drDataJmsMessage);
+    public void voltageMeterReadingsNotification(List<DrAttributeDataJmsMessage> drDataJmsMessage);
     
     /**
      * Sending Program Status notification messages to configured vendors.
@@ -48,6 +50,11 @@ public interface DrJmsMessageService {
     /**
      * Sending Alarm and Event notification messages to configured vendors.
      */
-    public void alarmAndEventNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage);
+    public void alarmAndEventNotification(List<DrAttributeDataJmsMessage> drAttributeDataJmsMessage);
+
+    /**
+     * Checks if any vendor configured for method supports.
+     */
+    public boolean isVendorMethodSupported();
 
 }

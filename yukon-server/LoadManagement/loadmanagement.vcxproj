@@ -361,6 +361,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="executor.cpp">
     </ClCompile>
     <ClCompile Include="honeywellCycleGear.cpp" />
+    <ClCompile Include="honeywellSetPointGear.cpp" />
     <ClCompile Include="ItronCycleGear.cpp" />
     <ClCompile Include="lmgrouphoneywell.cpp" />
     <ClCompile Include="lmgroupitron.cpp" />
@@ -475,6 +476,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\GroupControlInterface.h" />
     <ClInclude Include="include\honeywellControlInterface.h" />
     <ClInclude Include="include\honeywellCycleGear.h" />
+    <ClInclude Include="include\honeywellSetPointGear.h" />
     <ClInclude Include="include\id_loadmanagement.h" />
     <ClInclude Include="include\ItronControlInterface.h" />
     <ClInclude Include="include\ItronCycleGear.h" />

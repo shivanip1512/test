@@ -3,14 +3,14 @@ package com.cannontech.dr.honeywell.message;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DREventInterval {
+public class DRDutyCycleEventInterval {
 
     private final int sequenceNumber;
     private final Double dutyCycle;
     private final int durationSeconds;
     
     @JsonCreator
-    public DREventInterval(@JsonProperty("SequenceNumber") int sequenceNumber,
+    public DRDutyCycleEventInterval(@JsonProperty("SequenceNumber") int sequenceNumber,
             @JsonProperty("DutyCycle") Double dutyCycle,
             @JsonProperty("DurationSeconds") int durationSeconds) {
         this.sequenceNumber = sequenceNumber;
@@ -48,7 +48,7 @@ public class DREventInterval {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        DREventInterval other = (DREventInterval) obj;
+        DRDutyCycleEventInterval other = (DRDutyCycleEventInterval) obj;
         if (durationSeconds != other.durationSeconds)
             return false;
         if (dutyCycle == null) {

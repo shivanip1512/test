@@ -1,12 +1,13 @@
 package com.cannontech.common.rfn.service.impl;
 
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -23,7 +24,6 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResu
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.service.BlockingJmsMultiReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
@@ -113,8 +113,9 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         if(rfnCommsLog.isEnabled(Level.INFO)) {
             rfnCommsLog.log(Level.INFO, "<<< " + response.toString());
         }
-        log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {}", requestId,
-            response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType());
+        int devicesInResponse = response.getQueryResults() != null ? response.getQueryResults().size() : 0;
+        log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {} devices in response {}", requestId,
+            response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType(), devicesInResponse);
         validateResponse(response, requestId);
         updatePrimaryGatewayToDeviceMapping(response);
     }
@@ -135,19 +136,23 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         }
     }
 
+    
     private void updatePrimaryGatewayToDeviceMapping(RfnMetadataMultiResponse response) {
         executor.execute(() -> {
-            List<NodeComm> deviceToGateway = response.getQueryResults().values().stream()
-                    .filter(result -> result.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM))
-                    .map(result -> (NodeComm) result.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM))                 
-                    .collect(Collectors.toList());
-            if(!deviceToGateway.isEmpty()) {
-                log.debug("Updating device to gateway mapping for {} nodes", deviceToGateway.size());
+            Map<RfnIdentifier, RfnIdentifier> deviceToGateway = new HashMap<>();
+            response.getQueryResults().forEach((deviceRfnIdentifier, queryResult) -> {
+                if (queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
+                    RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
+                    deviceToGateway.put(deviceRfnIdentifier, gatewayRfnIdentifier);
+                }
+            });
+            if (!deviceToGateway.isEmpty()) {
+                log.debug("Updating device to gateway mapping for {} devices", deviceToGateway.size());
                 rfnDeviceDao.saveDynamicRfnDeviceData(deviceToGateway);
             }
         });
     }
-    
+
     @PostConstruct
     public void initialize() {
         multiReplyTemplate = new RequestMultiReplyTemplate<>(connectionFactory, JmsApiDirectory.RF_METADATA_MULTI);

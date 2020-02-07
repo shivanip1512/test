@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +68,6 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
-import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
@@ -134,9 +134,9 @@ public class MapController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private NmNetworkService nmNetworkService;
     @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private NmNetworkService nmNetworkService;
+    @Autowired private RfnGatewayService rfnGatewayService;
     
     List<BuiltInAttribute> attributes = ImmutableList.of(
         BuiltInAttribute.VOLTAGE,
@@ -256,9 +256,10 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
-                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
                 if (includePrimaryRoute) {
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                    requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
                 }
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
@@ -276,10 +277,13 @@ public class MapController {
                             statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + status);
                         }
                         model.addAttribute("deviceStatus", statusString);
-                        RfnGateway rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
-                        if(rfnGateway != null) {
-                            model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
-                            model.addAttribute("primaryGateway", rfnGateway);
+                        RfnDevice gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                        if(gateway != null) {
+                            RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
+                            if(rfnGateway != null) {
+                                model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
+                                model.addAttribute("primaryGateway", rfnGateway);
+                            }
                         }
                         if(metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
                             NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
@@ -325,12 +329,17 @@ public class MapController {
                                 model.addAttribute("routeFlags", String.join(", ", flags));
                                 //get distance to next hop
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
-                                RfnDevice nextHopDevice = rfnDeviceDao.getDeviceForExactIdentifier(nextHop);
-                                PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
-                                PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
-                                double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
-                                model.addAttribute("nextHopDistance", distanceTo);
+                                if (nextHop != null) {
+                                    RfnDevice nextHopDevice = rfnDeviceDao.getDeviceForExactIdentifier(nextHop);
+                                    PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
+                                    PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
+                                    double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
+                                    model.addAttribute("nextHopDistance", distanceTo);
+                                }
                             }
+                        }
+                        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+                            model.addAttribute("descendantCount", metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
                         }
                     }
                     
@@ -423,6 +432,13 @@ public class MapController {
         FeatureCollection locations = paoLocationService.getLocationsAsGeoJson(deviceCollection.getDeviceList());
         
         return locations;
+    }
+    
+    @GetMapping("/map/selectedGateways")
+    public @ResponseBody Set<Integer> selectedGateways(DeviceCollection deviceCollection) {
+        Set<Integer> deviceIds = new HashSet<>();
+        deviceCollection.getDeviceList().forEach(device -> deviceIds.add(device.getDeviceId()));
+       return rfnDeviceDao.getGatewayIdsForDevices(deviceIds);
     }
     
     @GetMapping("/map/filter/state-groups")

@@ -3,6 +3,7 @@ package com.cannontech.dr.honeywell.service;
 import java.util.List;
 
 import com.cannontech.dr.honeywellWifi.model.HoneywellDREvent;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWiFiSetpointDrParameters;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 
 /**
@@ -51,9 +52,16 @@ public interface HoneywellCommunicationService {
     /**
      * Send DREvent for a group.
      * 
-     * @param honeywellDutyCycleParameters parameters for sending DREvent
+     * @param honeywellDutyCycleParameters parameters for sending Duty Cycle DREvent
      */
-    void sendDREventForGroup(HoneywellWifiDutyCycleDrParameters honeywellDutyCycleParameters);
+    void sendDRDutyCycleEventForGroup(HoneywellWifiDutyCycleDrParameters honeywellDutyCycleParameters);
+
+    /**
+     * Send DREvent for a group.
+     * 
+     * @param honeywellWiFiSetpointDrParameters parameters for sending Setpoint DREvent
+     */
+    void sendDRSetpointEventForGroup(HoneywellWiFiSetpointDrParameters honeywellWiFiSetpointDrParameters);
     
     /**
      * Cancel DREvent for a group.

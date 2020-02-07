@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
@@ -32,7 +31,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
@@ -396,93 +394,43 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         private int deviceId;
         private int gatewayId;
         private Instant transferTime;
-        //id to send back to NM if NM requires acknowledgment 
-        private Long referenceID;
-    }
-    
-   private boolean isValidNodeComm(NodeComm comm) {
-       if(comm == null) {
-           return false;
-       }
-       
-       boolean isValid = comm.getDeviceRfnIdentifier() != null && !comm.getDeviceRfnIdentifier().is_Empty_() && comm.getGatewayRfnIdentifier() != null
-               && !comm.getGatewayRfnIdentifier().is_Empty_();
-       
-       if(!isValid) {
-           log.info("Missing RfnIdentifier or GatewayRfnIdentifier {}", comm);
-           return false;
-       }
-       Integer deviceId = rfnIdentifierCache.getPaoIdFor(comm.getDeviceRfnIdentifier());
-       if(deviceId == null) {
-           log.error("Unable to find {} in rfnIdentifier cache", comm.getDeviceRfnIdentifier());
-       }
-       Integer gatewayId = rfnIdentifierCache.getPaoIdFor(comm.getGatewayRfnIdentifier());
-       if(gatewayId == null) {
-           log.error("Unable to find {} in rfnIdentifier cache", comm.getGatewayRfnIdentifier());
-       }
-       
-       if(deviceId == null || gatewayId == null) {
-           return false;
-       }
-       
-       return true;
-   }
-   
-   
-    @Override
-    public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
-        if(CollectionUtils.isNotEmpty(nodes)) {
-            log.info("Attempting to save device to gateway mapping for devices {}", nodes);
-            List<DynamicRfnDeviceData> data = nodes.stream()
-                    .filter(node -> isValidNodeComm(node))
-                    .map(node -> getDynamicRfnDeviceData(node, null))
-                    .collect(Collectors.toList());
-            log.info("Saving device to gateway mapping for valid devices {}",  data );
-            chunkAndSaveDynamicRfnDeviceData(data);
-        }
     }
     
     @Override
-    public Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes) {
-        if(MapUtils.isEmpty(nodes)) {
-            return new HashSet<>();
+    public void saveDynamicRfnDeviceData(Map<RfnIdentifier, RfnIdentifier> deviceToGateway) {
+        if(MapUtils.isEmpty(deviceToGateway)) {
+            return;
         }
-        log.info("Attempting to save device to gateway mapping for devices {}", nodes);
-        List<DynamicRfnDeviceData> data = nodes.entrySet().stream()
-                .filter(node -> isValidNodeComm(node.getValue()))
-                .map(node -> getDynamicRfnDeviceData(node.getValue(), node.getKey()))
+        log.debug("Updating device to gateway mapping for {} devices", deviceToGateway.size());
+        List<DynamicRfnDeviceData> data = deviceToGateway.entrySet().stream()
+                .map(entry -> getDynamicRfnDeviceData(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
-        log.info("Saving device to gateway mapping for valid devices {}",  data );
-        Set<Long> refIds = chunkAndSaveDynamicRfnDeviceData(data);
-        log.info("Rows saved {}", refIds.size());
-        return refIds;
+        log.debug("Saving device to gateway mapping for valid devices {}", data.size());
+        chunkAndSaveDynamicRfnDeviceData(data);
     }
 
-    private Set<Long> chunkAndSaveDynamicRfnDeviceData(List<DynamicRfnDeviceData> data) {
-        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE/3);
+    private void chunkAndSaveDynamicRfnDeviceData(List<DynamicRfnDeviceData> data) {
+        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE / 3);
         log.debug("Starting update of {} DynamicRfnDeviceData rows ({} transaction sets).", data.size(), subSets.size());
-        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {  
-            return saveDynamicRfnDeviceDataSqlServer(subSets);
-        }
-        else if (dbVendorResolver.getDatabaseVendor().isOracle()) {  
-            return saveDynamicRfnDeviceDataOracle(subSets);
+        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {
+            saveDynamicRfnDeviceDataSqlServer(subSets);
+        } else if (dbVendorResolver.getDatabaseVendor().isOracle()) {
+            saveDynamicRfnDeviceDataOracle(subSets);
         }
         log.debug("Update DynamicRfnDeviceData completed.", data.size(), subSets.size());
-        return new HashSet<>();
     }
 
-    private DynamicRfnDeviceData getDynamicRfnDeviceData(NodeComm comm, Long referenceId) {
-        Integer deviceId = rfnIdentifierCache.getPaoIdFor(comm.getDeviceRfnIdentifier());
-        Integer gatewayId = rfnIdentifierCache.getPaoIdFor(comm.getGatewayRfnIdentifier());
+    private DynamicRfnDeviceData getDynamicRfnDeviceData(RfnIdentifier device, RfnIdentifier gateway) {
+        Integer deviceId = rfnIdentifierCache.getPaoIdFor(device);
+        Integer gatewayId = rfnIdentifierCache.getPaoIdFor(gateway);
         DynamicRfnDeviceData deviceData = new DynamicRfnDeviceData();
         deviceData.deviceId = deviceId;
         deviceData.gatewayId = gatewayId;
-        deviceData.transferTime = new Instant(comm.getNodeCommStatusTimestamp());
-        deviceData.referenceID = referenceId;
+        deviceData.transferTime = new Instant();
         return deviceData;
     }
     
-    private Set<Long> saveDynamicRfnDeviceDataOracle(List<List<DynamicRfnDeviceData>> subSets) {
+    private void saveDynamicRfnDeviceDataOracle(List<List<DynamicRfnDeviceData>> subSets) {
         /**
          * MERGE INTO DynamicRfnDeviceData DRDD
                  USING (  
@@ -495,7 +443,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             WHEN NOT MATCHED THEN
                  INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime);
          */
-        Set<Long> referenceIds = new HashSet<>();
         AtomicLong setNumber = new AtomicLong(0);
         subSets.forEach(part -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -519,40 +466,37 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
                    // .peek(value -> log.debug(value.deviceId+" "+ value.gatewayId+" "+ oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
                     .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
                     .toArray();
-            referenceIds.addAll(update(sql, values, setNumber.incrementAndGet(), part));
+            update(sql, values, setNumber.incrementAndGet(), part);
         });
-        return referenceIds;
     }
 
     /**
      * Inserts the data in the table, retries 3 times on failure
      */
-    private Set<Long> update(SqlStatementBuilder sql, Object[] values, long setNumber,
-            List<DynamicRfnDeviceData> part) {           
-            int retryCount = 1; 
-            while (retryCount <= 3) {
-                try {
-                    log.debug("Starting DynamicRfnDeviceData update try {} of 3, set {}.", retryCount, setNumber);
-                    template.update(sql.getSql(), values);
-                    log.debug("DynamicRfnDeviceData update success on try {} of 3, set {}. Updated {} rows.", retryCount, setNumber,  part.size());
-                    // ids to send to NM for acknowledgment
-                    return part.stream()
-                            .filter(p -> p.referenceID != null)
-                            .map(p -> p.referenceID)
-                            .collect(Collectors.toSet());
-                } catch (Exception e) {
-                    if (retryCount == 3) {
-                        log.error("DynamicRfnDeviceData update failed on try {} of 3, set {}. Transaction failed and aborting. Must perform a NM sync to retry updating data.", retryCount, setNumber, e);
-                    } else {
-                        log.debug("DynamicRfnDeviceData update failed on try {} of 3, set {}. Will retry.", retryCount, setNumber, e);
-                    }
-                    retryCount++;
+    private void update(SqlStatementBuilder sql, Object[] values, long setNumber,
+            List<DynamicRfnDeviceData> part) {
+        int retryCount = 1;
+        while (retryCount <= 3) {
+            try {
+                log.debug("Starting DynamicRfnDeviceData update try {} of 3, set {}.", retryCount, setNumber);
+                template.update(sql.getSql(), values);
+                log.debug("DynamicRfnDeviceData update success on try {} of 3, set {}. Updated {} rows.", retryCount, setNumber,
+                        part.size());
+                return;
+            } catch (Exception e) {
+                if (retryCount == 3) {
+                    log.error(
+                            "DynamicRfnDeviceData update failed on try {} of 3, set {}. Transaction failed and aborting. Must perform a NM sync to retry updating data.",
+                            retryCount, setNumber, e);
+                } else {
+                    log.debug("DynamicRfnDeviceData update failed on try {} of 3, set {}. Will retry.", retryCount, setNumber, e);
                 }
+                retryCount++;
             }
-            return new HashSet<>();
+        }
     }
     
-    private Set<Long> saveDynamicRfnDeviceDataSqlServer(List<List<DynamicRfnDeviceData>> subSets) {
+    private void saveDynamicRfnDeviceDataSqlServer(List<List<DynamicRfnDeviceData>> subSets) {
         /**
          * WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (
             SELECT * FROM (
@@ -570,7 +514,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             WHEN NOT MATCHED THEN
                  INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);
          */
-        Set<Long> referenceIds = new HashSet<>();
         AtomicLong setNumber = new AtomicLong(0);
         subSets.forEach(part -> {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -593,9 +536,8 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             Object[] values = part.stream()
                     .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, value.transferTime.toString()))
                     .toArray();
-            referenceIds.addAll(update(sql, values, setNumber.incrementAndGet(), part));
+            update(sql, values, setNumber.incrementAndGet(), part);
         });
-        return referenceIds;
     }
 
     @Override

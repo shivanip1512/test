@@ -26,6 +26,8 @@
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
         <jms:listener destination="yukon.notif.stream.dr.HoneywellCyclingControlMessage"
             ref="honeywellWifiMessageListener" method="handleLMHoneywellCyclingControlMessage" />
+        <jms:listener destination="yukon.notif.stream.dr.HoneywellSetpointControlMessage"
+            ref="honeywellWifiMessageListener" method="handleLMHoneywellSetpointControlMessage" />
         <jms:listener destination="yukon.notif.stream.dr.HoneywellRestoreMessage"
             ref="honeywellWifiMessageListener" method="handleLMHoneywellRestoreMessage" />
     </jms:listener-container>

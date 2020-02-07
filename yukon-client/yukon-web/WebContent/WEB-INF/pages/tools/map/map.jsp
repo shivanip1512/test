@@ -41,6 +41,13 @@
     <input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
     <input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
     
+    <cti:url var="getGatewaysUrl" value="/tools/map/selectedGateways">
+        <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+            <cti:param name="${cp.key}" value="${cp.value}" />
+        </c:forEach>    
+    </cti:url>
+    <input type="hidden" id="getGatewaysUrl" value="${getGatewaysUrl}"/>
+    
     <div id="map-container" style="height:100%;width:100%;background:white;">
 
         <div class="column-10-14 clearfix stacked">
@@ -190,7 +197,7 @@
                     <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="180px">
                         <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
                         <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
-<%--                         <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/> --%>
+                        <cm:criteriaOption classes="js-all-routes-collection js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
                     </cm:criteria>
                 </span>
             </div>
@@ -219,6 +226,9 @@
                 </div>
                 <span class="fr form-control"><i:inline key=".liveUpdate"/></span>
             </c:if>
+        </div>
+        <div style="padding-top:30px">
+            <%@ include file="/WEB-INF/pages/stars/comprehensiveMap/routeUpdateDetails.jsp" %>
         </div>
     
     </div>

@@ -3,8 +3,10 @@ package com.cannontech.web.stars.mapNetwork;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -72,6 +76,7 @@ public class MapNetworkController {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private LocationService locationService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId,
@@ -105,6 +110,7 @@ public class MapNetworkController {
         model.addAttribute("displayParentNodeLayer", displayParentNodeLayer);
         model.addAttribute("displayPrimaryRouteLayer", displayPrimaryRouteLayer);
         model.addAttribute("displayNearbyLayer", displayNearbyLayer);
+        model.addAttribute("displayInfrastructure", !isPlc);
         
         int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
         model.addAttribute("numLayers", numLayers);
@@ -255,6 +261,12 @@ public class MapNetworkController {
         }
 
         return json;
+    }
+    
+    //This request needs to be a post because there can be many devices that we pass in
+    @PostMapping("selectedGateways")
+    public @ResponseBody Set<Integer> selectedGateways(@RequestParam(value="deviceIds[]", required=true, defaultValue="") Integer[] deviceIds) {
+       return rfnDeviceDao.getGatewayIdsForDevices(new HashSet<>(Arrays.asList(deviceIds)));
     }
     
 }

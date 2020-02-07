@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/27/2020 8:50:36 AM                         */
+/* Created on:     2/6/2020 3:23:59 PM                          */
 /*==============================================================*/
 
 
@@ -7269,7 +7269,7 @@ create table MeterProgramStatus  (
    DeviceId             NUMBER                          not null,
    ReportedGuid         VARCHAR2(40)                    not null,
    Source               VARCHAR2(1)                     not null,
-   Status               VARCHAR2(20)                    not null,
+   Status               VARCHAR2(100)                   not null,
    LastUpdate           DATE                            not null,
    constraint PK_MeterProgramStatus primary key (DeviceId)
 );

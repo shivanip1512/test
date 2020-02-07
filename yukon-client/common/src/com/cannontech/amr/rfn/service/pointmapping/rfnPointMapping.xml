@@ -2821,6 +2821,17 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
+        <point name="Received Peak kW (Rate A kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
         <point name="Rate B kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -2887,6 +2898,17 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Received Peak kW (Rate B kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
         <point name="Rate C kWh">
@@ -2957,6 +2979,17 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
+        <point name="Received Peak kW (Rate C kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
         <point name="Rate D kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -3023,6 +3056,17 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Received Peak kW (Rate D kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
 

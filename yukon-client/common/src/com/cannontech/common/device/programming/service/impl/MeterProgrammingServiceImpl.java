@@ -83,9 +83,9 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
     private final Map<DeviceRequestType, String> commands = new HashMap<>();
     {
-        commands.put(DeviceRequestType.METER_PROGRAM_STATUS_READ, "");
-        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, "");
-        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE, ""); 
+        commands.put(DeviceRequestType.METER_PROGRAM_STATUS_READ, "getconfig meter programming");
+        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_CANCEL, "putconfig meter programming cancel");
+        commands.put(DeviceRequestType.METER_PROGRAM_UPLOAD_INITIATE, "putconfig meter programming"); 
     }
     private static final Set<ProgrammingStatus> failures = Sets.newHashSet(ProgrammingStatus.CANCELED,
                                                                           ProgrammingStatus.FAILED,

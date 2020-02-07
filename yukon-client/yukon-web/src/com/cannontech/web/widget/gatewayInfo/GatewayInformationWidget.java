@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
@@ -228,7 +229,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             
             gateway.setName(settings.getName());
             
-            if(settings.isUseDefault()) {
+            if (settings.isUseDefaultUpdateServer()) {
                 updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
                 auth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
                 auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
@@ -237,9 +238,11 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                 auth.setUsername(settings.getUpdateServerLogin().getUsername());
                 auth.setPassword(settings.getUpdateServerLogin().getPassword());
             }
+
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())
            .ipAddress(settings.getIpAddress())
+           .port(String.valueOf(settings.getPort()))
            .name(settings.getName())
            .admin(settings.getAdmin())
            .superAdmin(settings.getSuperAdmin())

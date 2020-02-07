@@ -1,17 +1,18 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM;
-import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.GATEWAY;
-import static com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy.LINK_QUALITY;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,6 +74,10 @@ import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Color;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.DescendantCount;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.HopCount;
+import com.cannontech.web.tools.mapping.model.NetworkMapFilter.HopCountColors;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
@@ -94,15 +99,14 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private static final String parentRequest = "NM_NETWORK_PARENT_REQUEST";
     private static final String neighborRequest = "NM_NETWORK_NEIGHBOR_REQUEST";
 
-    private static final String commsError =
-        "Unable to send request due to a communication error between Yukon and Network Manager.";
+    private static final String commsError = "Unable to send request due to a communication error between Yukon and Network Manager.";
     private static final String nmError = "Received error from Network Manager.";
     private static final String noRoute = "One or more devices within the route could not be located.";
     private static final String noParent = "No location in Yukon was found for this parent device.";
     private static final String metadataErrorKey = "yukon.web.modules.operator.mapNetwork.exception.metadataError";
 
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
- 
+
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private PaoLocationService paoLocationService;
@@ -118,17 +122,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
-   
+
     @PostConstruct
     public void init() {
-        routeReplyTemplate =
-            new RequestReplyTemplateImpl<>(routeRequest, configSource, connectionFactory, requestQueue, false);
-        neighborReplyTemplate =
-            new RequestReplyTemplateImpl<>(neighborRequest, configSource, connectionFactory, requestQueue, false);
-        parentReplyTemplate =
-            new RequestReplyTemplateImpl<>(parentRequest, configSource, connectionFactory, requestQueue, false);
+        routeReplyTemplate = new RequestReplyTemplateImpl<>(routeRequest, configSource, connectionFactory, requestQueue, false);
+        neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, connectionFactory, requestQueue,
+                false);
+        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, connectionFactory, requestQueue, false);
     }
-    
+
     public class Neighbors {
         private List<Neighbor> neighbors = new ArrayList<>();
         private List<RfnDevice> neighborsWithoutLocation = new ArrayList<>();
@@ -156,12 +158,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             this.errorMsg = errorMsg;
         }
     }
-    
+
     public class Route {
         private List<RouteInfo> route = new ArrayList<>();
         private RfnDevice deviceWithoutLocation = null;
         private String errorMsg;
-        
+
         public Route(List<RouteInfo> route, RfnDevice deviceWithoutLocation, String errorMsg) {
             this.route = route;
             this.deviceWithoutLocation = deviceWithoutLocation;
@@ -184,7 +186,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             this.errorMsg = errorMsg;
         }
     }
-    
+
     @Override
     public Parent getParent(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
 
@@ -222,14 +224,14 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(parentLocation));
             Parent parent = new Parent(parentDevice, location, data, accessor);
             parent.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(parentDevice));
-            
+
             try {
                 Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getMetaData(Lists.newArrayList(parentDevice));
                 addMappingInfo(metaData, parent);
             } catch (NmNetworkException e) {
                 parent.setErrorMsg(accessor.getMessage(metadataErrorKey));
             }
-            
+
             addDistance(parent, deviceLocation, parentLocation);
             log.debug(parent);
             log.debug("-----" + deviceLocation + " <<>> " + parentLocation);
@@ -242,7 +244,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             throw new NmNetworkException(noParent, "noParentLocation");
         }
     }
-    
+
     @Override
     public Route getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
 
@@ -253,8 +255,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         log.debug("Sending get route request to Network Manager: " + request);
 
-        BlockingJmsReplyHandler<RfnPrimaryRouteDataReply> reply =
-            new BlockingJmsReplyHandler<>(RfnPrimaryRouteDataReply.class);
+        BlockingJmsReplyHandler<RfnPrimaryRouteDataReply> reply = new BlockingJmsReplyHandler<>(RfnPrimaryRouteDataReply.class);
         RfnPrimaryRouteDataReply response;
         try {
             routeReplyTemplate.send(request, reply);
@@ -271,38 +272,57 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         log.debug("response: " + response);
 
-        Map<RouteData, RfnDevice>  dataToDevice = response.getRouteData().stream()
-                .collect(Collectors.toMap(data -> data, data -> rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier())));
-                    
+        Map<RfnIdentifier, RfnDevice> devices = response.getRouteData().stream()
+                .map(data -> rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
+
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         try {
-            metaData = getMetaData(dataToDevice.values());
+            metaData = getMetaData(devices.values());
         } catch (NmNetworkException e) {
             errorMsg = accessor.getMessage(metadataErrorKey);
         }
 
-        Set<PaoLocation> allLocations = paoLocationDao.getLocations(dataToDevice.values());
+        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
         PaoLocation nextHopLocation = null;
         List<RouteInfo> routes = new ArrayList<>();
         RfnDevice hopWithoutLocation = null;
-        
+
         for (int i = 0; i < response.getRouteData().size(); i++) {
             RouteData data = response.getRouteData().get(i);
-            RfnDevice routeDevice = dataToDevice.get(data);
+            RfnDevice routeDevice = devices.get(data.getRfnIdentifier());
+            if (routeDevice == null) {
+                log.error("Device {} was not found", data.getRfnIdentifier());
+                continue;
+            }
             PaoLocation paoLocation = locations.get(routeDevice.getPaoIdentifier());
             if (paoLocation != null) {
                 FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
                 RouteInfo routeInfo = new RouteInfo(routeDevice, data, location, accessor);
+                if (!metaData.isEmpty()) {
+                    RfnMetadataMultiQueryResult deviceMetadata = metaData.get(data.getRfnIdentifier());
+                    if (deviceMetadata != null) {
+                        if (deviceMetadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+                            Integer descendantCount = (Integer) deviceMetadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
+                            routeInfo.setDescendantCount(descendantCount);
+                        }
+                    }
+                }
                 routeInfo.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(routeDevice));
                 // the first element shows the distance from the first element to the 2nd element
                 // only the last element has no distance, because it has no "next hop"
                 if (i < response.getRouteData().size() - 1) {
                     RouteData nextHop = response.getRouteData().get(i + 1);
-                    RfnDevice nextHopDevice = dataToDevice.get(nextHop);
+                    RfnDevice nextHopDevice = devices.get(nextHop.getRfnIdentifier());
+                    if (nextHopDevice == null) {
+                        log.error("Device {} was not found", nextHop.getRfnIdentifier());
+                        break;
+                    }
                     PaoIdentifier nextHopPaoIdentifier = nextHopDevice.getPaoIdentifier();
                     nextHopLocation = locations.get(nextHopPaoIdentifier);
-                    if(nextHopLocation == null){
+                    if (nextHopLocation == null) {
                         hopWithoutLocation = nextHopDevice;
                     }
                     addDistance(routeInfo, paoLocation, nextHopLocation);
@@ -310,7 +330,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 addMappingInfo(metaData, routeInfo);
                 routes.add(routeInfo);
                 log.debug(routeInfo);
-                if(nextHopLocation == null){
+                if (nextHopLocation == null) {
                     break;
                 }
             } else {
@@ -319,9 +339,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 throw new NmNetworkException(noRoute, "noRoute");
             }
         }
-        if(routes.isEmpty()){
+        if (routes.isEmpty()) {
             // one of the devices has no location, can't display a route
-            throw new NmNetworkException(noRoute, "noRoute"); 
+            throw new NmNetworkException(noRoute, "noRoute");
         }
         return new Route(routes, hopWithoutLocation, errorMsg);
     }
@@ -329,12 +349,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Override
     public Neighbors getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        //the main entity (in which all neighbors are related to) shows no distance
+        // the main entity (in which all neighbors are related to) shows no distance
         PaoLocation deviceLocation = paoLocationDao.getLocation(deviceId);
         RfnNeighborDataRequest request = new RfnNeighborDataRequest();
         request.setRfnIdentifier(device.getRfnIdentifier());
         String errorMsg = null;
-        
+
         log.debug("Sending get neighbors request to Network Manager: " + request);
 
         BlockingJmsReplyHandler<RfnNeighborDataReply> reply = new BlockingJmsReplyHandler<>(RfnNeighborDataReply.class);
@@ -352,40 +372,43 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             throw new NmNetworkException(commsError, e, "commsError");
         }
 
-        Map<com.cannontech.common.rfn.message.network.NeighborData, RfnDevice>  dataToDevice = response.getNeighborData().stream()
-            .collect(Collectors.toMap(data -> data, data ->  rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier())));
-        
-        
+        Map<RfnIdentifier, RfnDevice> devices = response.getNeighborData().stream()
+                .map(data -> rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
+
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
         try {
-            metaData = getMetaData(dataToDevice.values());
+            metaData = getMetaData(devices.values());
         } catch (NmNetworkException e) {
             errorMsg = accessor.getMessage(metadataErrorKey);
         }
-        
-        Set<PaoLocation> allLocations = paoLocationDao.getLocations(dataToDevice.values());
+
+        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
         List<RfnDevice> neighborsWithoutLocation = new ArrayList<>();
-        List<Neighbor> neighbors = new ArrayList<>();        
+        List<Neighbor> neighbors = new ArrayList<>();
+
         for (com.cannontech.common.rfn.message.network.NeighborData data : response.getNeighborData()) {
-            RfnDevice neighborDevice = dataToDevice.get(data);
-            if (neighborDevice != null) {
-                PaoLocation neighborLocation = locations.get(neighborDevice.getPaoIdentifier());
-                if (neighborLocation != null) {
-                    FeatureCollection location =
-                        paoLocationService.getFeatureCollection(Lists.newArrayList(neighborLocation));
-                    Neighbor neighbor = new Neighbor(neighborDevice, location, data, accessor);
-                    neighbor.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(neighborDevice));
-                    addMappingInfo(metaData, neighbor);
-                    // distance is from device to each neighbor
-                    addDistance(neighbor, deviceLocation, neighborLocation);
-                    log.debug(neighbor);
-                    log.debug("-----" + deviceLocation + "-" + neighborLocation);
-                    neighbors.add(neighbor);
-                } else {
-                    neighborsWithoutLocation.add(neighborDevice);
-                    log.error("Location is not found for " + neighborDevice);
-                }
+            RfnDevice neighborDevice = devices.get(data.getRfnIdentifier());
+            if (neighborDevice == null) {
+                log.error("Device {} wan not found", data.getRfnIdentifier());
+                continue;
+            }
+            PaoLocation neighborLocation = locations.get(neighborDevice.getPaoIdentifier());
+            if (neighborLocation != null) {
+                FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(neighborLocation));
+                Neighbor neighbor = new Neighbor(neighborDevice, location, data, accessor);
+                neighbor.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(neighborDevice));
+                addMappingInfo(metaData, neighbor);
+                // distance is from device to each neighbor
+                addDistance(neighbor, deviceLocation, neighborLocation);
+                log.debug(neighbor);
+                log.debug("-----" + deviceLocation + "-" + neighborLocation);
+                neighbors.add(neighbor);
+            } else {
+                neighborsWithoutLocation.add(neighborDevice);
+                log.error("Location is not found for " + neighborDevice);
             }
         }
         return new Neighbors(neighbors, neighborsWithoutLocation, errorMsg);
@@ -403,7 +426,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = null;
         try {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(devicesOtherThenGatways,
-                Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+                    Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA,
+                            RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY, RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
         } catch (NmCommunicationException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
@@ -412,17 +436,17 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
     private void addMappingInfo(Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData, MappingInfo info) {
         PaoIdentifier pao = info.getDevice().getPaoIdentifier();
-        if(pao.getPaoType().isRfGateway()) {
+        if (pao.getPaoType().isRfGateway()) {
             addGatewayInfo(info);
         } else {
             addMetadata(info, metaData);
         }
-        if(pao.getPaoType().isMeter()) {
+        if (pao.getPaoType().isMeter()) {
             YukonMeter meter = meterDao.getForId(pao.getPaoId());
             info.setMeterNumber(meter.getMeterNumber());
         }
     }
-    
+
     private void addGatewayInfo(MappingInfo info) {
         try {
             RfnGatewayData gateway = gatewayDataCache.get(info.getDevice().getPaoIdentifier());
@@ -434,7 +458,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.error("Failed to get gateway data for " + info.getDevice(), e);
         }
     }
-    
+
     /**
      * Adds metadata received from NM to mapping info
      */
@@ -443,7 +467,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             RfnMetadataMultiQueryResult metadata = metaData.get(info.getDevice().getRfnIdentifier());
             if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
                 log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
-                    + " for device:" + info.getDevice());
+                        + " for device:" + info.getDevice());
                 info.setErrorMsg(info.getAccessor().getMessage(metadataErrorKey));
                 return;
             }
@@ -454,20 +478,21 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
 
     private void setPrimaryForwardGatewayInfo(MappingInfo info, RfnMetadataMultiQueryResult metadata) {
-        RfnGateway gateway = getPrimaryForwardGatewayFromMultiQueryResult(info.getDevice(), metadata);
-        if(gateway != null) {
+        RfnDevice device = getPrimaryForwardGatewayFromMultiQueryResult(info.getDevice(), metadata);
+        if (device != null) {
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(device.getPaoIdentifier().getPaoId());
             info.setPrimaryGateway(gateway.getNameWithIPAddress());
             info.setPrimaryGatewayUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(gateway));
         }
     }
 
     @Override
-    public RfnGateway getPrimaryForwardGatewayFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
+    public RfnDevice getPrimaryForwardGatewayFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
         if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY)) {
             RfnIdentifier gatewayIdentifier = (RfnIdentifier) metadata.getMetadatas()
                     .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
-            return rfnGatewayService.getGatewayByPaoId(
-                    rfnDeviceCreationService.createIfNotFound(gatewayIdentifier).getPaoIdentifier().getPaoId());
+            RfnDevice gateway = rfnDeviceCreationService.createIfNotFound(gatewayIdentifier);
+            return gateway;
         } else {
             log.error("NM didn't return PRIMARY_FORWARD_GATEWAY for {} ", rfnDevice);
         }
@@ -482,7 +507,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             log.error("NM didn't return NODE_DATA for {}", info.getDevice());
         }
     }
-    
+
     /**
      * To get the NodeCommStatus (Ready/Not-Ready) we compare PRIMARY_GATEWAY_NODE_COMM and with PRIMARY_FORWARD_GATEWAY.
      * If they match, we can use the NodeCommStatus from PRIMARY_GATEWAY_NODE_COMM. If they don't match we will have to use
@@ -495,9 +520,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
     @Override
     public NodeCommStatus getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata) {
-        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)
+        if (metadata.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)
                 && metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY)) {
-            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
+            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
             RfnIdentifier primaryForwardGateway = (RfnIdentifier) metadata.getMetadatas()
                     .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
             if (comm.getGatewayRfnIdentifier() == primaryForwardGateway) {
@@ -525,9 +550,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         info.setDistanceInKm(distance.distanceInKm);
         info.setDistanceInMiles(distance.distanceInMiles);
     }
-    
+
     /**
-     * "Distance to Next Hop" is calculated from the location (lat/lon) of the current node and the location of the next hop node/gateway
+     * "Distance to Next Hop" is calculated from the location (lat/lon) of the current node and the location of the next hop
+     * node/gateway
      * 
      * (Copy from NM - EntityMap.java)
      * Based on the Haversine formula
@@ -552,7 +578,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         double lat2 = Math.toRadians(lati2);
 
         double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-            + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+                + Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         double distanceInKm = earthRadius * c;
@@ -561,116 +587,155 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         double distanceInMiles = distanceInKm * 0.621371;
         return new Distance(distanceInKm, distanceInMiles);
     }
-    
-    private class Distance{
+
+    private class Distance {
         double distanceInKm;
-        double distanceInMiles; 
+        double distanceInMiles;
+
         public Distance(double distanceInKm, double distanceInMiles) {
             this.distanceInKm = distanceInKm;
             this.distanceInMiles = distanceInMiles;
         }
     }
-    
-    @Override
-    public NetworkMap getNetworkMap(NetworkMapFilter filter, MessageSourceAccessor accessor) throws NmNetworkException, NmCommunicationException {         
-        log.debug("Getting network map by filter: {}", filter);
-        NetworkMap map = new NetworkMap();
-        
-        Map<RfnIdentifier, RfnGateway> gateways =
-            rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds()).stream().collect(
-                Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
-        Set<RfnIdentifier> gatewayIdentifiers = new HashSet<>(gateways.keySet());
-        try {
-            if (filter.getColorCodeBy() == LINK_QUALITY) {
-                Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData =
-                    metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayIdentifiers,
-                        Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA));
-                
-                //if user didn't specify link quality pre-fill with all values
-                if(filter.getLinkQuality().isEmpty()) {
-                    filter.setLinkQuality(Lists.newArrayList(LinkQuality.values()));
-                }
-                
-                log.debug("Received neighbor data from NM for {} devices", neighborMetaData.size());
 
-                loadMapColorCodedByLinkQuality(filter, Sets.newHashSet(gateways.keySet()), accessor, map, neighborMetaData);       
-            } else if (filter.getColorCodeBy() == GATEWAY) {
-                if(filter.getLinkQuality().isEmpty()) {
-                    Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayIdentifiers, Set.of(PRIMARY_FORWARD_GATEWAY));
-                    
-                    log.debug("Received primary gateway nodes from NM for {} devices", metaData.size());
-                    loadMapColorCodedByGateway(Sets.newHashSet(gateways.keySet()), map, metaData);
-                    
-                }else {
-                    log.debug("Getting data for {} gateways", gateways.size());
-                    Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadataForGatewayRfnIdentifiers(gatewayIdentifiers,
-                            Set.of(PRIMARY_FORWARD_NEIGHBOR_DATA, PRIMARY_GATEWAY_NODE_COMM));
-                    
-                    log.debug("Received neighbor data from NM for {} devices", metaData.size());
-                    loadMapColorCodedByGatewayFilteredByLinkQuality(gateways, filter, map, metaData);
-                }
-            }
-        } catch (NmCommunicationException e) {
-            throw new NmNetworkException(commsError, e, "commsError");
+    @Override
+    public NetworkMap getNetworkMap(NetworkMapFilter filter, MessageSourceAccessor accessor)
+            throws NmNetworkException, NmCommunicationException {
+        // "link quality1 OR link quality2" AND "gateway1 OR gateway2 OR gateway3" AND "hopcount1 OR hopcount2"
+        log.debug("Getting network map by filter: {}", filter);
+
+        NetworkMap map = new NetworkMap();
+
+        Set<RfnMetadataMulti> multi = Set.of(PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_NEIGHBOR_DATA,
+                PRIMARY_FORWARD_DESCENDANT_COUNT, PRIMARY_FORWARD_ROUTE_DATA);
+
+        Map<RfnIdentifier, RfnGateway> gateways = rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds())
+                .stream().collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
+
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService
+                .getMetadataForGatewayRfnIdentifiers(new HashSet<>(gateways.keySet()), multi);
+
+        Set<RfnIdentifier> gatewaysToAddToMap = new HashSet<>(gateways.keySet());
+        Set<RfnIdentifier> filteredDevices = new HashSet<>(metaData.keySet());
+        removeDevicesThatDoNotMatchSelectedCriteria(filter, metaData, gatewaysToAddToMap, filteredDevices);
+        metaData.entrySet().removeIf(data -> !filteredDevices.contains(data.getKey()));
+
+        if (filter.getColorCodeBy() == ColorCodeBy.DESCENDANT_COUNT) {
+            colorCodeByDescendantCountAndAddToMap(map, metaData, accessor, filter);
+            gatewaysToAddToMap.addAll(gateways.keySet());
+        } else if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
+            colorCodeByGatewayAndAddToMap(map, metaData);
+        } else if (filter.getColorCodeBy() == ColorCodeBy.HOP_COUNT) {
+            colorCodeByHopCountAndAddToMap(map, metaData, accessor, filter);
+            gatewaysToAddToMap.addAll(gateways.keySet());
+        } else if (filter.getColorCodeBy() == ColorCodeBy.LINK_QUALITY) {
+            colorCodeByLinkQualityAndAddToMap(map, metaData, accessor, filter);
+            gatewaysToAddToMap.addAll(gateways.keySet());
         }
-        
-        log.debug("MAP-"+map);
+        addDevicesToMap(map, "#ffffff", gatewaysToAddToMap);
+        log.debug("Map {} ", map);
         return map;
     }
-    
+
     /**
-     * Adding devices received from NM to map
+     * Adding devices received from NM to map, hop count information displayed in a legend
      */
-    private void loadMapColorCodedByGatewayFilteredByLinkQuality(Map<RfnIdentifier, RfnGateway> gateways, NetworkMapFilter filter, NetworkMap map,
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
-        Set<RfnIdentifier> gatewaysWithoutDevices = new HashSet<>();
-        AtomicInteger i = new AtomicInteger(0);
-        for(Map.Entry<RfnIdentifier, RfnGateway> selectedGateways: gateways.entrySet()) {
-            Set<RfnIdentifier> identifiers = new HashSet<>();
-            for(Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data: metaData.entrySet()) {
-                if(data.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA) && data.getValue().isValidResultForMulti(PRIMARY_GATEWAY_NODE_COMM)) {
-                    NodeComm nodeComm = (NodeComm) data.getValue().getMetadatas().get(PRIMARY_GATEWAY_NODE_COMM);
-                    NeighborData neighborData = (NeighborData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA); 
-                    if(nodeComm.getGatewayRfnIdentifier().equals(selectedGateways.getKey()) && filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))) {
-                        identifiers.add(data.getKey());
-                    }
-                }
-            }
-            if (!identifiers.isEmpty()) {
-                Color color = Color.values()[i.getAndIncrement()];
-                //add gateway
-                identifiers.add(selectedGateways.getKey());
-                addDevicesToMap(map, color, selectedGateways.getValue().getName(), identifiers);
-            } else {
-                gatewaysWithoutDevices.add(selectedGateways.getKey());
-            }
+    private void colorCodeByHopCountAndAddToMap(NetworkMap map,
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData, MessageSourceAccessor accessor, NetworkMapFilter filter) {
+        log.debug("Loading map filtered by hop count, total devices in result {}", metaData.size());
+        if (metaData.isEmpty()) {
+            return;
         }
-        addDevicesToMap(map, "#ffffff", gatewaysWithoutDevices);
+        HashMultimap<HopCountColors, RfnIdentifier> identifiers = HashMultimap.create();
+
+        for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> result : metaData.entrySet()) {
+            com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) result
+                    .getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+            int hopCount = (int) routeData.getHopCount();
+            identifiers.put(HopCountColors.getHopCountColor(hopCount), result.getKey());
+        }
+        
+        log.debug("Filtered identifiers {}", identifiers.size());
+        HopCountColors maxCountColors = HopCountColors.getHopCountColorsWithMaxNumber();
+        List<HopCountColors> colors = identifiers.keySet().stream().sorted(Comparator.comparingInt(HopCountColors::getNumber))
+            .collect(Collectors.toList());
+        map.keepTheLegendOrder();
+        for (HopCountColors color : colors) {   
+            String legend = color == maxCountColors? "> "+ (maxCountColors.getNumber() - 1) : String.valueOf(color.getNumber());
+            addDevicesAndLegendToMap(map, color.getColor(), legend, identifiers.get(color));
+        }
     }
 
     /**
-     * Adding devices received from NM to map
+     * Adding devices received from NM to map, gateway information displayed in a legend
      */
-    private void loadMapColorCodedByGateway(Set<RfnIdentifier> allFilteredGateways, NetworkMap map,
+    private void colorCodeByDescendantCountAndAddToMap(NetworkMap map,
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData, MessageSourceAccessor accessor, NetworkMapFilter filter) {
+        log.debug("Loading map filtered by descendant count, total devices in result {}", metaData.size());
+        if (metaData.isEmpty()) {
+            return;
+        }
+        HashMultimap<DescendantCount, RfnIdentifier> identifiers = HashMultimap.create();
+        metaData.entrySet().stream()
+                .filter(result -> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT))
+                .forEach(result -> {
+                    Integer count = (Integer) result.getValue().getMetadatas()
+                            .get(PRIMARY_FORWARD_DESCENDANT_COUNT);
+                    DescendantCount dc = DescendantCount.getDescendantCount(count);
+                    identifiers.put(dc, result.getKey());
+                });
+
+        for (DescendantCount descendantCount : identifiers.keySet()) {
+            String legendText = accessor.getMessage(descendantCount.getFormatKey());
+            addDevicesAndLegendToMap(map, descendantCount.getColor(), legendText, identifiers.get(descendantCount));
+        }
+    }
+
+    /**
+     * Adding devices received from NM to map, gateway information displayed in a legend
+     */
+    private void colorCodeByLinkQualityAndAddToMap(NetworkMap map,
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData, MessageSourceAccessor accessor, NetworkMapFilter filter) {
+        log.debug("Loading map filtered by link quality, total devices in result {}", metaData.size());
+        if (metaData.isEmpty()) {
+            return;
+        }
+        HashMultimap<LinkQuality, RfnIdentifier> identifiers = HashMultimap.create();
+        metaData.entrySet().stream()
+                .filter(result -> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
+                .forEach(result -> {
+                    NeighborData neighborData = (NeighborData) result.getValue().getMetadatas()
+                            .get(PRIMARY_FORWARD_NEIGHBOR_DATA);
+                    LinkQuality lq = LinkQuality.getLinkQuality(neighborData);
+                    identifiers.put(lq, result.getKey());
+                });
+
+        for (LinkQuality linkQuality : identifiers.keySet()) {
+            String legendText = accessor.getMessage(linkQuality.getFormatKey());
+            addDevicesAndLegendToMap(map, linkQuality.getColor(), legendText, identifiers.get(linkQuality));
+        }
+    }
+
+    /**
+     * Adding devices received from NM to map, gateway information displayed in a legend
+     */
+    private void colorCodeByGatewayAndAddToMap(NetworkMap map,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData) {
 
+        if (metaData.isEmpty()) {
+            return;
+        }
+        log.debug("Loading map filtered by gateway, total devices in result {}", metaData.size());
         Map<RfnIdentifier, Collection<RfnIdentifier>> gatewayToDeviceMap = getGatewayToDeviceMap(metaData);
         AtomicInteger i = new AtomicInteger(0);
-        log.debug("Loading map filtered by gateway");
         for (RfnIdentifier gatewayIdentifier : gatewayToDeviceMap.keySet()) {
             Color color = Color.values()[i.getAndIncrement()];
             RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(gatewayIdentifier);
             Set<RfnIdentifier> devices = Sets.newHashSet(gatewayToDeviceMap.get(gatewayIdentifier));
-            log.debug("Gateway {} devices {}", gateway, devices);
+            log.debug("Gateway {} devices {}", gateway.getName(), devices.size());
             devices.add(gatewayIdentifier);
-            // remove gateway that had data
-            allFilteredGateways.remove(gateway.getRfnIdentifier());
-            addDevicesToMap(map, color, gateway.getName(), devices);
+            addDevicesAndLegendToMap(map, color, gateway.getName(), devices);
         }
-        // add gateways that have no data
-        addDevicesToMap(map, "#ffffff", allFilteredGateways);
     }
 
     private Map<RfnIdentifier, Collection<RfnIdentifier>> getGatewayToDeviceMap(
@@ -686,63 +751,116 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
 
     /**
-     * Adding devices received from NM to map
-     * @param gateways 
+     * selectedGateways - removes gateway that has devices
+     * filteredDevices - removes devices that do not match user selected criteria (filter)
      */
-    private void loadMapColorCodedByLinkQuality(NetworkMapFilter filter, Set<RfnIdentifier> gateways, MessageSourceAccessor accessor, NetworkMap map,
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> neighborMetaData) {
-        log.debug("Loading map filtered by link quality");
-        
-        HashMultimap<LinkQuality, RfnIdentifier> identifiers = HashMultimap.create();
-        neighborMetaData.entrySet().stream()
-                    .filter(result-> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
-                    .forEach(result -> {
-                        NeighborData neighborData = (NeighborData) result.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
-                        if(filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))){
-                            identifiers.put(LinkQuality.getLinkQuality(neighborData), result.getKey());
-                        }
-                    });
+    private void removeDevicesThatDoNotMatchSelectedCriteria(NetworkMapFilter filter,
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData,
+            Set<RfnIdentifier> selectedGateways, Set<RfnIdentifier> filteredDevices) {
 
-        for (LinkQuality linkQuality : identifiers.keySet()) {
-            String linkQualityFormatted = accessor.getMessage(linkQuality.getFormatKey());
-            addDevicesToMap(map, linkQuality.getColor(), linkQualityFormatted, identifiers.get(linkQuality));
+        for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
+            filterGatewaysWithoutDevices(selectedGateways, data);
+            filterByDescendantCount(filter, filteredDevices, data);
+            filterByLinkQuality(filter, filteredDevices, data);
+            filterByHopCount(filter, filteredDevices, data);
         }
-        
-        //add all gateways
-       addDevicesToMap(map, "#ffffff", gateways);
     }
-    
+
+    /**
+     * Removes devices that do not match user selected criteria (filter) from filteredDevices
+     */
+    private void filterByHopCount(NetworkMapFilter filter, Set<RfnIdentifier> filteredDevices,
+            Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
+        if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
+            com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) data
+                    .getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+            if (!filter.getHopCount().contains(HopCount.getHopCount(routeData.getHopCount()))) {
+                filteredDevices.remove(data.getKey());
+            }
+        } else {
+            filteredDevices.remove(data.getKey());
+        }
+    }
+
+    /**
+     * Removes devices that do not match user selected criteria (filter) from filteredDevices
+     */
+    private void filterByLinkQuality(NetworkMapFilter filter, Set<RfnIdentifier> filteredDevices,
+            Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
+        if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA)) {
+            NeighborData neighborData = (NeighborData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
+            if (!filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))) {
+                filteredDevices.remove(data.getKey());
+            }
+        } else {
+            filteredDevices.remove(data.getKey());
+        }
+    }
+
+    /**
+     * Removes devices that do not match user selected criteria (filter) from filteredDevices
+     */
+    private void filterByDescendantCount(NetworkMapFilter filter, Set<RfnIdentifier> filteredDevices,
+            Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
+        if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+            Integer count = (Integer) data.getValue().getMetadatas().get(PRIMARY_FORWARD_DESCENDANT_COUNT);
+            if (!filter.getDescendantCount().contains(DescendantCount.getDescendantCount(count))) {
+                filteredDevices.remove(data.getKey());
+            }
+        } else {
+            filteredDevices.remove(data.getKey());
+        }
+    }
+
+    /**
+     * Removes gateways that has devices
+     */
+    private void filterGatewaysWithoutDevices(Set<RfnIdentifier> selectedGateways,
+            Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
+        if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
+            RfnIdentifier gateway = (RfnIdentifier) data.getValue().getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
+            selectedGateways.remove(gateway);
+        }
+    }
+
     /**
      * Add legend and device location to a map
      */
-    private void addDevicesToMap(NetworkMap map, Color color, String legend, Set<RfnIdentifier> devices) {
-        map.getLegend().add(new Legend(color, legend));
+    private void addDevicesAndLegendToMap(NetworkMap map, Color color, String legend, Set<RfnIdentifier> devices) {
+        map.addLegend(new Legend(color, legend));
         addDevicesToMap(map, color.getHexColor(), devices);
     }
-    
+
     /**
      * Add device location to a map
      */
-    private void addDevicesToMap(NetworkMap map,  String hexColor, Set<RfnIdentifier> devices) {
-        if(CollectionUtils.isEmpty(devices)) {
+    private void addDevicesToMap(NetworkMap map, String hexColor, Set<RfnIdentifier> devices) {
+        if (CollectionUtils.isEmpty(devices)) {
             return;
         }
         Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
-        if(CollectionUtils.isEmpty(paoIds)) {
+        if (CollectionUtils.isEmpty(paoIds)) {
             return;
         }
-        
-        Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds), l -> l.getPaoIdentifier().getPaoId());
+
+        Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds),
+                l -> l.getPaoIdentifier().getPaoId());
         map.setDevicesWithoutLocation(paoIds.stream().filter(paoId -> !locations.containsKey(paoId))
-            .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
-            .collect(Collectors.toList()));
-        
-        if(locations.isEmpty()) {
+                .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
+                .collect(Collectors.toList()));
+
+        if (locations.isEmpty()) {
             log.debug("Failed to add devices {} to map, locations empty", devices.size());
             return;
         }
-        log.debug("Attempting to add devices {} to map locations found {}. Only devices, with locations will be added.", devices.size(), locations.size() );
+        log.debug("Color {} attempting to add devices {} to map locations found {}. Only devices, with locations will be added.",
+                hexColor, devices.size(), locations.size());
         FeatureCollection features = paoLocationService.getFeatureCollection(locations.values());
-        map.getMappedDevices().put(hexColor, features);
+        if(map.getMappedDevices().containsKey(hexColor)) {
+            //filtering by hop count contain duplicate colors, see legend for a visual example
+            map.getMappedDevices().get(hexColor).getFeatures().addAll(features.getFeatures());
+        } else {
+            map.getMappedDevices().put(hexColor, features);
+        }
     }
 }

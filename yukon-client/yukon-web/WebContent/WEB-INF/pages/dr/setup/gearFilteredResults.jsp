@@ -19,10 +19,10 @@
         <thead>
             <tr>
                 <tags:sort column="${NAME}" width="15%"/>
-                <tags:sort column="${TYPE}" width="15%"/>
-                <tags:sort column="${ORDER}" width="5%"/>
+                <tags:sort column="${TYPE}" width="10%"/>
+                <tags:sort column="${ORDER}" width="7%"/>
                 <tags:sort column="${PROGRAM}" width="15%"/>
-                <th width="60%"><i:inline key="yukon.common.details"/></th>
+                <th width="53%"><i:inline key="yukon.common.details"/></th>
             </tr>
         </thead>
         <tbody>

@@ -13,13 +13,13 @@
 <cti:msg2 var="locationHelp" key=".mapNetwork.location.helpText"/>
 <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
     <%@ include file="locationInput.jspf"%>
-    <c:if test="${!empty coordinates.latitude}">
+    <c:if test="${!empty coordinates.latitude && displayInfrastructure}">
         <span class="fr js-infrastructure">
             <c:set var="labelWidth" value="${!empty infrastructureLabelWidth ? infrastructureLabelWidth : '150px'}"/>
             <cm:criteria key="yukon.web.modules.operator.comprehensiveMap.infrastructure" labelWidth="${labelWidth}">
                 <cm:criteriaOption classes="js-all-gateways" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways"/>
                 <cm:criteriaOption classes="js-all-relays" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays"/>
-<%--                 <cm:criteriaOption classes="js-all-routes" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/> --%>
+                <cm:criteriaOption classes="js-all-routes js-all-routes-map-network" key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes"/>
             </cm:criteria>
         </span>
     </c:if>
@@ -68,7 +68,11 @@
             </div>
         </div>
     </div>
+    <div style="padding-top:40px">
+        <%@ include file="/WEB-INF/pages/stars/comprehensiveMap/routeUpdateDetails.jsp" %>
+    </div>
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
+
 </tags:sectionContainer2>
 
 <div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>

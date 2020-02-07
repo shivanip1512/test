@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/27/2020 8:46:37 AM                         */
+/* Created on:     2/6/2020 3:26:13 PM                          */
 /*==============================================================*/
 
 
@@ -7710,7 +7710,7 @@ create table MeterProgramStatus (
    DeviceId             numeric              not null,
    ReportedGuid         varchar(40)          not null,
    Source               varchar(1)           not null,
-   Status               varchar(20)          not null,
+   Status               varchar(100)         not null,
    LastUpdate           datetime             not null,
    constraint PK_MeterProgramStatus primary key (DeviceId)
 )

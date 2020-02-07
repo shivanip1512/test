@@ -39,12 +39,16 @@
         <tags:nameValue2 nameKey=".ipaddress">
             <tags:input path="ipAddress" inputClass="js-gateway-edit-ip" maxlength="15" size="15" tabindex="2"/>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".virtual">
-            <tags:switchButton path="virtual" onNameKey=".yes.label" offNameKey=".no.label" 
-                toggleGroup="virtual-gateway" toggleAction="invisible"/>
+        <tags:nameValue2 nameKey=".useDefaultPort">
+            <tags:switchButton path="useDefaultPort" onNameKey=".yes.label" offNameKey=".no.label" 
+                toggleGroup="virtual-gateway" toggleAction="invisible" toggleInverse="true"/>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".virtual.port" data-toggle-group="virtual-gateway">
+        <tags:nameValue2 nameKey=".default.port" data-toggle-group="virtual-gateway">
             <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
+            <cti:msg2 var="portHelpTextTitle" key=".default.port.title"/>
+            <tags:helpInfoPopup title="${portHelpTextTitle}" classes="vam">
+                <cti:msg2 key=".default.port.helpText"/>
+            </tags:helpInfoPopup>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>
@@ -97,7 +101,7 @@
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".updateServer.default">
-            <tags:switchButton path="useDefault" onNameKey=".yes.label" offNameKey=".no.label" 
+            <tags:switchButton path="useDefaultUpdateServer" onNameKey=".yes.label" offNameKey=".no.label" 
                 toggleGroup="update-server" toggleAction="invisible" toggleInverse="true"/>
         </tags:nameValue2>
 

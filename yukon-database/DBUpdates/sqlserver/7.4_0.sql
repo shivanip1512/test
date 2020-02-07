@@ -404,6 +404,67 @@ DELETE FROM Point WHERE POINTID IN (
 INSERT INTO DBUpdates VALUES ('YUK-21149', '7.4.0', GETDATE());
 /* @end YUK-21149 */
 
+/* @start YUK-21060 */
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+INSERT INTO DBUpdates VALUES ('YUK-21060', '7.4.0', GETDATE());
+/* @end YUK-21060 */
+
+/* @start YUK-21475 */
+ALTER TABLE MeterProgramStatus
+ALTER COLUMN Status VARCHAR(100) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-21475', '7.4.0', GETDATE());
+/* @end YUK-21475 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

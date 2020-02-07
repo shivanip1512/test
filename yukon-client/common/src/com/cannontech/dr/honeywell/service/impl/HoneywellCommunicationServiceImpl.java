@@ -49,10 +49,12 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
 import com.cannontech.dr.honeywell.message.AccessControlListItemRequest;
-import com.cannontech.dr.honeywell.message.DREventRequest;
+import com.cannontech.dr.honeywell.message.DRDutyCycleEventRequest;
+import com.cannontech.dr.honeywell.message.DRSetpointEventRequest;
 import com.cannontech.dr.honeywell.message.DutyCyclePeriod;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.dr.honeywellWifi.model.HoneywellDREvent;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWiFiSetpointDrParameters;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
@@ -215,14 +217,14 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     }
 
     @Override
-    public void sendDREventForGroup(HoneywellWifiDutyCycleDrParameters parameters) {
-        log.debug("Sending DR event for yukon LM group " + parameters.getGroupId());
+    public void sendDRDutyCycleEventForGroup(HoneywellWifiDutyCycleDrParameters parameters) {
+        log.debug("Sending DR Duty Cycle event for yukon LM group {}", parameters.getGroupId());
         try {
 
             int honeywellGroupId = honeywellDao.getHoneywellGroupId(parameters.getGroupId());
             String url = getUrlBase() + drEventForGroupUrlPart + "?groupId=" + honeywellGroupId;
 
-            DREventRequest request = new DREventRequest(parameters.getEventId(),
+            DRDutyCycleEventRequest request = new DRDutyCycleEventRequest(parameters.getEventId(),
                                                         parameters.getStartTime(),
                                                         Boolean.TRUE, //allow opt-out on Honeywell portal & device
                                                         parameters.getRandomizationInterval(),
@@ -239,9 +241,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             if (log.isDebugEnabled()) {
                 try {
-                    log.debug("Sending honeywell duty cycle DR:");
-                    log.debug("Headers: " + requestEntity.getHeaders());
-                    log.debug("Body: " + JsonUtils.toJson(request));
+                    log.debug("Sending honeywell duty cycle DR: Headers: {} - Body: {}.", requestEntity.getHeaders(), JsonUtils.toJson(request));
                 } catch (JsonProcessingException e) {
                     log.warn("Error parsing json in debug.", e);
                 }
@@ -251,6 +251,57 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                                                                 HttpMethod.POST,
                                                                 requestEntity,
                                                                 String.class);
+            log.debug(response);
+        } catch (RestClientException | JsonProcessingException ex) {
+            log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
+        }
+    }
+
+    @Override
+    public void sendDRSetpointEventForGroup(HoneywellWiFiSetpointDrParameters parameters) {
+        log.debug("Sending DR Setpoint event for yukon LM group {}", parameters.getGroupId());
+        try {
+
+            int honeywellGroupId = honeywellDao.getHoneywellGroupId(parameters.getGroupId());
+            String url = getUrlBase() + drEventForGroupUrlPart + "?groupId=" + honeywellGroupId;
+
+            Double heatDeltaC = null;
+            Double coolDeltaC = parameters.getTempOffsetC();
+
+            if (parameters.istempOptionHeat()) {
+                heatDeltaC = parameters.getTempOffsetC();
+                coolDeltaC = null;
+            }
+
+            DRSetpointEventRequest request = new DRSetpointEventRequest(parameters.getEventId(),
+                                                parameters.getStartTime(),
+                                                parameters.isOptional(), // allow opt-out on Honeywell portal & device
+                                                1, // Randomization Interval
+                                                DutyCyclePeriod.HALFHOUR,
+                                                1, // Sequence Number
+                                                heatDeltaC,
+                                                coolDeltaC,
+                                                parameters.getDurationSeconds());
+
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+            HttpEntity<?> requestEntity = new HttpEntity<>(request,
+                    getHttpHeaders(url,
+                            HttpMethod.POST,
+                            JsonUtils.toJson(request)));
+
+            if (log.isDebugEnabled()) {
+                try {
+                    log.debug("Sending honeywell setpoint DR: Headers: {} - Body: {}.", requestEntity.getHeaders(), JsonUtils.toJson(request));
+                } catch (JsonProcessingException e) {
+                    log.warn("Error parsing json in debug.", e);
+                }
+            }
+
+            HttpEntity<String> response = restTemplate.exchange(builder.build().encode().toUri(),
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class);
             log.debug(response);
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");

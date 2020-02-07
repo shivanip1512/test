@@ -366,7 +366,6 @@ public class LoadProgramSetupControllerHelper {
     private void setHoneywellSetpointGearFieldsDefaultValues(HoneywellSetpointGearFields honeywellSetpointGearFields) {
         honeywellSetpointGearFields.setMandatory(false);
         honeywellSetpointGearFields.setSetpointOffset(0);
-        honeywellSetpointGearFields.setPrecoolOffset(0);
         honeywellSetpointGearFields.setMode(Mode.COOL);
         honeywellSetpointGearFields.setCapacityReduction(100);
     }
