@@ -52,4 +52,9 @@ public interface DrJmsMessageService {
      */
     public void alarmAndEventNotification(List<DrAttributeDataJmsMessage> drAttributeDataJmsMessage);
 
+    /**
+     * Checks if any vendor configured for method supports.
+     */
+    public boolean isVendorMethodSupported();
+
 }

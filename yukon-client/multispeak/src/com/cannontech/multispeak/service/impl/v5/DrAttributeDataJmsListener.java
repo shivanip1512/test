@@ -65,6 +65,9 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
+         if (!drJmsMessageService.isVendorMethodSupported()) {
+            return;
+        }
         if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType())) {
             Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(
                     richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),

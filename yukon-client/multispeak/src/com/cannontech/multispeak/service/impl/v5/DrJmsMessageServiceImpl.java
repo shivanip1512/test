@@ -213,6 +213,14 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         vendorsToSendProgramStatusMsg = supportsProgramStatus.build();
     }
 
+    @Override
+    public boolean isVendorMethodSupported() {
+        if (isVendorsConfigured(vendorsToSendIntervalDataMsg) || isVendorsConfigured(vendorsToSendVoltageDataMsg)
+                || isVendorsConfigured(vendorsToSendAlarmAndEventDataMsg)) {
+            return true;
+        }
+        return false;
+    }
     /**
      * Add into supportedVendors if Methods received from response are supported.
      */
