@@ -527,7 +527,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
             RfnIdentifier reverseGateway = comm.getGatewayRfnIdentifier();
             log.debug("reverse gateway {} primary forward gateway {}", reverseGateway, primaryForwardGateway);
-            if (reverseGateway == primaryForwardGateway) {
+            if (reverseGateway.equals(primaryForwardGateway)) {
                 return comm;
             } else {
                 log.info("NM comm reverse gateway {} doesn't match primary forward gateway {} for {}, unable to determine comm status",
