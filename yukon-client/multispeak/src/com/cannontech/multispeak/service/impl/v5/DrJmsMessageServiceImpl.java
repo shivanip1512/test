@@ -754,14 +754,14 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
 
             IntervalData intervalData = new IntervalData();
 
+            intervalData.setIntervalDelimiter(",");
+            intervalData.setStatusDelimiter(",");
+            
             Profiles profiles = getProfiles(intervalAttributesMap.asMap());
             intervalData.setProfiles(profiles);
 
             Blocks blocks = getBlocks(drAttributeDataJmsMessage.getValue(), drAttributeDataJmsMessage.getKey());
             intervalData.setBlocks(blocks);
-
-            // intervalData.setIntervalDelimiter(",");
-            // intervalData.setStatusDelimiter("^");
 
             intervalDataList.add(intervalData);
         }
