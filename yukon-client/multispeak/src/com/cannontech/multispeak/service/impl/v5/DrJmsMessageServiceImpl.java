@@ -58,6 +58,7 @@ import com.cannontech.msp.beans.v5.enumerations.DRProgramEnrollmentStatusKind;
 import com.cannontech.msp.beans.v5.enumerations.FieldNameKind;
 import com.cannontech.msp.beans.v5.enumerations.TimeUnits;
 import com.cannontech.msp.beans.v5.multispeak.Blocks;
+import com.cannontech.msp.beans.v5.multispeak.Ch;
 import com.cannontech.msp.beans.v5.multispeak.Channels;
 import com.cannontech.msp.beans.v5.multispeak.Chs;
 import com.cannontech.msp.beans.v5.multispeak.DB;
@@ -67,8 +68,6 @@ import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventList;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventType;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEventTypeOption;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceEvents;
-import com.cannontech.msp.beans.v5.multispeak.EndReading;
-import com.cannontech.msp.beans.v5.multispeak.EndReadings;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.IntervalBlock;
 import com.cannontech.msp.beans.v5.multispeak.IntervalChannel;
@@ -755,14 +754,14 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
 
             IntervalData intervalData = new IntervalData();
 
+            intervalData.setIntervalDelimiter(",");
+            intervalData.setStatusDelimiter(",");
+            
             Profiles profiles = getProfiles(intervalAttributesMap.asMap());
             intervalData.setProfiles(profiles);
 
             Blocks blocks = getBlocks(drAttributeDataJmsMessage.getValue(), drAttributeDataJmsMessage.getKey());
             intervalData.setBlocks(blocks);
-
-            // intervalData.setIntervalDelimiter(",");
-            // intervalData.setStatusDelimiter("^");
 
             intervalDataList.add(intervalData);
         }
@@ -834,14 +833,11 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
         List<IntervalBlock> blockList = blocks.getBlock();
         IntervalBlock intervalBlock = new IntervalBlock();
 
-        EndReadings endReadings = getEndReadings(drAttributeDataJmsMessage);
-        intervalBlock.setEndReadings(endReadings);
-
         MeterID meterId = MultispeakFuncs.getDrMeterID(serialNumber);
         intervalBlock.setMeterID(meterId);
 
         intervalBlock.setIntervalStart(MultispeakFuncsBase.toXMLGregorianCalendar(drAttributeDataJmsMessage.getAttributeDataList().get(0).getTimeStamp()));
-        intervalBlock.setDB(getDB());
+        intervalBlock.setDB(getDB(drAttributeDataJmsMessage));
 
         blockList.add(intervalBlock);
         return blocks;
@@ -850,31 +846,19 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     /**
      * Creating DB object.
      */
-    private DB getDB() {
+    private DB getDB(DrAttributeDataJmsMessage drDataJmsMessage) {
         DB db = new DB();
         Chs chs = new Chs();
-        db.setChs(chs);
-        return db;
-    }
-
-    /**
-     * Creating EndReadings object that contains request fields (data value, timestamp and relay number(channelIndex)).
-     */
-    private EndReadings getEndReadings(DrAttributeDataJmsMessage drDataJmsMessage) {
-
-        EndReadings endReadings = new EndReadings();
-        List<EndReading> endReadingList = endReadings.getEndReading();
-
+        List<Ch> listOfch = chs.getCh();
         drDataJmsMessage.getAttributeDataList().forEach(message -> {
             RelayIntervalData relayIntervalData = RelayIntervalData.getRelayIntervalData(message.getAttribute());
-
-            EndReading endReading = new EndReading();
-            endReading.setChannelIndex(BigInteger.valueOf(relayIntervalData.getRelayNumber()));
-            endReading.setReading(String.valueOf(message.getValue()));
-            endReading.setReadingDate(MultispeakFuncsBase.toXMLGregorianCalendar(message.getTimeStamp()));
-            endReadingList.add(endReading);
+            Ch ch = new Ch();
+            ch.setIdx(relayIntervalData.getRelayNumber());
+            ch.setD(String.valueOf(message.getValue()));
+            listOfch.add(ch);
         });
-        return endReadings;
+        db.setChs(chs);
+        return db;
     }
     
     /**
