@@ -76,6 +76,9 @@ public class Node<T> {
 
     }
 
+    /**
+     * Creates statistics for the node
+     */
     private void count(Node<T> node, TreeDebugStatistics statistics) {
         statistics.TOTAL++;
         if(node.getData() == null) {

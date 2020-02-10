@@ -41,6 +41,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -288,11 +289,16 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
      * Creates Node from rfnIdentifier and location
      */
     private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier,  Map<Integer, PaoLocation> locations) {
-        if(rfnIdentifier == null || rfnIdentifier.is_Empty_()) {
+        if(rfnIdentifier == null) {
             //NN returned null rfnIdentifier or one of the fields is empty
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        RfnDevice device  = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+        RfnDevice device = null;
+        try {
+            device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+        } catch (BadTemplateDeviceCreationException e) {
+            log.error(e);
+        }
         if(device  == null) {
             //failed to create device
             return new Node<Pair<Integer, FeatureCollection>>(null);

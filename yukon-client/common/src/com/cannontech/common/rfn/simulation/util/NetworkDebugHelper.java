@@ -7,7 +7,7 @@ import com.cannontech.common.util.tree.Node.TreeDebugStatistics;
 
 public class NetworkDebugHelper {    
     /**
-     * Returns node count
+     * Returns node count statistics
      */
     public static TreeDebugStatistics count(RfnVertex vertex) {
         TreeDebugStatistics statistics = new TreeDebugStatistics();
@@ -18,6 +18,9 @@ public class NetworkDebugHelper {
         
     }
     
+    /**
+     * Creates statistics for the node
+     */
     private static void count(RfnVertex vertex, TreeDebugStatistics statistics) {
         if(vertex.getChildren() == null) {
             return;
