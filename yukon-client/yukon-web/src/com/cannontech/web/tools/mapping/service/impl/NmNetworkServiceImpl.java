@@ -655,9 +655,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) result
                     .getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
             int hopCount = (int) routeData.getHopCount();
-            if(result.getKey() != null && !result.getKey().is_Empty_()) {
-                identifiers.put(HopCountColors.getHopCountColor(hopCount), result.getKey());
-            }
+            identifiers.put(HopCountColors.getHopCountColor(hopCount), result.getKey());
         }
         
         log.debug("Filtered identifiers {}", identifiers.size());
@@ -687,9 +685,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     Integer count = (Integer) result.getValue().getMetadatas()
                             .get(PRIMARY_FORWARD_DESCENDANT_COUNT);
                     DescendantCount dc = DescendantCount.getDescendantCount(count);
-                    if(result.getKey() != null && !result.getKey().is_Empty_()) {
                         identifiers.put(dc, result.getKey());
-                    }
                 });
 
         for (DescendantCount descendantCount : identifiers.keySet()) {
@@ -714,9 +710,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     NeighborData neighborData = (NeighborData) result.getValue().getMetadatas()
                             .get(PRIMARY_FORWARD_NEIGHBOR_DATA);
                     LinkQuality lq = LinkQuality.getLinkQuality(neighborData);
-                    if(result.getKey() != null && !result.getKey().is_Empty_()) {
-                        identifiers.put(lq, result.getKey());
-                    }
+                    identifiers.put(lq, result.getKey());
                 });
 
         for (LinkQuality linkQuality : identifiers.keySet()) {

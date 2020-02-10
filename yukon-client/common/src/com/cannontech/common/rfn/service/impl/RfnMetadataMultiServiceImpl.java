@@ -104,8 +104,8 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     }
 
     private void handleMetadataResponse(RfnMetadataMultiResponse response, String requestId) throws NmCommunicationException {
-        if(rfnCommsLog.isEnabled(Level.INFO)) {
-            rfnCommsLog.log(Level.INFO, "<<< " + response.toString());
+        if(rfnCommsLog.isEnabled(Level.DEBUG)) {
+            rfnCommsLog.log(Level.DEBUG, "<<< " + response.toString());
         }
         int devicesInResponse = response.getQueryResults() != null ? response.getQueryResults().size() : 0;
         log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {} devices in response {}", requestId,
