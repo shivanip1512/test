@@ -1,5 +1,6 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_TREE;
 
 import java.io.Serializable;
@@ -15,10 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -36,7 +39,9 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -90,16 +95,28 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     protected JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeServiceImpl.class);
     private final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     
     //gateway/tree
     private final Cache<RfnIdentifier, Node<Pair<Integer, FeatureCollection>>> networkTreeCache = CacheBuilder.newBuilder().build();
     private NetworkTreeUpdateTimeResponse treeUpdateResponse;
     private Instant nextForceReloadTime;
     private int reloadFrequencyInMinutes = 30;
-         
+    private int MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE = 3;
+
+    
+    @PostConstruct
+    public void init() {
+        scheduledExecutorService.schedule(() -> {
+            NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
+            log.info("Sending NetworkTreeUpdateTimeRequest message to request network tree information.");
+            jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), request);
+        }, MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE, TimeUnit.MINUTES);
+    }
      
     //clear cache every day at midnight local time
     {
@@ -225,6 +242,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
                 RfnVertex vertex = (RfnVertex) data.getValue().getMetadatas().get(PRIMARY_FORWARD_TREE);
                 log.debug("{} Received NM VERTEX node count {}", data.getKey(), NetworkDebugHelper.count(vertex));
+                log.trace("\n{}", NetworkDebugHelper.print(vertex));
                 RfnGateway gateway = gatewaysToSendToNM.get(data.getKey());
                 if(gateway == null) {
                     log.info("Received network tree for gateway {} that we didn't request, ignoring the network tree", gateway);
@@ -244,9 +262,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         AtomicInteger totalNodesAdded = new AtomicInteger(1);
         copy(vertex, node, locations, totalNodesAdded);
         networkTreeCache.put(vertex.getRfnIdentifier(), node);
-        log.debug("{} Yukon NODE total node count {} null node count {}  gateway node {}",
-                vertex.getRfnIdentifier(), node.count(false), node.count(true), node.getData());
-        //log.info(node.print());
+        log.debug("{} Yukon NODE {} starting node {}",
+                vertex.getRfnIdentifier(), node.count(), node.getData());
+        log.trace("\n{}", node.print());
         return node;
     }
 
@@ -270,20 +288,25 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     /**
      * Creates Node from rfnIdentifier and location
      */
-    private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier,  Map<Integer, PaoLocation> locations) {
-        if(rfnIdentifier == null) {
-            //NN returned null rfnIdentifier
+    private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier, Map<Integer, PaoLocation> locations) {
+        if (rfnIdentifier == null) {
+            // NN returned null rfnIdentifier or one of the fields is empty
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        RfnDevice device  = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
-        if(device  == null) {
-            //failed to create device
+        RfnDevice device = null;
+        try {
+            device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+        } catch (BadTemplateDeviceCreationException e) {
+            log.error("Device {} was not found and creation attempted failed.", rfnIdentifier, e);
+        }
+        if (device == null) {
+            // failed to create device
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        //if device is not found create device
+        // if device is not found create device
         int deviceId = device.getPaoIdentifier().getPaoId();
         PaoLocation location = locations.get(deviceId);
-        //if no location in Yukon database featureCollection will be null
+        // if no location in Yukon database featureCollection will be null
         FeatureCollection featureCollection = location == null ? null : paoLocationService.getFeatureCollection(location);
         return new Node<Pair<Integer, FeatureCollection>>(Pair.of(deviceId, featureCollection));
     }
@@ -329,10 +352,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                                 format(response.getNoForceRefreshBeforeTimeMillis()));
                         //Reloads only cached trees
                         reloadNetworkTrees();
+                        updateDeviceToGatewayMapping();
                     }
-                    treeUpdateResponse = response;
-                    updateDeviceToGatewayMapping();
-                   
+                    treeUpdateResponse = response;                   
                 } 
             } catch (JMSException e) {
                 log.warn("Unable to extract NetworkTreeUpdateTimeResponse from message", e);
@@ -350,8 +372,16 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                 gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(",")));
         Set<RfnIdentifier> ids = gateways.stream().map(gateway -> gateway.getRfnIdentifier()).collect(Collectors.toSet());
         try {
-            metadataMultiService
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> response = metadataMultiService
                     .getMetadataForGatewayRfnIdentifiers(ids, Set.of(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+            Map<RfnIdentifier, RfnIdentifier> deviceToGateway = new HashMap<>();
+            response.forEach((deviceRfnIdentifier, queryResult) -> {
+                if (queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
+                    RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
+                    deviceToGateway.put(deviceRfnIdentifier, gatewayRfnIdentifier);
+                }
+            });
+            rfnDeviceDao.saveDynamicRfnDeviceData(deviceToGateway);
         } catch (NmCommunicationException e) {
             log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
         }

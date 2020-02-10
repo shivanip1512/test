@@ -316,7 +316,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private List<RfnMetadataMultiResponse> getPartitionedMetadataMultiResponse(RfnMetadataMultiRequest request) {
         List<RfnMetadataMultiResponse> responses = new ArrayList<>();
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = getResults(request);
-        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(results.keySet()), 1000);
+        List<List<RfnIdentifier>> parts = Lists.partition(Lists.newArrayList(results.keySet()), 25000);
         log.debug("--Split identifiers {} into {} parts", results.size(), parts.size());
     
         for (int i = 0; i < parts.size(); i++) {

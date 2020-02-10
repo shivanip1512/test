@@ -53,7 +53,6 @@ import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.node.NodeComm;
-import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -686,7 +685,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     Integer count = (Integer) result.getValue().getMetadatas()
                             .get(PRIMARY_FORWARD_DESCENDANT_COUNT);
                     DescendantCount dc = DescendantCount.getDescendantCount(count);
-                    identifiers.put(dc, result.getKey());
+                        identifiers.put(dc, result.getKey());
                 });
 
         for (DescendantCount descendantCount : identifiers.keySet()) {
@@ -748,7 +747,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         metaData.forEach((deviceRfnIdentifier, queryResult) -> {
             if (queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
                 RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
-                gatewaysToDevices.put(gatewayRfnIdentifier, deviceRfnIdentifier);
+                if (deviceRfnIdentifier != null && !deviceRfnIdentifier.is_Empty_()) {
+                    gatewaysToDevices.put(gatewayRfnIdentifier, deviceRfnIdentifier);
+                }
             }
         });
         return gatewaysToDevices.asMap();

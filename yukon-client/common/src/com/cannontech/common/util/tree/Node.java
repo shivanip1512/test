@@ -3,13 +3,23 @@ package com.cannontech.common.util.tree;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class Node<T> {
 
+    public static class TreeDebugStatistics {
+        public int TOTAL;
+        public int _EMPTY_;
+        public int NULL;
+        @Override
+        public String toString() {
+            return String.format("total:%s _EMPTY_: %s NULL:%s", TOTAL, _EMPTY_, NULL);
+        }
+    }
+
+    
     private T data = null;
 
     @JsonManagedReference
@@ -59,30 +69,24 @@ public class Node<T> {
         return buffer.toString();
     }
     
-    /**
-     * If onlyCountNullNodes is true, returns count of only null nodes, otherwise return all node count
-     */
-    public int count(boolean onlyCountNullNodes) {
-        AtomicInteger atomicInt = new AtomicInteger(0);
-        incrementNodeCount(atomicInt, onlyCountNullNodes, this);
-        count(this, atomicInt, onlyCountNullNodes);
-        return atomicInt.get();
+    public TreeDebugStatistics count() {
+        TreeDebugStatistics statistics = new TreeDebugStatistics();
+        count(this, statistics);
+        return statistics;
 
     }
 
-    private void count(Node<T> node, AtomicInteger atomicInt, boolean onlyCountNullNodes) {
+    /**
+     * Creates statistics for the node
+     */
+    private void count(Node<T> node, TreeDebugStatistics statistics) {
+        statistics.TOTAL++;
+        if(node.getData() == null) {
+            statistics.NULL++;
+        } 
         for (Iterator<Node<T>> it = node.getChildren().iterator(); it.hasNext();) {
             Node<T> nextNode = it.next();
-            incrementNodeCount(atomicInt, onlyCountNullNodes, nextNode);
-            count(nextNode, atomicInt, onlyCountNullNodes);
-        }
-    }
-
-    private void incrementNodeCount(AtomicInteger atomicInt, boolean onlyCountNullNodes, Node<T> node) {
-        if (!onlyCountNullNodes) {
-            atomicInt.incrementAndGet();
-        } else if (onlyCountNullNodes && node.getData() == null) {
-            atomicInt.incrementAndGet();
+            count(nextNode, statistics);
         }
     }
 

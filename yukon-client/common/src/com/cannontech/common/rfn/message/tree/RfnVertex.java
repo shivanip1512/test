@@ -70,7 +70,7 @@ public class RfnVertex implements Serializable  {
 
     @Override
     public String toString() {
-        return String.format("%s\n%s", rfnIdentifier, children);
+        return String.format("%s%s", rfnIdentifier, children);
     }
 
     public static void main(String[] args) {
