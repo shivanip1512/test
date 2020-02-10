@@ -273,27 +273,6 @@ UPDATE YukonPaobject SET Type = 'WRL-420cD' WHERE Type = 'RFN-420cDW';
 INSERT INTO DBUpdates VALUES('YUK-20859', '7.4.0', GETDATE());
 /* @end YUK-20859 */
 
-/* @start YUK-21378 */
-UPDATE YukonPAObject 
-SET Type = 'Virtual Gateway'
-WHERE PAObjectID IN
-    (SELECT DISTINCT DeviceId 
-     FROM RfnAddress 
-     WHERE Model IN
-        ('VGW', 'RFVirtualGateway'))
-
-UPDATE RfnAddress 
-SET Model = 'VGW' 
-WHERE Model = 'RFVirtualGateway'
-AND DeviceId IN 
-    (SELECT DISTINCT PaobjectId 
-     FROM YukonPaobject 
-     WHERE Type = 'Virtual Gateway' 
-     and PaoClass = 'RFMESH')
-
-INSERT INTO DBUpdates VALUES('YUK-21378', '7.4.0', GETDATE());
-/* @end YUK-21378 */
-
 /* @start YUK-21216 */
 INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
 
@@ -469,4 +448,4 @@ INSERT INTO DBUpdates VALUES ('YUK-21475', '7.4.0', GETDATE());
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.4', '13-AUG-2019', 'Latest Update', 0, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('7.4', '10-FEB-2020', 'Latest Update', 0, GETDATE());
