@@ -10,10 +10,12 @@ public class EditElement {
 
     private WebDriver driver;
     private String elementName;
+    private String parentName;
 
-    public EditElement(WebDriver driver, String elementName) {
+    public EditElement(WebDriver driver, String elementName, String parentName) {
         this.driver = driver;
         this.elementName = elementName;
+        this.parentName = parentName;
     }   
 
     public Boolean errorDisplayed() {
@@ -23,6 +25,10 @@ public class EditElement {
     }
 
     protected WebElement getEditElement() {
-        return this.driver.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
+        if (this.parentName != null) {
+            return this.driver.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name='" + this.elementName + "']"));
+        } else {
+            return this.driver.findElement(By.cssSelector("input[name='" + this.elementName + "']"));
+        }        
     }
 }

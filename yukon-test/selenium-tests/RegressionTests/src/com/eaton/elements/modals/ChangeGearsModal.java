@@ -8,5 +8,4 @@ public class ChangeGearsModal extends BaseModal {
         super(driver, modalName);
         // TODO Auto-generated constructor stub
     }
-
 }

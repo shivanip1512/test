@@ -16,9 +16,9 @@ public class SubstationBusCreatePage extends PageBase {
     public SubstationBusCreatePage(WebDriver driver, String pageUrl) {
         super(driver, pageUrl);
 
-        name = new TextEditElement(driver, "name");
-        saveBtn = new Button(driver, "Save");
-        cancelBtn = new Button(driver, "Cancel");
+        name = new TextEditElement(driver, "name", null);
+        saveBtn = new Button(driver, "Save", null);
+        cancelBtn = new Button(driver, "Cancel", null);
     }
 
     public String getTitle() {

@@ -17,7 +17,7 @@ public final class MyChromeDriver {
 
         WebDriver driver;
 
-        System.setProperty("webdriver.chrome.driver", driverLocation);
+        System.setProperty("webdriver.chrome.driver", driverLocation + "chromedriver.exe");
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-infobars");

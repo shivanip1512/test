@@ -17,7 +17,7 @@ public class DriverFactory implements IDriverFactory {
         case "INTERNETEXPLORER":
             return MyInternetExplorerDriver.getNewInternetExplorerDriver(useRemoteDriver, location);
         default:
-            return MyChromeDriver.getNewChromeDriver(useRemoteDriver, location, headless);
+            return MyFirefoxDriver.getNewFirefoxDriver(useRemoteDriver, location, headless);
         }
     }
 }

@@ -12,8 +12,8 @@ public class WebTableFilter {
     public WebTableFilter(WebElement filter, WebDriver driver) {
         
         this.filter = filter;
-        name = new TextEditElement(driver, "name");
-        filterBtn = new Button(driver, "Filter");
+        name = new TextEditElement(driver, "name", null);
+        filterBtn = new Button(driver, "Filter", null);
     } 
     
     public void enterFilterCritera(String criteria) {

@@ -13,11 +13,12 @@ public final class MyEdgeDriver {
     private MyEdgeDriver() {
     }
 
+    //TODO this is not the current edge driver because you can no longer download this from the Web.  You have to get it from windows
     public static WebDriver getNewEdgeDriver(boolean useRemoteDriver, String driverLocation) {
 
         WebDriver driver;
 
-        System.setProperty("webdriver.edge.drive", driverLocation);
+        System.setProperty("webdriver.edge.drive", driverLocation + "msedgedriver.exe");
 
         EdgeOptions options = new EdgeOptions();
 

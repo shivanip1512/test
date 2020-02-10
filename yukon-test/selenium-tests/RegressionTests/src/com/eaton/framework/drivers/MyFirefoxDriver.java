@@ -17,7 +17,7 @@ public final class MyFirefoxDriver {
 
         WebDriver driver;
 
-        System.setProperty("webdriver.gecko.driver", driverLocation);
+        System.setProperty("webdriver.gecko.driver", driverLocation + "geckodriver.exe");
 
         FirefoxOptions options = new FirefoxOptions();
 

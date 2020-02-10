@@ -1,11 +1,14 @@
 package com.eaton.framework;
 
+import java.time.Instant;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
@@ -135,10 +138,23 @@ public class SeleniumTestSetup {
         long startTime = System.currentTimeMillis();
 
         boolean expectedUrlLoaded = false;
-        while (!expectedUrlLoaded || System.currentTimeMillis() - startTime < 2000) {
+        while (!expectedUrlLoaded && System.currentTimeMillis() - startTime < 30000) {
             String currentUrl = driver.getCurrentUrl();
 
             expectedUrlLoaded = currentUrl.contains(expectedUrl);
+        }
+
+        // add code to throw an exception if the url is not loaded
+    }
+
+    public void waitForPageToLoad(String pageTitle) {
+        long startTime = System.currentTimeMillis();
+
+        boolean expectedPageTitle = false;
+        while (!expectedPageTitle && System.currentTimeMillis() - startTime < 20000) {
+            String currentTitle = driver.findElement(By.cssSelector(".page-heading")).getText();
+
+            expectedPageTitle = currentTitle.contains(pageTitle);
         }
 
         // add code to throw an exception if the url is not loaded
@@ -151,6 +167,16 @@ public class SeleniumTestSetup {
         } else {
             driver.navigate().refresh();
         }
+    }
+
+    public void waitForLoadingSpinner() {
+        String display = "";
+        
+        long startTime = System.currentTimeMillis(); 
+        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 3000) {
+            display = driver.findElement(By.id("modal-glass")).getAttribute("style");
+        }
+        
     }
 
     private void navigate(String url) {

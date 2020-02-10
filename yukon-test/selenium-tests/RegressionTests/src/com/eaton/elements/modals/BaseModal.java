@@ -13,13 +13,12 @@ public class BaseModal {
     public BaseModal(WebDriver driver, String modalName) {
         this.driver = driver;
         this.modalName = modalName;
-    }
+    }    
     
-    private void setModal() {
-        this.modal = this.driver.findElement(By.cssSelector("[aria-describedby='" + this.modalName  + "']"));
-    }
-    
+    //TODO this is not a unique way to select the modal.  On the new user, new user group and new role group the describedby changes 
     protected WebElement getModal() {
+        this.modal = this.driver.findElement(By.cssSelector("[aria-describedby='" + this.modalName  + "']"));
+        
         return this.modal;
     }
     
@@ -32,11 +31,11 @@ public class BaseModal {
     }
   
     //TODO need a unique way to select buttons
-//    public void clickCancel() {
-//        getModal().findElement(By.cssSelector(".ui-dialog-buttonset ")).click();
-//    }
+    public void clickOk() {
+        getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
+    }
 //    
-//    public void clickOk() {
+//    public void clickCancel() {
 //        getModal().findElement(By.cssSelector(".ui-dialog-buttonset ")).click();
 //    }
 }

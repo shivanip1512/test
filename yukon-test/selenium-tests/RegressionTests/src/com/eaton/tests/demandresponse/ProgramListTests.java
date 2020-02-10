@@ -12,11 +12,11 @@ import org.testng.asserts.SoftAssert;
 import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.ProgramListPage;
+import com.eaton.pages.demandresponse.LoadProgramListPage;
 
 public class ProgramListTests extends SeleniumTestSetup {
 
-    private ProgramListPage listPage;
+    private LoadProgramListPage listPage;
     private SoftAssert softAssertion;
 
     @BeforeClass
@@ -27,7 +27,7 @@ public class ProgramListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.PROGRAMS);
 
-        listPage = new ProgramListPage(driver, null);
+        listPage = new LoadProgramListPage(driver, null);
     }
 
     @Test

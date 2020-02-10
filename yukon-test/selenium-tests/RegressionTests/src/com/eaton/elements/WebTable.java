@@ -50,14 +50,21 @@ public class WebTable {
         // TODO determine how to wait for table to finish loading...
     }
     
-    public void filterTable(String filter) {
-        filter().enterFilterCritera(filter);
-        //TODO add code to wait for table to filter
+    public void filterTable(String filterCriteria) {        
+        filter().enterFilterCritera(filterCriteria);        
     }
     
     public void clearFilter() {
         filter().clearFilterCriteria();
-        //TODO add code to wait for table to filter
+    }
+    
+    public void searchTable(String value) {
+        TextEditElement search = new TextEditElement(this.driver, "ss", null);
+        
+        search.clearInputValue();
+        search.setInputValue(value);
+        
+        waitForLoadToComplete();
     }
     
     private WebTableFilter filter() {

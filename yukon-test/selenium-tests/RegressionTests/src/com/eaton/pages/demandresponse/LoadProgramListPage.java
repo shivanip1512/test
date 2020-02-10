@@ -6,11 +6,11 @@ import org.openqa.selenium.WebDriver;
 import com.eaton.elements.WebTable;
 import com.eaton.pages.PageBase;
 
-public class ProgramListPage extends PageBase {
+public class LoadProgramListPage extends PageBase {
 
     private WebTable table;
 
-    public ProgramListPage(WebDriver driver, String baseUrl) {
+    public LoadProgramListPage(WebDriver driver, String baseUrl) {
         super(driver, baseUrl);
 
         setTable(new WebTable(driver, "compact-results-table"));

@@ -1,5 +1,6 @@
 package com.eaton.tests.capcontrol;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 
 import org.openqa.selenium.WebDriver;
@@ -28,22 +29,23 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         this.createPage = new SubstationBusCreatePage(driver, Urls.CapControl.SUBSTATION_BUS_CREATE);
     }
 
-    @Test
+    @Test(groups = {"smoketest", "SM03_03_CreateCCObjects"})
     public void pageTitleCorrect() {
 
         Assert.assertEquals(createPage.getTitle(), "Create Bus");
     }
     
-    @Test
+    @Test(groups = {"smoketest", "SM03_03_CreateCCObjects"})
     public void createSubstationBusRequiredFieldsOnlySuccess() {
         
-        Instant thisInstant = Instant.now();
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
-        this.createPage.getName().setInputValue("AT Bus " + thisInstant.toString());
+        String name = "AT Bus " + timeStamp;
+        this.createPage.getName().setInputValue(name);
         
         this.createPage.getSaveBtn().click();
         
-        waitForUrlToLoad(Urls.CapControl.SUBSTATION_BUS_DETAIL);
+        waitForPageToLoad("Bus: " + name);
         
         SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driver, Urls.CapControl.SUBSTATION_BUS_DETAIL);
         

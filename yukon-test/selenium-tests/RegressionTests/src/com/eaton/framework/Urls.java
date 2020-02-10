@@ -10,7 +10,7 @@ public final class Urls {
     public static final String HOME = "/dashboards/-1/view?dashboardPageType=MAIN";
     public static final String SUPPORT = "/support";
     public static final String SITE_MAP = "/sitemap";
-
+    
     public static final class Ami {
 
         public static final String AMI = "/dashboards/-2/view?dashboardPageType=AMI";
@@ -20,6 +20,11 @@ public final class Urls {
         public static final String BULK_UPDATE = "/bulk/update/upload";
         public static final String LEGACY_IMPORTER = "/amr/bulkimporter/home";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=METERING";
+    }
+    
+    public static final class Meter {
+        
+        public static final String DETAIL = "/meter/home?deviceId=";
     }
 
     public static final class DemandResponse {
@@ -33,6 +38,10 @@ public final class Urls {
         public static final String SETUP = "/dr/setup/list";
         public static final String BULK_UPDATE = "/bulk/update/upload";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT";
+        
+        public static final String LOAD_GROUP_CREATE = "/dr/setup/loadGroup/create";
+        public static final String LOAD_GROUP_DETAIL = "/dr/setup/loadGroup/";
+        public static final String LOAD_GROUP_EDIT = "/dr/setup/loadGroup/";
 
         public static final String CI_CURTAILMENT = "/dr/cc/home";
 
@@ -65,6 +74,7 @@ public final class Urls {
 
         public static final String SUBSTATION_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__";
         public static final String SUBSTATION_CREATE = "/capcontrol/substations/create";
+        public static final String SUBSTATION_DETAIL = "/capcontrol/substations/";
 
         public static final String SUBSTATION_BUS_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__";
         public static final String SUBSTATION_BUS_CREATE = "/capcontrol/buses/create";
@@ -72,22 +82,32 @@ public final class Urls {
 
         public static final String FEEDER_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__";
         public static final String FEEDER_CREATE = "/capcontrol/feeders/create";
+        public static final String FEEDER_DETAIL = "/capcontrol/feeders/";
 
         public static final String CAP_BANK_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__";
         public static final String CAP_BANK_CREATE = "/capcontrol/capbanks/create";
+        public static final String CAP_BANK_DETAIL = "/capcontrol/capbanks/";
 
         public static final String CBC_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__";
         public static final String CBC_CREATE = "/capcontrol/cbc/create";
+        public static final String CBC_DETAIL = "/capcontrol/cbc/";
+        public static final String CBC_EDIT = "/capcontrol/cbc/";
 
         public static final String REGULATOR_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oRegulators__";
         public static final String REGULATOR_CREATE = "/capcontrol/regulators/create";
+        public static final String REGULATOR_DETAIL = "/capcontrol/regulators/";
+        public static final String REGULATOR_EDIT = "/capcontrol/regulators/";
 
         public static final String DMV_TEST_LIST = "/capcontrol/dmvTestList";
         public static final String DMV_TEST_CREATE = "/capcontrol/dmvTest/create";
 
         public static final String AREA_CREATE = "/capcontrol/areas/create";
+        public static final String AREA_DETAIL = "/capcontrol/areas/";
 
         public static final String SPECIAL_AREA_CREATE = "/capcontrol/areas/special/create";
+        
+        public static final String SCHEDULES_LIST = "/capcontrol/schedules";
+        public static final String SCHEDULES_ASSIGNMENTS = "/capcontrol/schedules/assignments";
     }
 
     public static final class Assets {
@@ -125,5 +145,10 @@ public final class Urls {
         public static final String SUBSTATIONS = "/admin/substations/routeMapping/view";
         public static final String USERS_AND_GROUPS = "/admin/users-groups/home";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=ADMINISTRATIVE";
-    }
+        
+        public static final String USER_DETAILS = "/admin/users/";
+        public static final String USERS_TAB = "/admin/users-groups/home#users-tab";
+        public static final String USER_GROUPS_TAB = "/admin/users-groups/home#users-groups-tab";
+        public static final String ROLE_GROUPS_TAB = "/admin/users-groups/home#role-groups-tab";
+    }    
 }

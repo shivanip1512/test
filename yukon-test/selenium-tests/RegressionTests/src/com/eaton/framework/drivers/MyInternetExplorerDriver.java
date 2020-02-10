@@ -20,7 +20,7 @@ public final class MyInternetExplorerDriver {
     public static WebDriver getNewInternetExplorerDriver(boolean useRemoteDriver, String driverLocation) {
         WebDriver driver;
 
-        System.setProperty("webdriver.ie.driver", driverLocation);
+        System.setProperty("webdriver.ie.driver", driverLocation + "IEDriverServer.exe");
 
         InternetExplorerOptions options = new InternetExplorerOptions();
 
