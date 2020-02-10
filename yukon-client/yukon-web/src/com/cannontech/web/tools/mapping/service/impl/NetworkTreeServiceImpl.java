@@ -296,7 +296,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         RfnDevice device = null;
         try {
             device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
-        } catch (BadTemplateDeviceCreationException e) {
+        }catch(BadTemplateDeviceCreationException e) {
             log.error(e);
         }
         if(device  == null) {
