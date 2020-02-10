@@ -1,7 +1,6 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,10 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -22,7 +18,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -41,6 +36,7 @@ import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.SqlParameterSink;
@@ -49,7 +45,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.vendor.DatabaseVendor;
-import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.message.DbChangeManager;
@@ -64,14 +59,11 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     private final static Logger log = YukonLogManager.getLogger(RfnDeviceDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private JdbcTemplate template;
     @Autowired private AsyncDynamicDataSource dynamicDataSource;
     @Autowired private IDatabaseCache cache;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    @Autowired private DatabaseVendorResolver dbVendorResolver;
     private RfnAddressCache rfnIdentifierCache;
-    private static SimpleDateFormat oracleLastTransferTimeFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
     
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
         @Override
@@ -402,22 +394,22 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             return;
         }
         log.debug("Updating device to gateway mapping for {} devices", deviceToGateway.size());
+        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+        deleteSql.append("delete from DynamicRfnDeviceData");
+        jdbcTemplate.update(deleteSql);
         List<DynamicRfnDeviceData> data = deviceToGateway.entrySet().stream()
                 .map(entry -> getDynamicRfnDeviceData(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
-        log.debug("Saving device to gateway mapping for valid devices {}", data.size());
-        chunkAndSaveDynamicRfnDeviceData(data);
-    }
-
-    private void chunkAndSaveDynamicRfnDeviceData(List<DynamicRfnDeviceData> data) {
-        List<List<DynamicRfnDeviceData>> subSets = Lists.partition(data, ChunkingSqlTemplate.DEFAULT_SIZE / 3);
-        log.debug("Starting update of {} DynamicRfnDeviceData rows ({} transaction sets).", data.size(), subSets.size());
-        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {
-            saveDynamicRfnDeviceDataSqlServer(subSets);
-        } else if (dbVendorResolver.getDatabaseVendor().isOracle()) {
-            saveDynamicRfnDeviceDataOracle(subSets);
-        }
-        log.debug("Update DynamicRfnDeviceData completed.", data.size(), subSets.size());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlBatchUpdater updater = sql.batchInsertInto("DynamicRfnDeviceData");
+        updater.columns("DeviceId", "GatewayId", "LastTransferTime");
+        List<List<Object>> values = data.stream().map(value -> {
+            List<Object> row = Lists.newArrayList(value.deviceId, value.gatewayId, value.transferTime);
+            return row;
+        }).collect(Collectors.toList());
+        updater.values(values);
+        jdbcTemplate.yukonBatchUpdate(sql);
+        log.debug("Finished device to gateway mapping for {} devices", deviceToGateway.size());
     }
 
     private DynamicRfnDeviceData getDynamicRfnDeviceData(RfnIdentifier device, RfnIdentifier gateway) {
@@ -429,117 +421,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         deviceData.transferTime = new Instant();
         return deviceData;
     }
-    
-    private void saveDynamicRfnDeviceDataOracle(List<List<DynamicRfnDeviceData>> subSets) {
-        /**
-         * MERGE INTO DynamicRfnDeviceData DRDD
-                 USING (  
-                      SELECT 123977 AS DeviceId, 138791 AS GatewayId, SYSDATE AS LastTransferTime FROM DUAL UNION
-                      SELECT 138787, 138791, SYSDATE FROM DUAL UNION
-                      SELECT 132879, 138791, SYSDATE FROM DUAL ) CACHE_DATA
-                 ON ( DRDD.DeviceId = CACHE_DATA.DeviceId )
-            WHEN MATCHED THEN
-                 UPDATE SET DRDD.GatewayId = CACHE_DATA.GatewayId, DRDD.LastTransferTime = CACHE_DATA.LastTransferTime
-            WHEN NOT MATCHED THEN
-                 INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime);
-         */
-        AtomicLong setNumber = new AtomicLong(0);
-        subSets.forEach(part -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("MERGE INTO DynamicRfnDeviceData DRDD");
-            sql.append("USING (");
-            String params = IntStream.range(0, part.size()).mapToObj(i -> {
-                String param =  "SELECT ? AS DeviceId, ? AS GatewayId, TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS') AS LastTransferTime FROM DUAL";
-                if(i != 0) {
-                    param =  "SELECT ? , ? , TO_DATE(?, 'YYYY-MM-DD HH24:MI:SS') FROM DUAL";
-                }
-                return param;
-            }).collect(Collectors.joining(" UNION "));
-            sql.append(params);
-            sql.append(") CACHE_DATA");
-            sql.append("    ON ( DRDD.DeviceId = CACHE_DATA.DeviceId )");
-            sql.append("WHEN MATCHED THEN");
-            sql.append("    UPDATE SET DRDD.GatewayId = CACHE_DATA.GatewayId, DRDD.LastTransferTime = CACHE_DATA.LastTransferTime");
-            sql.append("WHEN NOT MATCHED THEN");
-            sql.append("    INSERT VALUES (CACHE_DATA.DeviceId, CACHE_DATA.GatewayId, CACHE_DATA.LastTransferTime)");
-            Object[] values = part.stream()
-                   // .peek(value -> log.debug(value.deviceId+" "+ value.gatewayId+" "+ oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
-                    .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, oracleLastTransferTimeFormat.format(value.transferTime.toDate())))
-                    .toArray();
-            update(sql, values, setNumber.incrementAndGet(), part);
-        });
-    }
-
-    /**
-     * Inserts the data in the table, retries 3 times on failure
-     */
-    private void update(SqlStatementBuilder sql, Object[] values, long setNumber,
-            List<DynamicRfnDeviceData> part) {
-        int retryCount = 1;
-        while (retryCount <= 3) {
-            try {
-                log.debug("Starting DynamicRfnDeviceData update try {} of 3, set {}.", retryCount, setNumber);
-                template.update(sql.getSql(), values);
-                log.debug("DynamicRfnDeviceData update success on try {} of 3, set {}. Updated {} rows.", retryCount, setNumber,
-                        part.size());
-                return;
-            } catch (Exception e) {
-                if (retryCount == 3) {
-                    log.error(
-                            "DynamicRfnDeviceData update failed on try {} of 3, set {}. Transaction failed and aborting. Must perform a NM sync to retry updating data.",
-                            retryCount, setNumber, e);
-                } else {
-                    log.debug("DynamicRfnDeviceData update failed on try {} of 3, set {}. Will retry.", retryCount, setNumber, e);
-                }
-                retryCount++;
-            }
-        }
-    }
-    
-    private void saveDynamicRfnDeviceDataSqlServer(List<List<DynamicRfnDeviceData>> subSets) {
-        /**
-         * WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (
-            SELECT * FROM (
-                VALUES 
-                    (123977, 138791, GETDATE()),
-                    (138787, 138791, GETDATE()),
-                    (132879, 138791, GETDATE())
-                ) AS inner_query (DeviceId, GatewayId, LastTransferTime)
-            )
-            MERGE INTO DynamicRfnDeviceData DRDD
-                 USING NMD_CTE CACHE
-                 ON DRDD.DeviceId = CACHE.DeviceId
-            WHEN MATCHED THEN
-                 UPDATE SET DRDD.GatewayId = CACHE.GatewayId, DRDD.LastTransferTime = CACHE.LastTransferTime
-            WHEN NOT MATCHED THEN
-                 INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);
-         */
-        AtomicLong setNumber = new AtomicLong(0);
-        subSets.forEach(part -> {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("WITH NMD_CTE (DeviceId, GatewayId, LastTransferTime) AS (");
-            sql.append("SELECT * FROM (");
-            sql.append("    VALUES ");
-            String params = part.stream()
-                    .map(node -> " (?,?,?)")
-                    .collect(Collectors.joining(","));
-            sql.append(params);
-            sql.append("    ) AS inner_query (DeviceId, GatewayId, LastTransferTime)");
-            sql.append(")");
-            sql.append("MERGE INTO DynamicRfnDeviceData DRDD");
-            sql.append("    USING NMD_CTE CACHE");
-            sql.append("    ON DRDD.DeviceId = CACHE.DeviceId");
-            sql.append("WHEN MATCHED THEN");
-            sql.append("    UPDATE SET DRDD.GatewayId = CACHE.GatewayId, DRDD.LastTransferTime = CACHE.LastTransferTime");
-            sql.append("WHEN NOT MATCHED THEN");
-            sql.append("    INSERT VALUES (CACHE.DeviceId, CACHE.GatewayId, CACHE.LastTransferTime);");
-            Object[] values = part.stream()
-                    .flatMap(value -> Stream.of(value.deviceId, value.gatewayId, value.transferTime.toString()))
-                    .toArray();
-            update(sql, values, setNumber.incrementAndGet(), part);
-        });
-    }
-
+ 
     @Override
     public List<RfnDevice> getDevicesForGateway(int gatewayId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();

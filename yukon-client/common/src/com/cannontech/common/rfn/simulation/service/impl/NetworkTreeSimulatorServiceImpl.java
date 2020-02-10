@@ -1,8 +1,6 @@
 package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -24,16 +22,16 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
 public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorService {
-    
+
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeSimulatorServiceImpl.class);
-    @Autowired private RfnDeviceDao rfnDeviceDao;  
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     private Random random = new Random();
     private Integer nodeNullPercent;
     private Integer branchMin;
     private Integer branchMax;
     private Integer devicesAroundTheGateway;
-    
+
     private void initSettings() {
         nodeNullPercent = yukonSimulatorSettingsDao
                 .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL);
@@ -46,26 +44,26 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         log.info("nodeNullPercent:{} branchMin:{} branchMax:{} devicesAroundTheGateway:{}", nodeNullPercent,
                 branchMin, branchMax, devicesAroundTheGateway);
     }
-    
+
     /**
-     * Builds randomized node from all devices 
+     * Builds randomized node from all devices
      */
     private Node<RfnIdentifier> buildNode(RfnDevice gateway) {
-        initSettings();        
+        initSettings();
         Node<RfnIdentifier> node = new Node<RfnIdentifier>(gateway.getRfnIdentifier());
         List<RfnDevice> allDevices = rfnDeviceDao.getDevicesForGateway(gateway.getPaoIdentifier().getPaoId());
         int totalDevices = allDevices.size();
-        
+
         log.info("\nCreating a tree (Node) for {} devices {} ", gateway, totalDevices);
-        if(allDevices.isEmpty()) {
+        if (allDevices.isEmpty()) {
             return node;
         }
-        //System.out.println(allDevices);
-       
+        // System.out.println(allDevices);
+
         ListIterator<RfnDevice> it = allDevices.listIterator();
-        
+
         List<Node<RfnIdentifier>> endNodes = new ArrayList<>();
-        
+
         while (devicesAroundTheGateway-- > 0) {
             List<Node<RfnIdentifier>> branch = getNodes(it);
             // System.out.println("Added devices " + branch.size());
@@ -79,17 +77,17 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
             }
             // fork from a random node
             endNodes.addAll(fork(it, endNodes.get(random.nextInt(endNodes.size()))));
-        }        
+        }
 
-       // log.info(root.print());
-        return node; 
+        // log.info(root.print());
+        return node;
     }
 
     /**
      * Creates a randomized fork
      */
     private List<Node<RfnIdentifier>> fork(ListIterator<RfnDevice> it, Node<RfnIdentifier> node) {
-        if(node == null) {
+        if (node == null) {
             return new ArrayList<>();
         }
         List<Node<RfnIdentifier>> endNodes = new ArrayList<>();
@@ -108,14 +106,14 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
      * Adds branch to a node
      */
     private Node<RfnIdentifier> addToBranch(Node<RfnIdentifier> endNode, List<Node<RfnIdentifier>> branch) {
-        if(endNode == null) {
+        if (endNode == null) {
             return null;
         }
         Iterator<Node<RfnIdentifier>> branchIt = branch.iterator();
         Node<RfnIdentifier> lastNode = null;
-        while(branchIt.hasNext()) {
+        while (branchIt.hasNext()) {
             Node<RfnIdentifier> nextNode = branchIt.next();
-            if(lastNode == null) {
+            if (lastNode == null) {
                 lastNode = endNode.addChild(nextNode);
             } else {
                 lastNode = lastNode.addChild(nextNode);
@@ -132,12 +130,21 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         int randomNodeCount = getRandomNumberInRange(branchMin, branchMax);
         while (randomNodeCount-- > 0 && it.hasNext()) {
             RfnDevice nextNode = it.next();
-            nodes.add(random.nextInt(100) < nodeNullPercent ? new Node<>(null): new Node<>(nextNode.getRfnIdentifier()));
+            nodes.add(random.nextInt(100) < nodeNullPercent ? getNullNode(nextNode.getRfnIdentifier()) : new Node<>(
+                    nextNode.getRfnIdentifier()));
             it.remove();
         }
         return nodes;
     }
     
+    private Node<RfnIdentifier> getNullNode(RfnIdentifier identifier) {
+        if(random.nextBoolean()) {
+            return new Node<>(null);
+        }
+        return new Node<>(new RfnIdentifier("_EMPTY_", identifier.getSensorManufacturer(), identifier.getSensorModel()));
+        
+    }
+
     private int getRandomNumberInRange(int min, int max) {
         return random.nextInt((max - min) + 1) + min;
     }
@@ -145,18 +152,19 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
     @Override
     public RfnVertex buildVertex(RfnDevice gateway) {
         Node<RfnIdentifier> node = buildNode(gateway);
-        RfnVertex vertex = new RfnVertex(); 
+        RfnVertex vertex = new RfnVertex();
         vertex.setRfnIdentifier(node.getData());
         AtomicInteger totalNodesAdded = new AtomicInteger(1);
         copy(node, vertex, totalNodesAdded);
-        log.info("{} Created Yukon NODE total node count {} null node count {}",
-                node.getData(), node.count(false), node.count(true));
+        
+        log.info("{} Created Yukon NODE {}", node.getData(), node.count());
         log.info("{} Created NM VERTEX from Yukon Node node count {} added nodes {}", vertex.getRfnIdentifier(),
                 NetworkDebugHelper.count(vertex), totalNodesAdded);
-        //log.info(NetworkDebugHelper.print(vertex));
+
+        log.trace(NetworkDebugHelper.print(vertex));
         return vertex;
     }
-   
+
     /**
      * Makes a RfnVertex out of Node
      */
