@@ -14,7 +14,6 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.util.xml.XmlUtils;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.DeviceGroupType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ESIGroupRequestType;
 import com.cannontech.dr.itron.model.jaxb.deviceManagerTypes_v1_8.ErrorFault;
