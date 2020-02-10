@@ -288,25 +288,25 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     /**
      * Creates Node from rfnIdentifier and location
      */
-    private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier,  Map<Integer, PaoLocation> locations) {
-        if(rfnIdentifier == null) {
-            //NN returned null rfnIdentifier or one of the fields is empty
+    private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier, Map<Integer, PaoLocation> locations) {
+        if (rfnIdentifier == null) {
+            // NN returned null rfnIdentifier or one of the fields is empty
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
         RfnDevice device = null;
         try {
             device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
-        }catch(BadTemplateDeviceCreationException e) {
-            log.error(e);
+        } catch (BadTemplateDeviceCreationException e) {
+            log.error("Device {} was not found and creation attempted failed.", rfnIdentifier, e);
         }
-        if(device  == null) {
-            //failed to create device
+        if (device == null) {
+            // failed to create device
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        //if device is not found create device
+        // if device is not found create device
         int deviceId = device.getPaoIdentifier().getPaoId();
         PaoLocation location = locations.get(deviceId);
-        //if no location in Yukon database featureCollection will be null
+        // if no location in Yukon database featureCollection will be null
         FeatureCollection featureCollection = location == null ? null : paoLocationService.getFeatureCollection(location);
         return new Node<Pair<Integer, FeatureCollection>>(Pair.of(deviceId, featureCollection));
     }

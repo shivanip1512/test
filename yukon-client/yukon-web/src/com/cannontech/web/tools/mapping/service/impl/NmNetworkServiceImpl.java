@@ -747,7 +747,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         metaData.forEach((deviceRfnIdentifier, queryResult) -> {
             if (queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
                 RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
-                gatewaysToDevices.put(gatewayRfnIdentifier, deviceRfnIdentifier);
+                if (deviceRfnIdentifier != null && !deviceRfnIdentifier.is_Empty_()) {
+                    gatewaysToDevices.put(gatewayRfnIdentifier, deviceRfnIdentifier);
+                }
             }
         });
         return gatewaysToDevices.asMap();
