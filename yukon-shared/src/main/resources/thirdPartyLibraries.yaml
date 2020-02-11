@@ -5530,15 +5530,15 @@ JavaScript :
     notes : "Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
-    version : 3.3.1
+    version : 3.4.1
     project URL : "http://jquery.com/"
     license : MIT
     license URLs : "https://github.com/jquery/jquery/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery/v/3.3.1"
-    md5 : 86a1c9da00997c2c1161b1c98d949b59
-    sha1 : 87eb28c1c4e1cc2005d46b0356dcc8c2f3efb481
-    jira : YUK-18131
-    updated : 2018-05-18
+    npm URL : "https://www.npmjs.com/package/jquery/v/3.4.1"
+    md5 : 22bf90ce1d90e579e6d79d2ecf064b83
+    sha1 : 561193f2f30056e87e68c31d8107a2269315f13e
+    jira : YUK-21133
+    updated : 2020-02-11
     notes : 
 
   - project : jquery-ui
