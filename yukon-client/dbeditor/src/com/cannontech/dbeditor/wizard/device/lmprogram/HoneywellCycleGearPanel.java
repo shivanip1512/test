@@ -56,6 +56,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
     private JTextField changeTriggerOffsetTextField;
     private JTextField kwReductionTextField;
     private JCheckBox checkBoxRampInOut;
+    private JCheckBox checkBoxMandatory;
     private javax.swing.JLabel ivjJLabelCyclePeriod = null;
     private javax.swing.JComboBox<Integer> ivjJComboBoxCyclePeriod = null;
 
@@ -88,6 +89,16 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
             checkBoxRampInOut.setSelected(true);
         }
         return checkBoxRampInOut;
+    }
+
+    private JCheckBox getCheckBoxMandatory() {
+        if (checkBoxMandatory == null) {
+            checkBoxMandatory = new JCheckBox();
+            checkBoxMandatory.setText(LMProgramDirectGear.OPTION_MANDATORY);
+            checkBoxMandatory.setPreferredSize(new Dimension(165, 23));
+            checkBoxMandatory.setSelected(false);
+        }
+        return checkBoxMandatory;
     }
 
     private javax.swing.JComboBox<Integer> getJComboBoxCyclePeriod() {
@@ -609,6 +620,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
         com.cannontech.database.data.device.lm.HoneywellCycleGear sGear =
             (com.cannontech.database.data.device.lm.HoneywellCycleGear) gear;
         sGear.setCyclePeriod((Integer) getJComboBoxCyclePeriod().getSelectedItem());
+        gear.setMethodOptionType(getCheckBoxMandatory().isSelected());
         return gear;
     }
 
@@ -634,6 +646,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
         getJTextFieldKWReduction().addCaretListener(this);
         getCheckBoxRampInOut().addActionListener(this);
         getJComboBoxCyclePeriod().addActionListener(this);
+        getCheckBoxMandatory().addActionListener(this);
     }
 
     private void initialize() {
@@ -649,8 +662,17 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
             GridBagConstraints constraintJComboBoxHowToStop = new GridBagConstraints();
             GridBagConstraints constraintJCheckBoxRampIn = new GridBagConstraints();
             GridBagConstraints constraintJCheckBoxRampOut = new GridBagConstraints();
+            GridBagConstraints constraintJCheckBoxMandatory = new GridBagConstraints();
             java.awt.GridBagConstraints constraintJLabelCyclePeriod = new java.awt.GridBagConstraints();
             java.awt.GridBagConstraints constraintJComboBoxCyclePeriod = new java.awt.GridBagConstraints();
+
+            constraintJCheckBoxMandatory.insets = new Insets(0, 0, 5, 0);
+            constraintJCheckBoxMandatory.ipady = -3;
+            constraintJCheckBoxMandatory.ipadx = 200;
+            constraintJCheckBoxMandatory.gridwidth = 3;
+            constraintJCheckBoxMandatory.anchor = GridBagConstraints.WEST;
+            constraintJCheckBoxMandatory.gridy = 0;
+            constraintJCheckBoxMandatory.gridx = 1;
 
             constraintJCheckBoxRampIn.insets = new Insets(0, 0, 5, 0);
             constraintJCheckBoxRampIn.ipady = -3;
@@ -717,6 +739,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
 
             setLayout(new GridBagLayout());
             this.add(getCheckBoxRampInOut(), constraintJCheckBoxRampIn);
+            this.add(getCheckBoxMandatory(), constraintJCheckBoxMandatory);
             this.add(getJLabelControlPercent(), constraintJLabelDutyCyclePercent);
             this.add(getJCSpinFieldControlPercent(), constraintJCSpinFieldDutyCyclePercent);
             this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
@@ -838,6 +861,8 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
         com.cannontech.database.data.device.lm.HoneywellCycleGear hGear =
             (com.cannontech.database.data.device.lm.HoneywellCycleGear) gear;
         getJComboBoxCyclePeriod().setSelectedItem(hGear.getCyclePeriod());
+        getCheckBoxMandatory().setText(LMProgramDirectGear.OPTION_MANDATORY);
+        getCheckBoxMandatory().setSelected(gear.isMandatorySelected(gear.getMethodOptionType()));
     }
 
     @Override
