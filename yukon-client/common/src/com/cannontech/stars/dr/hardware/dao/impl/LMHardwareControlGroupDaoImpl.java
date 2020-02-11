@@ -858,7 +858,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         sql.append("SELECT InventoryID, Relay, GroupEnrollStart, GroupEnrollStop, ProgramId, lmGroupId, AccountID");
         sql.append("FROM");
         sql.append(    "(SELECT lmhg.InventoryID, lmhg.Relay, lmhg.GroupEnrollStart, lmhg.GroupEnrollStop, lmhg.ProgramId, lmhg.lmGroupId, lmhg.AccountID,");
-        sql.append(        "ROW_NUMBER() OVER (PARTITION BY inventoryid, Relay ORDER BY GroupEnrollStop DESC) AS rn");
+        sql.append(        "ROW_NUMBER() OVER (PARTITION BY lmhg.inventoryid, lmhg.Relay ORDER BY lmhg.GroupEnrollStop DESC) AS rn");
         sql.append(    "FROM LMHardwareControlGroup lmhg");
         sql.appendFragment(getJoinForProgramAndDeviceExistence());
         sql.append(    "WHERE GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NOT NULL");
@@ -877,6 +877,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         sql.append("JOIN LMProgramWebPublishing lmwp ON lmwp.ProgramID = lmhg.ProgramId");
         sql.append("JOIN YukonPAObject ypo ON ypo.PAObjectID = lmwp.DeviceID");
         sql.append("JOIN YukonPAObject lgPao ON lgPao.paobjectId = lmhg.lmGroupId");
+        sql.append("JOIN LMHardwareBase hb ON hb.InventoryId = lmhg.InventoryId");
         return sql;
     }
 
