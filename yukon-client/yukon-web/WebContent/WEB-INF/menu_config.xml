@@ -78,6 +78,9 @@
     <link>/dr/home</link>
     <options>
       <option name="dashboard">
+        <permissions>
+            <role name="DEMAND_RESPONSE" />
+        </permissions>
         <link>/dr/home</link>
       </option>
       <option name="scenarios">
