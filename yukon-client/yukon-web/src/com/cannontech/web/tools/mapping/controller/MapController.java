@@ -334,11 +334,13 @@ public class MapController {
                                 RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
                                 if (nextHop != null) {
                                     RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
-                                    PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
-                                    PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
-                                    if (deviceLocation != null && nextHopLocation != null) {
-                                        double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
-                                        model.addAttribute("nextHopDistance", distanceTo);
+                                    if(nextHopDevice != null) {
+                                        PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
+                                        PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
+                                        if (deviceLocation != null && nextHopLocation != null) {
+                                            double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
+                                            model.addAttribute("nextHopDistance", distanceTo);
+                                        }
                                     }
                                 }
                             }

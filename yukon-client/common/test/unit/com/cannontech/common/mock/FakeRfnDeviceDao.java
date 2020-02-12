@@ -129,7 +129,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public void saveDynamicRfnDeviceData(Map<RfnIdentifier, RfnIdentifier> nodes) {
+    public void saveDynamicRfnDeviceData(Map<RfnDevice, RfnDevice> nodes) {
         throw new MethodNotImplementedException();
     }
 }
