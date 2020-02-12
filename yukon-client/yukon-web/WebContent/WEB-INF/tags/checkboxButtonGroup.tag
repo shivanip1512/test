@@ -30,7 +30,7 @@
 </c:choose>
     
 <cti:displayForPageEditModes modes="CREATE,EDIT">
-    <div class="button-group stacked ${buttonGroupContainerCssClasses}">
+    <div class="button-group ${buttonGroupContainerCssClasses}">
         <c:forEach var="item" items="${items}">
             <tags:check id="${item}_chk" path="${path}" value="${item}" key="${fn:replace(key, placeHolder, item)}"/>
         </c:forEach>
