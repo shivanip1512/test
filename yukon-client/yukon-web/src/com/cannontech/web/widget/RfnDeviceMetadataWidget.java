@@ -137,7 +137,9 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                 NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM);
                 RfnIdentifier reverseIdentifier = comm.getGatewayRfnIdentifier();
                 RfnDevice reverseGateway = rfnDeviceCreationService.createIfNotFound(reverseIdentifier);
-                model.addAttribute("reverseLookup", reverseGateway.getName());
+                if(reverseGateway != null) {
+                    model.addAttribute("reverseLookup", reverseGateway.getName());
+                }
             } else {
                 log.error("NM didn't return REVERSE_LOOKUP_NODE_COMM for {} ", device.getName());
             }

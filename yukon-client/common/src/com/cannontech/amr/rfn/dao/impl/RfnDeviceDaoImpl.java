@@ -388,8 +388,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         private Instant transferTime;
     }
     
+    @Transactional
     @Override
-    public void saveDynamicRfnDeviceData(Map<RfnIdentifier, RfnIdentifier> deviceToGateway) {
+    public void saveDynamicRfnDeviceData(Map<RfnDevice, RfnDevice> deviceToGateway) {
         if(MapUtils.isEmpty(deviceToGateway)) {
             return;
         }
@@ -412,12 +413,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         log.debug("Finished device to gateway mapping for {} devices", deviceToGateway.size());
     }
 
-    private DynamicRfnDeviceData getDynamicRfnDeviceData(RfnIdentifier device, RfnIdentifier gateway) {
-        Integer deviceId = rfnIdentifierCache.getPaoIdFor(device);
-        Integer gatewayId = rfnIdentifierCache.getPaoIdFor(gateway);
+    private DynamicRfnDeviceData getDynamicRfnDeviceData(RfnDevice device, RfnDevice gateway) {
         DynamicRfnDeviceData deviceData = new DynamicRfnDeviceData();
-        deviceData.deviceId = deviceId;
-        deviceData.gatewayId = gatewayId;
+        deviceData.deviceId = device.getPaoIdentifier().getPaoId();
+        deviceData.gatewayId = gateway.getPaoIdentifier().getPaoId();
         deviceData.transferTime = new Instant();
         return deviceData;
     }

@@ -174,10 +174,10 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
 
     private void updateDeviceToGatewayMapping(RfnGateway gateway,
             List<LiteYukonPAObject> devicesForGateway) {
-        Map<RfnIdentifier, RfnIdentifier> deviceToGateway = new HashMap<>();
+        Map<RfnDevice, RfnDevice> deviceToGateway = new HashMap<>();
         List<Integer> deviceIds = devicesForGateway.stream().map(device -> device.getLiteID()).collect(Collectors.toList());
-        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds).stream().collect(Collectors.toList());
-        rfnDevices.forEach(device -> deviceToGateway.put(device.getRfnIdentifier(), gateway.getRfnIdentifier()));
+        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds);
+        rfnDevices.forEach(device -> deviceToGateway.put(device, gateway));
         rfnDeviceDao.saveDynamicRfnDeviceData(deviceToGateway);
     }
 
