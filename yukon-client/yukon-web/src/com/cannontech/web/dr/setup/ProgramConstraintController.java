@@ -42,6 +42,7 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
@@ -221,7 +222,7 @@ public class ProgramConstraintController {
         if (PageEditMode.VIEW == model.get("mode")) {
             model.addAttribute("daySelections", programConstraint.getDaySelection());
         } else {
-            model.addAttribute("daySelections", DayOfWeek.values());
+            model.addAttribute("daySelections", Lists.newArrayList(DayOfWeek.values()));
         }
 
         model.addAttribute("programConstraint", programConstraint);

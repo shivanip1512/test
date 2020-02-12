@@ -123,7 +123,7 @@ public class LoadGroupSetupControllerHelper {
                 model.addAttribute("addressUsageList", AddressUsage.getGeoAddressUsage());
                 model.addAttribute("feederList", getBitAddressLevel());
                 model.addAttribute("loadAddressUsageList", AddressUsage.getLoadAddressUsage());
-                model.addAttribute("loadsList", Loads.values());
+                model.addAttribute("loadsList", Lists.newArrayList(Loads.values()));
             }
             break;
         case LM_GROUP_ITRON:
@@ -179,7 +179,7 @@ public class LoadGroupSetupControllerHelper {
             model.addAttribute("addressLevels", AddressLevel.values());
             model.addAttribute("isMctAddressSelected", loadGroupMCT.getLevel() == AddressLevel.MCT_ADDRESS);
             model.addAttribute("mctAddressEnumVal", AddressLevel.MCT_ADDRESS);
-            model.addAttribute("relayUsageList", Relays.values());
+            model.addAttribute("relayUsageList", Lists.newArrayList(Relays.values()));
             if (model.containsAttribute(bindingResultKey) && mode != PageEditMode.VIEW) {
                 BindingResult result = (BindingResult) model.get(bindingResultKey);
                 if (result.hasFieldErrors("mctDeviceId")) {
