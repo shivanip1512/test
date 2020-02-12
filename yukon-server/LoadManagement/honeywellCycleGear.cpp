@@ -22,17 +22,15 @@ bool HoneywellCycleGear::attemptControl( CtiLMGroupPtr currentLMGroup,
                                          long          controlSeconds,
                                          DOUBLE      & expectedLoadReduced )
 {
-
-    if ( HoneywellControlInterfacePtr controllableGroup =
-         boost::dynamic_pointer_cast<HoneywellControlInterface>( currentLMGroup ) )
+    if ( auto controllableGroup = dynamic_cast<HoneywellControlInterface*>( currentLMGroup.get() ) )
     {
-        const double loadScalar = ( ( getPercentReduction() == 0 ) ? 100.0 : getPercentReduction() ) / 100.0;
+        expectedLoadReduced += calculateLoadReduction( currentLMGroup->getKWCapacity() );
 
-        expectedLoadReduced +=  (currentLMGroup->getKWCapacity() * loadScalar );
-
-        const bool rampInOut = ciStringEqual( getFrontRampOption(), CtiLMProgramDirectGear::RandomizeRandomOptionType );
-
-        return controllableGroup->sendCycleControl( getProgramPAOId(), getMethodRate(), controlSeconds, rampInOut );
+        return controllableGroup->sendCycleControl( getProgramPAOId(),
+                                                    getDutyCycle(),
+                                                    controlSeconds,
+                                                    isMandatory(),
+                                                    isRampInOut() );
     }
 
     CTILOG_WARN( dout, "Group does not implement honeywell control interface: " << currentLMGroup->getPAOName() );
@@ -42,8 +40,7 @@ bool HoneywellCycleGear::attemptControl( CtiLMGroupPtr currentLMGroup,
 
 bool HoneywellCycleGear::stopControl( CtiLMGroupPtr currentLMGroup )
 {
-    if ( GroupControlInterfacePtr controllableGroup =
-         boost::dynamic_pointer_cast<GroupControlInterface>( currentLMGroup ) )
+    if ( auto controllableGroup = dynamic_cast<GroupControlInterface*>( currentLMGroup.get() ) )
     {
         if ( ciStringEqual( getMethodStopType(), CtiLMProgramDirectGear::RestoreStopType ) )
         {
@@ -62,4 +59,26 @@ bool HoneywellCycleGear::stopControl( CtiLMGroupPtr currentLMGroup )
 unsigned long HoneywellCycleGear::estimateOffTime( long controlSeconds )
 {
     return controlSeconds * ( getMethodRate() / 100.0 );
+}
+
+double HoneywellCycleGear::calculateLoadReduction( double groupCapacity ) const
+{
+    const double loadScalar = ( getPercentReduction() == 0 ) ? 1.0 : getPercentReduction() / 100.0;
+
+    return loadScalar * groupCapacity;
+}
+
+bool HoneywellCycleGear::isRampInOut() const
+{
+    return ciStringEqual( getFrontRampOption(), CtiLMProgramDirectGear::RandomizeRandomOptionType );
+}
+
+bool HoneywellCycleGear::isMandatory() const
+{
+    return ciStringEqual( getMethodOptionType(), "Mandatory" );
+}
+
+int HoneywellCycleGear::getDutyCycle() const
+{
+    return getMethodRate();
 }
