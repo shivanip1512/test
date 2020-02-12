@@ -224,6 +224,9 @@
         </copy>
 
         <!-- Tomcat Component -->
+        <verifyShutdownPortDisabled serverXmlFilename="${basedir}/yukon-install/conf/server.xml"/>
+        <verifyShutdownPortDisabled serverXmlFilename="${basedir}/yukon-install/ApacheTomcat/conf/server.xml"/>
+    	
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/ApacheTomcat" />
         </copy>
@@ -276,6 +279,33 @@
             </condition>
         </fail>
     </target>
+
+    <macrodef name="verifyShutdownPortDisabled">
+        <attribute name="serverXmlFilename"/>
+        <sequential>
+            <loadfile property="serverShutdownPort" srcfile="@{serverXmlFilename}">
+                <filterchain>
+                    <linecontainsregexp>
+                        <!-- Looking for e.g. <Server port="8005" shutdown="SHUTDOWN"> -->
+                        <regexp pattern="&lt;Server.*port.*&gt;"/>
+                    </linecontainsregexp>
+                </filterchain>
+            </loadfile>
+            <local name="detectedShutdownPort"/>
+            <property name="detectedShutdownPort">
+                Detected active shutdown port in @{serverXmlFilename}.
+                Set to -1 using port=&quot;-1&quot;
+                ${serverShutdownPort}
+            </property>
+            <fail message="${detectedShutdownPort}">
+                <condition>
+                    <not>
+                        <matches pattern="port=&quot;-1&quot;" string="${shutdownPort}"/>
+                    </not>
+                </condition>
+            </fail>
+        </sequential>
+    </macrodef>
 
     <target name="copy_web_content" >
         <property name="yukon.lib" value="${basedir}/yukon-client/lib" />
