@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,6 +26,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -69,6 +71,7 @@ import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -80,11 +83,12 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
-import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.model.RfnTestMeterInfoStatusReport;
+import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
@@ -97,6 +101,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.DemandResetStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.DeviceArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.MeterInfoStatusArchiveSimulatorRequest;
@@ -115,7 +120,6 @@ import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStatusRequ
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopRequest;
 import com.cannontech.simulators.message.request.RfnMeterReadAndControlSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
-import com.cannontech.simulators.message.request.DemandResetStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
@@ -147,6 +151,7 @@ public class NmIntegrationController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private NmSyncService nmSyncService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    protected JmsTemplate jmsTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
 
@@ -1037,7 +1042,13 @@ public class NmIntegrationController {
     
     @RequestMapping("refreshNetworkTree")
     public String refreshNetworkTree(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
-        //TODO: Refresh Network Tree
+        NetworkTreeUpdateTimeResponse response = new NetworkTreeUpdateTimeResponse();
+        long time = System.currentTimeMillis();
+        response.setNextScheduledRefreshTimeMillis(time);
+        response.setNoForceRefreshBeforeTimeMillis(time);
+        response.setTreeGenerationEndTimeMillis(time);
+        response.setTreeGenerationStartTimeMillis(time);
+        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE.getQueue().getName(), response);
         return "redirect:viewMappingSimulator";
     }
     
@@ -1215,5 +1226,12 @@ public class NmIntegrationController {
             flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
+    }
+    
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate.setExplicitQosEnabled(true);
+        jmsTemplate.setDeliveryPersistent(false);
     }
 }

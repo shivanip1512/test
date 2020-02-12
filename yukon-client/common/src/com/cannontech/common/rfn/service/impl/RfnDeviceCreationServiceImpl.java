@@ -124,9 +124,9 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             } catch (NotFoundException e) {
                 try {
                     rfnDevice = create(identifier);
-                    log.info(identifier + " is not found. Creating device.");
-                } catch (DeviceCreationException e1) {
-                    log.error("Device creation failed for " + identifier, e1);
+                    log.info("{} is not found. Creating device.", identifier);
+                } catch (Exception e1) {
+                    log.error("Device creation failed for {}", identifier, e1);
                 }
             }
         }

@@ -22,7 +22,7 @@ public class NetworkDebugHelper {
      * Creates statistics for the node
      */
     private static void count(RfnVertex vertex, TreeDebugStatistics statistics) {
-        if(vertex.getChildren() == null) {
+        if(vertex.getChildren().isEmpty()) {
             return;
         }
         for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
@@ -50,12 +50,9 @@ public class NetworkDebugHelper {
         buffer.append(prefix);
         buffer.append(vertex.getRfnIdentifier());
         buffer.append('\n');
-        if (vertex.getChildren() != null) {
-            for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
-                print(buffer, childrenPrefix + "*", childrenPrefix + "I   ", it.next());
-            }
+        for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
+            print(buffer, childrenPrefix + "*", childrenPrefix + "I   ", it.next());
         }
         return buffer.toString();
     }
-    
 }
