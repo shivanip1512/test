@@ -300,7 +300,7 @@
             <fail message="${detectedShutdownPort}">
                 <condition>
                     <not>
-                        <matches pattern="port=&quot;-1&quot;" string="${shutdownPort}"/>
+                        <matches pattern="port=&quot;-1&quot;" string="${serverShutdownPort}"/>
                     </not>
                 </condition>
             </fail>
