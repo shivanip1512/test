@@ -142,43 +142,366 @@
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one">
         <h4 class="subtle">Example:</h4>
+        <div id="selectedinfo">
+            <cti:button id="checkselected" label="checkselected"/>
+            <cti:button id="checkselectall" label="checkselectall"/>
+        </div>
     </div>
     <div class="column two nogutter">
-        <div id="tree">
-            <ul id="treeData" style="display: none;">
-                <li id="1" class="parent">Groups
-                    <ul>
-                        <li id="2" class="folder">Node 1
-                            <ul>
-                                <li id="3">Node 1.1</li>
-                                <li id="4">Node 1.2</li>
-                            </ul>
-                        </li>
-                        <li id="5" class="folder">Node 2</li>
-                        <li id="6" class="folder">Node 3</li>
-                        <li id="7" class="folder">Node 4</li>
-                        <li id="8" class="folder">Node 5</li>
-                        <li id="9" class="folder">Node 6
-                            <ul>
-                                <li id="10">Node 6.1</li>
-                                <li id="11">Node 6.2</li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
+        <div id="tree"/>
+        <div id="activeNodeInfo"/>
 
         <script type="text/javascript">
             $(function(){
                 $("#tree").fancytree({
-                    checkbox:true
-                });
-                $(".fancytree-container").addClass("fancytree-connectors");
-                var tree = $("#tree").fancytree("getTree");
-                tree.visit(function(node){
+                	source:[{
+                		"metadata":{"groupName":"/","id":"Groups"},
+                		"children":
+                		[
+                			{"metadata":{"groupName":"/cbc_tssl1","id":"cbctssl1"},
+                			 "children":[],
+                			 "id":"cbctssl1",
+                			 "text":"cbc_tssl1",
+                			 "href":"javascript:void(0);",
+                			 "leaf":true,
+                			 "title":"cbc_tssl1",
+                			 "key":"cbctssl1",
+                			 "info":{"groupName":"/cbc_tssl1","id":"cbctssl1"},
+                			 "addClass":"null yukon"
+                			},
+                			{"metadata":{"groupName":"/Meters","id":"Meters"},
+                		     "children":[
+                                          {"metadata":{"groupName":"/Meters/<iframe><iframe>","id":"Metersiframeiframe"},
+                                           "children":[
+                                        	   {"metadata":{"groupName":"/Meters/<iframe><iframe>/<iframe src=javascript:alert(23)>",
+                                        		"id":"Metersiframeiframeiframesrcjavascriptalert23"},
+                                        		"children":[],
+                                        		"id":"Metersiframeiframeiframesrcjavascriptalert23",
+                                        		"text":"&lt;iframe src=javascript:alert(23)&gt;",
+                                        		"href":"javascript:void(0);",
+                                        		"leaf":true,
+                                        		"title":"&lt;iframe src=javascript:alert(23)&gt;",
+                                        		"key":"Metersiframeiframeiframesrcjavascriptalert23",
+                                        		"info":{"groupName":"/Meters/<iframe><iframe>/<iframe src=javascript:alert(23)>",
+                                        		"id":"Metersiframeiframeiframesrcjavascriptalert23"},
+                                        		"addClass":"null yukon"
+                                           }
+                                         ],
+                             "id":"Metersiframeiframe",
+                             "text":"&lt;iframe&gt;&lt;iframe&gt;",
+                             "href":"javascript:void(0);",
+                             "leaf":false,
+                             "title":"&lt;iframe&gt;&lt;iframe&gt;",
+                             "key":"Metersiframeiframe",
+                             "info":{"groupName":"/Meters/<iframe><iframe>","id":"Metersiframeiframe"},
+                             "addClass":"null yukon"
+                            },
+                            {"metadata":{"groupName":"/Meters/Alternate","id":"MetersAlternate"},
+                             "children":[],
+                             "id":"MetersAlternate",
+                             "text":"Alternate",
+                             "href":"javascript:void(0);",
+                             "iconCls":"ALTERNATE",
+                             "leaf":true,
+                             "title":"Alternate",
+                             "key":"MetersAlternate",
+                             "info":{"groupName":"/Meters/Alternate","id":"MetersAlternate"},
+                             "addClass":"ALTERNATE yukon"
+                            },
+                            {"metadata":{"groupName":"/Meters/Billing","id":"MetersBilling"},
+                             "children":[],
+                             "id":"MetersBilling",
+                             "text":"Billing",
+                             "href":"javascript:void(0);",
+                             "iconCls":"BILLING",
+                             "leaf":true,
+                             "title":"Billing",
+                             "key":"MetersBilling",
+                             "info":{"groupName":"/Meters/Billing","id":"MetersBilling"},
+                             "addClass":"BILLING yukon"
+                            },
+                            {"metadata":{"groupName":"/Meters/CIS DeviceClass","id":"MetersCISDeviceClass"},
+                             "children":[],
+                             "id":"MetersCISDeviceClass",
+                             "text":"CIS DeviceClass",
+                             "href":"javascript:void(0);",
+                             "iconCls":"CIS_DEVICECLASS",
+                             "leaf":true,
+                             "title":"CIS DeviceClass",
+                             "key":"MetersCISDeviceClass",
+                             "info":{"groupName":"/Meters/CIS DeviceClass","id":"MetersCISDeviceClass"},
+                             "addClass":"CIS_DEVICECLASS yukon"
+                            },
+                            {"metadata":{"groupName":"/Meters/CIS Substation","id":"MetersCISSubstation"},
+                             "children":[
+                            	          {"metadata":{"groupName":"/Meters/CIS Substation/FORT PIERRE","id":"MetersCISSubstationFORTPIERRE"},
+                            	           "children":[],
+                            	           "id":"MetersCISSubstationFORTPIERRE",
+                            	           "text":"FORT PIERRE",
+                            	           "href":"javascript:void(0);",
+                            	           "leaf":true,
+                            	           "title":"FORT PIERRE",
+                            	           "key":"MetersCISSubstationFORTPIERRE",
+                            	           "info":{"groupName":"/Meters/CIS Substation/FORT PIERRE","id":"MetersCISSubstationFORTPIERRE"},
+                            	           "addClass":"null yukon"
+                            	           }
+                            	        ],
+                             "id":"MetersCISSubstation",
+                             "text":"CIS Substation",
+                             "href":"javascript:void(0);",
+                             "iconCls":"CIS_SUBSTATION",
+                             "leaf":false,
+                             "title":"CIS Substation",
+                             "key":"MetersCISSubstation",
+                             "info":{"groupName":"/Meters/CIS Substation","id":"MetersCISSubstation"},
+                             "addClass":"CIS_SUBSTATION yukon"
+                            },
+                            {"metadata":{"groupName":"/Meters/Collection","id":"MetersCollection"},
+                        	 "children":[],
+                        	 "id":"MetersCollection",
+                        	 "text":"Collection",
+                        	 "href":"javascript:void(0);",
+                        	 "iconCls":"COLLECTION",
+                        	 "leaf":true,
+                        	 "title":"Collection",
+                        	 "key":"MetersCollection",
+                        	 "info":{"groupName":"/Meters/Collection","id":"MetersCollection"},
+                        	 "addClass":"COLLECTION yukon"
+                           },
+                           {"metadata":{"groupName":"/Meters/Flags","id":"MetersFlags"},
+                            "children":[
+                        	   {"metadata":{"groupName":"/Meters/Flags/DisconnectedStatus","id":"MetersFlagsDisconnectedStatus"},
+                        		"children":[],
+                        		"id":"MetersFlagsDisconnectedStatus",
+                        		"text":"DisconnectedStatus",
+                        		"href":"javascript:void(0);",
+                        		"iconCls":"DISCONNECTED_STATUS",
+                        		"leaf":true,
+                        		"title":"DisconnectedStatus",
+                        		"key":"MetersFlagsDisconnectedStatus",
+                        		"info":{"groupName":"/Meters/Flags/DisconnectedStatus","id":"MetersFlagsDisconnectedStatus"},
+                        		"addClass":"DISCONNECTED_STATUS yukon"
+                         },
+                         {"metadata":{"groupName":"/Meters/Flags/Inventory","id":"MetersFlagsInventory"},
+                          "children":[],
+                          "id":"MetersFlagsInventory",
+                          "text":"Inventory",
+                          "href":"javascript:void(0);",
+                          "iconCls":"INVENTORY",
+                          "leaf":true,
+                          "title":"Inventory",
+                          "key":"MetersFlagsInventory",
+                          "info":{"groupName":"/Meters/Flags/Inventory","id":"MetersFlagsInventory"},
+                          "addClass":"INVENTORY yukon"
+                         },
+                         {"metadata":{"groupName":"/Meters/Flags/UsageMonitoring","id":"MetersFlagsUsageMonitoring"},
+                          "children":[],
+                          "id":"MetersFlagsUsageMonitoring",
+                          "text":"UsageMonitoring",
+                          "href":"javascript:void(0);",
+                          "iconCls":"USAGE_MONITORING",
+                          "leaf":true,
+                          "title":"UsageMonitoring",
+                          "key":"MetersFlagsUsageMonitoring",
+                          "info":{"groupName":"/Meters/Flags/UsageMonitoring","id":"MetersFlagsUsageMonitoring"},
+                          "addClass":"USAGE_MONITORING yukon"
+                          }
+                       ],
+                     "id":"MetersFlags",
+                     "text":"Flags",
+                     "href":"javascript:void(0);",
+                     "iconCls":"FLAGS",
+                     "leaf":false,
+                     "title":"Flags",
+                     "key":"MetersFlags",
+                     "info":{"groupName":"/Meters/Flags","id":"MetersFlags"},
+                     "addClass":"FLAGS yukon"}
+                   ],
+                   "id":"Meters",
+                   "text":"Meters",
+                   "href":"javascript:void(0);",
+                   "iconCls":"METERS",
+                   "leaf":false,
+                   "title":"Meters",
+                   "key":"Meters",
+                   "info":{"groupName":"/Meters","id":"Meters"},
+                   "addClass":"METERS yukon"
+                 },
+                 {"metadata":{"groupName":"/Monitors","id":"Monitors"},
+                  "children":[{"metadata":{"groupName":"/Monitors/DeviceData","id":"MonitorsDeviceData"},
+                  "children":[{"metadata":{"groupName":"/Monitors/DeviceData/ddm 2","id":"MonitorsDeviceDataddm2"},
+                  "children":[],
+                  "id":"MonitorsDeviceDataddm2",
+                  "text":"ddm 2",
+                  "href":"javascript:void(0);",
+                  "leaf":true,
+                  "title":"ddm 2",
+                  "key":"MonitorsDeviceDataddm2",
+                  "info":{"groupName":"/Monitors/DeviceData/ddm 2","id":"MonitorsDeviceDataddm2"},
+                  "addClass":"null yukon"
+                },
+                {"metadata":{"groupName":"/Monitors/DeviceData/device data monitor1","id":"MonitorsDeviceDatadevicedatamonitor1"},
+                 "children":[],
+                 "id":"MonitorsDeviceDatadevicedatamonitor1",
+                 "text":"device data monitor1",
+                 "href":"javascript:void(0);",
+                 "leaf":true,
+                 "title":"device data monitor1",
+                 "key":"MonitorsDeviceDatadevicedatamonitor1",
+                 "info":{"groupName":"/Monitors/DeviceData/device data monitor1","id":"MonitorsDeviceDatadevicedatamonitor1"},
+                 "addClass":"null yukon"
+               },
+               {"metadata":{"groupName":"/Monitors/DeviceData/device data monitor1hgjhgjk",
+            	"id":"MonitorsDeviceDatadevicedatamonitor1hgjhgjk"},
+            	"children":[],
+            	"id":"MonitorsDeviceDatadevicedatamonitor1hgjhgjk",
+            	"text":"device data monitor1hgjhgjk",
+            	"href":"javascript:void(0);",
+            	"leaf":true,
+            	"title":"device data monitor1hgjhgjk",
+            	"key":"MonitorsDeviceDatadevicedatamonitor1hgjhgjk",
+            	"info":{"groupName":"/Monitors/DeviceData/device data monitor1hgjhgjk",
+                "id":"MonitorsDeviceDatadevicedatamonitor1hgjhgjk"},
+                "addClass":"null yukon"
+                },
+                {"metadata":{"groupName":"/Monitors/DeviceData/Test","id":"MonitorsDeviceDataTest"},
+                 "children":[],
+                 "id":"MonitorsDeviceDataTest",
+                 "text":"Test",
+                 "href":"javascript:void(0);",
+                 "leaf":true,
+                 "title":"Test",
+                 "key":"MonitorsDeviceDataTest",
+                 "info":{"groupName":"/Monitors/DeviceData/Test","id":"MonitorsDeviceDataTest"},
+                 "addClass":"null yukon"
+                }
+              ],
+              "id":"MonitorsDeviceData",
+              "text":"DeviceData",
+              "href":"javascript:void(0);",
+              "iconCls":"DEVICE_DATA",
+              "leaf":false,
+              "title":"DeviceData",
+              "key":"MonitorsDeviceData",
+              "info":{"groupName":"/Monitors/DeviceData","id":"MonitorsDeviceData"},
+              "addClass":"DEVICE_DATA yukon"
+              },
+              {"metadata":{"groupName":"/Monitors/Outage","id":"MonitorsOutage"},
+               "children":[{"metadata":{"groupName":"/Monitors/Outage/<iframe src=javascript:alert(347)>","id":"MonitorsOutageiframesrcjavascriptalert347"},
+            	            "children":[],
+            	            "id":"MonitorsOutageiframesrcjavascriptalert347",
+            	            "text":"&lt;iframe src=javascript:alert(347)&gt;",
+            	            "href":"javascript:void(0);",
+            	            "leaf":true,
+            	            "title":"&lt;iframe src=javascript:alert(347)&gt;",
+            	            "key":"MonitorsOutageiframesrcjavascriptalert347",
+            	            "info":{"groupName":"/Monitors/Outage/<iframe src=javascript:alert(347)>",
+            	            "id":"MonitorsOutageiframesrcjavascriptalert347"},
+            	            "addClass":"null yukon"
+            	            },
+            	            {"metadata":{"groupName":"/Monitors/Outage/outage2","id":"MonitorsOutageoutage2"},
+            	             "children":[],"id":"MonitorsOutageoutage2",
+            	             "text":"outage2",
+            	             "href":"javascript:void(0);",
+            	             "leaf":true,
+            	             "title":"outage2",
+            	             "key":"MonitorsOutageoutage2",
+            	             "info":{"groupName":"/Monitors/Outage/outage2","id":"MonitorsOutageoutage2"},
+            	             "addClass":"null yukon"
+            	            }
+            	          ],
+              "id":"MonitorsOutage",
+              "text":"Outage",
+              "href":"javascript:void(0);",
+              "iconCls":"OUTAGE",
+              "leaf":false,
+              "title":"Outage",
+              "key":"MonitorsOutage",
+              "info":{"groupName":"/Monitors/Outage","id":"MonitorsOutage"},
+              "addClass":"OUTAGE yukon"
+              },
+              {"metadata":{"groupName":"/Monitors/Tamper Flag","id":"MonitorsTamperFlag"},
+               "children":[
+            	            {"metadata":{"groupName":"/Monitors/Tamper Flag/tamper1","id":"MonitorsTamperFlagtamper1"},
+            	             "children":[],
+            	             "id":"MonitorsTamperFlagtamper1",
+            	             "text":"tamper1",
+            	             "href":"javascript:void(0);",
+            	             "leaf":true,
+            	             "title":"tamper1",
+            	             "key":"MonitorsTamperFlagtamper1",
+            	             "info":{"groupName":"/Monitors/Tamper Flag/tamper1","id":"MonitorsTamperFlagtamper1"},
+            	             "addClass":"null yukon"
+            	             },
+            	             {"metadata":{"groupName":"/Monitors/Tamper Flag/tamper 2","id":"MonitorsTamperFlagtamper2"},
+            	              "children":[],
+            	              "id":"MonitorsTamperFlagtamper2",
+            	              "text":"tamper 2",
+            	              "href":"javascript:void(0);",
+            	              "leaf":true,
+            	              "title":"tamper 2",
+            	              "key":"MonitorsTamperFlagtamper2",
+            	              "info":{"groupName":"/Monitors/Tamper Flag/tamper 2","id":"MonitorsTamperFlagtamper2"},
+            	              "addClass":"null yukon"
+            	             }
+            	           ],
+            	"id":"MonitorsTamperFlag",
+            	"text":"Tamper Flag",
+            	"href":"javascript:void(0);",
+            	"iconCls":"TAMPER_FLAG",
+            	"leaf":false,
+            	"title":"Tamper Flag",
+            	"key":"MonitorsTamperFlag",
+            	"info":{"groupName":"/Monitors/Tamper Flag","id":"MonitorsTamperFlag"},
+            	"addClass":"TAMPER_FLAG yukon"
+            	}
+              ],
+              "id":"Monitors",
+              "text":"Monitors",
+              "href":"javascript:void(0);",
+              "iconCls":"MONITORS",
+              "leaf":false,
+              "title":"Monitors",
+              "key":"Monitors",
+              "info":{"groupName":"/Monitors","id":"Monitors"},
+              "addClass":"MONITORS yukon"
+              },
+              {"metadata":{"groupName":"/shikha-test","id":"shikhatest"},
+               "children":[],
+               "id":"shikhatest",
+               "text":"shikha-test",
+               "href":"javascript:void(0);",
+               "leaf":true,
+               "title":"shikha-test",
+               "key":"shikhatest",
+               "info":{"groupName":"/shikha-test","id":"shikhatest"},
+               "addClass":"null yukon"
+              }],
+              "id":"groups",
+              "text":"groups",
+              "title":"Groups",
+              "key":"groups",
+              "info":{"groupName":"/groups","id":"shikhatest"},
+              "addClass":"null yukon"
+              }],
+              activate: function(event, data) {
+                  $("#activeNodeInfo").text("Active node: " + data.node.title);
+              }
+             });
+            $(".fancytree-container").addClass("fancytree-connectors");
+            var tree = $("#tree").fancytree("getTree");
+            tree.visit(function(node){
                     node.setExpanded(true);
-                 });
+            });
+
+            $("#checkselected").click(function() {
+                var node = tree.getNodeByKey('groups');
+                node.setSelected(true);
+             });
+
+            $("#checkselectall").click(function() {
+                tree.selectAll();
+             });
             });
         </script>
     </div>
