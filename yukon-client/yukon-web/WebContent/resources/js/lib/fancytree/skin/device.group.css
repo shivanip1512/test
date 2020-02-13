@@ -1,0 +1,66 @@
+span.fancytree-icon { background-image:url("tree/folder.gif"); background-position: 0 0 !important; background-repeat:no-repeat; background-color:transparent; }
+.fancytree-expanded span.fancytree-icon { background-image:url("tree/folder-open.gif"); background-position: 0 0 !important; background-repeat:no-repeat; background-color:transparent; }
+
+/* Meter */
+.fancytree-expanded.METERS span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMeters.gif"); }
+.METERS span.fancytree-icon { background-image: url("tree/folder_deviceGroupMeters.gif"); }
+                              
+/* Meters/Billing */
+.fancytree-expanded.BILLING span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMetersBilling.gif"); }
+.BILLING span.fancytree-icon { background-image: url("tree/folder_deviceGroupMetersBilling.gif"); }
+
+/* Meter/Collection */
+.fancytree-expanded.COLLECTION span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMetersCollection.gif"); }
+.COLLECTION span.fancytree-icon { background-image: url("tree/folder_deviceGroupMetersCollection.gif"); }
+
+/* Meter/Alternate */
+.fancytree-expanded.ALTERNATE span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMetersAlternategif.gif"); }
+.ALTERNATE span.fancytree-icon { background-image: url("tree/folder_deviceGroupMetersAlternate.gif"); }
+
+/* Meters/Flags */
+.fancytree-expanded.FLAGS span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlags.gif"); }
+.FLAGS span.fancytree-icon { background-image: url("tree/folder_deviceGroupMetersFlags.gif"); }
+
+/* Meters/Flags/Inventory */
+.fancytree-expanded.INVENTORY span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlagsInventory.gif"); }
+.INVENTORY span.fancytree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsInventory.gif"); }
+
+/* Meters/Flags/DisconnectStatus */
+.fancytree-expanded.DISCONNECTED_STATUS span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlagsDisconnectStatus.gif"); }
+.DISCONNECTED_STATUS span.fancytree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsDisconnectStatus.gif"); }
+
+/* Meters/Flags/Usage Monitoring */
+.fancytree-expanded.USAGE_MONITORING span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMetersFlagsUsageMonitoring.gif"); }
+.USAGE_MONITORING span.fancytree-icon { background-image: url("tree/folder_deviceGroupMetersFlagsUsageMonitoring.gif"); }
+
+/* System */
+.fancytree-expanded.SYSTEM span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupSystem.gif"); }
+.SYSTEM span.fancytree-icon { background-image: url("tree/folder_deviceGroupSystem.gif"); }
+
+/* Device Types */
+.fancytree-expanded.DEVICE_TYPES span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupDeviceTypes.gif"); }
+.DEVICE_TYPES span.fancytree-icon { background-image: url("tree/folder_deviceGroupDeviceTypes.gif"); }
+
+/* Routes */
+.fancytree-expanded.ROUTES span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupRoutes.gif"); }
+.ROUTES span.fancytree-icon { background-image: url("tree/folder_deviceGroupRoutes.gif"); }
+
+/* Tags */
+.fancytree-expanded.DEVICETAGS span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupTags.gif"); }
+.DEVICETAGS span.fancytree-icon { background-image: url("tree/folder_deviceGroupTags.gif"); }
+
+/* Scanning Meters */
+.fancytree-expanded.SCANNING span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupScanningMeters.gif"); }
+.SCANNING span.fancytree-icon { background-image: url("tree/folder_deviceGroupScanningMeters.gif"); }
+
+/* System Meters */
+.fancytree-expanded.SYSTEM_METERS span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupMeters.gif"); }
+.SYSTEM_METERS span.fancytree-icon { background-image: url("tree/folder_deviceGroupMeters.gif"); }
+    
+/* System Disabled Meters */
+.fancytree-expanded.DISABLED span.fancytree-icon { background-image: url("tree/folder-open_deviceGroupDisabled.gif"); }
+.DISABLED span.fancytree-icon { background-image: url("tree/folder_deviceGroupDisabled.gif"); }
+
+/* Device Config */
+.fancytree-expanded.DEVICE_CONFIGS span.fancytree-icon { background-image: url("tree/folder-open_deviceConfigs.gif"); }
+.DEVICE_CONFIGS span.fancytree-icon { background-image: url("tree/folder_deviceConfigs.gif"); }

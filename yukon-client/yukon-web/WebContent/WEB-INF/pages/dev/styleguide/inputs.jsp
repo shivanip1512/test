@@ -1,5 +1,6 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -12,6 +13,11 @@
 .style-guide-example .one { line-height: 26px; }
 .description { line-height: 22px; }
 </style>
+
+<cti:includeScript link="/resources/js/lib/fancytree/jquery.fancytree.min.js"/>
+<!-- Include Fancytree skin and library -->
+<cti:includeCss link="/resources/js/lib/fancytree/skin/skin-win8/ui.fancytree.css" />
+
 
 <p class="description">
     Inputs can have special behavior simply by using some css classes.
@@ -128,6 +134,55 @@
 &lt;tags:file/&gt;
 &lt;tags:file name="history.magnaCarta" id="my-input"/&gt;
 </pre>
+
+<h2 id="toggle-with-checkbox-example">Dynamic Tree using FancyTree</h2>
+<p class="description">
+    The dynamic tree is generated through Fancytree jquery.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one">
+        <h4 class="subtle">Example:</h4>
+    </div>
+    <div class="column two nogutter">
+        <div id="tree">
+            <ul id="treeData" style="display: none;">
+                <li id="1" class="parent">Groups
+                    <ul>
+                        <li id="2" class="folder">Node 1
+                            <ul>
+                                <li id="3">Node 1.1</li>
+                                <li id="4">Node 1.2</li>
+                            </ul>
+                        </li>
+                        <li id="5" class="folder">Node 2</li>
+                        <li id="6" class="folder">Node 3</li>
+                        <li id="7" class="folder">Node 4</li>
+                        <li id="8" class="folder">Node 5</li>
+                        <li id="9" class="folder">Node 6
+                            <ul>
+                                <li id="10">Node 6.1</li>
+                                <li id="11">Node 6.2</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <script type="text/javascript">
+            $(function(){
+                $("#tree").fancytree({
+                    checkbox:true
+                });
+                $(".fancytree-container").addClass("fancytree-connectors");
+                var tree = $("#tree").fancytree("getTree");
+                tree.visit(function(node){
+                    node.setExpanded(true);
+                 });
+            });
+        </script>
+    </div>
+</div>
 
 </tags:styleguide>
 </cti:standardPage>
