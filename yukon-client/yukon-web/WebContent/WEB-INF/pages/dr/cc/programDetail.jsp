@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="dr" page="cc.programDetail">
 <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
@@ -177,6 +178,7 @@
     <c:if test="${deletable}">
         <cti:url value="/dr/cc/programDelete/${program.id}" var="deleteUrl"/>
         <cti:button nameKey="delete" classes="delete" href="${deleteUrl}" id="delete-program"/>
+        <d:confirm on="#delete-program" nameKey="confirmDelete" argument="${program.name}" />
     </c:if>
     <cti:url value="/dr/cc/programList" var="cancelUrl"/>
     <cti:button nameKey="cancel" href="${cancelUrl}"/>
