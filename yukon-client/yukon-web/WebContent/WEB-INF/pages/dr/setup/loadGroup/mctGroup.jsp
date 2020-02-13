@@ -41,7 +41,7 @@
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".relayUsage">
             <c:set var="items" value="${isViewMode ? loadGroup.relayUsage : relayUsageList}"/>
-            <tags:checkboxButtonGroup items="${items}" path="relayUsage" buttonGroupContainerCssClasses="ML-5"/>
+            <tags:checkboxButtonGroup items="${items}" path="relayUsage"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </tags:sectionContainer2>

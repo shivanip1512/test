@@ -88,7 +88,7 @@
         </tags:nameValue2>
         <tags:nameValue2 id="js-loads" nameKey=".loads">
             <c:set var="items" value="${isViewMode ? loadGroup.relayUsage : loadsList}"/>
-            <tags:checkboxButtonGroup items="${items}" path="relayUsage" buttonGroupContainerCssClasses="ML-5" />
+            <tags:checkboxButtonGroup items="${items}" path="relayUsage" />
         </tags:nameValue2>
         <tags:nameValue2 id="js-programRow" nameKey=".program" rowClass="${displayProgram == true ? '' : 'dn'}">
             <tags:input id="js-program" path="program" size="25" maxlength="60"/>

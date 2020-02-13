@@ -79,7 +79,7 @@
                     <tags:numeric path="minRestartSeconds" size="5" maxlength="5" units="${seconds}" minValue="0" maxValue="99999"/>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".daySelection">
-                    <tags:checkboxButtonGroup items="${daySelections}" path="daySelection" keyPrefix="yukon.common.day." keySuffix=".short" buttonGroupContainerCssClasses="ML-5"/>
+                    <tags:checkboxButtonGroup items="${daySelections}" path="daySelection" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".holidaySchedule">
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
