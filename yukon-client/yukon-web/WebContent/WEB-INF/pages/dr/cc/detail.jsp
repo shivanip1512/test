@@ -3,6 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="dr" page="cc.detail">
 
@@ -76,7 +77,8 @@
                         <cti:url var="deleteUrl" value="/dr/cc/program/${program.id}/event/${event.id}"/>
                         <form:form action="${deleteUrl}" method="DELETE">
                         	<cti:csrfToken/>
-                            <cti:button type="submit" nameKey="delete" />
+                            <cti:button type="submit" nameKey="delete" id="delete-event"/>
+                            <d:confirm on="#delete-event" nameKey="confirmDelete" argument="${event.displayName}" />
                         </form:form>
                     </c:if>
                     <c:if test="${showCancelButton}">
