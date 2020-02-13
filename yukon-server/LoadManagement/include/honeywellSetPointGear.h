@@ -1,6 +1,5 @@
 #pragma once
 
-#include "lmprogramdirect.h"
 #include "lmprogramthermostatgear.h"
 #include "smartgearbase.h"
 
