@@ -52,7 +52,7 @@ public class ItronProgramSetupApiControllerTest {
         baseURI = ApiCallHelper.getProperty("baseURI");
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-        itronGearFieldDescriptor = new FieldDescriptor[] { fieldWithPath("gears[].fields.cycleType").type(JsonFieldType.STRING).description("Cycle Type"),
+        itronGearFieldDescriptor = new FieldDescriptor[] { fieldWithPath("gears[].fields.dutyCycleType").type(JsonFieldType.STRING).description("Cycle Type"),
                 fieldWithPath("gears[].fields.rampIn").type(JsonFieldType.BOOLEAN).description("Ramp In"),
                 fieldWithPath("gears[].fields.rampOut").type(JsonFieldType.BOOLEAN).description("Ramp Out"),
                 fieldWithPath("gears[].fields.dutyCyclePercent").type(JsonFieldType.NUMBER).description("Duty Cycle Percent. Min Value: 0, Max Value: 100"),

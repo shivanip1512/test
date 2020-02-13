@@ -18,7 +18,7 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class MockItronCycleGearFields implements MockProgramGearFields {
 
-    private MockItronCycleType cycleType;
+    private MockItronCycleType dutyCycleType;
     private Boolean rampIn;
     private Boolean rampOut;
     private Integer dutyCyclePercent;
