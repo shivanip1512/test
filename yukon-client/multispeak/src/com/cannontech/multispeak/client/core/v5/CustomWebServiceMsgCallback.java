@@ -1,10 +1,9 @@
 package com.cannontech.multispeak.client.core.v5;
 
-import java.util.GregorianCalendar;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPElement;
@@ -25,6 +24,7 @@ import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 
 public class CustomWebServiceMsgCallback {
     private final static Logger log = YukonLogManager.getLogger(CustomWebServiceMsgCallback.class);
+    public static final SimpleDateFormat MESSAGE_HEADER_DATE_TIME = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     @Autowired public MultispeakFuncs multispeakFuncs;
 
@@ -60,12 +60,8 @@ public class CustomWebServiceMsgCallback {
                     SOAPElement headElement = header.addChildElement("MultiSpeakRequestMsgHeader", "req");
                     headElement.setAttribute("MessageID", UUID.randomUUID().toString().replace("-", ""));
 
-                    try {
-                        XMLGregorianCalendar now = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-                        headElement.setAttribute("TimeStamp", now.toString());
-                    } catch (DatatypeConfigurationException e) {
-                        // ignore exception
-                    }
+                    XMLGregorianCalendar now = MultispeakFuncs.toXMLGregorianCalendar(new Date());
+                    headElement.setAttribute("TimeStamp", MESSAGE_HEADER_DATE_TIME.format(now.toGregorianCalendar().getTime()));
                     multispeakFuncs.getHeader(headElement, "req", mspVendor);
 
                 } catch (SOAPException e) {
