@@ -226,7 +226,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             DRDutyCycleEventRequest request = new DRDutyCycleEventRequest(parameters.getEventId(),
                                                         parameters.getStartTime(),
-                                                        Boolean.TRUE, //allow opt-out on Honeywell portal & device
+                                                        parameters.isOptional(), //allow opt-out on Honeywell portal & device
                                                         parameters.getRandomizationInterval(),
                                                         DutyCyclePeriod.HALFHOUR,
                                                         1,
