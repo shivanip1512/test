@@ -5,6 +5,7 @@
 #include "cmd_rfn_helper.h"
 
 #include <boost/range/adaptor/map.hpp>
+#include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/numeric.hpp>
 
 using namespace std;
@@ -48,6 +49,19 @@ void RfnAggregateCommand::prepareCommandData(const CtiTime now)
 auto RfnAggregateCommand::getApplicationServiceId() const -> ASID
 {
     return ASID::BulkMessageHandler;
+}
+
+std::string RfnAggregateCommand::getCommandName() const
+{
+    return "Aggregate ["
+        + boost::join(
+            _commands
+                | boost::adaptors::map_values
+                | boost::adaptors::indirected
+                | boost::adaptors::transformed([](const RfnIndividualCommand& command) {
+                    return command.getCommandName();
+                }), ",") 
+        + "]";
 }
 
 unsigned char RfnAggregateCommand::getCommandCode() const

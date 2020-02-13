@@ -28,7 +28,7 @@ auto RfnWifiGetCommunicationStatusUpdateCommand::getCommandData() -> Bytes
     return { static_cast<uint8_t>(Operation::GetCommunicationStatusUpdate) };
 }
 
-std::string RfnWifiGetCommunicationStatusUpdateCommand::getCommandName()
+std::string RfnWifiGetCommunicationStatusUpdateCommand::getCommandName() const
 {
     return "Get Wi-Fi Communication Status Request";
 }

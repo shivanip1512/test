@@ -54,7 +54,7 @@ RfnCommandResult RfnDemandIntervalSetConfigurationCommand::decodeCommand( const 
 }
 
 
-std::string RfnDemandIntervalSetConfigurationCommand::getCommandName()
+std::string RfnDemandIntervalSetConfigurationCommand::getCommandName() const
 {
     return "Set Demand Interval Request";
 }
@@ -100,7 +100,7 @@ std::chrono::minutes RfnDemandIntervalGetConfigurationCommand::getDemandInterval
 }
 
 
-std::string RfnDemandIntervalGetConfigurationCommand::getCommandName()
+std::string RfnDemandIntervalGetConfigurationCommand::getCommandName() const
 {
     return "Get Demand Interval Request";
 }

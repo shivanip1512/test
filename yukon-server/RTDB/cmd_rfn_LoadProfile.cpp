@@ -170,7 +170,7 @@ boost::optional<unsigned> RfnVoltageProfileGetConfigurationCommand::getLoadProfi
     return _loadProfileInterval;
 }
 
-std::string RfnVoltageProfileGetConfigurationCommand::getCommandName()
+std::string RfnVoltageProfileGetConfigurationCommand::getCommandName() const
 {
     return "Voltage Profile Get Configuration Request";
 }
@@ -204,7 +204,7 @@ RfnVoltageProfileSetConfigurationCommand::RfnVoltageProfileSetConfigurationComma
 }
 
 
-std::string RfnVoltageProfileSetConfigurationCommand::getCommandName()
+std::string RfnVoltageProfileSetConfigurationCommand::getCommandName() const
 {
     return "Voltage Profile Set Configuration Request";
 }
@@ -279,7 +279,7 @@ bool RfnLoadProfileGetRecordingCommand::isTemporaryEnabled() const
     return _isTemporaryEnabled;
 }
 
-std::string RfnLoadProfileGetRecordingCommand::getCommandName()
+std::string RfnLoadProfileGetRecordingCommand::getCommandName() const
 {
     return "Load Profile Get Recording Request";
 }
@@ -391,7 +391,7 @@ RfnCommandResult RfnLoadProfileSetTemporaryRecordingCommand::decodeCommand( cons
     return result;
 }
 
-std::string RfnLoadProfileSetTemporaryRecordingCommand::getCommandName()
+std::string RfnLoadProfileSetTemporaryRecordingCommand::getCommandName() const
 {
     return "Load Profile Set Temporary Recording Request";
 }
@@ -423,7 +423,7 @@ RfnCommandResult RfnLoadProfileSetPermanentRecordingCommand::decodeCommand( cons
     return result;
 }
 
-std::string RfnLoadProfileSetPermanentRecordingCommand::getCommandName()
+std::string RfnLoadProfileSetPermanentRecordingCommand::getCommandName() const
 {
     return "Load Profile Set Permanent Recording Request";
 }
@@ -569,7 +569,7 @@ RfnCommandResult RfnLoadProfileReadPointsCommand::decodeCommand( const CtiTime n
     return result;
 }
 
-std::string RfnLoadProfileReadPointsCommand::getCommandName()
+std::string RfnLoadProfileReadPointsCommand::getCommandName() const
 {
     return "Load Profile Read Points Request";
 }

@@ -212,7 +212,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
     return description;
 }
 
-std::string RfnFocusAlLcdConfigurationReadCommand::getCommandName()
+std::string RfnFocusAlLcdConfigurationReadCommand::getCommandName() const
 {
     return "LCD Configuration Read Request";
 }
@@ -240,7 +240,7 @@ RfnFocusAlLcdConfigurationWriteCommand::RfnFocusAlLcdConfigurationWriteCommand( 
 {
 }
 
-std::string RfnFocusAlLcdConfigurationWriteCommand::getCommandName()
+std::string RfnFocusAlLcdConfigurationWriteCommand::getCommandName() const
 {
     return "LCD Configuration Write Request";
 }
