@@ -358,6 +358,7 @@ public class LoadProgramSetupControllerHelper {
     }
 
     private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
+        honeywellCycleGearFields.setMandatory(false);
         honeywellCycleGearFields.setRampInOut(true);
         honeywellCycleGearFields.setControlPercent(50);
         honeywellCycleGearFields.setCapacityReduction(100);
