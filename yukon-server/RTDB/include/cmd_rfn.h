@@ -152,6 +152,8 @@ public:
 
     virtual ASID getApplicationServiceId() const;
 
+    virtual std::string getCommandName() const = 0;
+
     virtual bool isPost() const;
     virtual bool isOneWay() const;
 

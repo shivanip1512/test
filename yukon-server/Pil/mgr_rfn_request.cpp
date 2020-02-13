@@ -708,7 +708,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             FormattedList logItems;
             logItems.add("commandString")    << newRequest.request.parameters.commandString;
-            //logItems.add("command")          << newRequest.request.parameters.command;
+            logItems.add("command name")     << newRequest.request.command->getCommandName();
             logItems.add("connectionHandle") << newRequest.request.parameters.connectionHandle;
             logItems.add("deviceId")         << newRequest.request.parameters.deviceId;
             logItems.add("groupMessageId")   << newRequest.request.parameters.groupMessageId;

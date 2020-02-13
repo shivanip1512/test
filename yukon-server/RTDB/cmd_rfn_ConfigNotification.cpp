@@ -756,7 +756,7 @@ std::string RfnConfigNotificationCommand::decodeVoltageProfileStatus(Bytes paylo
 }
 
 
-std::string RfnConfigNotificationCommand::getCommandName()
+std::string RfnConfigNotificationCommand::getCommandName() const
 {
     return "Device Configuration Request";
 }

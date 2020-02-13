@@ -34,7 +34,7 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     const std::chrono::minutes demandInterval;
 
@@ -58,7 +58,7 @@ public:
     RfnCommandResult decodeCommand(const CtiTime now,
         const RfnResponsePayload & response) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     std::chrono::minutes getDemandInterval() const;
 

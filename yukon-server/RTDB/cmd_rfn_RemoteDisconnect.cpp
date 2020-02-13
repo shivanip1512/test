@@ -276,7 +276,7 @@ RfnCommandResult RfnRemoteDisconnectSetConfigurationCommand::decodeCommand( cons
     return result;
 }
 
-std::string RfnRemoteDisconnectSetConfigurationCommand::getCommandName()
+std::string RfnRemoteDisconnectSetConfigurationCommand::getCommandName() const
 {
     return "Remote Disconnect Set Configuration Request";
 }
@@ -437,7 +437,7 @@ RfnCommandResult RfnRemoteDisconnectGetConfigurationCommand::decodeCommand( cons
     return result;
 }
 
-std::string RfnRemoteDisconnectGetConfigurationCommand::getCommandName()
+std::string RfnRemoteDisconnectGetConfigurationCommand::getCommandName() const
 {
     return "Remote Disconnect Get Configuration Request";
 }

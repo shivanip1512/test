@@ -33,7 +33,7 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 };
 
 

@@ -15,6 +15,8 @@ public:
 
     ASID getApplicationServiceId() const override;
 
+    std::string getCommandName() const override;
+
     RfnCommandResultList handleResponse(const CtiTime now, const RfnResponsePayload &response) override final;
     RfnCommandResultList handleError(const CtiTime now, const YukonError_t error) override final;
 
