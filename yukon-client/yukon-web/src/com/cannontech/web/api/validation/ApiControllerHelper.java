@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -36,11 +39,26 @@ import com.cannontech.web.api.ApiRequestHelper;
 public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     private String webServerUrl;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
-    
+
+    @PostConstruct
+    public void initialize() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, (event) -> {
+            if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.YUKON_INTERNAL_URL)) {
+                clearWebUrl();
+            }
+        });
+    }
+
+    private void clearWebUrl() {
+        webServerUrl = null;
+        log.info("Yukon Internal URL is changed to " + getYukonInternalUrl());
+    }
+
     /**
-     * Populate and return binding error from the error object received from rest call. 
+     * Populate and return binding error from the error object received from rest call.
      */
     public BindingResult populateBindingError(BindingResult result, BindException error,
             ResponseEntity<? extends Object> errorResponse) {
