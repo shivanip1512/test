@@ -114,7 +114,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         
         templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
     }
-    
+
     @Override
     public RfnDevice createIfNotFound(RfnIdentifier identifier) {
         RfnDevice rfnDevice = null;
@@ -122,17 +122,21 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
             try {
                 rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
             } catch (NotFoundException e) {
-                try {
-                    rfnDevice = create(identifier);
-                    log.info("{} is not found. Creating device.", identifier);
-                } catch (Exception e1) {
-                    log.error("Device creation failed for {}", identifier, e1);
+                if (identifier.is_Empty_()) {
+                    log.info("Unable to create device with {} empty identifier.", identifier);
+                } else {
+                    try {
+                        rfnDevice = create(identifier);
+                        log.info("{} is not found. Creating device.", identifier);
+                    } catch (Exception e1) {
+                        log.error("Device creation failed for {}.", identifier, e1);
+                    }
                 }
             }
         }
         return rfnDevice;
     }
-    
+
     @Override
     @Transactional
     public RfnDevice create(final RfnIdentifier rfnIdentifier) {

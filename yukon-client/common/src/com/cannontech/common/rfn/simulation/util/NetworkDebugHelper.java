@@ -12,7 +12,7 @@ public class NetworkDebugHelper {
     public static TreeDebugStatistics count(RfnVertex vertex) {
         TreeDebugStatistics statistics = new TreeDebugStatistics();
         //gateway
-        statistics.TOTAL = 1;
+        statistics.TOTAL.incrementAndGet();
         count(vertex, statistics);
         return statistics;
         
@@ -27,11 +27,11 @@ public class NetworkDebugHelper {
         }
         for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
             RfnVertex node = it.next();
-            statistics.TOTAL++;
+            statistics.TOTAL.incrementAndGet();
             if (node.getRfnIdentifier() == null) {
-                statistics.NULL++;
+                statistics.NULL.incrementAndGet();
             } else if (node.getRfnIdentifier().is_Empty_()) {
-                statistics._EMPTY_++;
+                statistics._EMPTY_.incrementAndGet();
             }
             count(node, statistics);
         }
