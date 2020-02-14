@@ -40,7 +40,7 @@ public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    private String webServerUrl;
+    private volatile String webServerUrl;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
 
     @PostConstruct
@@ -53,8 +53,8 @@ public class ApiControllerHelper {
     }
 
     private void clearWebUrl() {
-        webServerUrl = null;
-        log.info("Yukon Internal URL is changed to " + getYukonInternalUrl());
+        setWebServerUrl(null);
+        log.info("Yukon Internal URL changed to {}, API connection URL will be reloaded.", getYukonInternalUrl());
     }
 
     /**
