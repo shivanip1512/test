@@ -17,8 +17,8 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class MockThermostatSetbackGearFields implements MockProgramGearFields {
 
-    private MockAbsoluteOrDelta absoluteOrDelta;
-    private MockTemperatureMeasureUnit measureUnit;
+    private MockSetpoint setpoint;
+    private MockTemperatureMeasureUnit tempMeasureUnit;
 
     public Boolean isHeatMode;
     public Boolean isCoolMode;

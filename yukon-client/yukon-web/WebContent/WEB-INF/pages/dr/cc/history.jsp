@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="dr" page="cc.history">
 <cti:msgScope paths=",yukon.web.modules.commercialcurtailment.ccurtSetup">
@@ -34,7 +35,8 @@
                         <cti:url var="deleteUrl" value="/dr/cc/program/${program.id}/event/${event.id}"/>
                         <form:form action="${deleteUrl}" method="DELETE">
                             <cti:csrfToken/>
-                            <cti:button type="submit" icon="icon-cross" renderMode="image" nameKey="eventDelete"/>
+                            <cti:button type="submit" icon="icon-cross" renderMode="image" nameKey="eventDelete" id="delete-event"/>
+                            <d:confirm on="#delete-event" nameKey="confirmDelete" argument="${event.displayName}" />
                         </form:form>
                     </td>
                 </tr>

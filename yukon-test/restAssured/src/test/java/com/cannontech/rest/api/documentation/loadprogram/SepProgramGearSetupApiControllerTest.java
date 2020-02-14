@@ -112,7 +112,7 @@ public class SepProgramGearSetupApiControllerTest {
         FieldDescriptor[] sepTemperatureOffsetDescriptor = new FieldDescriptor[] {
                 fieldWithPath("gears[].fields.rampIn").type(JsonFieldType.BOOLEAN).description("Ramp In"),
                 fieldWithPath("gears[].fields.rampOut").type(JsonFieldType.BOOLEAN).description("Ramp Out"),
-                fieldWithPath("gears[].fields.celsiusOrFahrenheit").type(JsonFieldType.STRING).description("Measurement Unit"),
+                fieldWithPath("gears[].fields.tempMeasureUnit").type(JsonFieldType.STRING).description("Measurement Unit"),
                 fieldWithPath("gears[].fields.mode").type(JsonFieldType.STRING).description("Heat or Cool Mode."),
                 fieldWithPath("gears[].fields.offset").type(JsonFieldType.NUMBER)
                                                       .description("Measurement Unit Offset. Min Value: 0.1, Max Value for Celsius: 25.4 and Max Value for Fahrenheit: 77.7"),

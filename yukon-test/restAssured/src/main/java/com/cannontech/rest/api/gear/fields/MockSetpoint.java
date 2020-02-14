@@ -1,6 +1,6 @@
 package com.cannontech.rest.api.gear.fields;
 
-public enum MockAbsoluteOrDelta {
+public enum MockSetpoint {
 
     ABSOLUTE,
     DELTA;

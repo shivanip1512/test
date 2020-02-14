@@ -50,7 +50,7 @@ public interface RfnDeviceCreationService {
     public int getNewDeviceCreated();
 
     /**
-     * If device is not found creates device
+     * If device is not found creates device. Returns null if unable to create device
      */
     RfnDevice createIfNotFound(RfnIdentifier identifier);
     
