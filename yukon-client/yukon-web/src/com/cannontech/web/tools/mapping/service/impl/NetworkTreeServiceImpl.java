@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -41,7 +40,6 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -59,6 +57,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.tree.Node;
+import com.cannontech.common.util.tree.Node.TreeDebugStatistics;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NetworkTreeService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
@@ -193,7 +192,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Override
     public List<Node<Pair<Integer, FeatureCollection>>> getNetworkTree(List<Integer> gatewayIds)
             throws NmNetworkException, NmCommunicationException {
-        
+       
         if (treeUpdateResponse == null) {
             log.debug("Network tree generation time was not found, sending request to NM to get the time");
             jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), new NetworkTreeUpdateTimeRequest());
@@ -241,7 +240,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
             if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
                 RfnVertex vertex = (RfnVertex) data.getValue().getMetadatas().get(PRIMARY_FORWARD_TREE);
-                log.debug("{} Received NM VERTEX node count {}", data.getKey(), NetworkDebugHelper.count(vertex));
+                log.debug("{} Received NM VERTEX", data.getKey());
                 log.trace("\n{}", NetworkDebugHelper.print(vertex));
                 RfnGateway gateway = gatewaysToSendToNM.get(data.getKey());
                 if(gateway == null) {
@@ -257,13 +256,16 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     /**
      * Converts NM tree to Yukon tree and returns Yukon tree. Caches the Yukon tree.
      */
-    private Node<Pair<Integer, FeatureCollection>> createTree(RfnVertex vertex,  Map<Integer, PaoLocation> locations) {
-        Node<Pair<Integer, FeatureCollection>> node = createNode(vertex.getRfnIdentifier(), locations); 
-        AtomicInteger totalNodesAdded = new AtomicInteger(1);
-        copy(vertex, node, locations, totalNodesAdded);
+    private Node<Pair<Integer, FeatureCollection>> createTree(RfnVertex vertex, Map<Integer, PaoLocation> locations) {
+        TreeDebugStatistics yukonNodeStatistics = new TreeDebugStatistics();
+        TreeDebugStatistics nmVertexStatistics = new TreeDebugStatistics();
+
+        Node<Pair<Integer, FeatureCollection>> node = createNode(vertex.getRfnIdentifier(), locations, yukonNodeStatistics,
+                nmVertexStatistics);
+        copy(vertex, node, locations, yukonNodeStatistics, nmVertexStatistics);
         networkTreeCache.put(vertex.getRfnIdentifier(), node);
-        log.debug("{} Yukon NODE {} starting node {}",
-                vertex.getRfnIdentifier(), node.count(), node.getData());
+        log.info("New tree created from vertex {} Yukon NODE node {} NM statistics {} Yukon statistics {}",
+                vertex.getRfnIdentifier(), node.getData(), nmVertexStatistics, yukonNodeStatistics);
         log.trace("\n{}", node.print());
         return node;
     }
@@ -287,20 +289,39 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     
     /**
      * Creates Node from rfnIdentifier and location
+     * @param nmVertexStatistics - collects statistics for debugging purposes
+     * @param yukonNodeStatistics  - collects statistics for debugging purposes
      */
-    private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier, Map<Integer, PaoLocation> locations) {
+    private Node<Pair<Integer, FeatureCollection>> createNode(RfnIdentifier rfnIdentifier, Map<Integer, PaoLocation> locations,
+            TreeDebugStatistics yukonNodeStatistics, TreeDebugStatistics nmVertexStatistics) {
+        nmVertexStatistics.TOTAL.incrementAndGet();
+        yukonNodeStatistics.TOTAL.incrementAndGet();
         if (rfnIdentifier == null) {
+            nmVertexStatistics.NULL.incrementAndGet();
+            yukonNodeStatistics.NULL.incrementAndGet();
             // NN returned null rfnIdentifier or one of the fields is empty
+            return new Node<Pair<Integer, FeatureCollection>>(null);
+        }
+        if(rfnIdentifier.is_Empty_()) {
+            nmVertexStatistics._EMPTY_.incrementAndGet();
+            yukonNodeStatistics.NULL.incrementAndGet();
+            log.debug("Tree node creation: adding NULL {} to tree, rfnIdentifier is empty.", rfnIdentifier);  
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
         RfnDevice device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
         if (device == null) {
+            yukonNodeStatistics.FAILED_TO_CREATE.incrementAndGet();
             // failed to create device
+            log.debug("Tree node creation: adding NULL {} to tree, device was not created.", rfnIdentifier);
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
         // if device is not found create device
         int deviceId = device.getPaoIdentifier().getPaoId();
         PaoLocation location = locations.get(deviceId);
+        if(location == null) {
+            yukonNodeStatistics.NO_LOCATION.incrementAndGet();
+            log.debug("Tree node creation: adding device {} id {} without location, location is not found.", rfnIdentifier, deviceId);
+        }
         // if no location in Yukon database featureCollection will be null
         FeatureCollection featureCollection = location == null ? null : paoLocationService.getFeatureCollection(location);
         return new Node<Pair<Integer, FeatureCollection>>(Pair.of(deviceId, featureCollection));
@@ -310,19 +331,19 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
      * Copies RfnVertex to Node
      */
     private void copy(RfnVertex vertex, Node<Pair<Integer, FeatureCollection>> parent, Map<Integer, PaoLocation> locations,
-            AtomicInteger totalNodesAdded) {
-        if (vertex.getChildren().isEmpty()) {
+            TreeDebugStatistics yukonNodeStatistics, TreeDebugStatistics nmVertexStatistics) {
+        if(vertex.getChildren().isEmpty()) {
             return;
         }
         for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
             RfnVertex nextNode = it.next();
-            Node<Pair<Integer, FeatureCollection>> child = createNode(nextNode.getRfnIdentifier(), locations);
+            Node<Pair<Integer, FeatureCollection>> child = createNode(nextNode.getRfnIdentifier(), locations, yukonNodeStatistics,
+                    nmVertexStatistics);
             parent.addChild(child);
-            totalNodesAdded.incrementAndGet();
-            copy(nextNode, child, locations, totalNodesAdded);
+            copy(nextNode, child, locations, yukonNodeStatistics, nmVertexStatistics);
         }
     }
-    
+
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         jmsTemplate = new JmsTemplate(connectionFactory);
@@ -338,7 +359,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                 Serializable object = objMessage.getObject();
                 if (object instanceof NetworkTreeUpdateTimeResponse) {
                     NetworkTreeUpdateTimeResponse response = (NetworkTreeUpdateTimeResponse) object;
-                    if (treeUpdateResponse == null || response.getTreeGenerationEndTimeMillis() != treeUpdateResponse.getTreeGenerationEndTimeMillis()) {
+                    if (treeUpdateResponse == null || response.getTreeGenerationEndTimeMillis() > treeUpdateResponse.getTreeGenerationEndTimeMillis()) {
                         log.info(
                                 "Received Network Tree Update Time - Start {} End {} Next automatic refresh {} Next forced refresh after {}",
                                 format(response.getTreeGenerationStartTimeMillis()),

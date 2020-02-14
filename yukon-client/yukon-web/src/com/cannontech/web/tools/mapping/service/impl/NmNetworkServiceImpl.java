@@ -527,7 +527,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             RfnIdentifier primaryForwardGateway = (RfnIdentifier) metadata.getMetadatas()
                     .get(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
             RfnIdentifier reverseGateway = comm.getGatewayRfnIdentifier();
-            log.debug("reverse gateway {} primary forward gateway {}", reverseGateway, primaryForwardGateway);
+            log.debug("reverse gateway {} primary forward gateway {} for {}", reverseGateway, primaryForwardGateway, rfnDevice);
             if (reverseGateway != null && primaryForwardGateway != null && reverseGateway.equals(primaryForwardGateway)) {
                 return comm;
             } else {
