@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +41,7 @@ public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    private volatile String webServerUrl;
+    private AtomicReference<String> webServerUrl = new AtomicReference<String>();
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
 
     @PostConstruct
@@ -53,7 +54,7 @@ public class ApiControllerHelper {
     }
 
     private void clearWebUrl() {
-        setWebServerUrl(null);
+        webServerUrl.set(StringUtils.EMPTY);
         log.info("Yukon Internal URL changed to {}, API connection URL will be reloaded.", getYukonInternalUrl());
     }
 
@@ -95,13 +96,6 @@ public class ApiControllerHelper {
     }
 
     /**
-     * Set the WebServer Url
-     */
-    private void setWebServerUrl(String webServerUrl) {
-        this.webServerUrl = webServerUrl;
-    }
-
-    /**
      * Returns the Yukon Internal Url.
      */
     private String getYukonInternalUrl() {
@@ -114,7 +108,7 @@ public class ApiControllerHelper {
      */
     private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
         HttpStatus responseCode = null;
-        if (StringUtils.isEmpty(webServerUrl)) {
+        if (StringUtils.isEmpty(webServerUrl.get())) {
             responseCode = apiConnection(request, userContext);
             if (responseCode != HttpStatus.OK) {
                 apiRequestHelper.setProxy();
@@ -125,7 +119,7 @@ public class ApiControllerHelper {
             }
             log.info("Connection with Api successful with URL: " + webServerUrl);
         }
-        return webServerUrl;
+        return webServerUrl.get();
     }
 
     /**
@@ -204,7 +198,7 @@ public class ApiControllerHelper {
         }
 
         if (responseCode == HttpStatus.OK) {
-            setWebServerUrl(webUrl);
+            webServerUrl.set(webUrl);
         }
         return responseCode;
     }
