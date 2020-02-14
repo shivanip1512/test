@@ -12,6 +12,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
@@ -19,12 +20,12 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 
 public class CustomWebServiceMsgCallback {
     private final static Logger log = YukonLogManager.getLogger(CustomWebServiceMsgCallback.class);
-    public static final SimpleDateFormat MESSAGE_HEADER_DATE_TIME = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     @Autowired public MultispeakFuncs multispeakFuncs;
 
@@ -59,9 +60,8 @@ public class CustomWebServiceMsgCallback {
                     SOAPHeader header = env.getHeader();
                     SOAPElement headElement = header.addChildElement("MultiSpeakRequestMsgHeader", "req");
                     headElement.setAttribute("MessageID", UUID.randomUUID().toString().replace("-", ""));
-
-                    XMLGregorianCalendar now = MultispeakFuncs.toXMLGregorianCalendar(new Date());
-                    headElement.setAttribute("TimeStamp", MESSAGE_HEADER_DATE_TIME.format(now.toGregorianCalendar().getTime()));
+                    
+                    headElement.setAttribute("TimeStamp", Iso8601DateUtil.formatIso8601Date(Instant.now().toDate(), true));
                     multispeakFuncs.getHeader(headElement, "req", mspVendor);
 
                 } catch (SOAPException e) {
