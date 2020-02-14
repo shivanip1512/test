@@ -33,7 +33,7 @@
         <include name="bcpkix-fips-1.0.3.jar"/>
         <include name="bc-fips-1.0.2.jar"/>
         <include name="cglib-2.1.3.jar"/>
-        <include name="ojdbc6.jar"/>
+        <include name="ojdbc10.jar"/>
         <include name="common.jar"/>
         <include name="commons-codec-1.10.jar"/>
         <include name="commons-collections4-4.1.jar"/>

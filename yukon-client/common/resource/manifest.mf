@@ -59,7 +59,7 @@ Class-Path: ./
  concurrentlinkedhashmap-lru-1.4.jar 
  sqljdbc42.jar 
  jtds-1.3.1.jar 
- ojdbc6.jar 
+ ojdbc10.jar 
  activation.jar 
  mailapi-1.5.1.jar 
  smtp-1.5.1.jar 
