@@ -421,7 +421,7 @@
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td><td>##IDS_FEATURE_DISPLAY_NAME24##</td><td>##ID_STRING23##</td><td>17</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Enterprise Integration Module</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME7##</td><td>##ID_STRING17##</td><td>15</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Commander</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td>##IDS_FEATURE_DISPLAY_NAME5##</td><td>##ID_STRING15##</td><td>5</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Client</td></row>
-		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING79##</td><td>##ID_STRING80##</td><td>39</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Watchdog Service</td></row>
+		<row><td>{D79E4CFE-5870-4B34-95FD-9170FD64AAF0}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING79##</td><td>##ID_STRING80##</td><td>39</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Watchdog</td></row>
 		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING20##</td><td>##ID_STRING41##</td><td>37</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Message Broker</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME21##</td><td>##ID_STRING13##</td><td>31</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Notification</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME8##</td><td>##ID_STRING18##</td><td>17</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Tabular Data Console</td></row>
@@ -1402,10 +1402,10 @@
 		<row><td>ID_STRING76</td><td>1033</td><td>Select which Yukon features to install.</td><td>0</td><td/><td>421427760</td></row>
 		<row><td>ID_STRING77</td><td>1033</td><td>Configuration</td><td>0</td><td/><td>-912357523</td></row>
 		<row><td>ID_STRING78</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207413974</td></row>
-		<row><td>ID_STRING79</td><td>1033</td><td>Yukon Watchdog Service</td><td>0</td><td/><td>-1574536511</td></row>
+		<row><td>ID_STRING79</td><td>1033</td><td>Watchdog</td><td>0</td><td/><td>1764257270</td></row>
 		<row><td>ID_STRING8</td><td>1033</td><td>Runs distributed automation operations based on data gathered by the system.</td><td>0</td><td/><td>-1516388534</td></row>
 		<row><td>ID_STRING80</td><td>1033</td><td>Watchdog service for Yukon</td><td>0</td><td/><td>-1574524223</td></row>
-		<row><td>ID_STRING81</td><td>1033</td><td>Yukon Watchdog Service</td><td>0</td><td/><td>-1574509887</td></row>
+		<row><td>ID_STRING81</td><td>1033</td><td>Watchdog</td><td>0</td><td/><td>1764269558</td></row>
 		<row><td>ID_STRING82</td><td>1033</td><td>Start Yukon</td><td>0</td><td/><td>1512485002</td></row>
 		<row><td>ID_STRING83</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>1512485162</td></row>
 		<row><td>ID_STRING84</td><td>1033</td><td>Stop Yukon</td><td>0</td><td/><td>1512497514</td></row>
