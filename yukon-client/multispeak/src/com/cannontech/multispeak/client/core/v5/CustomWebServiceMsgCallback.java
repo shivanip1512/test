@@ -1,10 +1,6 @@
 package com.cannontech.multispeak.client.core.v5;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.UUID;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
