@@ -200,6 +200,13 @@ $(document).ready(function(){
     </div>
 </div>
 
+<!-- Additional Contacts Table -->
+<cti:displayForPageEditModes modes="VIEW">
+    <c:if test="${displayAdditionalContacts}">
+        <%@ include file="additionalContactsTable.jsp" %>
+    </c:if>
+</cti:displayForPageEditModes>
+
 
 <cti:displayForPageEditModes modes="EDIT">
 <table class="dn">
