@@ -156,8 +156,6 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         vertex.setRfnIdentifier(node.getData());
         AtomicInteger totalNodesAdded = new AtomicInteger(1);
         copy(node, vertex, totalNodesAdded);
-        
-        log.info("{} Created Yukon NODE {}", node.getData(), node.count());
         log.info("{} Created NM VERTEX from Yukon Node node count {} added nodes {}", vertex.getRfnIdentifier(),
                 NetworkDebugHelper.count(vertex), totalNodesAdded);
 

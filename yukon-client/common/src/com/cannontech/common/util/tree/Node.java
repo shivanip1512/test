@@ -3,6 +3,7 @@ package com.cannontech.common.util.tree;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -10,12 +11,15 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 public class Node<T> {
 
     public static class TreeDebugStatistics {
-        public int TOTAL;
-        public int _EMPTY_;
-        public int NULL;
+        public AtomicInteger TOTAL = new AtomicInteger();
+        public AtomicInteger _EMPTY_ = new AtomicInteger();
+        public AtomicInteger NULL = new AtomicInteger();
+        public AtomicInteger NO_LOCATION = new AtomicInteger();
+        public AtomicInteger FAILED_TO_CREATE = new AtomicInteger();
         @Override
         public String toString() {
-            return String.format("total:%s _EMPTY_: %s NULL:%s", TOTAL, _EMPTY_, NULL);
+            return String.format("TOTAL:%s _EMPTY_: %s NULL:%s NO_LOCATION:%s FAILED_TO_CREATE:%s", TOTAL.get(), _EMPTY_.get(),
+                    NULL.get(), NO_LOCATION.get(), FAILED_TO_CREATE.get());
         }
     }
 
@@ -68,28 +72,6 @@ public class Node<T> {
         print(buffer, "", "");
         return buffer.toString();
     }
-    
-    public TreeDebugStatistics count() {
-        TreeDebugStatistics statistics = new TreeDebugStatistics();
-        count(this, statistics);
-        return statistics;
-
-    }
-
-    /**
-     * Creates statistics for the node
-     */
-    private void count(Node<T> node, TreeDebugStatistics statistics) {
-        statistics.TOTAL++;
-        if(node.getData() == null) {
-            statistics.NULL++;
-        } 
-        for (Iterator<Node<T>> it = node.getChildren().iterator(); it.hasNext();) {
-            Node<T> nextNode = it.next();
-            count(nextNode, statistics);
-        }
-    }
-
     private String print(StringBuilder buffer, String prefix, String childrenPrefix) {
         buffer.append(prefix);
         buffer.append(data);
