@@ -293,12 +293,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             // NN returned null rfnIdentifier or one of the fields is empty
             return new Node<Pair<Integer, FeatureCollection>>(null);
         }
-        RfnDevice device = null;
-        try {
-            device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
-        } catch (BadTemplateDeviceCreationException e) {
-            log.error("Device {} was not found and creation attempted failed.", rfnIdentifier, e);
-        }
+        RfnDevice device = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
         if (device == null) {
             // failed to create device
             return new Node<Pair<Integer, FeatureCollection>>(null);
@@ -316,7 +311,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
      */
     private void copy(RfnVertex vertex, Node<Pair<Integer, FeatureCollection>> parent, Map<Integer, PaoLocation> locations,
             AtomicInteger totalNodesAdded) {
-        if (vertex.getChildren() == null) {
+        if (vertex.getChildren().isEmpty()) {
             return;
         }
         for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
@@ -368,20 +363,25 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
      */
     private void updateDeviceToGatewayMapping() {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
-        log.info("Sending request to NM for device to gateway mapping information for {}",
-                gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(",")));
-        Set<RfnIdentifier> ids = gateways.stream().map(gateway -> gateway.getRfnIdentifier()).collect(Collectors.toSet());
+        String gatewayNames = gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(","));
+        log.info("Sending request to NM for device to gateway mapping information for {}", gatewayNames);
+        Map<RfnIdentifier, RfnDevice> ids = gateways.stream()
+                .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
         try {
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> response = metadataMultiService
-                    .getMetadataForGatewayRfnIdentifiers(ids, Set.of(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
-            Map<RfnIdentifier, RfnIdentifier> deviceToGateway = new HashMap<>();
+                    .getMetadataForGatewayRfnIdentifiers(ids.keySet(), Set.of(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
+            Map<RfnDevice, RfnDevice> deviceToGateway = new HashMap<>();
             response.forEach((deviceRfnIdentifier, queryResult) -> {
-                if (queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
+                RfnDevice device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
+                if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
                     RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
-                    deviceToGateway.put(deviceRfnIdentifier, gatewayRfnIdentifier);
+                    if (ids.containsKey(gatewayRfnIdentifier)) {
+                        deviceToGateway.put(device, ids.get(gatewayRfnIdentifier));
+                    }
                 }
             });
             rfnDeviceDao.saveDynamicRfnDeviceData(deviceToGateway);
+            log.info("Updated device to gateway mapping information for {}", gatewayNames);
         } catch (NmCommunicationException e) {
             log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
         }

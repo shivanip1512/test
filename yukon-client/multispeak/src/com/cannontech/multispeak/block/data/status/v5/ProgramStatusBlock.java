@@ -38,15 +38,15 @@ public class ProgramStatusBlock implements Block {
             return currentStatus;
         } else if (syntaxItem.equals(SyntaxItem.START_DATETIME)) {
             if (startDateTime != null) {
-                return Iso8601DateUtil.formatIso8601Date(startDateTime);
+                return Iso8601DateUtil.formatIso8601Date(startDateTime, true);
             };
         } else if (syntaxItem.equals(SyntaxItem.STOP_DATETIME)) {
             if (stopDateTime != null) {
-                return Iso8601DateUtil.formatIso8601Date(stopDateTime);
+                return Iso8601DateUtil.formatIso8601Date(stopDateTime, true);
             };
         } else if (syntaxItem.equals(SyntaxItem.GEAR_CHANGETIME)) {
             if (gearChangeTime != null) {
-                return Iso8601DateUtil.formatIso8601Date(gearChangeTime);
+                return Iso8601DateUtil.formatIso8601Date(gearChangeTime, true);
             };
         } else if (syntaxItem.equals(SyntaxItem.GEAR_NAME)) {
             return gearName;

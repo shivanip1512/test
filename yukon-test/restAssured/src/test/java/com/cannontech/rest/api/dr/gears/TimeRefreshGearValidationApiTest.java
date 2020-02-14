@@ -77,7 +77,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_02_InvalidRefreshShedType() {
 
         String errorMsg = "Invalid Refresh Shed Time value.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.CountDown);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.CountDown);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
@@ -95,7 +95,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_03_InvalidShedTime() {
 
         String errorMsg = "Invalid Shed Time value.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setShedTime(50);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -114,7 +114,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_04_InvalidCommandResendRate() {
 
         String errorMsg = "Invalid Command Resend Rate value.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setSendRate(130);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -133,7 +133,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_05_InvalidNumberOfGroups() {
 
         String errorMsg = "Must be between 0 and 25.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setNumberOfGroups(26);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -152,7 +152,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_06_InvalidGroupSelectionMethod() {
 
         String errorMsg = "Group Selection Method is required.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setGroupSelectionMethod(null);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -171,7 +171,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_07_RampInPercentageGreaterThanMaxValue() {
 
         String errorMsg = "Must be between 0 and 100.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(101);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -190,7 +190,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_08_RampInPercentageLessThanMinValue() {
 
         String errorMsg = "Must be between 0 and 100.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -209,7 +209,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_09_RampIntervalGreaterThanMaxValue() {
 
         String errorMsg = "Must be between -99,999 and 99,999.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(100000);
 
@@ -229,7 +229,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_10_RampIntervalLessThanMinValue() {
 
         String errorMsg = "Must be between -99,999 and 99,999.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setRampInPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(-100000);
 
@@ -249,7 +249,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_11_StopCommandGreaterThanMaxValue() {
 
         String errorMsg = "Must be between 0 and 5.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setStopCommandRepeat(6);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -268,7 +268,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_12_StopCommandLessThanMinValue() {
 
         String errorMsg = "Must be between 0 and 5.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setStopCommandRepeat(-1);
 
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
@@ -287,7 +287,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_13_RampOutPercentLessThanMinValue() {
 
         String errorMsg = "Must be between 0 and 100.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(-1);
 
@@ -307,7 +307,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_14_RampOutPercentGreaterThanMaxValue() {
 
         String errorMsg = "Must be between 0 and 100.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(101);
 
@@ -327,7 +327,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_15_RampOutIntervalGreaterThanMaxValue() {
 
         String errorMsg = "Must be between -99,999 and 99,999.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(100000);
@@ -348,7 +348,7 @@ public class TimeRefreshGearValidationApiTest {
     public void timeRefreshGear_16_RampOutIntervalLessThanMinValue() {
 
         String errorMsg = "Must be between -99,999 and 99,999.";
-        mockTimeRefreshGearFields.setRefreshShedTime(MockCycleCountSendType.FixedShedTime);
+        mockTimeRefreshGearFields.setRefreshShedType(MockCycleCountSendType.FixedShedTime);
         mockTimeRefreshGearFields.setHowToStopControl(MockHowToStopControl.RampOutRestore);
         mockTimeRefreshGearFields.setRampOutPercent(10);
         mockTimeRefreshGearFields.setRampInIntervalInSeconds(-100000);

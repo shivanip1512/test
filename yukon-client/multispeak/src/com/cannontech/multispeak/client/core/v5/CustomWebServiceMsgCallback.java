@@ -1,11 +1,6 @@
 package com.cannontech.multispeak.client.core.v5;
-
-import java.util.GregorianCalendar;
 import java.util.UUID;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
@@ -13,6 +8,7 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPHeader;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.WebServiceMessageCallback;
@@ -20,6 +16,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 
@@ -59,13 +56,8 @@ public class CustomWebServiceMsgCallback {
                     SOAPHeader header = env.getHeader();
                     SOAPElement headElement = header.addChildElement("MultiSpeakRequestMsgHeader", "req");
                     headElement.setAttribute("MessageID", UUID.randomUUID().toString().replace("-", ""));
-
-                    try {
-                        XMLGregorianCalendar now = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-                        headElement.setAttribute("TimeStamp", now.toString());
-                    } catch (DatatypeConfigurationException e) {
-                        // ignore exception
-                    }
+                    
+                    headElement.setAttribute("TimeStamp", Iso8601DateUtil.formatIso8601Date(Instant.now().toDate(), true));
                     multispeakFuncs.getHeader(headElement, "req", mspVendor);
 
                 } catch (SOAPException e) {

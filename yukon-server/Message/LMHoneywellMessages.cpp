@@ -13,10 +13,12 @@ LMHoneywellCyclingControlMessage::LMHoneywellCyclingControlMessage( const int  p
                                                                     const int  dutyCycle,
                                                                     const int  startTime,
                                                                     const int  controlDuration,
+                                                                    const bool mandatory,
                                                                     const bool rampInOut )
     :   _programId( programId ),
         _groupId(groupId),
         _rampingOption(rampInOut),
+        _mandatory( mandatory ),
         _dutyCycle(dutyCycle),
         _startTime(startTime),
         _stopTime(startTime + controlDuration)
@@ -30,6 +32,7 @@ void LMHoneywellCyclingControlMessage::streamInto(cms::StreamMessage & message) 
     message.writeInt(_groupId);
     message.writeByte(_dutyCycle);
     message.writeByte(_rampingOption);
+    message.writeByte( _mandatory );
     message.writeInt(_startTime);
     message.writeInt(_stopTime);
 }

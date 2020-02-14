@@ -19,7 +19,7 @@ public class MockSepTemperatureOffsetGearFields implements MockProgramGearFields
 
     private Boolean rampIn;
     private Boolean rampOut;
-    public MockTemperatureMeasureUnit celsiusOrFahrenheit;
+    public MockTemperatureMeasureUnit tempMeasureUnit;
     public MockMode mode;
     private Double offset;
     private Integer criticality;
