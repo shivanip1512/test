@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="s" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="dr" page="cc.groupDetail">
 <cti:includeScript link="/resources/js/pages/yukon.dr.curtailment.js"/>
@@ -91,7 +92,8 @@
     <cti:url value="/dr/cc/groupSave" var="saveUrl"/>
     <cti:button nameKey="save" classes="action primary" type="submit" id="group-save" href="${saveUrl}"/>
     <cti:url value="/dr/cc/groupDelete/${group.id}" var="deleteUrl"/>
-    <cti:button nameKey="delete" classes="delete" href="${deleteUrl}"/>
+    <cti:button nameKey="delete" classes="delete" href="${deleteUrl}" id="delete-group"/>
+    <d:confirm on="#delete-group" nameKey="confirmDelete" argument="${group.name}" />
     <cti:url value="/dr/cc/groupList" var="cancelUrl"/>
     <cti:button nameKey="cancel" href="${cancelUrl}"/>
 </div>
