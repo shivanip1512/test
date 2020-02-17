@@ -7,9 +7,10 @@ import java.util.stream.IntStream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 
-public enum DayOfWeek {
+public enum DayOfWeek implements DisplayableEnum {
     SUNDAY, 
     MONDAY, 
     TUESDAY, 
@@ -44,5 +45,10 @@ public enum DayOfWeek {
                         .filter(i -> daySelection.charAt(i) == 'Y')
                         .mapToObj(i -> dayOfWeeksMap.get(i))
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.day." + name() + ".short";
     }
 }
