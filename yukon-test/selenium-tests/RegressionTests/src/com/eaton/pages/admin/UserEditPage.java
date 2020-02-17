@@ -28,14 +28,14 @@ public class UserEditPage extends PageBase {
         this.requiresLogin = true;
         //pageUrl = DEFAULT_URL;
         
-        userName = new TextEditElement(this.driver, "username", null);
-        authentication = new DropDownElement(this.driver, "authCategory", null);
-        userGroup = new DropDownElement(this.driver, "userGroupId", null);
-        energyCompany = new DropDownElement(this.driver, "energyCompanyId", null);
-        status = new DropDownElement(this.driver, "loginStatus", null);
-        save = new Button(this.driver, "Save", null);
-        delete = new Button(this.driver, "Delete", null);
-        cancel = new Button(this.driver, "Cancel", null);
+        userName = new TextEditElement(this.driver, "username");
+        authentication = new DropDownElement(this.driver, "authCategory");
+        userGroup = new DropDownElement(this.driver, "userGroupId");
+        energyCompany = new DropDownElement(this.driver, "energyCompanyId");
+        status = new DropDownElement(this.driver, "loginStatus");
+        save = new Button(this.driver, "Save");
+        delete = new Button(this.driver, "Delete");
+        cancel = new Button(this.driver, "Cancel");
     }
 
     public String getTitle() {

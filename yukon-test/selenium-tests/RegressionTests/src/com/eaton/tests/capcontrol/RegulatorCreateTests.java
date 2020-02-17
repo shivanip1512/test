@@ -1,7 +1,6 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -13,8 +12,6 @@ import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.RegulatorCreatePage;
 import com.eaton.pages.capcontrol.RegulatorDetailPage;
-import com.eaton.pages.capcontrol.SubstationCreatePage;
-import com.eaton.pages.capcontrol.SubstationDetailPage;
 
 public class RegulatorCreateTests extends SeleniumTestSetup {
 

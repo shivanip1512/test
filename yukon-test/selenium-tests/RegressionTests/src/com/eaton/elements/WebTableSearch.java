@@ -11,7 +11,7 @@ public class WebTableSearch {
     public WebTableSearch(WebDriver driver) {
         
         this.driver = driver;
-        search = new TextEditElement(this.driver, "ss", null);        
+        search = new TextEditElement(this.driver, "ss");        
     } 
     
     public void enterSearchCritera(String criteria) {

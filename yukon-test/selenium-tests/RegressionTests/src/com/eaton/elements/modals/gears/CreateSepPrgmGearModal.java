@@ -14,29 +14,29 @@ public class CreateSepPrgmGearModal extends CreateGearsModal {
 
     // CONTROL PARAMETERS
     // Control Percent
-    // TODO Control Percent element does not have a unique way to select it
+    // TODO Control Percent need to create numeric spinner element
 
     // Criticality
-    // TODO Criticality element does not have a unique way to select it
+    // TODO Criticality need to create numeric spinner element
 
     // TrueCycleOrAdaptiveAlgorithm
     public TrueFalseCheckboxElement getTrueCycleOrAdaptiveAlgorithm() {
-        return new TrueFalseCheckboxElement(this.driver, "", null);
+        return new TrueFalseCheckboxElement(this.driver, "fields.trueCycle", getModal());
     }
 
     // Ramp
     public RadioButtonElement getRamp() {
-        return new RadioButtonElement(this.driver, "fields.rampIn", null);
+        return new RadioButtonElement(this.driver, "fields.rampIn", getModal());
     }
 
     // Mode
     public RadioButtonElement getMode() {
-        return new RadioButtonElement(this.driver, "fields.mode", null);
+        return new RadioButtonElement(this.driver, "fields.mode", getModal());
     }
 
     // Unit
     public RadioButtonElement getUnit() {
-        return new RadioButtonElement(this.driver, "fields.celsiusOrFahrenheit", null);
+        return new RadioButtonElement(this.driver, "fields.celsiusOrFahrenheit", getModal());
     }
 
     // Heating Offset
@@ -48,23 +48,23 @@ public class CreateSepPrgmGearModal extends CreateGearsModal {
 
     // When to Change
     public DropDownElement getWhenToChange() {
-        return new DropDownElement(this.driver, "fields.whenToChangeFields.whenToChange", null);
+        return new DropDownElement(this.driver, "fields.whenToChangeFields.whenToChange", getModal());
     }
 
     // RAMP IN
     // Ramp In
     public TrueFalseCheckboxElement getRampIn() {
-        return new TrueFalseCheckboxElement(this.driver, "fields.rampIn", null);
+        return new TrueFalseCheckboxElement(this.driver, "fields.rampIn", getModal());
     }
 
     // Ramp Out
     public TrueFalseCheckboxElement getRampOut() {
-        return new TrueFalseCheckboxElement(this.driver, "fields.rampOut", null);
+        return new TrueFalseCheckboxElement(this.driver, "fields.rampOut", getModal());
     }
 
     // STOP CTONROL
     // How To Stop Control
     public DropDownElement getHowToStopControl() {
-        return new DropDownElement(this.driver, "fields.howToStopControl", null);
+        return new DropDownElement(this.driver, "fields.howToStopControl", getModal());
     }
 }

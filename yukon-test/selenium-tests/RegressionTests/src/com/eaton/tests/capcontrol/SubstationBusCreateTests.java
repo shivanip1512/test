@@ -1,7 +1,6 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -49,7 +48,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         
         SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driver, Urls.CapControl.SUBSTATION_BUS_DETAIL);
         
-        String userMsg = detailsPage.getUserMessageSuccess();
+        String userMsg = detailsPage.getUserMessage();
         
         Assert.assertEquals(userMsg, "Bus was saved successfully.");
     }    

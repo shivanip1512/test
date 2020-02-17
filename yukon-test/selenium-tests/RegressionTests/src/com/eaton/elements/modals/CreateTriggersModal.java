@@ -17,9 +17,9 @@ public class CreateTriggersModal extends BaseModal {
         super(driver, modalName);
         
         this.driver = driver;
-        type = new DropDownElement(this.driver, "triggerType", null);
-        usePeakTracking = new TrueFalseCheckboxElement(this.driver, "usePeak", null);
-        minRestoreOffset = new NumericPickerElement(this.driver, "minRestoreOffset", null);
+        type = new DropDownElement(this.driver, "triggerType", getModal());
+        usePeakTracking = new TrueFalseCheckboxElement(this.driver, "usePeak", getModal());
+        minRestoreOffset = new NumericPickerElement(this.driver, "minRestoreOffset", getModal());
     }  
     
     //TODO Trigger Identification and Threshold Point Settings elements do not have a unique way to select them
@@ -35,7 +35,5 @@ public class CreateTriggersModal extends BaseModal {
     
     public NumericPickerElement getMinRestoreOffset() {
         return minRestoreOffset;
-    }
-    
-    
+    }        
 }

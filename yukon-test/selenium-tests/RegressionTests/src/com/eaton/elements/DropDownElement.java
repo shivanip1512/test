@@ -12,12 +12,30 @@ public class DropDownElement {
     private WebDriver driver;
     private String elementName;
     private String parentName;
+    private WebElement parentElement;
+    private WebElement selectElement;
 
+    public DropDownElement(WebDriver driver, String elementName) {
+        this.driver = driver;
+        this.elementName = elementName;
+        
+        setSelectElement();
+    }
+    
     public DropDownElement(WebDriver driver, String elementName, String parentName) {
-
         this.driver = driver;
         this.elementName = elementName;
         this.parentName = parentName;
+        
+        setSelectElement();
+    }
+    
+    public DropDownElement(WebDriver driver, String elementName, WebElement parentElement) {
+        this.driver = driver;
+        this.elementName = elementName;
+        this.parentElement = parentElement;
+        
+        setSelectElement();
     }
     
     public void selectItemByText(String text)
@@ -43,11 +61,17 @@ public class DropDownElement {
         return options.size();
     }
     
-    private WebElement getSelectElement() {
+    private void setSelectElement() {
         if (this.parentName != null) {
-            return this.driver.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + this.elementName + "']"));
+            this.selectElement = this.driver.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] select[name='" + this.elementName + "']"));
+        } else if (this.parentElement != null) {
+            this.selectElement = this.parentElement.findElement(By.cssSelector("select[name='" + this.elementName + "']"));
         } else {
-            return this.driver.findElement(By.cssSelector("select[name='" + this.elementName + "']"));   
+            this.selectElement = this.driver.findElement(By.cssSelector("select[name='" + this.elementName + "']"));   
         }        
+    }  
+    
+    public WebElement getSelectElement() {
+        return selectElement;
     }
 }

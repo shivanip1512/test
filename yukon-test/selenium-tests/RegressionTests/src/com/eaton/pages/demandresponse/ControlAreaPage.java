@@ -24,11 +24,11 @@ public class ControlAreaPage extends PageBase {
     public ControlAreaPage(WebDriver driver, String pageUrl) {
         super(driver, pageUrl);
 
-        name = new TextEditElement(driver, "name", null);
-        controlInterval = new DropDownElement(driver, "controlInterval", null);
-        minResponseTime = new DropDownElement(driver, "minResponseTime", null);
-        dailyDefaultState = new DropDownElement(driver, "dailyDefaultState", null);
-        requireAllTriggers = new TrueFalseCheckboxElement(driver, "allTriggersActiveFlag", null);
+        name = new TextEditElement(driver, "name");
+        controlInterval = new DropDownElement(driver, "controlInterval");
+        minResponseTime = new DropDownElement(driver, "minResponseTime");
+        dailyDefaultState = new DropDownElement(driver, "dailyDefaultState");
+        requireAllTriggers = new TrueFalseCheckboxElement(driver, "allTriggersActiveFlag");
     }
     
     public String getEditUrl() {
@@ -67,14 +67,14 @@ public class ControlAreaPage extends PageBase {
     //Triggers
     //TODO Need unique way to select the list of triggers linked to the control area
     public Button getCreateTrigger() {
-        return new Button(driver, "Create", null);
+        return new Button(driver, "Create");
     }
     
     //TODO add code to open the create trigger modal after clicking the button
     
     //Optional Control Window
     public TrueFalseCheckboxElement getUseOptionalControlWindow() {
-        return new TrueFalseCheckboxElement(driver, "controlWindow", null);
+        return new TrueFalseCheckboxElement(driver, "controlWindow");
     }
     
     public TimePickerElement getStartTime() {
@@ -89,10 +89,10 @@ public class ControlAreaPage extends PageBase {
     //TODO no unique way to select the assignment element
     
     public Button getSave() {
-        return new Button(driver, "Save", null);
+        return new Button(driver, "Save");
     }
     
     public Button getCancel() {
-        return new Button(driver, "Cancel", null);
+        return new Button(driver, "Cancel");
     }
 }

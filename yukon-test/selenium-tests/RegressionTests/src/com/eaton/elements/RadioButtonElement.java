@@ -9,17 +9,37 @@ import org.openqa.selenium.WebElement;
 
 public class RadioButtonElement {
 
-    WebDriver driver;
-    String elementName;
-    String parentName;
+    private WebDriver driver;
+    private String elementName;
+    private String parentName;
+    private WebElement parentElement;
+    private List<WebElement> radioBtns;
     
-    public RadioButtonElement(WebDriver driver, String elementName, String parentName) {
-        
+    
+    public RadioButtonElement(WebDriver driver, String elementName) {        
         this.driver = driver;
         this.elementName = elementName;
+        
+        setRadioBoxes();
     }
     
-    public void setByValue(String value, Boolean check) {
+    public RadioButtonElement(WebDriver driver, String elementName, String parentName) {        
+        this.driver = driver;
+        this.elementName = elementName;
+        this.parentName = parentName;
+        
+        setRadioBoxes();
+    }
+    
+    public RadioButtonElement(WebDriver driver, String elementName, WebElement parentElement) {        
+        this.driver = driver;
+        this.elementName = elementName;
+        this.parentElement = parentElement;
+        
+        setRadioBoxes();
+    }
+    
+    public void setByValue(String value, boolean check) {
         List<WebElement> elements = getRadioBoxes();
         
         for (WebElement element : elements) {
@@ -29,7 +49,7 @@ public class RadioButtonElement {
                 
                 String checked = element.getAttribute("checked");
                 
-                if(!checked.equals(check)) {
+                if(!checked.equals("checked") && check) {
                     element.click();   
                 }                                
                 
@@ -51,11 +71,17 @@ public class RadioButtonElement {
         return values;
     }
     
-    private List<WebElement> getRadioBoxes() {
-        if(parentName != null) {
-            return this.driver.findElements(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"));
+    private void setRadioBoxes() {
+        if(this.parentName != null) {
+            this.radioBtns = this.driver.findElements(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"));
+        } else if (this.parentElement != null) {
+            this.radioBtns = this.parentElement.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));
         } else {
-            return this.driver.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));   
+            this.radioBtns = this.driver.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));   
         }        
+    }
+    
+    private List<WebElement> getRadioBoxes() {
+        return this.radioBtns;
     }
 }

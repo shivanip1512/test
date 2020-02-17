@@ -6,15 +6,33 @@ import org.openqa.selenium.WebElement;
 
 public class TrueFalseCheckboxElement {
 
-    WebDriver driver;
-    String elementName;
-    String parentName;
+    private WebDriver driver;
+    private String elementName;
+    private String parentName;
+    private WebElement parentElement;
+    private WebElement checkbox;
     
-    public TrueFalseCheckboxElement(WebDriver driver, String elementName, String parentName) {
+    public TrueFalseCheckboxElement(WebDriver driver, String elementName) {        
+        this.driver = driver;
+        this.elementName = elementName;
         
+        setCheckbox();
+    }
+    
+    public TrueFalseCheckboxElement(WebDriver driver, String elementName, String parentName) {        
         this.driver = driver;
         this.elementName = elementName;
         this.parentName = parentName;
+        
+        setCheckbox();
+    }
+    
+    public TrueFalseCheckboxElement(WebDriver driver, String elementName, WebElement parentElement) {        
+        this.driver = driver;
+        this.elementName = elementName;
+        this.parentElement = parentElement;        
+        
+        setCheckbox();
     }
     
     public void setValue(Boolean value) {
@@ -32,11 +50,17 @@ public class TrueFalseCheckboxElement {
          return checked.equals("checked");
     }
     
-    private WebElement getCheckbox() {
-        if(parentName != null) {
-            return this.driver.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"));
+    private void setCheckbox() {
+        if(this.parentName != null) {
+            this.checkbox = this.driver.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"));
+        } else if (this.parentElement != null) {
+            this.checkbox = this.parentElement.findElement(By.cssSelector("input[name = '" + this.elementName + "']"));
         } else {
-            return this.driver.findElement(By.cssSelector("input[name = '" + this.elementName + "']"));   
+            this.checkbox = this.driver.findElement(By.cssSelector("input[name = '" + this.elementName + "']"));   
         }        
+    }
+    
+    private WebElement getCheckbox() {
+        return checkbox;
     }
 }

@@ -10,7 +10,6 @@ import com.eaton.pages.capcontrol.CapBankCreatePage;
 import com.eaton.pages.capcontrol.CapBankDetailPage;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -50,7 +49,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         
         CapBankDetailPage detailsPage = new CapBankDetailPage(driver, Urls.CapControl.CAP_BANK_DETAIL);
         
-        String userMsg = detailsPage.getUserMessageSuccess();
+        String userMsg = detailsPage.getUserMessage();
         
         Assert.assertEquals(userMsg, "CapBank was saved successfully.");
     }    

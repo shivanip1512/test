@@ -1,11 +1,8 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -32,7 +29,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         this.createPage = new CbcCreatePage(driver, Urls.CapControl.CBC_CREATE);
 
-        randomNum = new Random();
+        randomNum = getRandomNum();
     }
 
     @Test(groups = { "smoketest", "SM03_03_CreateCCObjects" })
@@ -65,7 +62,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         CbcDetailPage detailPage = new CbcDetailPage(driver, Urls.CapControl.CBC_DETAIL);
 
-        String userMsg = detailPage.getUserMessageSuccess();
+        String userMsg = detailPage.getUserMessage();
 
         Assert.assertEquals(userMsg, "CBC was saved successfully.");
     }

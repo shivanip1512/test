@@ -1,6 +1,6 @@
 package com.eaton.tests.capcontrol;
 
-import java.time.Instant;
+import java.text.SimpleDateFormat;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -37,9 +37,9 @@ public class AreaCreateTests extends SeleniumTestSetup {
     @Test(groups = {"smoketest", "SM03_03_CreateCCObjects"})
     public void createAreaRequiredFieldsOnlySuccess() {
         
-        Instant thisInstant = Instant.now();
+        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
-        String name = "AT Area " + thisInstant.toString();
+        String name = "AT Area " + timeStamp;
         this.createPage.getName().setInputValue(name);
         
         this.createPage.getSaveBtn().click();
@@ -48,7 +48,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         
         AreaDetailPage detailsPage = new AreaDetailPage(driver, Urls.CapControl.AREA_DETAIL);
         
-        String userMsg = detailsPage.getUserMessageSuccess();
+        String userMsg = detailsPage.getUserMessage();
         
         Assert.assertEquals(userMsg, "Area was saved successfully.");
     }    

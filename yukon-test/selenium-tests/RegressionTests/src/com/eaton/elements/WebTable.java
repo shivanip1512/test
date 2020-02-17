@@ -59,7 +59,7 @@ public class WebTable {
     }
     
     public void searchTable(String value) {
-        TextEditElement search = new TextEditElement(this.driver, "ss", null);
+        TextEditElement search = new TextEditElement(this.driver, "ss");
         
         search.clearInputValue();
         search.setInputValue(value);

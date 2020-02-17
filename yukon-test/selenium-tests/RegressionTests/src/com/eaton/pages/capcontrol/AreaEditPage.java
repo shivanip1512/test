@@ -17,13 +17,13 @@ public class AreaEditPage extends PageBase {
     public AreaEditPage(WebDriver driver, String pageUrl) {
         super(driver, pageUrl);
 
-        name = new TextEditElement(this.driver, "name", null);
-        saveBtn = new Button(this.driver, "Save", null);
-        cancelBtn = new Button(this.driver, "Cancel", null);
-        deleteBtn = new Button(this.driver, "Delete", null);
+        name = new TextEditElement(this.driver, "name");
+        saveBtn = new Button(this.driver, "Save");
+        cancelBtn = new Button(this.driver, "Cancel");
+        deleteBtn = new Button(this.driver, "Delete");
     }
 
-    public String getTitle() {
+    public String getPageTitle() {
         return this.driver.findElement(By.cssSelector(".page-heading")).getText();
     }
     

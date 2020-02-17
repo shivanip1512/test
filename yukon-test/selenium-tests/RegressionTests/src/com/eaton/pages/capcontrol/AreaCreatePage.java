@@ -16,9 +16,9 @@ public class AreaCreatePage extends PageBase {
     public AreaCreatePage(WebDriver driver, String pageUrl) {
         super(driver, pageUrl);
 
-        name = new TextEditElement(driver, "name", null);
-        saveBtn = new Button(driver, "Save", null);
-        cancelBtn = new Button(driver, "Cancel", null);
+        name = new TextEditElement(driver, "name");
+        saveBtn = new Button(driver, "Save");
+        cancelBtn = new Button(driver, "Cancel");
     }
 
     public String getTitle() {

@@ -15,16 +15,16 @@ import com.eaton.elements.modals.gears.CreateMeterDiconnectPrgmModal;
 import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
 import com.eaton.pages.PageBase;
 
-public class LoadProgramPage extends PageBase {
+public class LoadProgramCreatePage extends PageBase {
 
     private TextEditElement name;
     private DropDownElement type;
 
-    public LoadProgramPage(WebDriver driver, String pageUrl) {
+    public LoadProgramCreatePage(WebDriver driver, String pageUrl) {
         super(driver, pageUrl);
 
-        name = new TextEditElement(this.driver, "name", null);
-        type = new DropDownElement(this.driver, "type", null);
+        name = new TextEditElement(this.driver, "name");
+        type = new DropDownElement(this.driver, "type");
     }
 
     public String getTitle() {
@@ -41,20 +41,20 @@ public class LoadProgramPage extends PageBase {
     }
 
     public DropDownElement getOperationalState() {
-        return new DropDownElement(this.driver, "operationalState", null);
+        return new DropDownElement(this.driver, "operationalState");
     }
 
     public DropDownElement getConstraint() {
-        return new DropDownElement(this.driver, "constraint.constraintId", null);
+        return new DropDownElement(this.driver, "constraint.constraintId");
     }
 
     // Trigger Threshold Settings
     public TextEditElement getTriggerOffset() {
-        return new TextEditElement(this.driver, "triggerOffset", null);
+        return new TextEditElement(this.driver, "triggerOffset");
     }
 
     public TextEditElement getRestoreOffset() {
-        return new TextEditElement(this.driver, "restoreOffset", null);
+        return new TextEditElement(this.driver, "restoreOffset");
     }
 
     // Gears
@@ -62,23 +62,23 @@ public class LoadProgramPage extends PageBase {
 
     // Control Window
     public TrueFalseCheckboxElement getUseWindowOne() {
-        return new TrueFalseCheckboxElement(this.driver, "controlWindowOne", null);
+        return new TrueFalseCheckboxElement(this.driver, "controlWindowOne");
     }
 
     public TrueFalseCheckboxElement getUseWindowTwo() {
-        return new TrueFalseCheckboxElement(this.driver, "controlWindowTwo", null);
+        return new TrueFalseCheckboxElement(this.driver, "controlWindowTwo");
     }
 
     public Button getSaveBtn() {
-        return new Button(this.driver, "Save", null);
+        return new Button(this.driver, "Save");
     }
 
     public Button getCancelBtn() {
-        return new Button(this.driver, "Cancel", null);
+        return new Button(this.driver, "Cancel");
     }
 
     public Button getCreateBtn() {
-        return new Button(this.driver, "Create", null);
+        return new Button(this.driver, "Create");
     }
 
     public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {

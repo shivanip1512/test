@@ -16,22 +16,22 @@ public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
     // TODO Control Percent element does not have a unique way to select it
 
     public DropDownElement getCyclePeriod() {
-        return new DropDownElement(this.driver, "fields.cyclePeriodInMinutes", null);
+        return new DropDownElement(this.driver, "fields.cyclePeriodInMinutes", getModal());
     }
     
     public DropDownElement getHowToStopControl() {
-        return new DropDownElement(this.driver, "fields.howToStopControl", null);
+        return new DropDownElement(this.driver, "fields.howToStopControl", getModal());
     }    
 
     // Optional Attributes
     // TODO Group Capacity Reduction element does not have a unique way to select it
 
     public DropDownElement getWhenToChange() {
-        return new DropDownElement(this.driver, "fields.whenToChangeFields.whenToChange", null);
+        return new DropDownElement(this.driver, "fields.whenToChangeFields.whenToChange", getModal());
     }
     
     //RampIn/RampOut
     public TrueFalseCheckboxElement getRampInOut() {
-        return new TrueFalseCheckboxElement(this.driver, "fields.rampInOut", null);                
+        return new TrueFalseCheckboxElement(this.driver, "fields.rampInOut", getModal());                
     }    
 }

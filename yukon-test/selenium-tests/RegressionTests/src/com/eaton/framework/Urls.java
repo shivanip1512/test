@@ -10,6 +10,7 @@ public final class Urls {
     public static final String HOME = "/dashboards/-1/view?dashboardPageType=MAIN";
     public static final String SUPPORT = "/support";
     public static final String SITE_MAP = "/sitemap";
+    public static final String EDIT = "/edit";
     
     public static final class Ami {
 
@@ -20,6 +21,8 @@ public final class Urls {
         public static final String BULK_UPDATE = "/bulk/update/upload";
         public static final String LEGACY_IMPORTER = "/amr/bulkimporter/home";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=METERING";
+        
+        public static final String METER_DETAIL = "/meter/home?deviceId=";
     }
     
     public static final class Meter {
@@ -39,6 +42,8 @@ public final class Urls {
         public static final String BULK_UPDATE = "/bulk/update/upload";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT";
         
+        public static final String SETUP_FILTER = "/dr/setup/filter?filterByType=";
+        
         public static final String LOAD_GROUP_CREATE = "/dr/setup/loadGroup/create";
         public static final String LOAD_GROUP_DETAIL = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_EDIT = "/dr/setup/loadGroup/";
@@ -54,6 +59,10 @@ public final class Urls {
         public static final String CI_GROUP_EDIT = "/dr/cc/groupDetail/";
 
         public static final String CI_CUSTOMER_LIST = "/dr/cc/customerList";
+    }
+    
+    public static final class Filters {
+        public static final String LOAD_GROUP = "LOAD_GROUP";
     }
 
     public static final class CapControl {
@@ -75,18 +84,22 @@ public final class Urls {
         public static final String SUBSTATION_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__";
         public static final String SUBSTATION_CREATE = "/capcontrol/substations/create";
         public static final String SUBSTATION_DETAIL = "/capcontrol/substations/";
+        public static final String SUBSTATION_EDIT = "/capcontrol/substations/";
 
         public static final String SUBSTATION_BUS_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__";
         public static final String SUBSTATION_BUS_CREATE = "/capcontrol/buses/create";
         public static final String SUBSTATION_BUS_DETAIL = "/capcontrol/buses/";
+        public static final String SUBSTATION_BUS_EDIT = "/capcontrol/buses/";
 
         public static final String FEEDER_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__";
         public static final String FEEDER_CREATE = "/capcontrol/feeders/create";
         public static final String FEEDER_DETAIL = "/capcontrol/feeders/";
+        public static final String FEEDER_EDIT = "/capcontrol/feeders/";
 
         public static final String CAP_BANK_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__";
         public static final String CAP_BANK_CREATE = "/capcontrol/capbanks/create";
         public static final String CAP_BANK_DETAIL = "/capcontrol/capbanks/";
+        public static final String CAP_BANK_EDIT = "/capcontrol/capbanks/";
 
         public static final String CBC_LIST = "/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__";
         public static final String CBC_CREATE = "/capcontrol/cbc/create";
@@ -103,6 +116,7 @@ public final class Urls {
 
         public static final String AREA_CREATE = "/capcontrol/areas/create";
         public static final String AREA_DETAIL = "/capcontrol/areas/";
+        public static final String AREA_EDIT = "/capcontrol/areas/";
 
         public static final String SPECIAL_AREA_CREATE = "/capcontrol/areas/special/create";
         

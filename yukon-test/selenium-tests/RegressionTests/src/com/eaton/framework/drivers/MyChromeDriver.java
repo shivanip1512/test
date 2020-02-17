@@ -22,6 +22,11 @@ public final class MyChromeDriver {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-infobars");
         options.addArguments("--disable-notifications");
+        options.addArguments("enable-automation");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-browser-side-navigation");
+        options.addArguments("--disable-gpu");
 
         if (isHeadless)
             options.addArguments("headless");
@@ -34,8 +39,9 @@ public final class MyChromeDriver {
 
         driver.manage().deleteAllCookies();
         driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(5, TimeUnit.SECONDS);
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(30L, TimeUnit.SECONDS);
+        driver.manage().timeouts().setScriptTimeout(3L, TimeUnit.SECONDS);
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
         EventFiringWebDriver firingDriver = new EventFiringWebDriver(driver);
 

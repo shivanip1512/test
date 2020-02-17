@@ -1,6 +1,6 @@
 package com.eaton.framework;
 
-import java.time.Instant;
+import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -8,14 +8,12 @@ import java.util.logging.SimpleFormatter;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.drivers.DriverFactory;
-import com.eaton.pages.ISeleniumPage;
 import com.eaton.pages.LoginPage;
 import com.eaton.pages.PageBase;
 
@@ -30,12 +28,15 @@ public class SeleniumTestSetup {
     private static Logger logger;
 
     private static final String EXCEPTION_MSG = "Exception :";
+    
+    private static Random randomNum;
 
     @BeforeSuite
     public static void beforeSuite() {
 
         try {
             setSoftAssertion(new SoftAssert());
+            setRandomNum(new Random());
             logger = setupLogger();
             initialSetup();
             navigateToLoginPage();
@@ -129,6 +130,14 @@ public class SeleniumTestSetup {
     private static void setSoftAssertion(SoftAssert softAssertion) {
         SeleniumTestSetup.softAssertion = softAssertion;
     }
+    
+    public static Random getRandomNum() {
+        return randomNum;
+    }
+    
+    public static void setRandomNum(Random randomNum) {
+        SeleniumTestSetup.randomNum = randomNum;
+    }
 
     public static Logger getLogger() {
         return logger;
@@ -167,7 +176,7 @@ public class SeleniumTestSetup {
         } else {
             driver.navigate().refresh();
         }
-    }
+    }    
 
     public void waitForLoadingSpinner() {
         String display = "";
@@ -178,8 +187,18 @@ public class SeleniumTestSetup {
         }
         
     }
+    
+    public static void waitUntilModalVisible(String name) {
+        boolean displayed = driver.findElement(By.cssSelector("[aria-describedby='" + name + "']")).isDisplayed();
 
-    private void navigate(String url) {
+        long startTime = System.currentTimeMillis();
+
+        while (!displayed && System.currentTimeMillis() - startTime < 3000) {
+            displayed = driver.findElement(By.cssSelector("[aria-describedby='" + name + "']")).isDisplayed();
+        }
+    }
+
+    public void navigate(String url) {
         SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
 
         waitForUrlToLoad(url);

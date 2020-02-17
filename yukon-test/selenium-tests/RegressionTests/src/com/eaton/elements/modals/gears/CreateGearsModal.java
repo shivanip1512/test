@@ -1,6 +1,5 @@
 package com.eaton.elements.modals.gears;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import com.eaton.elements.DropDownElement;
@@ -16,8 +15,8 @@ public class CreateGearsModal extends BaseModal {
     public CreateGearsModal(WebDriver driver, String modalName) {
         super(driver, modalName);
 
-        gearName = new TextEditElement(this.driver, "gearName", null);
-        gearType = new DropDownElement(this.driver, "controlMethod", null);
+        gearName = new TextEditElement(this.driver, "gearName");
+        gearType = new DropDownElement(this.driver, "controlMethod");
     }
 
     public TextEditElement getGearName() {
@@ -26,15 +25,5 @@ public class CreateGearsModal extends BaseModal {
 
     public DropDownElement getGearType() {
         return gearType;
-    }
-
-    // TODO work around until get a unique way to select element
-    public void clickSave() {
-        this.driver.findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
-    }
-
-    // TODO work around until get a unique way to select element
-    public void clickCancel() {
-        this.driver.findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
     }
 }

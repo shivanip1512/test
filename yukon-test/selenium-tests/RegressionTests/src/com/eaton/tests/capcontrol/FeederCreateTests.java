@@ -1,7 +1,6 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -49,7 +48,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         
         FeederDetailPage detailsPage = new FeederDetailPage(driver, Urls.CapControl.FEEDER_DETAIL);
         
-        String userMsg = detailsPage.getUserMessageSuccess();
+        String userMsg = detailsPage.getUserMessage();
         
         Assert.assertEquals(userMsg, "Feeder was saved successfully.");
     }    

@@ -4,17 +4,11 @@ import org.openqa.selenium.WebDriver;
 
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
+import com.eaton.elements.TrueFalseCheckboxElement;
 
 public class EditMeterModal extends BaseModal {
 
     private WebDriver driver;
-    private TextEditElement deviceName;
-    private TextEditElement meterNumber;
-    private TextEditElement physicalAddress;
-    private DropDownElement route;
-    private TextEditElement serialNumber;
-    //TODO need to work with dev on how switchbutton works
-    //private SwitchButton status;
     
     public EditMeterModal(WebDriver driver, String modalName) {
         super(driver, modalName);
@@ -23,32 +17,26 @@ public class EditMeterModal extends BaseModal {
     }
     
     public TextEditElement getdeviceName() {
-        deviceName = new TextEditElement(driver, "name", null);
-        
-        return deviceName;
+        return new TextEditElement(this.driver, "name", getModal());
     }
     
     public TextEditElement getMeterNumber() {
-        meterNumber = new TextEditElement(driver, "meterNumber", null);
-        
-        return meterNumber;
+        return new TextEditElement(this.driver, "meterNumber", getModal());
     }
     
     public TextEditElement getPhycialAddress() {
-        physicalAddress = new TextEditElement(driver, "address", null);
-        
-        return physicalAddress;
+        return  new TextEditElement(this.driver, "address", getModal());
     }
     
     public DropDownElement getRoute() {
-        route = new DropDownElement(driver, "routeId", null);
-        
-        return route;
+        return new DropDownElement(this.driver, "routeId", getModal());
     }
     
     public TextEditElement getSerialNumber() {
-        serialNumber = new TextEditElement(driver, "serialNumber", null);
-        
-        return serialNumber;
+        return new TextEditElement(this.driver, "serialNumber", getModal());
+    }
+    
+    public TrueFalseCheckboxElement getStatus() {
+        return new TrueFalseCheckboxElement(this.driver, "disabled", getModal());
     }
 }

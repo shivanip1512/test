@@ -21,9 +21,9 @@ public class UserDetailPage extends PageBase {
         this.requiresLogin = true;
         //pageUrl = DEFAULT_URL;
         
-        edit = new Button(this.driver, "Edit", null);
-        changePassword = new Button(this.driver, "Change Password", null);
-        unlockUser = new Button(this.driver, "Unlock User", null);
+        edit = new Button(this.driver, "Edit");
+        changePassword = new Button(this.driver, "Change Password");
+        unlockUser = new Button(this.driver, "Unlock User");
     }
 
     public String getTitle() {

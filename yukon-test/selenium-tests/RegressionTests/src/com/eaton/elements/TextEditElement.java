@@ -5,14 +5,16 @@ import org.openqa.selenium.WebElement;
 
 public class TextEditElement extends EditElement {
     
-    private WebDriver driver;
-    private String elementName;
-
-    public TextEditElement(WebDriver driver, String elementName, String parent) {
-        super(driver, elementName, parent);
-
-        this.driver = driver;
-        this.elementName = elementName;
+    public TextEditElement(WebDriver driver, String elementName) {
+        super(driver, elementName);
+    }
+    
+    public TextEditElement(WebDriver driver, String elementName, WebElement parentElement) {
+        super(driver, elementName, parentElement);
+    }
+    
+    public TextEditElement(WebDriver driver, String elementName, String parentName) {
+        super(driver, elementName, parentName);
     }
     
     public void clearInputValue() {

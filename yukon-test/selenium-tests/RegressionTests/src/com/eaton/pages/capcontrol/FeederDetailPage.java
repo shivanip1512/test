@@ -17,7 +17,7 @@ public class FeederDetailPage extends PageBase {
         return this.driver.findElement(By.cssSelector(".page-heading")).getText();
     }
     
-    public String getUserMessageSuccess() {
-        return this.driver.findElement(By.cssSelector(".yukon-content .user-message.success")).getText();
+    public String getUserMessage() {
+        return this.driver.findElement(By.cssSelector(".yukon-content .user-message")).getText();
     }
 }

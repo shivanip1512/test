@@ -1,7 +1,6 @@
 package com.eaton.tests.demandresponse;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
@@ -12,12 +11,12 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
+import com.eaton.pages.demandresponse.LoadGroupCreatePage;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
-import com.eaton.pages.demandresponse.LoadGroupPage;
 
 public class LoadGroupCreateTests extends SeleniumTestSetup {
 
-    private LoadGroupPage createPage;
+    private LoadGroupCreatePage createPage;
     private WebDriver driver;
     private Random randomNum;
 
@@ -28,9 +27,9 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUP_CREATE);
 
-        this.createPage = new LoadGroupPage(driver, Urls.DemandResponse.LOAD_GROUP_CREATE);
+        this.createPage = new LoadGroupCreatePage(driver, Urls.DemandResponse.LOAD_GROUP_CREATE);
         
-        randomNum = new Random();
+        randomNum = getRandomNum();
     }
 
     @Test(groups = {"smoketest", ""})
@@ -39,7 +38,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(createPage.getTitle(), "Create Load Group");
     }
     
-    @Test(groups = {"smoketest", ""})
+    @Test(groups = {"smoketest", "SM06_01_CreateLoadGrp()"})
     public void createEcobeeLoadGroupSuccess() {
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
@@ -61,7 +60,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driver, Urls.DemandResponse.LOAD_GROUP_DETAIL);
         
-        String userMsg = detailsPage.getUserMessageSuccess();
+        String userMsg = detailsPage.getUserMessage();
         
         Assert.assertEquals(userMsg, name + " saved successfully.");
     }    

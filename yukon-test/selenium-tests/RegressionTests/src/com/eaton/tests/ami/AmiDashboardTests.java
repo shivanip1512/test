@@ -29,4 +29,8 @@ public class AmiDashboardTests extends SeleniumTestSetup {
         Assert.assertEquals(amiPage.getTitle(), "Dashboard: Default AMI Dashboard");
     }
 
+    @Test(groups = "smoketest")
+    public void createRfn420flMeterSuccess() {
+        amiPage.getActionBtn().clickAndSelectOptionByText("Create Meter");
+    }
 }

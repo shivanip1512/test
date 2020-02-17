@@ -4,21 +4,30 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import com.eaton.elements.Button;
+import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
+import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.elements.WebTable;
 import com.eaton.pages.PageBase;
 
 public class RegulatorCreatePage extends PageBase {
     
     private TextEditElement name;
-    private Button saveBtn;
-    private Button cancelBtn;
+    private TextEditElement description;
+    private DropDownElement type;
+    private DropDownElement configuration;
+    private TrueFalseCheckboxElement status;
+    private WebTable table;
 
     public RegulatorCreatePage(WebDriver driver, String pageUrl) {
         super(driver, pageUrl);
 
-        name = new TextEditElement(driver, "name", null);
-        saveBtn = new Button(driver, "Save", null);
-        cancelBtn = new Button(driver, "Cancel", null);
+        name = new TextEditElement(this.driver, "name");
+        description = new TextEditElement(this.driver, "description");
+        type = new DropDownElement(this.driver, "type");
+        configuration = new DropDownElement(this.driver, "configId");
+        status = new TrueFalseCheckboxElement(this.driver, "disabled");
+        table = new WebTable(this.driver, "compact-results-table");
     }
 
     public String getTitle() {
@@ -29,11 +38,31 @@ public class RegulatorCreatePage extends PageBase {
         return name;
     }
     
+    public TextEditElement getDescription() {
+        return description;
+    }
+    
+    public DropDownElement getType() {
+        return type;
+    }
+    
+    public DropDownElement getConfiguration() {
+        return configuration;
+    }
+    
+    public TrueFalseCheckboxElement getStatus() {
+        return status;
+    }
+    
+    public WebTable getAttributeMappingsTable() {
+        return table;
+    }
+    
     public Button getSaveBtn() {
-        return saveBtn;
+        return new Button(this.driver, "Save");
     }
     
     public Button getCancelBtn() {
-        return cancelBtn;
+        return new Button(this.driver, "Cancel");
     }    
 }
