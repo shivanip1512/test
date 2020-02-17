@@ -28,7 +28,7 @@ pipeline {
                             try {
                                 bat 'java -version'
                                 def scmVars = checkout([$class: 'GitSCM',
-                                          branches: [[name: 'refs/heads/master']],
+                                          branches: [[name: 'refs/heads/release/7.4']],
                                           doGenerateSubmoduleConfigurations: false,
                                           extensions: [[$class: 'CloneOption',
                                                         honorRefspec: true, noTags: true,
@@ -41,7 +41,7 @@ pipeline {
                                                                               [path: 'yukon-applications']]],
                                                        [$class: 'AuthorInChangelog']],
                                           submoduleCfg: [],
-                                          userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+                                          userRemoteConfigs: [[refspec: '+refs/heads/release/7.4:refs/remotes/origin/release/7.4', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                                 env.GIT_COMMIT = scmVars.GIT_COMMIT
 
@@ -75,7 +75,7 @@ pipeline {
                             }
                             try {
                                 checkout([$class: 'GitSCM',
-                                          branches: [[name: 'refs/heads/master']],
+                                          branches: [[name: 'refs/heads/release/7.4']],
                                           doGenerateSubmoduleConfigurations: false,
                                           extensions: [[$class: 'CloneOption',
                                                         honorRefspec: true, noTags: true,
@@ -87,7 +87,7 @@ pipeline {
                                                                               [path: 'yukon-shared']]],
                                                        [$class: 'AuthorInChangelog']],
                                           submoduleCfg: [],
-                                          userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+                                          userRemoteConfigs: [[refspec: '+refs/heads/release/7.4:refs/remotes/origin/release/7.4', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                                 bat './yukon-build/go.bat build-server'
 
@@ -122,7 +122,7 @@ pipeline {
                 script {
                     try {
                         checkout([$class: 'GitSCM',
-                                  branches: [[name: 'refs/heads/master']],
+                                  branches: [[name: 'refs/heads/release/7.4']],
                                   doGenerateSubmoduleConfigurations: false,
                                   extensions: [[$class: 'CloneOption',
                                                 honorRefspec: true, noTags: true,
@@ -134,7 +134,7 @@ pipeline {
                                                                       [path: 'yukon-applications']]],
                                                [$class: 'AuthorInChangelog']],
                                   submoduleCfg: [],
-                                  userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+                                  userRemoteConfigs: [[refspec: '+refs/heads/release/7.4:refs/remotes/origin/release/7.4', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                         // The stashed folders are modified during the build, which means a simple
                         // unstash leaves data behind. Here we manually wipe these folders before unstashing.
