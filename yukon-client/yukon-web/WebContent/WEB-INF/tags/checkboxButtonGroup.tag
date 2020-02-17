@@ -2,7 +2,6 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -12,8 +11,8 @@
 
 <cti:displayForPageEditModes modes="CREATE,EDIT">
     <div class="button-group ${buttonGroupContainerCssClasses}">
-        <c:forEach var="item" items="${items}">
-            <tags:check id="${item}_chk" path="${path}" value="${item}" key="${item}" classes="M0"/>
+        <c:forEach var="item" items="${items}" varStatus="status">
+            <tags:check id="${item}_chk" path="${path}" value="${item}" key="${item}" classes="${status.first ? 'M0' : '' }"/>
         </c:forEach>
     </div>
 </cti:displayForPageEditModes>
