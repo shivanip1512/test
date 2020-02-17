@@ -97,7 +97,7 @@ public class ApiControllerHelper {
     /**
      * Set the WebServer Url
      */
-    private synchronized void setWebServerUrl(String webServerUrl) {
+    private void setWebServerUrl(String webServerUrl) {
         this.webServerUrl = webServerUrl;
     }
 
@@ -124,7 +124,6 @@ public class ApiControllerHelper {
             if (responseCode != HttpStatus.OK) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
-            log.info("Connection with Api successful with URL: " + webServerApiUrl);
         }
         return webServerApiUrl;
     }
@@ -206,6 +205,7 @@ public class ApiControllerHelper {
 
         if (responseCode == HttpStatus.OK) {
             setWebServerUrl(webUrl);
+            log.info("Connection with Api successful with URL: " + webUrl);
         }
         return responseCode;
     }
