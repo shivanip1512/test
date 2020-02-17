@@ -53,6 +53,7 @@ public class RfnChannelDataConverter {
     @Autowired private AttributeService attributeService;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private RfnDataValidator rfnDataValidator;
     
     private ImmutableSet<PaoTypePointIdentifier> calculationContributors;
     private static final Logger log = YukonLogManager.getLogger(RfnChannelDataConverter.class);
@@ -187,7 +188,7 @@ public class RfnChannelDataConverter {
             log.debug("PointData converted: " + pointData);
         }
         
-        if( !RfnDataValidator.isTimestampRecent(readingInstant, Instant.now()) ) {
+        if( rfnDataValidator.isTimestampRecent(readingInstant, Instant.now()) ) {
             log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " : " + pointData);
             return null;
         }

@@ -39,6 +39,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
+    @Autowired private RfnDataValidator rfnDataValidator;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private ParsingService<ListMultimap<FieldType, byte[]>> parsingService;
     @Autowired private RfnLcrDataMappingService<ListMultimap<FieldType, byte[]>> rfnLcrDataMappingService;
@@ -78,7 +79,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
         Instant currentInstant = new Instant();
 
         // Discard all the data that is older than the global timestamp limit
-        if (RfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
+        if (rfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
             // Handle point data
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
