@@ -74,6 +74,7 @@ class MockSimpleHttpPostService implements SimpleHttpPostService {
 		// these exceptions are not part of test, they are just to cover the operations performed to parse 
 		// the request and send a mock response back code within this try should be kept error-free ;)
 		} catch (IOException e) {
+		    e.printStackTrace();
 		} catch (JDOMException e) {
 		} catch (CayentaRequestException e) {
 		}
