@@ -548,7 +548,7 @@
 
         <path id="antclasspath"> 
             <fileset dir="${basedir}/yukon-deploy/vm-install/third-party"> 
-                <include name="ojdbc6.jar"/> 
+                <include name="ojdbc10.jar"/> 
             </fileset> 
         </path>
 
@@ -667,7 +667,7 @@
 
         <path id="antclasspath"> 
         <fileset dir="${basedir}/yukon-deploy/vm-install/third-party"> 
-            <include name="ojdbc6.jar"/> 
+            <include name="ojdbc10.jar"/> 
         </fileset> 
         </path>
 
@@ -777,7 +777,7 @@
 
         <path id="antclasspath"> 
             <fileset dir="${basedir}/yukon-deploy/vm-install/third-party"> 
-                <include name="ojdbc6.jar"/> 
+                <include name="ojdbc10.jar"/> 
             </fileset> 
         </path>
 

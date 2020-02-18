@@ -212,7 +212,7 @@
             userid="sys as sysdba"
             password="cti">
             <classpath>
-                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
+                <pathelement location="../yukon-client/third-party/ojdbc10.jar"/>
             </classpath>
             <transaction src="tempCreateDatabase.sql" /> 
         </sql>
@@ -234,7 +234,7 @@
             <arg value="--schema=${databaseName}"/>
             <arg value="--outputXmlFile=../${dbSnapshot}/oracle.xml"/>
             <classpath>
-                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
+                <pathelement location="../yukon-client/third-party/ojdbc10.jar"/>
             </classpath>
         </java>
         
@@ -246,7 +246,7 @@
             userid="sys as sysdba"
             password="cti">
             <classpath>
-                <pathelement location="../yukon-client/third-party/ojdbc6.jar"/>
+                <pathelement location="../yukon-client/third-party/ojdbc10.jar"/>
             </classpath>
             <transaction src="tempDropDatabase.sql" />
         </sql>
