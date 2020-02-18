@@ -73,54 +73,95 @@ pipeline {
 
             }
         }
-        stage('installer') {
-            agent {
-                label "install"
-            }
-            tools {
-                jdk "jdk-11(18.9)"
-            }
-            steps {
-                script {
-                    if (params.RELEASE_MODE) {
-                        cleanWs()
+        stage('installer-executetestcase') {
+            parallel {
+                stage('installer') {
+                    agent {
+                        label "install"
                     }
-                }
-                // The stashed folders are modified during the build, which means a simple
-                // unstash leaves data behind. Here we manually wipe these folders before unstashing.
-                dir('yukon-client') {
-                    deleteDir()
-                }
-                unstash 'yukon-client'
-
-                dir('yukon-server') {
-                    deleteDir()
-                }
-                unstash 'yukon-server'
-
-                // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
-                script {
-                    try {
-                        bat './yukon-build/go.bat build-install'
-
-                        if (params.RELEASE_MODE) {
-                            bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
-                            bat './yukon-build/go.bat init clean symstore build-dist'
-                            bat 'net use p: /delete'
-                        } else {
-                            bat './yukon-build/go.bat clean build-dist-pdb'
+                    tools {
+                        jdk "jdk-11(18.9)"
+                    }
+                    steps {
+                        script {
+                            if (params.RELEASE_MODE) {
+                                cleanWs()
+                            }
                         }
+                        // The stashed folders are modified during the build, which means a simple
+                        // unstash leaves data behind. Here we manually wipe these folders before unstashing.
+                        dir('yukon-client') {
+                            deleteDir()
+                        }
+                        unstash 'yukon-client'
 
-                        archiveArtifacts artifacts: 'yukon-build/dist/*'
-                    } catch (Exception) {
-                        currentBuild.result = 'FAILURE'
-                        //Added sleep so that it capture full log for current stage
-                        sleep(5)
-                        sendEmailNotification("${env.STAGE_NAME}")
+                        dir('yukon-server') {
+                            deleteDir()
+                        }
+                        unstash 'yukon-server'
+
+                        // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
+                        script {
+                            try {
+                                bat './yukon-build/go.bat build-install'
+
+                                if (params.RELEASE_MODE) {
+                                    bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
+                                    bat './yukon-build/go.bat init clean symstore build-dist'
+                                    bat 'net use p: /delete'
+                                } else {
+                                    bat './yukon-build/go.bat clean build-dist-pdb'
+                                }
+
+                                archiveArtifacts artifacts: 'yukon-build/dist/*'
+                            } catch (Exception) {
+                                currentBuild.result = 'FAILURE'
+                                //Added sleep so that it capture full log for current stage
+                                sleep(5)
+                                sendEmailNotification("${env.STAGE_NAME}")
+                            }
+                        }
+                    }
+                }
+                stage('java-testcase') {
+                    agent {
+                        label "java"
+                    }
+                    tools {
+                            jdk "jdk-11(18.9)"
+                    }
+                    steps {
+                        try {
+                            script {
+                                bat './yukon-build/go.bat runUnitTests'
+                            }
+                        } catch (Exception) {
+                                currentBuild.result = 'FAILURE'
+                                //Added sleep so that it capture full log for current stage
+                                sleep(5)
+                                sendEmailNotification("${env.STAGE_NAME}")
+                        }
+                    }
+                }
+                stage('cpp-testcase') {
+                    agent {
+                        label "cpp"
+                    }
+                    steps {
+                        try {
+                            script {
+                                bat './yukon-build/go.bat runcppTestCases'
+                            }
+                        } catch (Exception) {
+                                currentBuild.result = 'FAILURE'
+                                //Added sleep so that it capture full log for current stage
+                                sleep(5)
+                                sendEmailNotification("${env.STAGE_NAME}")
+                        }
                     }
                 }
             }
-        }
+        }   
     }
     post {
         always {
