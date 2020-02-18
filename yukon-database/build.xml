@@ -188,7 +188,7 @@
         <git command="push" dir="../${dbSnapshot}">
             <args>
                 <arg value="origin"/>
-                <arg value="HEAD:master"/>
+                <arg value="HEAD:release/7.4"/>
             </args>
         </git>
         <echo message="Snapshot complete and checked in" />
@@ -276,7 +276,7 @@
         <git command="push" dir="../${dbSnapshot}">
             <args>
                 <arg value="origin"/>
-                <arg value="HEAD:master"/>
+                <arg value="HEAD:release/7.4"/>
             </args>
         </git>
         <echo message="Snapshot complete and checked in" />
