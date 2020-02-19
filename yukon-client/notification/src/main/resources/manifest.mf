@@ -6,7 +6,7 @@ Class-Path: ./
  vvr_tools.jar 
  yukonappserver.jar 
  sqljdbc42.jar 
- ojdbc6.jar 
+ ojdbc10.jar 
  spring-aop-5.1.5.RELEASE.jar 
  spring-aspects-5.1.5.RELEASE.jar 
  spring-beans-5.1.5.RELEASE.jar 

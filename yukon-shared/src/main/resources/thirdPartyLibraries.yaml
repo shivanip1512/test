@@ -2163,19 +2163,19 @@ Java :
     jira : YUK-10008
     notes : EasyMock dependency
   
-  - filename : ojdbc6.jar
+  - filename : ojdbc10.jar
     yukon group : Database - Oracle
     project : Oracle JDBC Thin driver
-    version : 12.1.0.1
+    version : 19.3.0.0
     project URL : "https://www.oracle.com/database/technologies/appdev/jdbc.html"
     license : Oracle Technology Network License
     license URLs : "https://www.oracle.com/technetwork/licenses/distribution-license-152002.html"
     maven URL : n/a
-    md5 : b99a9e9b93aa31b787d174a1dbec7cc4
-    sha1 : 5d5d3e7a6b217ddc0c1c4c6d14b352e8b04453ef
-    updated : 2014-07-23
-    jira : YUK-13459
-    notes : ojdbc6 for Java 6+
+    md5 : 4c78ba260b5c62dc32754a26d5f654f0
+    sha1 : bba59347e68c9416d14fcc9a9209e869f842e48d
+    updated : 2020-02-14
+    jira : YUK-21477
+    notes : ojdbc10 for Java 6+
   
   - filename : okhttp-3.12.0.jar
     yukon group : Azure
@@ -4279,20 +4279,6 @@ Network Manager :
     jira : NM-885
     notes : 
 
-  - filename : ojdbc6.jar
-    yukon group : Database - Oracle
-    project : Oracle JDBC Thin driver
-    version : 11.2.0.3.0
-    project URL : "https://www.oracle.com/database/technologies/appdev/jdbc.html"
-    license : Oracle Technology Network License
-    license URLs : "https://www.oracle.com/technetwork/licenses/distribution-license-152002.html"
-    maven URL : n/a
-    md5 : 54c41acb9df6465f45a931fbe9734e1a
-    sha1 : de96f0060c7353532f4cb4a0b73d20545580fc91
-    updated : 2013-01-22
-    jira : 
-    notes : 
-
   - filename : poi-3.2.jar
     yukon group : jfreereport
     project : Apache POI - Java API To Access Microsoft Format Files
@@ -5530,15 +5516,15 @@ JavaScript :
     notes : "Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
-    version : 3.3.1
+    version : 3.4.1
     project URL : "http://jquery.com/"
     license : MIT
     license URLs : "https://github.com/jquery/jquery/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery/v/3.3.1"
-    md5 : 86a1c9da00997c2c1161b1c98d949b59
-    sha1 : 87eb28c1c4e1cc2005d46b0356dcc8c2f3efb481
-    jira : YUK-18131
-    updated : 2018-05-18
+    npm URL : "https://www.npmjs.com/package/jquery/v/3.4.1"
+    md5 : 22bf90ce1d90e579e6d79d2ecf064b83
+    sha1 : 561193f2f30056e87e68c31d8107a2269315f13e
+    jira : YUK-21133
+    updated : 2020-02-11
     notes : 
 
   - project : jquery-ui

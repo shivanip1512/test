@@ -8,7 +8,7 @@ Class-Path:
  billing.jar 
  yukonappserver.jar 
  jcfield401K.jar 
- ojdbc6.jar 
+ ojdbc10.jar 
  sqljdbc42.jar 
  servlet-api.jar 
  ../log/ 
