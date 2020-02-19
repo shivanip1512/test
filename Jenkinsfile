@@ -189,23 +189,6 @@ pipeline {
                         }
                     }
                 }
-                stage('cpp-testcase') {
-                    agent {
-                        label "cpp"
-                    }
-                    steps {
-                        script {
-                            try {
-                                bat './yukon-build/go.bat runcppTestCases'
-                            } catch (Exception) {
-                                currentBuild.result = 'FAILURE'
-                                //Added sleep so that it capture full log for current stage
-                                sleep(5)
-                                sendEmailNotification("${env.STAGE_NAME}")
-							}
-                        }
-                    }
-                }
             }
         }
     }
