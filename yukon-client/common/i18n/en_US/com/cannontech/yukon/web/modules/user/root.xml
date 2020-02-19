@@ -38,10 +38,16 @@
     <entry key="yukon.web.modules.user.profile.contactInfo">Contact Info</entry>
 
     <entry key="yukon.web.modules.user.activityStream.title">Activity Stream</entry>
-    <entry key="yukon.web.modules.user.additionContactInfo.title">Additional Contact Info</entry>
+    <entry key="yukon.web.modules.user.additionContactInfo.title">Contact Info</entry>
     <entry key="yukon.web.modules.user.groups.title">User Group: {0}</entry>
     <entry key="yukon.web.modules.user.preferences.title">Preferences</entry>
     <entry key="yukon.web.modules.user.userInfo.title">User Info</entry>
+    
+    <!-- Profile Page Additional Contacts page -->
+    <entry key="yukon.web.modules.user.profile.contactInfo.pageName">Contact Information</entry>
+    
+    <entry key="yukon.web.modules.user.additionalContacts.title">Additional Contacts</entry>
+    <entry key="yukon.web.modules.user.contactDelete.successMsg">Contact "{0}" has been successfully deleted.</entry>
 
     <entry key="yukon.web.modules.user.activityStream.filter.time.today">Today</entry>
     <entry key="yukon.web.modules.user.activityStream.filter.time.week_1">1 Week</entry>
