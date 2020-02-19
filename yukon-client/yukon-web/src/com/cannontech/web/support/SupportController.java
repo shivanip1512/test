@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.PaoType;
@@ -44,10 +45,12 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -92,6 +95,13 @@ public class SupportController {
     
     @RequestMapping(value={"","/support"})
     public String support(ModelMap model, YukonUserContext context) {
+        LiteYukonUser user = context.getYukonUser();
+        boolean hasCIRole = rolePropertyDao.checkRole(YukonRole.CI_CURTAILMENT, user);
+        boolean isCIOperator = rolePropertyDao.checkProperty(YukonRoleProperty.CURTAILMENT_IS_OPERATOR, user);
+        if (hasCIRole && !isCIOperator) {
+            throw new NotAuthorizedException("User " + user + " is not authorized to access this page.");
+        }
+
         return supportBundle(model, new SupportBundle(), context);
     }
 
