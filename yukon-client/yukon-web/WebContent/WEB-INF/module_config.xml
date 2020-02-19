@@ -1711,6 +1711,7 @@
          <link>/user/profile</link>
          <pages>
            <page name="profile.EDIT" type="BASIC" hideFavorite="true"/>
+           <page name="profile.contactInfo" type="BASIC" hideFavorite="true"/>
          </pages>
        </page>
     </pages>

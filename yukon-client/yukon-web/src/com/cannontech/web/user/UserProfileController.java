@@ -14,14 +14,18 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,22 +39,26 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreferenceName;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.login.PasswordController;
 import com.cannontech.web.smartNotifications.SmartNotificationFilter;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
+import com.cannontech.web.stars.dr.operator.validator.ContactDtoValidator;
 import com.cannontech.web.user.model.ChangePassword;
 import com.cannontech.web.user.model.UserProfile;
 import com.cannontech.web.user.service.UserPreferenceService;
@@ -75,6 +83,8 @@ public class UserProfileController {
     @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private UserProfileValidator userValidator;
     @Autowired private ChangePasswordValidatorFactory passwordValidatorFactory;
+    @Autowired private ContactDtoValidator contactDtoValidator;
+    @Autowired private CustomerDao customerDao;
 
     private static final int pageEventRowCount = 10;
     private static final String baseKey = "yukon.web.modules.user.profile.";
@@ -299,5 +309,54 @@ public class UserProfileController {
         // No admin can set this preference for the other user.
         userPreferenceService.savePreference(user, UserPreferenceName.DISPLAY_EVENT_RANGE, prefValue);
         return Collections.singletonMap("success", true);
+    }
+    
+    @GetMapping("/contacts/{id}/edit")
+    public String editContact(@PathVariable int id, ModelMap model, YukonUserContext context) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        
+        ContactDto contactDto = operatorAccountService.getContactDto(id, context);
+        model.addAttribute("contactDto", contactDto);
+        
+        model.addAttribute("notificationTypes", ContactNotificationType.values());
+                
+        return "additionalContact.jsp";
+    }
+    
+    @DeleteMapping("/contacts/{id}/delete")
+    public void deleteContact(@PathVariable int id, FlashScope flash, HttpServletResponse resp) {
+        LiteContact contact = contactDao.getContact(id);
+        contactDao.deleteContact(contact);
+        
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.user.contactDelete.successMsg", contact.getContFirstName() + " " + contact.getContLastName()));
+    }
+    
+    @GetMapping("/contacts/create")
+    public String createContact(ModelMap model) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        
+        ContactDto contactDto = new ContactDto();
+        model.addAttribute("contactDto", contactDto);
+        
+        model.addAttribute("notificationTypes", ContactNotificationType.values());
+                
+        return "additionalContact.jsp";
+    }
+    
+    @PostMapping("/contacts/save")
+    public String saveContact(@ModelAttribute("contactDto") ContactDto contactDto, BindingResult bindingResult, ModelMap model, YukonUserContext context) {
+        contactDtoValidator.validate(contactDto, bindingResult);
+        
+        LiteCICustomer customer = customerDao.getCICustomerForUser(context.getYukonUser());
+
+        if (!bindingResult.hasErrors()) {
+            operatorAccountService.saveContactDto(contactDto, customer, context.getYukonUser());
+        } else {
+            model.addAttribute("notificationTypes", ContactNotificationType.values());
+            return "additionalContact.jsp";
+        }
+
+        return "redirect:/user/profile";
     }
 }
