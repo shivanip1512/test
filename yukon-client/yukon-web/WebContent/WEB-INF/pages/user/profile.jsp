@@ -48,8 +48,13 @@ $(document).ready(function(){
                             <cti:formatDate value="${passwordLastChangeTimestamp}" type="DATE"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".userGroup">
-                            <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
-                            <a href="${url}">${fn:escapeXml(userGroupName)}</a>
+                            <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
+                                <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
+                                <a href="${url}">${fn:escapeXml(userGroupName)}</a>
+                            </cti:checkRolesAndProperties>
+                            <cti:checkRolesAndProperties value="!OPERATOR_ADMINISTRATOR, !ADMIN_SUPER_USER">
+                                ${fn:escapeXml(userGroupName)}
+                            </cti:checkRolesAndProperties>
                         </tags:nameValue2>
                     </cti:displayForPageEditModes>
                 </tags:nameValueContainer2>
