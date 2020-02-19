@@ -62,7 +62,7 @@
                         <tags:radioButtonGroup items="${units}" path="fields.tempMeasureUnit" viewModeKey="${programGear.fields.tempMeasureUnit}"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".setpoint">
-                        <tags:radioButtonGroup items="${setpoints}" path="fields.setpoint" viewModeKey="${programGear.fields.setpoint}" inputCssClass="${js-setpoint-input}"/>
+                        <tags:radioButtonGroup items="${setpoints}" path="fields.setpoint" viewModeKey="${programGear.fields.setpoint}" inputCssClass="js-setpoint-input"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".minValue">
                         <tags:input path="fields.minValue"/>
