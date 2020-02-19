@@ -18,12 +18,7 @@ public final class RfnDataValidatorImpl implements RfnDataValidator {
     @Autowired private GlobalSettingDao globalSettingDao;
 
     /**
-     * Checks that the timestamp is between 1-Jan-2000 or calculated date and 1 year from now
-     * Use this method only for checking for a "reasonable" timestamp.
-     * Expectation is that when "not valid" the timestamp and quality may be adjusted.
-     * Examples of "unreasonable" would be the year 1970 or 2106).
-     * @param timestamp The timestamp to validate
-     * @param now The current time
+     * Checks that the timestamp is "reasonable," that is, between 1-Jan-2000 and now + 1 year.
      */
     @Override
     public boolean isTimestampValid(Instant timestamp, Instant now) {
@@ -31,13 +26,8 @@ public final class RfnDataValidatorImpl implements RfnDataValidator {
     }
 
     /**
-     * Checks {@link #isTimestampValid(Instant, Instant)}
-     * Then, checks to see if timestamp is within "recent" threshold such that we should process is.
-     * Calculated date/threshold depends on the months value set in global setting.
-     * Use this method for checking for a "reasonable" AND "recent" timestamp to consume.
-     * Expectation is that when "not valid" AND "not recent" that data is thrown away.
-     * @param timestamp The timestamp to validate
-     * @param now The current time
+     * Checks that the timestamp is within the "recent" interval defined by the Global setting. If the global setting
+     * is set to 0, then {@link #isTimestampValid(Instant, Instant)} is checked instead.
      */
     @Override
     public boolean isTimestampRecent(Instant timestamp, Instant now) {
