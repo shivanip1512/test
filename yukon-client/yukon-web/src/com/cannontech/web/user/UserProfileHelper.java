@@ -1,5 +1,6 @@
 package com.cannontech.web.user;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,10 @@ import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.users.dao.UserGroupDao;
+import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -39,6 +42,7 @@ public class UserProfileHelper {
     @Autowired private PasswordResetService passwordResetService;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private CustomerDao customerDao;
 
     private static final int passwordExpireDaysToWarn = 30;
 
@@ -91,6 +95,18 @@ public class UserProfileHelper {
         List<LiteContactNotification> nots = null;
         if(!contacts.isEmpty()) {
             contact = operatorAccountService.getContactDto(contacts.get(0).getContactID(), false, false, true, context);
+            //get additional contacts
+            LiteCICustomer customer = customerDao.getCICustomerForUser(user);
+            if (customer != null) {
+                model.addAttribute("displayAdditionalContacts", true);
+                List<ContactDto> addContacts = new ArrayList<>();
+                List<LiteContact> additionalLiteContacts = contactDao.getAdditionalContactsForCustomer(customer.getCustomerID());
+                for (LiteContact additionalLiteContact : additionalLiteContacts) {
+                    ContactDto additionalContact = operatorAccountService.getContactDto(additionalLiteContact.getContactID(), context);
+                    addContacts.add(additionalContact);
+                }
+                model.addAttribute("additionalContacts", addContacts);
+            }
         }
         model.addAttribute("userProfile", new UserProfile(user, contact, nots));
         model.addAttribute("notificationTypes", ContactNotificationType.values());

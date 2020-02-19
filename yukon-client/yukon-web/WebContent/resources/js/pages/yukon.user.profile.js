@@ -161,6 +161,17 @@ yukon.userProfile = (function () {
             $(document).on('yukon:user:profile:password:save', _submitChangePassword);
             $(document).on('change', '#commandPriority', _validateAndSetCommanderPriority);
             $(document).on('click', '#resetCommandPriorityBtn', _resetCommandPriority);
+
+            $(document).on('yukon:profile:contact:remove', function (ev) {
+                var container = $(ev.target),
+                    contactId = container.data('contactId');
+                $.ajax({
+                    url: yukon.url('/user/contacts/' + contactId + '/delete'),
+                    type: 'delete'
+                }).done(function (data) {
+                    window.location.reload();
+                });
+            });
                         
             _initialized = true;
         }
