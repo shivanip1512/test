@@ -60,7 +60,6 @@
     
     <target name="build-client">
         <antcall target="compile-java" />
-        <antcall target="runUnitTests" />
     </target>
     
     <target name="compile-java" depends="init,clean">
