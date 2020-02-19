@@ -295,13 +295,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
                     if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
                         RfnMetadataMultiRequest request = (RfnMetadataMultiRequest) requestMessage.getObject();
-                        log.info("RfnMetadataMultiRequest identifier {} metadatas {} gateway ids {} or rfn ids {}",
-                            request.getRequestID(), request.getPrimaryForwardNodesForGatewayRfnIdentifiers().size(),
-                            request.getRfnIdentifiers().size(), request.getRfnMetadatas());
-
                         for (RfnMetadataMultiResponse reply : getPartitionedMetadataMultiResponse(request)) {
-                            log.info("RfnMetadataMultiRequest identifier: {} segment: {} response: {}",
-                                      request.getRequestID(), reply.getSegmentNumber(), reply.getResponseType());
+                            log.info("RfnMetadataMultiRequest identifier: {} segment: {} response: {} sending response on {}",
+                                    request.getRequestID(), reply.getSegmentNumber(), reply.getResponseType(),
+                                    requestMessage.getJMSReplyTo());
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
@@ -325,8 +322,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             response.setQueryResults(new HashMap<>());
             parts.get(i).forEach(identifier -> response.getQueryResults().put(identifier, results.get(identifier)));
             responses.add(response);
-            log.debug("--Created response {} (of {}) query results {}", response.getSegmentNumber(),
-                response.getTotalSegments(), response.getQueryResults().size());
+            log.debug("--Created response {} (of {}) query results {} for {}", response.getSegmentNumber(),
+                response.getTotalSegments(), response.getQueryResults().size(), request.getRfnMetadatas());
         }
         return responses;
     }
@@ -468,13 +465,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     
     private RfnVertex getVertex(RfnDevice gateway) {
         RfnVertex vertex = vertexCache.getIfPresent(gateway.getRfnIdentifier());
-        if(vertex == null) {
-           vertex = networkTreeSimulatorService.buildVertex(gateway);  
-           vertexCache.put(gateway.getRfnIdentifier(), vertex);
+        if (vertex == null) {
+            vertex = networkTreeSimulatorService.buildVertex(gateway);
+            log.debug("Created vertex for {}", gateway);
+            vertexCache.put(gateway.getRfnIdentifier(), vertex);
+        } else {
+            log.debug("Found cached vertex for {}", gateway);
         }
         return vertex;
     }
-
 
     private WifiSuperMeterData getSuperMeterData() {
         WifiSuperMeterData superMeterData = new WifiSuperMeterData();
