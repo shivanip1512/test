@@ -10,8 +10,8 @@ public enum JsLibrary {
     
     DEBUGGER("/resources/js/lib/debugger.js"), // http://benalman.com/projects/javascript-debug-console-log/
     
-    JQUERY("/resources/js/lib/jquery/jquery-3.3.1.min.js",
-           "/resources/js/lib/jquery/jquery-3.3.1.js"), // http://www.jquery.com
+    JQUERY("/resources/js/lib/jquery/jquery-3.4.1.min.js",
+           "/resources/js/lib/jquery/jquery-3.4.1.js"), // http://www.jquery.com
     
     JQUERY_CHECK_ALL("/resources/js/lib/checkall/jquery.checkall.js"), // https://github.com/mjball/jQuery-CheckAll
     JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
