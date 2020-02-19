@@ -28,12 +28,14 @@ import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
@@ -159,6 +161,10 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         log.info("Inserting {} locations.", newLocations.size());
         paoLocationDao.save(newLocations);
         log.info("Inserting {} locations is done.", newLocations.size());
+        NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
+        request.setForceRefresh(true);
+        log.debug("Sending NetworkTreeUpdateTimeRequest message to request reload of network tree information.");
+        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST.getQueue().getName(), request);
     }
 
     private Set<RfnGateway> createAdditionalGateways(Set<RfnGateway> gateways, List<List<LiteYukonPAObject>> rfnDevicesSplit) {

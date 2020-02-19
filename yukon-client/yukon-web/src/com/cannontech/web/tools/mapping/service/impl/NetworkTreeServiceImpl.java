@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -230,14 +231,17 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
      * Sends request to NM for tree refresh, returns new trees
      */
     private List<Node<Pair<Integer, FeatureCollection>>> sendRequestToNMForTreeRefresh(Map<RfnIdentifier, RfnGateway> gatewaysToSendToNM) throws NmCommunicationException {
-        log.debug("Getting Network trees from NM for gateways: {}", gatewaysToSendToNM.keySet());
         List<Node<Pair<Integer, FeatureCollection>>> trees = new ArrayList<>(); 
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService
-                .getMetadataForDeviceRfnIdentifiers(gatewaysToSendToNM.keySet(), Set.of(PRIMARY_FORWARD_TREE));
-
+        
         Map<Integer, PaoLocation> locations = getLocationsForDevicesAndGateways(gatewaysToSendToNM.values());
         
+        log.debug("Getting Network trees from NM for gateways: {}", gatewaysToSendToNM.keySet());
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService
+                .getMetadataForDeviceRfnIdentifiers(gatewaysToSendToNM.keySet(), Set.of(PRIMARY_FORWARD_TREE));
+        
         for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
+            log.debug("{} {}", data.getKey(),
+                    data.getValue() == null ? "nothing returned" : data.getValue().getMetadatas().size());
             if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_TREE)) {
                 RfnVertex vertex = (RfnVertex) data.getValue().getMetadatas().get(PRIMARY_FORWARD_TREE);
                 log.debug("{} Received NM VERTEX", data.getKey());
@@ -262,7 +266,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
 
         Node<Pair<Integer, FeatureCollection>> node = createNode(vertex.getRfnIdentifier(), locations, yukonNodeStatistics,
                 nmVertexStatistics);
-        copy(vertex, node, locations, yukonNodeStatistics, nmVertexStatistics);
+        AtomicInteger numberOfTimesInCopyFunction = new  AtomicInteger(1);
+        copy(numberOfTimesInCopyFunction, vertex, node, locations, yukonNodeStatistics, nmVertexStatistics);
+        log.debug("numberOfTimesInCopyFunction {}", numberOfTimesInCopyFunction.get());
         networkTreeCache.put(vertex.getRfnIdentifier(), node);
         log.info("New tree created from vertex {} Yukon NODE node {} NM statistics {} Yukon statistics {}",
                 vertex.getRfnIdentifier(), node.getData(), nmVertexStatistics, yukonNodeStatistics);
@@ -330,17 +336,15 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     /**
      * Copies RfnVertex to Node
      */
-    private void copy(RfnVertex vertex, Node<Pair<Integer, FeatureCollection>> parent, Map<Integer, PaoLocation> locations,
+    private void copy(AtomicInteger numberOfTimesInCopyFunction, RfnVertex vertex, Node<Pair<Integer, FeatureCollection>> parent, Map<Integer, PaoLocation> locations,
             TreeDebugStatistics yukonNodeStatistics, TreeDebugStatistics nmVertexStatistics) {
-        if(vertex.getChildren().isEmpty()) {
-            return;
-        }
+        numberOfTimesInCopyFunction.incrementAndGet();
         for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
             RfnVertex nextNode = it.next();
             Node<Pair<Integer, FeatureCollection>> child = createNode(nextNode.getRfnIdentifier(), locations, yukonNodeStatistics,
                     nmVertexStatistics);
             parent.addChild(child);
-            copy(nextNode, child, locations, yukonNodeStatistics, nmVertexStatistics);
+            copy(numberOfTimesInCopyFunction, nextNode, child, locations, yukonNodeStatistics, nmVertexStatistics);
         }
     }
 
