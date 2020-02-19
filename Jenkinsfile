@@ -104,65 +104,89 @@ pipeline {
 
             }
         }
-        stage('installer') {
-            agent {
-                label "install"
-            }
-            tools {
-                jdk "jdk-11(18.9)"
-            }
-            steps {
-                script {
-                    if (params.RELEASE_MODE) {
-                        cleanWs()
+        stage('installer-executetestcase') {
+            parallel {
+                stage('installer') {
+                    agent {
+                        label "install"
+                    }
+                    tools {
+                        jdk "jdk-11(18.9)"
+                    }
+                    steps {
+                        script {
+                            if (params.RELEASE_MODE) {
+                                cleanWs()
+                            }
+                        }
+
+                        // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
+                        script {
+                            try {
+                                checkout([$class: 'GitSCM',
+                                          branches: [[name: 'refs/heads/master']],
+                                          doGenerateSubmoduleConfigurations: false,
+                                          extensions: [[$class: 'CloneOption',
+                                                        honorRefspec: true, noTags: true,
+                                                        reference: '', shallow: true, timeout: 30],
+                                                       [$class: 'SparseCheckoutPaths',
+                                                        sparseCheckoutPaths: [[path: 'yukon-install'],
+                                                                              [path: 'yukon-build'],
+                                                                              [path: 'yukon-database'],
+                                                                              [path: 'yukon-applications']]],
+                                                       [$class: 'AuthorInChangelog']],
+                                          submoduleCfg: [],
+                                          userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+
+                                // The stashed folders are modified during the build, which means a simple
+                                // unstash leaves data behind. Here we manually wipe these folders before unstashing.
+                                dir('yukon-client') {
+                                    deleteDir()
+                                }
+                                unstash 'yukon-client'
+
+                                dir('yukon-server') {
+                                    deleteDir()
+                                }
+                                unstash 'yukon-server'
+                                bat './yukon-build/go.bat build-install'
+
+                                if (params.RELEASE_MODE) {
+                                    bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
+                                    bat './yukon-build/go.bat init clean symstore build-dist'
+                                    bat 'net use p: /delete'
+                                } else {
+                                    bat './yukon-build/go.bat clean build-dist-pdb'
+                                }
+
+                                archiveArtifacts artifacts: 'yukon-build/dist/*'
+                            } catch (Exception) {
+                                currentBuild.result = 'FAILURE'
+                                //Added sleep so that it capture full log for current stage
+                                sleep(5)
+                                sendEmailNotification("${env.STAGE_NAME}")
+                            }
+                        }
                     }
                 }
-
-                // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
-                script {
-                    try {
-                        checkout([$class: 'GitSCM',
-                                  branches: [[name: 'refs/heads/master']],
-                                  doGenerateSubmoduleConfigurations: false,
-                                  extensions: [[$class: 'CloneOption',
-                                                honorRefspec: true, noTags: true,
-                                                reference: '', shallow: true, timeout: 30],
-                                               [$class: 'SparseCheckoutPaths',
-                                                sparseCheckoutPaths: [[path: 'yukon-install'],
-                                                                      [path: 'yukon-build'],
-                                                                      [path: 'yukon-database'],
-                                                                      [path: 'yukon-applications']]],
-                                               [$class: 'AuthorInChangelog']],
-                                  submoduleCfg: [],
-                                  userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
-
-                        // The stashed folders are modified during the build, which means a simple
-                        // unstash leaves data behind. Here we manually wipe these folders before unstashing.
-                        dir('yukon-client') {
-                            deleteDir()
+                stage('java-testcase') {
+                    agent {
+                        label "java"
+                    }
+                    tools {
+                            jdk "jdk-11(18.9)"
+                    }
+                    steps {
+                        script {
+                            try {
+                                bat './yukon-build/go.bat runUnitTests'
+                            } catch (Exception) {
+                                currentBuild.result = 'FAILURE'
+                                //Added sleep so that it capture full log for current stage
+                                sleep(5)
+                                sendEmailNotification("${env.STAGE_NAME}")
+							}
                         }
-                        unstash 'yukon-client'
-
-                        dir('yukon-server') {
-                            deleteDir()
-                        }
-                        unstash 'yukon-server'
-                        bat './yukon-build/go.bat build-install'
-
-                        if (params.RELEASE_MODE) {
-                            bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
-                            bat './yukon-build/go.bat init clean symstore build-dist'
-                            bat 'net use p: /delete'
-                        } else {
-                            bat './yukon-build/go.bat clean build-dist-pdb'
-                        }
-
-                        archiveArtifacts artifacts: 'yukon-build/dist/*'
-                    } catch (Exception) {
-                        currentBuild.result = 'FAILURE'
-                        //Added sleep so that it capture full log for current stage
-                        sleep(5)
-                        sendEmailNotification("${env.STAGE_NAME}")
                     }
                 }
             }
