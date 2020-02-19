@@ -12,9 +12,11 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -37,6 +39,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
         
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ConfigurationSource configSource;
     
     private RequestMultiReplyTemplate<RfnMetadataMultiRequest, RfnMetadataMultiResponse> multiReplyTemplate;
     
@@ -131,7 +134,9 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
 
     @PostConstruct
     public void initialize() {
-        multiReplyTemplate = new RequestMultiReplyTemplate<>(connectionFactory, JmsApiDirectory.RF_METADATA_MULTI);
+        Duration timeout = configSource.getDuration("RFN_META_DATA_REPLY_TIMEOUT", Duration.standardMinutes(1));
+        multiReplyTemplate = new RequestMultiReplyTemplate<>(connectionFactory, null, JmsApiDirectory.RF_METADATA_MULTI,
+                timeout, false);
     }
-    
+
 }
