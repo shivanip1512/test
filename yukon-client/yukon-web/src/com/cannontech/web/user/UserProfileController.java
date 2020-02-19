@@ -333,7 +333,7 @@ public class UserProfileController {
     }
     
     @GetMapping("/contacts/create")
-    public String createContact(ModelMap model, YukonUserContext context) {
+    public String createContact(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         
         ContactDto contactDto = new ContactDto();

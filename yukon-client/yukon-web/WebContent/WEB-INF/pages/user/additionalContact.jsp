@@ -38,7 +38,7 @@
                         <%-- EXISTING NOTIFICATIONS --%>
                         <tags:nameValueContainer2 id="contact-notif-table">
                         
-                            <cti:msg2 var="noneText" key=".notificationTable.none"/>
+                            <cti:msg2 var="noneText" key="yukon.common.selector.selectOne"/>
                             <c:forEach var="notif" items="${contactDto.otherNotifications}" varStatus="notifRow">
                                 <c:set var="newNotification" value="${notif.notificationId <= 0}"/>
                                 <tr>
@@ -58,6 +58,8 @@
                                     
                                     <td class="value">
                                         <tags:input path="otherNotifications[${notifRow.index}].notificationValue" inputClass="fl js-notif-value"/>
+                                    </td>
+                                    <td>
                                         <cti:button nameKey="delete" icon="icon-cross" renderMode="buttonImage" classes="js-remove fn"/>
                                     </td>
                             </c:forEach>
@@ -88,6 +90,8 @@
                         </td>
                         <td class="value">
                             <input type="text" name="otherNotifications[?].notificationValue" class="js-notif-value fl">
+                        </td>
+                        <td>
                             <cti:button renderMode="buttonImage" icon="icon-cross" classes="js-remove fn"/>
                         </td>
                     </tr>
