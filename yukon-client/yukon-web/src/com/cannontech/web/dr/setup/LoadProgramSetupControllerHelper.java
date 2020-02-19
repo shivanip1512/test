@@ -623,7 +623,7 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         case EcobeeSetpoint:
-            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
@@ -633,7 +633,7 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("cyclePeriod", List.of(30));
             break;
         case HoneywellSetpoint:
-            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
@@ -649,19 +649,19 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("postPeakLoadShaping", PostLoadShape.values());
             break;
         case ThermostatRamping:
-            model.addAttribute("units", TemperatureMeasureUnit.values());
-            model.addAttribute("setpoints", Setpoint.values());
+            model.addAttribute("units", Lists.newArrayList(TemperatureMeasureUnit.values()));
+            model.addAttribute("setpoints", Lists.newArrayList(Setpoint.values()));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SimpleThermostatRamping:
-            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SepTemperatureOffset:
-            model.addAttribute("temperatureModes", Mode.values());
-            model.addAttribute("units", TemperatureMeasureUnit.values());
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
+            model.addAttribute("units", Lists.newArrayList(TemperatureMeasureUnit.values()));
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             break;
