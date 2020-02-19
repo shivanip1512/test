@@ -11,15 +11,24 @@
     <cti:button nameKey="create" icon="icon-plus-green" href="${createUrl}" classes="fr"/>
     
     <tags:sectionContainer2 nameKey="additionalContacts">
-        <div class="scroll-sm">
+        <div class="scroll-md">
             <table class="compact-results-table no-stripes row-highlighting has-actions">
                 <th><i:inline key=".firstname"/></th>
                 <th><i:inline key=".lastname"/></th>
                 <th><i:inline key=".contactInfo"/></th>
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0" /></th>
                 <tbody>
-                    <c:forEach var="contact" items="${additionalContacts}">
-                        <tr>
+                    <c:forEach var="contact" items="${additionalContacts}" varStatus="status">
+                        <c:set var="count" value="${status.index + 1}"/>
+                        <c:choose>
+                            <c:when test="${count % 2 == 0}">
+                                <c:set var="striped" value="alt-row"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="striped" value=""/>
+                            </c:otherwise>
+                        </c:choose>
+                        <tr class="${striped}">
                             <td>${fn:escapeXml(contact.firstName)}</td>
                             <td>${fn:escapeXml(contact.lastName)}</td>
                             <td>                        
@@ -55,21 +64,17 @@
                                     <cti:url var="contactEditUrl" value="/user/contacts/${contact.contactId}/edit"/>
                                     <cm:dropdownOption key="yukon.web.components.button.edit.label" icon="icon-pencil" href="${contactEditUrl}"/>
                                     <cm:dropdownOption id="delete_${contact.contactId}" key="yukon.web.components.button.delete.label" icon="icon-cross" 
-                                        data-ok-event="yukon:profile:contact:remove" data-contact-id="${contact.contactId}"/>
+                                        data-ok-event="yukon:profile:contact:remove" data-contact-id="${contact.contactId}" classes="js-hide-dropdown"/>
                                     <d:confirm nameKey="confirmDelete" argument="${contact.firstName} ${contact.lastName}" on="#delete_${contact.contactId}"/>
                                 </cm:dropdown>
                             </td>
                         </tr>
                     </c:forEach>
-                    <c:if test="${empty additionalContacts}">
-                        <tr>
-                            <td colspan="4">
-                                <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
-                            </td
-                        </tr>
-                    </c:if>
                 </tbody>
             </table>
+            <c:if test="${empty additionalContacts}">
+                <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
+            </c:if>
         </div>
     </tags:sectionContainer2>
 </div>
