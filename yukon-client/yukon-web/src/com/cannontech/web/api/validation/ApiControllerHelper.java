@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +40,7 @@ public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    private AtomicReference<String> webServerUrl = new AtomicReference<String>();
+    private String webServerUrl;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
 
     @PostConstruct
@@ -54,7 +53,7 @@ public class ApiControllerHelper {
     }
 
     private void clearWebUrl() {
-        webServerUrl.set(StringUtils.EMPTY);
+        setWebServerUrl(StringUtils.EMPTY);
         log.info("Yukon Internal URL changed to {}, API connection URL will be reloaded.", getYukonInternalUrl());
     }
 
@@ -96,6 +95,13 @@ public class ApiControllerHelper {
     }
 
     /**
+     * Set the WebServer Url
+     */
+    private void setWebServerUrl(String webServerUrl) {
+        this.webServerUrl = webServerUrl;
+    }
+
+    /**
      * Returns the Yukon Internal Url.
      */
     private String getYukonInternalUrl() {
@@ -107,19 +113,20 @@ public class ApiControllerHelper {
      * @throws ApiCommunicationException
      */
     private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
-        HttpStatus responseCode = null;
-        if (StringUtils.isEmpty(webServerUrl.get())) {
-            responseCode = apiConnection(request, userContext);
-            if (responseCode != HttpStatus.OK) {
+
+        String webServerApiUrl = webServerUrl;
+        if (StringUtils.isEmpty(webServerApiUrl)) {
+            webServerApiUrl = apiConnection(request, userContext);
+            if (StringUtils.isEmpty(webServerApiUrl)) {
                 apiRequestHelper.setProxy();
-                responseCode = apiConnection(request, userContext);
+                webServerApiUrl = apiConnection(request, userContext);
             }
-            if (responseCode != HttpStatus.OK) {
+            if (StringUtils.isEmpty(webServerApiUrl)) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
-            log.info("Connection with Api successful with URL: " + webServerUrl);
+            log.info("Connection with Api successful with URL: " + webServerApiUrl);
         }
-        return webServerUrl.get();
+        return webServerApiUrl;
     }
 
     /**
@@ -138,7 +145,7 @@ public class ApiControllerHelper {
         return HttpStatus.NOT_FOUND;
     }
     
-    private HttpStatus apiConnection(HttpServletRequest request, YukonUserContext userContext) {
+    private String apiConnection(HttpServletRequest request, YukonUserContext userContext) {
         HttpStatus responseCode = null;
         String webUrl = null;
         try {
@@ -198,9 +205,9 @@ public class ApiControllerHelper {
         }
 
         if (responseCode == HttpStatus.OK) {
-            webServerUrl.set(webUrl);
+            setWebServerUrl(webUrl);
         }
-        return responseCode;
+        return webUrl;
     }
 
     /**
