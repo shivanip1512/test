@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.program.service.impl;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,7 +10,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.Logger;
@@ -189,7 +193,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 command.setUser(user);
                                 
                                 if(hardwareType.isItron()) {
-                                    addLmGroupId(requests, command, liteHw.getInventoryID());
+                                    var addedEnrollmentGroupIds = getAddedEnrollmentGroupIds(requests, liteHw.getInventoryID());
+                                    var removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments, requests);
+                                    var groupIds = CollectionUtils.union(addedEnrollmentGroupIds, removedEnrollmentGroupIds);
+                                    command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                                 }
                                 
                                 lmHardwareCommandService.sendConfigCommand(command);
@@ -202,7 +209,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             command.setUser(user);  
                             
                             if(hardwareType.isItron()) {
-                                addLmGroupId(requests, command, liteHw.getInventoryID());
+                                var addedEnrollmentGroupIds = getAddedEnrollmentGroupIds(requests, liteHw.getInventoryID());
+                                var removedEnrollmentGroupIds = getRemovedEnrollmentGroupIds(originalEnrollments, requests);
+                                var groupIds = CollectionUtils.union(addedEnrollmentGroupIds, removedEnrollmentGroupIds);
+                                command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                             }
                             
                             lmHardwareCommandService.sendInServiceCommand(command);
@@ -214,7 +224,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         command.setUser(user);
                         
                         if(hardwareType.isItron()) {
-                            addLmGroupId(originalEnrollments, command, liteHw.getInventoryID());
+                            var groupIds = getAddedEnrollmentGroupIds(originalEnrollments, liteHw.getInventoryID());
+                            command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupIds);
                         }
                         
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
@@ -251,15 +262,20 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         }
     }
     
-    /**
-     * Find group id and adds to the command.
-     */
-    private void addLmGroupId(List<ProgramEnrollment> requests, LmHardwareCommand command, int inventoryId) {
-        Integer groupId = requests.stream()
-                .filter(entrollment -> entrollment.getInventoryId() == inventoryId)
-                .findFirst().get()
-                .getLmGroupId();
-        command.getParams().put(LmHardwareCommandParam.GROUP_ID, groupId);
+    private Set<Integer> getRemovedEnrollmentGroupIds(Collection<ProgramEnrollment> originalEnrollments, 
+                                                      Collection<ProgramEnrollment> updatedEnrollments) {
+        
+        return CollectionUtils.subtract(originalEnrollments, updatedEnrollments)
+                              .stream()
+                              .map(ProgramEnrollment::getLmGroupId)
+                              .collect(Collectors.toSet());
+    }
+    
+    private Set<Integer> getAddedEnrollmentGroupIds(List<ProgramEnrollment> requests, int inventoryId) {
+        return requests.stream()
+                       .filter(enrollment -> enrollment.getInventoryId() == inventoryId)
+                       .map(ProgramEnrollment::getLmGroupId)
+                       .collect(Collectors.toSet());
     }
 
     private StarsOperation createStarsOperation(CustomerAccount customerAccount,
