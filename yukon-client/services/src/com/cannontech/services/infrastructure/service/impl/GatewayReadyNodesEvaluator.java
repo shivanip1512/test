@@ -4,6 +4,7 @@ import static com.cannontech.infrastructure.model.InfrastructureWarningType.GATE
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -67,6 +68,7 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
         // connected
         return gatewayToReadyNodes.entrySet()
                                   .stream()
+                                  .filter(Objects::nonNull)
                                   .filter(entry -> isWarnable(entry))
                                   .filter(entry -> isConnected(entry.getKey(), gatewayToConnectionStatus, connectionWarningDuration)) 
                                   .map(entry -> buildWarning(entry))
