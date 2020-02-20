@@ -219,29 +219,35 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     @Transactional
     @Override
-    public void enroll(int accountId, int groupId) {
+    public void enroll(int accountId, Collection<Integer> groupIds) {
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         CustomerAccount account = customerAccountDao.getById(accountId);
-        if (!isEnrollmentSentToItron(account, groupId, enrollments, enrollmentCache)) {
+        
+        if (!isEnrollmentSentToItron(account, groupIds, enrollments, enrollmentCache)) {
             log.debug("ITRON-enroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, true);           
-            Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
-            long itronGroupId = addMacAddressesToGroup(account, getGroup(groupId), inventoryIds);
-            itronDao.updateGroupMapping(groupId, itronGroupId);
+            for (int groupId : groupIds) {
+                Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
+                long itronGroupId = updateMacAddressesInGroup(account, getGroup(groupId), inventoryIds);
+                itronDao.updateGroupMapping(groupId, itronGroupId);
+            }
             unenrollmentCache.invalidate(accountId);
         }
     }
     
     @Transactional
     @Override
-    public void unenroll(int accountId, int groupId) {
+    public void unenroll(int accountId, Collection<Integer> groupIds) {
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         CustomerAccount account = customerAccountDao.getById(accountId);
-        if (!isEnrollmentSentToItron(account, groupId, enrollments, unenrollmentCache)) {
+        
+        if (!isEnrollmentSentToItron(account, groupIds, enrollments, unenrollmentCache)) {
             log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, false);
-            Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
-            addMacAddressesToGroup(account, getGroup(groupId), inventoryIds);
+            for (int groupId : groupIds) {
+                Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
+                updateMacAddressesInGroup(account, getGroup(groupId), inventoryIds);
+            }
             enrollmentCache.invalidate(accountId);
         }
     }
@@ -255,7 +261,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         for(int yukonGroupId : yukonGroupIds) {
             Set<Integer> inventoryIds = getInventoryIdsForGroup(yukonGroupId);
             inventoryIds.add(inventoryId);
-            addMacAddressesToGroup(account, getGroup(yukonGroupId), inventoryIds);
+            updateMacAddressesInGroup(account, getGroup(yukonGroupId), inventoryIds);
         }
     }
     
@@ -277,7 +283,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
             Set<Integer> inventoryIds = getInventoryIdsForGroup(yukonGroupId);
             inventoryIds.remove(inventoryId);
-            addMacAddressesToGroup(account, getGroup(yukonGroupId), inventoryIds);
+            updateMacAddressesInGroup(account, getGroup(yukonGroupId), inventoryIds);
         }
     }
     
@@ -382,8 +388,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             UpdateDeviceEventLogsResponse response =
                 (UpdateDeviceEventLogsResponse) ItronEndpointManager.DEVICE.getTemplate(
                     settingDao).marshalSendAndReceive(url, request);
-            log.debug("ITRON-updateDeviceLogs url:{} groups:{} result:{}.", url, response.isUpdateRequested(),
-                request.getGroupIDs(), "success");
+            log.debug("ITRON-updateDeviceLogs url:{} updateRequested:{} groups:{} result:{}.", url, 
+                      response.isUpdateRequested(), request.getGroupIDs(), "success");
             log.debug(XmlUtils.getPrettyXml(response));
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.DEVICE);
@@ -429,7 +435,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * 4. For each group sends all mac addresses to itron
      * @return itron group id
      */
-    private long addMacAddressesToGroup(CustomerAccount account, LiteYukonPAObject group, Set<Integer> inventoryIds) {
+    private long updateMacAddressesInGroup(CustomerAccount account, LiteYukonPAObject group, Set<Integer> inventoryIds) {
         log.debug("ITRON-group {} is associated with account number {}", group.getPaoName(),
             account.getAccountNumber());        
         if (!inventoryIds.isEmpty()) {
@@ -954,37 +960,71 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Returns true if enrollment was already sent to Itron. Caches enrollment information.
      */
-    private boolean isEnrollmentSentToItron(CustomerAccount account, int groupId, List<ProgramEnrollment> enrollments,
-            Cache<Integer, Enrollment> cacheToCheck) {
-        Enrollment newValueToCache = new Enrollment(groupId, enrollments);
-        Enrollment valueInCache = cacheToCheck.getIfPresent(account.getAccountId());
-        if (valueInCache != null 
-                && CollectionUtils.isEqualCollection(newValueToCache.inventoryIds, valueInCache.inventoryIds)
-                    && newValueToCache.groupId == valueInCache.groupId) {
-            
+    private boolean isEnrollmentSentToItron(CustomerAccount account, Collection<Integer> groupIds, List<ProgramEnrollment> enrollments,
+            Cache<Integer, Enrollment> cache) {
+        Enrollment newValue = new Enrollment(groupIds, enrollments);
+        Enrollment cachedValue = cache.getIfPresent(account.getAccountId());
+        if (cachedValue != null && cachedValue.equals(newValue)) {
             log.debug("ITRON-skipping sending enroll/unroll messages for account number {}, as the messages were already sent. ",
                 account.getAccountNumber());
             return true;
         }
-        cacheToCheck.put(account.getAccountId(), newValueToCache);
+        cache.put(account.getAccountId(), newValue);
         return false;
     }
         
     private static class Enrollment {
-        private int groupId;
+        private Collection<Integer> groupIds;
         private List<Integer> inventoryIds;
         
-        public Enrollment(int groupId, List<ProgramEnrollment> enrollments){
+        public Enrollment(Collection<Integer> groupIds, List<ProgramEnrollment> enrollments) {
             inventoryIds = enrollments.stream()
-                    .map(ProgramEnrollment::getInventoryId)
-                    .collect(Collectors.toList());
-            this.groupId = groupId;
+                                      .map(ProgramEnrollment::getInventoryId)
+                                      .collect(Collectors.toList());
+            this.groupIds = groupIds;
+        }
+        
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((groupIds == null) ? 0 : groupIds.hashCode());
+            result = prime * result + ((inventoryIds == null) ? 0 : inventoryIds.hashCode());
+            return result;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Enrollment other = (Enrollment) obj;
+            if (groupIds == null) {
+                if (other.groupIds != null) {
+                    return false;
+                }
+            } else if (!CollectionUtils.isEqualCollection(groupIds, other.groupIds)) {
+                return false;
+            }
+            if (inventoryIds == null) {
+                if (other.inventoryIds != null) {
+                    return false;
+                }
+            } else if (!CollectionUtils.isEqualCollection(inventoryIds, other.inventoryIds)) {
+                return false;
+            }
+            return true;
         }
         
         @Override
         public String toString() {
-            return ToStringBuilder.reflectionToString(this,
-                ToStringStyle.MULTI_LINE_STYLE);
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
         }
     }
 }
