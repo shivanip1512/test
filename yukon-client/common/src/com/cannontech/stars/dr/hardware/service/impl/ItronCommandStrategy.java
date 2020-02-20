@@ -1,7 +1,5 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
-import java.util.Collection;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,11 +37,11 @@ public class ItronCommandStrategy  implements LmHardwareCommandStrategy{
             case CONFIG:
             case IN_SERVICE:
                 itronCommunicationService.enroll(command.getDevice().getAccountID(),
-                (Collection<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID));
+                    (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID));
                 break;
             case OUT_OF_SERVICE:
                 itronCommunicationService.unenroll(command.getDevice().getAccountID(),
-                (Collection<Integer>) command.getParams().get(LmHardwareCommandParam.GROUP_ID));
+                    (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID));
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
                 itronCommunicationService.optIn(command.getDevice().getAccountID(), command.getDevice().getInventoryID());

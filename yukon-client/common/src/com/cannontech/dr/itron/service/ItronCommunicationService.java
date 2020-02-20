@@ -1,6 +1,5 @@
 package com.cannontech.dr.itron.service;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.zip.ZipFile;
 
@@ -48,7 +47,7 @@ public interface ItronCommunicationService {
      * 6. Finds mac address for each device
      * 7. For each group sends all mac addresses to itron
      */
-    void enroll(int accountId, Collection<Integer> groupIds);
+    void enroll(int accountId, int groupId);
 
     /**
      * Attempts to sync Yukon account with Itron
@@ -59,7 +58,7 @@ public interface ItronCommunicationService {
      * 5. Finds mac address for each device
      * 6. For each group sends all mac addresses to itron
      */
-    void unenroll(int accountId, Collection<Integer> groupIds);
+    void unenroll(int accountId, int groupId);
 
     /**
      * Attempts to sync Yukon account with Itron
