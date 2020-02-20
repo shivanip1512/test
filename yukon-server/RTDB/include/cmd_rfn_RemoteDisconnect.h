@@ -107,7 +107,7 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload &response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     boost::optional<DisconnectMode> getDisconnectMode() const override;
     boost::optional<Reconnect>      getReconnectParam() const override;
@@ -209,7 +209,7 @@ public:
 
     RfnCommandResult decodeCommand( const CtiTime now, const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     boost::optional<DisconnectMode> getDisconnectMode() const override;
     boost::optional<Reconnect>      getReconnectParam() const override;

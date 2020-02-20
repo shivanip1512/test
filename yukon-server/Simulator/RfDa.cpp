@@ -1,5 +1,10 @@
 #include "precompiled.h"
 
+#include "RfnE2eDataIndicationMsg.h"
+#include "RfnE2eDataRequestMsg.h"
+
+#include "e2e_packet.h"
+
 #include "prot_dnpSlave.h"
 #include "rfn_identifier.h"
 #include "RfDa.h"
@@ -11,21 +16,35 @@ using namespace std::chrono_literals;
 
 namespace Cti::Simulator {
 
-auto RfDa::doHubMeterRequest(const Bytes& request, const RfnIdentifier & rfnId) -> Bytes
+void RfDa::processRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
 {
-    if( ! request.empty() )
-    {
-        switch( request[0] )
-        {
-            case 0x35:
-            {
-                auto serial = std::stoi(rfnId.serialNumber);
+    using ASIDs = Cti::Messaging::Rfn::ApplicationServiceIdentifiers;
 
-                return { 0x36, static_cast<unsigned char>(serial >> 8), static_cast<unsigned char>(serial) };
+    switch( requestMsg.applicationServiceId )
+    {
+        case ASIDs::HubMeterCommandSet:
+        {
+            if( !request.payload.empty() )
+            {
+                switch( request.payload[0] )
+                {
+                    case 0x35:
+                    {
+                        auto serial = std::stoi(requestMsg.rfnIdentifier.serialNumber);
+
+                        e2edt_reply_packet replyPacket;
+                        
+                        replyPacket.id = request.id;
+                        replyPacket.token = request.token;
+                        replyPacket.payload = { 0x36, static_cast<unsigned char>(serial >> 8), static_cast<unsigned char>(serial) };
+                        replyPacket.status = Protocols::Coap::ResponseCode::Content;
+
+                        e2eReplySender(requestMsg, replyPacket);
+                    }
+                }
             }
         }
     }
-    return {};
 }
 
 auto RfDa::buildDnp3Response(const Bytes& request) -> Bytes

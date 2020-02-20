@@ -200,7 +200,7 @@ RfnCommandResult RfnDataStreamingGetMetricsListCommand::decodeCommand(const CtiT
     return createJson(cr, _paoType);
 }
 
-std::string RfnDataStreamingGetMetricsListCommand::getCommandName()
+std::string RfnDataStreamingGetMetricsListCommand::getCommandName() const
 {
     return "Data Streaming Get Metrics List Request";
 }
@@ -286,7 +286,7 @@ RfnCommandResult RfnDataStreamingSetMetricsCommand::decodeCommand(const CtiTime 
     return json;
 }
 
-std::string RfnDataStreamingSetMetricsCommand::getCommandName()
+std::string RfnDataStreamingSetMetricsCommand::getCommandName() const
 {
     return "Data Streaming Set Metrics Request";
 }

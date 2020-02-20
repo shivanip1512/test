@@ -203,7 +203,7 @@ auto RfnSetTemperatureAlarmConfigurationCommand::getAlarmConfiguration() const -
     return boost::none;
 }
 
-std::string RfnSetTemperatureAlarmConfigurationCommand::getCommandName()
+std::string RfnSetTemperatureAlarmConfigurationCommand::getCommandName() const
 {
     return "Set Temperature Alarm Configuration Request";
 }
@@ -283,7 +283,7 @@ auto RfnGetTemperatureAlarmConfigurationCommand::getAlarmConfiguration() const -
     return _configuration;
 }
 
-std::string RfnGetTemperatureAlarmConfigurationCommand::getCommandName()
+std::string RfnGetTemperatureAlarmConfigurationCommand::getCommandName() const
 {
     return "Get Temperature Alarm Configuration Request";
 }
