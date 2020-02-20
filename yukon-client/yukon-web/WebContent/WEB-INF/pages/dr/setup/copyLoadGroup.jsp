@@ -14,8 +14,7 @@
                 <tags:input path="name" maxlength="60" inputClass="w300"/>
             </tags:nameValue2>
             <c:if test="${not empty routes}">
-                <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="liteID" 
-                nameKey=".route" path="routeId" defaultItemLabel="${route.paoName}" defaultItemValue="${route.liteID}"/>
+                <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="liteID" nameKey=".route" path="routeId"/>
             </c:if>
         </tags:nameValueContainer2>
     </form:form>

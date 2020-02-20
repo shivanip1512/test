@@ -295,12 +295,17 @@ public class LoadGroupSetupController {
         lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", litePao.getPaoName()));
         model.addAttribute("lmCopy", lmCopy);
         if (loadGroupType.isLoadGroupSupportRoute()) {
-            model.addAttribute("routes", cache.getAllRoutes());
-            LiteYukonPAObject route = cache.getAllRoutes().stream()
-                                                          .filter(pao -> pao.getLiteID() == routeId)
-                                                          .findFirst()
-                                                          .get();
-            model.addAttribute("route", route);
+            List<LiteYukonPAObject> routes = cache.getAllRoutes().stream()
+                                                                 .filter(pao -> pao.getLiteID() != routeId)
+                                                                 .collect(Collectors.toList());
+
+            // Get the parent group route and add it to the beginning of the list
+            LiteYukonPAObject parentRoute = cache.getAllRoutes().stream()
+                                                                .filter(pao -> pao.getLiteID() == routeId)
+                                                                .findFirst()
+                                                                .get();
+            routes.add(0, parentRoute);
+            model.addAttribute("routes", routes);
         }
 
         model.addAttribute("loadGroupId", id);
