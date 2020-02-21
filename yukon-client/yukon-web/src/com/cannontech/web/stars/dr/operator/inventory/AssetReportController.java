@@ -96,6 +96,7 @@ public class AssetReportController {
         
         int dequeueCount = 0;
         List<Integer> ids = Lists.transform(collection.getList(), YukonInventory.TO_INVENTORY_ID);
+        int assetSize = ids.size();
         queueDevices(ids, ecId, queue);
       
         resp.setContentType("text/csv");
@@ -106,7 +107,7 @@ public class AssetReportController {
              CSVWriter csvWriter = new CSVWriter(writer);) {
             csvWriter.writeNext(header);
             while (true) {
-                if (dequeueCount != ids.size()) {
+                if (dequeueCount != assetSize) {
                     if (!queue.isEmpty()) {
                         AssetReportDevice device = queue.take();
                         dequeueCount++;
