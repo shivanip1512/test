@@ -1,23 +1,22 @@
 package com.eaton.pages;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.MenuElement;
+import com.eaton.framework.DriverExtensions;
 
 public class HomePage extends PageBase {
 
     private MenuElement menu;
-    private WebDriver driver;
 
-    public HomePage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public HomePage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        this.driver = driver;
-        menu = new MenuElement(this.driver);
+        menu = new MenuElement(this.driverExt);
     }
 
     public MenuElement getMenu() {
@@ -43,7 +42,7 @@ public class HomePage extends PageBase {
 
     private List<WebElement> getUtilityUrls() {
 
-        return this.driver.findElements(By.cssSelector(".utility a"));
+        return this.driverExt.findElements(By.cssSelector(".utility a"), Optional.empty());
     }
 
     public void clickSupport() {

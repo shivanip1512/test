@@ -1,31 +1,32 @@
 package com.eaton.pages.demandresponse;
 
+import java.util.Optional;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 
 import com.eaton.elements.ActionBtnDropDownElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class DemandResponseDashboardPage extends PageBase {
 
     public static final String DEFAULT_URL = Urls.DemandResponse.DASHBOARD;
-    public ActionBtnDropDownElement actionBtn;
+    private ActionBtnDropDownElement actionBtn;
 
-    public DemandResponseDashboardPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public DemandResponseDashboardPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
         this.requiresLogin = true;
         pageUrl = DEFAULT_URL;
-        actionBtn = new ActionBtnDropDownElement(this.driver);
-    }
-
-    public String getTitle() {
-
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        actionBtn = new ActionBtnDropDownElement(this.driverExt);
     }
 
     public String getQuickSearchesUrl(String linkText) {
-        return this.driver.findElement(By.linkText(linkText)).getAttribute("href");
+        return this.driverExt.findElement(By.linkText(linkText), Optional.empty()).getAttribute("href");
+    }
+    
+    public ActionBtnDropDownElement getActionBtn() {
+        return actionBtn;
     }
 }

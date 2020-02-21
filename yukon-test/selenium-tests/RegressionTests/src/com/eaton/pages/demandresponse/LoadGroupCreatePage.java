@@ -2,14 +2,12 @@ package com.eaton.pages.demandresponse;
 
 import java.util.List;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class LoadGroupCreatePage extends PageBase {
@@ -17,16 +15,12 @@ public class LoadGroupCreatePage extends PageBase {
     private TextEditElement name;
     private DropDownElement type;
 
-    public LoadGroupCreatePage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public LoadGroupCreatePage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(this.driver, "name");
-        type = new DropDownElement(this.driver, "type");
+        name = new TextEditElement(this.driverExt, "name");
+        type = new DropDownElement(this.driverExt, "type");
     }    
-
-    public String getTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
-    }
 
     // General
     public TextEditElement getName() {
@@ -38,78 +32,78 @@ public class LoadGroupCreatePage extends PageBase {
     }
 
     public DropDownElement getCommunicationRoute() {
-        return new DropDownElement(this.driver, "routeId");
+        return new DropDownElement(this.driverExt, "routeId");
     }
     
     //Device Class
     public DropDownElement getDeviceClass() {
-        return new DropDownElement(this.driver, "deviceClassSet");
+        return new DropDownElement(this.driverExt, "deviceClassSet");
     }
     
     //Enrollment
     public TextEditElement getUtilityEnrollmentGroup() {
-        return new TextEditElement(this.driver, "utilityEnrollmentGroup");
+        return new TextEditElement(this.driverExt, "utilityEnrollmentGroup");
     }
     
     //Timing
     public TextEditElement getRampInTime() {
-        return new TextEditElement(this.driver, "rampInMinutes");
+        return new TextEditElement(this.driverExt, "rampInMinutes");
     }
     
     public TextEditElement getRampOutTime() {
-        return new TextEditElement(this.driver, "rampOutMinutes");
+        return new TextEditElement(this.driverExt, "rampOutMinutes");
     }
 
     // Geographical Address
     public RadioButtonElement getAddressUsage() {
         // addressUsage is used for 2 different radio buttons on this page
-        return new RadioButtonElement(this.driver, "addressUsage");
+        return new RadioButtonElement(this.driverExt, "addressUsage");
     }
 
     // Geographical Addressing
     public TextEditElement getSpid() {
-        return new TextEditElement(this.driver, "serviceProvider");
+        return new TextEditElement(this.driverExt, "serviceProvider");
     }
 
     public TextEditElement getGeo() {
-        return new TextEditElement(this.driver, "geo");
+        return new TextEditElement(this.driverExt, "geo");
     }
 
     public TextEditElement getSubstation() {
-        return new TextEditElement(this.driver, "substation");
+        return new TextEditElement(this.driverExt, "substation");
     }
 
     public RadioButtonElement getFeeder() {
-        return new RadioButtonElement(this.driver, "feeder");
+        return new RadioButtonElement(this.driverExt, "feeder");
     }
 
     public TextEditElement getZip() {
-        return new TextEditElement(this.driver, "zip");
+        return new TextEditElement(this.driverExt, "zip");
     }
 
     public TextEditElement getUser() {
-        return new TextEditElement(this.driver, "user");
+        return new TextEditElement(this.driverExt, "user");
     }
 
     public TextEditElement getSerial() {
-        return new TextEditElement(this.driver, "serialNumber");
+        return new TextEditElement(this.driverExt, "serialNumber");
     }
 
     // Addressing
     public TextEditElement getGoldAddress() {
-        return new TextEditElement(this.driver, "goldAddress");
+        return new TextEditElement(this.driverExt, "goldAddress");
     }
 
     public TextEditElement getSilverAddress() {
-        return new TextEditElement(this.driver, "silverAddress");
+        return new TextEditElement(this.driverExt, "silverAddress");
     }
 
     public RadioButtonElement getAddressToUse() {
-        return new RadioButtonElement(this.driver, "addressUsage");
+        return new RadioButtonElement(this.driverExt, "addressUsage");
     }
 
     public RadioButtonElement getRelayToUse() {
-        return new RadioButtonElement(this.driver, "relayUsage");
+        return new RadioButtonElement(this.driverExt, "relayUsage");
     }
 
     public List<String> getRelayToUseValues() {
@@ -123,44 +117,44 @@ public class LoadGroupCreatePage extends PageBase {
     // LoadAddress
     public RadioButtonElement getUsage() {
         // addressUsage is used for 2 different radio buttons on this page
-        return new RadioButtonElement(this.driver, "addressUsage");
+        return new RadioButtonElement(this.driverExt, "addressUsage");
     }
 
     // LoadAddressing
     public RadioButtonElement getLoads() {
-        return new RadioButtonElement(this.driver, "relayUsage");
+        return new RadioButtonElement(this.driverExt, "relayUsage");
     }
 
     public TextEditElement getProgram() {
-        return new TextEditElement(this.driver, "program");
+        return new TextEditElement(this.driverExt, "program");
     }
 
     public TextEditElement getSplinter() {
-        return new TextEditElement(this.driver, "splinter");
+        return new TextEditElement(this.driverExt, "splinter");
     }
 
     // Optional Attributes
     public DropDownElement getControlPriority() {
-        return new DropDownElement(this.driver, "protocolPriority");
+        return new DropDownElement(this.driverExt, "protocolPriority");
     }
 
     public TextEditElement getkWCapacity() {
-        return new TextEditElement(this.driver, "kWCapacity");
+        return new TextEditElement(this.driverExt, "kWCapacity");
     }
 
     public TrueFalseCheckboxElement getDisableGroup() {
-        return new TrueFalseCheckboxElement(this.driver, "disableGroup");
+        return new TrueFalseCheckboxElement(this.driverExt, "disableGroup");
     }
 
     public TrueFalseCheckboxElement getDisableControl() {
-        return new TrueFalseCheckboxElement(this.driver, "disableControl");
+        return new TrueFalseCheckboxElement(this.driverExt, "disableControl");
     }
 
     public Button getSaveBtn() {
-        return new Button(this.driver, "Save");
+        return new Button(this.driverExt, "Save");
     }
 
     public Button getCancelBtn() {
-        return new Button(this.driver, "Cancel");
+        return new Button(this.driverExt, "Cancel");
     }
 }

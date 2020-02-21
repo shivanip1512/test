@@ -47,6 +47,26 @@ public final class Urls {
         public static final String LOAD_GROUP_CREATE = "/dr/setup/loadGroup/create";
         public static final String LOAD_GROUP_DETAIL = "/dr/setup/loadGroup/";
         public static final String LOAD_GROUP_EDIT = "/dr/setup/loadGroup/";
+        public static final String LOAD_GROUP_SETUP_LIST = "/dr/setup/filter?filterByType=LOAD_GROUP";
+        
+        public static final String LOAD_PROGRAM_CREATE = "/dr/setup/loadProgram/create";
+        public static final String LOAD_PROGRAM_DETAILS = "/dr/setup/loadProgram/";
+        public static final String LOAD_PROGRAM_EDIT = "/dr/setup/loadProgram/";
+        public static final String LOAD_PROGRAM_SETUP_LIST = "/dr/setup/filter?filterByType=LOAD_PROGRAM";
+        
+        public static final String CONTROL_AREA_CREATE = "/dr/setup/controlArea/create";
+        public static final String CONTROL_AREA_DETAILS = "/dr/setup/controlArea/";
+        public static final String CONTROL_AREA_EDIT = "/dr/setup/controlArea/";
+        public static final String CONTROL_AREA_SETUP_LIST = "/dr/setup/filter?filterByType=CONTROL_AREA";
+        
+        public static final String ACTIVE_CONTROL_AREAS = "/dr/controlArea/list?state=active";
+        public static final String ACTIVE_PROGRAMS = "/dr/program/list?state=ACTIVE";
+        public static final String ACTIVE_LOAD_GROUPS = "/dr/loadGroup/list?state=active";
+        
+        public static final String SCENARIO_CREATE = "/dr/setup/controlScenario/create";
+        public static final String SCENARIO_DETAILS = "/dr/setup/controlScenario/";
+        public static final String SCENARIO_EDIT = "/dr/setup/controlScenario/";
+        public static final String SCENARIO_SETUP_LIST = "/dr/setup/filter?filterByType=CONTROL_SCENARIO";        
 
         public static final String CI_CURTAILMENT = "/dr/cc/home";
 
@@ -63,6 +83,7 @@ public final class Urls {
     
     public static final class Filters {
         public static final String LOAD_GROUP = "LOAD_GROUP";
+        public static final String LOAD_PROGRAM = "LOAD_PROGRAM";
     }
 
     public static final class CapControl {

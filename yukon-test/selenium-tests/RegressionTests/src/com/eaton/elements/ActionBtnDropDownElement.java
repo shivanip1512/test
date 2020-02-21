@@ -1,21 +1,23 @@
 package com.eaton.elements;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class ActionBtnDropDownElement {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
 
-    public ActionBtnDropDownElement(WebDriver driver) {
-        this.driver = driver;    
+    public ActionBtnDropDownElement(DriverExtensions driverExt) {
+        this.driverExt = driverExt;    
     }
     
     public WebElement getActionBtn() {
-        return this.driver.findElement(By.cssSelector(".page-actions #b-page-actions button"));
+        return this.driverExt.findElement(By.cssSelector(".page-actions #b-page-actions button"), Optional.empty());
     }
 
     public void click() {
@@ -36,7 +38,7 @@ public class ActionBtnDropDownElement {
         WebElement element = null;
         long startTime = System.currentTimeMillis();
         while (element == null && System.currentTimeMillis() - startTime < 3000) {
-            element = this.driver.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"));
+            element = this.driverExt.findElement(By.cssSelector(".dropdown-menu[style*='display: block;']"), Optional.empty());
         }
         
         if (element != null) {

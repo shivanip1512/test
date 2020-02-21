@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.eaton.elements.WebTableColumnHeader;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
@@ -24,16 +25,27 @@ public class ControlAreaListTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
         softAssertion = getSoftAssertion();
 
         driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA);
 
-        listPage = new ControlAreaListPage(driver, null);
+        listPage = new ControlAreaListPage(driverExt, null);
+    }
+    
+    @Test
+    public void pageTitleCorrect() {
+        final String EXPECTED_TITLE = "Control Areas";
+        
+        String actualPageTitle = listPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
     @Test
     public void columnHeadersCorrect() {
-
+        final int EXPECTED_COUNT = 8;
+        
         List<WebTableColumnHeader> headers = listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
@@ -41,19 +53,16 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         for (WebTableColumnHeader header : headers) {
             headerList.add(header.getColumnName());
         }
-
-        Assert.assertEquals(headerList.size(), 8);
-        softAssertion.assertTrue(headerList.contains("Name"));
-        softAssertion.assertTrue(headerList.contains("State"));
-        softAssertion.assertTrue(headerList.contains("Value / Threshold"));
-        softAssertion.assertTrue(headerList.contains("Peak / Projection"));
-        softAssertion.assertTrue(headerList.contains("ATKU"));
-        softAssertion.assertTrue(headerList.contains("Priority"));
-        softAssertion.assertTrue(headerList.contains("Time Window"));
-    }
-
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS })
-    public void pageTitleCorrect() {
-        Assert.assertEquals(listPage.getTitle(), "Control Areas");
+        
+        int actualCount = headerList.size();
+        
+        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
+        softAssertion.assertTrue(headerList.contains("Name"), "Expected Column Header of Name");
+        softAssertion.assertTrue(headerList.contains("State"), "Expected Column Header of State");
+        softAssertion.assertTrue(headerList.contains("Value / Threshold"), "Expected Column Header of Value / Threshold");
+        softAssertion.assertTrue(headerList.contains("Peak / Projection"), "Expected Column Header of Peak / Projection");
+        softAssertion.assertTrue(headerList.contains("ATKU"), "Expected Column Header of ATKU");
+        softAssertion.assertTrue(headerList.contains("Priority"), "Expected Column Header of Priority");
+        softAssertion.assertTrue(headerList.contains("Time Window"), "Expected Column Header of Time Window");
     }
 }

@@ -2,32 +2,38 @@ package com.eaton.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class WebTable {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private String tableClassName;
     private List<WebTableColumnHeader> columnHeaders = null;
     private List<WebTableRow> dataRows;
-    public WebTableFilter filter;    
-    public WebElement table;
+    private WebElement parentElement; 
 
-    public WebTable(WebDriver driver, String tableClassName) {
-        this.driver = driver;
+    public WebTable(DriverExtensions driverExt, String tableClassName) {
+        this.driverExt = driverExt;
         this.tableClassName = tableClassName;
-        setTable();
     }
     
-    private void setTable() {
-        this.table = this.driver.findElement(By.cssSelector("." + this.tableClassName));
+    public WebTable(DriverExtensions driverExt, String tableClassName, WebElement parentElement) {
+        this.driverExt = driverExt;
+        this.tableClassName = tableClassName;
+        this.parentElement = parentElement;
     }
-
+    
     private WebElement getTable() {
-        return this.table;
+        if (this.parentElement != null) {
+            return this.parentElement.findElement(By.cssSelector("." + this.tableClassName));
+        } else {
+            return this.driverExt.findElement(By.cssSelector("." + this.tableClassName), Optional.empty());   
+        } 
     }
 
     public List<WebTableColumnHeader> getColumnHeaders() {
@@ -39,12 +45,12 @@ public class WebTable {
         return this.columnHeaders;
     }
 
-    public List<WebTableRow> getDataRow() {
+    public List<WebTableRow> getDataRows() {
 
         findDataRows();
 
         return this.dataRows;
-    }    
+    }      
 
     public void waitForLoadToComplete() {
         // TODO determine how to wait for table to finish loading...
@@ -59,7 +65,7 @@ public class WebTable {
     }
     
     public void searchTable(String value) {
-        TextEditElement search = new TextEditElement(this.driver, "ss");
+        TextEditElement search = new TextEditElement(this.driverExt, "ss");
         
         search.clearInputValue();
         search.setInputValue(value);
@@ -67,10 +73,15 @@ public class WebTable {
         waitForLoadToComplete();
     }
     
+    public void clearSearch() {
+        TextEditElement search = new TextEditElement(this.driverExt, "ss");
+        search.clearInputValue();
+    }
+    
     private WebTableFilter filter() {
-        WebElement filterElement = this.driver.findElement(By.cssSelector(".filter-section"));
+        WebElement filterElement = this.driverExt.findElement(By.cssSelector(".filter-section"), Optional.empty());
         
-        return new WebTableFilter(filterElement, this.driver);
+        return new WebTableFilter(filterElement, this.driverExt);
     }
 
     private void findDataRows() {
@@ -82,6 +93,23 @@ public class WebTable {
             newList.add(new WebTableRow(element));
         }
     }
+    
+    public WebTableRow getDataRowByName(String name) {
+        List<WebElement> rowList = this.getTable().findElements(By.cssSelector("tbody tr"));
+        
+        //WebElement element = rowList.stream().filter((row) -> row.findElement(By.cssSelector("a")).getText().contains(name)).findFirst().orElseThrow();
+        
+        //return new WebTableRow(element);
+       
+        for (WebElement row : rowList) {
+            String text = row.findElement(By.cssSelector("a")).getText();
+            
+            if (text.equals(name)) {
+                return new WebTableRow(row);
+            }
+        }
+        return null;
+    }    
 
     private void findColumnHeaders() {
 

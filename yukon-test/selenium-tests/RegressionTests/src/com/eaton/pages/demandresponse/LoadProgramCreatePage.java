@@ -1,8 +1,5 @@
 package com.eaton.pages.demandresponse;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
@@ -13,22 +10,21 @@ import com.eaton.elements.modals.gears.CreateHoneywellPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateItronPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateMeterDiconnectPrgmModal;
 import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
+import com.eaton.elements.tabs.LoadGroupsTab;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class LoadProgramCreatePage extends PageBase {
 
     private TextEditElement name;
     private DropDownElement type;
+    private static final String PARENT_NAME = "gear-create-popup-LM_DIRECT_PROGRAM";
 
-    public LoadProgramCreatePage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public LoadProgramCreatePage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(this.driver, "name");
-        type = new DropDownElement(this.driver, "type");
-    }
-
-    public String getTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        name = new TextEditElement(this.driverExt, "name");
+        type = new DropDownElement(this.driverExt, "type");
     }
 
     // General
@@ -41,79 +37,80 @@ public class LoadProgramCreatePage extends PageBase {
     }
 
     public DropDownElement getOperationalState() {
-        return new DropDownElement(this.driver, "operationalState");
+        return new DropDownElement(this.driverExt, "operationalState");
     }
 
     public DropDownElement getConstraint() {
-        return new DropDownElement(this.driver, "constraint.constraintId");
+        return new DropDownElement(this.driverExt, "constraint.constraintId");
     }
 
     // Trigger Threshold Settings
     public TextEditElement getTriggerOffset() {
-        return new TextEditElement(this.driver, "triggerOffset");
+        return new TextEditElement(this.driverExt, "triggerOffset");
     }
 
     public TextEditElement getRestoreOffset() {
-        return new TextEditElement(this.driver, "restoreOffset");
+        return new TextEditElement(this.driverExt, "restoreOffset");
     }
-
-    // Gears
-    // add gear section
 
     // Control Window
     public TrueFalseCheckboxElement getUseWindowOne() {
-        return new TrueFalseCheckboxElement(this.driver, "controlWindowOne");
+        return new TrueFalseCheckboxElement(this.driverExt, "controlWindowOne");
     }
 
     public TrueFalseCheckboxElement getUseWindowTwo() {
-        return new TrueFalseCheckboxElement(this.driver, "controlWindowTwo");
+        return new TrueFalseCheckboxElement(this.driverExt, "controlWindowTwo");
     }
 
     public Button getSaveBtn() {
-        return new Button(this.driver, "Save");
+        return new Button(this.driverExt, "Save");
     }
 
     public Button getCancelBtn() {
-        return new Button(this.driver, "Cancel");
+        return new Button(this.driverExt, "Cancel");
     }
 
-    public Button getCreateBtn() {
-        return new Button(this.driver, "Create");
+    public Button getGearsCreateBtn() {
+        return new Button(this.driverExt, "Create");
     }
 
     public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {
-        getCreateBtn().click();
+        getGearsCreateBtn().click();
 
-        return new CreateDirectPrgmGearModal(this.driver, "gear-create-popup-LM_DIRECT_PROGRAM");
+        return new CreateDirectPrgmGearModal(this.driverExt, PARENT_NAME);
     }
 
     public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal() {
-        getCreateBtn().click();
+        getGearsCreateBtn().click();
 
-        return new CreateEcobeePrgmGearModal(this.driver, "gear-create-popup-LM_DIRECT_PROGRAM");
+        return new CreateEcobeePrgmGearModal(this.driverExt, PARENT_NAME);
     }
 
     public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
-        getCreateBtn().click();
+        getGearsCreateBtn().click();
 
-        return new CreateHoneywellPrgmGearModal(this.driver, "gear-create-popup-LM_DIRECT_PROGRAM");
+        return new CreateHoneywellPrgmGearModal(this.driverExt, PARENT_NAME);
     }
 
     public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
-        getCreateBtn().click();
+        getGearsCreateBtn().click();
 
-        return new CreateItronPrgmGearModal(this.driver, "gear-create-popup-LM_DIRECT_PROGRAM");
+        return new CreateItronPrgmGearModal(this.driverExt, PARENT_NAME);
     }
 
     public CreateMeterDiconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
-        getCreateBtn().click();
+        getGearsCreateBtn().click();
 
-        return new CreateMeterDiconnectPrgmModal(this.driver, "gear-create-popup-LM_DIRECT_PROGRAM");
+        return new CreateMeterDiconnectPrgmModal(this.driverExt, PARENT_NAME);
     }
 
     public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
-        getCreateBtn().click();
+        getGearsCreateBtn().click();
 
-        return new CreateSepPrgmGearModal(this.driver, "gear-create-popup-LM_DIRECT_PROGRAM");
+        return new CreateSepPrgmGearModal(this.driverExt, PARENT_NAME);
+    }
+
+    public LoadGroupsTab getLoadGroupTab() {
+        return new LoadGroupsTab(this.driverExt);
     }
 }

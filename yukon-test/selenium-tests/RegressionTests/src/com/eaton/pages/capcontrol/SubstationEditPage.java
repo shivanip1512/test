@@ -1,11 +1,9 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class SubstationEditPage extends PageBase {
@@ -18,20 +16,16 @@ public class SubstationEditPage extends PageBase {
     private Button cancelBtn;
     private Button deleteBtn;
 
-    public SubstationEditPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public SubstationEditPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
         
-        name = new TextEditElement(this.driver, "name");
-        geoName = new TextEditElement(this.driver, "geoAreaName");
-        mapLocation = new TextEditElement(this.driver, "CapControlSubstation.mapLocationID");
-        status = new TrueFalseCheckboxElement(this.driver, "disabled");
-        saveBtn = new Button(this.driver, "Save");
-        cancelBtn = new Button(this.driver, "Cancel");
-        deleteBtn = new Button(this.driver, "Delete");
-    }
-
-    public String getPageTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        name = new TextEditElement(this.driverExt, "name");
+        geoName = new TextEditElement(this.driverExt, "geoAreaName");
+        mapLocation = new TextEditElement(this.driverExt, "CapControlSubstation.mapLocationID");
+        status = new TrueFalseCheckboxElement(this.driverExt, "disabled");
+        saveBtn = new Button(this.driverExt, "Save");
+        cancelBtn = new Button(this.driverExt, "Cancel");
+        deleteBtn = new Button(this.driverExt, "Delete");
     }
     
     public TextEditElement getName() {

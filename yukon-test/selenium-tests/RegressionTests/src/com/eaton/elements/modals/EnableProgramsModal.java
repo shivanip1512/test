@@ -1,11 +1,11 @@
 package com.eaton.elements.modals;
 
-import org.openqa.selenium.WebDriver;
+import com.eaton.framework.DriverExtensions;
 
 public class EnableProgramsModal extends BaseModal {
 
-    public EnableProgramsModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public EnableProgramsModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
         // TODO Auto-generated constructor stub
     }
 

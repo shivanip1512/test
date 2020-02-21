@@ -1,7 +1,8 @@
 package com.eaton.elements;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class WebTableFilter {
     
@@ -9,11 +10,11 @@ public class WebTableFilter {
     private TextEditElement name;
     private Button filterBtn;
 
-    public WebTableFilter(WebElement filter, WebDriver driver) {
+    public WebTableFilter(WebElement filter, DriverExtensions driverExt) {
         
         this.filter = filter;
-        name = new TextEditElement(driver, "name");
-        filterBtn = new Button(driver, "Filter", this.filter);
+        name = new TextEditElement(driverExt, "name");
+        filterBtn = new Button(driverExt, "Filter", this.filter);
     } 
     
     public void enterFilterCritera(String criteria) {

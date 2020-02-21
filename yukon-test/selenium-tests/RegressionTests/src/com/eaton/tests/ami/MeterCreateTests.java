@@ -11,7 +11,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.modals.CreateMeterModal;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
@@ -19,30 +21,32 @@ import com.eaton.pages.ami.MeterDetailsPage;
 public class MeterCreateTests extends SeleniumTestSetup {
 
     private AmiDashboardPage amiDashboardPage;
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private Random randomNum;
+    
+    private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
     @BeforeClass
     public void beforeClass() {
 
-        driver = getDriver();
+        WebDriver driver = getDriver();
+        driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.Ami.AMI);
 
-        this.amiDashboardPage = new AmiDashboardPage(driver, Urls.Ami.AMI);
+        amiDashboardPage = new AmiDashboardPage(driverExt, Urls.Ami.AMI);
 
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { "smoketest", "SM03_06_createRFNOjects" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
     public void createMeterRfn420flSuccess() {
-
         CreateMeterModal createModal = amiDashboardPage.showCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);
         String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-420fL Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-420fL");
@@ -56,22 +60,21 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL);
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driver, Urls.Ami.METER_DETAIL);
+        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.");
+        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.", "Expected User Msg: 'Meter" + name + "' created successfully. but found: " + userMsg);
     }
 
-    @Test(groups = { "smoketest", "SM03_06_createRFNOjects" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
     public void createMeterRfn430Sl4Success() {
-
         CreateMeterModal createModal = amiDashboardPage.showCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);
         String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-430SL4 Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-430SL4");
@@ -85,14 +88,14 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL);
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driver, Urls.Ami.METER_DETAIL);
+        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.");
+        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.", "Expected User Msg: 'Meter" + name + "' created successfully. but found: " + userMsg);
     }
     
-    @Test(groups = { "smoketest", "SM03_06_createRFNOjects" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
     public void createMeterRfn530S4xSuccess() {
 
         CreateMeterModal createModal = amiDashboardPage.showCreateMeterModal();
@@ -100,7 +103,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);
         String manufacturer = randomString(12);
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT RFN-430SL4 Meter " + timeStamp;
         createModal.getType().selectItemByTextSearch("RFN-530S4x");
@@ -114,11 +117,11 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL);
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driver, Urls.Ami.METER_DETAIL);
+        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.");
+        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.", "Expected User Msg: 'Meter" + name + "' created successfully. but found: " + userMsg);
     }
 
     private String randomString(int length) {

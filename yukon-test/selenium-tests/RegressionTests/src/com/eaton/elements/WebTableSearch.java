@@ -1,17 +1,20 @@
 package com.eaton.elements;
 
+import java.util.Optional;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+
+import com.eaton.framework.DriverExtensions;
 
 public class WebTableSearch {
     
     private TextEditElement search;  
-    WebDriver driver;
+    DriverExtensions driverExt;
 
-    public WebTableSearch(WebDriver driver) {
+    public WebTableSearch(DriverExtensions driverExt) {
         
-        this.driver = driver;
-        search = new TextEditElement(this.driver, "ss");        
+        this.driverExt = driverExt;
+        search = new TextEditElement(this.driverExt, "ss");        
     } 
     
     public void enterSearchCritera(String criteria) {
@@ -25,6 +28,6 @@ public class WebTableSearch {
     }  
     
     public void clickClearBtn() {
-        this.driver.findElement(By.id("picker-voltReduction-show-all-link")).click();
+        this.driverExt.findElement(By.id("picker-voltReduction-show-all-link"), Optional.empty()).click();
     }
 }

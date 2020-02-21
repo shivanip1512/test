@@ -1,20 +1,21 @@
 package com.eaton.elements;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class TextEditElement extends EditElement {
     
-    public TextEditElement(WebDriver driver, String elementName) {
-        super(driver, elementName);
+    public TextEditElement(DriverExtensions driverExt, String elementName) {
+        super(driverExt, elementName);
     }
     
-    public TextEditElement(WebDriver driver, String elementName, WebElement parentElement) {
-        super(driver, elementName, parentElement);
+    public TextEditElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
+        super(driverExt, elementName, parentElement);
     }
     
-    public TextEditElement(WebDriver driver, String elementName, String parentName) {
-        super(driver, elementName, parentName);
+    public TextEditElement(DriverExtensions driverExt, String elementName, String parentName) {
+        super(driverExt, elementName, parentName);
     }
     
     public void clearInputValue() {

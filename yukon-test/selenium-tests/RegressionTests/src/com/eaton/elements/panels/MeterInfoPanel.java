@@ -1,23 +1,23 @@
 package com.eaton.elements.panels;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.Button;
+import com.eaton.framework.DriverExtensions;
 
 public class MeterInfoPanel extends BasePanel {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private WebElement panel;
     
-    public MeterInfoPanel(WebDriver driver, String panelName) {
-        super(driver, panelName);
+    public MeterInfoPanel(DriverExtensions driverExt, String panelName) {
+        super(driverExt, panelName);
         
-        this.driver = driver;
+        this.driverExt = driverExt;
         this.panel = getPanel();
     }
 
     public Button getEdit() {
-        return new Button(this.driver, "Edit", this.panel);
+        return new Button(this.driverExt, "Edit", this.panel);
     }    
 }

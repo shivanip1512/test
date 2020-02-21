@@ -1,27 +1,24 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.ActionBtnDropDownElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CapControlDashboardPage extends PageBase {
 
-    public static final String DEFAULT_URL = Urls.CapControl.DASHBOARD;
-    public ActionBtnDropDownElement actionBtn;
+    private static final String DEFAULT_URL = Urls.CapControl.DASHBOARD;
+    private ActionBtnDropDownElement actionBtn;
 
-    public CapControlDashboardPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public CapControlDashboardPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
         this.requiresLogin = true;
         pageUrl = DEFAULT_URL;
-        actionBtn = new ActionBtnDropDownElement(this.driver);
+        actionBtn = new ActionBtnDropDownElement(this.driverExt);
     }
-
-    public String getTitle() {
-
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+    
+    public ActionBtnDropDownElement getActionBtn() {
+        return actionBtn;
     }
 }

@@ -1,36 +1,38 @@
 package com.eaton.elements;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class DropDownSearchElement {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private String elementId;
     private String parentName;
     private WebElement parentElement;
     private WebElement searchDropDown;
 
-    public DropDownSearchElement(WebDriver driver, String elementId) {
-        this.driver = driver;
+    public DropDownSearchElement(DriverExtensions driverExt, String elementId) {
+        this.driverExt = driverExt;
         this.elementId = elementId;
         
         setDropDownSearchElement();
     }    
     
-    public DropDownSearchElement(WebDriver driver, String elementId, String parentName) {
-        this.driver = driver;
+    public DropDownSearchElement(DriverExtensions driverExt, String elementId, String parentName) {
+        this.driverExt = driverExt;
         this.elementId = elementId;
         this.parentName = parentName;
         
         setDropDownSearchElement();
     } 
     
-    public DropDownSearchElement(WebDriver driver, String elementId, WebElement parentElement) {
-        this.driver = driver;
+    public DropDownSearchElement(DriverExtensions driverExt, String elementId, WebElement parentElement) {
+        this.driverExt = driverExt;
         this.elementId = elementId;
         this.parentElement = parentElement;
         
@@ -61,11 +63,11 @@ public class DropDownSearchElement {
     
     private void setDropDownSearchElement() {
         if (this.parentName != null) {
-            this.searchDropDown = this.driver.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] #" + this.elementId ));
+            this.searchDropDown = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] #" + this.elementId ), Optional.empty());
         } else if (this.parentElement != null) {
             this.searchDropDown = this.parentElement.findElement(By.id(this.elementId));
         } else {
-            this.searchDropDown = this.driver.findElement(By.id(this.elementId));   
+            this.searchDropDown = this.driverExt.findElement(By.id(this.elementId), Optional.empty());   
         }        
     }    
     

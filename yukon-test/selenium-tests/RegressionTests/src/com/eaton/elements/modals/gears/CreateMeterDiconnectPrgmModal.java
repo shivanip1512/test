@@ -1,11 +1,11 @@
 package com.eaton.elements.modals.gears;
 
-import org.openqa.selenium.WebDriver;
+import com.eaton.framework.DriverExtensions;
 
 public class CreateMeterDiconnectPrgmModal extends CreateGearsModal {
 
-    public CreateMeterDiconnectPrgmModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public CreateMeterDiconnectPrgmModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
     }
 
 }

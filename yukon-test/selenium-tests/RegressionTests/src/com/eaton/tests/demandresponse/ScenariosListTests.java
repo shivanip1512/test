@@ -10,35 +10,42 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.eaton.elements.WebTableColumnHeader;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ScenariosListPage;
 
 public class ScenariosListTests extends SeleniumTestSetup {
 
-    WebDriver driver;
+    DriverExtensions driverExt;
     ScenariosListPage listPage;
     SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
-        this.softAssertion = getSoftAssertion();
+        WebDriver driver = getDriver();
+        driverExt = getDriverExt();
+        softAssertion = getSoftAssertion();
 
-        this.driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIOS);
+        driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIOS);
 
-        this.listPage = new ScenariosListPage(this.driver, null);
+        this.listPage = new ScenariosListPage(driverExt, Urls.DemandResponse.SCENARIOS);
     }
 
-    @Test(groups = { "smoketest", "SmokeTest_DemandResponse" })
+    @Test
     public void titleCorrect() {
-        Assert.assertEquals(this.listPage.getTitle(), "Scenarios");
+        final String EXPECTED_TITLE = "Scenarios";
+        
+        String actualPageTitle = listPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
     @Test
     public void columnHeadersCorrect() {
-
+        final int EXPECTED_COUNT = 2;
+        
         List<WebTableColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
 
         List<String> headerList = new ArrayList<>();
@@ -47,8 +54,10 @@ public class ScenariosListTests extends SeleniumTestSetup {
             headerList.add(header.getColumnName());
         }
 
-        Assert.assertEquals(headerList.size(), 2);
-        this.softAssertion.assertTrue(headerList.contains("Name"));
+        int actualCount = headerList.size();
+        
+        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
+        softAssertion.assertTrue(headerList.contains("Name"), "Expected Column Header of Name");
     }
 
     @Test(enabled = false)

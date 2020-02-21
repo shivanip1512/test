@@ -1,17 +1,21 @@
 package com.eaton.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
+import java.util.Optional;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.ValidUserLogin;
 
 public class LoginPage extends PageBase {
-
-    public LoginPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
-
-        driver.navigate().to(pageUrl);
-        this.requiresLogin = false;
+    
+    public LoginPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
+        
+        SeleniumTestSetup.navigateToLoginPage();
+        requiresLogin = false;
     }
 
     public void login() {
@@ -23,14 +27,15 @@ public class LoginPage extends PageBase {
     }
 
     public void setUserName(String userName) {
-        this.driver.findElement(By.id("login_email")).sendKeys(userName);
+        WebElement el = this.driverExt.findElement(By.id("login_email"), Optional.empty());
+        el.sendKeys(userName);
     }
 
     public void setPassword(String password) {
-        this.driver.findElement(By.id("login_password")).sendKeys(password);
+        this.driverExt.findElement(By.id("login_password"), Optional.empty()).sendKeys(password);
     }
 
     public void loginClick() {
-        this.driver.findElement(By.name("login")).click();
+        this.driverExt.findElement(By.name("login"), Optional.empty()).click();
     }
 }

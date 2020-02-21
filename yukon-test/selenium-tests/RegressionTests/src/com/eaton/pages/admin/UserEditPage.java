@@ -1,11 +1,9 @@
 package com.eaton.pages.admin;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
@@ -22,25 +20,20 @@ public class UserEditPage extends PageBase {
     private Button delete;
     private Button cancel;
 
-    public UserEditPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public UserEditPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
         this.requiresLogin = true;
         //pageUrl = DEFAULT_URL;
         
-        userName = new TextEditElement(this.driver, "username");
-        authentication = new DropDownElement(this.driver, "authCategory");
-        userGroup = new DropDownElement(this.driver, "userGroupId");
-        energyCompany = new DropDownElement(this.driver, "energyCompanyId");
-        status = new DropDownElement(this.driver, "loginStatus");
-        save = new Button(this.driver, "Save");
-        delete = new Button(this.driver, "Delete");
-        cancel = new Button(this.driver, "Cancel");
-    }
-
-    public String getTitle() {
-
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        userName = new TextEditElement(this.driverExt, "username");
+        authentication = new DropDownElement(this.driverExt, "authCategory");
+        userGroup = new DropDownElement(this.driverExt, "userGroupId");
+        energyCompany = new DropDownElement(this.driverExt, "energyCompanyId");
+        status = new DropDownElement(this.driverExt, "loginStatus");
+        save = new Button(this.driverExt, "Save");
+        delete = new Button(this.driverExt, "Delete");
+        cancel = new Button(this.driverExt, "Cancel");
     }
     
     public TextEditElement getUserName() {

@@ -1,45 +1,39 @@
 package com.eaton.tests.admin;
 
-
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
-import com.eaton.pages.capcontrol.CapBankCreatePage;
+import com.eaton.pages.admin.UsersAndGroupsPage;
 
 public class UserCreateTests extends SeleniumTestSetup {
 
-    private CapBankCreatePage createPage;
-    private WebDriver driver;
+    private UsersAndGroupsPage page;
 
     @BeforeClass
     public void beforeClass() {
 
-        driver = getDriver();        
+        WebDriver driver = getDriver();     
+        DriverExtensions driverExt = getDriverExt();
         
-        driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_CREATE);
+        driver.get(getBaseUrl() + Urls.Admin.USERS_AND_GROUPS);
 
-        this.createPage = new CapBankCreatePage(driver, Urls.CapControl.CAP_BANK_CREATE);
+        page = new UsersAndGroupsPage(driverExt, Urls.Admin.USERS_AND_GROUPS);
     }
-
-//    @Test(groups = {"smoketest", "SM03_03_CreateCCObjects"})
-//    public void pageTitleCorrect() {
-//
-//        Assert.assertEquals(createPage.getTitle(), "Create CapBank");
-//    }
     
-    @Test(groups = {"smoketest", ""})
+    @Test(enabled = false)
     public void createUserRequiredFieldsOnlySuccess() {
 //        
 //        Instant thisInstant = Instant.now();
 //        
 //        String name = "AT CapBank " + thisInstant.toString();
-//        this.createPage.getName().setInputValue(name);
+//        createPage.getName().setInputValue(name);
 //        
-//        this.createPage.getSaveBtn().click();
+//        createPage.getSaveBtn().click();
 //        
 //        waitForPageToLoad("CapBank: " + name);
 //        
@@ -52,6 +46,6 @@ public class UserCreateTests extends SeleniumTestSetup {
     
     @AfterMethod
     public void afterTest() {        
-        refreshPage(createPage);
+        refreshPage(page);
     }
 }

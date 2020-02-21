@@ -1,28 +1,28 @@
 package com.eaton.elements;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class MenuElement {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
 
-    public MenuElement(WebDriver driver) {
-        this.driver = driver;
+    public MenuElement(DriverExtensions driverExt) {
+        this.driverExt = driverExt;
     }
     
     private WebElement getMenu() {
-        return this.driver.findElement(By.cssSelector(".menus"));
+        return this.driverExt.findElement(By.cssSelector(".menus"), Optional.empty());
     }
 
     private List<WebElement> getAllMenuItems() {
 
-        List<WebElement> menuItems = getMenu().findElements(By.cssSelector(".menu.dropdown"));
-        
-        return menuItems;
+        return getMenu().findElements(By.cssSelector(".menu.dropdown"));
     }
 
     private WebElement findParent(String menuTitle) {

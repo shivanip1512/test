@@ -1,10 +1,8 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class AreaEditPage extends PageBase {
@@ -14,17 +12,13 @@ public class AreaEditPage extends PageBase {
     private Button cancelBtn;
     private Button deleteBtn;
 
-    public AreaEditPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public AreaEditPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(this.driver, "name");
-        saveBtn = new Button(this.driver, "Save");
-        cancelBtn = new Button(this.driver, "Cancel");
-        deleteBtn = new Button(this.driver, "Delete");
-    }
-
-    public String getPageTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        name = new TextEditElement(this.driverExt, "name");
+        saveBtn = new Button(this.driverExt, "Save");
+        cancelBtn = new Button(this.driverExt, "Cancel");
+        deleteBtn = new Button(this.driverExt, "Delete");
     }
     
     public TextEditElement getName() {

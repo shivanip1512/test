@@ -1,16 +1,20 @@
 package com.eaton.pages;
 
-import org.openqa.selenium.WebDriver;
+import java.util.Optional;
+
+import org.openqa.selenium.By;
+
+import com.eaton.framework.DriverExtensions;
 
 public class PageBase implements ISeleniumPage {
 
     protected String pageUrl;
     protected Boolean requiresLogin;
-    protected WebDriver driver;
+    protected DriverExtensions driverExt;
 
-    public PageBase(WebDriver driver, String pageUrl) {
+    public PageBase(DriverExtensions driverExt, String pageUrl) {
 
-        this.driver = driver;
+        this.driverExt = driverExt;
         this.pageUrl = pageUrl;
     }
 
@@ -24,5 +28,13 @@ public class PageBase implements ISeleniumPage {
     public boolean getRequiresLogin() {
 
         return this.requiresLogin;
+    }
+    
+    public String getPageTitle() {
+        return this.driverExt.findElement(By.cssSelector(".page-heading"), Optional.empty()).getText();
+    }
+    
+    public String getUserMessage() {
+        return this.driverExt.findElement(By.cssSelector(".yukon-content .user-message"), Optional.empty()).getText();
     }
 }

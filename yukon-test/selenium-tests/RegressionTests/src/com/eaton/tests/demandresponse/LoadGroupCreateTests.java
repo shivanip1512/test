@@ -9,7 +9,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupCreatePage;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
@@ -17,28 +19,32 @@ import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 public class LoadGroupCreateTests extends SeleniumTestSetup {
 
     private LoadGroupCreatePage createPage;
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private Random randomNum;
 
     @BeforeClass
     public void beforeClass() {
 
-        driver = getDriver();        
+        WebDriver driver = getDriver();
+        driverExt = getDriverExt();
         
         driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUP_CREATE);
 
-        this.createPage = new LoadGroupCreatePage(driver, Urls.DemandResponse.LOAD_GROUP_CREATE);
+        createPage = new LoadGroupCreatePage(driverExt, Urls.DemandResponse.LOAD_GROUP_CREATE);
         
         randomNum = getRandomNum();
     }
 
-    @Test(groups = {"smoketest", ""})
+    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
     public void pageTitleCorrect() {
-
-        Assert.assertEquals(createPage.getTitle(), "Create Load Group");
+        final String EXPECTED_TITLE = "Create Load Group";
+        
+        String actualPageTitle = createPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {"smoketest", "SM06_01_CreateLoadGrp()"})
+    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
     public void createEcobeeLoadGroupSuccess() {
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
@@ -48,21 +54,21 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         int randomInt = randomNum.nextInt(9999);
         double capacity = randomDouble + randomInt;
         
-        this.createPage.getName().setInputValue(name);
-        this.createPage.getType().selectItemByText("ecobee Group");
+        createPage.getName().setInputValue(name);
+        createPage.getType().selectItemByText("ecobee Group");
         waitForLoadingSpinner();
         
-        this.createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
+        createPage.getkWCapacity().setInputValue(String.valueOf(capacity));
         
-        this.createPage.getSaveBtn().click();
+        createPage.getSaveBtn().click();
         
         waitForPageToLoad("Load Group: " + name);
         
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driver, Urls.DemandResponse.LOAD_GROUP_DETAIL);
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " saved successfully.");
+        Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
     }    
     
     @AfterMethod

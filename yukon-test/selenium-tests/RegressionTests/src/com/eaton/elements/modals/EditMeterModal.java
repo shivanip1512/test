@@ -1,42 +1,41 @@
 package com.eaton.elements.modals;
 
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 
 public class EditMeterModal extends BaseModal {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     
-    public EditMeterModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public EditMeterModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
         
-        this.driver = driver;
+        this.driverExt = driverExt;
     }
     
     public TextEditElement getdeviceName() {
-        return new TextEditElement(this.driver, "name", getModal());
+        return new TextEditElement(this.driverExt, "name", getModal());
     }
     
     public TextEditElement getMeterNumber() {
-        return new TextEditElement(this.driver, "meterNumber", getModal());
+        return new TextEditElement(this.driverExt, "meterNumber", getModal());
     }
     
     public TextEditElement getPhycialAddress() {
-        return  new TextEditElement(this.driver, "address", getModal());
+        return  new TextEditElement(this.driverExt, "address", getModal());
     }
     
     public DropDownElement getRoute() {
-        return new DropDownElement(this.driver, "routeId", getModal());
+        return new DropDownElement(this.driverExt, "routeId", getModal());
     }
     
     public TextEditElement getSerialNumber() {
-        return new TextEditElement(this.driver, "serialNumber", getModal());
+        return new TextEditElement(this.driverExt, "serialNumber", getModal());
     }
     
     public TrueFalseCheckboxElement getStatus() {
-        return new TrueFalseCheckboxElement(this.driver, "disabled", getModal());
+        return new TrueFalseCheckboxElement(this.driverExt, "disabled", getModal());
     }
 }

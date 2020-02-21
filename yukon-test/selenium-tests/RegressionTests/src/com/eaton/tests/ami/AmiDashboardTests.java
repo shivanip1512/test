@@ -5,7 +5,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 
@@ -17,20 +19,19 @@ public class AmiDashboardTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.Ami.DASHBOARD);
 
-        amiPage = new AmiDashboardPage(driver, getBaseUrl());
+        amiPage = new AmiDashboardPage(driverExt, getBaseUrl());
     }
 
-    @Test(groups = { "smoketest", "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void pageTitleCorrect() {
-
-        Assert.assertEquals(amiPage.getTitle(), "Dashboard: Default AMI Dashboard");
-    }
-
-    @Test(groups = "smoketest")
-    public void createRfn420flMeterSuccess() {
-        amiPage.getActionBtn().clickAndSelectOptionByText("Create Meter");
+        final String EXPECTED_TITLE = "Dashboard: Default AMI Dashboard";
+        
+        String actualPageTitle = amiPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 }

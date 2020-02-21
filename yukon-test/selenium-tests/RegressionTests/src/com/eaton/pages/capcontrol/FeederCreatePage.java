@@ -1,11 +1,9 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class FeederCreatePage extends PageBase {
@@ -16,19 +14,15 @@ public class FeederCreatePage extends PageBase {
     private Button saveBtn;
     private Button cancelBtn;
 
-    public FeederCreatePage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public FeederCreatePage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(this.driver, "name");
-        status = new TrueFalseCheckboxElement(this.driver, "disabled");
-        mapLocationId = new TextEditElement(this.driver, "capControlFeeder.mapLocationID");
+        name = new TextEditElement(this.driverExt, "name");
+        status = new TrueFalseCheckboxElement(this.driverExt, "disabled");
+        mapLocationId = new TextEditElement(this.driverExt, "capControlFeeder.mapLocationID");
         
-        saveBtn = new Button(this.driver, "Save");
-        cancelBtn = new Button(this.driver, "Cancel");
-    }
-
-    public String getTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        saveBtn = new Button(this.driverExt, "Save");
+        cancelBtn = new Button(this.driverExt, "Cancel");
     }
     
     public TextEditElement getName() {

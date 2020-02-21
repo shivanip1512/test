@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.eaton.elements.WebTableColumnHeader;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CapBankListPage;
@@ -23,15 +24,16 @@ public class CapBankListTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
 
         softAssertion = getSoftAssertion();
 
         driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_LIST);
 
-        listPage = new CapBankListPage(driver, null);
+        listPage = new CapBankListPage(driverExt, null);
     }
 
-    @Test(groups = { "smoketest", "SmokeTest_CapControl" })
+    @Test
     public void columnHeadersCorrect() {
 
         List<WebTableColumnHeader> headers = this.listPage.getTable().getColumnHeaders();

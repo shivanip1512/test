@@ -1,13 +1,11 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.WebTable;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class RegulatorEditPage extends PageBase {
@@ -19,19 +17,15 @@ public class RegulatorEditPage extends PageBase {
     private TrueFalseCheckboxElement status;
     private WebTable table;
 
-    public RegulatorEditPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public RegulatorEditPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(this.driver, "name");
-        description = new TextEditElement(this.driver, "description");
-        type = new DropDownElement(this.driver, "type");
-        configuration = new DropDownElement(this.driver, "configId");
-        status = new TrueFalseCheckboxElement(this.driver, "disabled");
-        table = new WebTable(this.driver, "compact-results-table");
-    }
-
-    public String getPageTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        name = new TextEditElement(this.driverExt, "name");
+        description = new TextEditElement(this.driverExt, "description");
+        type = new DropDownElement(this.driverExt, "type");
+        configuration = new DropDownElement(this.driverExt, "configId");
+        status = new TrueFalseCheckboxElement(this.driverExt, "disabled");
+        table = new WebTable(this.driverExt, "compact-results-table");
     }
     
     public TextEditElement getName() {
@@ -59,14 +53,14 @@ public class RegulatorEditPage extends PageBase {
     }
     
     public Button getSaveBtn() {
-        return new Button(this.driver, "Save");
+        return new Button(this.driverExt, "Save");
     }
     
     public Button getCancelBtn() {
-        return new Button(this.driver, "Cancel");
+        return new Button(this.driverExt, "Cancel");
     }   
     
     public Button getDeleteBtn() {
-        return new Button(this.driver, "Delete");
+        return new Button(this.driverExt, "Delete");
     }
 }

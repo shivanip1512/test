@@ -9,7 +9,9 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcCreatePage;
 import com.eaton.pages.capcontrol.CbcDetailPage;
@@ -17,28 +19,32 @@ import com.eaton.pages.capcontrol.CbcDetailPage;
 public class CbcCreateTests extends SeleniumTestSetup {
 
     private CbcCreatePage createPage;
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     Random randomNum;
 
     @BeforeClass
     public void beforeClass() {
 
-        driver = getDriver();
+        WebDriver driver = getDriver();
+        driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.CapControl.CBC_CREATE);
 
-        this.createPage = new CbcCreatePage(driver, Urls.CapControl.CBC_CREATE);
+        this.createPage = new CbcCreatePage(driverExt, Urls.CapControl.CBC_CREATE);
 
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { "smoketest", "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void pageTitleCorrect() {
-
-        Assert.assertEquals(createPage.getTitle(), "Create CBC");
+        final String EXPECTED_TITLE = "Create CBC";
+        
+        String actualPageTitle = createPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test(enabled = false, groups = { "smoketest", "SM03_03_CreateCCObjects" })
+    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void createCbcRequiredFieldsOnlySuccess() {
 
         int masterAddress = randomNum.nextInt(65000);
@@ -52,15 +58,9 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         this.createPage.getSaveBtn().click();
 
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-
         waitForPageToLoad("CBC: " + name);
 
-        CbcDetailPage detailPage = new CbcDetailPage(driver, Urls.CapControl.CBC_DETAIL);
+        CbcDetailPage detailPage = new CbcDetailPage(driverExt, Urls.CapControl.CBC_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 

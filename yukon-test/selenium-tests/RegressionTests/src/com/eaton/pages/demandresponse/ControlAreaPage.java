@@ -1,12 +1,11 @@
 package com.eaton.pages.demandresponse;
 
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TimePickerElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class ControlAreaPage extends PageBase {
@@ -21,14 +20,14 @@ public class ControlAreaPage extends PageBase {
     private static final String COPYCONTROLAREAURL = "";
     private static final String DELETECONTROLAREAURL = "";
 
-    public ControlAreaPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public ControlAreaPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(driver, "name");
-        controlInterval = new DropDownElement(driver, "controlInterval");
-        minResponseTime = new DropDownElement(driver, "minResponseTime");
-        dailyDefaultState = new DropDownElement(driver, "dailyDefaultState");
-        requireAllTriggers = new TrueFalseCheckboxElement(driver, "allTriggersActiveFlag");
+        name = new TextEditElement(driverExt, "name");
+        controlInterval = new DropDownElement(driverExt, "controlInterval");
+        minResponseTime = new DropDownElement(driverExt, "minResponseTime");
+        dailyDefaultState = new DropDownElement(driverExt, "dailyDefaultState");
+        requireAllTriggers = new TrueFalseCheckboxElement(driverExt, "allTriggersActiveFlag");
     }
     
     public String getEditUrl() {
@@ -67,32 +66,32 @@ public class ControlAreaPage extends PageBase {
     //Triggers
     //TODO Need unique way to select the list of triggers linked to the control area
     public Button getCreateTrigger() {
-        return new Button(driver, "Create");
+        return new Button(driverExt, "Create");
     }
     
     //TODO add code to open the create trigger modal after clicking the button
     
     //Optional Control Window
     public TrueFalseCheckboxElement getUseOptionalControlWindow() {
-        return new TrueFalseCheckboxElement(driver, "controlWindow");
+        return new TrueFalseCheckboxElement(driverExt, "controlWindow");
     }
     
     public TimePickerElement getStartTime() {
-        return new TimePickerElement(driver, "dailyStartTime");
+        return new TimePickerElement(driverExt, "dailyStartTime");
     }
     
     public TimePickerElement getStopTime() {
-        return new TimePickerElement(driver, "dailyStopTime");
+        return new TimePickerElement(driverExt, "dailyStopTime");
     }
     
     //Program Assignments
     //TODO no unique way to select the assignment element
     
     public Button getSave() {
-        return new Button(driver, "Save");
+        return new Button(driverExt, "Save");
     }
     
     public Button getCancel() {
-        return new Button(driver, "Cancel");
+        return new Button(driverExt, "Cancel");
     }
 }

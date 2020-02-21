@@ -5,7 +5,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.AssetDashboardPage;
 
@@ -17,16 +19,19 @@ public class AssetsDashboardTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.Assets.DASHBOARD);
 
-        assetsPage = new AssetDashboardPage(driver, getBaseUrl());
+        assetsPage = new AssetDashboardPage(driverExt, getBaseUrl());
     }
 
-    @Test(groups = { "smoketest", "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void pageTitleCorrect() {
-
-        Assert.assertEquals(assetsPage.getTitle(), "Assets Dashboard");
+        final String EXPECTED_TITLE = "Assets Dashboard";
+        
+        String actualPageTitle = assetsPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
-
 }

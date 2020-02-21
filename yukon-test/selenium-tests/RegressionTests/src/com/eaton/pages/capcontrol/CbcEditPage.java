@@ -1,12 +1,10 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class CbcEditPage extends PageBase {
@@ -22,23 +20,19 @@ public class CbcEditPage extends PageBase {
     private TrueFalseCheckboxElement class0123Scan;
     private TrueFalseCheckboxElement class123Scan;
 
-    public CbcEditPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public CbcEditPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(this.driver, "name");
-        status = new TrueFalseCheckboxElement(this.driver, "disableFlag");
-        serialNumber = new TextEditElement(this.driver, "deviceCBC.serialNumber");
-        controlRoute = new DropDownElement(this.driver, "deviceCBC.routeID");
-        masterAddress = new TextEditElement(this.driver, "deviceAddress.masterAddress");
-        slaveAddress = new TextEditElement(this.driver, "deviceAddress.slaveAddress");
-        commChannel = new DropDownElement(this.driver, "deviceDirectCommSettings.portID");
-        postCommWait = new TextEditElement(this.driver, "deviceAddress.postCommWait");
-        class0123Scan = new TrueFalseCheckboxElement(this.driver, "editingIntegrity");
-        class123Scan = new TrueFalseCheckboxElement(this.driver, "editingException");
-    }
-
-    public String getPageTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        name = new TextEditElement(this.driverExt, "name");
+        status = new TrueFalseCheckboxElement(this.driverExt, "disableFlag");
+        serialNumber = new TextEditElement(this.driverExt, "deviceCBC.serialNumber");
+        controlRoute = new DropDownElement(this.driverExt, "deviceCBC.routeID");
+        masterAddress = new TextEditElement(this.driverExt, "deviceAddress.masterAddress");
+        slaveAddress = new TextEditElement(this.driverExt, "deviceAddress.slaveAddress");
+        commChannel = new DropDownElement(this.driverExt, "deviceDirectCommSettings.portID");
+        postCommWait = new TextEditElement(this.driverExt, "deviceAddress.postCommWait");
+        class0123Scan = new TrueFalseCheckboxElement(this.driverExt, "editingIntegrity");
+        class123Scan = new TrueFalseCheckboxElement(this.driverExt, "editingException");
     }
 
     public TextEditElement getName() {
@@ -82,14 +76,14 @@ public class CbcEditPage extends PageBase {
     }
 
     public Button getSaveBtn() {
-        return new Button(this.driver, "Save");
+        return new Button(this.driverExt, "Save");
     }
 
     public Button getCancelBtn() {
-        return new Button(this.driver, "Cancel");
+        return new Button(this.driverExt, "Cancel");
     }
     
     public Button getDeleteBtn() {
-        return new Button(this.driver, "Delete");
+        return new Button(this.driverExt, "Delete");
     }
 }

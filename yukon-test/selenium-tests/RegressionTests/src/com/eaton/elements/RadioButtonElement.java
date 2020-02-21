@@ -2,37 +2,39 @@ package com.eaton.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class RadioButtonElement {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private String elementName;
     private String parentName;
     private WebElement parentElement;
     private List<WebElement> radioBtns;
     
     
-    public RadioButtonElement(WebDriver driver, String elementName) {        
-        this.driver = driver;
+    public RadioButtonElement(DriverExtensions driverExt, String elementName) {        
+        this.driverExt = driverExt;
         this.elementName = elementName;
         
         setRadioBoxes();
     }
     
-    public RadioButtonElement(WebDriver driver, String elementName, String parentName) {        
-        this.driver = driver;
+    public RadioButtonElement(DriverExtensions driverExt, String elementName, String parentName) {        
+        this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentName = parentName;
         
         setRadioBoxes();
     }
     
-    public RadioButtonElement(WebDriver driver, String elementName, WebElement parentElement) {        
-        this.driver = driver;
+    public RadioButtonElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {        
+        this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
         
@@ -61,7 +63,7 @@ public class RadioButtonElement {
     public List<String> getValues() {
         List<WebElement> elements = getRadioBoxes();
         
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         for (WebElement element : elements) {
             String value = element.getAttribute("value");
             
@@ -73,11 +75,11 @@ public class RadioButtonElement {
     
     private void setRadioBoxes() {
         if(this.parentName != null) {
-            this.radioBtns = this.driver.findElements(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"));
+            this.radioBtns = this.driverExt.findElements(By.cssSelector("[aria-describedby='" + this.parentName + "'] input[name = '" + this.elementName + "']"), Optional.empty());
         } else if (this.parentElement != null) {
             this.radioBtns = this.parentElement.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));
         } else {
-            this.radioBtns = this.driver.findElements(By.cssSelector("input[name = '" + this.elementName + "']"));   
+            this.radioBtns = this.driverExt.findElements(By.cssSelector("input[name = '" + this.elementName + "']"), Optional.empty());   
         }        
     }
     

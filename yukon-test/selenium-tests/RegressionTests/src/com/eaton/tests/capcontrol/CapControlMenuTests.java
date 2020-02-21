@@ -5,7 +5,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.HomePage;
 
@@ -20,13 +22,14 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.HOME);
 
-        page = new HomePage(driver, getBaseUrl());
+        page = new HomePage(driverExt, getBaseUrl());
     }
 
-    @Test(groups = { "smoketest", "find which smoke test this connects with" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void dashboardUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Dashboard");

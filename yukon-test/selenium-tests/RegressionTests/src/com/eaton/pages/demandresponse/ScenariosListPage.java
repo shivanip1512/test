@@ -1,24 +1,17 @@
 package com.eaton.pages.demandresponse;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.WebTable;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class ScenariosListPage extends PageBase {
 
     private WebTable table;
 
-    public ScenariosListPage(WebDriver driver, String baseUrl) {
-        super(driver, baseUrl);
+    public ScenariosListPage(DriverExtensions driverExt, String baseUrl) {
+        super(driverExt, baseUrl);
 
-        setTable(new WebTable(driver, "compact-results-table"));
-    }
-
-    public String getTitle() {
-
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        setTable(new WebTable(driverExt, "compact-results-table"));
     }
 
     public WebTable getTable() {

@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import com.eaton.elements.WebTableColumnHeader;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadProgramListPage;
@@ -23,17 +24,20 @@ public class ProgramListTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
         softAssertion = getSoftAssertion();
 
         driver.get(getBaseUrl() + Urls.DemandResponse.PROGRAMS);
 
-        listPage = new LoadProgramListPage(driver, null);
+        listPage = new LoadProgramListPage(driverExt, null);
     }
 
     @Test
     public void pageTitleCorrect() {
-
-        Assert.assertEquals(listPage.getTitle(), "Programs");
+        final String EXPECTED_TITLE = "Programs";
+        String actualPageTitle = listPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page Title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
     @Test
@@ -47,7 +51,7 @@ public class ProgramListTests extends SeleniumTestSetup {
             headerList.add(header.getColumnName());
         }
 
-        Assert.assertEquals(headerList.size(), 8);
+        softAssertion.assertEquals(headerList.size(), 8);
         softAssertion.assertTrue(headerList.contains("Name"));
         softAssertion.assertTrue(headerList.contains("State"));
         softAssertion.assertTrue(headerList.contains("Start"));

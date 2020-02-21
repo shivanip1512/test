@@ -1,22 +1,22 @@
 package com.eaton.elements.modals.gears;
 
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.modals.BaseModal;
+import com.eaton.framework.DriverExtensions;
 
 public class CreateGearsModal extends BaseModal {
 
-    WebDriver driver;
+    DriverExtensions driverExt;
     private TextEditElement gearName;
     private DropDownElement gearType;
 
-    public CreateGearsModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public CreateGearsModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
 
-        gearName = new TextEditElement(this.driver, "gearName");
-        gearType = new DropDownElement(this.driver, "controlMethod");
+        this.driverExt = driverExt;
+        gearName = new TextEditElement(this.driverExt, "gearName");
+        gearType = new DropDownElement(this.driverExt, "controlMethod");
     }
 
     public TextEditElement getGearName() {

@@ -1,12 +1,10 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class CbcCreatePage extends PageBase {
@@ -17,18 +15,14 @@ public class CbcCreatePage extends PageBase {
     private TextEditElement serialNumber;
     private DropDownElement controlRoute;
 
-    public CbcCreatePage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public CbcCreatePage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
-        name = new TextEditElement(this.driver, "name");
-        type = new DropDownElement(this.driver, "paoType");
-        status = new TrueFalseCheckboxElement(this.driver, "disableFlag");
-        serialNumber = new TextEditElement(this.driver, "deviceCBC.serialNumber");
-        controlRoute = new DropDownElement(this.driver, "deviceCBC.routeID");
-    }
-
-    public String getTitle() {
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        name = new TextEditElement(this.driverExt, "name");
+        type = new DropDownElement(this.driverExt, "paoType");
+        status = new TrueFalseCheckboxElement(this.driverExt, "disableFlag");
+        serialNumber = new TextEditElement(this.driverExt, "deviceCBC.serialNumber");
+        controlRoute = new DropDownElement(this.driverExt, "deviceCBC.routeID");
     }
 
     public TextEditElement getName() {
@@ -52,34 +46,34 @@ public class CbcCreatePage extends PageBase {
     }
 
     public TextEditElement getMasterAddress() {
-        return new TextEditElement(this.driver, "deviceAddress.masterAddress");
+        return new TextEditElement(this.driverExt, "deviceAddress.masterAddress");
     }
 
     public TextEditElement getSlaveAddress() {
-        return new TextEditElement(this.driver, "deviceAddress.slaveAddress");
+        return new TextEditElement(this.driverExt, "deviceAddress.slaveAddress");
     }
 
     public DropDownElement getCommChannel() {
-        return new DropDownElement(this.driver, "deviceDirectCommSettings.portID");
+        return new DropDownElement(this.driverExt, "deviceDirectCommSettings.portID");
     }
 
     public TextEditElement getPostCommWait() {
-        return new TextEditElement(this.driver, "deviceAddress.postCommWait");
+        return new TextEditElement(this.driverExt, "deviceAddress.postCommWait");
     }
 
     public TrueFalseCheckboxElement getClass0123Scan() {
-        return new TrueFalseCheckboxElement(this.driver, "editingIntegrity");
+        return new TrueFalseCheckboxElement(this.driverExt, "editingIntegrity");
     }
 
     public TrueFalseCheckboxElement getClass123Scan() {
-        return new TrueFalseCheckboxElement(this.driver, "editingException");
+        return new TrueFalseCheckboxElement(this.driverExt, "editingException");
     }
 
     public Button getSaveBtn() {
-        return new Button(this.driver, "Save");
+        return new Button(this.driverExt, "Save");
     }
 
     public Button getCancelBtn() {
-        return new Button(this.driver, "Cancel");
+        return new Button(this.driverExt, "Cancel");
     }
 }

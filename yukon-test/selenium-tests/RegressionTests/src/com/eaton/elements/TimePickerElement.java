@@ -1,16 +1,19 @@
 package com.eaton.elements;
 
+import java.util.Optional;
+
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+
+import com.eaton.framework.DriverExtensions;
 
 public class TimePickerElement {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private String elementName;
 
-    public TimePickerElement(WebDriver driver, String elementName) {
-        this.driver = driver;
+    public TimePickerElement(DriverExtensions driverExt, String elementName) {
+        this.driverExt = driverExt;
         this.elementName = elementName;
     }
     
@@ -26,6 +29,6 @@ public class TimePickerElement {
     }
  
     public WebElement getNumericPicker() {
-        return this.driver.findElement(By.cssSelector("input[name='" + elementName + "']"));
+        return this.driverExt.findElement(By.cssSelector("input[name='" + elementName + "']"), Optional.empty());
     }
 }

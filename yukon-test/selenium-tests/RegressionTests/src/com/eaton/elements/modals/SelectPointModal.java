@@ -1,18 +1,19 @@
 package com.eaton.elements.modals;
 
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.WebTable;
+import com.eaton.framework.DriverExtensions;
 
 public class SelectPointModal extends BaseModal {
     
-    public WebTable table;
-    public WebDriver driver;
+    private WebTable table;
 
-    public SelectPointModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public SelectPointModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
         
-        this.driver = driver;
-        table = new WebTable(this.driver, "compact-results-table");
+        table = new WebTable(driverExt, "compact-results-table");
+    }
+    
+    public WebTable getTable() {
+        return table;
     }
 }

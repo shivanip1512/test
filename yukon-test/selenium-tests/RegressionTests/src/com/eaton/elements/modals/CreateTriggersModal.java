@@ -1,29 +1,27 @@
 package com.eaton.elements.modals;
 
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.NumericPickerElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.framework.DriverExtensions;
 
 public class CreateTriggersModal extends BaseModal {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private DropDownElement type;
     private TrueFalseCheckboxElement usePeakTracking;
     private NumericPickerElement minRestoreOffset;
     
-    public CreateTriggersModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public CreateTriggersModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
         
-        this.driver = driver;
-        type = new DropDownElement(this.driver, "triggerType", getModal());
-        usePeakTracking = new TrueFalseCheckboxElement(this.driver, "usePeak", getModal());
-        minRestoreOffset = new NumericPickerElement(this.driver, "minRestoreOffset", getModal());
+        this.driverExt = driverExt;
+        type = new DropDownElement(this.driverExt, "triggerType", getModal());
+        usePeakTracking = new TrueFalseCheckboxElement(this.driverExt, "usePeak", getModal());
+        minRestoreOffset = new NumericPickerElement(this.driverExt, "minRestoreOffset", getModal());
     }  
     
     //TODO Trigger Identification and Threshold Point Settings elements do not have a unique way to select them
-    //TODO Save and Cancel buttons do not have a unique way to select them
     
     public DropDownElement getType() {
         return type;

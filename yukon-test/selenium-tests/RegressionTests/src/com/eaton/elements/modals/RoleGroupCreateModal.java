@@ -1,27 +1,24 @@
 package com.eaton.elements.modals;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.MultiLineTextElement;
 import com.eaton.elements.TextEditElement;
+import com.eaton.framework.DriverExtensions;
 
 public class RoleGroupCreateModal extends BaseModal {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private TextEditElement name;
     private MultiLineTextElement description;
     
-    // TODO no unique way to get modal
     // TODO cancel and save buttons do not have a unique way to select them
     
-    public RoleGroupCreateModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public RoleGroupCreateModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
         
-        this.driver = driver;
+        this.driverExt = driverExt;
         
-        name = new TextEditElement(this.driver, "username", "");
-        description = new MultiLineTextElement(this.driver, "password.password", "");
+        name = new TextEditElement(this.driverExt, "username", "");
+        description = new MultiLineTextElement(this.driverExt, "password.password", "");
     }  
     
     public TextEditElement geName() {
@@ -30,15 +27,5 @@ public class RoleGroupCreateModal extends BaseModal {
     
     public MultiLineTextElement getDescription() {
         return description;
-    } 
-    
-    //TODO this a work around until the buttons are updated to follow the Button class pattern
-    public void clickSave() {
-        getModal().findElement(By.cssSelector(".primary")).click();
-    }
-    
-    //TODO this a work around until the buttons are updated to follow the Button class pattern
-    public void clickCancel() {
-        getModal().findElement(By.cssSelector(".js-secondary-action")).click();
-    }
+    }     
 }

@@ -1,18 +1,17 @@
 package com.eaton.pages.capcontrol;
 
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.WebTable;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
 public class CapBankListPage extends PageBase {
 
     private WebTable table;
 
-    public CapBankListPage(WebDriver driver, String baseUrl) {
-        super(driver, baseUrl);
+    public CapBankListPage(DriverExtensions driverExt, String baseUrl) {
+        super(driverExt, baseUrl);
 
-        setTable(new WebTable(this.driver, "compact-results-table"));
+        setTable(new WebTable(this.driverExt, "compact-results-table"));
     }
 
     public WebTable getTable() {

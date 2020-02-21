@@ -5,28 +5,32 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.pointimport.PointImportPage;
 
 public class PointImportTests extends SeleniumTestSetup {
 
-    WebDriver driver;
     PointImportPage importPage;
 
     @BeforeClass
     public void beforeClass() {
 
-        this.driver = getDriver();
+        WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();        
 
-        this.driver.get(getBaseUrl() + Urls.CapControl.POINT_IMPORT);
+        driver.get(getBaseUrl() + Urls.CapControl.POINT_IMPORT);
 
-        this.importPage = new PointImportPage(this.driver, null);
+        importPage = new PointImportPage(driverExt, null);
     }
 
-    @Test(groups = { "smoketest", "SmokeTEst_CapControl" })
+    @Test
     public void pageTitleCorrect() {
-
-        Assert.assertEquals(this.importPage.getTitle(), "Point Import");
+        final String EXPECTED_TITLE = "Point Import";
+        
+        String actualPageTitle = importPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 }

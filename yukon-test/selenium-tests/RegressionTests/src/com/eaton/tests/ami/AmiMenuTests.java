@@ -5,6 +5,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
@@ -22,15 +23,15 @@ public class AmiMenuTests extends SeleniumTestSetup {
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
 
         driver.get(getBaseUrl() + Urls.HOME);
 
-        page = new HomePage(driver, getBaseUrl());
+        page = new HomePage(driverExt, getBaseUrl());
     }
     
-    @Test(groups = { "smoketest", "SM03_02_NavigateToLinks" })
-    public void dashboardUrlCorrect() {
-        
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    public void dashboardUrlCorrect() {        
         String url = page.getMenu().getMenuOptionUrl(AMI, "Dashboard");
 
         Assert.assertTrue(url.contains(Urls.Ami.DASHBOARD), EXPECTED + Urls.Assets.DASHBOARD + ACTUAL + url);

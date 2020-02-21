@@ -4,59 +4,66 @@ import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseDashboardPage;
 
 public class DemandResponseDashboardTests extends SeleniumTestSetup {
 
     private DemandResponseDashboardPage demandPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass
     public void beforeClass() {
 
         WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
+        softAssertion = getSoftAssertion();
 
         driver.get(getBaseUrl() + Urls.DemandResponse.DASHBOARD);
 
-        // this.demandPage = getInstance(DemandResponseDashboardPage.class);
-
-        demandPage = new DemandResponseDashboardPage(driver, getBaseUrl());
+        demandPage = new DemandResponseDashboardPage(driverExt, getBaseUrl());
     }
 
-    @Test(groups = { "smoketest", "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void pageTitleCorrect() {
-
-        Assert.assertEquals(demandPage.getTitle(), "DR Dashboard");
+        final String EXPECTED_TITLE = "DR Dashboard";
+        
+        String actualPageTitle = demandPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
     @Test
     public void quickSearchLinkActiveControlAreasUrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Control Areas");
 
-        Assert.assertTrue(url.contains("/dr/controlArea/list?state=active"));
+        Assert.assertTrue(url.contains(Urls.DemandResponse.ACTIVE_CONTROL_AREAS));
     }
 
     @Test
     public void quickSearchLinkActiveProgramsUrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Programs");
 
-        Assert.assertTrue(url.contains("/dr/program/list?state=ACTIVE"));
+        Assert.assertTrue(url.contains(Urls.DemandResponse.ACTIVE_PROGRAMS));
     }
 
     @Test
     public void quickSearchLinkActiveLoadGroupsUrlCorrect() {
         String url = demandPage.getQuickSearchesUrl("Active Load Groups");
 
-        Assert.assertTrue(url.contains("/dr/loadGroup/list?state=active"));
+        Assert.assertTrue(url.contains(Urls.DemandResponse.ACTIVE_LOAD_GROUPS));
     }
-    
+
     @Test()
     public void actionsBtnDisplayedAndEnabled() {
-        Assert.assertTrue(demandPage.actionBtn.isEnabled());
-        Assert.assertTrue(demandPage.actionBtn.isDisplayed());
-    }    
+        softAssertion.assertTrue(demandPage.getActionBtn().isEnabled());
+        softAssertion.assertTrue(demandPage.getActionBtn().isDisplayed());
+    }
 
     @Test(enabled = false)
     public void resetSeasonControlHoursModelTitleCorrect() {

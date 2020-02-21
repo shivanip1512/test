@@ -8,7 +8,9 @@ import java.util.logging.SimpleFormatter;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.asserts.SoftAssert;
@@ -20,6 +22,8 @@ import com.eaton.pages.PageBase;
 public class SeleniumTestSetup {
 
     private static WebDriver driver;
+    
+    private static DriverExtensions driverExt;
 
     private static String baseUrl;
 
@@ -28,7 +32,7 @@ public class SeleniumTestSetup {
     private static Logger logger;
 
     private static final String EXCEPTION_MSG = "Exception :";
-    
+
     private static Random randomNum;
 
     @BeforeSuite
@@ -56,6 +60,7 @@ public class SeleniumTestSetup {
             setDriver(new DriverFactory().getWebDriver(configFileReader.getBrowser(),
                     Boolean.parseBoolean(configFileReader.getUseRemoteDriver()), configFileReader.getDriverPath(),
                     Boolean.parseBoolean(configFileReader.getRunHeadless())));
+            setDriverExt();
         } catch (Exception ex) {
             logger.fine(EXCEPTION_MSG + ex);
         }
@@ -64,15 +69,6 @@ public class SeleniumTestSetup {
     public static void navigateToLoginPage() {
         SeleniumTestSetup.driver.navigate().to(getBaseUrl());
     }
-
-//	public static void navigateToPage(PageBase page){				
-//		
-//		if (page.getRequiresLogin()) {
-//			login();
-//		}
-//		
-//		driver.get(getBaseUrl() + page.getPageUrl());
-//	}
 
     public static <T extends PageBase> T getInstance(Class<T> pageClass) {
         try {
@@ -98,7 +94,7 @@ public class SeleniumTestSetup {
 
     public static void login() {
 
-        LoginPage loginPage = new LoginPage(SeleniumTestSetup.driver, getBaseUrl());
+        LoginPage loginPage = new LoginPage(SeleniumTestSetup.driverExt, getBaseUrl());
 
         loginPage.login();
     }
@@ -108,7 +104,15 @@ public class SeleniumTestSetup {
     }
 
     private static void setDriver(WebDriver driver) {
-        SeleniumTestSetup.driver = driver;
+        SeleniumTestSetup.driver = driver;        
+    }
+    
+    public static DriverExtensions getDriverExt() {
+        return driverExt;
+    }
+    
+    private static void setDriverExt() {
+        SeleniumTestSetup.driverExt = new DriverExtensions(SeleniumTestSetup.driver);
     }
 
     public static String getCurrentUrl() {
@@ -130,11 +134,11 @@ public class SeleniumTestSetup {
     private static void setSoftAssertion(SoftAssert softAssertion) {
         SeleniumTestSetup.softAssertion = softAssertion;
     }
-    
+
     public static Random getRandomNum() {
         return randomNum;
     }
-    
+
     public static void setRandomNum(Random randomNum) {
         SeleniumTestSetup.randomNum = randomNum;
     }
@@ -158,12 +162,17 @@ public class SeleniumTestSetup {
 
     public void waitForPageToLoad(String pageTitle) {
         long startTime = System.currentTimeMillis();
-
         boolean expectedPageTitle = false;
-        while (!expectedPageTitle && System.currentTimeMillis() - startTime < 20000) {
-            String currentTitle = driver.findElement(By.cssSelector(".page-heading")).getText();
 
-            expectedPageTitle = currentTitle.contains(pageTitle);
+        while (!expectedPageTitle && System.currentTimeMillis() - startTime < 20000) {
+            
+            WebElement element = SeleniumTestSetup.driverExt.getDriverWait().until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".page-heading")));
+
+            if (element.getText().contains(pageTitle)) {
+                expectedPageTitle = true;
+            } else {
+                expectedPageTitle = false;
+            }
         }
 
         // add code to throw an exception if the url is not loaded
@@ -176,24 +185,34 @@ public class SeleniumTestSetup {
         } else {
             driver.navigate().refresh();
         }
-    }    
+    }
 
     public void waitForLoadingSpinner() {
         String display = "";
-        
-        long startTime = System.currentTimeMillis(); 
-        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 3000) {
+
+        long startTime = System.currentTimeMillis();
+        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 5000) {
             display = driver.findElement(By.id("modal-glass")).getAttribute("style");
         }
-        
+
     }
-    
+
     public static void waitUntilModalVisible(String name) {
-        boolean displayed = driver.findElement(By.cssSelector("[aria-describedby='" + name + "']")).isDisplayed();
+        boolean displayed = false;
 
         long startTime = System.currentTimeMillis();
 
         while (!displayed && System.currentTimeMillis() - startTime < 3000) {
+            displayed = driver.findElement(By.cssSelector("[aria-describedby='" + name + "']")).isDisplayed();
+        }
+    }
+
+    public static void waitUntilModalClosed(String name) {
+        boolean displayed = true;
+
+        long startTime = System.currentTimeMillis();
+
+        while (displayed && System.currentTimeMillis() - startTime > 3000) {
             displayed = driver.findElement(By.cssSelector("[aria-describedby='" + name + "']")).isDisplayed();
         }
     }

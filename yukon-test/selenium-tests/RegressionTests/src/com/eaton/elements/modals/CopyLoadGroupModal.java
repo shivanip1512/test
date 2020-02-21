@@ -1,20 +1,20 @@
 package com.eaton.elements.modals;
 
-import org.openqa.selenium.WebDriver;
 
 import com.eaton.elements.TextEditElement;
+import com.eaton.framework.DriverExtensions;
 
 public class CopyLoadGroupModal extends BaseModal {
     
-    private WebDriver driver; 
+    private DriverExtensions driverExt; 
     
-    public CopyLoadGroupModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public CopyLoadGroupModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
         
-        this.driver = driver;
+        this.driverExt = driverExt;
     }
     
     public TextEditElement getName() {
-        return new TextEditElement(this.driver, "name", getModal());
+        return new TextEditElement(this.driverExt, "name", getModal());
     }
 }

@@ -1,9 +1,7 @@
 package com.eaton.pages.admin;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.Button;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
@@ -15,20 +13,15 @@ public class UserDetailPage extends PageBase {
     private Button changePassword;
     private Button unlockUser;
 
-    public UserDetailPage(WebDriver driver, String pageUrl) {
-        super(driver, pageUrl);
+    public UserDetailPage(DriverExtensions driverExt, String pageUrl) {
+        super(driverExt, pageUrl);
 
         this.requiresLogin = true;
         //pageUrl = DEFAULT_URL;
         
-        edit = new Button(this.driver, "Edit");
-        changePassword = new Button(this.driver, "Change Password");
-        unlockUser = new Button(this.driver, "Unlock User");
-    }
-
-    public String getTitle() {
-
-        return this.driver.findElement(By.cssSelector(".page-heading")).getText();
+        edit = new Button(this.driverExt, "Edit");
+        changePassword = new Button(this.driverExt, "Change Password");
+        unlockUser = new Button(this.driverExt, "Unlock User");
     }    
     
     public Button getEdit() {

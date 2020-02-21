@@ -2,13 +2,14 @@ package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
 
-import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.modals.ConfirmDeleteModal;
+import com.eaton.elements.modals.ConfirmModal;
+import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcDetailPage;
 import com.eaton.pages.capcontrol.CbcEditPage;
@@ -16,30 +17,33 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 
 public class CbcEditTests extends SeleniumTestSetup {
 
-    private WebDriver driver;
+    DriverExtensions driverExt;
 
     @BeforeClass
     public void beforeClass() {
-        driver = getDriver();
+        driverExt = getDriverExt();
     }
 
-    @Test(enabled = false, groups = { "smoketest", "SM03_03_CreateCCObjects" })
+    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects" })
     public void pageTitleCorrect() {
+        final String EXPECTED_TITLE = "CBC: AT CBC";
+        
+        navigate(Urls.CapControl.CBC_EDIT + "879" + Urls.EDIT);
 
-        navigate(Urls.CapControl.CBC_EDIT + "563/" + Urls.EDIT);
+        CbcEditPage editPage = new CbcEditPage(driverExt, Urls.CapControl.CBC_EDIT + "879" + Urls.EDIT);
 
-        CbcEditPage editPage = new CbcEditPage(driver, Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
-
-        String pageTitle = editPage.getPageTitle();
-        Assert.assertTrue(pageTitle.startsWith("Edit CBC:"));
+        String actualPageTitle = editPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test(enabled = false, groups = { "smoketest", "SM03_03_CreateCCObjects" })
-    public void createCbcRequiredFieldsOnlySuccess() {
+    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects" })
+    public void editCbcRequiredFieldsOnlySuccess() {
+        final String EXPECTED_MSG = "CBC was saved successfully.";
         
         navigate(Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
 
-        CbcEditPage editPage = new CbcEditPage(driver, Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
+        CbcEditPage editPage = new CbcEditPage(driverExt, Urls.CapControl.CBC_EDIT + "563" + Urls.EDIT);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
@@ -50,32 +54,33 @@ public class CbcEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("CBC: " + name);
 
-        CbcDetailPage detailPage = new CbcDetailPage(driver, Urls.CapControl.CBC_DETAIL);
+        CbcDetailPage detailPage = new CbcDetailPage(driverExt, Urls.CapControl.CBC_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "CBC was saved successfully.");
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
     }
     
-    @Test(enabled = false, groups = {"smoketest", "SM03_05_DeleteCCOjects"})
+    @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteCbcSuccess() {
+        final String EXPECTED_MSG = "Deleted CBC";
         
         navigate(Urls.CapControl.CBC_EDIT + "579" + Urls.EDIT);
 
-        CbcEditPage editPage = new CbcEditPage(driver, Urls.CapControl.CBC_EDIT + "579" + Urls.EDIT);
+        CbcEditPage editPage = new CbcEditPage(driverExt, Urls.CapControl.CBC_EDIT + "579" + Urls.EDIT);
         
         editPage.getDeleteBtn().click();   
         
-        ConfirmDeleteModal modal = new ConfirmDeleteModal(this.driver, "yukon_dialog_confirm");
+        ConfirmModal modal = new ConfirmModal(driverExt, "yukon_dialog_confirm");
         
         modal.clickOk();
         
         waitForPageToLoad("Orphans");
         
-        OrphansPage detailsPage = new OrphansPage(driver, Urls.CapControl.ORPHANS);
+        OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, "Deleted CBC");
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
     }
 }

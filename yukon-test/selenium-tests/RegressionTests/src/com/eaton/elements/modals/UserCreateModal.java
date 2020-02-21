@@ -1,14 +1,12 @@
 package com.eaton.elements.modals;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
+import com.eaton.framework.DriverExtensions;
 
 public class UserCreateModal extends BaseModal {
 
-    private WebDriver driver;
+    private DriverExtensions driverExt;
     private TextEditElement userName;
     private DropDownElement authentication;
     private TextEditElement password;
@@ -21,17 +19,17 @@ public class UserCreateModal extends BaseModal {
     // TODO enable/disable is a new kind of checkbox, should this be changed to match the others?
     // TODO cancel and save buttons do not have a unique way to select them
 
-    public UserCreateModal(WebDriver driver, String modalName) {
-        super(driver, modalName);
+    public UserCreateModal(DriverExtensions driverExt, String modalName) {
+        super(driverExt, modalName);
 
-        this.driver = driver;
+        this.driverExt = driverExt;
 
-        userName = new TextEditElement(this.driver, "username", PARENT);
-        authentication = new DropDownElement(this.driver, "authCategory", PARENT);
-        password = new TextEditElement(this.driver, "password.password", PARENT);
-        confirmPassword = new TextEditElement(this.driver, "password.confirmPassword", PARENT);
-        userGroup = new DropDownElement(this.driver, "userGroupId", PARENT);
-        energyCompany = new DropDownElement(this.driver, "energyCompanyId", PARENT);
+        userName = new TextEditElement(this.driverExt, "username", PARENT);
+        authentication = new DropDownElement(this.driverExt, "authCategory", PARENT);
+        password = new TextEditElement(this.driverExt, "password.password", PARENT);
+        confirmPassword = new TextEditElement(this.driverExt, "password.confirmPassword", PARENT);
+        userGroup = new DropDownElement(this.driverExt, "userGroupId", PARENT);
+        energyCompany = new DropDownElement(this.driverExt, "energyCompanyId", PARENT);
     }
 
     public TextEditElement getUserName() {
@@ -56,15 +54,5 @@ public class UserCreateModal extends BaseModal {
 
     public DropDownElement getEnergyCompany() {
         return energyCompany;
-    }
-
-    // TODO this a work around until the buttons are updated to follow the Button class pattern
-    public void clickSave() {
-        getModal().findElement(By.cssSelector(".primary")).click();
-    }
-
-    // TODO this a work around until the buttons are updated to follow the Button class pattern
-    public void clickCancel() {
-        getModal().findElement(By.cssSelector(".js-secondary-action")).click();
     }
 }
