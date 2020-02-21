@@ -163,12 +163,12 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     public void initialize() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.MULTISPEAK, (event) -> {
             loadDrSupportedVendors();
-            drAttributeDataJmsListener.registerSimpleMessageListenerContainer();
+            drAttributeDataJmsListener.registerOrDestroySimpleMessageListenerContainer();
         });
         // To make this call asynchronous, added new thread for calling method.
         executor.execute(() -> {
             loadDrSupportedVendors();
-            drAttributeDataJmsListener.registerSimpleMessageListenerContainer();
+            drAttributeDataJmsListener.registerOrDestroySimpleMessageListenerContainer();
         });
 
     }

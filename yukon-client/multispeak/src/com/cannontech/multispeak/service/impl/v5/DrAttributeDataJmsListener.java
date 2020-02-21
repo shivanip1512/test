@@ -192,15 +192,14 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     }
 
     /**
-     * Register Listener container if any vendor configured for method supports.
-     * 
+     * Register or destroy Listener container based on if any vendor configured for method supports.
      */
-    public void registerSimpleMessageListenerContainer() {
+    public synchronized void registerOrDestroySimpleMessageListenerContainer() {
 
-        if (listenerContainer == null) {
-            listenerContainer = new SimpleMessageListenerContainer();
-        }
-        if (drJmsMessageService.isVendorMethodSupported() && !listenerContainer.isRunning()) {
+        if (drJmsMessageService.isVendorMethodSupported()) {
+            if (listenerContainer == null) {
+                listenerContainer = new SimpleMessageListenerContainer();
+            }
 
             MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(this);
             messageListenerAdapter.setDefaultListenerMethod(defaultListenerMethod);
@@ -215,9 +214,11 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
             listenerContainer.afterPropertiesSet();
             listenerContainer.start();
         }
-        if (!drJmsMessageService.isVendorMethodSupported() && listenerContainer.isRunning()) {
-            listenerContainer.shutdown();
-            listenerContainer = null;
+        if (listenerContainer != null) {
+            if (!drJmsMessageService.isVendorMethodSupported()) {
+                listenerContainer.shutdown();
+                listenerContainer = null;
+            }
         }
     }
 
