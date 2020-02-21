@@ -31,6 +31,7 @@ import com.google.common.collect.Lists;
 
 public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
 
+    @Autowired private RfnDataValidator rfnDataValidator;
     @Autowired private ParsingService<SimpleXPathTemplate> parsingService;
     @Autowired private RfnLcrDataMappingService<SimpleXPathTemplate> rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
@@ -66,7 +67,7 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
         Instant currentInstant = new Instant();
 
         // Discard all the data that is older than the global timestamp limit
-        if (RfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
+        if (rfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
             // Handle point data
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);

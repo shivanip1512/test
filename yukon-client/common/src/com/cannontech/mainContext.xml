@@ -54,8 +54,8 @@
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
-	<bean class="com.cannontech.message.util.ClientConnectionFactory"/>
-	
+    <bean class="com.cannontech.message.util.ClientConnectionFactory"/>
+
     <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool"/>
 
     <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" scope="prototype">
@@ -348,7 +348,7 @@
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
     <bean id="configurationPropertiesLoader" class="com.cannontech.common.config.ConfigurationLoader"/>
     <bean id="smtpHelper" class="com.cannontech.common.config.SmtpHelper"/>
-	
+
     <bean class="com.cannontech.common.config.dao.impl.RfnPointMappingDaoImpl"/>
     <bean class="com.cannontech.common.config.dao.impl.DeviceDefinitionDaoImpl"/>
 
@@ -472,4 +472,5 @@
     <bean class="com.cannontech.common.util.WebserverUrlResolver"/>
     <bean class="com.cannontech.infrastructure.simulation.service.impl.InfrastructureWarningsGeneratorServiceImpl"/>
     <bean class="com.cannontech.common.smartNotification.simulation.service.impl.SmartNotificationSimulatorServiceImpl"/>
+    <bean id="rfnDataValidator" class="com.cannontech.amr.rfn.service.RfnDataValidatorImpl"/>
 </beans>

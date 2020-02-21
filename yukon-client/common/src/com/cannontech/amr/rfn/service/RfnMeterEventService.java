@@ -31,6 +31,7 @@ public class RfnMeterEventService {
 
     @Autowired private AttributeService attributeService;
     @Autowired private List<RfnArchiveRequestProcessor> processors;
+    @Autowired private RfnDataValidator rfnDataValidator;
 
     private Map<RfnConditionType, RfnArchiveRequestProcessor> processorsMap;
     private Map<Boolean, Integer> clearedStateMap = ImmutableMap.of(Boolean.TRUE, EventStatus.CLEARED.getRawState(),
@@ -126,7 +127,7 @@ public class RfnMeterEventService {
         pointData.setValue(pointValue);
         pointData.setTagsPointMustArchive(true);
 
-        if (RfnDataValidator.isTimestampRecent(timestamp, now)) {
+        if (rfnDataValidator.isTimestampRecent(timestamp, now)) {
             pointDatas.add(pointData);
         } else {
             log.warn("Timestamp invalid or old, discarding pointdata for " + rfnDevice + " " + attr + ": " + pointData);
