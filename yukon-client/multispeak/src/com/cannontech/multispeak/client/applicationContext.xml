@@ -81,14 +81,6 @@
     </bean>
     
     <bean id="drAttributeDataJmsListener" class="com.cannontech.multispeak.service.impl.v5.DrAttributeDataJmsListener" />
-    <jms:listener-container 
-        connection-factory="connectionFactory" 
-        task-executor="globalTaskExecutor" 
-        destination-type="topic"
-        concurrency="1"
-        container-type="simple">
-        <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="drAttributeDataJmsListener" method="pointDataReceived"/>
-    </jms:listener-container>
 
   <bean id="yukonJmsErrorHandler" class="com.cannontech.multispeak.util.YukonJmsErrorHandler"/>
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl">
