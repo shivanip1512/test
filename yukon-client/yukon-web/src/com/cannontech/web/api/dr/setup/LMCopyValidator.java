@@ -5,10 +5,14 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LoadGroupCopy;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.stars.util.ServletUtils;
 
 public class LMCopyValidator extends SimpleValidator<LMCopy> {
     @Autowired private LMValidatorHelper lmValidatorHelper;
+    @Autowired private PaoDao paoDao;
 
     public LMCopyValidator() {
         super(LMCopy.class);
@@ -20,11 +24,6 @@ public class LMCopyValidator extends SimpleValidator<LMCopy> {
         // Group Name
         lmValidatorHelper.validateCopyPaoName(lmCopy.getName(), errors, "Name");
         // Validate routeId if present.
-        if (lmCopy instanceof LoadGroupCopy) {
-            Integer routeId = ((LoadGroupCopy) lmCopy).getRouteId();
-            if (routeId != null) {
-                lmValidatorHelper.validateRoute(errors, routeId);
-            }
-        }
+        lmValidatorHelper.validateRouteId(lmCopy, lmCopy.getName(), errors, "RouteId");
     }
 }

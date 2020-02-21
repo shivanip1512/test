@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.setup.LMCopy;
+import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -106,4 +108,21 @@ public class LMValidatorHelper {
     public Set<Integer> findDuplicates(List<Integer> list) {
         return list.stream().filter(e -> Collections.frequency(list, e) >1).collect(Collectors.toSet());
     }
+
+    /**
+     * Validates route id if load group supports route id
+     */
+    public void validateRouteId(LMCopy lmCopy, String paoName, Errors errors, String field) {
+        Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+        if (paoId != null) {
+            PaoType type = paoDao.getLiteYukonPAO(paoId).getPaoType();
+            if (lmCopy instanceof LoadGroupCopy && type.isLoadGroupSupportRoute()) {
+                Integer routeId = ((LoadGroupCopy) lmCopy).getRouteId();
+                if (routeId != null) {
+                    validateRoute(errors, routeId);
+                }
+            }
+        }
+    }
+
 }
