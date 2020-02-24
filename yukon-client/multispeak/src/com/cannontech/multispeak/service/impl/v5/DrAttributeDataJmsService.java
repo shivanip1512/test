@@ -34,7 +34,7 @@ import com.cannontech.stars.dr.jms.message.DrJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
 import com.google.common.collect.Sets;
 
-public class DrAttributeDataJmsListener implements RichPointDataListener {
+public class DrAttributeDataJmsService implements RichPointDataListener {
     @Autowired private DrJmsMessageService drJmsMessageService;
     @Autowired private AttributeService attributeService;
     @Autowired private ConnectionFactory connectionFactory;
@@ -54,7 +54,7 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
     private SimpleMessageListenerContainer listenerContainer;
 
-    private static final Logger log = YukonLogManager.getLogger(DrAttributeDataJmsListener.class);
+    private static final Logger log = YukonLogManager.getLogger(DrAttributeDataJmsService.class);
 
     @PostConstruct
     public void startSchedulers() {
@@ -76,9 +76,9 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     public void pointDataReceived(RichPointData richPointData) {
         
         if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType())) {
-            Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(
-                    richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
-                    attributes);
+            Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(richPointData.getPaoPointIdentifier()
+                                                                                                             .getPaoTypePointIdentifier(),
+                                                                                                attributes);
             if (!supportedAttributes.isEmpty()) {
                 DrAttributeDataJmsMessage attributeDataJmsMessage = new DrAttributeDataJmsMessage();
                 attributeDataJmsMessage.setPaoPointIdentifier(richPointData.getPaoPointIdentifier());
@@ -196,11 +196,10 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
      */
     public synchronized void registerOrDestroySimpleMessageListenerContainer() {
 
-        if (drJmsMessageService.isVendorMethodSupported()) {
-            if (listenerContainer == null) {
-                listenerContainer = new SimpleMessageListenerContainer();
-            }
+        boolean isVendorMethodSupported = drJmsMessageService.isVendorMethodSupported();
+        if (isVendorMethodSupported && listenerContainer == null) {
 
+            listenerContainer = new SimpleMessageListenerContainer();
             MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(this);
             messageListenerAdapter.setDefaultListenerMethod(defaultListenerMethod);
 
@@ -213,13 +212,14 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
             listenerContainer.setMessageListener(messageListenerAdapter);
             listenerContainer.afterPropertiesSet();
             listenerContainer.start();
+
         }
-        if (listenerContainer != null) {
-            if (!drJmsMessageService.isVendorMethodSupported()) {
-                listenerContainer.shutdown();
-                listenerContainer = null;
-            }
+        if (listenerContainer != null && !isVendorMethodSupported) {
+
+            listenerContainer.shutdown();
+            listenerContainer = null;
         }
+
     }
 
 }

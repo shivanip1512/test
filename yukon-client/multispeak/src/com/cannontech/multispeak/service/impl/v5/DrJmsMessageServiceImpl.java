@@ -130,7 +130,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     @Autowired private AssignedProgramDao assignedProgramDao;
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
-    @Autowired private DrAttributeDataJmsListener drAttributeDataJmsListener;
+    @Autowired private DrAttributeDataJmsService drAttributeDataJmsService;
 
     private static final Logger log = YukonLogManager.getLogger(DrJmsMessageServiceImpl.class);
     private AtomicLong atomicLong = new AtomicLong();
@@ -163,12 +163,12 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
     public void initialize() {
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.MULTISPEAK, (event) -> {
             loadDrSupportedVendors();
-            drAttributeDataJmsListener.registerOrDestroySimpleMessageListenerContainer();
+            drAttributeDataJmsService.registerOrDestroySimpleMessageListenerContainer();
         });
         // To make this call asynchronous, added new thread for calling method.
         executor.execute(() -> {
             loadDrSupportedVendors();
-            drAttributeDataJmsListener.registerOrDestroySimpleMessageListenerContainer();
+            drAttributeDataJmsService.registerOrDestroySimpleMessageListenerContainer();
         });
 
     }
