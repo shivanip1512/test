@@ -10,16 +10,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
+import org.springframework.jms.listener.adapter.MessageListenerAdapter;
+import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.multispeak.service.DrJmsMessageService;
@@ -29,9 +34,11 @@ import com.cannontech.stars.dr.jms.message.DrJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
 import com.google.common.collect.Sets;
 
-public class DrAttributeDataJmsListener implements RichPointDataListener {
+public class DrAttributeDataJmsService implements RichPointDataListener {
     @Autowired private DrJmsMessageService drJmsMessageService;
     @Autowired private AttributeService attributeService;
+    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private ConcurrentTaskExecutor globalTaskExecutor;
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
 
     private static Set<BuiltInAttribute> attributes = Sets.union(
@@ -40,12 +47,14 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
     private static Set<PaoType> supportedPaoTypes = Sets.union(PaoType.getItronTypes(), PaoType.getTwoWayLcrTypes());
 
     private static final int POINT_DATA_TO_SEND_AT_ONCE = 100;
+    private static final String defaultListenerMethod = "pointDataReceived";
     List<DrAttributeDataJmsMessage> relayDataAvailable = Collections.synchronizedList(new ArrayList<>());
     List<DrAttributeDataJmsMessage> voltageDataAvailable = Collections.synchronizedList(new ArrayList<>());
     List<DrAttributeDataJmsMessage> alarmDataAvailable = Collections.synchronizedList(new ArrayList<>());
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(3);
+    private SimpleMessageListenerContainer listenerContainer;
 
-    private static final Logger log = YukonLogManager.getLogger(DrAttributeDataJmsListener.class);
+    private static final Logger log = YukonLogManager.getLogger(DrAttributeDataJmsService.class);
 
     @PostConstruct
     public void startSchedulers() {
@@ -65,9 +74,7 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
 
     @Override
     public void pointDataReceived(RichPointData richPointData) {
-         if (!drJmsMessageService.isVendorMethodSupported()) {
-            return;
-        }
+
         if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType())) {
             Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(
                     richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
@@ -182,6 +189,37 @@ public class DrAttributeDataJmsListener implements RichPointDataListener {
         } else {
             attributeDataJmsMessage.setMessageType(DrJmsMessageType.ALARMANDEVENT);
         }
+    }
+
+    /**
+     * Register or destroy Listener container based on if any vendor configured for method supports.
+     */
+    public synchronized void registerOrDestroySimpleMessageListenerContainer() {
+
+        boolean isVendorMethodSupported = drJmsMessageService.isVendorMethodSupported();
+        if (isVendorMethodSupported && listenerContainer == null) {
+
+            listenerContainer = new SimpleMessageListenerContainer();
+            MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(this);
+            messageListenerAdapter.setDefaultListenerMethod(defaultListenerMethod);
+
+            listenerContainer.setConnectionFactory(connectionFactory);
+            listenerContainer.setDestinationName(JmsApiDirectory.RICH_POINT_DATA.getQueueName());
+            listenerContainer.setConcurrentConsumers(1);
+            listenerContainer.setConnectionFactory(connectionFactory);
+            listenerContainer.setTaskExecutor(globalTaskExecutor);
+            listenerContainer.setPubSubDomain(true);
+            listenerContainer.setMessageListener(messageListenerAdapter);
+            listenerContainer.afterPropertiesSet();
+            listenerContainer.start();
+
+        }
+        if (listenerContainer != null && !isVendorMethodSupported) {
+
+            listenerContainer.shutdown();
+            listenerContainer = null;
+        }
+
     }
 
 }
