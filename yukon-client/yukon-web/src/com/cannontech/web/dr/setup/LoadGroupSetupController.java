@@ -38,6 +38,7 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
@@ -288,24 +289,15 @@ public class LoadGroupSetupController {
             HttpServletRequest request) {
 
         PaoType loadGroupType = getPaoTypeForPaoId(id);
-        LMCopy lmCopy = LMModelFactory.createLoadGroupCopy(loadGroupType);
+        LoadGroupCopy lmCopy = (LoadGroupCopy) LMModelFactory.createLoadGroupCopy(loadGroupType);
 
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(id);
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
         lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", litePao.getPaoName()));
         model.addAttribute("lmCopy", lmCopy);
         if (loadGroupType.isLoadGroupSupportRoute()) {
-            List<LiteYukonPAObject> routes = cache.getAllRoutes().stream()
-                                                                 .filter(pao -> pao.getLiteID() != routeId)
-                                                                 .collect(Collectors.toList());
-
-            // Get the parent group route and add it to the beginning of the list
-            LiteYukonPAObject parentRoute = cache.getAllRoutes().stream()
-                                                      .filter(pao -> pao.getLiteID() == routeId)
-                                                      .findFirst()
-                                                      .get();
-            routes.add(0, parentRoute);
-            model.addAttribute("routes", routes);
+            model.addAttribute("routes", cache.getAllRoutes());
+            lmCopy.setRouteId(routeId);
         }
 
         model.addAttribute("loadGroupId", id);
