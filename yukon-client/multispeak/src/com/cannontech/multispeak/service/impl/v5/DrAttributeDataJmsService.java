@@ -76,9 +76,9 @@ public class DrAttributeDataJmsService implements RichPointDataListener {
     public void pointDataReceived(RichPointData richPointData) {
         
         if (supportedPaoTypes.contains(richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoType())) {
-            Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(richPointData.getPaoPointIdentifier()
-                                                                                                             .getPaoTypePointIdentifier(),
-                                                                                                attributes);
+            Set<BuiltInAttribute> supportedAttributes = attributeService.findAttributesForPoint(
+                   richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
+                   attributes);
             if (!supportedAttributes.isEmpty()) {
                 DrAttributeDataJmsMessage attributeDataJmsMessage = new DrAttributeDataJmsMessage();
                 attributeDataJmsMessage.setPaoPointIdentifier(richPointData.getPaoPointIdentifier());
