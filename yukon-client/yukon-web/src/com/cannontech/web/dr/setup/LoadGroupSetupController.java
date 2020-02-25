@@ -38,6 +38,7 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
@@ -288,7 +289,7 @@ public class LoadGroupSetupController {
             HttpServletRequest request) {
 
         PaoType loadGroupType = getPaoTypeForPaoId(id);
-        LMCopy lmCopy = LMModelFactory.createLoadGroupCopy(loadGroupType);
+        LoadGroupCopy lmCopy = (LoadGroupCopy) LMModelFactory.createLoadGroupCopy(loadGroupType);
 
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(id);
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -296,16 +297,12 @@ public class LoadGroupSetupController {
         model.addAttribute("lmCopy", lmCopy);
         if (loadGroupType.isLoadGroupSupportRoute()) {
             model.addAttribute("routes", cache.getAllRoutes());
-            LiteYukonPAObject route = cache.getAllRoutes().stream()
-                                                          .filter(pao -> pao.getLiteID() == routeId)
-                                                          .findFirst()
-                                                          .get();
-            model.addAttribute("route", route);
+            lmCopy.setRouteId(routeId);
         }
 
         model.addAttribute("loadGroupId", id);
         model.addAttribute("selectedSwitchType", loadGroupType);
-        return "dr/setup/copyLoadGroup.jsp";
+        return "dr/setup/copyLoadGroup.jsp";    
     }
 
     /**
