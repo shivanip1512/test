@@ -805,26 +805,9 @@ yukon.tools.map = (function() {
                 $('#map-updater .button').toggleClass('on');
             });
             
-            $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {                
-                // we if are doing an exit from the full screen, close any open pop-ups
-                if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
-                    $(".ui-dialog-content").dialog("close");
-                    if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
-                        $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
-                    }
-                    //adjust height back
-                    $('#map-container').css('padding-bottom', '0px');
-                    $('#map-container').css('padding-top', '0px');
-                } else {
-                    //adjust height for mapping buttons
-                    $('#map-container').css('padding-bottom', '120px');
-                    $('#map-container').css('padding-top', '10px');
-                }
-                
-                //close any popups
-                $('#marker-info').hide();
-                yukon.mapping.updateZoom(_map);
-                _map.updateSize();
+            $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
+                var mapContainer = $('#map-container');
+                yukon.mapping.adjustMapForFullScreenModeChange(mapContainer, "120px", "10px");
             });
             
             $("body").on("dialogopen", function (event, ui) {

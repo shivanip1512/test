@@ -542,24 +542,8 @@ yukon.map.comprehensive = (function () {
             });
                         
             $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
-                // we if are doing an exit from the full screen, close any open pop-ups
-                if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
-                    $(".ui-dialog-content").dialog("close");
-                    if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
-                        $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
-                    }
-                    //adjust height back
-                    $('#comprehensive-map-container').css('padding-bottom', '0px');
-                    $('#comprehensive-map-container').css('padding-top', '0px');
-                } else {
-                    //adjust height for mapping buttons
-                    $('#comprehensive-map-container').css('padding-bottom', '220px');
-                    $('#comprehensive-map-container').css('padding-top', '0px');
-                }
-                //close any popups
-                $('#marker-info').hide();
-                yukon.mapping.updateZoom(_map);
-                _map.updateSize();
+                var mapContainer = $('#comprehensive-map-container');
+                yukon.mapping.adjustMapForFullScreenModeChange(mapContainer, "220px", "0px");
             });
             
             $("body").on("dialogopen", function (event, ui) {

@@ -861,22 +861,8 @@ yukon.map.network = (function () {
                 });
                 
                 $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
-                    // we if are doing an exit from the full screen, close any open pop-ups
-                    if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
-                        $(".ui-dialog-content").dialog("close");
-                        if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
-                            $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
-                        }
-                        //adjust height back
-                        $('#map-network-container').css('padding-bottom', '0px');
-                    } else {
-                        //adjust height for mapping buttons
-                        $('#map-network-container').css('padding-bottom', '50px');
-                    }
-                    //close any popups
-                    $('#marker-info').hide();
-                    yukon.mapping.updateZoom(_map);
-                    _map.updateSize();
+                    var mapContainer = $('#map-network-container');
+                    yukon.mapping.adjustMapForFullScreenModeChange(mapContainer, "80px", "10px");
                 });
                 
                 $("body").on("dialogopen", function (event, ui) {

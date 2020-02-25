@@ -833,6 +833,34 @@ yukon.mapping = (function () {
             _allRoutesIcons = [];
             _allRoutesLines = [];
         },
+        
+        adjustMapForFullScreenModeChange: function(mapContainer, paddingBottom, paddingTop) {
+            // we if are doing an exit from the full screen, close any open pop-ups
+            if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
+                $(".ui-dialog-content").dialog("close");
+                if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
+                    $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
+                }
+                //move all dropdowns back to the body
+                var menus = $('div.ol-viewport').find('.dropdown-menu');
+                $('body').prepend(menus);
+                //adjust height back
+                mapContainer.css('padding-bottom', '0px');
+                mapContainer.css('padding-top', '0px');
+            } else {
+                //adjust height for mapping buttons
+                mapContainer.css('padding-bottom', paddingBottom);
+                mapContainer.css('padding-top', paddingTop);
+                
+                //move any dropdowns from body to viewport
+                var menus = $('body').children('.dropdown-menu');
+                $('div.ol-viewport').prepend(menus);
+            }
+            //close any popups
+            $('#marker-info').hide();
+            mod.updateZoom(_map);
+            _map.updateSize();
+        }
 
     };
  
