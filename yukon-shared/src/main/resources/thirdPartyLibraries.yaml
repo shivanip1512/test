@@ -5576,16 +5576,16 @@ JavaScript :
     notes : 
 
   - project : open-layers
-    version : 5.3.0
+    version : 6.2.1
     project URL : "https://openlayers.org/"
     license : BSD 2-clause
     license URLs : "https://raw.githubusercontent.com/openlayers/openlayers/master/LICENSE.md"
-    npm URL : "https://www.npmjs.com/package/ol/v/5.3.0"
-    md5 : ff1f13729b498edca3524e77dcc4dd01
-    sha1 : ed5d792b2a6f423ed42e2f57eb0d504fed57df25
-    jira : YUK-19887
-    updated : 2019-05-09
-    notes : 
+    npm URL : "https://www.npmjs.com/package/ol/v/6.2.1"
+    md5 : b8382fa532af01cbc11185f78baf5a2b
+    sha1 : 118318fae9b4f83e8bcec99d2d1e5dde54ba2624
+    jira : YUK-21139
+    updated : 2020-02-18
+    notes : Used for mapping
 
   - project : placeholder
     version : 2.0.7
