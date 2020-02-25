@@ -325,6 +325,17 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             log.debug("--Created response {} (of {}) query results {} for {}", response.getSegmentNumber(),
                 response.getTotalSegments(), response.getQueryResults().size(), request.getRfnMetadatas());
         }
+        
+        if(parts.isEmpty()) {
+            RfnMetadataMultiResponse response = new RfnMetadataMultiResponse(request.getRequestID(), parts.size(), 1);
+            // example: If query PRIMARY_FORWARD_GATEWAY for a gateway and there is not devices associated with this gateway, the
+            // return is YUKON_INPUT_ERROR, according to Li
+            response.setResponseType(RfnMetadataMultiResponseType.YUKON_INPUT_ERROR);
+            response.setQueryResults(new HashMap<>());
+            responses.add(response);
+            log.debug("--Created response {} (of {}) query results {} for {}", response.getSegmentNumber(),
+                    response.getTotalSegments(), response.getQueryResults().size(), request.getRfnMetadatas());
+        }
         return responses;
     }
     
@@ -394,6 +405,12 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     }
 
     private NeighborData getNeighborData() {
+        /*
+         * Add to test "Unknown" option on comprehensive map, select all for filters and color code by link quality
+         * if(new Random().nextBoolean()) {
+         * return null;
+         * }
+         */
         NeighborData neighborData = new NeighborData();
         List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
         int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
