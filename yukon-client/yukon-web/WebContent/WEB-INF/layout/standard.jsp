@@ -205,8 +205,10 @@
                 <div class="utility">
                     <nav>
                         <ul>
-                            <li><a href="<cti:url value="/support"/>"><i:inline key=".support"/></a></li>
-                            <li><a href="<cti:url value="/sitemap"/>"><i:inline key=".siteMap"/></a></li>
+                            <cti:checkRolesAndProperties value="CURTAILMENT_IS_OPERATOR, !CI_CURTAILMENT">
+                                <li><a href="<cti:url value="/support"/>"><i:inline key=".support"/></a></li>
+                                <li><a href="<cti:url value="/sitemap"/>"><i:inline key=".siteMap"/></a></li>
+                            </cti:checkRolesAndProperties>
                             <cti:checkRolesAndProperties value="JAVA_WEB_START_LAUNCHER_ENABLED">
                                 <li>
                                     <a href="javascript:void(0);" data-popup="#yukon-apps-popup">
