@@ -703,7 +703,7 @@ yukon.mapping = (function () {
             var checked = $('.js-all-routes').find(':checkbox').prop('checked');
             // TODO: Remove this if condition after adding this functionality support to collection actions and map devices page.
             if ($("#js-route-details-container").exists()) {
-                $("#js-route-details-container").toggleClass("dn", !checked);
+                $("#js-route-details-container").toggleClass("vh", !checked);
             }
             if (!checked) {
                 yukon.mapping.removeAllRoutesLayers();

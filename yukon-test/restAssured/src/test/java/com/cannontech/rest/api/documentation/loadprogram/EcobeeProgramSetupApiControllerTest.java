@@ -109,6 +109,7 @@ public class EcobeeProgramSetupApiControllerTest {
     public void Test_EcobeeProgram_Create(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.EcobeeCycle);
+        gearTypes.add(MockGearControlMethod.EcobeeSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,
