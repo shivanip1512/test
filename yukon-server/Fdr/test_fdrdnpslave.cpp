@@ -7,6 +7,8 @@
 
 #include "boost_test_helpers.h"
 
+#include <boost/range/adaptor/indexed.hpp>
+
 BOOST_AUTO_TEST_SUITE( test_fdrdnpslave )
 
 using Cti::Test::byte_str;
@@ -723,6 +725,71 @@ BOOST_AUTO_TEST_CASE(test_scan_request_multiple_application_fragments)
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 134);
+
+    for( const auto& indexedMsg : connection.messages | boost::adaptors::indexed() )
+    {
+        BOOST_TEST_CONTEXT("Message index " << indexedMsg.index())
+        {
+            const auto packetSize = indexedMsg.value().size();
+
+            constexpr auto 
+                TC_First = 0x40, 
+                TC_Final = 0x80, 
+                AC_First = 0x80,
+                AC_Final = 0x40,
+                Neither = 0x00;
+
+            const auto transportControl = indexedMsg.value()[10] & 0xc0;
+            const auto transportSequence = indexedMsg.value()[10] & 0x3f;
+            
+            const auto applicationControl = indexedMsg.value()[11] & 0xc0;
+
+            BOOST_CHECK_EQUAL(transportSequence, indexedMsg.index() % 64);
+
+            switch( indexedMsg.index() )
+            {
+                case 0:
+                    //  Start of the first application fragment, full packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_First);
+                    BOOST_CHECK_EQUAL(applicationControl, AC_First);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+                case 63:
+                    //  End of the first application fragment, partial packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
+                    BOOST_CHECK_EQUAL(packetSize, 204);
+                    break;
+                case 64:
+                    //  Start of the second application fragment, full packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_First);
+                    BOOST_CHECK_EQUAL(applicationControl, Neither);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+                case 127:
+                    //  End of the second application fragment, partial packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
+                    BOOST_CHECK_EQUAL(packetSize, 154);
+                    break;
+                case 128:
+                    //  Start of the third and final application fragment, full packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_First);
+                    BOOST_CHECK_EQUAL(applicationControl, AC_Final);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+                case 133:
+                    //  End of the third application fragment, partial packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
+                    BOOST_CHECK_EQUAL(packetSize, 286);
+                    break;
+                default:
+                    //  All others are in the middle of an application fragment, neither first nor final, full packet
+                    BOOST_CHECK_EQUAL(transportControl, Neither);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+            }
+        }
+    }
+
 }
 
 
