@@ -115,7 +115,7 @@ public class LMValidatorHelper {
     public void validateRouteId(LMCopy lmCopy, String paoName, Errors errors, String field) {
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         if (paoId != null) {
-            PaoType type = paoDao.getLiteYukonPAO(paoId).getPaoType();
+            PaoType type = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoType();
             if (lmCopy instanceof LoadGroupCopy && type.isLoadGroupSupportRoute()) {
                 Integer routeId = ((LoadGroupCopy) lmCopy).getRouteId();
                 if (routeId != null) {
