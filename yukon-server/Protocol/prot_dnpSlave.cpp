@@ -13,35 +13,33 @@
 
 #include "std_helper.h"
 
-namespace Cti {
-namespace Protocols {
+namespace Cti::Protocols {
 
 using namespace Cti::Protocols::DNP;
 using namespace std::chrono_literals;
 
 YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 {
-    if( xfer.getOutBuffer()[10] & 0x80 )
-    {
-        setTransactionComplete();
-        return ClientErrors::None;
-    }
-
-    YukonError_t retVal = _datalink.decode(xfer, ClientErrors::None);
-
-    if( ! _datalink.isTransactionComplete() )
+    if( const auto retVal = _datalink.decode(xfer, ClientErrors::None);
+        ! _datalink.isTransactionComplete() )
     {
         return retVal;
     }
 
-    retVal = _transport.decode(_datalink);
-
-    if( ! _transport.isTransactionComplete() )
+    if( const auto retVal = _transport.decode(_datalink);
+        ! _transport.isTransactionComplete() )
     {
         return retVal;
     }
 
-    return _application.decode(_transport);
+    if( const auto retVal = _application.decode(_transport);
+        ! _application.isTransactionComplete() )
+    {
+        return retVal;
+    }
+
+    setTransactionComplete();
+    return ClientErrors::None;
 }
 
 
@@ -538,5 +536,3 @@ unsigned short DnpSlaveProtocol::getDstAddr() const
 }
 
 }
-}
-

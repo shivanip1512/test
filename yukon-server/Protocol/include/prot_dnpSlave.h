@@ -4,8 +4,7 @@
 #include "dnp_object_analogoutput.h"
 #include "dnp_object_binaryoutput.h"
 
-namespace Cti {
-namespace Protocols {
+namespace Cti::Protocols {
 
 namespace DnpSlave {
     struct output_point;
@@ -137,5 +136,3 @@ struct analog_output_request
 }
 
 }
-}
-

@@ -659,6 +659,73 @@ BOOST_AUTO_TEST_CASE( test_scan_request_maximum_packet )
 }
 
 
+BOOST_AUTO_TEST_CASE(test_scan_request_multiple_application_fragments)
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getSendToList().deletePointList();
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(nullptr);
+
+    unsigned pointid = 37;
+
+    for( auto pointtype : { PulseAccumulatorPointType, DemandAccumulatorPointType, StatusPointType, StatusOutputPointType, AnalogPointType, AnalogOutputPointType } )
+    {
+        for( int pointoffset = 1; pointoffset <= 1935; ++pointoffset, ++pointid )
+        {
+            const unsigned dnpOffset = pointoffset * 25 / 24;  //  Split into chunks of 24 contiguous points.
+
+            //Initialize the interface to have a point in a group.
+            CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+            fdrPoint->setPointID(pointid);
+            fdrPoint->setPaoID(52);
+            fdrPoint->setOffset(pointoffset);
+            fdrPoint->setPointType(PulseAccumulatorPointType);
+            fdrPoint->setValue(
+                (pointtype == StatusPointType || pointtype == StatusOutputPointType)
+                    ? pointoffset % 2
+                    : pointoffset);
+
+            CtiFDRDestination pointDestination(
+                fdrPoint->getPointID(),
+                "MasterId:2;SlaveId:30;"
+                "POINTTYPE:" + desolvePointType(pointtype) + ";"
+                "Offset:" + std::to_string(dnpOffset), "Test Destination");
+
+            vector<CtiFDRDestination> destinationList;
+
+            destinationList.push_back(pointDestination);
+
+            fdrPoint->setDestinationList(destinationList);
+
+            fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
+
+            dnpSlave.translateSinglePoint(fdrPoint, true);
+        }
+    }
+
+    const byte_str request(
+        "05 64 17 c4 1e 00 02 00 78 b5 "
+        "c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 "
+        "01 06 75 e1");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 134);
+}
+
+
 /**
 * Verify behavior of various "control close" messages sent to a point.
 * Correctly-formatted requests should generate a pointdata message.

@@ -15,7 +15,7 @@ public:
 
     enum
     {
-        BufferSize = 16384
+        BufferSize = 15932  //  Transport layer maximum, 249 * 64 - RspHeaderSize
     };
 
     using object_block_queue = std::deque<ObjectBlockPtr>;
@@ -124,6 +124,8 @@ private:
     void generateAck( acknowledge_t *app_packet, const control_header ctrl );
 
     void processResponse( void );
+
+    bool fillResponse( void );
 
     void eraseOutboundObjectBlocks( void );
     void eraseInboundObjectBlocks( void );
