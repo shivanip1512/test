@@ -6,6 +6,7 @@ import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.P
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -609,8 +610,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         NetworkMap map = new NetworkMap();
 
-        Set<RfnMetadataMulti> multi = Set.of(PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_NEIGHBOR_DATA,
-                PRIMARY_FORWARD_DESCENDANT_COUNT, PRIMARY_FORWARD_ROUTE_DATA);
+        Set<RfnMetadataMulti> multi = getMulti(filter);
 
         Map<RfnIdentifier, RfnGateway> gateways = rfnGatewayService.getGatewaysByPaoIds(filter.getSelectedGatewayIds())
                 .stream().collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
@@ -639,6 +639,28 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         log.debug("Map {} ", map);
         return map;
     }
+    
+    private Set<RfnMetadataMulti> getMulti(NetworkMapFilter filter) {
+        Set<RfnMetadataMulti> multi = new HashSet<>();
+        multi.add(PRIMARY_FORWARD_GATEWAY);
+        if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))) {
+            multi.add(PRIMARY_FORWARD_DESCENDANT_COUNT);
+        }
+        if (!filter.getLinkQuality().containsAll(Arrays.asList(LinkQuality.values()))) {
+            multi.add(PRIMARY_FORWARD_NEIGHBOR_DATA);
+        }
+        if (!filter.getHopCount().containsAll(Arrays.asList(HopCount.values()))) {
+            multi.add(PRIMARY_FORWARD_ROUTE_DATA);
+        }
+        if (filter.getColorCodeBy() == ColorCodeBy.DESCENDANT_COUNT) {
+            multi.add(PRIMARY_FORWARD_DESCENDANT_COUNT);
+        } else if (filter.getColorCodeBy() == ColorCodeBy.HOP_COUNT) {
+            multi.add(PRIMARY_FORWARD_ROUTE_DATA);
+        } else if (filter.getColorCodeBy() == ColorCodeBy.LINK_QUALITY) {
+            multi.add(PRIMARY_FORWARD_NEIGHBOR_DATA);
+        }
+        return multi;
+    }
 
     /**
      * Adding devices received from NM to map, hop count information displayed in a legend
@@ -649,15 +671,20 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (metaData.isEmpty()) {
             return;
         }
+        RfnMetadataMulti multi = PRIMARY_FORWARD_ROUTE_DATA;
+        Set<RfnIdentifier> unknownDevices = new HashSet<>();
         HashMultimap<HopCountColors, RfnIdentifier> identifiers = HashMultimap.create();
 
         for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> result : metaData.entrySet()) {
-            com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) result
-                    .getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
-            int hopCount = (int) routeData.getHopCount();
-            identifiers.put(HopCountColors.getHopCountColor(hopCount), result.getKey());
+            if (result.getValue().isValidResultForMulti(multi)) {
+                com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) result
+                        .getValue().getMetadatas().get(multi);
+                int hopCount = (int) routeData.getHopCount();
+                identifiers.put(HopCountColors.getHopCountColor(hopCount), result.getKey());
+            } else {
+                unknownDevices.add(result.getKey());
+            }
         }
-        
         log.debug("Filtered identifiers {}", identifiers.size());
         HopCountColors maxCountColors = HopCountColors.getHopCountColorsWithMaxNumber();
         List<HopCountColors> colors = identifiers.keySet().stream().sorted(Comparator.comparingInt(HopCountColors::getNumber))
@@ -667,6 +694,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             String legend = color == maxCountColors? "> "+ (maxCountColors.getNumber() - 1) : String.valueOf(color.getNumber());
             addDevicesAndLegendToMap(map, color.getColor(), legend, identifiers.get(color));
         }
+        addUnknownDevicesToMap(map, accessor, unknownDevices);
     }
 
     /**
@@ -678,19 +706,35 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (metaData.isEmpty()) {
             return;
         }
+        RfnMetadataMulti multi = PRIMARY_FORWARD_DESCENDANT_COUNT;
+        Set<RfnIdentifier> unknownDevices = new HashSet<>();
         HashMultimap<DescendantCount, RfnIdentifier> identifiers = HashMultimap.create();
-        metaData.entrySet().stream()
-                .filter(result -> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT))
+        metaData.entrySet()
                 .forEach(result -> {
-                    Integer count = (Integer) result.getValue().getMetadatas()
-                            .get(PRIMARY_FORWARD_DESCENDANT_COUNT);
-                    DescendantCount dc = DescendantCount.getDescendantCount(count);
+                    if (result.getValue().isValidResultForMulti(multi)) {
+                        Integer count = (Integer) result.getValue().getMetadatas().get(multi);
+                        DescendantCount dc = DescendantCount.getDescendantCount(count);
                         identifiers.put(dc, result.getKey());
+                    } else {
+                        unknownDevices.add(result.getKey());
+                    }
                 });
 
         for (DescendantCount descendantCount : identifiers.keySet()) {
             String legendText = accessor.getMessage(descendantCount.getFormatKey());
             addDevicesAndLegendToMap(map, descendantCount.getColor(), legendText, identifiers.get(descendantCount));
+        }
+        addUnknownDevicesToMap(map, accessor, unknownDevices);
+    }
+
+    /**
+     * If there was no data to determine the color is returned for device and the user chose to color code by that option, it will
+     * be added to a map the device will be marked as "Unknown".
+     */
+    private void addUnknownDevicesToMap(NetworkMap map, MessageSourceAccessor accessor, Set<RfnIdentifier> unknownDevices) {
+        if(!unknownDevices.isEmpty()) {
+            String legendText = accessor.getMessage("yukon.web.modules.operator.comprehensiveMap.unknown");
+            addDevicesAndLegendToMap(map, Color.GREY, legendText, unknownDevices);
         }
     }
 
@@ -703,20 +747,25 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (metaData.isEmpty()) {
             return;
         }
+        RfnMetadataMulti multi = PRIMARY_FORWARD_NEIGHBOR_DATA;
+        Set<RfnIdentifier> unknownDevices = new HashSet<>();
         HashMultimap<LinkQuality, RfnIdentifier> identifiers = HashMultimap.create();
-        metaData.entrySet().stream()
-                .filter(result -> result.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA))
+        metaData.entrySet()
                 .forEach(result -> {
-                    NeighborData neighborData = (NeighborData) result.getValue().getMetadatas()
-                            .get(PRIMARY_FORWARD_NEIGHBOR_DATA);
-                    LinkQuality lq = LinkQuality.getLinkQuality(neighborData);
-                    identifiers.put(lq, result.getKey());
+                    if (result.getValue().isValidResultForMulti(multi)) {
+                        NeighborData neighborData = (NeighborData) result.getValue().getMetadatas().get(multi);
+                        LinkQuality lq = LinkQuality.getLinkQuality(neighborData);
+                        identifiers.put(lq, result.getKey());
+                    } else {
+                        unknownDevices.add(result.getKey());
+                    }
                 });
 
         for (LinkQuality linkQuality : identifiers.keySet()) {
             String legendText = accessor.getMessage(linkQuality.getFormatKey());
             addDevicesAndLegendToMap(map, linkQuality.getColor(), legendText, identifiers.get(linkQuality));
         }
+        addUnknownDevicesToMap(map, accessor, unknownDevices);
     }
 
     /**
@@ -762,7 +811,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private void removeDevicesThatDoNotMatchSelectedCriteria(NetworkMapFilter filter,
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData,
             Set<RfnIdentifier> selectedGateways, Set<RfnIdentifier> filteredDevices) {
-
         for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data : metaData.entrySet()) {
             filterGatewaysWithoutDevices(selectedGateways, data);
             filterByDescendantCount(filter, filteredDevices, data);
@@ -776,14 +824,16 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void filterByHopCount(NetworkMapFilter filter, Set<RfnIdentifier> filteredDevices,
             Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
-        if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
-            com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) data
-                    .getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
-            if (!filter.getHopCount().contains(HopCount.getHopCount(routeData.getHopCount()))) {
+        if (!filter.getHopCount().containsAll(Arrays.asList(HopCount.values()))) {
+            if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
+                com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) data
+                        .getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+                if (!filter.getHopCount().contains(HopCount.getHopCount(routeData.getHopCount()))) {
+                    filteredDevices.remove(data.getKey());
+                }
+            } else {
                 filteredDevices.remove(data.getKey());
             }
-        } else {
-            filteredDevices.remove(data.getKey());
         }
     }
 
@@ -792,13 +842,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void filterByLinkQuality(NetworkMapFilter filter, Set<RfnIdentifier> filteredDevices,
             Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
-        if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA)) {
-            NeighborData neighborData = (NeighborData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
-            if (!filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))) {
+        if (!filter.getLinkQuality().containsAll(Arrays.asList(LinkQuality.values()))) {
+            if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA)) {
+                NeighborData neighborData = (NeighborData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
+                if (!filter.getLinkQuality().contains(LinkQuality.getLinkQuality(neighborData))) {
+                    filteredDevices.remove(data.getKey());
+                }
+            } else {
                 filteredDevices.remove(data.getKey());
             }
-        } else {
-            filteredDevices.remove(data.getKey());
         }
     }
 
@@ -807,13 +859,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      */
     private void filterByDescendantCount(NetworkMapFilter filter, Set<RfnIdentifier> filteredDevices,
             Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
-        if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {
-            Integer count = (Integer) data.getValue().getMetadatas().get(PRIMARY_FORWARD_DESCENDANT_COUNT);
-            if (!filter.getDescendantCount().contains(DescendantCount.getDescendantCount(count))) {
+        if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))) {
+            if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {
+                Integer count = (Integer) data.getValue().getMetadatas().get(PRIMARY_FORWARD_DESCENDANT_COUNT);
+                if (!filter.getDescendantCount().contains(DescendantCount.getDescendantCount(count))) {
+                    filteredDevices.remove(data.getKey());
+                }
+            } else {
                 filteredDevices.remove(data.getKey());
             }
-        } else {
-            filteredDevices.remove(data.getKey());
         }
     }
 
