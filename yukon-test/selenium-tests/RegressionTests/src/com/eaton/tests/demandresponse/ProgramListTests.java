@@ -1,6 +1,5 @@
 package com.eaton.tests.demandresponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
@@ -9,7 +8,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
@@ -35,6 +33,7 @@ public class ProgramListTests extends SeleniumTestSetup {
     @Test
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
+        
         String actualPageTitle = listPage.getPageTitle();
         
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page Title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
@@ -42,22 +41,19 @@ public class ProgramListTests extends SeleniumTestSetup {
 
     @Test
     public void columnHeadersCorrect() {
+        final int EXPECTED_COUNT = 8;
 
-        List<WebTableColumnHeader> headers = listPage.getTable().getColumnHeaders();
+        List<String> headers = this.listPage.getTable().getListTableHeaders();
+        
+        int actualCount = headers.size();
 
-        List<String> headerList = new ArrayList<>();
-
-        for (WebTableColumnHeader header : headers) {
-            headerList.add(header.getColumnName());
-        }
-
-        softAssertion.assertEquals(headerList.size(), 8);
-        softAssertion.assertTrue(headerList.contains("Name"));
-        softAssertion.assertTrue(headerList.contains("State"));
-        softAssertion.assertTrue(headerList.contains("Start"));
-        softAssertion.assertTrue(headerList.contains("Stop"));
-        softAssertion.assertTrue(headerList.contains("Current Gear"));
-        softAssertion.assertTrue(headerList.contains("Priority"));
-        softAssertion.assertTrue(headerList.contains("Reduction"));
+        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
+        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
+        softAssertion.assertTrue(headers.contains("State"), "Expected Column Header of State");
+        softAssertion.assertTrue(headers.contains("Start"), "Expected Column Header of Start");
+        softAssertion.assertTrue(headers.contains("Stop"), "Expected Column Header of Stop");
+        softAssertion.assertTrue(headers.contains("Current Gear"), "Expected Column Header of Current Gear");
+        softAssertion.assertTrue(headers.contains("Priority"), "Expected Column Header of Priority");
+        softAssertion.assertTrue(headers.contains("Reduction"), "Expected Column Header of Reduction");
     }
 }

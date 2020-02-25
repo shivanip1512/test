@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -22,7 +23,6 @@ public class AreaCreateTests extends SeleniumTestSetup {
 
     @BeforeClass
     public void beforeClass() {
-
         WebDriver driver = getDriver();        
         driverExt = getDriverExt();
         
@@ -51,7 +51,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         
         this.createPage.getSaveBtn().click();
         
-        waitForPageToLoad("Area: " + name);       
+        waitForPageToLoad("Area: " + name, Optional.empty());       
         
         AreaDetailPage detailsPage = new AreaDetailPage(driverExt, Urls.CapControl.AREA_DETAIL);
         

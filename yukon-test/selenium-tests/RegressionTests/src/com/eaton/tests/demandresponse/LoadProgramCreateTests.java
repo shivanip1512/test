@@ -1,6 +1,7 @@
 package com.eaton.tests.demandresponse;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -35,7 +36,11 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
     public void pageTitleCorrect() {
-        Assert.assertEquals(createPage.getPageTitle(), "Create Load Program");
+        final String EXPECTED_TITLE = "Create Load Program";
+        
+        String actualPageTitle = createPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
@@ -62,13 +67,13 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         
         createPage.getSaveBtn().click();
         
-        waitForPageToLoad("Load Program: " + name);
+        waitForPageToLoad("Load Program: " + name, Optional.empty());
         
         LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " saved successfully.");
+        Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully." + "' but found: " + userMsg);
     } 
     
     //DELETE ME deleted successfully.

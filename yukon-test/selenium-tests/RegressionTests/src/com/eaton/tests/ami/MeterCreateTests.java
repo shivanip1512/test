@@ -2,6 +2,7 @@ package com.eaton.tests.ami;
 
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
@@ -23,6 +24,8 @@ public class MeterCreateTests extends SeleniumTestSetup {
     private AmiDashboardPage amiDashboardPage;
     private DriverExtensions driverExt;
     private Random randomNum;
+    private static final String CREATED = " created successfully.";
+    private static final String METER = "Meter ";
     
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
@@ -58,13 +61,13 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         createModal.clickOk();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL);
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.", "Expected User Msg: 'Meter" + name + "' created successfully. but found: " + userMsg);
+        Assert.assertEquals(userMsg, METER + name + CREATED, "Expected User Msg: 'Meter" + name + " created successfully.' but found: " + userMsg);
     }
 
     @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
@@ -86,13 +89,13 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         createModal.clickOk();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL);
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.", "Expected User Msg: 'Meter" + name + "' created successfully. but found: " + userMsg);
+        Assert.assertEquals(userMsg, METER + name + CREATED, "Expected User Msg: 'Meter" + name + " created successfully.' but found: " + userMsg);
     }
     
     @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
@@ -115,13 +118,13 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         createModal.clickOk();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL);
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "Meter " + name + " created successfully.", "Expected User Msg: 'Meter" + name + "' created successfully. but found: " + userMsg);
+        Assert.assertEquals(userMsg, METER + name + CREATED, "Expected User Msg: 'Meter" + name + " created successfully.' but found: " + userMsg);
     }
 
     private String randomString(int length) {

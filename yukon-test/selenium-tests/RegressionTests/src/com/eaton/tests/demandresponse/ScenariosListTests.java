@@ -1,6 +1,5 @@
 package com.eaton.tests.demandresponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
@@ -9,7 +8,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
@@ -46,18 +44,12 @@ public class ScenariosListTests extends SeleniumTestSetup {
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 2;
         
-        List<WebTableColumnHeader> headers = this.listPage.getTable().getColumnHeaders();
+        List<String> headers = this.listPage.getTable().getListTableHeaders();
 
-        List<String> headerList = new ArrayList<>();
-
-        for (WebTableColumnHeader header : headers) {
-            headerList.add(header.getColumnName());
-        }
-
-        int actualCount = headerList.size();
+        int actualCount = headers.size();
         
         softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
-        softAssertion.assertTrue(headerList.contains("Name"), "Expected Column Header of Name");
+        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
     }
 
     @Test(enabled = false)

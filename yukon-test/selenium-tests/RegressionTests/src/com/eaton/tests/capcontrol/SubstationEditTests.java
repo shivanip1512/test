@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -18,6 +19,7 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class SubstationEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private static final String FOUND = "' but found: ";
 
     @BeforeClass
     public void beforeClass() {
@@ -26,16 +28,21 @@ public class SubstationEditTests extends SeleniumTestSetup {
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void pageTitleCorrect() {
-        navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
+        final String EXPECTED_TITLE = "Edit Substation: AT Substation";
         
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, Urls.CapControl.SUBSTATION_EDIT + "451/edit");
+        navigate(Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
+        
+        SubstationEditPage editPage = new SubstationEditPage(driverExt, Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
 
-        String pageTitle = editPage.getPageTitle();
-        Assert.assertTrue(pageTitle.startsWith("Edit Substation:")); 
+        String actualPageTitle = editPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void editSubstationRequiredFieldsOnlySuccess() {
+        final String EXPECTED_MSG = "Substation was saved successfully.";
+        
         navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
         
         SubstationEditPage editPage = new SubstationEditPage(driverExt, Urls.CapControl.SUBSTATION_EDIT + "451/edit");        
@@ -47,17 +54,18 @@ public class SubstationEditTests extends SeleniumTestSetup {
         
         editPage.getSaveBtn().click();
         
-        waitForPageToLoad("Substation: " + name);
+        waitForPageToLoad("Substation: " + name, Optional.empty());
         
         SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, Urls.CapControl.SUBSTATION_DETAIL);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, "Substation was saved successfully.");
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }     
     
     @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteSubstationSuccess() {
+        final String EXPECTED_MSG = "Substation AT Delete Substation deleted successfully.";
         
         navigate(Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);
 
@@ -69,12 +77,12 @@ public class SubstationEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Orphans");
+        waitForPageToLoad("Orphans", Optional.empty());
         
         OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, "Substation AT Delete Substation deleted successfully.");
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }
 }

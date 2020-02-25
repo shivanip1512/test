@@ -41,6 +41,10 @@ public class Button {
     public WebElement getButton() {
         return btn;
     }
+    
+    public void click() {
+        getButton().click();
+    }
 
     private void setButton() {
         if (this.parentName != null) {
@@ -51,8 +55,4 @@ public class Button {
             btn = this.driverExt.findElement(By.cssSelector("[aria-label='" + this.elementName + "']"), Optional.empty()); 
         }
     }    
-
-    public void click() {
-        getButton().click();
-    }
 }

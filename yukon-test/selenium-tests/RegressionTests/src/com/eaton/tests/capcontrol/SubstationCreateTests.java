@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -23,11 +24,12 @@ public class SubstationCreateTests extends SeleniumTestSetup {
     @BeforeClass
     public void beforeClass() {
 
-        WebDriver driver = getDriver();        
+        WebDriver driver = getDriver();
+        driverExt = getDriverExt();
         
         driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_CREATE);
 
-        this.createPage = new SubstationCreatePage(driverExt, Urls.CapControl.SUBSTATION_CREATE);
+        createPage = new SubstationCreatePage(driverExt, Urls.CapControl.SUBSTATION_CREATE);
     }
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
@@ -46,11 +48,11 @@ public class SubstationCreateTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
         String name = "AT Substation " + timeStamp; 
-        this.createPage.getName().setInputValue(name);
+        createPage.getName().setInputValue(name);
         
-        this.createPage.getSaveBtn().click();
+        createPage.getSaveBtn().click();
         
-        waitForPageToLoad("Substation: " + name);
+        waitForPageToLoad("Substation: " + name, Optional.empty());
         
         SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, Urls.CapControl.SUBSTATION_DETAIL);
         

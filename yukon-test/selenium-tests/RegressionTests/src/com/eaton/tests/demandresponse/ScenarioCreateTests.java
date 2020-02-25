@@ -13,12 +13,12 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestNgGroupConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.ControlAreaCreatePage;
 import com.eaton.pages.demandresponse.ControlAreaDetailPage;
+import com.eaton.pages.demandresponse.ScenarioCreatePage;
 
-public class ControlAreaCreateTests extends SeleniumTestSetup {
+public class ScenarioCreateTests extends SeleniumTestSetup {
     
-    private ControlAreaCreatePage createPage;
+    private ScenarioCreatePage createPage;
     private DriverExtensions driverExt;
 
     @BeforeClass
@@ -27,35 +27,34 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         WebDriver driver = getDriver();  
         driverExt = getDriverExt();
         
-        driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA_CREATE);
+        driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIO_CREATE);
 
-        createPage = new ControlAreaCreatePage(driverExt, Urls.DemandResponse.CONTROL_AREA_CREATE);                
+        createPage = new ScenarioCreatePage(driverExt, Urls.DemandResponse.SCENARIO_CREATE);                
     }  
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_09_CreateControlArea"})
+    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_12_CreateScenario"})
     public void pageTitleCorrect() {
-        final String EXPECTED_TITLE = "Create Control Area";
+        final String EXPECTED_TITLE = "Create Scenario";
         
         String actualPageTitle = createPage.getPageTitle();
         
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_09_CreateControlArea"})
-    public void createControlAreaSuccess() {
-        
+    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_12_CreateScenario"})
+    public void createScenarioRequiredFieldsOnlySuccess() {        
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
                  
-        String name = "AT Control Area " + timeStamp;         
+        String name = "AT Scenario " + timeStamp;         
         createPage.getName().setInputValue(name);  
         
-        createPage.getProgramAssignments().addSingleAvailable("AT Direct Program for Create Control Area");
+        createPage.getLoadProgramAssignments().addSingleAvailable("AT Ldprm for Create Scenario");
         
         createPage.getSave().click();
         
-        waitForPageToLoad("Control Area: " + name, Optional.empty());
+        waitForPageToLoad("Scenario: " + name, Optional.empty());
         
-        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, Urls.DemandResponse.CONTROL_AREA_DETAILS);
+        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, Urls.DemandResponse.SCENARIO_DETAILS);
         
         String userMsg = detailsPage.getUserMessage();
         

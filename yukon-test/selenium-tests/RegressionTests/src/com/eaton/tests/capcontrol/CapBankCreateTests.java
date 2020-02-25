@@ -12,6 +12,7 @@ import com.eaton.pages.capcontrol.CapBankCreatePage;
 import com.eaton.pages.capcontrol.CapBankDetailPage;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -51,7 +52,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
 
         this.createPage.getSaveBtn().click();
 
-        waitForPageToLoad("CapBank: " + name);
+        waitForPageToLoad("CapBank: " + name, Optional.empty());
 
         CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt, Urls.CapControl.CAP_BANK_DETAIL);
 

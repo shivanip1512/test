@@ -1,6 +1,8 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -17,6 +19,7 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class AreaEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private static final String FOUND = "' but found: ";
 
     @BeforeClass
     public void beforeClass() {
@@ -25,16 +28,21 @@ public class AreaEditTests extends SeleniumTestSetup {
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void pageTitleCorrect() {
-        navigate(Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
+        final String EXPECTED_TITLE = "Edit Area: AT Area";
         
-        AreaEditPage editPage = new AreaEditPage(driverExt, Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
+        navigate(Urls.CapControl.AREA_EDIT + "672" + Urls.EDIT);
+        
+        AreaEditPage editPage = new AreaEditPage(driverExt, Urls.CapControl.AREA_EDIT + "672" + Urls.EDIT);
 
-        String pageTitle = editPage.getPageTitle();
-        Assert.assertTrue(pageTitle.startsWith("Edit Area:"));       
+        String actualPageTitle = editPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
-    public void editAreaNameOnlySuccess() {        
+    public void editAreaNameOnlySuccess() {   
+        final String EXPECTED_MSG = "Area was saved successfully.";
+        
         navigate(Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
         
         AreaEditPage editPage = new AreaEditPage(driverExt, Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
@@ -46,17 +54,18 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         editPage.getSaveBtn().click();
         
-        waitForPageToLoad("Area: " + name);
+        waitForPageToLoad("Area: " + name, Optional.empty());
         
         AreaDetailPage detailsPage = new AreaDetailPage(driverExt, Urls.CapControl.AREA_DETAIL);
         
         String userMsg = detailsPage.getUserMessage();
-        
-        Assert.assertEquals(userMsg, "Area was saved successfully.");
+
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }      
     
     @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteAreaSuccess() {
+        final String EXPECTED_MSG = "Area AT Delete Area deleted successfully.";
         
         navigate(Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);
 
@@ -68,12 +77,12 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Orphans");
+        waitForPageToLoad("Orphans", Optional.empty());
         
         OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
         
         String userMsg = detailsPage.getUserMessage();
-        
-        Assert.assertEquals(userMsg, "Area AT Delete Area deleted successfully.");
+
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }
 }

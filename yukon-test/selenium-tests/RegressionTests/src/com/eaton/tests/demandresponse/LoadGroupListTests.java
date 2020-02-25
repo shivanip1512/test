@@ -1,6 +1,5 @@
 package com.eaton.tests.demandresponse;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.WebDriver;
@@ -9,7 +8,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-import com.eaton.elements.WebTableColumnHeader;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
@@ -45,21 +43,15 @@ public class LoadGroupListTests extends SeleniumTestSetup {
     public void columnHeadersCorrect() {
         final int EXPECTED_COUNT = 6;
         
-        List<WebTableColumnHeader> headers = listPage.getTable().getColumnHeaders();
-
-        List<String> headerList = new ArrayList<>();
-
-        for (WebTableColumnHeader header : headers) {
-            headerList.add(header.getColumnName());
-        }
+        List<String> headers = this.listPage.getTable().getListTableHeaders();
         
-        int actualCount = headerList.size();
+        int actualCount = headers.size();
         
         softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
-        softAssertion.assertTrue(headerList.contains("Name"), "Expected Column Header of Name");
-        softAssertion.assertTrue(headerList.contains("State"), "Expected Column Header of State");
-        softAssertion.assertTrue(headerList.contains("Last Action"), "Expected Column Header of Last Action");
-        softAssertion.assertTrue(headerList.contains("Day/Month/Season/Year Hrs"), "Expected Column Header of Day/Month/Season/Year Hrs");
-        softAssertion.assertTrue(headerList.contains("Reduction"), "Expected Column Header of Reduction");
+        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
+        softAssertion.assertTrue(headers.contains("State"), "Expected Column Header of State");
+        softAssertion.assertTrue(headers.contains("Last Action"), "Expected Column Header of Last Action");
+        softAssertion.assertTrue(headers.contains("Day/Month/Season/Year Hrs"), "Expected Column Header of Day/Month/Season/Year Hrs");
+        softAssertion.assertTrue(headers.contains("Reduction"), "Expected Column Header of Reduction");
     }
 }

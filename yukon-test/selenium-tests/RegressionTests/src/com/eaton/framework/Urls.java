@@ -84,6 +84,8 @@ public final class Urls {
     public static final class Filters {
         public static final String LOAD_GROUP = "LOAD_GROUP";
         public static final String LOAD_PROGRAM = "LOAD_PROGRAM";
+        public static final String CONTROL_AREA = "CONTROL_AREA";
+        public static final String CONTROl_SCENARIO = "CONTROL_SCENARIO";
     }
 
     public static final class CapControl {

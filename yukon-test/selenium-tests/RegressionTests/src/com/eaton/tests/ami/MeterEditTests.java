@@ -1,6 +1,7 @@
 package com.eaton.tests.ami;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -42,7 +43,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOk();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL);
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
@@ -65,7 +66,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOk();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL);
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
@@ -88,7 +89,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         editModal.getdeviceName().setInputValue(name);
         editModal.clickOk();
 
-        waitForUrlToLoad(Urls.Ami.METER_DETAIL);
+        waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
         MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
 
@@ -111,7 +112,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForUrlToLoad(Urls.Ami.AMI);
+        waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
         
         AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt, Urls.Ami.AMI);
         
@@ -134,7 +135,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForUrlToLoad(Urls.Ami.AMI);
+        waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
         
         AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt, Urls.Ami.AMI);
         
@@ -157,7 +158,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForUrlToLoad(Urls.Ami.AMI);
+        waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
         
         AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt, Urls.Ami.AMI);
         

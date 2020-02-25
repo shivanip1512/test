@@ -1,5 +1,6 @@
 package com.eaton.framework;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ import com.eaton.pages.PageBase;
 public class SeleniumTestSetup {
 
     private static WebDriver driver;
-    
+
     private static DriverExtensions driverExt;
 
     private static String baseUrl;
@@ -104,13 +105,13 @@ public class SeleniumTestSetup {
     }
 
     private static void setDriver(WebDriver driver) {
-        SeleniumTestSetup.driver = driver;        
+        SeleniumTestSetup.driver = driver;
     }
-    
+
     public static DriverExtensions getDriverExt() {
         return driverExt;
     }
-    
+
     private static void setDriverExt() {
         SeleniumTestSetup.driverExt = new DriverExtensions(SeleniumTestSetup.driver);
     }
@@ -147,11 +148,23 @@ public class SeleniumTestSetup {
         return logger;
     }
 
-    public void waitForUrlToLoad(String expectedUrl) {
+    public void waitForUrlToLoad(String expectedUrl, Optional<Integer> timeOutSeconds) {
+        Integer timeOut = timeOutSeconds.orElse(null);
+
+        Integer waitTime;
+
+        if (timeOut == null) {
+            waitTime = 5000;
+        } else if (timeOut < 5) {
+            waitTime = 5000;
+        } else {
+            waitTime = timeOut * 1000;
+        }
+
         long startTime = System.currentTimeMillis();
 
         boolean expectedUrlLoaded = false;
-        while (!expectedUrlLoaded && System.currentTimeMillis() - startTime < 30000) {
+        while (!expectedUrlLoaded && System.currentTimeMillis() - startTime < waitTime) {
             String currentUrl = driver.getCurrentUrl();
 
             expectedUrlLoaded = currentUrl.contains(expectedUrl);
@@ -160,19 +173,25 @@ public class SeleniumTestSetup {
         // add code to throw an exception if the url is not loaded
     }
 
-    public void waitForPageToLoad(String pageTitle) {
+    public void waitForPageToLoad(String pageTitle, Optional<Integer> timeOutSeconds) {
+        Integer timeOut = timeOutSeconds.orElse(null);
+
+        Integer waitTime;
+
+        if (timeOut == null) {
+            waitTime = 5000;
+        } else if (timeOut < 5) {
+            waitTime = 5000;
+        } else {
+            waitTime = timeOut * 1000;
+        }
+
         long startTime = System.currentTimeMillis();
-        boolean expectedPageTitle = false;
+        boolean found = false;
 
-        while (!expectedPageTitle && System.currentTimeMillis() - startTime < 20000) {
-            
-            WebElement element = SeleniumTestSetup.driverExt.getDriverWait().until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".page-heading")));
-
-            if (element.getText().contains(pageTitle)) {
-                expectedPageTitle = true;
-            } else {
-                expectedPageTitle = false;
-            }
+        while (!found && System.currentTimeMillis() - startTime < (waitTime * 2)) {
+            found = SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
+                    .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));            
         }
 
         // add code to throw an exception if the url is not loaded
@@ -220,7 +239,7 @@ public class SeleniumTestSetup {
     public void navigate(String url) {
         SeleniumTestSetup.driver.navigate().to(getBaseUrl() + url);
 
-        waitForUrlToLoad(url);
+        waitForUrlToLoad(url, Optional.empty());
     }
 
     @AfterSuite(alwaysRun = true)

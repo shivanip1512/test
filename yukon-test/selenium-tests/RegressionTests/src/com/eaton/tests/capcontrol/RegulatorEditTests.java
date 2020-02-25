@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -26,14 +27,15 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void pageTitleCorrect() {
+        final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
+        
+        navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
 
-        String expectedPageTitle = "Edit Regulator:";
-        navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
+        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
 
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, Urls.CapControl.REGULATOR_EDIT + "490/edit");
-
-        String pageTitle = editPage.getPageTitle();        
-        Assert.assertTrue(pageTitle.startsWith(expectedPageTitle), "Expected Page Title to be '" + expectedPageTitle + "', but found " + pageTitle);
+        String actualPageTitle = editPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
@@ -50,7 +52,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
         editPage.getSaveBtn().click();
         
-        waitForPageToLoad("Regulator: " + name);
+        waitForPageToLoad("Regulator: " + name, Optional.empty());
         
         RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, Urls.CapControl.REGULATOR_DETAIL);
         
@@ -76,7 +78,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Orphans");
+        waitForPageToLoad("Orphans", Optional.empty());
         
         OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
         

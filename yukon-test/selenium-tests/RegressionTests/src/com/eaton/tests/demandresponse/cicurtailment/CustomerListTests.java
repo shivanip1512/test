@@ -26,7 +26,7 @@ public class CustomerListTests extends SeleniumTestSetup {
     }
 
     @Test
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Customers";
 
         String actualPageTitle = listPage.getPageTitle();

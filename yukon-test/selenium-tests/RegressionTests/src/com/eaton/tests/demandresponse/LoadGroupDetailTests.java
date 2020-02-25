@@ -1,6 +1,7 @@
 package com.eaton.tests.demandresponse;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -26,15 +27,15 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
     public void pageTitleCorrect() {
-        final String GROUP_NAME = "AT Load Group";
+        final String EXPECTED_TITLE = "Load Group: AT Load Group";
         
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "856");
+        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "664");
         
-        LoadGroupDetailPage editPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "856");
+        LoadGroupDetailPage editPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "664");
 
-        String pageTitle = editPage.getPageTitle();
+        String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertTrue(pageTitle.contains("Load Group: " + GROUP_NAME), "Expected Page title: 'Load Group:: " + GROUP_NAME + "' but found: " + pageTitle); 
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_03_CopyLoadGrp"})
@@ -52,7 +53,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Load Group: " + name);
+        waitForPageToLoad("Load Group: " + name, Optional.of(8));
         
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL);
         
@@ -73,7 +74,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         confirmModal.clickOk();
         
-        waitForPageToLoad("Setup");
+        waitForPageToLoad("Setup", Optional.empty());
         
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.DemandResponse.SETUP_FILTER + Urls.Filters.LOAD_GROUP);
         

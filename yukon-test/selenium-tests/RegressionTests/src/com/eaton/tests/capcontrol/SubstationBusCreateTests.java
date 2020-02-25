@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -50,7 +51,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         
         createPage.getSaveBtn().click();
         
-        waitForPageToLoad("Bus: " + name);
+        waitForPageToLoad("Bus: " + name, Optional.empty());
         
         SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt, Urls.CapControl.SUBSTATION_BUS_DETAIL);
         

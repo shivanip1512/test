@@ -1,6 +1,7 @@
 package com.eaton.tests.demandresponse;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -26,17 +27,16 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_07_CopyLoadPgm()()"})
-    public void pageTitleCorrect() {
+    public void pageTitleCorrect() {        
+        final String EXPECTED_TITLE = "Load Program: AT Load Program";
         
-        final String PROGRAM_NAME = "AT Load Program";
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");
         
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "857");
-        
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "857");
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");
 
-        String pageTitle = detailPage.getPageTitle();
+        String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertTrue(pageTitle.contains("Load Program: " + PROGRAM_NAME), "Expected Page title: 'Load Program: " + PROGRAM_NAME + "' but found: " + pageTitle);        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_07_CopyLoadPgm()"})
@@ -54,17 +54,18 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Load Program: " + name);
+        waitForPageToLoad("Load Program: " + name, Optional.of(8));
         
         LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name +" copied successfully.");
+        Assert.assertEquals(userMsg, name +" copied successfully.", "Expected User Msg: '" + name +" copied successfully.' but found: " + userMsg);
     }
     
     @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_08_DeleteLoadPgm()"})
     public void deleteLoadProgramSuccess() {
+        final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "605");
 
@@ -74,13 +75,12 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Setup");
+        waitForPageToLoad("Setup", Optional.empty());
         
         DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.DemandResponse.SETUP_FILTER + Urls.Filters.LOAD_PROGRAM);
         
         String userMsg = setupPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, "AT Delete Direct Program deleted successfully.");
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
     }   
-
 }

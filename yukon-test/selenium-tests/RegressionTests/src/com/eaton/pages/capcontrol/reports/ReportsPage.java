@@ -8,6 +8,6 @@ public class ReportsPage extends PageBase {
     public ReportsPage(DriverExtensions driverExt, String baseUrl) {
         super(driverExt, baseUrl);
 
-    }
+    }    
     
 }

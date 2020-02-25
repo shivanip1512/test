@@ -31,7 +31,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
 
     @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void dashboardUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Dashboard");
 
         Assert.assertTrue(url.contains(Urls.CapControl.DASHBOARD), EXPECTED + Urls.CapControl.DASHBOARD + ACTUAL + url);
@@ -39,7 +38,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
 
     @Test
     public void schedulesUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Schedules");
 
         Assert.assertTrue(url.contains(Urls.CapControl.SCHEDULES), EXPECTED + Urls.CapControl.SCHEDULES + ACTUAL + url);
@@ -47,7 +45,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     
     @Test
     public void strategiesUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Strategies");
 
         Assert.assertTrue(url.contains(Urls.CapControl.STRATEGIES), EXPECTED + Urls.CapControl.STRATEGIES + ACTUAL + url);
@@ -55,7 +52,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     
     @Test
     public void recentTempMovesUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Recent Temp Moves");
 
         Assert.assertTrue(url.contains(Urls.CapControl.RECENT_TEMP_MOVES), EXPECTED + Urls.CapControl.RECENT_TEMP_MOVES + ACTUAL + url);
@@ -63,7 +59,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     
     @Test
     public void orphansUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Orphans");
 
         Assert.assertTrue(url.contains(Urls.CapControl.ORPHANS), EXPECTED + Urls.CapControl.ORPHANS + ACTUAL + url);
@@ -71,7 +66,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     
     @Test
     public void regulatroSetupUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Regulator Setup");
 
         Assert.assertTrue(url.contains(Urls.CapControl.REGULATOR_SETUP), EXPECTED + Urls.CapControl.REGULATOR_SETUP + ACTUAL + url);
@@ -79,7 +73,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     
     @Test
     public void importUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Import");
 
         Assert.assertTrue(url.contains(Urls.CapControl.IMPORT), EXPECTED + Urls.CapControl.IMPORT + ACTUAL + url);
@@ -87,7 +80,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     
     @Test
     public void pointImportUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Point Import");
 
         Assert.assertTrue(url.contains(Urls.CapControl.POINT_IMPORT), EXPECTED + Urls.CapControl.POINT_IMPORT + ACTUAL + url);
@@ -95,7 +87,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     
     @Test
     public void reportsUrlCorrect() {
-
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL, "Reports");
 
         Assert.assertTrue(url.contains(Urls.CapControl.REPORTS), EXPECTED + Urls.CapControl.REPORTS + ACTUAL + url);

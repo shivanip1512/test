@@ -1,6 +1,7 @@
 package com.eaton.tests.demandresponse;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -27,9 +28,9 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     public void pageTitleCorrect() {
         final String PROGRAM_NAME = "AT Load Program";
         
-        navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "857" + Urls.EDIT);
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "665" + Urls.EDIT);
         
-        LoadProgramEditPage editPage = new LoadProgramEditPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_EDIT + "857" + Urls.EDIT);
+        LoadProgramEditPage editPage = new LoadProgramEditPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_EDIT + "665" + Urls.EDIT);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -48,7 +49,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         
         editPage.getSaveBtn().click();
         
-        waitForPageToLoad("Load Program: " + name);
+        waitForPageToLoad("Load Program: " + name, Optional.empty());
         
         LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "599");
         

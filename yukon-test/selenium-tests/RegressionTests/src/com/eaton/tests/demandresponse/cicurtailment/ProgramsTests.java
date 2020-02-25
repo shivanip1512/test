@@ -25,7 +25,7 @@ public class ProgramsTests extends SeleniumTestSetup {
     }
 
     @Test
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Programs";
 
         String actualPageTitle = programPage.getPageTitle();

@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -50,7 +51,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
         
         createPage.getSaveBtn().click();
         
-        waitForPageToLoad("Regulator: " + name);
+        waitForPageToLoad("Regulator: " + name, Optional.empty());
         
         RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, Urls.CapControl.REGULATOR_DETAIL);
         

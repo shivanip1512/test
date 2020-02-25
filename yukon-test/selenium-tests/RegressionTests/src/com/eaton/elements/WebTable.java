@@ -36,13 +36,25 @@ public class WebTable {
         } 
     }
 
-    public List<WebTableColumnHeader> getColumnHeaders() {
+    private List<WebTableColumnHeader> getColumnHeaders() {
 
         if (this.columnHeaders == null) {
             findColumnHeaders();
         }
 
         return this.columnHeaders;
+    }
+    
+    public List<String> getListTableHeaders() {
+        List<WebTableColumnHeader> headers = getColumnHeaders();
+        
+        List<String> headerList = new ArrayList<>();
+
+        for (WebTableColumnHeader header : headers) {
+            headerList.add(header.getColumnName());
+        }
+        
+        return headerList;
     }
 
     public List<WebTableRow> getDataRows() {

@@ -1,6 +1,7 @@
 package com.eaton.tests.demandresponse;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -24,20 +25,22 @@ public class LoadGroupEditTests extends SeleniumTestSetup {
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
     public void pageTitleCorrect() {
-        final String LOAD_GROUP_TITLE = "Edit Load Group: AT Load Group";
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "856" + Urls.EDIT);
+        final String EXPECTED_TITLE = "Edit Load Group: AT Load Group";
         
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "856" + Urls.EDIT);
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "664" + Urls.EDIT);
+        
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "664" + Urls.EDIT);
 
-        String pageTitle = editPage.getPageTitle();
-        Assert.assertTrue(pageTitle.equals(LOAD_GROUP_TITLE));       
+        String actualPageTitle = editPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
-    public void editLoadGroupNameOnlySuccess() {        
-        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "850" + Urls.EDIT);
+    public void editLoadGroupNameOnlySuccess() {              
+        navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
         
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "850" + Urls.EDIT);
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         String name = "AT Edited Ecobee Ldgrp " + timeStamp;
@@ -45,12 +48,12 @@ public class LoadGroupEditTests extends SeleniumTestSetup {
         
         editPage.getSaveBtn().click();
         
-        waitForPageToLoad("Load Group: " + name);
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
         
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL + "850");
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL + "596");
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " saved successfully.");
+        Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
     }        
 }

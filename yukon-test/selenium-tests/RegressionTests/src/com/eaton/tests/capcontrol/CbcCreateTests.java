@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
@@ -46,7 +47,8 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
     @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void createCbcRequiredFieldsOnlySuccess() {
-
+        final String EXPECTED_MSG = "CBC was saved successfully.";
+        
         int masterAddress = randomNum.nextInt(65000);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
@@ -58,13 +60,13 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         this.createPage.getSaveBtn().click();
 
-        waitForPageToLoad("CBC: " + name);
+        waitForPageToLoad("CBC: " + name, Optional.empty());
 
         CbcDetailPage detailPage = new CbcDetailPage(driverExt, Urls.CapControl.CBC_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, "CBC was saved successfully.");
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User MsgL:'" + EXPECTED_MSG + "' but found: " + userMsg);
     }
 
     @AfterMethod

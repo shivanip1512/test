@@ -24,6 +24,14 @@ public class DriverExtensions {
         return driverWait;
     }
     
+    public WebDriverWait getDriverWait(Optional<Integer> timeOutSeconds) {
+        Integer timeOut = timeOutSeconds.orElse(null);
+        
+        if ( timeOut == null ) return driverWait;
+        
+        return new WebDriverWait(this.driver, timeOut);
+    }
+    
     /**
      * 
      * @param by The selector used to find the element

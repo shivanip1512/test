@@ -26,7 +26,7 @@ public class CiCurtailmentTests extends SeleniumTestSetup {
     }
 
     @Test
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Commercial Curtailment";
 
         String actualPageTitle = curtailmentPage.getPageTitle();

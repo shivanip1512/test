@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -18,6 +19,7 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class CbcEditTests extends SeleniumTestSetup {
 
     DriverExtensions driverExt;
+    private static final String FOUND = "' but found: ";
 
     @BeforeClass
     public void beforeClass() {
@@ -28,13 +30,13 @@ public class CbcEditTests extends SeleniumTestSetup {
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "CBC: AT CBC";
         
-        navigate(Urls.CapControl.CBC_EDIT + "879" + Urls.EDIT);
+        navigate(Urls.CapControl.CBC_EDIT + "670" + Urls.EDIT);
 
-        CbcEditPage editPage = new CbcEditPage(driverExt, Urls.CapControl.CBC_EDIT + "879" + Urls.EDIT);
+        CbcEditPage editPage = new CbcEditPage(driverExt, Urls.CapControl.CBC_EDIT + "670" + Urls.EDIT);
 
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
 
     @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects" })
@@ -52,13 +54,13 @@ public class CbcEditTests extends SeleniumTestSetup {
         
         editPage.getSaveBtn().click();
 
-        waitForPageToLoad("CBC: " + name);
+        waitForPageToLoad("CBC: " + name, Optional.empty());
 
         CbcDetailPage detailPage = new CbcDetailPage(driverExt, Urls.CapControl.CBC_DETAIL);
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }
     
     @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
@@ -75,12 +77,12 @@ public class CbcEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Orphans");
+        waitForPageToLoad("Orphans", Optional.empty());
         
         OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }
 }

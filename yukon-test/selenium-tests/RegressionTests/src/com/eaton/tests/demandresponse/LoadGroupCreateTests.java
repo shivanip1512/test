@@ -1,6 +1,7 @@
 package com.eaton.tests.demandresponse;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
@@ -62,7 +63,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         createPage.getSaveBtn().click();
         
-        waitForPageToLoad("Load Group: " + name);
+        waitForPageToLoad("Load Group: " + name, Optional.empty());
         
         LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL);
         

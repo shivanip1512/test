@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
@@ -51,7 +52,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         
         createPage.getSaveBtn().click();
         
-        waitForPageToLoad("Feeder: " + name);
+        waitForPageToLoad("Feeder: " + name, Optional.empty());
         
         FeederDetailPage detailsPage = new FeederDetailPage(driverExt, Urls.CapControl.FEEDER_DETAIL);
         

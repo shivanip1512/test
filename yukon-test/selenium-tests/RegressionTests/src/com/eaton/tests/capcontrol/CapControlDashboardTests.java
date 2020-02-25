@@ -13,7 +13,7 @@ import com.eaton.pages.capcontrol.CapControlDashboardPage;
 
 public class CapControlDashboardTests extends SeleniumTestSetup {
 
-    private CapControlDashboardPage capControlPage;
+    private CapControlDashboardPage dashboardPage;
 
     @BeforeClass
     public void beforeClass() {
@@ -23,14 +23,14 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.DASHBOARD);
 
-        capControlPage = new CapControlDashboardPage(driverExt, getBaseUrl());
+        dashboardPage = new CapControlDashboardPage(driverExt, getBaseUrl());
     }
 
     @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Volt/Var Dashboard";
         
-        String actualPageTitle = capControlPage.getPageTitle();
+        String actualPageTitle = dashboardPage.getPageTitle();
         
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }

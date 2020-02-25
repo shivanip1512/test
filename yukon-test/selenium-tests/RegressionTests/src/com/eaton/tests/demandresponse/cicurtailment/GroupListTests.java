@@ -26,7 +26,7 @@ public class GroupListTests extends SeleniumTestSetup {
     }
 
     @Test
-    public void titleCorrect() {
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Groups";
 
         String actualPageTitle = listPage.getPageTitle();

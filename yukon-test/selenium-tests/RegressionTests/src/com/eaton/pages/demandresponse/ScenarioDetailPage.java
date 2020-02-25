@@ -5,9 +5,9 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.pages.PageBase;
 
-public class ControlAreaDetailPage extends PageBase {
+public class ScenarioDetailPage extends PageBase {
 
-    public ControlAreaDetailPage(DriverExtensions driverExt, String baseUrl) {
+    public ScenarioDetailPage(DriverExtensions driverExt, String baseUrl) {
         super(driverExt, baseUrl);
 
     }

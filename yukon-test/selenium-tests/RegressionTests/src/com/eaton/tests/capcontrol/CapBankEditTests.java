@@ -1,6 +1,7 @@
 package com.eaton.tests.capcontrol;
 
 import java.text.SimpleDateFormat;
+import java.util.Optional;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -18,6 +19,7 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class CapBankEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
+    private static final String FOUND = "' but found: ";
 
     @BeforeClass
     public void beforeClass() {
@@ -26,19 +28,22 @@ public class CapBankEditTests extends SeleniumTestSetup {
 
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void pageTitleCorrect() {
+        final String EXPECTED_TITLE = "Edit CapBank: AT Cap Bank";
+        
+        navigate(Urls.CapControl.CAP_BANK_EDIT + "669" + Urls.EDIT);
 
-        navigate(Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
+        CapBankEditPage editPage = new CapBankEditPage(driverExt, Urls.CapControl.CAP_BANK_EDIT + "669" + Urls.EDIT);
 
-        CapBankEditPage editPage = new CapBankEditPage(driverExt, Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
-
-        String pageTitle = editPage.getPageTitle();
-        Assert.assertTrue(pageTitle.startsWith("Edit CapBank:"));
+        String actualPageTitle = editPage.getPageTitle();
+        
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
     
     @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void editCapBankUpdateNameOnlySuccess() {
+        final String EXPECTED_MSG = "CapBank was saved successfully.";
         
-        navigate(Urls.CapControl.CAP_BANK_EDIT + "459/edit");
+        navigate(Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
 
         CapBankEditPage editPage = new CapBankEditPage(driverExt, Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
         
@@ -49,17 +54,18 @@ public class CapBankEditTests extends SeleniumTestSetup {
         
         editPage.getSaveBtn().click();
         
-        waitForPageToLoad("CapBank: " + name);
+        waitForPageToLoad("CapBank: " + name, Optional.empty());
         
         CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt, Urls.CapControl.CAP_BANK_DETAIL);
         
         String userMsg = detailsPage.getUserMessage();
-        
-        Assert.assertEquals(userMsg, "CapBank was saved successfully.");
+
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }    
     
     @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteCapBankSuccess() {
+        final String EXPECTED_MSG = "CapBank AT Delete CapBank deleted successfully.";
         
         navigate(Urls.CapControl.CAP_BANK_EDIT + "576" + Urls.EDIT);
 
@@ -71,12 +77,12 @@ public class CapBankEditTests extends SeleniumTestSetup {
         
         modal.clickOk();
         
-        waitForPageToLoad("Orphans");
+        waitForPageToLoad("Orphans", Optional.empty());
         
         OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, "CapBank AT Delete CapBank deleted successfully.");
+        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }
 }

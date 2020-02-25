@@ -1,9 +1,7 @@
 package com.eaton.tests.capcontrol.reports;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -23,14 +21,5 @@ public class ReportsTests extends SeleniumTestSetup {
         driver.get(getBaseUrl() + Urls.CapControl.REPORTS);
 
         reportPage = new ReportsPage(driverExt, null);
-    }
-
-    @Test
-    public void pageTitleCorrect() {
-        final String EXPECTED_TITLE = "Report Selection";
-        
-        String actualPageTitle = reportPage.getPageTitle();
-        
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 }
