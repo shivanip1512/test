@@ -49,6 +49,8 @@
     <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.HIGH">17 - 20</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.REALLY_HIGH">&gt; 20</entry>
     
+    <entry key="yukon.web.modules.operator.comprehensiveMap.unknown">Unknown</entry>
+        
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure">Infrastructure</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways">All Gateways</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays">All Relays</entry>

@@ -134,7 +134,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
 
     @PostConstruct
     public void initialize() {
-        Duration timeout = configSource.getDuration("RFN_META_DATA_REPLY_TIMEOUT", Duration.standardMinutes(1));
+        Duration timeout = configSource.getDuration("RFN_META_DATA_REPLY_TIMEOUT", Duration.standardMinutes(2));
         multiReplyTemplate = new RequestMultiReplyTemplate<>(connectionFactory, null, JmsApiDirectory.RF_METADATA_MULTI,
                 timeout, false);
     }
