@@ -2,7 +2,10 @@
 
 #include "RfnMeter.h"
 
-#include "rfn_identifier.h"
+#include "RfnE2eDataRequestMsg.h"
+#include "RfnE2eDataIndicationMsg.h"
+
+#include "e2e_packet.h"
 
 #include "CParms.h"
 
@@ -15,13 +18,24 @@
 
 #include <map>
 #include <random>
+#include <optional>
+#include <thread>
+#include <tuple>
 #include <time.h>
 
 namespace Cti::Simulator {
 
 namespace {
 RandomGenerator<unsigned> idGenerator;
-std::map<RfnIdentifier, std::map<unsigned, std::string>> meterProgrammingRequests;
+
+struct MeterProgrammingRequest
+{
+    unsigned initialToken;
+    unsigned currentToken;
+    std::string path;
+};
+
+std::map<RfnIdentifier, MeterProgrammingRequest> meterProgrammingRequests;
 
 std::map<RfnIdentifier, std::string> configurationIds;
 
@@ -187,94 +201,254 @@ RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
 
 }
 
-std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
-std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId);
-std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId);
+using Bytes = std::vector<unsigned char>;
 
-auto RfnMeter::doChannelManagerRequest(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> Bytes
+void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
+auto processChannelManagerPost(const e2edt_request_packet& post_request, const RfnIdentifier& rfnId) -> std::optional<e2edt_request_packet>;
+
+void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
 {
-    if( ! request.empty() )
+    using ASIDs = Messaging::Rfn::ApplicationServiceIdentifiers;
+
+    switch( request.method )
     {
-        switch( request[0] )
+        default:
         {
-            case 0x84:
+            CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
+            return;
+        }
+        case Protocols::Coap::RequestMethod::Get:
+        {
+            switch( const auto asid = requestMsg.applicationServiceId; 
+                    asid )
             {
-                return DataStreamingRead(request, rfnId);
+                default:
+                {
+                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
+                    return;
+                }
+                case ASIDs::ChannelManager:
+                {
+                    doChannelManagerRequest(e2eRequestSender, e2eReplySender, request, requestMsg);
+                    return;
+                }
             }
-            case 0x86:
+        }
+        case Protocols::Coap::RequestMethod::Post:
+        {
+            //  The only POST we process at present is the Set Meter Configuration request, which results in a GET request back to Yukon.
+            switch( const auto asid = requestMsg.applicationServiceId; 
+                    asid )
             {
-                return DataStreamingWrite(request, rfnId);
-            }
-            case 0x91:
-            {
-                return GetMeterProgrammingConfiguration(rfnId);
+                default:
+                {
+                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
+                    return;
+                }
+                case ASIDs::ChannelManager:
+                {
+                    if( auto newRequest = processChannelManagerPost(request, requestMsg.rfnIdentifier);
+                        newRequest.has_value() )
+                    {
+                        e2eRequestSender(requestMsg, *newRequest);
+                    }
+                    return;
+                }
             }
         }
     }
-    return {};
 }
 
-auto RfnMeter::processReply(const e2edt_reply_packet& reply, const RfnIdentifier& rfnId) -> std::unique_ptr<e2edt_request_packet>
+Bytes GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId);
+
+void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt_reply_packet& reply, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
 {
-    if( auto requests = mapFindRef(meterProgrammingRequests, rfnId) )
+    auto itr = meterProgrammingRequests.find(requestMsg.rfnIdentifier);
+
+    if( itr == meterProgrammingRequests.end() )
     {
-        if( auto existingRequestPath = mapFind(*requests, reply.token) )
+        CTILOG_WARN(dout, "No active meter programming request for " << requestMsg.rfnIdentifier);
+        return;
+    }
+
+    auto& programmingRequest = itr->second;
+
+    if( programmingRequest.currentToken != reply.token )
+    {
+        CTILOG_WARN(dout, "Received unexpected token " << FormattedList::of(
+            "Path", programmingRequest.path,
+            "Initial token", programmingRequest.initialToken,
+            "Current token", programmingRequest.currentToken,
+            "Reply token", reply.token));
+
+        return;
+    }
+
+    if( reply.status != Protocols::Coap::ResponseCode::Content )
+    {
+        CTILOG_WARN(dout, "Request failed, aborting programming request");
+        meterProgrammingRequests.erase(itr);
+        return;
+    }
+
+    if( reply.block && reply.block->more )
+    {
+        e2edt_request_packet request;
+
+        request.id = idGenerator();
+        request.confirmable = true;
+        request.method = Protocols::Coap::RequestMethod::Get;
+        request.block = reply.block;
+        request.block->num++;
+
+        request.path = programmingRequest.path;
+        request.token = idGenerator();
+
+        programmingRequest.currentToken = request.token;
+
+        e2eRequestSender(requestMsg, request);
+
+        return;
+    }
+
+    //  request is complete, store off configurationId and issue response
+
+    configurationIds[requestMsg.rfnIdentifier] = 
+        programmingRequest.path.substr(
+            static_cast<std::string::size_type>(
+                programmingRequest.path.find_last_of('/') + 1U));
+
+    e2edt_request_packet request;
+
+    request.id = idGenerator();
+    request.confirmable = false;
+    request.method = Protocols::Coap::RequestMethod::Post;
+
+    request.token = programmingRequest.initialToken;
+
+    meterProgrammingRequests.erase(itr);
+
+    request.payload = GetMeterProgrammingConfiguration(requestMsg.rfnIdentifier);
+
+    e2eRequestSender(requestMsg, request);
+}
+
+Bytes DataStreamingRead (const Bytes& request, const RfnIdentifier & rfnId);
+Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId);
+
+void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
+{
+    if( request.payload.empty() )
+    {
+        return;
+    }
+
+    e2edt_reply_packet reply {};
+
+    switch( request.payload[0] )
+    {
+        default:
         {
-            if( reply.block && reply.block->more )
-            {
-                auto request = std::make_unique<e2edt_request_packet>();
+            return;
+        }
+        case 0x84:
+        {
+            reply.payload = DataStreamingRead(request.payload, requestMsg.rfnIdentifier);
+            reply.token = request.token;
+            reply.status = Protocols::Coap::ResponseCode::Content;
+            break;
+        }
+        case 0x86:
+        {
+            reply.payload = DataStreamingWrite(request.payload, requestMsg.rfnIdentifier);
+            reply.token = request.token;
+            reply.status = Protocols::Coap::ResponseCode::Content;
+            break;
+        }
+        case 0x91:
+        {
+            reply.status = Protocols::Coap::ResponseCode::EmptyMessage;
 
-                request->id = idGenerator();
-                request->confirmable = true;
-                request->method = Protocols::Coap::RequestMethod::Get;
-                request->block = reply.block;
-                request->block->num++;
+            //  Delay the actual data reply by 4 seconds (arbitrary)
+            std::thread([e2eRequestSender, requestMsg, token=request.token]() {
+                Sleep(4000);
+                
+                e2edt_request_packet reply;
 
-                request->path = *existingRequestPath;
-                request->token = idGenerator();
+                reply.id = idGenerator();
+                reply.method = Protocols::Coap::RequestMethod::Post;
+                reply.token = token;
+                reply.confirmable = false;
+                reply.payload = GetMeterProgrammingConfiguration(requestMsg.rfnIdentifier);
 
-                return request;
-            }
-            else
-            {
-                //  TODO - request is complete, issue response and store off configurationId
-            }
+                e2eRequestSender(requestMsg, reply);
+            }).detach();
+
+            break;
         }
     }
 
-    return nullptr;
+    reply.id = request.id;
+
+    e2eReplySender(requestMsg, reply);
 }
 
-auto RfnMeter::processChannelManagerPost(const e2edt_request_packet& post_request, const RfnIdentifier& rfnId) -> std::unique_ptr<e2edt_request_packet>
+auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>;
+
+auto processChannelManagerPost(const e2edt_request_packet& post_request, const RfnIdentifier& rfnId) -> std::optional<e2edt_request_packet>
 {
     if( ! post_request.payload.empty() )
     {
         switch( post_request.payload[0] )
         {
             case 0x90:
-                auto request = std::make_unique<e2edt_request_packet>();
-
-                request->id = idGenerator();
-                request->confirmable = true;
-                request->method = Protocols::Coap::RequestMethod::Get;
-                        
-                if( const auto meterProgramInfo = ParseSetMeterProgram(post_request.payload, rfnId);
-                    meterProgramInfo )
+            {
+                if( const auto pathSize = ParseSetMeterProgram(post_request.payload, rfnId) )
                 {
-                    request->path = meterProgramInfo->path;
-                    request->token = idGenerator();
+                    const auto [path, size] = *pathSize;
 
-                    meterProgrammingRequests[rfnId][request->token] = request->path;
+                    auto itr = meterProgrammingRequests.find(rfnId);
+
+                    if( itr != meterProgrammingRequests.end() )
+                    {
+                        if( itr->second.path == path )
+                        {
+                            CTILOG_INFO(dout, "Received duplicate path request, ignoring" << FormattedList::of(
+                                "Device", rfnId,
+                                "Path", path));
+
+                            return std::nullopt;
+                        }
+
+                        CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
+                            "Device", rfnId,
+                            "Existing path", itr->second.path,
+                            "New path", path));
+
+                        itr->second.path = path;
+                        itr->second.initialToken = post_request.token;
+                    }
+
+                    e2edt_request_packet request;
+
+                    request.id = idGenerator();
+                    request.confirmable = true;
+                    request.method = Protocols::Coap::RequestMethod::Get;
+                    request.path = path;
+                    request.token = idGenerator();
+
+                    itr->second.currentToken = request.token;
 
                     return request;
                 }
+            }
         }
     }
 
-    return nullptr;
+    return std::nullopt;
 }
 
-auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId) -> std::optional<path_size>
+auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>
 {
     auto pos = 1;
     const auto end = request.size();
@@ -324,7 +498,7 @@ auto RfnMeter::ParseSetMeterProgram(const std::vector<unsigned char>& request, c
         return std::nullopt;  //  error, missing one of the two required parameters
     }
 
-    return path_size { *uri, *size };
+    return { { *uri, *size } };
 }
 
 struct metric_response
@@ -403,14 +577,14 @@ std::string GenerateConfigurationId(const RfnIdentifier & rfnId)
                          : remoteGuids[index % remoteGuids.size()]);
 }
 
-std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId)
+Bytes GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId)
 {
     auto configurationId = mapFindOrCompute(configurationIds, rfnId, GenerateConfigurationId);
 
     //  Success response
     //  TODO - add support for failure responses
     //  TODO - track individual meter state
-    std::vector<unsigned char> response { 0x92, 0x00, 0x00, 0x01, 0x03 };
+    Bytes response { 0x92, 0x00, 0x00, 0x01, 0x03 };
 
     response.push_back(configurationId.length());
     response.insert(response.end(), configurationId.begin(), configurationId.end());
@@ -418,7 +592,7 @@ std::vector<unsigned char> GetMeterProgrammingConfiguration(const RfnIdentifier 
     return response;
 }
 
-std::vector<unsigned char> makeDataStreamingResponse(const unsigned char responseCode, const metric_response& original)
+Bytes makeDataStreamingResponse(const unsigned char responseCode, const metric_response& original)
 {
     //  Response format:
     //  0x87,       //  command code
@@ -438,7 +612,7 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
     //      0x00,        //  metric ID 3 status
     //      0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
-    std::vector<unsigned char> response { responseCode };
+    Bytes response { responseCode };
 
     const auto mangleChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CONFIG_MANGLE_CHANCE");
     const auto mangleHappen = dist(gen);
@@ -475,7 +649,7 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
     return response;
 }
 
-std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId)
+Bytes DataStreamingRead(const Bytes& request, const RfnIdentifier & rfnId)
 {
     streaming_metrics::metrics modelMetrics;
 
@@ -500,7 +674,7 @@ std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& r
     return makeDataStreamingResponse(0x85, response);
 }
 
-std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& request, const RfnIdentifier & rfnId)
+Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId)
 {
     //  Request format:
     //  0x86,  //  command code

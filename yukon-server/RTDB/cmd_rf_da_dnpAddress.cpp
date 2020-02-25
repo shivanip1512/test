@@ -65,7 +65,7 @@ RfnCommandResult RfDaReadDnpSlaveAddressCommand::decodeCommand( const CtiTime no
     return "Outstation DNP3 address: " + CtiNumStr(_dnp3SlaveAddress);
 }
 
-std::string RfDaReadDnpSlaveAddressCommand::getCommandName()
+std::string RfDaReadDnpSlaveAddressCommand::getCommandName() const
 {
     return "Read DNP Slave Address Request";
 }

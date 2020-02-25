@@ -544,7 +544,7 @@ RfnCommandResult RfnChannelSelectionCommand::decodeCommand( const CtiTime now,
     return description + "\n" + decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()), longTlvs ), getExpectedTlvType() );
 }
 
-std::string RfnChannelSelectionCommand::getCommandName()
+std::string RfnChannelSelectionCommand::getCommandName() const
 {
     return "Channel Selection Request";
 }
@@ -671,7 +671,7 @@ RfnCommandResult RfnChannelIntervalRecordingCommand::decodeCommand( const CtiTim
     return description + "\n" + decodeTlv( tlvs[0] );
 }
 
-std::string RfnChannelIntervalRecordingCommand::getCommandName()
+std::string RfnChannelIntervalRecordingCommand::getCommandName() const
 {
     return "Channel Interval Recording Request";
 }

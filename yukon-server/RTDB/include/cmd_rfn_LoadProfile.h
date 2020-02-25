@@ -113,7 +113,7 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     boost::optional<unsigned> getVoltageAveragingInterval() const override;
     boost::optional<unsigned> getLoadProfileInterval()      const override;
@@ -139,7 +139,7 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     const unsigned voltageAveragingInterval,    // seconds
                    loadProfileInterval;         // minutes
@@ -182,7 +182,7 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     boost::optional<RecordingOption> getRecordingOption() const;
     boost::optional<CtiTime>         getEndTime() const;
@@ -213,7 +213,7 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     const RecordingOption recordingOption;
 };
@@ -232,7 +232,7 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     const RecordingOption recordingOption;
 };
@@ -252,7 +252,7 @@ public:
     RfnCommandResult decodeCommand( const CtiTime now,
                                     const RfnResponsePayload & response ) override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
 protected:
 

@@ -30,7 +30,7 @@ namespace Cti::Devices::Commands {
 
         RfnMeterProgrammingSetConfigurationCommand(std::string guid, std::size_t length);
 
-        std::string getCommandName() override;
+        std::string getCommandName() const override;
 
         bool isPost() const override;
 
@@ -67,7 +67,7 @@ namespace Cti::Devices::Commands {
     {
     public:
 
-        std::string getCommandName() override;
+        std::string getCommandName() const override;
 
         RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 

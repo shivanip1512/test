@@ -246,7 +246,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_USERNAME,
             ITRON_SFTP_PASSWORD,
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
-            NETWORK_MANAGER_DB_PASSWORD);
+            NETWORK_MANAGER_DB_PASSWORD,
+            CLOUD_IOT_HUB_CONNECTION_STRING);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

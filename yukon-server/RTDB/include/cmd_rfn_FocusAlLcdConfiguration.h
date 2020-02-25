@@ -48,7 +48,7 @@ public:
     boost::optional<unsigned char> getDisplayItemDurationReceived() const;
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
 protected:
     virtual unsigned char getOperation() const;
@@ -66,7 +66,7 @@ public:
     RfnFocusAlLcdConfigurationWriteCommand( const MetricVector &metrics_, const unsigned char displayItemDuration_ );
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) override;
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
 
     const MetricVector metrics;
     const unsigned char displayItemDuration;

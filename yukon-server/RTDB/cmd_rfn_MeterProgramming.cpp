@@ -184,7 +184,7 @@ namespace Cti::Devices::Commands {
     unsigned char RfnMeterProgrammingSetConfigurationCommand::getOperation()   const { return {}; }
     unsigned char RfnMeterProgrammingSetConfigurationCommand::getCommandCode() const { return {}; }
 
-    std::string RfnMeterProgrammingSetConfigurationCommand::getCommandName()
+    std::string RfnMeterProgrammingSetConfigurationCommand::getCommandName() const
     {
         return "Set Meter Programming Request";
     }
@@ -232,7 +232,7 @@ namespace Cti::Devices::Commands {
     unsigned char RfnMeterProgrammingGetConfigurationCommand::getOperation()   const { return {}; }
     unsigned char RfnMeterProgrammingGetConfigurationCommand::getCommandCode() const { return {}; }
 
-    std::string RfnMeterProgrammingGetConfigurationCommand::getCommandName()
+    std::string RfnMeterProgrammingGetConfigurationCommand::getCommandName() const
     {
         return "Get Meter Programming Request";
     }
