@@ -415,6 +415,11 @@ begin
         DeleteDir(sDir, ALLCONTENTS);
     endif;
 
+    //Delete logic.dll in case of upgrade when installed version < "7.5.0".
+    if(IsInstalledVersionLesser("7.5.0")) then
+        DeleteFile ( TARGETDIR ^ "\\Server\\bin\\logic.dll");
+    endif;
+
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
 	
