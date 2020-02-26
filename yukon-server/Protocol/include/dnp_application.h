@@ -121,6 +121,8 @@ private:
     object_block_queue _out_object_blocks,
                        _in_object_blocks;
 
+    unsigned _outboundFragmentSize = BufferSize;  //  Default to largest possible, can be overridden by setOutboundFragmentSize
+
     void generateAck( acknowledge_t *app_packet, const control_header ctrl );
 
     void processResponse( void );
@@ -143,6 +145,8 @@ public:
     void setCommand( FunctionCode fc );
     void setCommand( FunctionCode fc, ObjectBlockPtr obj );
     void setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> objs );
+
+    void setOutboundFragmentSize( unsigned outboundFragmentSize );
 
     void initForOutput( void );
 
@@ -214,4 +218,3 @@ public:
 };
 
 }
-

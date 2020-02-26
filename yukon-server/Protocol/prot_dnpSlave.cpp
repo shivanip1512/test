@@ -9,6 +9,8 @@
 #include "dnp_object_counter.h"
 #include "dnp_object_class.h"
 
+#include "GlobalSettings.h"
+
 #include "logger.h"
 
 #include "std_helper.h"
@@ -330,13 +332,17 @@ void DnpSlaveProtocol::setScanCommand( std::vector<DnpSlave::output_point> outpu
         }
     }
 
+    const auto outboundApplicationFragmentSize = GlobalSettings::getInteger(GlobalSettings::Integers::FdrDnpSlaveApplicationFragmentSize, 2048);
+
+    _application.setOutboundFragmentSize(outboundApplicationFragmentSize);
+
     std::vector<ObjectBlockPtr> dobs;
 
-    const auto insertPoints = [ &dobs ]( auto && points ) 
+    const auto insertPoints = [ &dobs, outboundApplicationFragmentSize ]( auto && points ) 
                               { 
                                   if( ! points.empty() ) 
                                   {
-                                      auto blocks = ObjectBlock::makeRangedBlocks(std::move(points));
+                                      auto blocks = ObjectBlock::makeRangedBlocks(std::move(points), outboundApplicationFragmentSize);
                                       std::move(blocks.begin(), blocks.end(), std::back_inserter(dobs));
                                   }
                               };

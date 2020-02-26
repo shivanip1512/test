@@ -4,6 +4,7 @@
 #include "ctitime.h"
 #include "ctidate.h"
 #include "dbaccess.h"
+#include "GlobalSettings.h"
 
 #include <boost/bind.hpp>
 #include <boost/optional.hpp>
@@ -67,6 +68,39 @@ struct byte_str
 
 namespace {  //  internal linkage so we can include it in multiple translation units
 
+struct test_GlobalSettings : Cti::GlobalSettings
+{
+    std::string getStringImpl(Strings  setting, std::string default) override
+    {
+        return default;
+    }
+    int getIntegerImpl(Integers setting, int default) override
+    {
+        return default;
+    }
+    bool getBooleanImpl(Booleans setting, bool default) override
+    {
+        return default;
+    }
+};
+
+class Override_GlobalSettings
+{
+    std::unique_ptr<GlobalSettings> origGlobalSettings;
+public:
+    Override_GlobalSettings()
+    {
+        origGlobalSettings = std::make_unique<test_GlobalSettings>();
+
+        std::swap(origGlobalSettings, gGlobalSettings);
+    }
+
+    ~Override_GlobalSettings()
+    {
+        std::swap(origGlobalSettings, gGlobalSettings);
+    }
+};
+    
 class Override_CtiTime_TimeZoneInformation
 {
     TIME_ZONE_INFORMATION _newTzi;

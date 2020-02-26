@@ -76,6 +76,12 @@ void ApplicationLayer::setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> 
 }
 
 
+void ApplicationLayer::setOutboundFragmentSize(unsigned outboundFragmentSize)
+{
+    _outboundFragmentSize = outboundFragmentSize;
+}
+
+
 void ApplicationLayer::initUnsolicited( void )
 {
     eraseInboundObjectBlocks();
@@ -264,10 +270,10 @@ bool ApplicationLayer::fillResponse()
             CTILOG_ERROR(dout, "ob null");
             continue;
         }
-        if( pos + ob->getSerializedLen() >= BufferSize )
+        if( pos + ob->getSerializedLen() >= _outboundFragmentSize )
         {
-            CTILOG_DEBUG(dout, "Exceeded application buffer size, remainder in next packet" << FormattedList::of(
-                "Buffer position", std::to_string(pos) + "/" + std::to_string(BufferSize),
+            CTILOG_DEBUG(dout, "Exceeded application fragment size, remainder in next packet" << FormattedList::of(
+                "Buffer position", std::to_string(pos) + "/" + std::to_string(_outboundFragmentSize),
                 "Object length", ob->getSerializedLen(),
                 "Object index", std::to_string(index) + "/" + std::to_string(ob_count)));
             break;
