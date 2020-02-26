@@ -20,7 +20,7 @@ public class AmiDashboardPage extends PageBase {
         return actionBtn;
     }
     
-    public CreateMeterModal showCreateMeterModal() {
+    public CreateMeterModal showAndWaitCreateMeterModal() {
         
         actionBtn.clickAndSelectOptionByText("Create Meter");        
                       

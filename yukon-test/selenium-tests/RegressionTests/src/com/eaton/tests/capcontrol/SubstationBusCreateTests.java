@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.SubstationBusCreatePage;
 import com.eaton.pages.capcontrol.SubstationBusDetailPage;
@@ -44,7 +45,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     public void createSubstationBusRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Bus was saved successfully.";
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         
         String name = "AT Bus " + timeStamp;
         createPage.getName().setInputValue(name);

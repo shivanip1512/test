@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.SubstationCreatePage;
 import com.eaton.pages.capcontrol.SubstationDetailPage;
@@ -32,7 +32,7 @@ public class SubstationCreateTests extends SeleniumTestSetup {
         createPage = new SubstationCreatePage(driverExt, Urls.CapControl.SUBSTATION_CREATE);
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Substation";
         
@@ -41,11 +41,11 @@ public class SubstationCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
     public void createSubstationRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Substation was saved successfully.";
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         
         String name = "AT Substation " + timeStamp; 
         createPage.getName().setInputValue(name);

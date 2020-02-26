@@ -7,11 +7,11 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.HomePage;
 
-@Test(groups = TestNgGroupConstants.AMI)
+@Test(groups = TestConstants.AMI)
 public class AmiMenuTests extends SeleniumTestSetup {
     
     private static final String EXPECTED = "Expected Url: ";
@@ -30,7 +30,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
         page = new HomePage(driverExt, getBaseUrl());
     }
     
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void dashboardUrlCorrect() {        
         String url = page.getMenu().getMenuOptionUrl(AMI, "Dashboard");
 

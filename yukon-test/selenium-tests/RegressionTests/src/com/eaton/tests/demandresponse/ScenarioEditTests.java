@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ScenarioDetailPage;
 import com.eaton.pages.demandresponse.ScenarioEditPage;
@@ -23,7 +23,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();        
     }  
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_13_EditScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_13_EditScenario"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Scenario: AT Scenario";
         
@@ -36,13 +36,13 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_13_EditScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_13_EditScenario"})
     public void editScenarioNameOnlySuccess() {
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
         
         ScenarioEditPage editPage = new ScenarioEditPage(driverExt, Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
                  
         String name = "AT Edited Scenario " + timeStamp;         
         editPage.getName().setInputValue(name);  

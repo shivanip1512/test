@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.support.SupportPage;
 
@@ -25,7 +25,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
         supportPage = new SupportPage(driverExt, Urls.SUPPORT);
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Support";
 
