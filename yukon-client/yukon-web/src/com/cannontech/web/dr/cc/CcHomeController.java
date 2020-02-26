@@ -88,7 +88,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotificationGroupDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -147,7 +146,6 @@ public class CcHomeController {
     @Autowired private GroupDao groupDao;
     @Autowired private GroupService groupService;
     @Autowired private NotificationGroupDao notificationGroupDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private ProgramService programService;
     @Autowired private StrategyFactory strategyFactory;
@@ -1145,16 +1143,16 @@ public class CcHomeController {
             @PathVariable int programId,
             @PathVariable int eventId) {
         
+        String programTypeStrategy  = programService.getProgramById(programId).getProgramType().getStrategy();
+        CiEventType ciEventType = CiEventType.of(programTypeStrategy);
         Integer programTypeId = programService.getProgramById(programId).getProgramType().getId();
-        switch(programTypeId) {
-        case 1:
-        case 2:
+        if (ciEventType.isNotification() || ciEventType.isDirect()) {
             return capacityDetail(model, userContext, programTypeId, eventId);
-        case 3:
+        } else if (ciEventType.isAccounting()) {
             return accountingDetail(model, userContext, programTypeId, eventId);
-        case 4:
+        } else if (ciEventType.isEconomic()) {
             return economicDetail(model, userContext, programId, eventId, -1, request);
-        default:
+        } else {
             throw new IllegalArgumentException("Invalid program type id: " + programTypeId);
         }
     }
