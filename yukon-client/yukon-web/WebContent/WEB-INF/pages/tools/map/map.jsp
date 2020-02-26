@@ -48,7 +48,7 @@
     </cti:url>
     <input type="hidden" id="getGatewaysUrl" value="${getGatewaysUrl}"/>
     
-    <div style="height:600px">
+    <div style="height:800px">
         <div id="map-container" style="height:100%;width:100%;background:white;">
     
             <div class="column-10-14 clearfix stacked">
@@ -204,7 +204,7 @@
                 </div>
             </div>
             
-            <div id="map" class="map" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
+            <div id="map" class="map" style="height:75%;" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
             <div class="buffered">
                 <div id="mouse-position" class="fl detail"></div>
                 <div id="scale-line" class="fl"></div>
@@ -249,9 +249,7 @@
     </cti:url>
     <input id="state-group-base-url" type="hidden" value="${fn:escapeXml(stateGroupBaseUrl)}">
     
-    <div style="padding-top:140px">
-        <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
-    </div>
+    <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
 
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>

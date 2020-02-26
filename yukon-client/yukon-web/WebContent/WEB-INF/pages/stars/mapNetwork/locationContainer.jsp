@@ -14,7 +14,7 @@
 
 <cti:msg2 var="locationHelp" key=".mapNetwork.location.helpText"/>
 <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
-    <div style="height:400px">
+    <div style="height:500px">
         <div id="map-network-container" style="height:100%;width:100%;background:white;">
             <%@ include file="locationInput.jspf"%>
             <c:if test="${!empty coordinates.latitude && displayInfrastructure}">
@@ -27,7 +27,7 @@
                     </cm:criteria>
                 </span>
             </c:if>
-            <div class="${empty geojson.features ? 'dn' : ''}" style="height:100%;">
+            <div class="${empty geojson.features ? 'dn' : ''}" style="height:85%;">
                 <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
                 <div class="buffered">
                     <c:set var="groupClass" value=""/>
@@ -75,7 +75,7 @@
             </div>
         </div>
     </div>
-    <div style="padding-top:50px">
+    <div style="margin-top:50px;">
         <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
     </div>
 
