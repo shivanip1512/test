@@ -12,9 +12,9 @@ public enum CiEventType {
     NOTIFICATION("genericNotification"),
     
     ISOC_DIRECT("isocDirect"),
-    ISOC_SUPERCEDE_DIRECT("isocSupercedeDirect"),
+    ISOC_SUPERSEDE_DIRECT("isocSupersedeDirect"),
     ISOC_NOTIFICATION("isocNotification"),
-    ISOC_SUPERCEDE_NOTIFICATION("isocSupercedeNotification"),
+    ISOC_SUPERSEDE_NOTIFICATION("isocSupersedeNotification"),
     ISOC_SAME_DAY("isocSameDay"),
     ;
     
@@ -58,7 +58,7 @@ public enum CiEventType {
     public boolean isDirect() {
         return this == DIRECT ||
                this == ISOC_DIRECT ||
-               this == ISOC_SUPERCEDE_DIRECT;
+               this == ISOC_SUPERSEDE_DIRECT;
     }
     
     public boolean isHoursConstrained() {

@@ -139,7 +139,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
             doCommonVerifications(customer, event, exclusions);
         } else if (eventType == CiEventType.ISOC_NOTIFICATION) {
             doCommonVerifications(customer, event, exclusions);
-        } else if (eventType == CiEventType.ISOC_SUPERCEDE_DIRECT || eventType == CiEventType.ISOC_SUPERCEDE_NOTIFICATION) {
+        } else if (eventType == CiEventType.ISOC_SUPERSEDE_DIRECT || eventType == CiEventType.ISOC_SUPERSEDE_NOTIFICATION) {
             verifyNoticeTime(customer, event, exclusions);
         } else if (eventType == CiEventType.ISOC_SAME_DAY) {
             verifyEconEventOverlap(customer, event, exclusions);
