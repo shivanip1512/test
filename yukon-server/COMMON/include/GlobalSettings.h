@@ -5,6 +5,8 @@
 
 #include <map>
 
+namespace Cti {
+
 class IM_EX_CTIBASE GlobalSettings 
 {
 public:
@@ -19,6 +21,7 @@ public:
         MaxInactivityDuration,
         MaxLogFileSize,
         LogRetentionDays,
+        FdrDnpSlaveApplicationFragmentSize
     };
 
     enum class Booleans {
@@ -30,21 +33,23 @@ public:
     
     static void reload();
 
+protected:
+
+    /** Private accessors that initialize the singleton. */
+    virtual auto getStringImpl(Strings  setting, std::string default)->std::string;
+    virtual auto getIntegerImpl(Integers setting, int default)         -> int;
+    virtual auto getBooleanImpl(Booleans setting, bool default)        -> bool;
+
+    /** Protected constructor for the getSingleton process */
+    GlobalSettings();
+
 private:
 
     typedef std::map<std::string, std::string> SettingMap;
     SettingMap _settingMap;
 
-    /** Private constructor for the getSingleton process */
-    GlobalSettings();
-
     /** Private static singleton constructor.  Reads settings from database. */
-    static GlobalSettings& GlobalSettings::getSingleton();
-
-    /** Private accessors that initialize the singleton. */
-    auto getStringImpl (Strings  setting, std::string default) -> std::string;
-    auto getIntegerImpl(Integers setting, int default)         -> int;
-    auto getBooleanImpl(Booleans setting, bool default)        -> bool;
+    static GlobalSettings& getSingleton();
 
     /** Private GlobalSetting reload tool implementation. */
     void reloadImpl();
@@ -52,4 +57,4 @@ private:
 
 extern IM_EX_CTIBASE std::unique_ptr<GlobalSettings> gGlobalSettings;
 
-
+}

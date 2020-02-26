@@ -1902,7 +1902,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     }
                     if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
-                        GlobalSettings::reload();
+                        Cti::GlobalSettings::reload();
 
                         doutManager.reloadSettings();
                     }

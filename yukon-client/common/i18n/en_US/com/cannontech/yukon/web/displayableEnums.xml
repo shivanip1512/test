@@ -496,6 +496,9 @@
     <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING">Cloud IoT Hub Connection String</entry>
     <entry key="yukon.common.setting.CLOUD_IOT_HUB_CONNECTION_STRING.description">Cloud IoT Hub Connection String.</entry>
     
+    <entry key="yukon.common.setting.FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE">FDR DNP Slave Application Fragment Size</entry>
+    <entry key="yukon.common.setting.FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE.description">The maximum DNP application fragment size used for FDR DNP Slave scan responses.</entry>
+    
     <!-- global setting enums -->
     <entry key="yukon.common.multispeakPaoNameAlias.METER_NUMBER">Meter Number (Default)</entry>
     <entry key="yukon.common.multispeakPaoNameAlias.ACCOUNT_NUMBER">Account Number</entry>

@@ -103,6 +103,8 @@ void CtiClientConnection::onException( const cms::CMSException& e )
  */
 bool CtiClientConnection::establishConnection()
 {
+    using Cti::GlobalSettings;
+
     InsideScope<CtiMutex> insideEstablishConn(_abortConnMux, _canAbortConn);
 
     const long receiveMillis    = 1000 * 60 * 60;  // 1 hour
