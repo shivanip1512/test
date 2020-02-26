@@ -9,7 +9,7 @@
 <cti:standardPage module="tools" page="map">
 <style>
 .map .ol-viewport canvas {
-     min-height: 600px; 
+     min-height: 500px; 
 }
 
 .ol-scale-line,.ol-mouse-position {
@@ -204,7 +204,7 @@
                 </div>
             </div>
             
-            <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
+            <div id="map" class="map" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
             <div class="buffered">
                 <div id="mouse-position" class="fl detail"></div>
                 <div id="scale-line" class="fl"></div>
@@ -249,7 +249,7 @@
     </cti:url>
     <input id="state-group-base-url" type="hidden" value="${fn:escapeXml(stateGroupBaseUrl)}">
     
-    <div style="padding-top:100px">
+    <div style="padding-top:140px">
         <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
     </div>
 

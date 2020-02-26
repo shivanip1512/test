@@ -75,7 +75,9 @@
             </div>
         </div>
     </div>
-    <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
+    <div style="padding-top:50px">
+        <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborsLegend.jsp" %>
+    </div>
 
 </tags:sectionContainer2>
 

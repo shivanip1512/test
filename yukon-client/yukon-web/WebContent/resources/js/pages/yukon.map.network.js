@@ -862,7 +862,7 @@ yukon.map.network = (function () {
                 
                 $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
                     var mapContainer = $('#map-network-container');
-                    yukon.mapping.adjustMapForFullScreenModeChange(mapContainer, "80px", "10px");
+                    yukon.mapping.adjustMapForFullScreenModeChange(mapContainer, "100px", "10px");
                 });
                 
                 $("body").on("dialogopen", function (event, ui) {
