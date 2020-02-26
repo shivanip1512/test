@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaDetailPage;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
@@ -23,7 +23,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_11_DeleteControlArea"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_11_DeleteControlArea"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Control Area: AT Control Area";
         
@@ -36,7 +36,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }    
     
-    @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_11_DeleteControlArea"})
+    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_11_DeleteControlArea"})
     public void deleteControlAreaSuccess() {
         final String EXPECTED_MSG = "AT Delete Control Area deleted successfully.";
         

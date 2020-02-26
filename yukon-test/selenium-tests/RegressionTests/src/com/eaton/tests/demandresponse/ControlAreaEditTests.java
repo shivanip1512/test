@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaDetailPage;
 import com.eaton.pages.demandresponse.ControlAreaEditPage;
@@ -23,7 +23,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();        
     }  
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_10_EditControlArea"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_10_EditControlArea"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Control Area: AT Control Area";
         
@@ -36,13 +36,13 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_10_EditControlArea"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_10_EditControlArea"})
     public void editControlAreaNameOnlySuccess() {
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
         
         ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
                  
         String name = "AT Edited Control Area " + timeStamp;         
         editPage.getName().setInputValue(name);  

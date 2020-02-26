@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CapBankCreatePage;
 import com.eaton.pages.capcontrol.CapBankDetailPage;
@@ -32,7 +32,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         this.createPage = new CapBankCreatePage(driverExt, Urls.CapControl.CAP_BANK_CREATE);
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void pageTitleCorrect() {   
         final String EXPECTED_TITLE = "Create CapBank";
         
@@ -41,11 +41,11 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void createCapBankRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CapBank was saved successfully.";
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
 
         String name = "AT CapBank " + timeStamp;
         this.createPage.getName().setInputValue(name);

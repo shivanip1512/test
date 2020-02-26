@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaDetailPage;
 import com.eaton.pages.demandresponse.ScenarioCreatePage;
@@ -32,7 +32,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         createPage = new ScenarioCreatePage(driverExt, Urls.DemandResponse.SCENARIO_CREATE);                
     }  
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_12_CreateScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_12_CreateScenario"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Scenario";
         
@@ -41,9 +41,9 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_12_CreateScenario"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_12_CreateScenario"})
     public void createScenarioRequiredFieldsOnlySuccess() {        
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
                  
         String name = "AT Scenario " + timeStamp;         
         createPage.getName().setInputValue(name);  

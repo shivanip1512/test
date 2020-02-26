@@ -11,7 +11,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaCreatePage;
 import com.eaton.pages.demandresponse.ControlAreaDetailPage;
@@ -32,7 +32,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         createPage = new ControlAreaCreatePage(driverExt, Urls.DemandResponse.CONTROL_AREA_CREATE);                
     }  
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_09_CreateControlArea"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_09_CreateControlArea"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Control Area";
         
@@ -41,10 +41,10 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_09_CreateControlArea"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_09_CreateControlArea"})
     public void createControlAreaSuccess() {
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
                  
         String name = "AT Control Area " + timeStamp;         
         createPage.getName().setInputValue(name);  

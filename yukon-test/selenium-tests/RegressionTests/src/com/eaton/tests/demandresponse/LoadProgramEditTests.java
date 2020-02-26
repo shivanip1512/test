@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupEditPage;
 import com.eaton.pages.demandresponse.LoadProgramDetailPage;
@@ -24,7 +24,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
     public void pageTitleCorrect() {
         final String PROGRAM_NAME = "AT Load Program";
         
@@ -37,13 +37,13 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         Assert.assertTrue(actualPageTitle.contains("Edit Load Program: " + PROGRAM_NAME), "Expected Page title: 'Edit Load Program: " + PROGRAM_NAME + "' but found: " + actualPageTitle);      
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
     public void editLoadProgramNameOnlySuccess() {        
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "599" + Urls.EDIT);
         
         LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_EDIT + "599" + Urls.EDIT);
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Direct Program " + timeStamp;
         editPage.getName().setInputValue(name);
         

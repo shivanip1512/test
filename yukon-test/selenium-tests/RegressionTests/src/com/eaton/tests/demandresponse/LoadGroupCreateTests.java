@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadGroupCreatePage;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
@@ -36,7 +36,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Group";
         
@@ -45,10 +45,10 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
     public void createEcobeeLoadGroupSuccess() {
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         
         String name = "AT ecobee " + timeStamp;
         double randomDouble = randomNum.nextDouble();   

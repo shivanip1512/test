@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcCreatePage;
 import com.eaton.pages.capcontrol.CbcDetailPage;
@@ -36,7 +36,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create CBC";
         
@@ -45,13 +45,13 @@ public class CbcCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(enabled = false, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void createCbcRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CBC was saved successfully.";
         
         int masterAddress = randomNum.nextInt(65000);
 
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         
         String name = "AT CBC " + timeStamp;
         this.createPage.getType().selectItemByText("CBC 8020");

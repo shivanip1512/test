@@ -1,6 +1,5 @@
 package com.eaton.elements.modals;
 
-
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
@@ -11,10 +10,10 @@ public class CopyLoadGroupModal extends BaseModal {
     public CopyLoadGroupModal(DriverExtensions driverExt, String modalName) {
         super(driverExt, modalName);
         
-        this.driverExt = driverExt;
+        this.driverExt = driverExt;        
     }
     
     public TextEditElement getName() {
-        return new TextEditElement(this.driverExt, "name", getModal());
+        return new TextEditElement(this.driverExt, "name");
     }
 }

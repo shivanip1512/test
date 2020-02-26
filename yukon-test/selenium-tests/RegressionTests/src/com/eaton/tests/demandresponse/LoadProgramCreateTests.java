@@ -13,7 +13,7 @@ import com.eaton.elements.modals.gears.CreateDirectPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.LoadProgramCreatePage;
 import com.eaton.pages.demandresponse.LoadProgramDetailPage;
@@ -34,7 +34,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         createPage = new LoadProgramCreatePage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_CREATE);                
     }  
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Program";
         
@@ -43,10 +43,10 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
     public void createLoadProgramSuccess() {
         
-        String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
                  
         String name = "AT LM Direct Program " + timeStamp;         
         createPage.getName().setInputValue(name);        

@@ -9,11 +9,11 @@ import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaListPage;
 
-@Test(groups = TestNgGroupConstants.DEMAND_REPONSE)
+@Test(groups = TestConstants.DEMAND_REPONSE)
 public class ControlAreaListTests extends SeleniumTestSetup {
 
     private ControlAreaListPage listPage;

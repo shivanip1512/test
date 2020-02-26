@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.HomePage;
 
@@ -28,7 +28,7 @@ public class HomeTests extends SeleniumTestSetup {
         page = new HomePage(driverExt, getBaseUrl());
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void supportUrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
