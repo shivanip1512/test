@@ -1,9 +1,11 @@
 package com.cannontech.watchdogs.impl;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
 
     private static WatchdogMACSConnection macsConnection;
     private volatile Instant receivedLatestMessageTimeStamp;
+    private volatile AtomicInteger numberOfMissedAttempts = new AtomicInteger();
 
     private CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -97,9 +100,15 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
         } catch (InterruptedException e) {}
 
         if (receivedLatestMessageTimeStamp == null || !macsConnection.isValid()) {
-            log.info("Status of MACS service " + ServiceStatus.STOPPED);
-            return generateWarning(WatchdogWarningType.YUKON_MAC_SCHEDULER_SERVICE, ServiceStatus.STOPPED);
+            if (numberOfMissedAttempts.incrementAndGet() < 3) {
+                log.debug("Number of missed MACS attempts less than 3. Current count: " + numberOfMissedAttempts);
+                return new ArrayList<WatchdogWarnings>();
+            } else {
+                log.info("Status of MACS service " + ServiceStatus.STOPPED);
+                return generateWarning(WatchdogWarningType.YUKON_MAC_SCHEDULER_SERVICE, ServiceStatus.STOPPED);
+            }
         } else {
+            numberOfMissedAttempts.set(0);
             log.info("Status of MACS service " + ServiceStatus.RUNNING);
             return generateWarning(WatchdogWarningType.YUKON_MAC_SCHEDULER_SERVICE, ServiceStatus.RUNNING);
         }
