@@ -9,39 +9,39 @@
 #include "dnp_object_counter.h"
 #include "dnp_object_class.h"
 
+#include "GlobalSettings.h"
+
 #include "logger.h"
 
 #include "std_helper.h"
 
-namespace Cti {
-namespace Protocols {
+namespace Cti::Protocols {
 
 using namespace Cti::Protocols::DNP;
 using namespace std::chrono_literals;
 
 YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 {
-    if( xfer.getOutBuffer()[10] & 0x80 )
-    {
-        setTransactionComplete();
-        return ClientErrors::None;
-    }
-
-    YukonError_t retVal = _datalink.decode(xfer, ClientErrors::None);
-
-    if( ! _datalink.isTransactionComplete() )
+    if( const auto retVal = _datalink.decode(xfer, ClientErrors::None);
+        ! _datalink.isTransactionComplete() )
     {
         return retVal;
     }
 
-    retVal = _transport.decode(_datalink);
-
-    if( ! _transport.isTransactionComplete() )
+    if( const auto retVal = _transport.decode(_datalink);
+        ! _transport.isTransactionComplete() )
     {
         return retVal;
     }
 
-    return _application.decode(_transport);
+    if( const auto retVal = _application.decode(_transport);
+        ! _application.isTransactionComplete() )
+    {
+        return retVal;
+    }
+
+    setTransactionComplete();
+    return ClientErrors::None;
 }
 
 
@@ -332,13 +332,17 @@ void DnpSlaveProtocol::setScanCommand( std::vector<DnpSlave::output_point> outpu
         }
     }
 
+    const auto outboundApplicationFragmentSize = GlobalSettings::getInteger(GlobalSettings::Integers::FdrDnpSlaveApplicationFragmentSize, 2048);
+
+    _application.setOutboundFragmentSize(outboundApplicationFragmentSize);
+
     std::vector<ObjectBlockPtr> dobs;
 
-    const auto insertPoints = [ &dobs ]( auto && points ) 
+    const auto insertPoints = [ &dobs, outboundApplicationFragmentSize ]( auto && points ) 
                               { 
                                   if( ! points.empty() ) 
                                   {
-                                      auto blocks = ObjectBlock::makeRangedBlocks(std::move(points));
+                                      auto blocks = ObjectBlock::makeRangedBlocks(std::move(points), outboundApplicationFragmentSize);
                                       std::move(blocks.begin(), blocks.end(), std::back_inserter(dobs));
                                   }
                               };
@@ -538,5 +542,3 @@ unsigned short DnpSlaveProtocol::getDstAddr() const
 }
 
 }
-}
-

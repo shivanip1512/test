@@ -658,7 +658,7 @@ void CtiCalcLogicService::handleDbChangeMsg( const CtiDBChangeMsg &dbChgMsg, Cti
     // In the event that a GlobalSetting has been updated, reload GlobalSettings.
     if (resolveDBCategory(dbChgMsg.getCategory()) == CtiDBChangeCategory::GlobalSetting)
     {
-        GlobalSettings::reload();
+        Cti::GlobalSettings::reload();
 
         doutManager.reloadSettings();
     }

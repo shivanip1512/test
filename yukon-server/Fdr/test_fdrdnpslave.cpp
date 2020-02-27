@@ -7,7 +7,9 @@
 
 #include "boost_test_helpers.h"
 
-BOOST_AUTO_TEST_SUITE( test_fdrdnpslave )
+#include <boost/range/adaptor/indexed.hpp>
+
+BOOST_FIXTURE_TEST_SUITE( test_fdrdnpslave, Cti::Test::Override_GlobalSettings )
 
 using Cti::Test::byte_str;
 
@@ -593,7 +595,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
     }
 }
 
-BOOST_AUTO_TEST_CASE( test_scan_request_maximum_packet )
+BOOST_AUTO_TEST_CASE( test_scan_request_full_application_fragment )
 {
     Test_FdrDnpSlave dnpSlave;
 
@@ -613,15 +615,14 @@ BOOST_AUTO_TEST_CASE( test_scan_request_maximum_packet )
 
     for( auto pointtype : { PulseAccumulatorPointType, DemandAccumulatorPointType, StatusPointType, StatusOutputPointType, AnalogPointType, AnalogOutputPointType } )
     {
-        for( int pointoffset = 1; pointoffset <= 900; ++pointoffset, ++pointid )
-        //  Pulse Accumulator offset 17, point ID 42
+        for( int pointoffset = 1; pointoffset <= 120; ++pointoffset, ++pointid )
         {
             //Initialize the interface to have a point in a group.
             CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
 
             fdrPoint->setPointID(pointid);
             fdrPoint->setPaoID(52);
-            fdrPoint->setOffset(pointoffset * 25 / 24);
+            fdrPoint->setOffset(pointoffset);
             fdrPoint->setPointType(PulseAccumulatorPointType);
             fdrPoint->setValue(
                     (pointtype == StatusPointType || pointtype == StatusOutputPointType)
@@ -655,7 +656,155 @@ BOOST_AUTO_TEST_CASE( test_scan_request_maximum_packet )
 
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
-    BOOST_REQUIRE_EQUAL(connection.messages.size(), 58);
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 8);
+
+    //  Start of the application fragment, full packet
+    BOOST_REQUIRE_EQUAL(connection.messages[0].size(), 292);
+    BOOST_CHECK_EQUAL(connection.messages[0][10], 0x40);  //  transport header, first
+    BOOST_CHECK_EQUAL(connection.messages[0][11], 0xca);  //  application header, first+final + seq 0x0a
+
+    //  End of the application fragment, partial packet
+    BOOST_REQUIRE_EQUAL(connection.messages[7].size(), 238);
+    BOOST_CHECK_EQUAL(connection.messages[7][10], 0x87);  //  transport header, final
+}
+
+
+BOOST_AUTO_TEST_CASE(test_scan_request_multiple_application_fragments)
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getSendToList().deletePointList();
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(nullptr);
+
+    unsigned pointid = 37;
+
+    for( auto pointtype : { PulseAccumulatorPointType, DemandAccumulatorPointType, StatusPointType, StatusOutputPointType, AnalogPointType, AnalogOutputPointType } )
+    {
+        for( int pointoffset = 1; pointoffset <= 250; ++pointoffset, ++pointid )
+        {
+            //Initialize the interface to have a point in a group.
+            CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+            fdrPoint->setPointID(pointid);
+            fdrPoint->setPaoID(52);
+            fdrPoint->setOffset(pointoffset);
+            fdrPoint->setPointType(PulseAccumulatorPointType);
+            fdrPoint->setValue(
+                (pointtype == StatusPointType || pointtype == StatusOutputPointType)
+                    ? pointoffset % 2
+                    : pointoffset);
+
+            CtiFDRDestination pointDestination(
+                fdrPoint->getPointID(),
+                "MasterId:2;SlaveId:30;"
+                "POINTTYPE:" + desolvePointType(pointtype) + ";"
+                "Offset:" + std::to_string(pointoffset), "Test Destination");
+
+            vector<CtiFDRDestination> destinationList;
+
+            destinationList.push_back(pointDestination);
+
+            fdrPoint->setDestinationList(destinationList);
+
+            fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
+
+            dnpSlave.translateSinglePoint(fdrPoint, true);
+        }
+    }
+
+    const byte_str request(
+        "05 64 17 c4 1e 00 02 00 78 b5 "
+        "c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 "
+        "01 06 75 e1");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 19);
+
+    for( const auto& indexedMsg : connection.messages | boost::adaptors::indexed() )
+    {
+        BOOST_TEST_CONTEXT("Message index " << indexedMsg.index())
+        {
+            const auto packetSize = indexedMsg.value().size();
+
+            constexpr auto 
+                TC_First = 0x40, 
+                TC_Final = 0x80, 
+                AC_First = 0x80,
+                AC_Final = 0x40,
+                Neither = 0x00;
+
+            const auto transportControl = indexedMsg.value()[10] & 0xc0;
+            const auto transportSequence = indexedMsg.value()[10] & 0x3f;
+            
+            //  Only valid for the first packet in an application fragment, meaningless otherwise
+            const auto applicationControl = indexedMsg.value()[11] & 0xc0;
+            const auto applicationSequence = indexedMsg.value()[11] & 0x3f;
+
+            switch( indexedMsg.index() )
+            {
+                case 0:
+                    //  Start of the first application fragment, full packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_First);
+                    BOOST_CHECK_EQUAL(transportSequence, 0);
+                    BOOST_CHECK_EQUAL(applicationControl, AC_First);
+                    BOOST_CHECK_EQUAL(applicationSequence, 10);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+                case 6:
+                    //  End of the first application fragment, partial packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
+                    BOOST_CHECK_EQUAL(transportSequence, 6);
+                    BOOST_CHECK_EQUAL(packetSize, 35);
+                    break;
+                case 7:
+                    //  Start of the second application fragment, full packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_First);
+                    BOOST_CHECK_EQUAL(transportSequence, 0);
+                    BOOST_CHECK_EQUAL(applicationControl, Neither);
+                    BOOST_CHECK_EQUAL(applicationSequence, 11);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+                case 12:
+                    //  End of the second application fragment, partial packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
+                    BOOST_CHECK_EQUAL(transportSequence, 5);
+                    BOOST_CHECK_EQUAL(packetSize, 27);
+                    break;
+                case 13:
+                    //  Start of the third and final application fragment, full packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_First);
+                    BOOST_CHECK_EQUAL(transportSequence, 0);
+                    BOOST_CHECK_EQUAL(applicationControl, AC_Final);
+                    BOOST_CHECK_EQUAL(applicationSequence, 12);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+                case 18:
+                    //  End of the third application fragment, partial packet
+                    BOOST_CHECK_EQUAL(transportControl, TC_Final);
+                    BOOST_CHECK_EQUAL(transportSequence, 5);
+                    BOOST_CHECK_EQUAL(packetSize, 27);
+                    break;
+                default:
+                    //  All others are in the middle of an application fragment, neither first nor final, full packet
+                    BOOST_CHECK_EQUAL(transportControl, Neither);
+                    BOOST_CHECK_EQUAL(packetSize, 292);
+                    break;
+            }
+        }
+    }
+
 }
 
 
