@@ -886,20 +886,22 @@ public class NmNetworkServiceImpl implements NmNetworkService {
      * Add legend and device location to a map
      */
     private void addDevicesAndLegendToMap(NetworkMap map, Color color, String legend, Set<RfnIdentifier> devices) {
-        map.addLegend(new Legend(color, legend));
-        addDevicesToMap(map, color.getHexColor(), devices);
+        if(addDevicesToMap(map, color.getHexColor(), devices)) {
+            map.addLegend(new Legend(color, legend));
+        }
     }
 
     /**
      * Add device location to a map
+     * @returns true if at least in device is added to map
      */
-    private void addDevicesToMap(NetworkMap map, String hexColor, Set<RfnIdentifier> devices) {
+    private boolean addDevicesToMap(NetworkMap map, String hexColor, Set<RfnIdentifier> devices) {
         if (CollectionUtils.isEmpty(devices)) {
-            return;
+            return false;
         }
         Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(devices);
         if (CollectionUtils.isEmpty(paoIds)) {
-            return;
+            return false;
         }
 
         Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds),
@@ -910,7 +912,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         if (locations.isEmpty()) {
             log.debug("Failed to add devices {} to map, locations empty", devices.size());
-            return;
+            return false;
         }
         log.debug("Color {} attempting to add devices {} to map locations found {}. Only devices, with locations will be added.",
                 hexColor, devices.size(), locations.size());
@@ -921,5 +923,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         } else {
             map.getMappedDevices().put(hexColor, features);
         }
+        return true;
     }
 }
