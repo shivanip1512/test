@@ -91,12 +91,12 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
                     return ServiceStatus.STOPPED;
                 }
             }
-            statusCheckTime=System.currentTimeMillis();
+            statusCheckTime = System.currentTimeMillis();
             return ServiceStatus.RUNNING;
         } catch (SocketTimeoutException e) {
             log.debug("Yukon web server may be starting. Checked with url: " + url + " with proxy as " + proxySetting
                 + " Error " + e);
-            if ((System.currentTimeMillis()-statusCheckTime) < WAITTIME) {
+            if ((System.currentTimeMillis() - statusCheckTime) < WAITTIME) {
                 return ServiceStatus.UNKNOWN;
             } else {
                 return ServiceStatus.STOPPED;
