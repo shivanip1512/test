@@ -106,6 +106,7 @@ yukon.widget.dataCollection = (function () {
             },
             series: [{
                 type: 'pie',
+                dataSorting: { enabled: false },
                 data: _getData(data)
             }]
         });
@@ -115,7 +116,8 @@ yukon.widget.dataCollection = (function () {
     
     /** Update the existing pie chart. */
     _updateChart = function (chart, data) {
-        chart.highcharts().series[0].setData(data);
+        chart.find('.highcharts-legend-item').remove();
+        chart.highcharts().series[0].setData(data, true, false, false);
     },
     
     /** Update the page every so many seconds */
@@ -150,6 +152,7 @@ yukon.widget.dataCollection = (function () {
                             _buildChart(chart, data.summary);
                         } else {
                             _updateChart(chart, _getData(data.summary));
+                            //_buildChart(chart, data.summary);
                         }
                         chart.removeClass('dn');
                     } else {

@@ -157,7 +157,7 @@ public class PorterQueueCountsController {
     }
 
     @RequestMapping(value = "updateZoom")
-    public Map<String, Object> updateZoom(LiteYukonUser user, HttpServletRequest request, @RequestParam(value="zoom") String zoom) {
+    public @ResponseBody Map<String, Object> updateZoom(LiteYukonUser user, HttpServletRequest request, @RequestParam(value="zoom") String zoom) {
         Map<String, Object> json = new HashMap<>();
         PreferencePorterQueueCountsZoomOption trendZoom = PreferencePorterQueueCountsZoomOption.valueOf(zoom);
         userPreferenceService.updatePorterPreferenceZoomType(trendZoom, user);
