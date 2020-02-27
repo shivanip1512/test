@@ -80,7 +80,23 @@ public class MiscellaneousIsocMethodController {
             insert4.addValue("CcurtProgramTypeName", "Economic");
             yukonJdbcTemplate.update(sql4);
             
-            flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Four Program Types have been added to the database"));
+            SqlStatementBuilder sql5 = new SqlStatementBuilder();
+            SqlParameterSink insert5 = sql5.insertInto("CCurtProgramType");
+            insert5.addValue("CCurtProgramTypeId", primaryKey++);
+            insert5.addValue("EnergyCompanyId", energyCompany.getEnergyCompanyId());
+            insert5.addValue("CcurtProgramTypeStrategy", "isocSupersedeNotification");
+            insert5.addValue("CcurtProgramTypeName", "Capacity/Contingency (supersede)");
+            yukonJdbcTemplate.update(sql5);
+            
+            SqlStatementBuilder sql6 = new SqlStatementBuilder();
+            SqlParameterSink insert6 = sql6.insertInto("CCurtProgramType");
+            insert6.addValue("CCurtProgramTypeId", primaryKey++);
+            insert6.addValue("EnergyCompanyId", energyCompany.getEnergyCompanyId());
+            insert6.addValue("CcurtProgramTypeStrategy", "isocSupersedeDirect");
+            insert6.addValue("CcurtProgramTypeName", "Direct Control (supersede)");
+            yukonJdbcTemplate.update(sql6);
+            
+            flashScope.setConfirm(YukonMessageSourceResolvable.createDefaultWithoutCode("Six Program Types have been added to the database"));
         } catch (Exception e) {
             log.warn("caught exception in insertProgramTypes", e);
             flashScope.setError(YukonMessageSourceResolvable.createDefaultWithoutCode("Unable to add Program Types: " + e.getMessage()));
