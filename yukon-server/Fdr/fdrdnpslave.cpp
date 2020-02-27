@@ -485,13 +485,13 @@ int DnpSlave::doComms(ConnectionProtocol cp, const std::string& messageType)
                 }
                 cp.connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
             }
-
-            cp.dnpSlave.decode(xfer);
         }
         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() <<" was not able to generate " << messageType << " response.");
         }
+
+        cp.dnpSlave.decode(xfer);
     }
 
     return 0;

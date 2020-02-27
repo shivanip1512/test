@@ -945,7 +945,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
             }
             if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
             {
-                GlobalSettings::reload();
+                Cti::GlobalSettings::reload();
 
                 doutManager.reloadSettings();
             }

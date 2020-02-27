@@ -76,6 +76,12 @@ void ApplicationLayer::setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> 
 }
 
 
+void ApplicationLayer::setOutboundFragmentSize(unsigned outboundFragmentSize)
+{
+    _outboundFragmentSize = outboundFragmentSize;
+}
+
+
 void ApplicationLayer::initUnsolicited( void )
 {
     eraseInboundObjectBlocks();
@@ -234,35 +240,40 @@ void ApplicationLayer::initForSlaveOutput( void )
 
     memset( &_response, 0, sizeof(_response) );
 
-    //  ACH: if we need to use multiple outbound application layer request packets, this will need to change
-
     _response.ctrl.first       = 1;
-    _response.ctrl.final       = 1;
     _response.ctrl.app_confirm = 0;
     _response.ctrl.unsolicited = 0;
     _response.ind.broadcast      = 0;
     _response.ind.class_1_events = 0;
     _response.ind.class_2_events = 0;
     _response.ind.class_3_events = 0;
-    _response.ctrl.seq = _seqno;
 
     _response.func_code = DNP::ApplicationLayer::ResponseResponse;
 
+    _response.ctrl.final = fillResponse();
+}
+
+bool ApplicationLayer::fillResponse()
+{
+    _response.ctrl.seq = _seqno++;
+    
     unsigned pos = 0;
     size_t index = 0;
     const size_t ob_count = _out_object_blocks.size();
 
-    for( const auto& ob : _out_object_blocks )
+    while( ! _out_object_blocks.empty() )
     {
+        const auto& ob = _out_object_blocks.front();
+        
         if( ! ob )
         {
             CTILOG_ERROR(dout, "ob null");
             continue;
         }
-        if( pos + ob->getSerializedLen() >= BufferSize )
+        if( pos + ob->getSerializedLen() >= _outboundFragmentSize )
         {
-            CTILOG_ERROR(dout, "Exceeded application buffer size" << FormattedList::of(
-                "Buffer position", std::to_string(pos) + "/" + std::to_string(BufferSize),
+            CTILOG_DEBUG(dout, "Exceeded application fragment size, remainder in next packet" << FormattedList::of(
+                "Buffer position", std::to_string(pos) + "/" + std::to_string(_outboundFragmentSize),
                 "Object length", ob->getSerializedLen(),
                 "Object index", std::to_string(index) + "/" + std::to_string(ob_count)));
             break;
@@ -271,11 +282,13 @@ void ApplicationLayer::initForSlaveOutput( void )
         ob->serialize(_response.buf + pos);
         pos += ob->getSerializedLen();
         ++index;
+
+        _out_object_blocks.pop_front();
     }
 
-    _out_object_blocks.clear();
-
     _response.buf_len = pos;
+
+    return _out_object_blocks.empty();
 }
 
 void ApplicationLayer::setInternalIndications_FunctionCodeUnsupported()
@@ -415,13 +428,23 @@ YukonError_t ApplicationLayer::generate( TransportLayer &_transport )
             return _transport.initLoopback();
         }
 
+        case SendResponse:
+        {
+            //  Did we already send the final packet?
+            if( _response.ctrl.final )
+            {
+                //  If so, return without generating any output, we're done.
+                return ClientErrors::None;
+            }
+
+            //  Otherwise, this is not our first packet
+            _response.ctrl.first = false;
+            _response.ctrl.final = fillResponse();
+            [[fallthrough]];
+        }
         case SendFirstResponse:
         {
             return _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
-        }
-        case SendResponse:
-        {
-            return ClientErrors::None;
         }
         case SendRequest:
         {
@@ -499,10 +522,15 @@ YukonError_t ApplicationLayer::decode( TransportLayer &_transport )
         case SendFirstResponse:
         {
             _appState = SendResponse;
+
+            break;
         }
         case SendResponse:
         {
-            _appState = Complete;
+            if( _out_object_blocks.empty() )
+            {
+                _appState = Complete;
+            }
 
             break;
         }

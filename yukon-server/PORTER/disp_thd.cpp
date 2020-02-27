@@ -110,7 +110,7 @@ void DispatchMsgHandlerThread()
 
                         if (dbCategory == CtiDBChangeCategory::GlobalSetting)
                         {
-                            GlobalSettings::reload();
+                            Cti::GlobalSettings::reload();
 
                             doutManager.reloadSettings();
                             slogManager.reloadSettings();

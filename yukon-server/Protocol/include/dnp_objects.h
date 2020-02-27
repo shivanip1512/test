@@ -118,7 +118,7 @@ public:
     template<class T>
     static ObjectBlockPtr makeRangedBlock(std::map<unsigned, std::unique_ptr<const T>> objects);
     template<class T>
-    static std::vector<ObjectBlockPtr> makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects);
+    static std::vector<ObjectBlockPtr> makeRangedBlocks(std::map<unsigned, std::unique_ptr<const T>> objects, const size_t maximumObjectBlockSize);
 
     static ObjectBlockPtr makeNoIndexNoRange  (int group, int variation);
 

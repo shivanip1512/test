@@ -182,6 +182,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     NETWORK_MANAGER_DB_URL(GlobalSettingSubCategory.MISC, stringType(), null),
     CLOUD_DATA_SENDING_FREQUENCY(GlobalSettingSubCategory.MISC, 15, Range.inclusive(1, Integer.MAX_VALUE)),
     CLOUD_IOT_HUB_CONNECTION_STRING(GlobalSettingSubCategory.MISC, stringType(), null),
+    FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE(GlobalSettingSubCategory.MISC, 2048, Range.inclusive(249, 15932)),
 
     // Misc. > Web Graph
     HOME_DIRECTORY(GlobalSettingSubCategory.MISC, stringType(), "c:\\yukon\\client\\webgraphs\\"),
