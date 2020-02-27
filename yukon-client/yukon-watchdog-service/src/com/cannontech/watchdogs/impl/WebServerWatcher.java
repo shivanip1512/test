@@ -30,6 +30,8 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
     }
 
     private static final Logger log = YukonLogManager.getLogger(WebServerWatcher.class);
+    private static long WAITTIME = 600000;
+    private long statusCheckTime = System.currentTimeMillis();
 
     @Autowired private WebserverUrlResolver webserverUrlResolver;
     @Autowired private ConfigurationSource configurationSource;
@@ -89,11 +91,16 @@ public class WebServerWatcher extends ServiceStatusWatchdogImpl {
                     return ServiceStatus.STOPPED;
                 }
             }
+            statusCheckTime=System.currentTimeMillis();
             return ServiceStatus.RUNNING;
         } catch (SocketTimeoutException e) {
             log.debug("Yukon web server may be starting. Checked with url: " + url + " with proxy as " + proxySetting
                 + " Error " + e);
-            return ServiceStatus.UNKNOWN;
+            if ((System.currentTimeMillis()-statusCheckTime) < WAITTIME) {
+                return ServiceStatus.UNKNOWN;
+            } else {
+                return ServiceStatus.STOPPED;
+            }    
         } catch (IOException e) {
             log.debug("Yukon web server is down. Checked with url: " + url + " with proxy as " + proxySetting
                 + " Error " + e);
