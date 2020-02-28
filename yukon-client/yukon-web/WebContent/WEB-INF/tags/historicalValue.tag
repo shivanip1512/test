@@ -8,6 +8,7 @@
 <%@ attribute name="pao" required="true" type="com.cannontech.common.pao.YukonPao" %>
 <%@ attribute name="pointId" type="java.lang.Integer" %>
 <%@ attribute name="classes" description="CSS class names applied to the anchor element." %>
+<%@ attribute name="qualityIndicator" required="false" type="com.cannontech.core.service.PointFormattingService.Format" %>
 
 <c:choose>
     <c:when test="${pointId == 0}">
@@ -20,8 +21,16 @@
             <cti:param name="deviceId" value="${pao.paoIdentifier.paoId}"/>
         </cti:url>
         <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
-            <cti:pointValue pointId="${pointId}" format="DATE"/>
+            <c:choose>
+                <c:when test="${empty qualityIndicator}">
+                    <cti:pointValue pointId="${pointId}" format="DATE"/>
+                </c:when>
+                <c:otherwise>
+                    <cti:pointValue pointId="${pointId}" format="${qualityIndicator}"/>
+                </c:otherwise>
+            </c:choose>
         </a>
         <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
+
     </c:otherwise>
 </c:choose>
