@@ -2,8 +2,6 @@ package com.cannontech.web.api.dr.setup;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,27 +17,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
-import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.loadgroup.service.LoadGroupSetupService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.yukon.IDatabaseCache;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/dr/setup/loadGroup")
 public class LoadGroupSetupApiController {
     
-    @Autowired private IDatabaseCache dbCache;
-    @Autowired private DemandResponseEventLogService logService;
     @Autowired LoadGroupSetupService loadGroupService;
     @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMCopyValidator lmCopyValidator;
@@ -57,8 +49,6 @@ public class LoadGroupSetupApiController {
         int paoId = loadGroupService.create(loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("groupId", paoId);
-        logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType().getDbString(),
-                ApiRequestContext.getContext().getLiteYukonUser());
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
     
@@ -68,8 +58,6 @@ public class LoadGroupSetupApiController {
         int paoId = loadGroupService.update(id, loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("groupId", paoId);
-        logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType().getDbString(),
-                ApiRequestContext.getContext().getLiteYukonUser());
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
@@ -86,15 +74,9 @@ public class LoadGroupSetupApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
 
-        Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
-                .stream()
-                .filter(group -> group.getLiteID() == id)
-                .findFirst();
         int paoId = loadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("groupId", paoId);
-        logService.loadGroupDeleted(lmDelete.getName(), liteLoadGroup.get().getPaoType().getDbString(),
-                ApiRequestContext.getContext().getLiteYukonUser());
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 

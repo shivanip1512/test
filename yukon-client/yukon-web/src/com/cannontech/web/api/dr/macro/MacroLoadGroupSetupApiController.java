@@ -1,8 +1,6 @@
 package com.cannontech.web.api.dr.macro;
 
 import java.util.HashMap;
-import java.util.Optional;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,29 +17,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
-import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.setup.service.LMSetupService;
 import com.cannontech.web.api.dr.setup.LMCopyValidator;
 import com.cannontech.web.api.dr.setup.LMDeleteValidator;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.yukon.IDatabaseCache;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/dr/setup/macroLoadGroup")
 public class MacroLoadGroupSetupApiController {
 
-    @Autowired private IDatabaseCache dbCache;
     @Autowired @Qualifier("macroLoadGroup") LMSetupService <MacroLoadGroup, LMCopy> macroLoadGroupService;
     @Autowired MacroLoadGroupValidator macroLoadGroupValidator;
-    @Autowired private DemandResponseEventLogService logService;
     @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMCopyValidator lmCopyValidator;
 
@@ -57,8 +49,6 @@ public class MacroLoadGroupSetupApiController {
         int paoId = macroLoadGroupService.update(id, loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
-        logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType().getDbString(),
-                ApiRequestContext.getContext().getLiteYukonUser());
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
@@ -68,8 +58,6 @@ public class MacroLoadGroupSetupApiController {
         int paoId = macroLoadGroupService.create(loadGroup);
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
-        logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType().getDbString(),
-                ApiRequestContext.getContext().getLiteYukonUser());
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
@@ -85,16 +73,9 @@ public class MacroLoadGroupSetupApiController {
     @DeleteMapping("/delete/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
-
-        Optional<LiteYukonPAObject> liteLoadGroup = dbCache.getAllLMGroups()
-                .stream()
-                .filter(group -> group.getLiteID() == id)
-                .findFirst();
         int paoId = macroLoadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("paoId", paoId);
-        logService.loadGroupDeleted(lmDelete.getName(), liteLoadGroup.get().getPaoType().getDbString(),
-                ApiRequestContext.getContext().getLiteYukonUser());
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 

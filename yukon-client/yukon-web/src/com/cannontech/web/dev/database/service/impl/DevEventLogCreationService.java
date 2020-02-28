@@ -421,7 +421,7 @@ public class DevEventLogCreationService {
                 String programName = devEventLog.getIndicatorString() + "ProgramName";
                 String gearName = devEventLog.getIndicatorString() + "GearName";
                 String loadGroupName = devEventLog.getIndicatorString() + "LoadGroupName";
-                String loadGroupType = devEventLog.getIndicatorString() + "LoadGroupType";
+                PaoType loadGroupType = PaoType.LM_GROUP_EMETCON;
 
                 boolean overrideConstraints = true;
                 boolean stopScheduled = true;

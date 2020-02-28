@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -172,15 +173,15 @@ public interface DemandResponseEventLogService {
     public void seasonalControlHistoryReset(@Arg(ArgEnum.username) LiteYukonUser userName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupCreated(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.type) String loadGroupType,
+    public void loadGroupCreated(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupUpdated(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.type) String loadGroupType,
+    public void loadGroupUpdated(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupDeleted(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.type) String loadGroupType,
+    public void loadGroupDeleted(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     
