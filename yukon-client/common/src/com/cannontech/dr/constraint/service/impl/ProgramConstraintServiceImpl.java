@@ -1,18 +1,17 @@
 package com.cannontech.dr.constraint.service.impl;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramConstraint;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBDeleteResult;
@@ -32,8 +31,8 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired DBDeletionDao dbDeletionDao;
-    private static final Logger log = YukonLogManager.getLogger(ProgramConstraintServiceImpl.class);
 
     @Override
     public ProgramConstraint retrieve(int constraintId) {
@@ -77,6 +76,10 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         if (constraint.getConstraintID() == null) {
             dbPersistentDao.performDBChange(constraint, TransactionType.INSERT);
         }
+
+        demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(),
+                                                               ApiRequestContext.getContext().getLiteYukonUser().getUsername());
+
         return constraint.getConstraintID();
     }
 
@@ -94,6 +97,10 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         checkIfConstriantIsUsed(liteLMConstraint.get(), paoId);
         LMProgramConstraint constraint = (LMProgramConstraint) LiteFactory.createDBPersistent(liteLMConstraint.get());
         dbPersistentDao.performDBChange(constraint, TransactionType.DELETE);
+
+        demandResponseEventLogService.programConstraintDeleted(constraint.getConstraintName(),
+                                                               ApiRequestContext.getContext().getLiteYukonUser().getUsername());
+
         return constraint.getConstraintID();
     }
 
@@ -121,6 +128,10 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         LMProgramConstraint lmprogramConstraint = new LMProgramConstraint();
         programConstraint.buildDBPersistent(lmprogramConstraint);
         dbPersistentDao.performDBChange(lmprogramConstraint, TransactionType.UPDATE);
+
+        demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(),
+                                                               ApiRequestContext.getContext().getLiteYukonUser().getUsername());
+
         return lmprogramConstraint.getConstraintID();
     }
 

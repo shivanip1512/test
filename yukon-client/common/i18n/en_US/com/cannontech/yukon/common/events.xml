@@ -990,10 +990,16 @@
     <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved">{1} access removed from user {2} for {3} {4} by {5}.</entry>
     <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved.1">Allow/Deny</entry>
     <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved.2">User Updated</entry>
-    
+
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionAdded">{2} access added to user group {3} for {4} {5} by {1}.</entry>
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionAdded.2">Allow/Deny</entry>
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved">{2} access removed from user group {3} for {4} {5} by {1}.</entry>
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved.2">Allow/Deny</entry>
+
+    <!-- DR Setup Program Constraint -->
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintCreated">ProgramConstraint: {1} created by {2}.</entry>
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintUpdated">ProgramConstraint: {1} updated by {2}.</entry>
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintDeleted">ProgramConstraint: {1} deleted by {2}.</entry>
+
 </properties>
 
