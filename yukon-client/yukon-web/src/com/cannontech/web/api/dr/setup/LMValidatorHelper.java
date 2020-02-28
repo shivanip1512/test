@@ -82,13 +82,12 @@ public class LMValidatorHelper {
             errors.rejectValue("name", key + "unique", new Object[] {fieldName}, "");
         }
     }
-    
-    public void validateRoute(Errors errors, Integer routeId) {
 
+    public void validateRoute(Errors errors, Integer routeId) {
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
-            Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
-            if (!routeIds.contains(routeId)) {
+            LiteYukonPAObject liteRoute = serverDatabaseCache.getAllRoutesMap().get(routeId);
+            if (liteRoute == null) {
                 errors.rejectValue("routeId", key + "routeId.doesNotExist");
             }
         }
@@ -112,7 +111,7 @@ public class LMValidatorHelper {
     /**
      * Validates route id if load group supports route id
      */
-    public void validateRouteId(LMCopy lmCopy, String paoName, Errors errors, String field) {
+    public void validateRouteId(LMCopy lmCopy, Errors errors, String field) {
         Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
         if (paoId != null) {
             PaoType type = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoType();
