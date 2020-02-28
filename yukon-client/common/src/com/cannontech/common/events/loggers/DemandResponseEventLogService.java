@@ -173,13 +173,14 @@ public interface DemandResponseEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
     public void programConstraintCreated(@Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                         @Arg(ArgEnum.username) String userName);
+                                         @Arg(ArgEnum.username) LiteYukonUser userName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
     public void programConstraintUpdated(@Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                         @Arg(ArgEnum.username) String userName);
+                                         @Arg(ArgEnum.username) LiteYukonUser userName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
     public void programConstraintDeleted(@Arg(ArgEnum.programConstraintName) String programConstraintName,
-                                         @Arg(ArgEnum.username) String userName);
+                                         @Arg(ArgEnum.username) LiteYukonUser userName);
+    
 }

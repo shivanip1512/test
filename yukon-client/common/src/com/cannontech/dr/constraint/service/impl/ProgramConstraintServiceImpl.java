@@ -78,7 +78,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         }
 
         demandResponseEventLogService.programConstraintCreated(constraint.getConstraintName(),
-                                                               ApiRequestContext.getContext().getLiteYukonUser().getUsername());
+                                                               ApiRequestContext.getContext().getLiteYukonUser());
 
         return constraint.getConstraintID();
     }
@@ -99,7 +99,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         dbPersistentDao.performDBChange(constraint, TransactionType.DELETE);
 
         demandResponseEventLogService.programConstraintDeleted(constraint.getConstraintName(),
-                                                               ApiRequestContext.getContext().getLiteYukonUser().getUsername());
+                                                               ApiRequestContext.getContext().getLiteYukonUser());
 
         return constraint.getConstraintID();
     }
@@ -130,7 +130,7 @@ public class ProgramConstraintServiceImpl implements ProgramConstraintService {
         dbPersistentDao.performDBChange(lmprogramConstraint, TransactionType.UPDATE);
 
         demandResponseEventLogService.programConstraintUpdated(lmprogramConstraint.getConstraintName(),
-                                                               ApiRequestContext.getContext().getLiteYukonUser().getUsername());
+                                                               ApiRequestContext.getContext().getLiteYukonUser());
 
         return lmprogramConstraint.getConstraintID();
     }

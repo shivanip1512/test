@@ -466,9 +466,9 @@ public class DevEventLogCreationService {
                 demandResponseEventLogService.threeTierLoadGroupDisabled(yukonUser, loadGroupName);
                 demandResponseEventLogService.loadGroupDisabled(loadGroupName);
                 // ProgramConstraint_Dr_Setup_Logging
-                demandResponseEventLogService.programConstraintCreated(programConstraintName, yukonUser.getUsername());
-                demandResponseEventLogService.programConstraintUpdated(programConstraintName, yukonUser.getUsername());
-                demandResponseEventLogService.programConstraintDeleted(programConstraintName, yukonUser.getUsername());
+                demandResponseEventLogService.programConstraintCreated(programConstraintName, yukonUser);
+                demandResponseEventLogService.programConstraintUpdated(programConstraintName, yukonUser);
+                demandResponseEventLogService.programConstraintDeleted(programConstraintName, yukonUser);
 
                 
                 demandResponseEventLogService.seasonalControlHistoryReset(yukonUser);

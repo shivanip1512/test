@@ -114,6 +114,7 @@
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.widgetType">Widget Type</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
+    <entry key="yukon.common.events.programConstraintName">Program Constraint Name</entry>
 
 <!-- Event log message text and column names -->
 
@@ -997,9 +998,9 @@
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved.2">Allow/Deny</entry>
 
     <!-- DR Setup Program Constraint -->
-    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintCreated">ProgramConstraint: {1} created by {2}.</entry>
-    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintUpdated">ProgramConstraint: {1} updated by {2}.</entry>
-    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintDeleted">ProgramConstraint: {1} deleted by {2}.</entry>
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintCreated">Program constraint {1} created by {2}.</entry>
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintUpdated">Program constraint {1} updated by {2}.</entry>
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintDeleted">Program constraint {1} deleted by {2}.</entry>
 
 </properties>
 
