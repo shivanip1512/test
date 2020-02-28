@@ -139,7 +139,7 @@ yukon.assets.gateway.list = (function () {
     },
     
     _updateFirmwareRow = function (row, update) {
-        var timestamp = moment(update.sendDate.millis).tz(yg.timezone).format(yg.formats.date.full_hm);
+        var timestamp = moment(update.sendDate).tz(yg.timezone).format(yg.formats.date.full_hm);
         
         row.find('.js-firmware-update-timestamp a').text(timestamp);
         row.find('.js-firmware-gateways').text(update.totalGateways);
@@ -185,7 +185,7 @@ yukon.assets.gateway.list = (function () {
         
         var 
         gwText, 
-        timestamp = moment(update.timestamp.millis).tz(yg.timezone).format(yg.formats.date.full_hm);
+        timestamp = moment(update.timestamp).tz(yg.timezone).format(yg.formats.date.full_hm);
         
         row.find('.js-cert-update-timestamp a').text(timestamp);
         row.find('.js-cert-update-file').text(update.fileName);
