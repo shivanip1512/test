@@ -296,11 +296,9 @@ public class LoadGroupSetupController {
         lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", litePao.getPaoName()));
         model.addAttribute("lmCopy", lmCopy);
         if (loadGroupType.isLoadGroupSupportRoute()) {
-            if (lmCopy instanceof LoadGroupCopy) {
                 LoadGroupCopy lgCopy = (LoadGroupCopy) lmCopy;
                 model.addAttribute("routes", cache.getAllRoutes());
                 lgCopy.setRouteId(routeId);
-            }
         }
 
         model.addAttribute("loadGroupId", id);
