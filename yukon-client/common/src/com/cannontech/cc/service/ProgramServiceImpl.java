@@ -122,8 +122,8 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public CurtailmentProgramType getProgramType(int programId) {
-        ProgramType programTypeId = programDao.getForId(programId).getProgramType();
-        CiEventType ciEventType = CiEventType.of(programTypeId.getStrategy());
+        ProgramType programType = programDao.getForId(programId).getProgramType();
+        CiEventType ciEventType = CiEventType.of(programType.getStrategy());
         return ciEventType.getProgramType();
     }
     
