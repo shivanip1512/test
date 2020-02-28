@@ -53,9 +53,9 @@ public enum CiEventType {
         return this.programType == CurtailmentProgramType.ECONOMIC;
     }
     
-    // is this correct??? Or should it be this.programType = CurtailmentProgramType.CAPACITY_CONTINGENCY ???
     public boolean isNotification() {
-        return !isAccounting() && !isEconomic();
+        return (this.programType == CurtailmentProgramType.DIRECT_CONTROL ||
+                this.programType == CurtailmentProgramType.CAPACITY_CONTINGENCY);
     }
     
     /**
