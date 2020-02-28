@@ -168,7 +168,8 @@ public enum ItronDataEventType {
      * @throws IllegalArgumentException if no appropriate attribute can be found.
      */
     public BuiltInAttribute getAttribute(byte[] byteArray) throws IllegalArgumentException {
-        long relayNumber = decode(byteArray);
+        // Relay number comes back 0-indexed, but relay-related attributes are 1-indexed, so increment.
+        long relayNumber = decode(byteArray) + 1;
         switch (this) {
         case LOAD_ON:
         case LOAD_OFF:
@@ -247,7 +248,7 @@ public enum ItronDataEventType {
         String cacheKey = keyPrefix + pairedType.name();
         PointData pointData = voltageCache.getIfPresent(cacheKey);
         if (pointData == null) {
-            log.debug("No cached entry found for " + cacheKey);
+            log.debug("No cached entry found for {}", cacheKey);
             
             // make new, incomplete point data (with either timestamp or value) and put in cache
             pointData = new PointData();
@@ -256,17 +257,17 @@ public enum ItronDataEventType {
             insertValueOrTime(pointData, isValue, byteArray);
             
             String key = keyPrefix + name();
-            log.debug("Caching incomplete data. Key: " + key);
+            log.debug("Caching incomplete data. Key: {}", key);
             // Put the incomplete point data into the cache with a key that combines date, point ID and event type
             voltageCache.put(key, pointData);
             return Optional.empty();
         }
         
-        log.debug("Invalidating cache key: " + cacheKey);
+        log.debug("Invalidating cache key: {}", cacheKey);
         voltageCache.invalidate(cacheKey);
         // Put the second part (time or value) into the pointdata
         insertValueOrTime(pointData, isValue, byteArray);
-        log.debug("Completed point data - date: " + pointData.getTimeStamp() + ", value: " + pointData.getValue());
+        log.debug("Completed point data - date: " + pointData.getPointDataTimeStamp() + ", value: " + pointData.getValue());
         return Optional.of(pointData);
     }
     
@@ -276,11 +277,12 @@ public enum ItronDataEventType {
     private void insertValueOrTime(PointData pointData, boolean isValue, byte[] byteArray) {
         long decodedData = decode(byteArray);
         if (isValue) {
-            log.debug("Setting point data value: " + decodedData);
+            log.debug("Setting point data value: {}", decodedData);
             pointData.setValue(decodedData);
         } else {
-            Date date = new Date(decodedData);
-            log.debug("Setting point data date: " + date.toString());
+            // Date comes in as seconds since epoch
+            Date date = new Date(decodedData * 1000);
+            log.debug("Setting point data date: {}", date.toString());
             pointData.setTime(date);
         }
     }
