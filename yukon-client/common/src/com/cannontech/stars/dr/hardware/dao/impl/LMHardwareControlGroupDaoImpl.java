@@ -867,7 +867,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         sql.append(                     "WHERE lmhg2.InventoryID = lmhg.InventoryID");
         sql.append(                     "AND lmhg2.Relay = lmhg.Relay");
         sql.append(                     "AND GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NULL)");
-        sql.append(     ") AS t");
+        sql.append(     ") t");
         sql.append("WHERE rn").eq_k(1);
         return yukonJdbcTemplate.query(sql, enrollmentMessageRowMapper);
     }
