@@ -80,6 +80,7 @@
     <entry key="yukon.common.events.pointOffset">Point Offset</entry>
     <entry key="yukon.common.events.pointType">Point Type</entry>
     <entry key="yukon.common.events.pointValue">Point Value</entry>
+    <entry key="yukon.common.events.programConstraintName">Program Constraint Name</entry>
     <entry key="yukon.common.events.programName">Program Name</entry>
     <entry key="yukon.common.events.userGroup">User Group</entry>
     <entry key="yukon.common.events.remoteAddress">Remote Address</entry>
@@ -114,7 +115,6 @@
     <entry key="yukon.common.events.warehouseName">Warehouse Name</entry>
     <entry key="yukon.common.events.widgetType">Widget Type</entry>
     <entry key="yukon.common.events.workOrderNumber">Work Order Number</entry>
-    <entry key="yukon.common.events.programConstraintName">Program Constraint Name</entry>
 
 <!-- Event log message text and column names -->
 
