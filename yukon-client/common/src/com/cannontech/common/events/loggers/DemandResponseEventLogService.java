@@ -184,5 +184,16 @@ public interface DemandResponseEventLogService {
     public void loadGroupDeleted(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
-    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
+    public void programConstraintCreated(@Arg(ArgEnum.programConstraintName) String programConstraintName,
+                                         @Arg(ArgEnum.username) LiteYukonUser userName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
+    public void programConstraintUpdated(@Arg(ArgEnum.programConstraintName) String programConstraintName,
+                                         @Arg(ArgEnum.username) LiteYukonUser userName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
+    public void programConstraintDeleted(@Arg(ArgEnum.programConstraintName) String programConstraintName,
+                                         @Arg(ArgEnum.username) LiteYukonUser userName);
+
 }

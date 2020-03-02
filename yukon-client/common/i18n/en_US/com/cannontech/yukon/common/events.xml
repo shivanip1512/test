@@ -80,6 +80,7 @@
     <entry key="yukon.common.events.pointOffset">Point Offset</entry>
     <entry key="yukon.common.events.pointType">Point Type</entry>
     <entry key="yukon.common.events.pointValue">Point Value</entry>
+    <entry key="yukon.common.events.programConstraintName">Program Constraint Name</entry>
     <entry key="yukon.common.events.programName">Program Name</entry>
     <entry key="yukon.common.events.userGroup">User Group</entry>
     <entry key="yukon.common.events.remoteAddress">Remote Address</entry>
@@ -995,10 +996,16 @@
     <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved">{1} access removed from user {2} for {3} {4} by {5}.</entry>
     <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved.1">Allow/Deny</entry>
     <entry key="yukon.common.events.system.usersAndGroups.user.permissionRemoved.2">User Updated</entry>
-    
+
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionAdded">{2} access added to user group {3} for {4} {5} by {1}.</entry>
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionAdded.2">Allow/Deny</entry>
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved">{2} access removed from user group {3} for {4} {5} by {1}.</entry>
     <entry key="yukon.common.events.system.usersAndGroups.userGroup.permissionRemoved.2">Allow/Deny</entry>
+
+    <!-- DR Setup Program Constraint -->
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintCreated">Program constraint {1} created by {2}.</entry>
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintUpdated">Program constraint {1} updated by {2}.</entry>
+    <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintDeleted">Program constraint {1} deleted by {2}.</entry>
+
 </properties>
 
