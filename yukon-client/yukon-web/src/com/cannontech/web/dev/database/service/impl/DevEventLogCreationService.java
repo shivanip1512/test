@@ -421,7 +421,7 @@ public class DevEventLogCreationService {
                 String programName = devEventLog.getIndicatorString() + "ProgramName";
                 String gearName = devEventLog.getIndicatorString() + "GearName";
                 String loadGroupName = devEventLog.getIndicatorString() + "LoadGroupName";
-                String programConstraintName = devEventLog.getIndicatorString() + "ProgramConstraintName";
+                PaoType loadGroupType = PaoType.LM_GROUP_EMETCON;
 
                 boolean overrideConstraints = true;
                 boolean stopScheduled = true;
@@ -465,13 +465,12 @@ public class DevEventLogCreationService {
                 demandResponseEventLogService.loadGroupEnabled(loadGroupName);
                 demandResponseEventLogService.threeTierLoadGroupDisabled(yukonUser, loadGroupName);
                 demandResponseEventLogService.loadGroupDisabled(loadGroupName);
-                // ProgramConstraint_Dr_Setup_Logging
-                demandResponseEventLogService.programConstraintCreated(programConstraintName, yukonUser);
-                demandResponseEventLogService.programConstraintUpdated(programConstraintName, yukonUser);
-                demandResponseEventLogService.programConstraintDeleted(programConstraintName, yukonUser);
-
                 
                 demandResponseEventLogService.seasonalControlHistoryReset(yukonUser);
+                // DR Setup
+                demandResponseEventLogService.loadGroupCreated(loadGroupName, loadGroupType, yukonUser);
+                demandResponseEventLogService.loadGroupUpdated(loadGroupName, loadGroupType, yukonUser);
+                demandResponseEventLogService.loadGroupDeleted(loadGroupName, loadGroupType, yukonUser);
             }
         });
         executables.put(LogType.DEVICE_CONFIG, new DevEventLogExecutable() {

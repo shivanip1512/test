@@ -463,6 +463,11 @@
     <entry key="yukon.common.events.dr.controlArea.controlAreaDisabled">Control area {1} disabled.</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaPeakReset">Control area {1} had its triggers peak(s) reset.</entry>
 
+    <!-- DR setup Load Group -->
+    <entry key="yukon.common.events.dr.setup.loadGroup.loadGroupCreated">Load group {1} of type {2} created by {3}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadGroup.loadGroupUpdated">Load group {1} of type {2} updated by {3}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadGroup.loadGroupDeleted">Load group {1} of type {2} deleted by {3}.</entry>
+
     <!-- Program -->
     <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {2} start scheduled at {11} by {1} via 3-Tier.</entry>
     <entry key="yukon.common.events.dr.program.threeTierProgramScheduled.11">Scheduled Start Date</entry>

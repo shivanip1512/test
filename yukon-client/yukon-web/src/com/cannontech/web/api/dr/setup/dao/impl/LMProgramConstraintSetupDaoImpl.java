@@ -94,6 +94,7 @@ public class LMProgramConstraintSetupDaoImpl extends AbstractLMSetupDaoImpl<Prog
 
     @Override
     public String getColumnNames() {
-        return "*";
+        return "ConstraintName, ConstraintID, availableWeekdays, maxHoursDaily, maxHoursMonthly, maxHoursSeasonal, "
+                + "maxHoursAnnually, minActivateTime, minRestartTime, maxDailyOps, maxActivateTime, seasonScheduleID, holidayScheduleID";
     }
 }
