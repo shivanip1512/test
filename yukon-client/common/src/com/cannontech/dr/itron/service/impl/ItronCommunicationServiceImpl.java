@@ -114,7 +114,9 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private InventoryDao inventoryDao;
     @Autowired private List<SoapFaultParser> soapFaultParsers;
     
-    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists", "macID.exists");
+    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists", 
+                                                                          "macID.exists", 
+                                                                          "Done.programEventID");
     
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     private static final String READ_GROUP = "ITRON_READ_GROUP";
