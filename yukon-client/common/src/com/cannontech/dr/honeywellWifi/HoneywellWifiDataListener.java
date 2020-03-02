@@ -171,6 +171,7 @@ public class HoneywellWifiDataListener {
                     HoneywellWifiData data = buildHoneywellWifiData(message);
                     try {
                         processMessage(data);
+                        lastProcessedMessageTime = data.getMessageWrapper().getDate().toDateTime();
                     } catch (Exception e) {
                         log.error("Error processing Honeywell wifi message of type: " + data.getType(), e);
                         log.debug(data);
