@@ -101,8 +101,7 @@ public class HoneywellRestProxyFactory {
         }
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private String getAuthenticationToken() {
+    private synchronized String getAuthenticationToken() {
         if (tokenCache == null || tokenCache.getIfPresent(authTokenKey) == null) {
             authTokenValue = generateAuthenticationToken();
         } else {

@@ -469,7 +469,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, String.class);
 
-            log.debug(response);
+            log.trace("Gateway Details For MacId Response: {}", response);
             String responseString = response.getBody().toString();
             try {
                 Map<String, Object> data = JsonUtils.fromJson(responseString, Map.class);
