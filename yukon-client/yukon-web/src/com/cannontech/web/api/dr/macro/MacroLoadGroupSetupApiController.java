@@ -1,7 +1,6 @@
 package com.cannontech.web.api.dr.macro;
 
 import java.util.HashMap;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
