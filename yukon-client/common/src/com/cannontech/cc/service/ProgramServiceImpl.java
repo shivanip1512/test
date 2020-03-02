@@ -22,6 +22,7 @@ import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.dao.ProgramTypeDao;
 import com.cannontech.cc.model.AvailableProgramGroup;
 import com.cannontech.cc.model.BaseEvent;
+import com.cannontech.cc.model.CiEventType;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramParameter;
@@ -121,8 +122,9 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public CurtailmentProgramType getProgramType(int programId) {
-        Integer programTypeId = programDao.getForId(programId).getProgramType().getId();
-        return CurtailmentProgramType.withId(programTypeId);
+        ProgramType programType = programDao.getForId(programId).getProgramType();
+        CiEventType ciEventType = CiEventType.of(programType.getStrategy());
+        return ciEventType.getProgramType();
     }
     
     public ProgramTypeDao getProgramTypeDao() {
