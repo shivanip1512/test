@@ -106,7 +106,6 @@ yukon.widget.dataCollection = (function () {
             },
             series: [{
                 type: 'pie',
-                dataSorting: { enabled: false },
                 data: _getData(data)
             }]
         });
