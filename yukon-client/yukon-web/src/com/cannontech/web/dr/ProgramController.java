@@ -374,7 +374,7 @@ public class ProgramController extends ProgramControllerBase {
         
         json.put("success", result.isSuccess());
         json.put("status", accessor.getMessage(result.getState().getFormatKey()));
-        json.put("time", result.getDisconnectTime());
+        json.put("time", result.getDisconnectTime() == null ? result.getDisconnectTime() : result.getDisconnectTime().getMillis());
     }
     
     public enum DisconnectSortBy implements DisplayableEnum {

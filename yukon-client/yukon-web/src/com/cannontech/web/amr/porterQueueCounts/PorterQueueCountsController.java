@@ -109,9 +109,9 @@ public class PorterQueueCountsController {
         }
         json.put("yAxis", yAxis);
         Instant lastUpdateTime = new Instant();
-        json.put("lastUpdateTime", lastUpdateTime);
+        json.put("lastUpdateTime", lastUpdateTime.getMillis());
         Instant nextRun = porterQueueCountsWidgetService.getNextRefreshTime(lastUpdateTime);
-        json.put("nextRefreshDate", nextRun);
+        json.put("nextRefreshDate", nextRun.getMillis());
         json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
         json.put("refreshMillis",  porterQueueCountsWidgetService.getRefreshMilliseconds());
         json.put("maxNumSelections", GlobalSettingType.PORTER_QUEUE_COUNTS_TREND_MAX_NUM_PORTS);
