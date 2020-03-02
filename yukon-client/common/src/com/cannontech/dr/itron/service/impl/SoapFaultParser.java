@@ -33,12 +33,15 @@ interface SoapFaultParser {
      */
     default void checkIfErrorShouldBeIgnored(String errorCode, String errorMessage, Set<String> faultCodesToIgnore, Logger log)
             throws ItronCommunicationException {
-        if (!faultCodesToIgnore.contains(errorCode)) {
+        boolean ignore = faultCodesToIgnore.stream()
+                                           .anyMatch(code -> code.equalsIgnoreCase(errorCode));
+        if (ignore) {
+            log.info("Ignored soap fault {}:{}", errorCode, errorMessage);
+        } else {
             ItronCommunicationException exception =
                 new ItronCommunicationException("Soap Fault: " + errorCode + ":" + errorMessage);
             log.error(exception);
             throw exception;
         }
-        log.debug("Ignored soap fault: " + errorCode + ":" + errorMessage);
     }
 }
