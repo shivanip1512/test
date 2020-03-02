@@ -5,9 +5,9 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<%@ attribute name="classes" description="CSS class names applied to the anchor element." %>
 <%@ attribute name="pao" required="true" type="com.cannontech.common.pao.YukonPao" %>
 <%@ attribute name="pointId" type="java.lang.Integer" %>
-<%@ attribute name="classes" description="CSS class names applied to the anchor element." %>
 <%@ attribute name="qualityIndicator" required="false" type="com.cannontech.core.service.PointFormattingService.Format" %>
 
 <c:choose>
