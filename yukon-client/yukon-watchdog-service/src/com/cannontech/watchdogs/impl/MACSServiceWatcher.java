@@ -24,7 +24,7 @@ import com.cannontech.watchdogs.message.WatchdogMessageListener;
 import com.cannontech.watchdogs.util.WatchdogMACSConnection;
 
 /**
- * This class will validate MAC Scheduler Service Status in every 5 min and generate warning.
+ * This class will validate MAC Scheduler Service Status in every 5 min and generate warning if 3 validations fail.
  */
 
 @Service

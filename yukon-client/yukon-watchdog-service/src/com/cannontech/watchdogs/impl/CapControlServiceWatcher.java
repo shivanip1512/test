@@ -27,7 +27,7 @@ import com.cannontech.watchdogs.message.WatchdogMessageListener;
 import com.cannontech.watchdogs.util.WatchdogCapControlClientConnection;
 
 /**
- * This class will validate Cap Control Status in every 5 min and generate warning.
+ * This class will validate Cap Control Status in every 5 min and generate warning if 3 consecutive validations fail.
  */
 
 @Service
