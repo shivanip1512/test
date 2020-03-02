@@ -97,13 +97,12 @@ public class SftpConnection implements AutoCloseable {
     
     @Override
     public void close() {
-        if (privateKeyFile == null) {
-            return;
-        }
-        try {
-            Files.delete(privateKeyFile.toPath());
-        } catch (Exception e) {
-            log.debug("Error deleting key file", e);
+        if (privateKeyFile != null) {
+            try {
+                Files.delete(privateKeyFile.toPath());
+            } catch (Exception e) {
+                log.debug("Error deleting key file", e);
+            }
         }
     }
     

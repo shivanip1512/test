@@ -119,7 +119,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     private static final String READ_GROUP = "ITRON_READ_GROUP";
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
-    private static DateTime lastItronFileDeletionDate = DateTime.now().minus(Duration.standardDays(1));
+    private DateTime lastItronFileDeletionDate = DateTime.now().minus(Duration.standardDays(1));
     
     private Cache<Integer, Enrollment> enrollmentCache =
             CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
@@ -606,6 +606,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         // Check and possibly clean up old files
         if (lastItronFileDeletionDate.isBefore(DateTime.now().withTimeAtStartOfDay())) {
+            lastItronFileDeletionDate = DateTime.now();
             deleteOldItronFiles();
         }
         
@@ -691,7 +692,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             return;
         }
         DateTime retentionDate = DateTime.now().minusDays(daysToKeep);
-        log.info("Itron archive file cleanup started. Deleting files last used before " + retentionDate.toDate().toString() + ".");
+        log.info("Itron archive file cleanup started. Deleting files last used before {}.", retentionDate.toDate().toString());
         
         // Get the files to check
         File dir = new File(CtiUtilities.getItronDirPath());
@@ -703,7 +704,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             for (File itronZip : directoryListing) {
                 filesDeleted += deleteIfOldFile(itronZip, retentionDate);
             }
-            log.info("Itron archive file cleanup is complete. " + filesDeleted + " log files were deleted.");
+            log.info("Itron archive file cleanup is complete. {} log files were deleted.", filesDeleted);
         } catch (Exception e) {
             log.error("Unable to delete old file archives", e);
         }
