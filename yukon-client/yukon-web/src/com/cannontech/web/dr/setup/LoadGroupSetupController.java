@@ -289,15 +289,16 @@ public class LoadGroupSetupController {
             HttpServletRequest request) {
 
         PaoType loadGroupType = getPaoTypeForPaoId(id);
-        LoadGroupCopy lmCopy = (LoadGroupCopy) LMModelFactory.createLoadGroupCopy(loadGroupType);
+        LMCopy lmCopy = LMModelFactory.createLoadGroupCopy(loadGroupType);
 
         LiteYukonPAObject litePao = dbCache.getAllPaosMap().get(id);
         MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(userContext);
         lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", litePao.getPaoName()));
         model.addAttribute("lmCopy", lmCopy);
         if (loadGroupType.isLoadGroupSupportRoute()) {
-            model.addAttribute("routes", cache.getAllRoutes());
-            lmCopy.setRouteId(routeId);
+                LoadGroupCopy lgCopy = (LoadGroupCopy) lmCopy;
+                model.addAttribute("routes", cache.getAllRoutes());
+                lgCopy.setRouteId(routeId);
         }
 
         model.addAttribute("loadGroupId", id);
