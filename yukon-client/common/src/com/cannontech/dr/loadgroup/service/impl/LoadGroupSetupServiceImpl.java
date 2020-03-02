@@ -175,7 +175,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         SimpleDevice device = SimpleDevice.of(loadGroup.getPAObjectID(), loadGroup.getPaoType());
         paoCreationHelper.applyPoints(device, points);
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
-
+        logService.loadGroupCreated(loadGroup.getPAOName(), loadGroup.getPaoType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return loadGroup.getPAObjectID();
     }
 

@@ -96,6 +96,8 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         loadGroup.setPAObjectID(null);
 
         dbPersistentDao.performDBChange(loadGroup, TransactionType.INSERT);
+        logService.loadGroupCreated(loadGroup.getPAOName(), loadGroup.getPaoType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return loadGroup.getPAObjectID();
     }
 
