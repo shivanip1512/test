@@ -101,7 +101,7 @@ public class MACSServiceWatcher extends ServiceStatusWatchdogImpl implements Wat
 
         if (receivedLatestMessageTimeStamp == null || !macsConnection.isValid()) {
             if (numberOfMissedAttempts.incrementAndGet() < 3) {
-                log.debug("Number of missed MACS attempts less than 3. Current count: " + numberOfMissedAttempts);
+                log.debug("Number of missed MACS attempts less than 3. Current count: {}", numberOfMissedAttempts);
                 return new ArrayList<WatchdogWarnings>();
             } else {
                 log.info("Status of MACS service " + ServiceStatus.STOPPED);
