@@ -259,7 +259,7 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
-                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY);
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA);
                 if (includePrimaryRoute) {
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
@@ -280,7 +280,7 @@ public class MapController {
                             statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                         }
                         model.addAttribute("deviceStatus", statusString);
-                        RfnDevice gateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                        RfnDevice gateway = rfnDeviceDao.findGatewayForDeviceId(rfnDevice.getPaoIdentifier().getPaoId());
                         if(gateway != null) {
                             RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
                             if(rfnGateway != null) {

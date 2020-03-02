@@ -1,5 +1,6 @@
 package com.cannontech.amr.rfn.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -140,4 +141,24 @@ public interface RfnDeviceDao {
      * Returns gateway ids for the set of devices
      */
     Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds);
+
+    /**
+     * Returns gateway for devices or null if the device is not associated with gateway
+     */
+    RfnDevice findGatewayForDeviceId(Integer deviceId);
+
+    /**
+     * Returns a map of device ids to gateway ids
+     */
+    Map<Integer, Integer> getDevicesToGateways(List<Integer> deviceIds);
+
+    /**
+     * Returns a map of gateway ids to a collection of devices ids
+     */
+    Map<Integer, Collection<Integer>> getGatewaysToDevicesByDevices(Iterable<Integer> deviceIds);
+
+    /**
+     * Returns a map of gateway ids to a collection of devices ids
+     */
+    Map<Integer, Collection<Integer>> getGatewaysToDevicesByGateways(Iterable<Integer> gatewayIds);
 }
