@@ -542,8 +542,7 @@ yukon.map.comprehensive = (function () {
             });
                         
             $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
-                var mapContainer = $('#comprehensive-map-container');
-                yukon.mapping.adjustMapForFullScreenModeChange(mapContainer, "0px");
+                yukon.mapping.adjustMapForFullScreenModeChange($('#comprehensive-map-container'), "0px");
             });
             
             $("body").on("dialogopen", function (event, ui) {

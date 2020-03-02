@@ -806,8 +806,7 @@ yukon.tools.map = (function() {
             });
             
             $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
-                var mapContainer = $('#map-container');
-                yukon.mapping.adjustMapForFullScreenModeChange(mapContainer, "10px");
+                yukon.mapping.adjustMapForFullScreenModeChange($('#map-container'), "10px");
             });
             
             $("body").on("dialogopen", function (event, ui) {

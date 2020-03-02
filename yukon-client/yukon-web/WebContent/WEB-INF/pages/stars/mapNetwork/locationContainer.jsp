@@ -30,26 +30,22 @@
             <div class="${empty geojson.features ? 'dn' : ''}" style="height:85%;">
                 <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
                 <div class="buffered">
-                    <c:set var="groupClass" value=""/>
-                    <c:if test="${numLayers > 1}">
-                        <c:set var="groupClass" value="button-group"/>
-                    </c:if>
+                    <c:set var="groupClass" value="${numLayers > 1 ? 'button-group' : ''}"/>
                     <div class="${groupClass} stacked">
                         <c:if test="${displayNearbyLayer}">
-                            <span class="fl" style="text-transform:capitalize">
+                            <span class="fl ttc">
                                 <i:inline key=".mapNetwork.distance.miles"/>:&nbsp;
                                 <select id="miles" class="js-miles">
-                                    <option>0.25</option>
-                                    <option>0.5</option>
-                                    <option selected="selected">1</option>
-                                    <option>5</option>
-                                    <option>10</option>
+                                    <c:forEach var="mile" items="${mileValues}">
+                                        <c:set var="selected" value="${mile.value == 1 ? 'selected=selected' : '' }"/>
+                                        <option ${selected}>${mile.value}</option>
+                                    </c:forEach>
                                 </select>
                             </span>
                             <tags:check name="nearby" key=".mapNetwork.nearby" classes="js-nearby bl1" />
                         </c:if>
                         <c:if test="${displayNeighborsLayer}">
-                            <tags:check name="neighbors" key=".mapNetwork.neighbors" classes="js-neighbor-data" />                            
+                            <tags:check name="neighbors" key=".mapNetwork.neighbors" classes="js-neighbor-data" />
                         </c:if>
                         <c:if test="${displayParentNodeLayer}">
                             <tags:check name="parent" key=".mapNetwork.parent" classes="js-parent-node" />
