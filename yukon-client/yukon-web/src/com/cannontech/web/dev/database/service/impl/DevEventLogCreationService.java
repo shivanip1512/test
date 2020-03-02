@@ -421,6 +421,7 @@ public class DevEventLogCreationService {
                 String programName = devEventLog.getIndicatorString() + "ProgramName";
                 String gearName = devEventLog.getIndicatorString() + "GearName";
                 String loadGroupName = devEventLog.getIndicatorString() + "LoadGroupName";
+                String programConstraintName = devEventLog.getIndicatorString() + "ProgramConstraintName";
                 PaoType loadGroupType = PaoType.LM_GROUP_EMETCON;
 
                 boolean overrideConstraints = true;
@@ -471,6 +472,10 @@ public class DevEventLogCreationService {
                 demandResponseEventLogService.loadGroupCreated(loadGroupName, loadGroupType, yukonUser);
                 demandResponseEventLogService.loadGroupUpdated(loadGroupName, loadGroupType, yukonUser);
                 demandResponseEventLogService.loadGroupDeleted(loadGroupName, loadGroupType, yukonUser);
+                // ProgramConstraint_Dr_Setup_Logging
+                demandResponseEventLogService.programConstraintCreated(programConstraintName, yukonUser);
+                demandResponseEventLogService.programConstraintUpdated(programConstraintName, yukonUser);
+                demandResponseEventLogService.programConstraintDeleted(programConstraintName, yukonUser);
             }
         });
         executables.put(LogType.DEVICE_CONFIG, new DevEventLogExecutable() {
@@ -1217,7 +1222,7 @@ public class DevEventLogCreationService {
         DATA_STREAMING(DataStreamingEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 8),
-        DEMAND_RESPONSE(DemandResponseEventLogService.class, 40),
+        DEMAND_RESPONSE(DemandResponseEventLogService.class, 43),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
         ECOBEE(EcobeeEventLogService.class, 3),
