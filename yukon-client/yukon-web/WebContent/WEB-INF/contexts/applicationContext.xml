@@ -1406,6 +1406,8 @@
 
     <bean class="com.cannontech.dr.loadprogram.service.impl.LoadProgramSetupServiceImpl"/>
 
+    <bean class="com.cannontech.deviceReadings.service.impl.DeviceReadingsServiceImpl"/>
+
     <bean class="com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl">
         <qualifier value="macroLoadGroup" />
     </bean>
