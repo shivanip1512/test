@@ -80,10 +80,10 @@ public class TrendDataController {
         if (trend != null) {
             json = getTrendJson(userContext, trend, Months.ONE);
             Instant lastUpdateTime = new Instant();
-            json.put("lastAttemptedRefresh", lastUpdateTime);
+            json.put("lastAttemptedRefresh", lastUpdateTime.getMillis());
             json.put("refreshMillis", trendDataService.getRefreshMilliseconds());
             Instant nextRun = trendDataService.getNextRefreshTime(lastUpdateTime);
-            json.put("nextRun", nextRun);
+            json.put("nextRun", nextRun.getMillis());
             json.put("updateTooltip", accessor.getMessage("yukon.web.widgets.forceUpdate"));
         } else {
             json.put("errorMessage", accessor.getMessage("yukon.web.modules.dashboard.exception.trendId.notFound"));

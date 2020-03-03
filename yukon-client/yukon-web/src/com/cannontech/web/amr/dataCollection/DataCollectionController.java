@@ -105,10 +105,11 @@ public class DataCollectionController {
             json.put("errorMessage", errorMsg);
         }
 
-        json.put("lastAttemptedRefresh", dataCollectionWidgetService.getRunTime(false));
+        Instant runTime = dataCollectionWidgetService.getRunTime(false);
+        json.put("lastAttemptedRefresh", runTime == null ? runTime : runTime.getMillis());
         Instant nextRun = dataCollectionWidgetService.getRunTime(true);
         if (nextRun.isAfterNow()) {
-            json.put("nextRefresh", nextRun);
+            json.put("nextRefresh", nextRun == null ? nextRun : nextRun.getMillis());
             json.put("isRefreshPossible", false);
         } else {
             json.put("isRefreshPossible", true);
