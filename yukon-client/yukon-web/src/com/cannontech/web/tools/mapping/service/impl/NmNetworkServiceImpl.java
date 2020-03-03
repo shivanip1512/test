@@ -870,9 +870,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds),
                 l -> l.getPaoIdentifier().getPaoId());
-        map.setDevicesWithoutLocation(paoIds.stream().filter(paoId -> !locations.containsKey(paoId))
-                .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
-                .collect(Collectors.toList()));
+        map.getDevicesWithoutLocation().addAll(paoIds.stream().filter(paoId -> !locations.containsKey(paoId))
+            .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
+            .collect(Collectors.toList()));
 
         if (locations.isEmpty()) {
             log.debug("Failed to add devices {} to map, locations empty", paoIds.size());
