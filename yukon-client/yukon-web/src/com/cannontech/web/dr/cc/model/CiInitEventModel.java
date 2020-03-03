@@ -6,6 +6,8 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import com.cannontech.cc.model.CiEventType;
+
 /**
  * Model object used by pages that initialize a curtailment event.
  */
