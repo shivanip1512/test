@@ -66,9 +66,4 @@ public interface NmNetworkService {
      * Parses the result we received from NM to get Node Comm Status
      */
     NodeComm getNodeCommStatusFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata);
-
-    /**
-     * Parses the result we received from NM to get Primary Forward Gateway
-     */
-    RfnDevice getPrimaryForwardGatewayFromMultiQueryResult(RfnDevice rfnDevice, RfnMetadataMultiQueryResult metadata);
 }
