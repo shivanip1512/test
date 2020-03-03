@@ -1,13 +1,11 @@
 package com.cannontech.stars.dr.jms.service.impl;
 
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
@@ -20,7 +18,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
 
     private final static Logger log = YukonLogManager.getLogger(DrJmsMessagingServiceImpl.class);
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplate yukonJmsTemplate;
 
     @Override
     public void publishEnrollmentNotice(LMHardwareControlGroup controlInformation) {
@@ -30,7 +28,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.ENROLLMENT);
 
         log.debug("Enrollment message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION.getQueue().getName(), message);
+        yukonJmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
     }
 
     @Override
@@ -42,7 +40,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.UNENROLLMENT);
 
         log.debug("Unenrollment message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION.getQueue().getName(), message);
+        yukonJmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
     }
 
     private void setEnrollmentJmsMessageFields(EnrollmentJmsMessage message, LMHardwareControlGroup controlInformation) {
@@ -64,7 +62,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.OPTOUT);
 
         log.debug("OptOut message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION.getQueue().getName(), message);
+        yukonJmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
     }
 
     @Override
@@ -76,21 +74,15 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.STOPOPTOUT);
 
         log.debug("Stop OptOut message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION.getQueue().getName(), message);
+        yukonJmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
 
-    }
-
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
     }
 
     @Override
     public void publishProgramStatusNotice(DrProgramStatusJmsMessage message) {
 
         log.debug("Program Status Message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.PROGRAM_STATUS_NOTIFICATION.getQueue().getName(), message);
-
+        yukonJmsTemplate.convertAndSend(JmsApiDirectory.PROGRAM_STATUS_NOTIFICATION, message);
     }
 
 }

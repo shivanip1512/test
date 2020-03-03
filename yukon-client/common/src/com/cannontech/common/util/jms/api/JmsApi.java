@@ -18,10 +18,12 @@ import org.apache.commons.lang3.StringUtils;
  * if NM or a Yukon simulator can both receive a particular message.)<br><br>
  * 
  * To define any messaging that is sent over a temp queue, use {@code JmsQueue.TEMP_QUEUE}.
+ * To define any messaging that is sent over a topic, set topic as true.
  */
 public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Serializable> {
     private String name;
     private String description;
+    private Boolean topic = false;
     private final JmsCommunicationPattern pattern;
     private final Set<JmsCommunicatingService> senders;
     private final Set<JmsCommunicatingService> receivers;
@@ -37,6 +39,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
      */
     private JmsApi(String name,
                    String description,
+                   Boolean topic,
                    JmsCommunicationPattern pattern, 
                    Set<JmsCommunicatingService> senders,
                    Set<JmsCommunicatingService> receivers,
@@ -110,6 +113,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
                                                "REQUEST_ACK_RESPONSE or REQUEST_MULTI_RESPONSE pattern");
         }
         this.responseMessage = Optional.ofNullable(responseMessage);
+        this.topic = topic;
     }
     
     public String getName() {
@@ -205,6 +209,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         result = prime * result + ((ackMessage == null) ? 0 : ackMessage.hashCode());
         result = prime * result + ((ackQueue == null) ? 0 : ackQueue.hashCode());
         result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + ((topic == false) ? 0 : topic.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((pattern == null) ? 0 : pattern.hashCode());
         result = prime * result + ((queue == null) ? 0 : queue.hashCode());
@@ -301,6 +306,13 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         } else if (!senders.equals(other.senders)) {
             return false;
         }
+        if (topic == false) {
+            if (other.topic != false) {
+                return false;
+            }
+        } else if (topic && !other.topic) {
+            return false;
+        }
         return true;
     }
     
@@ -309,9 +321,18 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         return name;
     }
 
+    public Boolean isTopic() {
+        return topic;
+    }
+
+    public void setTopic(Boolean topic) {
+        this.topic = topic;
+    }
+
     public static class Builder<Rq extends Serializable,A extends Serializable,Rp extends Serializable> {
         private String name;
         private String description;
+        private Boolean topic;
         private JmsCommunicationPattern pattern;
         private Set<JmsCommunicatingService> senders;
         private Set<JmsCommunicatingService> receivers;
@@ -327,7 +348,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         }
         
         public JmsApi<Rq,A,Rp> build() {
-            return new JmsApi<>(name, description, pattern, senders, receivers, queue, ackQueue, responseQueue, 
+            return new JmsApi<>(name, description, topic, pattern, senders, receivers, queue, ackQueue, responseQueue, 
                               requestMessage, ackMessage, responseMessage);
         }
         
@@ -338,6 +359,10 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         
         public Builder<Rq,A,Rp> description(String description) {
             this.description = description;
+            return this;
+        }
+        public Builder<Rq,A,Rp> topic(Boolean topic) {
+            this.topic = topic;
             return this;
         }
         
@@ -390,6 +415,14 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         public Builder<Rq,A,Rp> responseMessage(Class<Rp> responseMessage) {
             this.responseMessage = responseMessage;
             return this;
+        }
+
+        public Boolean isTopic() {
+            return topic;
+        }
+
+        public void setTopic(Boolean topic) {
+            this.topic = topic;
         }
     }
 }

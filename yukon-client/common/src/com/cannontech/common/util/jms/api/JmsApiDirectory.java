@@ -127,6 +127,7 @@ import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
  * specified. (For example, if NM or a Yukon simulator can both receive a particular message.)
  * 
  * To define any messaging that is sent over a temp queue, use JmsQueue.TEMP_QUEUE.
+ * To define any messaging that is sent over a topic, set topic as true.
  */
 public final class JmsApiDirectory {
     private static final Comparator<JmsApi<?,?,?>> API_COMPARATOR = (api1, api2) -> api1.getName().compareTo(api2.getName());
@@ -313,6 +314,7 @@ public final class JmsApiDirectory {
             JmsApi.builder(EnrollmentJmsMessage.class)
                   .name("DR Enrollment/UnEnrollment Notification")
                   .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
+                  .topic(false)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(EnrollmentJmsMessage.class)
@@ -1099,6 +1101,7 @@ public final class JmsApiDirectory {
             JmsApi.builder(OptOutOptInJmsMessage.class)
                   .name("DR OptOut/OptIn Notification")
                   .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
+                  .topic(false)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(OptOutOptInJmsMessage.class)
@@ -1123,6 +1126,7 @@ public final class JmsApiDirectory {
             JmsApi.builder(DrProgramStatusJmsMessage.class)
                   .name("DR Program Status Notification")
                   .description("Send Program Status Notification to other Integrated systems")
+                  .topic(false)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(DrProgramStatusJmsMessage.class)
