@@ -612,8 +612,11 @@ yukon.mapping = (function () {
             }
         },
         
-        drawChildren: function(currentNode, primaryRoutePreviousPoints, dashedLine, atRoot, gatewayPoints) {
-            var currentNodePoints = primaryRoutePreviousPoints;
+        drawChildren: function(currentNode, primaryRoutePreviousPoints, atRoot, gatewayPoints) {
+            var currentNodePoints = primaryRoutePreviousPoints,
+                parentFeature = yukon.mapping.getFeatureFromData(currentNode),
+                dashedLine = parentFeature == null;
+            
             for (var x in currentNode.children) {
                 if (atRoot) {
                     dashedLine = false;
@@ -623,38 +626,28 @@ yukon.mapping = (function () {
                 var child = currentNode.children[x];
       
                 if (yukon.mapping.shouldLineBeDrawn(child)) {
-                    if (child.data != null) {
-                        var features = Object.keys(child.data).map(function (key) {                
-                            return child.data[key];
-                        });
-                        if (features[0] != null) {
-                            var feature = features[0].features[0],
-                                icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
-                            if (currentNodePoints != null) {
-                                var points = [];
-                                points.push(icon.getGeometry().getCoordinates());
-                                points.push(currentNodePoints);
-                                
-                                var lineFeature = new ol.Feature({
-                                    geometry: new ol.geom.LineString(points),
-                                    name: 'Line'
-                                })
-                                if (dashedLine) {
-                                    _allRoutesDashedLineFeatures.push(lineFeature);
-                                } else {
-                                    _allRoutesLineFeatures.push(lineFeature);
-                                }
+                    var feature = yukon.mapping.getFeatureFromData(child);
+                    if (feature != null) {
+                        var icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
+                        if (currentNodePoints != null) {
+                            var points = [];
+                            points.push(icon.getGeometry().getCoordinates());
+                            points.push(currentNodePoints);
+                            
+                            var lineFeature = new ol.Feature({
+                                geometry: new ol.geom.LineString(points),
+                                name: 'Line'
+                            })
+                            if (dashedLine) {
+                                _allRoutesDashedLineFeatures.push(lineFeature);
+                            } else {
+                                _allRoutesLineFeatures.push(lineFeature);
                             }
-                            primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-                            dashedLine = false;
-                        } else {
-                            dashedLine = true;
                         }
-                    } else {
-                        dashedLine = true;
-                    }
+                        primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                    } 
                 } 
-                yukon.mapping.drawChildren(child, primaryRoutePreviousPoints, dashedLine, false, gatewayPoints);
+                yukon.mapping.drawChildren(child, primaryRoutePreviousPoints, false, gatewayPoints);
             }
         },
         
@@ -690,11 +683,13 @@ yukon.mapping = (function () {
         },
         
         getFeatureFromData: function(node) {
-            var nodeData = Object.keys(node.data).map(function (key) {
-                return node.data[key];
-            });
-            if (nodeData[0] != null) {
-                return nodeData[0].features[0];
+            if (node.data != null) {
+                var nodeData = Object.keys(node.data).map(function (key) {
+                    return node.data[key];
+                });
+                if (nodeData[0] != null) {
+                    return nodeData[0].features[0];
+                }
             }
         },
                 
@@ -750,7 +745,7 @@ yukon.mapping = (function () {
                             if (feature != null) {
                                 var icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
                                 primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-                                yukon.mapping.drawChildren(currentNode, primaryRoutePreviousPoints, false, true, primaryRoutePreviousPoints);
+                                yukon.mapping.drawChildren(currentNode, primaryRoutePreviousPoints, true, primaryRoutePreviousPoints);
                             } else {
                                 //this is a virtual gateway so draw children instead
                                 for (var i in currentNode.children) {
@@ -759,7 +754,7 @@ yukon.mapping = (function () {
                                     if (feature != null) {
                                         var icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
                                         primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-                                        yukon.mapping.drawChildren(childNode, primaryRoutePreviousPoints, false, true, primaryRoutePreviousPoints);
+                                        yukon.mapping.drawChildren(childNode, primaryRoutePreviousPoints, true, primaryRoutePreviousPoints);
                                     }
                                 }
                             }
