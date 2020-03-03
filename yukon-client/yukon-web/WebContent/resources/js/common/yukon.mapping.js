@@ -523,7 +523,10 @@ yukon.mapping = (function () {
             if (features != null && features.length > 0) {
                 if (features.length > 1) {
                     map.getView().fit(source.getExtent(), map.getSize());
-                    if (map.getView().getZoom() > 16){
+                    //zoom out just a little to make sure pins display fully
+                    var currentZoom = map.getView().getZoom();
+                    map.getView().setZoom(currentZoom - 0.2);
+                    if (currentZoom > 16){
                         map.getView().setZoom(16);
                     }
                 } else {
@@ -828,6 +831,33 @@ yukon.mapping = (function () {
             _allRoutesIcons = [];
             _allRoutesLines = [];
         },
+        
+        adjustMapForFullScreenModeChange: function(mapContainer, paddingTop) {
+            // we if are doing an exit from the full screen, close any open pop-ups
+            if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
+                $(".ui-dialog-content").dialog("close");
+                if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
+                    $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
+                }
+                //move all dropdowns back to the body
+                var menus = $('div.ol-viewport').find('.dropdown-menu');
+                $('body').prepend(menus);
+                //adjust height back
+                mapContainer.css('padding-top', '0px');
+            } else {
+                //adjust height for mapping buttons
+                mapContainer.css('padding-top', paddingTop);
+                mapContainer.css('padding-bottom', '0px');
+                
+                //move any dropdowns from body to viewport
+                var menus = $('body').children('.dropdown-menu');
+                $('div.ol-viewport').prepend(menus);
+            }
+            //close any popups
+            $('#marker-info').hide();
+            mod.updateZoom(_map);
+            _map.updateSize();
+        }
 
     };
  

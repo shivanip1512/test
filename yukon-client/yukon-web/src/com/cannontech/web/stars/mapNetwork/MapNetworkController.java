@@ -22,7 +22,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -118,6 +117,8 @@ public class MapNetworkController {
         model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
         model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
         model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        
+        model.addAttribute("mileValues", NearbyMiles.values());
 
         return "mapNetwork/home.jsp";
     }

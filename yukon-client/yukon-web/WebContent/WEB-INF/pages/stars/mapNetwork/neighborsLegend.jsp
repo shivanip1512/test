@@ -6,7 +6,7 @@
     text-align:center;
     border:1px solid #ccc;
     padding:2px;
-    margin-top:50px;
+    margin-top:20px;
     font-size:11px;
     box-shadow: 0px 0px 2px #888;
 }
