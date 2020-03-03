@@ -151,7 +151,6 @@ yukon.widget.dataCollection = (function () {
                             _buildChart(chart, data.summary);
                         } else {
                             _updateChart(chart, _getData(data.summary));
-                            //_buildChart(chart, data.summary);
                         }
                         chart.removeClass('dn');
                     } else {
