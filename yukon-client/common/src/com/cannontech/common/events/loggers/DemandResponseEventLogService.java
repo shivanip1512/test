@@ -173,15 +173,15 @@ public interface DemandResponseEventLogService {
     public void seasonalControlHistoryReset(@Arg(ArgEnum.username) LiteYukonUser userName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupCreated(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
+    public void loadGroupCreated(@Arg(ArgEnum.loadGroupName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupUpdated(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
+    public void loadGroupUpdated(@Arg(ArgEnum.loadGroupName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.loadGroup")
-    public void loadGroupDeleted(@Arg(ArgEnum.deviceName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
+    public void loadGroupDeleted(@Arg(ArgEnum.loadGroupName) String loadGroupName, @Arg(ArgEnum.paoType) PaoType loadGroupType,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
