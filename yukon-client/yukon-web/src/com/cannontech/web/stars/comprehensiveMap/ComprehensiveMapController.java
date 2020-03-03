@@ -226,6 +226,8 @@ public class ComprehensiveMapController {
         
         log.debug("Devices in a group {}", collection.getDeviceCount());
         
+        Map<Integer, Integer> devicesToGateways = rfnDeviceDao.getDevicesToGateways(
+                collection.getDeviceList().stream().map(device -> device.getDeviceId()).collect(Collectors.toList()));
         Set<RfnIdentifier> rfnIdentifiers = collection.getDeviceList().stream()
                 .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
                 .collect(Collectors.toSet());
@@ -234,7 +236,6 @@ public class ComprehensiveMapController {
         try {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
-                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY,
                                                                                          RfnMetadataMulti.NODE_DATA,
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA,
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
@@ -272,9 +273,9 @@ public class ComprehensiveMapController {
                 }
                 dataRow[7] = statusString;
         
-                RfnDevice rfnGateway = nmNetworkService.getPrimaryForwardGatewayFromMultiQueryResult(rfnDevice, metadata);
+                Integer rfnGateway = devicesToGateways.get(rfnDevice.getPaoIdentifier().getPaoId());
                 if(rfnGateway != null) {
-                    dataRow[6] = rfnGateway.getName();
+                    dataRow[6] = cache.getAllPaosMap().get(rfnGateway).getPaoName();
                 }
                 
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
