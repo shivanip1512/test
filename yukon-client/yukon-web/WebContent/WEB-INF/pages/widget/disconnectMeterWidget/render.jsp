@@ -21,7 +21,7 @@
                 <tags:nameValue2 label="${attribute}" valueClass="full-width">
                     <cti:pointStatus pointId="${pointId}" classes="vatt"/>
                     <cti:pointValue pointId="${pointId}" format="VALUE"/>&nbsp;
-                    <tags:historicalValue pointId="${pointId}" pao="${device}" qualityIndicator="DATE_QUALITY" classes="wsnw"/>
+                    <tags:historicalValue pointId="${pointId}" pao="${device}" format="DATE_QUALITY" classes="wsnw"/>
                 </tags:nameValue2>
             </c:when>
             <c:otherwise>

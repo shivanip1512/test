@@ -54,16 +54,7 @@
                    </c:if>
                 </td>
                 <td><cti:pointValue pointId="${pointResultRow.pointId}" format="VALUE_UNIT"/></td> 
-                <td>
-                    <c:choose>
-                        <c:when test="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType.status}">
-                            <tags:historicalValue pao="${pao}" pointId="${pointResultRow.pointId}" qualityIndicator="DATE_QUALITY"/>
-                        </c:when>
-                        <c:otherwise>
-                            <tags:historicalValue pao="${pao}" pointId="${pointResultRow.pointId}"/>
-                        </c:otherwise>
-                    </c:choose>
-                </td> 
+                <td><tags:historicalValue pao="${pao}" pointId="${pointResultRow.pointId}"/></td> 
                 <td><cti:pointValue pointId="${pointResultRow.pointId}" format="{quality}"/></td> 
                 <td><i:inline key="${pointResultRow.paoPointIdentifier.pointIdentifier.pointType}"/></td>
                 <td>${fn:escapeXml(pointResultRow.paoPointIdentifier.pointIdentifier.offset)}</td>

@@ -80,13 +80,13 @@
                         <span class="js-comm-status"><cti:pointValue pointId="${data.commStatusPoint.pointID}" format="VALUE"/></span>
                     </td>
                     <td>
-                        <tags:historicalValue pao="${data.device}" pointId="${data.commStatusPoint.pointID}" qualityIndicator="DATE_QUALITY"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.commStatusPoint.pointID}"/>
                     </td>
                     <td>
                         <cti:pointValue pointId="${data.rssiPoint.pointID}" format="VALUE"/>
                     </td>
                     <td>
-                        <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}" qualityIndicator="DATE_QUALITY"/>
+                        <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}"/>
                     </td>
                     <td class="PL0">
                         <cti:msg2 var="refreshTitle" key=".refreshStatus"/>

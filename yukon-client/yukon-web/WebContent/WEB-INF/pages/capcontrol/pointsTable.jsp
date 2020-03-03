@@ -49,14 +49,7 @@
                             <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
                        </td>
                        <td class="wsnw">
-                           <c:choose>
-                               <c:when test="${point.pointIdentifier.pointType.status}">
-                                   <tags:historicalValue pao="${area}" pointId="${point.pointId}" qualityIndicator="DATE_QUALITY"/>
-                               </c:when>
-                               <c:otherwise>
-                                   <tags:historicalValue pao="${area}" pointId="${point.pointId}"/>
-                               </c:otherwise>
-                           </c:choose>
+                            <tags:historicalValue pao="${area}" pointId="${point.pointId}" />
                        </td>
                     </tr>
                 </c:forEach>

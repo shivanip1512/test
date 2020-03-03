@@ -77,14 +77,7 @@
                                 <cti:pointValue pointId="${point.pointId}" format="${point.format}" />
                             </td>
                             <td class="wsnw">
-                                <c:choose>
-                                    <c:when test="${point.paoPointIdentifier.pointIdentifier.pointType.status}">
-                                        <tags:historicalValue pao="${rtu}" pointId="${point.pointId}" qualityIndicator="DATE_QUALITY"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <tags:historicalValue pao="${rtu}" pointId="${point.pointId}"/>
-                                    </c:otherwise>
-                                </c:choose>
+                                <tags:historicalValue pao="${rtu}" pointId="${point.pointId}" />
                             </td>
                             <td>
                                 ${point.paoPointIdentifier.pointIdentifier.offset}
