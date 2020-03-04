@@ -1404,25 +1404,28 @@ public class CcHomeController {
     public String customerSave(@PathVariable int customerId,
                                @ModelAttribute CustomerModel customerModel,
                                FlashScope flash) {
+        CICustomerStub customer = customerPointService.getCustomer(customerId);
         try {
-            CICustomerStub customer = customerPointService.getCustomer(customerId);
-            customerPointService.savePointValues(customer, customerModel.getPointValues());
-            // Java8
-            
-            List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms().stream()
-                    .mapToInt(model -> model.getPaoId())
-                    .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId)).collect(Collectors.toList());
+            if (customerModel.getPointValues() != null) {
+                customerPointService.savePointValues(customer, customerModel.getPointValues());
+            }
 
-            customerLMProgramService.saveProgramList(customer, activeProgramPaos);
+            if (customerModel.getActivePrograms() != null) {
+                List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms().stream()
+                        .mapToInt(model -> model.getPaoId())
+                        .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId)).collect(Collectors.toList());
+
+                customerLMProgramService.saveProgramList(customer, activeProgramPaos);
+            }
 
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.success",
                     customer.getCompanyName()));
             return "redirect:/dr/cc/customerList";
 
-        } catch (NullPointerException npe) {
-            flash.setError(
-                    new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.missingPointsOrGroups",
-                            ""));
+        } catch (Exception e) {
+            log.error("Error saving customer {}", customer.getCompanyName(), e);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.failure",
+                    customer.getCompanyName()));
             return "redirect:/dr/cc/customerDetail/" + customerId;
         }
     }
