@@ -523,7 +523,10 @@ yukon.mapping = (function () {
             if (features != null && features.length > 0) {
                 if (features.length > 1) {
                     map.getView().fit(source.getExtent(), map.getSize());
-                    if (map.getView().getZoom() > 16){
+                    //zoom out just a little to make sure pins display fully
+                    var currentZoom = map.getView().getZoom();
+                    map.getView().setZoom(currentZoom - 0.2);
+                    if (currentZoom > 16){
                         map.getView().setZoom(16);
                     }
                 } else {
@@ -612,8 +615,11 @@ yukon.mapping = (function () {
             }
         },
         
-        drawChildren: function(currentNode, primaryRoutePreviousPoints, dashedLine, atRoot, gatewayPoints) {
-            var currentNodePoints = primaryRoutePreviousPoints;
+        drawChildren: function(currentNode, primaryRoutePreviousPoints, atRoot, gatewayPoints) {
+            var currentNodePoints = primaryRoutePreviousPoints,
+                parentFeature = yukon.mapping.getFeatureFromData(currentNode),
+                dashedLine = parentFeature == null;
+            
             for (var x in currentNode.children) {
                 if (atRoot) {
                     dashedLine = false;
@@ -623,38 +629,28 @@ yukon.mapping = (function () {
                 var child = currentNode.children[x];
       
                 if (yukon.mapping.shouldLineBeDrawn(child)) {
-                    if (child.data != null) {
-                        var features = Object.keys(child.data).map(function (key) {                
-                            return child.data[key];
-                        });
-                        if (features[0] != null) {
-                            var feature = features[0].features[0],
-                                icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
-                            if (currentNodePoints != null) {
-                                var points = [];
-                                points.push(icon.getGeometry().getCoordinates());
-                                points.push(currentNodePoints);
-                                
-                                var lineFeature = new ol.Feature({
-                                    geometry: new ol.geom.LineString(points),
-                                    name: 'Line'
-                                })
-                                if (dashedLine) {
-                                    _allRoutesDashedLineFeatures.push(lineFeature);
-                                } else {
-                                    _allRoutesLineFeatures.push(lineFeature);
-                                }
+                    var feature = yukon.mapping.getFeatureFromData(child);
+                    if (feature != null) {
+                        var icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
+                        if (currentNodePoints != null) {
+                            var points = [];
+                            points.push(icon.getGeometry().getCoordinates());
+                            points.push(currentNodePoints);
+                            
+                            var lineFeature = new ol.Feature({
+                                geometry: new ol.geom.LineString(points),
+                                name: 'Line'
+                            })
+                            if (dashedLine) {
+                                _allRoutesDashedLineFeatures.push(lineFeature);
+                            } else {
+                                _allRoutesLineFeatures.push(lineFeature);
                             }
-                            primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-                            dashedLine = false;
-                        } else {
-                            dashedLine = true;
                         }
-                    } else {
-                        dashedLine = true;
-                    }
+                        primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                    } 
                 } 
-                yukon.mapping.drawChildren(child, primaryRoutePreviousPoints, dashedLine, false, gatewayPoints);
+                yukon.mapping.drawChildren(child, primaryRoutePreviousPoints, false, gatewayPoints);
             }
         },
         
@@ -690,11 +686,13 @@ yukon.mapping = (function () {
         },
         
         getFeatureFromData: function(node) {
-            var nodeData = Object.keys(node.data).map(function (key) {
-                return node.data[key];
-            });
-            if (nodeData[0] != null) {
-                return nodeData[0].features[0];
+            if (node.data != null) {
+                var nodeData = Object.keys(node.data).map(function (key) {
+                    return node.data[key];
+                });
+                if (nodeData[0] != null) {
+                    return nodeData[0].features[0];
+                }
             }
         },
                 
@@ -750,7 +748,7 @@ yukon.mapping = (function () {
                             if (feature != null) {
                                 var icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
                                 primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-                                yukon.mapping.drawChildren(currentNode, primaryRoutePreviousPoints, false, true, primaryRoutePreviousPoints);
+                                yukon.mapping.drawChildren(currentNode, primaryRoutePreviousPoints, true, primaryRoutePreviousPoints);
                             } else {
                                 //this is a virtual gateway so draw children instead
                                 for (var i in currentNode.children) {
@@ -759,7 +757,7 @@ yukon.mapping = (function () {
                                     if (feature != null) {
                                         var icon = yukon.mapping.addFeatureToMapAndArray(feature, _allRoutesIcons);
                                         primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-                                        yukon.mapping.drawChildren(childNode, primaryRoutePreviousPoints, false, true, primaryRoutePreviousPoints);
+                                        yukon.mapping.drawChildren(childNode, primaryRoutePreviousPoints, true, primaryRoutePreviousPoints);
                                     }
                                 }
                             }
@@ -833,6 +831,33 @@ yukon.mapping = (function () {
             _allRoutesIcons = [];
             _allRoutesLines = [];
         },
+        
+        adjustMapForFullScreenModeChange: function(mapContainer, paddingTop) {
+            // we if are doing an exit from the full screen, close any open pop-ups
+            if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
+                $(".ui-dialog-content").dialog("close");
+                if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
+                    $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
+                }
+                //move all dropdowns back to the body
+                var menus = $('div.ol-viewport').find('.dropdown-menu');
+                $('body').prepend(menus);
+                //adjust height back
+                mapContainer.css('padding-top', '0px');
+            } else {
+                //adjust height for mapping buttons
+                mapContainer.css('padding-top', paddingTop);
+                mapContainer.css('padding-bottom', '0px');
+                
+                //move any dropdowns from body to viewport
+                var menus = $('body').children('.dropdown-menu');
+                $('div.ol-viewport').prepend(menus);
+            }
+            //close any popups
+            $('#marker-info').hide();
+            mod.updateZoom(_map);
+            _map.updateSize();
+        }
 
     };
  

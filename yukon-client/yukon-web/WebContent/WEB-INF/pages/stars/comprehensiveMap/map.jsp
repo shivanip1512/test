@@ -26,7 +26,7 @@
     
     <tags:alertBox classes="dn js-no-location-message" type="warning"><i:inline key=".missingLocations"/></tags:alertBox>
         
-    <div style="height:600px;">
+    <div style="height:800px;">
         <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">
             <div class="filter-section">
                 <hr>
@@ -83,7 +83,7 @@
                 </span>
             </div>
             
-            <div id="comprehensive-map" class="map"></div>
+            <div id="comprehensive-map" class="map" style="height:75%;"></div>
             <div class="buffered">
                 <span class="fl">
                     <cti:msg2 var="searchPlaceholder" key=".meterNumberOrName"/>
