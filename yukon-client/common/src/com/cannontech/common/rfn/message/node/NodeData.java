@@ -24,6 +24,8 @@ public class NodeData implements Serializable {
     
     private String meterConfigID;
     
+    private String secondaryModuleFirmwareVersion;
+       
     private WifiSuperMeterData wifiSuperMeterData;
 
     public String getNodeSerialNumber() {
@@ -98,6 +100,14 @@ public class NodeData implements Serializable {
         this.meterConfigID = meterConfigID;
     }
     
+    public String getSecondaryModuleFirmwareVersion() {
+        return secondaryModuleFirmwareVersion;
+    }
+
+    public void setSecondaryModuleFirmwareVersion(String secondaryModuleFirmwareVersion) {
+        this.secondaryModuleFirmwareVersion = secondaryModuleFirmwareVersion;
+    }
+    
     public WifiSuperMeterData getWifiSuperMeterData() {
         return wifiSuperMeterData;
     }
@@ -119,8 +129,8 @@ public class NodeData implements Serializable {
         result = prime * result + ((nodeSerialNumber == null) ? 0 : nodeSerialNumber.hashCode());
         result = prime * result + ((nodeType == null) ? 0 : nodeType.hashCode());
         result = prime * result + ((productNumber == null) ? 0 : productNumber.hashCode());
-        result =
-            prime * result + ((wifiSuperMeterData == null) ? 0 : wifiSuperMeterData.hashCode());
+        result = prime * result + ((secondaryModuleFirmwareVersion == null) ? 0 : secondaryModuleFirmwareVersion.hashCode());
+        result = prime * result + ((wifiSuperMeterData == null) ? 0 : wifiSuperMeterData.hashCode());
         return result;
     }
 
@@ -172,6 +182,11 @@ public class NodeData implements Serializable {
                 return false;
         } else if (!productNumber.equals(other.productNumber))
             return false;
+        if (secondaryModuleFirmwareVersion == null) {
+            if (other.secondaryModuleFirmwareVersion != null)
+                return false;
+        } else if (!secondaryModuleFirmwareVersion.equals(other.secondaryModuleFirmwareVersion))
+            return false;
         if (wifiSuperMeterData == null) {
             if (other.wifiSuperMeterData != null)
                 return false;
@@ -182,12 +197,9 @@ public class NodeData implements Serializable {
 
     @Override
     public String toString() {
-        return "NodeData [nodeSerialNumber=" + nodeSerialNumber + ", nodeType=" + nodeType
-            + ", inNetworkTimestamp=" + inNetworkTimestamp + ", macAddress=" + macAddress
-            + ", networkAddress=" + networkAddress + ", hardwareVersion=" + hardwareVersion
-            + ", firmwareVersion=" + firmwareVersion + ", productNumber=" + productNumber
-            + ", meterConfigID=" + meterConfigID + ", wifiSuperMeterData=" + wifiSuperMeterData
-            + "]";
+        return String.format(
+                "NodeData [nodeSerialNumber=%s, nodeType=%s, inNetworkTimestamp=%s, macAddress=%s, networkAddress=%s, hardwareVersion=%s, firmwareVersion=%s, productNumber=%s, meterConfigID=%s, secondaryModuleFirmwareVersion=%s, wifiSuperMeterData=%s]",
+                nodeSerialNumber, nodeType, inNetworkTimestamp, macAddress, networkAddress, hardwareVersion, firmwareVersion,
+                productNumber, meterConfigID, secondaryModuleFirmwareVersion, wifiSuperMeterData);
     }
-
 }
