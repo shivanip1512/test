@@ -121,10 +121,13 @@ import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
  * To add messaging for a new feature, create a new public static final JmsApi object here, and add it to the 
  * {@code jmsApis} map with a category.<br><br>
  * 
- * {@code JmsApi.builder} requires that all APIs have a name, description, communicationPattern, sender, receiver, queue 
- * and requestMessage specified. Additionally, you will need to specify ackQueue, responseQueue, ackMessage and
+ * {@code JmsApi.builder} requires that all APIs have a name, description, communicationPattern, sender, receiver, queue, 
+ * timeToLive and requestMessage specified. Additionally, you will need to specify ackQueue, responseQueue, ackMessage and
  * responseMessage if the communicationPattern involves ack or response. Multiple senders and receivers may also be
- * specified. (For example, if NM or a Yukon simulator can both receive a particular message.)
+ * specified. (For example, if NM or a Yukon simulator can both receive a particular message.)<br><br>
+ * 
+ * Default time-to-live is set to 86400000 milliseconds (1 Day). You can also specify your own time-to live as per 
+ * your requirements (For example 12 Hours: 43200000L).<br><br>
  * 
  * To define any messaging that is sent over a temp queue, use JmsQueue.TEMP_QUEUE.
  * To define any messaging that is sent over a topic, set topic as true.
@@ -315,6 +318,7 @@ public final class JmsApiDirectory {
                   .name("DR Enrollment/UnEnrollment Notification")
                   .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
                   .topic(false)
+                  .timeToLive(86400000L)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(EnrollmentJmsMessage.class)
@@ -1102,6 +1106,7 @@ public final class JmsApiDirectory {
                   .name("DR OptOut/OptIn Notification")
                   .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
                   .topic(false)
+                  .timeToLive(86400000L)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(OptOutOptInJmsMessage.class)
@@ -1127,6 +1132,7 @@ public final class JmsApiDirectory {
                   .name("DR Program Status Notification")
                   .description("Send Program Status Notification to other Integrated systems")
                   .topic(false)
+                  .timeToLive(86400000L)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(DrProgramStatusJmsMessage.class)

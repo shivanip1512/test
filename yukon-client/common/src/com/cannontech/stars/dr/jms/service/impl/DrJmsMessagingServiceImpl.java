@@ -18,7 +18,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
 
     private final static Logger log = YukonLogManager.getLogger(DrJmsMessagingServiceImpl.class);
-    @Autowired private YukonJmsTemplate yukonJmsTemplate;
+    @Autowired private YukonJmsTemplate jmsTemplate;
 
     @Override
     public void publishEnrollmentNotice(LMHardwareControlGroup controlInformation) {
@@ -28,7 +28,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.ENROLLMENT);
 
         log.debug("Enrollment message pushed to jms queue: " + message);
-        yukonJmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
+        jmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
     }
 
     @Override
@@ -40,7 +40,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.UNENROLLMENT);
 
         log.debug("Unenrollment message pushed to jms queue: " + message);
-        yukonJmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
+        jmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
     }
 
     private void setEnrollmentJmsMessageFields(EnrollmentJmsMessage message, LMHardwareControlGroup controlInformation) {
@@ -62,7 +62,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.OPTOUT);
 
         log.debug("OptOut message pushed to jms queue: " + message);
-        yukonJmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
+        jmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.STOPOPTOUT);
 
         log.debug("Stop OptOut message pushed to jms queue: " + message);
-        yukonJmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
+        jmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
 
     }
 
@@ -82,7 +82,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
     public void publishProgramStatusNotice(DrProgramStatusJmsMessage message) {
 
         log.debug("Program Status Message pushed to jms queue: " + message);
-        yukonJmsTemplate.convertAndSend(JmsApiDirectory.PROGRAM_STATUS_NOTIFICATION, message);
+        jmsTemplate.convertAndSend(JmsApiDirectory.PROGRAM_STATUS_NOTIFICATION, message);
     }
 
 }
