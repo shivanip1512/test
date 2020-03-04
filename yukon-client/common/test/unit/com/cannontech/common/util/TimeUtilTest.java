@@ -246,4 +246,15 @@ public class TimeUtilTest {
         DateTime nullDate = null;
         assertEquals(nullDate + " is not future date." , false , TimeUtil.isFutureDate(nullDate));
     }
+    @Test
+    public void test_fromMinutesToHHmm_nonZero() {
+        int minutes = 64;
+        assertEquals("01:04", TimeUtil.fromMinutesToHHmm(minutes));
+    }
+
+    @Test
+    public void test_fromMinutesToHHmm_zero() {
+        int minutes = 0;
+        assertEquals("00:00", TimeUtil.fromMinutesToHHmm(minutes));
+    }
 }

@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlArea;
 import com.cannontech.common.dr.setup.ControlAreaProgramAssignment;
@@ -20,8 +22,11 @@ import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.DailyDefaultState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LMServiceHelper;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.TimeIntervals;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -48,6 +53,8 @@ import com.cannontech.yukon.IDatabaseCache;
 public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DemandResponseEventLogService logService;
+    @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private PointDao pointdao;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PaoCreationHelper paoCreationHelper;
@@ -88,6 +95,15 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
 
+        String startTime = controlArea.getDailyStartTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStartTimeInMinutes()) : null;
+        String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
+
+        logService.controlAreaCreated(controlArea.getName(), getTriggerNames(controlArea.getTriggers()),
+                getProgramNames(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
+                ApiRequestContext.getContext().getLiteYukonUser());
+
         return lmControlArea.getPAObjectID();
     }
 
@@ -103,7 +119,37 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         lmControlArea.setPAObjectID(controlAreaId);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.UPDATE);
 
+        String startTime = controlArea.getDailyStartTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStartTimeInMinutes()) : null;
+        String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
+
+        logService.controlAreaUpdated(lmControlArea.getPAOName(), getTriggerNames(controlArea.getTriggers()),
+                getProgramNames(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
+                ApiRequestContext.getContext().getLiteYukonUser());
+
         return lmControlArea.getPAObjectID();
+    }
+
+    private String getTriggerNames(List<ControlAreaTrigger> triggerList) {
+        if (CollectionUtils.isNotEmpty(triggerList)) {
+            List<String> triggerNameList = triggerList.stream()
+                                                      .map(trigger -> trigger.getTriggerType().getTriggerTypeValue().concat("(")
+                                                              .concat(trigger.getTriggerPointName().replace(":", " /")).concat(")"))
+                                                      .collect(Collectors.toList());
+            return String.join(", ", triggerNameList);
+        }
+        return null;
+    }
+
+    private String getProgramNames(Vector<LMControlAreaProgram> programList) {
+        if (CollectionUtils.isNotEmpty(programList)) {
+            List<Integer> programIds = programList.stream()
+                                                  .map(program -> program.getLmProgramDeviceID())
+                                                  .collect(Collectors.toList());
+            return lmServiceHelper.getAbbreviatedPaoNames(programIds);
+        }
+        return null;
     }
 
     @Override
@@ -118,6 +164,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         YukonPAObject lmControlArea = (YukonPAObject) LiteFactory.createDBPersistent(controlArea);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.DELETE);
 
+        logService.controlAreaDeleted(lmControlArea.getPAOName(), ApiRequestContext.getContext().getLiteYukonUser());
         return lmControlArea.getPAObjectID();
     }
 
