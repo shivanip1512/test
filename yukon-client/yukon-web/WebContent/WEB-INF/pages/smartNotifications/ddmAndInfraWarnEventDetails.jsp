@@ -45,7 +45,7 @@
                                     <span class="${warningColor}"><cti:msg2 key="yukon.web.widgets.infrastructureWarnings.warningType.${event.status}.${event.severity}" arguments="${arguments}"/></span>
                                 </c:when>
                                 <c:otherwise>
-                                     <span style="text-transform:capitalize"><cti:msg2 key=".${eventType}.${event.status}"/></span> 
+                                     <span class="ttc"><cti:msg2 key=".${eventType}.${event.status}"/></span> 
                                 </c:otherwise>
                             </c:choose>
                         </td>

@@ -16,8 +16,8 @@ $(function() {
         if (menu[0]) { // The menu hasn't been moved to the body yet
             trigger.data({'menu': menu});
             //check if in full screen mode
-            if ((document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement) && $(this).closest('div.ol-viewport').length === 1) {
-                $(this).closest('div.ol-viewport').prepend(menu); // prepend will move, not clone
+            if ((document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement) && $('div.ol-viewport').exists()) {
+                $('div.ol-viewport').prepend(menu); // prepend will move, not clone
             } else {
                 $('body').prepend(menu); // prepend will move, not clone
             }
@@ -63,7 +63,7 @@ $(function() {
         container.addClass('menu-open');
 
         menu.removeAttr('style');
-        if(menu.closest('div.ol-viewport').length === 1) {
+        if (menu.closest('div.ol-viewport').exists()) {
             var mapOffset = menu.closest('div.ol-viewport').offset().top;
             menu.css({top: offset.top - mapOffset + container.height() + 2, right: ($(window).width() - offset.left - container.width())});
         } else {
