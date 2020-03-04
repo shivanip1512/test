@@ -24,7 +24,7 @@ SET DescendantCount = -1;
 
 UPDATE DynamicRfnDeviceData
 SET LastTransferTime = SYSDATE;
-go
+GO
 
 ALTER TABLE DynamicRfnDeviceData
 ALTER COLUMN DescendantCount NUMBER NOT NULL;
