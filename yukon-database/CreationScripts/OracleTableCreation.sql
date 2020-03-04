@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2020 3:23:59 PM                          */
+/* Created on:     3/4/2020 3:24:28 PM                          */
 /*==============================================================*/
 
 
@@ -5077,7 +5077,8 @@ create table DynamicPointAlarming  (
 /*==============================================================*/
 create table DynamicRfnDeviceData  (
    DeviceId             NUMBER                          not null,
-   GatewayId            NUMBER,
+   GatewayId            NUMBER                          not null,
+   DescendantCount      NUMBER                          not null,
    LastTransferTime     DATE                            not null,
    constraint PK_NmToRfnDeviceData primary key (DeviceId)
 );
