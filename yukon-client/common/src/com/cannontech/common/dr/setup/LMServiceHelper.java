@@ -80,7 +80,7 @@ public class LMServiceHelper {
     }
 
     /**
-     * Return a list of abbreviated PAO name corresponding to paoId
+     * Return a list of abbreviated PAO names corresponding to paoId
      */
     public String getAbbreviatedPaoNames(List<Integer> paoIds) {
         Map<Integer, LiteYukonPAObject> paoMaps = dbCache.getAllPaosMap();

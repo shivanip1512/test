@@ -110,7 +110,7 @@
     <entry key="yukon.common.events.taskName">Task Name</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
     <entry key="yukon.common.events.totalCount">Total</entry>
-    <entry key="yukon.common.events.triggerName">Trigger Name(s)</entry>
+    <entry key="yukon.common.events.triggerNames">Trigger Name(s)</entry>
     <entry key="yukon.common.events.type">Type</entry>
     <entry key="yukon.common.events.unsupportedCount">Unsupported</entry>
     <entry key="yukon.common.events.username">Username</entry>

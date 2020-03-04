@@ -101,7 +101,7 @@ public enum ArgEnum {
     tagSet,
     taskName,
     thermostatLabel,
-    triggerName,
+    triggerNames,
     type,
     totalCount,
     unsupportedCount,

@@ -426,9 +426,8 @@ public class DevEventLogCreationService {
 
                 String startTime = "01.01";
                 String stopTime = "02.01";
-                String triggers = "Threshold Point (Cart MCT-410iL (101)/ SP Test)";
+                String triggerNames = "Threshold Point (Cart MCT-410iL (101)/ SP Test)";
                 String loadProgramNames ="ecobee program, direct program";
-                
 
                 boolean overrideConstraints = true;
                 boolean stopScheduled = true;
@@ -479,8 +478,8 @@ public class DevEventLogCreationService {
                 demandResponseEventLogService.loadGroupUpdated(loadGroupName, loadGroupType, yukonUser);
                 demandResponseEventLogService.loadGroupDeleted(loadGroupName, loadGroupType, yukonUser);
 
-                demandResponseEventLogService.controlAreaCreated(controlAreaName, triggers, loadProgramNames, startTime, stopTime, yukonUser);
-                demandResponseEventLogService.controlAreaUpdated(controlAreaName, triggers, loadProgramNames, startTime, stopTime, yukonUser);
+                demandResponseEventLogService.controlAreaCreated(controlAreaName, triggerNames, loadProgramNames, startTime, stopTime, yukonUser);
+                demandResponseEventLogService.controlAreaUpdated(controlAreaName, triggerNames, loadProgramNames, startTime, stopTime, yukonUser);
                 demandResponseEventLogService.controlAreaDeleted(controlAreaName, yukonUser);
 
                 demandResponseEventLogService.scenarioCreated(scenarioName, loadProgramNames, yukonUser);

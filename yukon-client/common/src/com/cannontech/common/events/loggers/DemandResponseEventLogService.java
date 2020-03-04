@@ -199,12 +199,12 @@ public interface DemandResponseEventLogService {
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.controlArea")
-    public void controlAreaCreated(@Arg(ArgEnum.controlAreaName) String controlAreaName, @Arg(ArgEnum.triggerName) String triggers,
+    public void controlAreaCreated(@Arg(ArgEnum.controlAreaName) String controlAreaName, @Arg(ArgEnum.triggerNames) String triggerNames,
             @Arg(ArgEnum.loadProgramNames) String loadProgramNames, @Arg(ArgEnum.startTime) String startTime, @Arg(ArgEnum.stopTime) String stopTime,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "dr.setup.controlArea")
-    public void controlAreaUpdated(@Arg(ArgEnum.controlAreaName) String controlAreaName, @Arg(ArgEnum.triggerName) String triggers,
+    public void controlAreaUpdated(@Arg(ArgEnum.controlAreaName) String controlAreaName, @Arg(ArgEnum.triggerNames) String triggerNames,
             @Arg(ArgEnum.loadProgramNames) String loadProgramNames, @Arg(ArgEnum.startTime) String startTime, @Arg(ArgEnum.stopTime) String stopTime,
             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 
