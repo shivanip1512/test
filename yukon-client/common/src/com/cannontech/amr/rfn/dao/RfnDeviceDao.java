@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -93,12 +94,12 @@ public interface RfnDeviceDao {
     RfnDevice updateGatewayType(RfnDevice device);
     
     /**
-     * Creates mappings for gateway to device.
+     * Creates mappings for gateway/device/descendant count.
      */
-    void saveDynamicRfnDeviceData(Map<RfnDevice, RfnDevice> deviceToGateway);
+    void saveDynamicRfnDeviceData(Set<DynamicRfnDeviceData> datas);
 
     /**
-     * Returns list of devices for gateway
+     * Returns list of devices for gateway.
      */
     List<RfnDevice> getDevicesForGateway(int gatewayId);
     
@@ -133,9 +134,9 @@ public interface RfnDeviceDao {
     Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier);
 
     /**
-     * Returns device to gateway identifier map
+     * Returns device to gateway identifier/descendant count
      */
-    Map<RfnIdentifier, RfnIdentifier> getDeviceToGatewayMap();
+
 
     /**
      * Returns gateway ids for the set of devices
@@ -143,22 +144,21 @@ public interface RfnDeviceDao {
     Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds);
 
     /**
-     * Returns gateway for devices or null if the device is not associated with gateway
+     * Returns  DynamicRfnDeviceData for device or null if the device is not associated with gateway
      */
-    RfnDevice findGatewayForDeviceId(Integer deviceId);
+    DynamicRfnDeviceData findDynamicRfnDeviceData(Integer deviceId);   
+    /**
+     * Returns gateway to collection of DynamicRfnDeviceData
+     */
+    Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds);
+    
+    /**
+     * Returns gateway to collection of DynamicRfnDeviceData
+     */
+    Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds);
 
     /**
-     * Returns a map of device ids to gateway ids
+     * Returns list of DynamicRfnDeviceDatas
      */
-    Map<Integer, Integer> getDevicesToGateways(List<Integer> deviceIds);
-
-    /**
-     * Returns a map of gateway ids to a collection of devices ids
-     */
-    Map<Integer, Collection<Integer>> getGatewaysToDevicesByDevices(Iterable<Integer> deviceIds);
-
-    /**
-     * Returns a map of gateway ids to a collection of devices ids
-     */
-    Map<Integer, Collection<Integer>> getGatewaysToDevicesByGateways(Iterable<Integer> gatewayIds);
+    List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds);
 }
