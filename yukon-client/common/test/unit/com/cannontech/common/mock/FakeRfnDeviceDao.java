@@ -131,22 +131,22 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
 
     @Override
     public DynamicRfnDeviceData findDynamicRfnDeviceData(Integer deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }  
 }

@@ -299,7 +299,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
                 RouteInfo routeInfo = new RouteInfo(routeDevice, data, location, accessor);
                 DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(deviceId);
-                routeInfo.setDescendantCount(deviceData.getDescendantCount());
+                if(deviceData != null) {
+                    routeInfo.setDescendantCount(deviceData.getDescendantCount());
+                }
                 routeInfo.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(routeDevice));
                 // the first element shows the distance from the first element to the 2nd element
                 // only the last element has no distance, because it has no "next hop"
@@ -616,14 +618,14 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 colorCodeByLinkQualityAndAddToMap(map, metaData, accessor, filter);
             } else if (filter.getColorCodeBy() == ColorCodeBy.GATEWAY) {
                 Set<Integer> paoIds = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(filteredDevices);
-                Map<Integer, Collection<DynamicRfnDeviceData>> data = rfnDeviceDao.getDynamicRfnDeviceDataByDevices(paoIds);
+                Map<Integer, List<DynamicRfnDeviceData>> data = rfnDeviceDao.getDynamicRfnDeviceDataByDevices(paoIds);
                 gatewaysToAddToMap.removeAll(data.keySet().stream().map(id -> gatewayIdsToIdentifiers.get(id))
                         .collect(Collectors.toList()));
                 log.debug("Loading map filtered by gateway {} devices to display {}", gatewayNames, paoIds.size());
                 colorCodeByGatewayAndAddToMap(map, data);
             }
         } else {
-            Map<Integer, Collection<DynamicRfnDeviceData>> data = rfnDeviceDao
+            Map<Integer, List<DynamicRfnDeviceData>> data = rfnDeviceDao
                     .getDynamicRfnDeviceDataByGateways(filter.getSelectedGatewayIds());
             if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))) {
                 data.values().forEach(datas -> datas.removeIf(value -> !filter.getDescendantCount()
@@ -773,7 +775,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     /**
      * Adding devices and gateways to map
      */
-    private void colorCodeByGatewayAndAddToMap(NetworkMap map,  Map<Integer, Collection<DynamicRfnDeviceData>> data) {
+    private void colorCodeByGatewayAndAddToMap(NetworkMap map,  Map<Integer, List<DynamicRfnDeviceData>> data) {
         AtomicInteger i = new AtomicInteger(0);
         for (Integer gatewayId : data.keySet()) {
             Color color = Color.values()[i.getAndIncrement()];
@@ -848,8 +850,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<Integer, PaoLocation> locations = Maps.uniqueIndex(paoLocationDao.getLocations(paoIds),
                 l -> l.getPaoIdentifier().getPaoId());
         map.getDevicesWithoutLocation().addAll(paoIds.stream().filter(paoId -> !locations.containsKey(paoId))
-            .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
-            .collect(Collectors.toList()));
+                .map(paoId -> new SimpleDevice(dbCache.getAllPaosMap().get(paoId).getPaoIdentifier()))
+                .collect(Collectors.toList()));
 
         if (locations.isEmpty()) {
             log.debug("Failed to add devices {} to map, locations empty", paoIds.size());
