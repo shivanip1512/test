@@ -344,7 +344,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = new HashMap<>();
         Set<RfnIdentifier> rfnIdentifiers = getRfnIdentifiers(request);
 
-        List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(null);
+        List<DynamicRfnDeviceData> data = rfnDeviceDao.getAllDynamicRfnDeviceData();
         Map<RfnIdentifier, DynamicRfnDeviceData> deviceDataMap = data.stream()
                 .collect(Collectors.toMap(d -> d.getDevice().getRfnIdentifier(), d -> d));
         log.debug("devicesToGatewayMap size {}", deviceDataMap.size());

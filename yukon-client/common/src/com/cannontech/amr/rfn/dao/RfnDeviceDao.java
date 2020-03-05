@@ -161,4 +161,9 @@ public interface RfnDeviceDao {
      * Returns list of DynamicRfnDeviceDatas
      */
     List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds);
+
+    /**
+     * Returns all data in the table, used by simulator
+     */
+    List<DynamicRfnDeviceData> getAllDynamicRfnDeviceData();
 }
