@@ -148,5 +148,10 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     @Override
     public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds) {
         throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<DynamicRfnDeviceData> getAllDynamicRfnDeviceData() {
+        throw new MethodNotImplementedException();
     }  
 }
