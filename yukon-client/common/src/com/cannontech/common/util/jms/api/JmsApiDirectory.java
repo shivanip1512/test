@@ -126,8 +126,8 @@ import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
  * responseMessage if the communicationPattern involves ack or response. Multiple senders and receivers may also be
  * specified. (For example, if NM or a Yukon simulator can both receive a particular message.)<br><br>
  * 
- * Default time-to-live is set to 86400000 milliseconds (1 Day). You can also specify your own time-to live as per 
- * your requirements (For example 12 Hours: 43200000L).<br><br>
+ * Default time-to-live is set to 1 Day. You can also specify your own time-to live as per 
+ * your requirements (For example 12 Hours: Duration.standardHours(12)).<br><br>
  * 
  * To define any messaging that is sent over a temp queue, use JmsQueue.TEMP_QUEUE.
  * To define any messaging that is sent over a topic, set topic as true.
@@ -317,8 +317,6 @@ public final class JmsApiDirectory {
             JmsApi.builder(EnrollmentJmsMessage.class)
                   .name("DR Enrollment/UnEnrollment Notification")
                   .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
-                  .topic(false)
-                  .timeToLive(86400000L)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(EnrollmentJmsMessage.class)
@@ -1105,8 +1103,6 @@ public final class JmsApiDirectory {
             JmsApi.builder(OptOutOptInJmsMessage.class)
                   .name("DR OptOut/OptIn Notification")
                   .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
-                  .topic(false)
-                  .timeToLive(86400000L)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(OptOutOptInJmsMessage.class)
@@ -1131,8 +1127,6 @@ public final class JmsApiDirectory {
             JmsApi.builder(DrProgramStatusJmsMessage.class)
                   .name("DR Program Status Notification")
                   .description("Send Program Status Notification to other Integrated systems")
-                  .topic(false)
-                  .timeToLive(86400000L)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(DrProgramStatusJmsMessage.class)
