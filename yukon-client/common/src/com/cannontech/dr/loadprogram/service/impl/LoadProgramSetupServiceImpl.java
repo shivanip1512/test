@@ -915,7 +915,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     /*
      * Process event log for updating load program
      */
-    private void processEventLogsForProgramUpdate(LoadProgram loadProgram ,List<LMProgramDirectGear> oldGears) {
+    private void processEventLogsForProgramUpdate(LoadProgram loadProgram, List<LMProgramDirectGear> oldGears) {
 
         LiteLMConstraint litelmConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
         String gearNames = getGearNamesString(loadProgram);
@@ -939,7 +939,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                       ApiRequestContext.getContext().getLiteYukonUser());
         }
 
-        // event log for program creation
+        // event log for program update
         demandResponseEventLogService.loadProgramUpdated(loadProgram.getName(),
                                                          loadProgram.getType(),
                                                          litelmConstraint.getConstraintName(),
@@ -970,7 +970,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
        
     }
 
-    /*
+    /**
      * Process event log for load program copy
      */
     private void processEventLogsForProgramCopy(LMProgramDirectBase directBase) {
@@ -991,7 +991,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
                                                          ApiRequestContext.getContext().getLiteYukonUser());
     }
 
-    /*
+    /**
      * Returns Program Constraint from constraintID
      */
     private LiteLMConstraint getProgramConstraint(Integer constraintID) {
@@ -1003,7 +1003,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         return liteLMConstraint;
     }
 
-    /*
+    /**
      * Returns Comma separated values of gear names
      */
     private String getGearNamesString(LoadProgram loadProgram) {
@@ -1013,7 +1013,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         return StringUtils.abbreviate(gearNames, 2000);
     }
 
-    /*
+    /**
      * Returns Comma separated values of load group names
      */
     private String getLoadGroupNamesString(LoadProgram loadProgram) {

@@ -204,7 +204,7 @@ public interface DemandResponseEventLogService {
                                    @Arg(ArgEnum.gearName) String gearNames,
                                    @Arg(ArgEnum.loadGroupName) String LoadGroupNames,
                                    @Arg(ArgEnum.username) LiteYukonUser userName);
-    
+
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
     public void loadProgramUpdated(@Arg(ArgEnum.programName) String programName,
                                    @Arg(ArgEnum.paoType) PaoType programType,
@@ -212,7 +212,7 @@ public interface DemandResponseEventLogService {
                                    @Arg(ArgEnum.gearName) String gearNames,
                                    @Arg(ArgEnum.loadGroupName) String LoadGroupNames,
                                    @Arg(ArgEnum.username) LiteYukonUser userName);
-    
+
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
     public void loadProgramDeleted(@Arg(ArgEnum.programName) String programName,
                                    @Arg(ArgEnum.paoType) PaoType programType,
@@ -222,14 +222,14 @@ public interface DemandResponseEventLogService {
     public void gearCreated(@Arg(ArgEnum.gearName) String gearName,
                             @Arg(ArgEnum.gearControlMethod) String gearControlMethod,
                             @Arg(ArgEnum.programName) String programName,
-                            @Arg(ArgEnum.gearNumber)Integer gearNumber,
+                            @Arg(ArgEnum.gearNumber) Integer gearNumber,
                             @Arg(ArgEnum.username) LiteYukonUser userName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
     public void gearDeleted(@Arg(ArgEnum.gearName) String gearName,
                             @Arg(ArgEnum.gearControlMethod) String gearControlMethod,
                             @Arg(ArgEnum.programName) String programName,
-                            @Arg(ArgEnum.gearNumber)Integer gearNumber,
+                            @Arg(ArgEnum.gearNumber) Integer gearNumber,
                             @Arg(ArgEnum.username) LiteYukonUser userName);
 
 }
