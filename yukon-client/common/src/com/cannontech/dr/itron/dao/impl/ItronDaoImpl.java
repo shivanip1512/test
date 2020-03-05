@@ -1,6 +1,5 @@
 package com.cannontech.dr.itron.dao.impl;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.itron.dao.ItronDao;
 
 public class ItronDaoImpl implements ItronDao {
@@ -154,12 +152,7 @@ public class ItronDaoImpl implements ItronDao {
         
         // If there is no row for this Yukon group ID, this will throw an EmptyResultDataAccessException
         // If the row exists but the value is null, an empty optional will be returned
-        return jdbcTemplate.queryForObject(sql, new YukonRowMapper<Optional<Long>>() {
-            @Override
-            public Optional<Long> mapRow(YukonResultSet rs) throws SQLException {
-                return Optional.ofNullable(rs.getNullableLong("ItronEventId"));
-            }
-        });
+        return jdbcTemplate.queryForObject(sql, (YukonResultSet rs) -> Optional.ofNullable(rs.getNullableLong("ItronEventId")));
     }
     
     @Override
