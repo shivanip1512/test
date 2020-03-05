@@ -3352,5 +3352,116 @@ BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
 }
 
 
+/** 
+ * Validate passthrough control functionality 
+ */
+BOOST_AUTO_TEST_CASE( test_control_open_or_close_sbo_porter_passthrough )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(nullptr);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(153);  //  >100, a DNP deviceid (see Test_FdrDnpSlave::isDnpDirectDeviceId)
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().emplace(fdrPoint->getPointID(), fdrPoint);
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    dnpSlave.point.setControlOffset(72);
+    dnpSlave.point.setPaoId(153);
+    dnpSlave.point.setPointId(43);
+    dnpSlave.point.setControlType(ControlType_SBOPulse);
+    dnpSlave.point.setStateZeroControl("scan integrity");       // passthrough
+    dnpSlave.point.setStateOneControl("putconfig timesync");    // passthrough
+    dnpSlave.point.setCloseTime1(1000);
+    dnpSlave.point.setCloseTime2(1000);
+
+    //  Trip, pulse on (0x81), select
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 81 01 e8 03 00 00 00 00 db 00 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 81 01 e8 03 00 00 3b da "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "scan integrity");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+
+    dnpSlave.lastRequestMsg.reset();
+
+    //  Close, pulse on (0x41), select
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 03 0c 01 17 01 00 41 01 e8 03 00 00 00 00 0e 9e "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK(dnpSlave.dispatchMessages.empty());
+
+        BOOST_REQUIRE(dnpSlave.lastRequestMsg);
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putconfig timesync");
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->DeviceId(), 153);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
