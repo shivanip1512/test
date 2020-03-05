@@ -150,12 +150,12 @@ public interface RfnDeviceDao {
     /**
      * Returns gateway to collection of DynamicRfnDeviceData
      */
-    Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds);
+    Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds);
     
     /**
      * Returns gateway to collection of DynamicRfnDeviceData
      */
-    Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds);
+    Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds);
 
     /**
      * Returns list of DynamicRfnDeviceDatas

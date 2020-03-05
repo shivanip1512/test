@@ -424,11 +424,8 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                     int descendantCount = (Integer) queryResult.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
                     //if gateway doesn't exists in Yukon, RfnIdentifier is not enough information to create gateway
                     if (gatewayIds.containsKey(gatewayRfnIdentifier)) {
-                        DynamicRfnDeviceData data = new DynamicRfnDeviceData();
-                        data.setDevice(device);
-                        data.setGateway(gatewayIds.get(gatewayRfnIdentifier));
-                        data.setDescendantCount(descendantCount);
-                        data.setLastTransferTime(treeGenerationEndTime);
+                        DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gatewayIds.get(gatewayRfnIdentifier),
+                                descendantCount, treeGenerationEndTime);
                         datas.add(data);
                     }
                 }
