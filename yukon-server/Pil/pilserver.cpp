@@ -1578,7 +1578,7 @@ void PilServer::vgConnThread()
 
 struct message_time_less
 {
-    bool operator()(CtiMessage *lhs, CtiMessage *rhs)
+    bool operator()(const CtiMessage *lhs, const CtiMessage *rhs) const
     {
         return (lhs && rhs)?(lhs->getMessageTime() < rhs->getMessageTime()):(lhs < rhs);
     }

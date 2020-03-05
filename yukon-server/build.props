@@ -26,7 +26,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalOptions>/Zc:__cplusplus /we4834</AdditionalOptions>
+      <AdditionalOptions>/Zc:__cplusplus /we4834 /experimental:external /external:anglebrackets /external:W0 /external:templates-</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
