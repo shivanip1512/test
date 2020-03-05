@@ -3,10 +3,14 @@ package com.cannontech.web.api.deviceReadings;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,15 +26,22 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 @RequestMapping("/device/")
 public class DeviceReadingsApiController {
     @Autowired private DeviceReadingsService deviceReadingService;
+    @Autowired private DeviceReadingRequestValidator deviceReadingRequestValidator;
 
     @GetMapping("/getLatestReading")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_POINTS, level = HierarchyPermissionLevel.VIEW)
-    public ResponseEntity<Object> getLatestReading(@RequestBody DeviceReadingRequest deviceReadingRequest) {
+    public ResponseEntity<Object> getLatestReading(@Valid @RequestBody DeviceReadingRequest deviceReadingRequest) {
         List<DeviceReadingsResponse> responses = deviceReadingService.getLatestReading(deviceReadingRequest);
         HashMap<String, List<DeviceReadingsResponse>> deviceReadingMap = new HashMap<>();
         deviceReadingMap.put("DeviceReadings", responses);
         return new ResponseEntity<>(deviceReadingMap, HttpStatus.OK);
 
     }
+    
+    @InitBinder("deviceReadingRequest")
+    public void setupBinderDelete(WebDataBinder binder) {
+        binder.addValidators(deviceReadingRequestValidator);
+    }
+    
 
 }

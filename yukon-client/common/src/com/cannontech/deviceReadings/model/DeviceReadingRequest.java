@@ -4,14 +4,14 @@ import java.util.List;
 
 public class DeviceReadingRequest {
 
-    private List<DeviceReading> deviceReadings;
+    private List<DeviceReadingsSelector> deviceReadingsSelectors;
 
-    public List<DeviceReading> getDeviceReadings() {
-        return deviceReadings;
+    public List<DeviceReadingsSelector> getDeviceReadingsSelectors() {
+        return deviceReadingsSelectors;
     }
 
-    public void setDeviceReadings(List<DeviceReading> deviceReadings) {
-        this.deviceReadings = deviceReadings;
+    public void setDeviceReadingsSelectors(List<DeviceReadingsSelector> deviceReadingsSelectors) {
+        this.deviceReadingsSelectors = deviceReadingsSelectors;
     }
 
 }

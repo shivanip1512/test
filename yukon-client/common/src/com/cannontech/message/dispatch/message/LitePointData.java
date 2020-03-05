@@ -9,12 +9,14 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueQualityTagHolder;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.point.PointType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class LitePointData extends LiteBase implements PointValueQualityTagHolder {
     private int id;
     private int type;
     private PointQuality pointQuality;
-    private long tags;
+    @JsonIgnore private long tags;
     private double value;
     private Date time = new Date();
 
@@ -35,6 +37,7 @@ public class LitePointData extends LiteBase implements PointValueQualityTagHolde
     }
 
     @Override
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZZ") 
     public Date getPointDataTimeStamp() {
         return time;
     }

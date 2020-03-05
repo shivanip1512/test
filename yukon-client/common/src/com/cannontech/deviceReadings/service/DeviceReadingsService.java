@@ -8,7 +8,7 @@ import com.cannontech.deviceReadings.model.DeviceReadingsResponse;
 public interface DeviceReadingsService {
 
     /**
-     * Get Latest Point Reading Values based on requested device and corresponding Attributes.
+     * Get Latest Point Reading Values based on requested Identifier type and corresponding Attributes.
      */
     List<DeviceReadingsResponse> getLatestReading(DeviceReadingRequest deviceReadingRequest);
 
