@@ -535,6 +535,12 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         };
         return template.query(sqlGenerator, deviceIds, rfnDynamicRfnDeviceDataRowMapper);
     }
+    
+    @Override
+    public List<DynamicRfnDeviceData> getAllDynamicRfnDeviceData() {
+        SqlStatementBuilder sql = getSelectFromDynamicRfnDeviceData();
+        return jdbcTemplate.query(sql, rfnDynamicRfnDeviceDataRowMapper);
+    }
 
     /**
      * Returns select statement
