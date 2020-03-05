@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<project name="cloud-service" default="all">
+<project name="cloud-service" default="all" basedir="../..">
 
     <property file="../../yukon-client/build/build.properties"/>
 
@@ -22,17 +22,17 @@
     </target>
 
     <target name="yukon-cloud">
-        <property name="cloud.build" value="${basedir}/build" />
+        <property name="cloud.build" value="${basedir}/yukon-applications/cloud-service/build" />
         <property name="install.bag" value="${basedir}/yukon-install" />
 
         <!-- Base Component -->
-        <mkdir dir="build"/>
+        <mkdir dir="${cloud.build}"/>
         <mkdir dir="${cloud.build}/Runtime"/>
         <mkdir dir="${cloud.build}/Client/bin"/>
 
         <!-- Yukon Base Component (Client) -->
         <copy todir="${cloud.build}/Client/bin" preservelastmodified="yes">
-            <fileset dir="../../yukon-client/third-party">
+            <fileset dir="yukon-client/third-party">
                 <include name="wrapper.jar"/>
                 <include name="wrapperApp.jar"/>
                 <include name="ahessian.jar"/>
@@ -54,16 +54,16 @@
         </copy>
 
         <copy todir="${cloud.build}/Client/bin" preservelastmodified="true">
-            <fileset dir="../../yukon-client/tools/src/main/resources" includes="setjavapath.bat" />
-            <fileset dir="../../yukon-applications/cloud-service/conf"/>
-            <fileset dir="../../yukon-client/lib">
+            <fileset dir="yukon-client/tools/src/main/resources" includes="setjavapath.bat" />
+            <fileset dir="yukon-applications/cloud-service/conf"/>
+            <fileset dir="yukon-client/lib">
                 <include name="yukon-cloud-service.jar"/>
             </fileset>
         </copy>
 
          <!-- JRE Component -->
         <copy todir="${cloud.build}/Runtime" preservelastmodified="true">
-            <fileset dir="${basedir}/../../yukon-install/JRE" />
+            <fileset dir="${basedir}/yukon-install/JRE" />
         </copy> 
         <zip destfile="${cloud.build}/yukon_cloud.zip"
             basedir ="${cloud.build}" includes="Client/**,Runtime/**"/>
