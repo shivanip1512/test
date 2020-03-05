@@ -31,6 +31,7 @@ dependencies {
 
 bootJar {
    archiveName = 'yukon-cloud-service.jar'
+   exclude ('cloudservice.properties')
 }
 configurations.compile {
     // Ignore default logging provided by spring boot to use log4j
