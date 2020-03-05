@@ -75,7 +75,7 @@ public class ItronDeviceDataParser {
                     allPointValues.putAll(pointValues);
                     hasData = true;
                 } catch (EmptyImportFileException e) {
-                    log.info(file.getName() + " in zip " + zip.getName() + " is empty.", e);
+                    log.info("Data file {} in zip {} is empty.", file.getName(), zip.getName());
                 }
             } catch (Exception e) {
                 log.error("Unable to parse Itron file", e);
