@@ -187,11 +187,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds);
         Instant now = Instant.now();
         rfnDevices.forEach(device -> {
-            DynamicRfnDeviceData data = new DynamicRfnDeviceData();
-            data.setDevice(device);
-            data.setGateway(gateway);
-            data.setDescendantCount(getRandomNumberInRange(1, 130));
-            data.setLastTransferTime(now);
+            DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gateway, getRandomNumberInRange(1, 130), now);
             datas.add(data);
         });
     }

@@ -1,7 +1,7 @@
 package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -52,10 +51,8 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
     
@@ -391,7 +388,6 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         return rfnDevices;
     }
     
-        
     @Transactional
     @Override
     public void saveDynamicRfnDeviceData(Set<DynamicRfnDeviceData> data) {
@@ -405,10 +401,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlBatchUpdater updater = sql.batchInsertInto("DynamicRfnDeviceData");
         updater.columns("DeviceId", "GatewayId", "DescendantCount", "LastTransferTime");
-        final Instant now = Instant.now();
         List<List<Object>> values = data.stream().map(value ->{
             List<Object> row = Lists.newArrayList(value.getDevice().getPaoIdentifier().getPaoId(),
-                    value.getGateway().getPaoIdentifier().getPaoId(), value.getDescendantCount(), now);
+                    value.getGateway().getPaoIdentifier().getPaoId(), value.getDescendantCount(), value.getLastTransferTime());
             return row;
         }).collect(Collectors.toList());
         
@@ -509,39 +504,36 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
-    public Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds) {
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds) {
         SqlStatementBuilder sql = getSelectFromDynamicRfnDeviceData();
         sql.append("WHERE dd.gatewayId").in(gatewayIds);
-        return getGatewaysToDevices(sql);
+        List<DynamicRfnDeviceData> data = jdbcTemplate.query(sql, rfnDynamicRfnDeviceDataRowMapper);
+        return data.stream()
+                .collect(Collectors.groupingBy(d -> d.getGateway().getPaoIdentifier().getPaoId()));
     }
 
     @Override
-    public Map<Integer, Collection<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds) {
-        SqlStatementBuilder sql = getSelectFromDynamicRfnDeviceData();
-        sql.append("WHERE dd.deviceId").in(deviceIds);
-        return getGatewaysToDevices(sql);
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds) {
+        List<DynamicRfnDeviceData> data = getDynamicRfnDeviceData(deviceIds);
+        return data.stream()
+                .collect(Collectors.groupingBy(d -> d.getGateway().getPaoIdentifier().getPaoId()));
     }
 
-    private Map<Integer, Collection<DynamicRfnDeviceData>> getGatewaysToDevices(
-            SqlStatementBuilder sql) {
-        Multimap<Integer, DynamicRfnDeviceData> gatewaysToDevices = ArrayListMultimap.create();
-        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                DynamicRfnDeviceData data = getDynamicRfnDeviceData(rs);
-                gatewaysToDevices.put(data.getGateway().getPaoIdentifier().getPaoId(), data);
-            }
-        });
-        return gatewaysToDevices.asMap();
-    }
-    
     @Override
     public List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds) {
-        SqlStatementBuilder sql = getSelectFromDynamicRfnDeviceData();
-        if(deviceIds != null) {
-            sql.append("WHERE dd.deviceId").in(deviceIds);
+        if(IterableUtils.isEmpty(deviceIds)) {
+            return new ArrayList<>();
         }
-        return jdbcTemplate.query(sql, rfnDynamicRfnDeviceDataRowMapper);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = getSelectFromDynamicRfnDeviceData();
+                sql.append("WHERE dd.deviceId").in(subList);
+                return sql;
+            }
+        };
+        return template.query(sqlGenerator, deviceIds, rfnDynamicRfnDeviceDataRowMapper);
     }
 
     /**
@@ -549,14 +541,14 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
      */
     private SqlStatementBuilder getSelectFromDynamicRfnDeviceData() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT deviceIdent.SerialNumber as dSerialNumber, deviceIdent.Manufacturer as dManufacture, deviceIdent.Model as dModel,");
-        sql.append("       gatewayIdent.SerialNumber as gSerialNumber, gatewayIdent.Manufacturer as gManufacture, gatewayIdent.Model as gModel, DescendantCount, LastTransferTime,");
+        sql.append("SELECT deviceIdent.SerialNumber as dSerialNumber, deviceIdent.Manufacturer as dManufacturer, deviceIdent.Model as dModel,");
+        sql.append("       gatewayIdent.SerialNumber as gSerialNumber, gatewayIdent.Manufacturer as gManufacturer, gatewayIdent.Model as gModel, DescendantCount, LastTransferTime,");
         sql.append("       devicePao.paoName as dName, devicePao.Type as dType, devicePao.PaobjectId as dId, gatewayPao.paoName as gName, gatewayPao.Type as gType, gatewayPao.PaobjectId as gId");
         sql.append("FROM DynamicRfnDeviceData dd");
         sql.append("JOIN RfnAddress deviceIdent on dd.DeviceId = deviceIdent.DeviceId");
         sql.append("JOIN RfnAddress gatewayIdent on dd.GatewayId = gatewayIdent.DeviceId");
-        sql.append("JOIN YukonPAObject devicePao on dd.DeviceId = devicePao.PAObjectID");
-        sql.append("JOIN YukonPAObject gatewayPao on dd.GatewayId = gatewayPao.PAObjectID");
+        sql.append("JOIN YukonPAObject devicePao on deviceIdent.DeviceId = devicePao.PAObjectID");
+        sql.append("JOIN YukonPAObject gatewayPao on gatewayIdent.DeviceId = gatewayPao.PAObjectID");
         return sql;
     }
     
@@ -564,14 +556,10 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
      * Returns DynamicRfnDeviceData created from result
      */
     private static DynamicRfnDeviceData getDynamicRfnDeviceData(YukonResultSet rs) throws SQLException {
-        DynamicRfnDeviceData data = new DynamicRfnDeviceData();
-        data.setDevice(getDevice("d",rs));
-        data.setGateway(getDevice("g",rs));
-        data.setDescendantCount(rs.getInt("descendantCount"));
-        data.setLastTransferTime(rs.getInstant("LastTransferTime"));
-        return data;
+        return new DynamicRfnDeviceData(getDevice("d", rs), getDevice("g", rs), rs.getInt("descendantCount"),
+                rs.getInstant("LastTransferTime"));
     }
-    
+
     /**
      * Returns RfnDevice created from result
      */
@@ -580,7 +568,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         PaoIdentifier devicePao = rs.getPaoIdentifier(prefix + "Id", prefix + "Type");
         RfnIdentifier device = new RfnIdentifier(
                 rs.getStringSafe(prefix + "SerialNumber"),
-                rs.getStringSafe(prefix + "Manufacture"),
+                rs.getStringSafe(prefix + "Manufacturer"),
                 rs.getStringSafe(prefix + "Model"));
         return new RfnDevice(deviceName, devicePao, device);
     }
