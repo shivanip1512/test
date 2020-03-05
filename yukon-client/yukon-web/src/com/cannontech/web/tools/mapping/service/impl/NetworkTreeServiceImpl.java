@@ -2,6 +2,7 @@ package com.cannontech.web.tools.mapping.service.impl;
 
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_TREE;
+import static org.joda.time.Instant.now;
 
 import java.io.Serializable;
 import java.time.Duration;
@@ -11,6 +12,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -59,6 +62,8 @@ import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.common.util.tree.Node.TreeDebugStatistics;
+import com.cannontech.core.dao.PersistedSystemValueDao;
+import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NetworkTreeService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
@@ -96,6 +101,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     protected JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeServiceImpl.class);
     private final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
@@ -361,8 +367,20 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 Serializable object = objMessage.getObject();
+       
+                
                 if (object instanceof NetworkTreeUpdateTimeResponse) {
                     NetworkTreeUpdateTimeResponse response = (NetworkTreeUpdateTimeResponse) object;
+                    
+                    Instant lastUpdateTime =
+                            persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME);
+                    
+                    if (lastUpdateTime == null
+                            || response.getTreeGenerationEndTimeMillis() > lastUpdateTime.getMillis()) {
+                        updateDeviceToGatewayMapping(new Instant(response.getTreeGenerationEndTimeMillis()));
+                        persistedSystemValueDao.setValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME, new Instant(response.getTreeGenerationEndTimeMillis()));
+                    }
+                    
                     if (treeUpdateResponse == null || response.getTreeGenerationEndTimeMillis() > treeUpdateResponse.getTreeGenerationEndTimeMillis()) {
                         log.info(
                                 "Received Network Tree Update Time - Start {} End {} Next automatic refresh {} Next forced refresh after {}",
@@ -370,7 +388,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                                 format(response.getTreeGenerationEndTimeMillis()),
                                 format(response.getNextScheduledRefreshTimeMillis()),
                                 format(response.getNoForceRefreshBeforeTimeMillis()));
-                        updateDeviceToGatewayMapping();
+
                         //Reloads only cached trees
                         reloadNetworkTrees();
                     }
@@ -386,27 +404,37 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
      * Sends message to NM to get device to gateway mapping information for all gateways. When message is received the device to
      * gateway mapping is persisted in DynamicRfnDeviceData.
      */
-    private void updateDeviceToGatewayMapping() {
+    private void updateDeviceToGatewayMapping(Instant treeGenerationEndTime) {        
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
-        String gatewayNames = gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(","));
+        String gatewayNames = gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(", "));
         log.info("Sending request to NM for device to gateway mapping information for {}", gatewayNames);
-        Map<RfnIdentifier, RfnDevice> ids = gateways.stream()
+        Map<RfnIdentifier, RfnDevice> gatewayIds = gateways.stream()
                 .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
         try {
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> response = metadataMultiService
-                    .getMetadataForGatewayRfnIdentifiers(ids.keySet(), Set.of(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
-            Map<RfnDevice, RfnDevice> deviceToGateway = new HashMap<>();
+                    .getMetadataForGatewayRfnIdentifiers(gatewayIds.keySet(),
+                            Set.of(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY, RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
+            Set<DynamicRfnDeviceData> datas = new HashSet<>();
             response.forEach((deviceRfnIdentifier, queryResult) -> {
                 RfnDevice device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
-                if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
+                //Li confirmed PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_DESCENDANT_COUNT will always be returned
+                if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)
+                        && queryResult.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
                     RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
-                    if (ids.containsKey(gatewayRfnIdentifier)) {
-                        deviceToGateway.put(device, ids.get(gatewayRfnIdentifier));
+                    int descendantCount = (Integer) queryResult.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
+                    //if gateway doesn't exists in Yukon, RfnIdentifier is not enough information to create gateway
+                    if (gatewayIds.containsKey(gatewayRfnIdentifier)) {
+                        DynamicRfnDeviceData data = new DynamicRfnDeviceData();
+                        data.setDevice(device);
+                        data.setGateway(gatewayIds.get(gatewayRfnIdentifier));
+                        data.setDescendantCount(descendantCount);
+                        data.setLastTransferTime(treeGenerationEndTime);
+                        datas.add(data);
                     }
                 }
             });
-            rfnDeviceDao.saveDynamicRfnDeviceData(deviceToGateway);
-            log.info("Updated device to gateway mapping information for {}", gatewayNames);
+            rfnDeviceDao.saveDynamicRfnDeviceData(datas);
+            log.info("Updated device to gateway mapping information for {} devices {}", gatewayNames, datas.size());
         } catch (NmCommunicationException e) {
             log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
         }
