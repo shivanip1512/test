@@ -195,5 +195,41 @@ public interface DemandResponseEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.programConstraint")
     public void programConstraintDeleted(@Arg(ArgEnum.programConstraintName) String programConstraintName,
                                          @Arg(ArgEnum.username) LiteYukonUser userName);
+    
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
+    public void loadProgramCreated(@Arg(ArgEnum.programName) String programName,
+                                   @Arg(ArgEnum.paoType) PaoType programType,
+                                   @Arg(ArgEnum.programConstraintName) String programConstraintName,
+                                   @Arg(ArgEnum.gearName) String gearNames,
+                                   @Arg(ArgEnum.loadGroupName) String LoadGroupNames,
+                                   @Arg(ArgEnum.username) LiteYukonUser userName);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
+    public void loadProgramUpdated(@Arg(ArgEnum.programName) String programName,
+                                   @Arg(ArgEnum.paoType) PaoType programType,
+                                   @Arg(ArgEnum.programConstraintName) String programConstraintName,
+                                   @Arg(ArgEnum.gearName) String gearNames,
+                                   @Arg(ArgEnum.loadGroupName) String LoadGroupNames,
+                                   @Arg(ArgEnum.username) LiteYukonUser userName);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
+    public void loadProgramDeleted(@Arg(ArgEnum.programName) String programName,
+                                   @Arg(ArgEnum.paoType) PaoType programType,
+                                   @Arg(ArgEnum.username) LiteYukonUser userName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
+    public void gearCreated(@Arg(ArgEnum.gearName) String gearName,
+                            @Arg(ArgEnum.gearControlMethod) String gearControlMethod,
+                            @Arg(ArgEnum.programName) String programName,
+                            @Arg(ArgEnum.gearNumber)Integer gearNumber,
+                            @Arg(ArgEnum.username) LiteYukonUser userName);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "dr.setup.loadProgram")
+    public void gearDeleted(@Arg(ArgEnum.gearName) String gearName,
+                            @Arg(ArgEnum.gearControlMethod) String gearControlMethod,
+                            @Arg(ArgEnum.programName) String programName,
+                            @Arg(ArgEnum.gearNumber)Integer gearNumber,
+                            @Arg(ArgEnum.username) LiteYukonUser userName);
 
 }

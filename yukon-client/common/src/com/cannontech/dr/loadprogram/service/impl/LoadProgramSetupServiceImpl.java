@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ import com.cannontech.common.dr.program.setup.model.ProgramDirectMemberControl;
 import com.cannontech.common.dr.program.setup.model.ProgramGroup;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.dr.setup.ProgramDetails;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.pao.PaoType;
@@ -79,6 +81,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     @Autowired private ProgramDao programDao;
     @Autowired private LMGearDao lmGearDao;
     @Autowired private ProgramGearFieldsBuilder programGearFieldsBuilder;
+    @Autowired private DemandResponseEventLogService demandResponseEventLogService;
 
     @Override
     @Transactional
@@ -93,6 +96,9 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
 
+        // Logging events during load program creation
+        processEventLogsForProgramCreate(loadProgram);
+
         return lmProgram.getPAObjectID();
     }
 
@@ -101,14 +107,25 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
     public int update(int programId, LoadProgram loadProgram) {
         // Validate programId
         getProgramFromCache(programId);
+        List<LMProgramDirectGear> oldGears = null;
 
         LMProgramBase lmProgramBase = getDBPersistent(programId, loadProgram.getType());
+
+        if (lmProgramBase instanceof LMProgramDirectBase) {
+            LMProgramDirectBase lmProgramDirectBase = (LMProgramDirectBase) lmProgramBase;
+            oldGears = lmProgramDirectBase.getLmProgramDirectGearVector().stream()
+                                                                         .collect(Collectors.toList());
+        }
+
         loadProgram.setProgramId(programId);
         buildLMProgramBaseDBPersistent(lmProgramBase, loadProgram);
 
         buildLMMemberControlDBPersistent(lmProgramBase, loadProgram);
 
         dbPersistentDao.performDBChange(lmProgramBase, TransactionType.UPDATE);
+
+        // Logging events during load program update
+        processEventLogsForProgramUpdate(loadProgram, oldGears);
 
         return lmProgramBase.getPAObjectID();
     }
@@ -135,7 +152,11 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
             throw new LMObjectDeletionFailureException(message);
         }
         YukonPAObject lmProgram = (YukonPAObject) LiteFactory.createDBPersistent(loadProgram);
+        List<LiteGear> gears = getGearsForProgram(lmProgram.getPAObjectID());
         dbPersistentDao.performDBChange(lmProgram, TransactionType.DELETE);
+
+        // Logging events during load program deletion
+        processEventLogsForProgramDelete(lmProgram, gears);
 
         return lmProgram.getPAObjectID();
     }
@@ -179,6 +200,9 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         SimpleDevice device = SimpleDevice.of(program.getPAObjectID(), program.getPaoType());
         paoCreationHelper.applyPoints(device, points);
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
+
+        // Logging events during load program copy
+        processEventLogsForProgramCopy(directBase);
 
         return program.getPAObjectID();
     }
@@ -428,11 +452,7 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         loadProgram.setName(program.getPAOName());
         loadProgram.setOperationalState(OperationalState.valueOf(program.getProgram().getControlType()));
 
-        List<LiteLMConstraint> constraints = dbCache.getAllLMProgramConstraints();
-        LiteLMConstraint liteLMConstraint = constraints.stream()
-                                                       .filter(constraint -> constraint.getConstraintID() == program.getProgram().getConstraintID())
-                                                       .findFirst()
-                                                       .get();
+        LiteLMConstraint liteLMConstraint = getProgramConstraint(program.getProgram().getConstraintID());
         ProgramConstraint programConstraint = new ProgramConstraint();
         programConstraint.setConstraintId(liteLMConstraint.getConstraintID());
         programConstraint.setConstraintName(liteLMConstraint.getConstraintName());
@@ -864,4 +884,144 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
         gear.setFields(fields);
         return gear;
     }
+
+    /*
+     * Process event log for program creation and gear creation
+     */
+    private void processEventLogsForProgramCreate(LoadProgram loadProgram) {
+
+        LiteLMConstraint litelmConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
+        String gearNames = getGearNamesString(loadProgram);
+        String loadGroupNames = getLoadGroupNamesString(loadProgram);
+
+        // event log for gear creation
+        for (ProgramGear programGear : loadProgram.getGears()) {
+            demandResponseEventLogService.gearCreated(programGear.getGearName(),
+                                                      programGear.getControlMethod().name(),
+                                                      loadProgram.getName(),
+                                                      programGear.getGearNumber(),
+                                                      ApiRequestContext.getContext().getLiteYukonUser());
+        }
+
+        // event log for program creation
+        demandResponseEventLogService.loadProgramCreated(loadProgram.getName(),
+                                                         loadProgram.getType(),
+                                                         litelmConstraint.getConstraintName(),
+                                                         gearNames,
+                                                         loadGroupNames,
+                                                         ApiRequestContext.getContext().getLiteYukonUser());
+    }
+
+    /*
+     * Process event log for updating load program
+     */
+    private void processEventLogsForProgramUpdate(LoadProgram loadProgram ,List<LMProgramDirectGear> oldGears) {
+
+        LiteLMConstraint litelmConstraint = getProgramConstraint(loadProgram.getConstraint().getConstraintId());
+        String gearNames = getGearNamesString(loadProgram);
+        String loadGroupNames = getLoadGroupNamesString(loadProgram);
+        
+        // event log for gear deletion
+        for (LMProgramDirectGear lmProgramDirectGear : oldGears) {
+            demandResponseEventLogService.gearDeleted(lmProgramDirectGear.getGearName(),
+                                                      lmProgramDirectGear.getControlMethod().name(),
+                                                      loadProgram.getName(),
+                                                      lmProgramDirectGear.getGearNumber(),
+                                                      ApiRequestContext.getContext().getLiteYukonUser());
+        }
+
+        // event log for gear creation
+        for (ProgramGear programGear : loadProgram.getGears()) {
+            demandResponseEventLogService.gearCreated(programGear.getGearName(),
+                                                      programGear.getControlMethod().name(),
+                                                      loadProgram.getName(),
+                                                      programGear.getGearNumber(),
+                                                      ApiRequestContext.getContext().getLiteYukonUser());
+        }
+
+        // event log for program creation
+        demandResponseEventLogService.loadProgramUpdated(loadProgram.getName(),
+                                                         loadProgram.getType(),
+                                                         litelmConstraint.getConstraintName(),
+                                                         gearNames,
+                                                         loadGroupNames,
+                                                         ApiRequestContext.getContext().getLiteYukonUser());
+    }
+
+    /*
+     * Process event log for program deletion and gear deletion
+     */
+    private void processEventLogsForProgramDelete(YukonPAObject lmProgram, List<LiteGear> gears) {
+
+        // event log for gear deletion
+        for (LiteGear liteGear : gears) {
+            demandResponseEventLogService.gearDeleted(liteGear.getGearName(),
+                                                      liteGear.getGearType(),
+                                                      lmProgram.getPAOName(),
+                                                      liteGear.getGearNumber(),
+                                                      ApiRequestContext.getContext().getLiteYukonUser());
+        }
+
+        // event log for program deletion
+        demandResponseEventLogService.loadProgramDeleted(lmProgram.getPAOName(),
+                                                         lmProgram.getPaoType(),
+                                                         ApiRequestContext.getContext().getLiteYukonUser());
+
+       
+    }
+
+    /*
+     * Process event log for load program copy
+     */
+    private void processEventLogsForProgramCopy(LMProgramDirectBase directBase) {
+
+        String gearNames = directBase.getLmProgramDirectGearVector().stream()
+                                                                    .map(gear -> gear.getGearName())
+                                                                    .collect(Collectors.joining(", "));
+
+        String reducedGearNames = StringUtils.abbreviate(gearNames, 2000);
+        LiteLMConstraint litelmConstraint = getProgramConstraint(directBase.getProgram().getConstraintID());
+
+        // event log for copying load program 
+        demandResponseEventLogService.loadProgramCreated(directBase.getPAOName(),
+                                                         directBase.getPaoType(),
+                                                         litelmConstraint.getConstraintName(),
+                                                         reducedGearNames,
+                                                         null, // In case of load program copy, load groups didn't copied
+                                                         ApiRequestContext.getContext().getLiteYukonUser());
+    }
+
+    /*
+     * Returns Program Constraint from constraintID
+     */
+    private LiteLMConstraint getProgramConstraint(Integer constraintID) {
+        List<LiteLMConstraint> constraints = dbCache.getAllLMProgramConstraints();
+        LiteLMConstraint liteLMConstraint = constraints.stream()
+                                                       .filter(constraint -> constraint.getConstraintID() == constraintID)
+                                                       .findFirst()
+                                                       .get();
+        return liteLMConstraint;
+    }
+
+    /*
+     * Returns Comma separated values of gear names
+     */
+    private String getGearNamesString(LoadProgram loadProgram) {
+        String gearNames=loadProgram.getGears().stream()
+                                               .map(gear->gear.getGearName())
+                                               .collect(Collectors.joining(", "));
+        return StringUtils.abbreviate(gearNames, 2000);
+    }
+
+    /*
+     * Returns Comma separated values of load group names
+     */
+    private String getLoadGroupNamesString(LoadProgram loadProgram) {
+        String groupNames = loadProgram.getAssignedGroups().stream()
+                                                           .peek(lg -> lg.setGroupName(dbCache.getAllPaosMap().get(lg.getGroupId()).getPaoName()))
+                                                           .map(lg -> lg.getGroupName())
+                                                           .collect(Collectors.joining(", "));
+        return StringUtils.abbreviate(groupNames, 2000);
+    }
+
 }
