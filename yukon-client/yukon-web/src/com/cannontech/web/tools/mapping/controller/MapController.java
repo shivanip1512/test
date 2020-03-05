@@ -38,6 +38,7 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -69,7 +70,6 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResu
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.message.node.NodeComm;
-import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.message.route.RouteFlag;
@@ -262,7 +262,6 @@ public class MapController {
                 Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA);
                 if (includePrimaryRoute) {
                     requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
-                    requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
                 }
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
@@ -280,13 +279,14 @@ public class MapController {
                             statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
                         }
                         model.addAttribute("deviceStatus", statusString);
-                        RfnDevice gateway = rfnDeviceDao.findGatewayForDeviceId(rfnDevice.getPaoIdentifier().getPaoId());
-                        if(gateway != null) {
-                            RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
-                            if(rfnGateway != null) {
-                                model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
-                                model.addAttribute("primaryGateway", rfnGateway);
+                        DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(rfnDevice.getPaoIdentifier().getPaoId());
+                        if (deviceData != null) {
+                            if (includePrimaryRoute) {
+                                model.addAttribute("descendantCount", deviceData.getDescendantCount());
                             }
+                            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(deviceData.getGateway().getPaoIdentifier().getPaoId());
+                            model.addAttribute("primaryGatewayName", gateway.getNameWithIPAddress());
+                            model.addAttribute("primaryGateway", gateway);
                         }
                         if(metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
                             NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
@@ -344,9 +344,6 @@ public class MapController {
                                     }
                                 }
                             }
-                        }
-                        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
-                            model.addAttribute("descendantCount", metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
                         }
                     }
                     

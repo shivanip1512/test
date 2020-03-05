@@ -29,6 +29,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionUrl;
@@ -226,8 +227,11 @@ public class ComprehensiveMapController {
         
         log.debug("Devices in a group {}", collection.getDeviceCount());
         
-        Map<Integer, Integer> devicesToGateways = rfnDeviceDao.getDevicesToGateways(
-                collection.getDeviceList().stream().map(device -> device.getDeviceId()).collect(Collectors.toList()));
+        List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(collection.getDeviceList().stream()
+                .map(device -> device.getDeviceId()).collect(Collectors.toList()));
+        Map<RfnIdentifier, DynamicRfnDeviceData> deviceDataMap = data.stream()
+                .collect(Collectors.toMap(d -> d.getDevice().getRfnIdentifier(), d -> d));
+        
         Set<RfnIdentifier> rfnIdentifiers = collection.getDeviceList().stream()
                 .map(device -> rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier())
                 .collect(Collectors.toSet());
@@ -237,8 +241,7 @@ public class ComprehensiveMapController {
             metaData = metadataMultiService.getMetadataForDeviceRfnIdentifiers(rfnIdentifiers, Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, 
                                                                                          RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA,
                                                                                          RfnMetadataMulti.NODE_DATA,
-                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA,
-                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
+                                                                                         RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA));
         } catch (NmCommunicationException e1) {
             log.warn("caught exception in download", e1);
         } 
@@ -273,15 +276,15 @@ public class ComprehensiveMapController {
                 }
                 dataRow[7] = statusString;
         
-                Integer rfnGateway = devicesToGateways.get(rfnDevice.getPaoIdentifier().getPaoId());
-                if(rfnGateway != null) {
-                    dataRow[6] = cache.getAllPaosMap().get(rfnGateway).getPaoName();
+                DynamicRfnDeviceData deviceData = deviceDataMap.get(device);
+                if(deviceData != null) {
+                    dataRow[6] = deviceData.getGateway().getName();
+                    dataRow[12] = String.valueOf(deviceData.getDescendantCount());
                 }
-                
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
-                    NodeData data = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-                    dataRow[8] = data.getMacAddress();
-                    dataRow[9] = data.getNodeSerialNumber();
+                    NodeData node = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
+                    dataRow[8] = node.getMacAddress();
+                    dataRow[9] = node.getNodeSerialNumber();
                 }
                 if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA)) {
                     NeighborData neighbor = (NeighborData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA);
@@ -293,10 +296,6 @@ public class ComprehensiveMapController {
                     RouteData routeData = (RouteData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
                     dataRow[11] = String.valueOf(routeData.getHopCount());
                 }
-                if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
-                    dataRow[12] = String.valueOf(metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
-                }
-                
             }
             dataRows.add(dataRow);
         }

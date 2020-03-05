@@ -31,6 +31,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReplyType;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
@@ -343,15 +344,20 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> results = new HashMap<>();
         Set<RfnIdentifier> rfnIdentifiers = getRfnIdentifiers(request);
 
-        Map<RfnIdentifier, RfnIdentifier> devicesToGatewayMap = rfnDeviceDao.getDeviceToGatewayMap();
-        log.debug("devicesToGatewayMap size {}", devicesToGatewayMap.size());
+        List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(null);
+        Map<RfnIdentifier, DynamicRfnDeviceData> deviceDataMap = data.stream()
+                .collect(Collectors.toMap(d -> d.getDevice().getRfnIdentifier(), d -> d));
+        log.debug("devicesToGatewayMap size {}", deviceDataMap.size());
         log.debug("rfnIdentifiers size {}", rfnIdentifiers.size());
 
 
         for (RfnIdentifier device : rfnIdentifiers) {
             try {
                 RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
-                RfnIdentifier gateway = devicesToGatewayMap.get(device);
+                RfnIdentifier gateway = null;
+                if(deviceDataMap.get(device) != null) {
+                    gateway = deviceDataMap.get(device).getGateway().getRfnIdentifier();
+                }
                 for (RfnMetadataMulti multi : request.getRfnMetadatas()) {
                     if (multi == RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM && gateway != null) {
                         addObjectToResult(results, device, multi, getNodeComm(device, gateway));
@@ -363,10 +369,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         addObjectToResult(results, device, multi, getNeighborData());
                     } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_TREE) {
                         addObjectToResult(results, device, multi, getVertex(rfnDevice));
-                    } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA) {
+                    } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA && gateway != null) {
                         addObjectToResult(results, device, multi, getRouteData(rfnDevice, gateway));
-                    } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT) {
-                        addObjectToResult(results, device, multi, getRandomNumberInRange(1, 130));
+                    } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT && gateway != null) {
+                        Integer descendantCount = deviceDataMap.get(device).getDescendantCount();
+                        addObjectToResult(results, device, multi, descendantCount);
                     }
                 }
             } catch (Exception e) {
