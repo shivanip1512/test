@@ -18,8 +18,14 @@ public class DynamicRfnDeviceData {
         this.descendantCount = descendantCount;
         this.lastTransferTime = lastTransferTime;
     }
-
     
+    public DynamicRfnDeviceData(RfnDevice device, RfnDevice gateway, Instant lastTransferTime) {
+        this.device = device;
+        this.gateway = gateway;
+        this.descendantCount = -1;
+        this.lastTransferTime = lastTransferTime;
+    }
+
     public int getDescendantCount() {
         return descendantCount;
     }
