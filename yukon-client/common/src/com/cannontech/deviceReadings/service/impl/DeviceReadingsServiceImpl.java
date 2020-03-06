@@ -87,18 +87,12 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         if (CollectionUtils.isNotEmpty(deviceReadingSelector.getAttributes())) {
             for (BuiltInAttribute attribute : deviceReadingSelector.getAttributes()) {
                 if (supportedAttributes.contains(attribute)) {
-                    DeviceReadingResponse readingResponse = new DeviceReadingResponse();
                     LitePoint litePoint = attributeService.getPointForAttribute(yukonDevice, attribute);
                     PointValueQualityHolder pointValueQualityHolder = asyncDynamicDataSource.getPointValue(litePoint.getLiteID());
 
                     if (pointValueQualityHolder != null) {
-                        readingResponse.setId(pointValueQualityHolder.getId());
-                        readingResponse.setPointQuality(pointValueQualityHolder.getPointQuality());
-                        readingResponse.setType(pointValueQualityHolder.getType());
-                        readingResponse.setValue(pointValueQualityHolder.getValue());
-                        readingResponse.setTime(pointValueQualityHolder.getPointDataTimeStamp());
-                        readingResponse.setAttribute(attribute);
-                        readingResponse.setIdentifier(deviceReadingSelector.getIdentifier());
+                        DeviceReadingResponse readingResponse = new DeviceReadingResponse(deviceReadingSelector.getIdentifier(),
+                                attribute, pointValueQualityHolder);
                         listOfDeviceReading.add(readingResponse);
                     }
                 }

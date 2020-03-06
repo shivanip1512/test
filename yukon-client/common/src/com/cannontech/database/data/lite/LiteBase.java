@@ -2,12 +2,11 @@ package com.cannontech.database.data.lite;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Function;
 
 public abstract class LiteBase implements java.io.Serializable, Comparable<Object> {
-    @JsonIgnore private int liteType;
-    @JsonIgnore private int liteId;
+    private int liteType;
+    private int liteId;
 
     @Override
     public int compareTo(Object other) {
