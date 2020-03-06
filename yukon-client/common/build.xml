@@ -2,7 +2,18 @@
 <project name="yukon commons" default="all">
 
 	<property file="../build/build.properties"/>
+    <property file="../../yukon-build/build_version.properties"/>
 
+    <macrodef name="math">
+        <attribute name="operand1"/>
+        <attribute name="operand2"/>
+        <attribute name="result"/>
+        <sequential>
+            <script language="javascript">
+                project.setProperty("@{result}", parseInt("@{operand1}") - parseInt("@{operand2}"));
+            </script>
+        </sequential>
+    </macrodef>
 	<target name="all" depends="clean,build">
 	</target>
 
@@ -32,12 +43,19 @@
         </path>
         <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
 
+        <exec executable="git" outputproperty="git-commit-current-count">
+            <arg value="rev-list"/>
+            <arg value="HEAD"/>
+            <arg value="--count"/>
+        </exec>
+        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
+
 		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
 			<manifest>
 				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
 				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
 				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Hudson-Build-Details" value="${build.info}"/>
+				<attribute name="Hudson-Build-Details" value="YUKON_BUILD_NUMBER=${yukon-build-number},${build.info}"/>
 			</manifest>
 			<fileset dir="resource">
 				<include name="**/*.gif"/>

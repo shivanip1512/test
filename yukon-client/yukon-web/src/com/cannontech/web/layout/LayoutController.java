@@ -387,9 +387,9 @@ public class LayoutController {
     @ModelAttribute("buildInfo")
     public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
-        if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("BUILD_NUMBER")) {
+        if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("YUKON_BUILD_NUMBER")) {
             return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/"
-                + buildInfo.get("BUILD_NUMBER") + "\">" + buildInfo.get("BUILD_NUMBER") + "</a>";
+                + buildInfo.get("BUILD_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
         }
         return "undefined";
     }

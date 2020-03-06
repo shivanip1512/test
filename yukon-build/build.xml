@@ -28,6 +28,16 @@
         <echo message=" compile-java    - Builds all java/war but does not run unit tests " />
         <echo message=" jsdoctoolkit    - generates documentation from commented JavaScript source code" />
    </target>
+    <macrodef name="math">
+        <attribute name="operand1"/>
+        <attribute name="operand2"/>
+        <attribute name="result"/>
+        <sequential>
+            <script language="javascript">
+                project.setProperty("@{result}", parseInt("@{operand1}") - parseInt("@{operand2}"));
+            </script>
+        </sequential>
+    </macrodef>
 
     <target name="init">
         <property file="yukon-build/build_version.properties" />
@@ -257,11 +267,18 @@
         <!-- Location of the installer data file -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
         
+        <exec executable="git" outputproperty="git-commit-current-count">
+            <arg value="rev-list"/>
+            <arg value="HEAD"/>
+            <arg value="--count"/>
+        </exec>
+        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
+        
         <!-- Build the installer -->
         <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
             <arg line="-p '${isfile}'" />
             <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
-            <env key="YukonBuildVersion" value="${version.major}.${version.minor}.${env.YUKON_BUILD_RELEASE_NUMBER}.${version.revision}" />
+            <env key="YukonBuildVersion" value="${version.major}.${version.minor}.${yukon-build-number}.${version.revision}" />
         </exec>
 
         <condition property="out" value="${erroroutput}" else="">
@@ -356,6 +373,12 @@
     </target>
 
     <target name="build-dist" depends="updatedbscripts">
+        <exec executable="git" outputproperty="git-commit-current-count">
+            <arg value="rev-list"/>
+            <arg value="HEAD"/>
+            <arg value="--count"/>
+        </exec>
+        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
         <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/YukonInstall">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
@@ -375,7 +398,7 @@
         
         <mkdir dir="${dist.dir}" />
         
-        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}.zip">
+        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip">
             <fileset dir="${temp.dir}" />
         </zip>
 
@@ -384,11 +407,16 @@
 
     <target name="build-dist-pdb" depends="build-dist">
         <mkdir dir="${temp.dir}" />
-
+        <exec executable="git" outputproperty="git-commit-current-count">
+            <arg value="rev-list"/>
+            <arg value="HEAD"/>
+            <arg value="--count"/>
+        </exec>
+        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
         <zip destfile="${temp.dir}/YukonInstall/yukon-pdb.zip" update="true">
           <fileset dir="${basedir}/yukon-server/pdb" />
         </zip>
-        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}.zip" update="true">
+        <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip" update="true">
             <fileset dir="${temp.dir}" />
         </zip>
 
