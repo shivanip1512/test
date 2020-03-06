@@ -6,7 +6,6 @@
     <target name="all" depends="clean,build" />
 
     <target name="build">
-        <antcall target="yukon-cloud"/>
         <echo message="Building Jar : yukon-cloud-service.jar"/>
         <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
@@ -21,17 +20,17 @@
         </copy>
     </target>
 
-    <target name="yukon-cloud">
-        <property name="cloud.build" value="${basedir}/yukon-applications/cloud-service/build" />
+    <target name="build-cloud">
+        <property name="cloud.build.dir" value="${basedir}/yukon-applications/cloud-service/build" />
         <property name="install.bag" value="${basedir}/yukon-install" />
 
         <!-- Base Component -->
-        <mkdir dir="${cloud.build}"/>
-        <mkdir dir="${cloud.build}/Runtime"/>
-        <mkdir dir="${cloud.build}/Client/bin"/>
+        <mkdir dir="${cloud.build.dir}"/>
+        <mkdir dir="${cloud.build.dir}/Runtime"/>
+        <mkdir dir="${cloud.build.dir}/Client/bin"/>
 
         <!-- Yukon Base Component (Client) -->
-        <copy todir="${cloud.build}/Client/bin" preservelastmodified="yes">
+        <copy todir="${cloud.build.dir}/Client/bin" preservelastmodified="yes">
             <fileset dir="yukon-client/third-party">
                 <include name="wrapper.jar"/>
                 <include name="wrapperApp.jar"/>
@@ -53,7 +52,7 @@
              </fileset>     	
         </copy>
 
-        <copy todir="${cloud.build}/Client/bin" preservelastmodified="true">
+        <copy todir="${cloud.build.dir}/Client/bin" preservelastmodified="true">
             <fileset dir="yukon-client/tools/src/main/resources" includes="setjavapath.bat" />
             <fileset dir="yukon-applications/cloud-service/conf"/>
             <fileset dir="yukon-client/lib">
@@ -61,12 +60,11 @@
             </fileset>
         </copy>
 
-         <!-- JRE Component -->
-        <copy todir="${cloud.build}/Runtime" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/JRE" />
+        <!-- JRE Component -->
+        <copy todir="${cloud.build.dir}/Runtime" preservelastmodified="true">
+            <fileset dir="${basedir}/yukon-install/JRE"/>
         </copy> 
-        <zip destfile="${cloud.build}/yukon_cloud.zip"
-            basedir ="${cloud.build}" includes="Client/**,Runtime/**"/>
+        <zip destfile="${cloud.build.dir}/yukon_cloud.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**"/>
     </target>
 
     <target name="clean">
