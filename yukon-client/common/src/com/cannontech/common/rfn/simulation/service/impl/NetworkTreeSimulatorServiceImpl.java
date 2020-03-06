@@ -159,7 +159,7 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         log.info("{} Created NM VERTEX from Yukon Node node count {} added nodes {}", vertex.getRfnIdentifier(),
                 NetworkDebugHelper.count(vertex), totalNodesAdded);
 
-        log.trace("{}", NetworkDebugHelper.print(vertex));
+        //log.trace("{}", NetworkDebugHelper.print(vertex));
         return vertex;
     }
 
