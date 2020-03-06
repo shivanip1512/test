@@ -1,5 +1,7 @@
 package com.cannontech.amr.rfn.dao.model;
 
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.Instant;
 
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -48,6 +50,19 @@ public class DynamicRfnDeviceData {
 
     public void setLastTransferTime(Instant lastTransferTime) {
         this.lastTransferTime = lastTransferTime;
+    }
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("device", device);
+        builder.append("gateway",  gateway);
+        builder.append("descendantCount", descendantCount);
+        builder.append("lastTransferTime", lastTransferTime);
+        return builder.toString();
     }
     
     @Override
