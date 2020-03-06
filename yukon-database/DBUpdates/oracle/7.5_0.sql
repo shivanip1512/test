@@ -3,7 +3,7 @@
 /******************************************/ 
 
 /* @start YUK-21642 */
-DROP INDEX INDX_DynRfnDevData_GatewayId ON DynamicRfnDeviceData;
+DROP INDEX INDX_DynRfnDevData_GatewayId;
 GO
 
 ALTER TABLE DynamicRfnDeviceData
