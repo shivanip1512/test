@@ -135,6 +135,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
 
         List<PaoLocation> newLocations = new ArrayList<>();
 
+        Instant now = Instant.now();
         Set<DynamicRfnDeviceData> datas = new HashSet<>();
         for (RfnGateway gateway : gateways) {
             List<LiteYukonPAObject> rfnDevices = rfnDevicesSplit.get(deviceChunkCounter);
@@ -155,7 +156,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
                 log.info("creating  location for none rfn devices {}", noneRfnDevices.size());
                 addDeviceLocations(radius, newLocations, gatewayLocation, noneRfnDevices);
             }
-            addDeviceToGatewayMapping(gateway, rfnDevices, datas);
+            addDeviceToGatewayMapping(gateway, rfnDevices, datas, now);
             deviceChunkCounter++;
         }
         rfnDeviceDao.saveDynamicRfnDeviceData(datas);
@@ -182,10 +183,9 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
     }
 
     private void addDeviceToGatewayMapping(RfnGateway gateway,
-            List<LiteYukonPAObject> devicesForGateway, Set<DynamicRfnDeviceData> datas) {
+            List<LiteYukonPAObject> devicesForGateway, Set<DynamicRfnDeviceData> datas, Instant now) {
         List<Integer> deviceIds = devicesForGateway.stream().map(device -> device.getLiteID()).collect(Collectors.toList());
         List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds);
-        Instant now = Instant.now();
         rfnDevices.forEach(device -> {
             DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gateway, getRandomNumberInRange(1, 130), now);
             datas.add(data);
