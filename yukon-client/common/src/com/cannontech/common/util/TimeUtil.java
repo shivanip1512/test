@@ -498,7 +498,10 @@ public static int differenceMinutes(Date from, Date to) {
     /**
      * Convert minutes of time into HH:mm string.
      */
-    public static String fromMinutesToHHmm(int minutes) {
-       return LocalTime.MIN.plus(java.time.Duration.ofMinutes(minutes)).toString();
+    public static String fromMinutesToHHmm(int minutes) throws RuntimeException {
+        if (minutes >= 0 && minutes <= 1440)
+            return LocalTime.MIN.plus(java.time.Duration.ofMinutes(minutes)).toString();
+        else
+            throw new RuntimeException("Invalid minute value.");
     }
 }

@@ -100,8 +100,8 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
                 .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
 
-        logService.controlAreaCreated(controlArea.getName(), getTriggerNames(controlArea.getTriggers()),
-                getProgramNames(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
+        logService.controlAreaCreated(controlArea.getName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
+                getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
                 ApiRequestContext.getContext().getLiteYukonUser());
 
         return lmControlArea.getPAObjectID();
@@ -124,25 +124,31 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
                 .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
 
-        logService.controlAreaUpdated(lmControlArea.getPAOName(), getTriggerNames(controlArea.getTriggers()),
-                getProgramNames(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
-                ApiRequestContext.getContext().getLiteYukonUser());
+          logService.controlAreaUpdated(lmControlArea.getPAOName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
+          getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
+          ApiRequestContext.getContext().getLiteYukonUser());
 
         return lmControlArea.getPAObjectID();
     }
 
-    private String getTriggerNames(List<ControlAreaTrigger> triggerList) {
+    /**
+     * Return a string with comma separated trigger names for the provided LMControlAreaTrigger List.
+     */
+    private String getTriggerNamesString(Vector<LMControlAreaTrigger> triggerList) {
         if (CollectionUtils.isNotEmpty(triggerList)) {
-            List<String> triggerNameList = triggerList.stream()
-                                                      .map(trigger -> trigger.getTriggerType().getTriggerTypeValue().concat("(")
-                                                              .concat(trigger.getTriggerPointName().replace(":", " /")).concat(")"))
-                                                      .collect(Collectors.toList());
-            return String.join(", ", triggerNameList);
+            List<String> triggerNames = new ArrayList<String>();
+            triggerList.forEach(trigger -> {
+                triggerNames.add(trigger.toString());
+            });
+            return String.join(", ", triggerNames);
         }
         return null;
     }
 
-    private String getProgramNames(Vector<LMControlAreaProgram> programList) {
+    /**
+     * Return a string with comma separated program names for the provided LMControlAreaProgram List
+     */
+    private String getProgramNamesString(Vector<LMControlAreaProgram> programList) {
         if (CollectionUtils.isNotEmpty(programList)) {
             List<Integer> programIds = programList.stream()
                                                   .map(program -> program.getLmProgramDeviceID())

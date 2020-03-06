@@ -424,8 +424,8 @@ public class DevEventLogCreationService {
                 String programConstraintName = devEventLog.getIndicatorString() + "ProgramConstraintName";
                 PaoType loadGroupType = PaoType.LM_GROUP_EMETCON;
 
-                String startTime = "01.01";
-                String stopTime = "02.01";
+                String startTime = "01:01";
+                String stopTime = "02:01";
                 String triggerNames = "Threshold Point (Cart MCT-410iL (101)/ SP Test)";
                 String loadProgramNames ="ecobee program, direct program";
 

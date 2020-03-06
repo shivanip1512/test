@@ -1,7 +1,6 @@
 package com.cannontech.common.dr.setup;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.core.dao.LMGearDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteGear;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
 import com.cannontech.yukon.IDatabaseCache;
@@ -83,10 +81,9 @@ public class LMServiceHelper {
      * Return a list of abbreviated PAO names corresponding to paoId
      */
     public String getAbbreviatedPaoNames(List<Integer> paoIds) {
-        Map<Integer, LiteYukonPAObject> paoMaps = dbCache.getAllPaosMap();
+
         List<String> paoNameList = paoIds.stream()
-                                         .filter(id -> paoMaps.containsKey(id))
-                                         .map(id -> paoMaps.get(id).getPaoName())
+                                         .map(id -> dbCache.getAllPaosMap().get(id).getPaoName())
                                          .collect(Collectors.toList());
         return StringUtils.abbreviate(String.join(", ", paoNameList), 2000);
     }
