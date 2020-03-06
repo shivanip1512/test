@@ -995,11 +995,10 @@ public class LoadProgramSetupServiceImpl implements LoadProgramSetupService {
      * Returns Program Constraint from constraintId
      */
     private LiteLMConstraint getProgramConstraint(Integer constraintId) {
-        List<LiteLMConstraint> constraints = dbCache.getAllLMProgramConstraints();
-        LiteLMConstraint liteLMConstraint = constraints.stream()
-                                                       .filter(constraint -> constraint.getConstraintID() == constraintId)
-                                                       .findFirst()
-                                                       .get();
+        LiteLMConstraint liteLMConstraint = dbCache.getAllLMProgramConstraints().stream()
+                                                                                .filter(constraint -> constraint.getConstraintID() == constraintId)
+                                                                                .findFirst()
+                                                                                .get();
         return liteLMConstraint;
     }
 

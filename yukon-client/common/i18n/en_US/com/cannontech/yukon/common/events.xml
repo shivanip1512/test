@@ -1013,8 +1013,8 @@
     <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramCreated">Load program {1} of type {2} with program constraint={3}, gear(s)={4}, load group(s)={5} created by {6}.</entry>
     <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramUpdated">Load program {1} of type {2} with program constraint={3}, gear(s)={4}, load group(s)={5} updated by {6}.</entry>
     <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramDeleted">Load program {1} of type {2} deleted by {3}.</entry>
-    <entry key="yukon.common.events.dr.setup.loadProgram.gearCreated">Gear {1} of type {2} associated to load program={3} at order={7} created by {4}.</entry>
-    <entry key="yukon.common.events.dr.setup.loadProgram.gearDeleted">Gear {1} of type {2} associated to load program={3} at order={7} deleted by {4}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadProgram.gearCreated">Gear {1} of type {2} assigned to load program={3} at order={7} created by {4}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadProgram.gearDeleted">Gear {1} of type {2} assigned to load program={3} at order={7} deleted by {4}.</entry>
 
 </properties>
 
