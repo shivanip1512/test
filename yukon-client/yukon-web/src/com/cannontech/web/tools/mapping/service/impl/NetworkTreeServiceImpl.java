@@ -422,12 +422,13 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                     // if gateway doesn't exists in Yukon, RfnIdentifier is not enough information to create gateway
                     if (gatewayIds.containsKey(gatewayRfnIdentifier)) {
                         DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gatewayIds.get(gatewayRfnIdentifier),
-                                -1, treeGenerationEndTime);
+                                treeGenerationEndTime);
                         datas.put(deviceRfnIdentifier, data);
                     }
                 }
             });
 
+            Set<DynamicRfnDeviceData> deviceData = new HashSet<>();
             if (!response.isEmpty()) {
                 log.info("Sending request to NM for descendant count for {} devices", response.keySet().size());
                 Map<RfnIdentifier, RfnMetadataMultiQueryResult> descCountResponse = metadataMultiService
@@ -440,12 +441,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                                 .get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
                         DynamicRfnDeviceData data = datas.get(deviceRfnIdentifier);
                         data.setDescendantCount(descendantCount);
+                        deviceData.add(data);
                     }
                 });
-
-                Set<DynamicRfnDeviceData> deviceData = new HashSet<>(datas.values());
-                // remove entry that does not have DescendantCount
-                deviceData.removeIf(d -> d.getDescendantCount() == -1);
                 log.info("Updating device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
                 rfnDeviceDao.saveDynamicRfnDeviceData(deviceData);
                 log.info("Updated device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
