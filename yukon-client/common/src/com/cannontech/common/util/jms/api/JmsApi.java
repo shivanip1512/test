@@ -131,6 +131,14 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         return description;
     }
     
+    public boolean isTopic() {
+        return topic;
+    }
+
+    public Duration getTimeToLive() {
+        return timeToLive;
+    }
+
     public JmsCommunicationPattern getPattern() {
         return pattern;
     }
@@ -216,8 +224,8 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         result = prime * result + ((ackMessage == null) ? 0 : ackMessage.hashCode());
         result = prime * result + ((ackQueue == null) ? 0 : ackQueue.hashCode());
         result = prime * result + ((description == null) ? 0 : description.hashCode());
-        result = prime * result + ((topic == false) ? 0 : Boolean.hashCode(topic));
-        result = prime * result + ((timeToLive.isEqual(Duration.standardDays(1))) ? 0 : timeToLive.hashCode());
+        result = prime * result + (topic ? 1231 : 1237);
+        result = prime * result + timeToLive.hashCode();
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((pattern == null) ? 0 : pattern.hashCode());
         result = prime * result + ((queue == null) ? 0 : queue.hashCode());
@@ -314,18 +322,10 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         } else if (!senders.equals(other.senders)) {
             return false;
         }
-        if (topic == false) {
-            if (other.topic != false) {
-                return false;
-            }
-        } else if (topic && !other.topic) {
+        if (topic != other.topic) {
             return false;
         }
-        if (timeToLive.isEqual(Duration.standardDays(1))) {
-            if (!other.timeToLive.isEqual(Duration.standardDays(1))) {
-                return false;
-            }
-        } else if (!timeToLive.isEqual(other.timeToLive)) {
+        if (!timeToLive.isEqual(other.timeToLive)) {
             return false;
         }
         return true;
@@ -334,22 +334,6 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
     @Override
     public String toString() {
         return name;
-    }
-
-    public boolean isTopic() {
-        return topic;
-    }
-
-    public void setTopic(boolean topic) {
-        this.topic = topic;
-    }
-
-    public Duration getTimeToLive() {
-        return timeToLive;
-    }
-
-    public void setTimeToLive(Duration timeToLive) {
-        this.timeToLive = timeToLive;
     }
 
     public static class Builder<Rq extends Serializable,A extends Serializable,Rp extends Serializable> {
@@ -390,6 +374,9 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
             return this;
         }
         public Builder<Rq, A, Rp> timeToLive(Duration timeToLive) {
+            if (timeToLive == null) {
+                timeToLive = Duration.standardDays(1);
+            }
             this.timeToLive = timeToLive;
             return this;
         }
@@ -442,22 +429,6 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         public Builder<Rq,A,Rp> responseMessage(Class<Rp> responseMessage) {
             this.responseMessage = responseMessage;
             return this;
-        }
-
-        public boolean isTopic() {
-            return topic;
-        }
-
-        public void setTopic(boolean topic) {
-            this.topic = topic;
-        }
-
-        public Duration getTimeToLive() {
-            return timeToLive;
-        }
-
-        public void setTimeToLive(Duration timeToLive) {
-            this.timeToLive = timeToLive;
         }
     }
 }
