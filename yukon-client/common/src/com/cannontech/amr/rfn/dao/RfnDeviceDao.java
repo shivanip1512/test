@@ -166,4 +166,8 @@ public interface RfnDeviceDao {
      * Returns all data in the table, used by simulator
      */
     List<DynamicRfnDeviceData> getAllDynamicRfnDeviceData();
+    /**
+     * Returns device RfnIdentifiers by gateway ids
+     */
+    Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds);
 }
