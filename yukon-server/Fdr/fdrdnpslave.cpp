@@ -837,16 +837,14 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         {
             static const std::regex regularControlCommand
             { 
-                "^(control) *(open|close)",
+                "^control *(?:open|close)",
                 std::regex_constants::ECMAScript
                     | std::regex_constants::icase
             };
 
             std::smatch results;
 
-            std::regex_search( commandString, results, regularControlCommand );
-
-            isPassthroughControl = ( results.size() != 3 );
+            isPassthroughControl = ! std::regex_search( commandString, results, regularControlCommand );
         }
     }
 
