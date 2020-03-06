@@ -802,7 +802,7 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
 
     std::string commandString;
 
-    bool isPassthroughControl = false;
+    bool isPassthroughControl = true;
 
     {   // find out if it is a binary pass-through control....
         switch ( point.getControlType() )
@@ -844,11 +844,11 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
 
             std::smatch results;
 
-            isPassthroughControl = ! std::regex_search( commandString, results, regularControlCommand );
+            isPassthroughControl = std::regex_search( commandString, results, regularControlCommand );
         }
     }
 
-    if ( ! isPassthroughControl )   // a normal control operation
+    if ( isPassthroughControl )   // a normal control operation
     {
         //  Confirm SBO vs direct
         switch( control.action )
@@ -1313,7 +1313,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         return ControlStatus::Undefined;
     }
 
-    return waitForResponse(userMessageId);
+    return waitForResponse(userMessageId, true);
 }
 
 
@@ -1379,7 +1379,7 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isP
         {
             if( msg->UserMessageId() == userMessageId && ! msg->ExpectMore() )
             {
-                if ( ! isPassthroughControl )
+                if ( isPassthroughControl )
                 {
                     std::regex re { "Control result \\(([0-9]+)\\)" };
 

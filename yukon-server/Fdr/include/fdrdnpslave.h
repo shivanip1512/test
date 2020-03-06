@@ -124,7 +124,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         auto tryPorterAnalogOutput  (const Protocols::DnpSlave::analog_output_request &analog, const long pointId, const double multiplier) -> Protocols::DNP::ControlStatus;
         bool tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, const long pointId, const double multiplier);
 
-        auto waitForResponse(const long userMessageId, const bool isPassthroughControl = false) -> Protocols::DNP::ControlStatus;
+        auto waitForResponse(const long userMessageId, const bool isPassthroughControl) -> Protocols::DNP::ControlStatus;
 
         typedef std::map<CtiFDRDestination, DnpId> DnpDestinationMap;
         /** Map of DNP Send and Receive Translations */
