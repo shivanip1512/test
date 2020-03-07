@@ -429,6 +429,11 @@ public class DevEventLogCreationService {
                 PaoType loadProgramType = PaoType.LM_ITRON_PROGRAM;
                 GearControlMethod gearControlMethod = GearControlMethod.ItronCycle;
 
+                String startTime = "01:01";
+                String stopTime = "02:01";
+                String triggerNames = "Threshold Point (Cart MCT-410iL (101)/ SP Test)";
+                String loadProgramNames ="ecobee program, direct program";
+
                 boolean overrideConstraints = true;
                 boolean stopScheduled = true;
 
@@ -477,6 +482,15 @@ public class DevEventLogCreationService {
                 demandResponseEventLogService.loadGroupCreated(loadGroupName, loadGroupType, yukonUser);
                 demandResponseEventLogService.loadGroupUpdated(loadGroupName, loadGroupType, yukonUser);
                 demandResponseEventLogService.loadGroupDeleted(loadGroupName, loadGroupType, yukonUser);
+
+                demandResponseEventLogService.controlAreaCreated(controlAreaName, triggerNames, loadProgramNames, startTime, stopTime, yukonUser);
+                demandResponseEventLogService.controlAreaUpdated(controlAreaName, triggerNames, loadProgramNames, startTime, stopTime, yukonUser);
+                demandResponseEventLogService.controlAreaDeleted(controlAreaName, yukonUser);
+
+                demandResponseEventLogService.scenarioCreated(scenarioName, loadProgramNames, yukonUser);
+                demandResponseEventLogService.scenarioUpdated(scenarioName, loadProgramNames, yukonUser);
+                demandResponseEventLogService.scenarioDeleted(scenarioName, yukonUser);
+
                 // ProgramConstraint_Dr_Setup_Logging
                 demandResponseEventLogService.programConstraintCreated(programConstraintName, yukonUser);
                 demandResponseEventLogService.programConstraintUpdated(programConstraintName, yukonUser);
@@ -1233,7 +1247,7 @@ public class DevEventLogCreationService {
         DATA_STREAMING(DataStreamingEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 8),
-        DEMAND_RESPONSE(DemandResponseEventLogService.class, 48),
+        DEMAND_RESPONSE(DemandResponseEventLogService.class, 54),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
         ECOBEE(EcobeeEventLogService.class, 3),
