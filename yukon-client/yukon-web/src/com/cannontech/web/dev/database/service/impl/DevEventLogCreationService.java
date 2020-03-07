@@ -65,6 +65,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.dr.nest.model.v3.EnrollmentState;
 import com.cannontech.dr.nest.model.v3.RushHourEventType;
@@ -417,17 +418,16 @@ public class DevEventLogCreationService {
                 int startSeconds = 10;
                 int stopSeconds = 10;
                 int shedSeconds = 10;
+                int gearNumber = 3;
 
                 String programName = devEventLog.getIndicatorString() + "ProgramName";
                 String gearName = devEventLog.getIndicatorString() + "GearName";
                 String loadGroupName = devEventLog.getIndicatorString() + "LoadGroupName";
                 String programConstraintName = devEventLog.getIndicatorString() + "ProgramConstraintName";
+                String gearNames = devEventLog.getIndicatorString() + "GearName";
                 PaoType loadGroupType = PaoType.LM_GROUP_EMETCON;
-
-                String startTime = "01:01";
-                String stopTime = "02:01";
-                String triggerNames = "Threshold Point (Cart MCT-410iL (101)/ SP Test)";
-                String loadProgramNames ="ecobee program, direct program";
+                PaoType loadProgramType = PaoType.LM_ITRON_PROGRAM;
+                GearControlMethod gearControlMethod = GearControlMethod.ItronCycle;
 
                 boolean overrideConstraints = true;
                 boolean stopScheduled = true;
@@ -477,19 +477,16 @@ public class DevEventLogCreationService {
                 demandResponseEventLogService.loadGroupCreated(loadGroupName, loadGroupType, yukonUser);
                 demandResponseEventLogService.loadGroupUpdated(loadGroupName, loadGroupType, yukonUser);
                 demandResponseEventLogService.loadGroupDeleted(loadGroupName, loadGroupType, yukonUser);
-
-                demandResponseEventLogService.controlAreaCreated(controlAreaName, triggerNames, loadProgramNames, startTime, stopTime, yukonUser);
-                demandResponseEventLogService.controlAreaUpdated(controlAreaName, triggerNames, loadProgramNames, startTime, stopTime, yukonUser);
-                demandResponseEventLogService.controlAreaDeleted(controlAreaName, yukonUser);
-
-                demandResponseEventLogService.scenarioCreated(scenarioName, loadProgramNames, yukonUser);
-                demandResponseEventLogService.scenarioUpdated(scenarioName, loadProgramNames, yukonUser);
-                demandResponseEventLogService.scenarioDeleted(scenarioName, yukonUser);
-
                 // ProgramConstraint_Dr_Setup_Logging
                 demandResponseEventLogService.programConstraintCreated(programConstraintName, yukonUser);
                 demandResponseEventLogService.programConstraintUpdated(programConstraintName, yukonUser);
                 demandResponseEventLogService.programConstraintDeleted(programConstraintName, yukonUser);
+                // Load_Program_Dr_Setup_Logging
+                demandResponseEventLogService.loadProgramCreated(programName, loadProgramType, programConstraintName, gearNames, loadGroupName, yukonUser);
+                demandResponseEventLogService.loadProgramUpdated(programName, loadProgramType, programConstraintName, gearNames, loadGroupName, yukonUser);
+                demandResponseEventLogService.loadProgramDeleted(programName, loadProgramType, yukonUser);
+                demandResponseEventLogService.gearCreated(gearName, gearControlMethod.name(), programName, gearNumber, yukonUser);
+                demandResponseEventLogService.gearDeleted(gearName, gearControlMethod.name(), programName, gearNumber, yukonUser);
             }
         });
         executables.put(LogType.DEVICE_CONFIG, new DevEventLogExecutable() {
@@ -1236,7 +1233,7 @@ public class DevEventLogCreationService {
         DATA_STREAMING(DataStreamingEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 8),
-        DEMAND_RESPONSE(DemandResponseEventLogService.class, 49),
+        DEMAND_RESPONSE(DemandResponseEventLogService.class, 48),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 21),
         DISCONNECT(DisconnectEventLogService.class, 10),
         ECOBEE(EcobeeEventLogService.class, 3),
