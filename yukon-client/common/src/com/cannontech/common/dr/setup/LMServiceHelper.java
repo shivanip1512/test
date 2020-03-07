@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.LMGearDao;
@@ -11,10 +12,12 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteGear;
 import com.cannontech.dr.constraint.service.ProgramConstraintService;
 import com.cannontech.dr.loadprogram.service.LoadProgramSetupService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class LMServiceHelper {
 
+    @Autowired private IDatabaseCache dbCache;
     @Autowired private LMGearDao lmGearDao;
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired private ProgramConstraintService programConstraintService;
@@ -72,5 +75,16 @@ public class LMServiceHelper {
         return programConstraintService.getHolidaySchedules().stream()
                                                              .filter(lmdto -> lmdto.getId().compareTo(holidayScheduleId) == 0)
                                                              .findFirst();
+    }
+
+    /**
+     * Return a list of abbreviated PAO names corresponding to paoId
+     */
+    public String getAbbreviatedPaoNames(List<Integer> paoIds) {
+
+        List<String> paoNameList = paoIds.stream()
+                                         .map(id -> dbCache.getAllPaosMap().get(id).getPaoName())
+                                         .collect(Collectors.toList());
+        return StringUtils.abbreviate(String.join(", ", paoNameList), 2000);
     }
 }

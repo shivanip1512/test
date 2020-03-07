@@ -1,12 +1,18 @@
 package com.cannontech.dr.controlscenario.service.impl;
 
+import java.util.List;
+import java.util.Vector;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMServiceHelper;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -16,6 +22,7 @@ import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.device.lm.LMControlScenarioProgram;
 import com.cannontech.dr.setup.service.LMSetupService;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -23,6 +30,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private LMServiceHelper lmServiceHelper;
+    @Autowired private DemandResponseEventLogService logService;
     @Autowired private IDatabaseCache dbCache;
 
     @Override
@@ -34,6 +42,9 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         LMScenario lmScenario = getDBPersistent(controlScenario);
         controlScenario.buildDBPersistent(lmScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.INSERT);
+
+        logService.scenarioCreated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return lmScenario.getPAObjectID();
     }
 
@@ -47,9 +58,21 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         LMScenario lmScenario = getDBPersistent(controlScenario);
         controlScenario.buildDBPersistent(lmScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.UPDATE);
+
+        logService.scenarioUpdated(lmScenario.getPAOName(), getProgramNames(lmScenario.getAllThePrograms()),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return lmScenario.getPAObjectID();
     }
 
+    private String getProgramNames(Vector<LMControlScenarioProgram> allPrograms) {
+        if (CollectionUtils.isNotEmpty(allPrograms)) {
+            List<Integer> programIds = allPrograms.stream()
+                                                  .map(program -> program.getProgramID())
+                                                  .collect(Collectors.toList());
+            return lmServiceHelper.getAbbreviatedPaoNames(programIds);
+        }
+        return null;
+    }
     @Override
     public ControlScenario retrieve(int controlScenarioId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(controlScenarioId);
@@ -75,6 +98,7 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
 
         YukonPAObject lmScenario = (YukonPAObject) LiteFactory.createDBPersistent(controlScenario);
         dbPersistentDao.performDBChange(lmScenario, TransactionType.DELETE);
+        logService.scenarioDeleted(lmScenario.getPAOName(), ApiRequestContext.getContext().getLiteYukonUser());
         return lmScenario.getPAObjectID();
 
     }

@@ -62,6 +62,7 @@
     <entry key="yukon.common.events.key">Key</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
+    <entry key="yukon.common.events.loadProgramNames">Load Program Name(s)</entry>
     <entry key="yukon.common.events.macAddress">Mac Address</entry>
     <entry key="yukon.common.events.media">Media</entry>
     <entry key="yukon.common.events.message">Message</entry>
@@ -111,6 +112,7 @@
     <entry key="yukon.common.events.taskName">Task Name</entry>
     <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
     <entry key="yukon.common.events.totalCount">Total</entry>
+    <entry key="yukon.common.events.triggerNames">Trigger Name(s)</entry>
     <entry key="yukon.common.events.type">Type</entry>
     <entry key="yukon.common.events.unsupportedCount">Unsupported</entry>
     <entry key="yukon.common.events.username">Username</entry>
@@ -469,6 +471,16 @@
     <entry key="yukon.common.events.dr.setup.loadGroup.loadGroupCreated">Load group {1} of type {2} created by {3}.</entry>
     <entry key="yukon.common.events.dr.setup.loadGroup.loadGroupUpdated">Load group {1} of type {2} updated by {3}.</entry>
     <entry key="yukon.common.events.dr.setup.loadGroup.loadGroupDeleted">Load group {1} of type {2} deleted by {3}.</entry>
+
+    <!-- DR setup Scenario -->
+    <entry key="yukon.common.events.dr.setup.scenario.scenarioCreated">Scenario {1} with load programs(s)={2} created by {3}.</entry>
+    <entry key="yukon.common.events.dr.setup.scenario.scenarioUpdated">Scenario {1} with load programs(s)={2} updated by {3}.</entry>
+    <entry key="yukon.common.events.dr.setup.scenario.scenarioDeleted">Scenario {1} deleted by {2}.</entry>
+
+    <!-- DR setup control Area -->
+    <entry key="yukon.common.events.dr.setup.controlArea.controlAreaCreated">Control area {1} with trigger(s)={2}, load program(s)={3}, control window start time (HH:mm)={4} and stop time (HH:mm)={5} created by {6}.</entry>
+    <entry key="yukon.common.events.dr.setup.controlArea.controlAreaUpdated">Control area {1} with trigger(s)={2}, load program(s)={3}, control window start time (HH:mm)={4} and stop time (HH:mm)={5} updated by {6}.</entry>
+    <entry key="yukon.common.events.dr.setup.controlArea.controlAreaDeleted">Control area {1} deleted by {2}.</entry>
 
     <!-- Program -->
     <entry key="yukon.common.events.dr.program.threeTierProgramScheduled">Program {2} start scheduled at {11} by {1} via 3-Tier.</entry>

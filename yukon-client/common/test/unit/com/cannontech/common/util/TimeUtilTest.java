@@ -246,4 +246,31 @@ public class TimeUtilTest {
         DateTime nullDate = null;
         assertEquals(nullDate + " is not future date." , false , TimeUtil.isFutureDate(nullDate));
     }
+    @Test
+    public void test_fromMinutesToHHmm_nonZeroMaximum() {
+        int minutes = 1440;
+        assertEquals("00:00", TimeUtil.fromMinutesToHHmm(minutes));
+    }
+
+    @Test
+    public void test_fromMinutesToHHmm_nonZero() {
+        int minutes = 1439;
+        assertEquals("23:59", TimeUtil.fromMinutesToHHmm(minutes));
+    }
+
+    @Test
+    public void test_fromMinutesToHHmm_zero() {
+        int minutes = 0;
+        assertEquals("00:00", TimeUtil.fromMinutesToHHmm(minutes));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void test_fromMinutesToHHmm_invalidNegative() {
+        TimeUtil.fromMinutesToHHmm(-1);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void test_fromMinutesToHHmm_invalidPositive() {
+        TimeUtil.fromMinutesToHHmm(1441);
+    }
 }
