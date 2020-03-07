@@ -115,7 +115,8 @@ yukon.widget.dataCollection = (function () {
     
     /** Update the existing pie chart. */
     _updateChart = function (chart, data) {
-        chart.highcharts().series[0].setData(data);
+        chart.find('.highcharts-legend-item').remove();
+        chart.highcharts().series[0].setData(data, true, false, false);
     },
     
     /** Update the page every so many seconds */

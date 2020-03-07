@@ -84,17 +84,17 @@ public:
 // This will be used to sort these things in a CtiQueue.
 namespace std
 {
-  template <> struct greater<CtiMessage*>
-  {
-    bool operator()(CtiMessage const* p1, CtiMessage const* p2)
+    template <> struct greater<const CtiMessage*>
     {
-      if(!p1)
-        return true;
-      if(!p2)
-        return false;
-      return *p1 > *p2;
-    }
-  };
+        bool operator()(CtiMessage const* p1, CtiMessage const* p2)
+        {
+            if(!p1)
+                return true;
+            if(!p2)
+                return false;
+            return *p1 > *p2;
+        }
+    };
 };
 
 

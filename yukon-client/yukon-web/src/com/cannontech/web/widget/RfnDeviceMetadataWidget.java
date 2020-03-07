@@ -16,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -27,7 +28,6 @@ import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
@@ -126,9 +126,9 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                     .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(), Set.of(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM));
             RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
 
-            RfnDevice gateway = rfnDeviceDao.findGatewayForDeviceId(device.getPaoIdentifier().getPaoId());
-            if (gateway != null) {
-                metadata.put(RfnMetadata.PRIMARY_GATEWAY, gateway.getName());
+            DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(device.getPaoIdentifier().getPaoId());
+            if (deviceData != null) {
+                metadata.put(RfnMetadata.PRIMARY_GATEWAY, deviceData.getGateway().getName());
             }
 
             if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM)) {

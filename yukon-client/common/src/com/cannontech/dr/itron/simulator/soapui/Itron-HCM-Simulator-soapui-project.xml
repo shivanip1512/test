@@ -6992,8 +6992,8 @@ requestContext.randJobId = random.nextInt(10000)</con:script><con:responseConten
 </soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="urn:com:ssn:dr:xmlschema:service:v1.6:ProgramEventManager/ProgramEventManagerPortType/cancelHANLoadControlProgramEventOnDevicesResponse"/></con:response><con:response name="Mock SoapFault Response" id="9d7a83e3-d705-4e57-b5f9-4c36a4ab86dd" httpResponseStatus="500" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:com:ssn:dr:xmlschema:service:v1.1:BasicTypes.xsd">
   <soapenv:Body>
     <soapenv:Fault>
-      <faultcode>soapenv:Client</faultcode>
-      <faultstring>Improperly formatted message.</faultstring>
+      <faultcode>SOAP-ENV:Server</faultcode>
+      <faultstring>The Event has already been completed</faultstring>
       <!--Optional:-->
       <faultactor>http://localhost:8083/DeviceManagerPort</faultactor>
       <!--Optional:-->
@@ -7001,8 +7001,8 @@ requestContext.randJobId = random.nextInt(10000)</con:script><con:responseConten
         <urn:ErrorFault>
           <!--1 or more repetitions:-->
           <urn:Error>
-            <urn:ErrorCode>INVALID_MESSAGE</urn:ErrorCode>
-            <urn:ErrorMessage>Itron documentation does not detail possible errors.</urn:ErrorMessage>
+            <urn:ErrorCode>Done.programEventID</urn:ErrorCode>
+            <urn:ErrorMessage>The Event with ID 000 has already been completed.</urn:ErrorMessage>
           </urn:Error>
         </urn:ErrorFault>
         <!--You may enter ANY elements at this point-->

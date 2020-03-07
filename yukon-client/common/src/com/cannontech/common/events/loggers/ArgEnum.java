@@ -39,7 +39,9 @@ public enum ArgEnum {
     fileName, 
     frequency,
     gatewayName, //Zigbee gateway, not RF gateway
+    gearControlMethod,
     gearName,
+    gearNumber,
     globalSettingType,
     globalSettingValue,
     group,

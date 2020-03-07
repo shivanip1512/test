@@ -10,6 +10,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
+import com.cannontech.common.rfn.message.node.NodeNetworkInfo;
 import com.cannontech.common.rfn.message.route.RfnRoute;
 import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.message.tree.RfnVertex;
@@ -37,7 +38,16 @@ public enum RfnMetadataMulti implements Serializable {
     //         RfnMetadata.NODE_ADDRESS
     //         RfnMetadata.NODE_FIRMWARE_VERSION
     //         RfnMetadata.NODE_TYPE
+    //         RfnMetadata.PRODUCT_NUMBER
+    //         RfnMetadata.SUB_MODULE_FIRMWARE_VERSION
+    //         RfnMetadata.WIFI_SUPER_METER_DATA
     NODE_DATA(NodeData.class, 1000, EntityType.NODE),
+    
+    // Replace RfnMetadata.GROUPS
+    // Replace RfnMetadata.NODE_NAMES
+    // Replace RfnMetadata.IPV6_ADDRESS
+    // Replace RfnMetadata.HOSTNAME
+    NODE_NETWORK_INFO(NodeNetworkInfo.class, 1000, EntityType.NODE),
 
     // Replace RfnMetadata.NUM_ASSOCIATIONS
     // Note: null indicates the meter doesn't support battery node association.

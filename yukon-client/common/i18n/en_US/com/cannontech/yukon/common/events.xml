@@ -48,7 +48,9 @@
     <entry key="yukon.common.events.fileName">File Name</entry>
     <entry key="yukon.common.events.frequency">Frequency</entry>
     <entry key="yukon.common.events.gatewayName">Gateway Name</entry>
+    <entry key="yukon.common.events.gearControlMethod">Gear Control Method</entry>
     <entry key="yukon.common.events.gearName">Gear Name</entry>
+    <entry key="yukon.common.events.gearNumber">Gear Number</entry>
     <entry key="yukon.common.events.globalSettingType">Global Setting</entry>
     <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
     <entry key="yukon.common.events.group">Group</entry>
@@ -1018,6 +1020,13 @@
     <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintCreated">Program constraint {1} created by {2}.</entry>
     <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintUpdated">Program constraint {1} updated by {2}.</entry>
     <entry key="yukon.common.events.dr.setup.programConstraint.programConstraintDeleted">Program constraint {1} deleted by {2}.</entry>
+
+    <!-- DR Setup Load Program -->
+    <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramCreated">Load program {1} of type {2} with program constraint={3}, gear(s)={4}, load group(s)={5} created by {6}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramUpdated">Load program {1} of type {2} with program constraint={3}, gear(s)={4}, load group(s)={5} updated by {6}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramDeleted">Load program {1} of type {2} deleted by {3}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadProgram.gearCreated">Gear {1} of type {2} assigned to load program={3} at order={7} created by {4}.</entry>
+    <entry key="yukon.common.events.dr.setup.loadProgram.gearDeleted">Gear {1} of type {2} assigned to load program={3} at order={7} deleted by {4}.</entry>
 
 </properties>
 

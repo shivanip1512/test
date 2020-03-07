@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -120,37 +121,37 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public Map<RfnIdentifier, RfnIdentifier> getDeviceToGatewayMap() {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
 
     @Override
-    public void saveDynamicRfnDeviceData(Map<RfnDevice, RfnDevice> nodes) {
+    public void saveDynamicRfnDeviceData(Set<DynamicRfnDeviceData> datas) {
         throw new MethodNotImplementedException();
     }
 
     @Override
-    public RfnDevice findGatewayForDeviceId(Integer deviceId) {
+    public List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
 
     @Override
-    public Map<Integer, Integer> getDevicesToGateways(List<Integer> deviceIds) {
+    public DynamicRfnDeviceData findDynamicRfnDeviceData(Integer deviceId) {
         throw new MethodNotImplementedException();
     }
 
     @Override
-    public Map<Integer, Collection<Integer>> getGatewaysToDevicesByDevices(Iterable<Integer> deviceIds) {
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds) {
         throw new MethodNotImplementedException();
     }
 
     @Override
-    public Map<Integer, Collection<Integer>> getGatewaysToDevicesByGateways(Iterable<Integer> gatewayIds) {
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds) {
         throw new MethodNotImplementedException();
     }
+
+    @Override
+    public List<DynamicRfnDeviceData> getAllDynamicRfnDeviceData() {
+        throw new MethodNotImplementedException();
+    }  
 }

@@ -180,7 +180,7 @@ vector<CtiLMControlArea*> CtiLMControlAreaStore::findControlAreasByPointID(long 
 {
     vector<CtiLMControlArea*> retVal;
 
-    std::multimap< long, long >::_Pairii range = _point_control_area_map.equal_range(point_id);
+    auto range = _point_control_area_map.equal_range(point_id);
     for( ; range.first != range.second; ++range.first )
     {
         CtiLMControlArea* area = getLMControlArea(range.first->second);

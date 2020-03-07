@@ -5492,16 +5492,16 @@ JavaScript :
     notes : 
 
   - project : highstock
-    version : 6.0.4
+    version : 8.0.0
     project URL : "https://www.highcharts.com/blog/products/highstock/"
     license : Eaton-owned
     license URLs : n/a
-    npm URL : "https://www.npmjs.com/package/highcharts/v/6.0.4"
-    md5 : bd0fbb0cd958c9ee5f31dd05d46ba3c4
-    sha1 : 0a3f528572645aa0a9f695df9280cb1b0b7e0cb7
-    jira : YUK-17366
-    updated : 2017-12-20
-    notes : 
+    npm URL : "https://www.npmjs.com/package/highcharts/v/8.0.0"
+    md5 : 64082fd2a0792f16762669a1c8abe090
+    sha1 : 8834f42a88f83666390b328092c63f7c9da982d4
+    jira : YUK-21140
+    updated : 2020-02-27
+    notes : Used for charting
 
   - project : jqgrid
     version : 4.5.1

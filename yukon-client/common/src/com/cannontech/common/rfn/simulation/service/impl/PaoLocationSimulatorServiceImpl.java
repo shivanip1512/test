@@ -2,7 +2,7 @@ package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
@@ -134,7 +135,8 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
 
         List<PaoLocation> newLocations = new ArrayList<>();
 
-        Map<RfnDevice, RfnDevice> deviceToGateway = new HashMap<>();
+        Instant now = Instant.now();
+        Set<DynamicRfnDeviceData> datas = new HashSet<>();
         for (RfnGateway gateway : gateways) {
             List<LiteYukonPAObject> rfnDevices = rfnDevicesSplit.get(deviceChunkCounter);
             if (rfnDevices == null) {
@@ -154,10 +156,10 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
                 log.info("creating  location for none rfn devices {}", noneRfnDevices.size());
                 addDeviceLocations(radius, newLocations, gatewayLocation, noneRfnDevices);
             }
-            updateDeviceToGatewayMapping(gateway, rfnDevices, deviceToGateway);
+            addDeviceToGatewayMapping(gateway, rfnDevices, datas, now);
             deviceChunkCounter++;
         }
-        rfnDeviceDao.saveDynamicRfnDeviceData(deviceToGateway);
+        rfnDeviceDao.saveDynamicRfnDeviceData(datas);
         log.info("Inserting {} locations.", newLocations.size());
         paoLocationDao.save(newLocations);
         log.info("Inserting {} locations is done.", newLocations.size());
@@ -180,11 +182,19 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         return gateways;
     }
 
-    private void updateDeviceToGatewayMapping(RfnGateway gateway,
-            List<LiteYukonPAObject> devicesForGateway, Map<RfnDevice, RfnDevice> deviceToGateway) {
+    private void addDeviceToGatewayMapping(RfnGateway gateway,
+            List<LiteYukonPAObject> devicesForGateway, Set<DynamicRfnDeviceData> datas, Instant now) {
         List<Integer> deviceIds = devicesForGateway.stream().map(device -> device.getLiteID()).collect(Collectors.toList());
         List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds);
-        rfnDevices.forEach(device -> deviceToGateway.put(device, gateway));
+        rfnDevices.forEach(device -> {
+            DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gateway, getRandomNumberInRange(1, 130), now);
+            datas.add(data);
+        });
+    }
+    
+    private int getRandomNumberInRange(int min, int max) {
+        Random r = new Random();
+        return r.nextInt((max - min) + 1) + min;
     }
 
     /**
