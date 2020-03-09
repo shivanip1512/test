@@ -28,7 +28,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
     private String name;
     private String description;
     private boolean topic;
-    private Duration timeToLive = Duration.standardDays(1);
+    private Duration timeToLive;
     private final JmsCommunicationPattern pattern;
     private final Set<JmsCommunicatingService> senders;
     private final Set<JmsCommunicatingService> receivers;
@@ -340,7 +340,7 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         private String name;
         private String description;
         private boolean topic;
-        private Duration timeToLive;
+        private Duration timeToLive = Duration.standardDays(1);
         private JmsCommunicationPattern pattern;
         private Set<JmsCommunicatingService> senders;
         private Set<JmsCommunicatingService> receivers;

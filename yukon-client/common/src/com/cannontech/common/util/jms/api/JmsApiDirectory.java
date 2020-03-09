@@ -13,8 +13,6 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.Duration;
-
 import com.cannontech.amr.monitors.message.DeviceDataMonitorMessage;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusRequest;
 import com.cannontech.amr.monitors.message.DeviceDataMonitorStatusResponse;
@@ -319,7 +317,6 @@ public final class JmsApiDirectory {
             JmsApi.builder(EnrollmentJmsMessage.class)
                   .name("DR Enrollment/UnEnrollment Notification")
                   .description("Send Demand Response Notification related to Enrollment/UnEnrollment to other Integrated systems")
-                  .timeToLive(Duration.standardDays(1))
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(EnrollmentJmsMessage.class)
@@ -1106,7 +1103,6 @@ public final class JmsApiDirectory {
             JmsApi.builder(OptOutOptInJmsMessage.class)
                   .name("DR OptOut/OptIn Notification")
                   .description("Send Demand Response Notification related to OptOut/OptIn to other Integrated systems")
-                  .timeToLive(Duration.standardDays(1))
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(OptOutOptInJmsMessage.class)
@@ -1131,7 +1127,6 @@ public final class JmsApiDirectory {
             JmsApi.builder(DrProgramStatusJmsMessage.class)
                   .name("DR Program Status Notification")
                   .description("Send Program Status Notification to other Integrated systems")
-                  .timeToLive(Duration.standardDays(1))
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.dr.DRNotificationMessage"))
                   .requestMessage(DrProgramStatusJmsMessage.class)
