@@ -55,6 +55,7 @@
         <copy todir="${cloud.build.dir}/Client/bin" preservelastmodified="true">
             <fileset dir="yukon-client/tools/src/main/resources" includes="setjavapath.bat" />
             <fileset dir="yukon-applications/cloud-service/conf"/>
+        	<fileset dir="yukon-applications/cloud-service/src/main/resources" includes="cloudservice.properties"/>
             <fileset dir="yukon-client/lib">
                 <include name="yukon-cloud-service.jar"/>
             </fileset>
