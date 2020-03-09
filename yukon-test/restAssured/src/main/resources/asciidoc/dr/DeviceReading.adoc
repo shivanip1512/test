@@ -5,9 +5,6 @@
 :toclevels: 4
 :sectlinks:
 
-
-==== Device Reading
-
 *Request Properties* :
 
 include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/request-fields.adoc[]
