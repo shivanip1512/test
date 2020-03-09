@@ -5,6 +5,7 @@ import com.eaton.elements.DropDownSearchElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 
 public class CreateMeterModal extends BaseModal {
 
@@ -51,5 +52,5 @@ public class CreateMeterModal extends BaseModal {
     
     public TrueFalseCheckboxElement getStatus() {
         return new TrueFalseCheckboxElement(this.driverExt, "disabled", PARENT_NAME);
-    }        
+    }     
 }

@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.ScenarioDetailPage;
@@ -23,7 +23,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_14_DeleteScenario"})
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario" })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Scenario: AT Scenario";
         
@@ -36,7 +36,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }    
     
-    @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_14_DeleteScenario"})
+    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario"})
     public void deleteScenarioSuccess() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
         

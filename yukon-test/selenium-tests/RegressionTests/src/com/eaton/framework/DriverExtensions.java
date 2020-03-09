@@ -21,7 +21,11 @@ public class DriverExtensions {
     }
     
     public WebDriverWait getDriverWait() {
-        return driverWait;
+        return this.driverWait;
+    }
+    
+    public WebDriver getDriver() {
+        return this.driver;
     }
     
     public WebDriverWait getDriverWait(Optional<Integer> timeOutSeconds) {

@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.AreaDetailPage;
 import com.eaton.pages.capcontrol.AreaEditPage;
@@ -26,7 +26,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Area: AT Area";
         
@@ -39,7 +39,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void editAreaNameOnlySuccess() {   
         final String EXPECTED_MSG = "Area was saved successfully.";
         
@@ -63,7 +63,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }      
     
-    @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteAreaSuccess() {
         final String EXPECTED_MSG = "Area AT Delete Area deleted successfully.";
         

@@ -1,13 +1,17 @@
 package com.eaton.elements;
 
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import com.eaton.framework.DriverExtensions;
 
 public class TextEditElement extends EditElement {
     
+    private DriverExtensions driverExt;
+    
     public TextEditElement(DriverExtensions driverExt, String elementName) {
-        super(driverExt, elementName);
+        super(driverExt, elementName); 
+        this.driverExt = driverExt;
     }
     
     public TextEditElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
@@ -26,6 +30,8 @@ public class TextEditElement extends EditElement {
         WebElement input = getEditElement();
         
         input.clear();
-        input.sendKeys(value);
+        
+        Actions action = new Actions(this.driverExt.getDriver());
+        action.sendKeys(input, value).build().perform();
     }
 }

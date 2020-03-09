@@ -14,6 +14,6 @@ public class CopyLoadGroupModal extends BaseModal {
     }
     
     public TextEditElement getName() {
-        return new TextEditElement(this.driverExt, "name");
+        return new TextEditElement(this.driverExt, "name", getModal());
     }
 }

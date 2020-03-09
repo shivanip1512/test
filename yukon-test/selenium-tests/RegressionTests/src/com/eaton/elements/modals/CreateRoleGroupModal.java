@@ -4,15 +4,13 @@ import com.eaton.elements.MultiLineTextElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class RoleGroupCreateModal extends BaseModal {
+public class CreateRoleGroupModal extends BaseModal {
 
     private DriverExtensions driverExt;
     private TextEditElement name;
     private MultiLineTextElement description;
     
-    // TODO cancel and save buttons do not have a unique way to select them
-    
-    public RoleGroupCreateModal(DriverExtensions driverExt, String modalName) {
+    public CreateRoleGroupModal(DriverExtensions driverExt, String modalName) {
         super(driverExt, modalName);
         
         this.driverExt = driverExt;

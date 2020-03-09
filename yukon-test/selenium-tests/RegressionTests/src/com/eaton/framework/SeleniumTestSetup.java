@@ -36,6 +36,8 @@ public class SeleniumTestSetup {
 
     private static Random randomNum;
 
+    private static boolean loggedIn = false;
+
     @BeforeSuite
     public static void beforeSuite() {
 
@@ -94,10 +96,11 @@ public class SeleniumTestSetup {
     }
 
     public static void login() {
+        if (!loggedIn) {
+            LoginPage loginPage = new LoginPage(SeleniumTestSetup.driverExt, getBaseUrl());
 
-        LoginPage loginPage = new LoginPage(SeleniumTestSetup.driverExt, getBaseUrl());
-
-        loginPage.login();
+            loggedIn = loginPage.login();
+        }
     }
 
     public static WebDriver getDriver() {
@@ -191,7 +194,7 @@ public class SeleniumTestSetup {
 
         while (!found && System.currentTimeMillis() - startTime < (waitTime * 2)) {
             found = SeleniumTestSetup.driverExt.getDriverWait(Optional.of(waitTime))
-                    .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));            
+                    .until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector(".page-heading"), pageTitle));
         }
 
         // add code to throw an exception if the url is not loaded

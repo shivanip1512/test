@@ -4,7 +4,7 @@ import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class UserCreateModal extends BaseModal {
+public class CreateUserModal extends BaseModal {
 
     private DriverExtensions driverExt;
     private TextEditElement userName;
@@ -19,7 +19,7 @@ public class UserCreateModal extends BaseModal {
     // TODO enable/disable is a new kind of checkbox, should this be changed to match the others?
     // TODO cancel and save buttons do not have a unique way to select them
 
-    public UserCreateModal(DriverExtensions driverExt, String modalName) {
+    public CreateUserModal(DriverExtensions driverExt, String modalName) {
         super(driverExt, modalName);
 
         this.driverExt = driverExt;

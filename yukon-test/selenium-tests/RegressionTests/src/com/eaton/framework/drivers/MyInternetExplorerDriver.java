@@ -16,7 +16,6 @@ public final class MyInternetExplorerDriver {
 
     }
 
-    @SuppressWarnings("deprecation")
     public static WebDriver getNewInternetExplorerDriver(boolean useRemoteDriver, String driverLocation) {
         WebDriver driver;
 
@@ -30,7 +29,7 @@ public final class MyInternetExplorerDriver {
         options.disableNativeEvents();
         options.ignoreZoomSettings();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-        options.enableNativeEvents();
+        options.setCapability(InternetExplorerDriver.NATIVE_EVENTS, true);
         options.requireWindowFocus();
 
         if (useRemoteDriver) {

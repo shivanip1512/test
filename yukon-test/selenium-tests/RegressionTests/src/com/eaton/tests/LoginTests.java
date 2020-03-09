@@ -14,6 +14,7 @@ public class LoginTests extends SeleniumTestSetup {
 
     LoginPage page;
 
+    //todo need to refactor this test class
     @Test(enabled = false)
     public void loginSuccessfully() {
         final String EXPECTED_TITLE = "Dashboard: Default Main Dashboard";
@@ -24,9 +25,9 @@ public class LoginTests extends SeleniumTestSetup {
 
         page = new LoginPage(driverExt, null);
 
-        page.setUserName("ea");
-        page.setPassword("ea");
-        page.loginClick();
+        page.getUserName().setInputValue("ea");
+        page.getPassword().setInputValue("ea");
+        page.getLoginBtn().click();
 
         DefaultMainDashboardPage dashboardPage = new DefaultMainDashboardPage(driverExt, null);
         String actualPageTitle = dashboardPage.getPageTitle();

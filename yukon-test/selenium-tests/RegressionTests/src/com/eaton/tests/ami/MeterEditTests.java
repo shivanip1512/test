@@ -11,7 +11,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.EditMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
@@ -29,7 +29,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_07_editRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
     public void editMeterRfn420flSuccess() {
         navigate(Urls.Ami.METER_DETAIL + "492");
 
@@ -52,7 +52,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, METER + name + UPDATED, "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_07_editRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
     public void editMeterRfn430Sl4Success() {
         navigate(Urls.Ami.METER_DETAIL + "586");
 
@@ -75,7 +75,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, METER + name + UPDATED, "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_07_editRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
     public void editMeterRfn530S4xSuccess() {
         navigate(Urls.Ami.METER_DETAIL + "587");
 
@@ -98,7 +98,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, METER + name + UPDATED, "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
     }
     
-    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
+    @Test(enabled = false, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
     public void deleteMeterRfn530S4xSuccess() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-530S4x deleted successfully.";
         
@@ -121,7 +121,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg '" + EXPECTED_MSG + "' but found " + userMsg);
     }
     
-    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
+    @Test(enabled = false, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
     public void deleteMeterRfn420flSuccess() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-420fL deleted successfully.";
         
@@ -144,7 +144,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg '" + EXPECTED_MSG + "' but found " + userMsg);
     }
     
-    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
+    @Test(enabled = false, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
     public void deleteMeterRfn430Sl4Success() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-430SL4 deleted successfully.";
         

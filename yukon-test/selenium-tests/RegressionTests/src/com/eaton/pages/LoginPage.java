@@ -1,41 +1,53 @@
 package com.eaton.pages;
 
-import java.util.Optional;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-
+import com.eaton.elements.Button;
+import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.ValidUserLogin;
 
 public class LoginPage extends PageBase {
-    
+
+    private boolean loggedIn;
+
     public LoginPage(DriverExtensions driverExt, String pageUrl) {
         super(driverExt, pageUrl);
-        
+
         SeleniumTestSetup.navigateToLoginPage();
         requiresLogin = false;
+        loggedIn = false;
     }
 
-    public void login() {
+    public void login(String userName, String password) {
+        getUserName().setInputValue(userName);
+        getPassword().setInputValue(password);
 
-        setUserName(ValidUserLogin.getUserName());
-        setPassword(ValidUserLogin.getPassword());
-
-        loginClick();
+        getLoginBtn().click();
     }
 
-    public void setUserName(String userName) {
-        WebElement el = this.driverExt.findElement(By.id("login_email"), Optional.empty());
-        el.sendKeys(userName);
+    public boolean login() {
+
+        if (!loggedIn) {
+            getUserName().setInputValue(ValidUserLogin.getUserName());
+            getPassword().setInputValue(ValidUserLogin.getPassword());
+
+            getLoginBtn().click();
+
+            loggedIn = true;
+        }
+
+        return loggedIn;
     }
 
-    public void setPassword(String password) {
-        this.driverExt.findElement(By.id("login_password"), Optional.empty()).sendKeys(password);
+    public TextEditElement getUserName() {
+        return new TextEditElement(this.driverExt, "USERNAME");
     }
 
-    public void loginClick() {
-        this.driverExt.findElement(By.name("login"), Optional.empty()).click();
+    public TextEditElement getPassword() {
+        return new TextEditElement(this.driverExt, "PASSWORD");
+    }
+
+    public Button getLoginBtn() {
+        return new Button(this.driverExt, "Login");
     }
 }

@@ -14,7 +14,7 @@ import org.testng.annotations.Test;
 import com.eaton.elements.modals.CreateMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.ami.AmiDashboardPage;
 import com.eaton.pages.ami.MeterDetailsPage;
@@ -42,9 +42,9 @@ public class MeterCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
     public void createMeterRfn420flSuccess() {
-        CreateMeterModal createModal = amiDashboardPage.showCreateMeterModal();
+        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);
@@ -70,9 +70,9 @@ public class MeterCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, METER + name + CREATED, "Expected User Msg: 'Meter" + name + " created successfully.' but found: " + userMsg);
     }
 
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
     public void createMeterRfn430Sl4Success() {
-        CreateMeterModal createModal = amiDashboardPage.showCreateMeterModal();
+        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);
@@ -98,10 +98,10 @@ public class MeterCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, METER + name + CREATED, "Expected User Msg: 'Meter" + name + " created successfully.' but found: " + userMsg);
     }
     
-    @Test(groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_06_createRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
     public void createMeterRfn530S4xSuccess() {
 
-        CreateMeterModal createModal = amiDashboardPage.showCreateMeterModal();
+        CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
         int meterNumber = randomNum.nextInt(999999);
         int serialNumber = randomNum.nextInt(99999999);

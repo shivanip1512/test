@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CbcDetailPage;
 import com.eaton.pages.capcontrol.CbcEditPage;
@@ -26,7 +26,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects" })
+    @Test(enabled = false, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects" })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "CBC: AT CBC";
         
@@ -39,7 +39,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
 
-    @Test(enabled = false, groups = { TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects" })
+    @Test(enabled = false, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects" })
     public void editCbcRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CBC was saved successfully.";
         
@@ -63,7 +63,7 @@ public class CbcEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }
     
-    @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteCbcSuccess() {
         final String EXPECTED_MSG = "Deleted CBC";
         

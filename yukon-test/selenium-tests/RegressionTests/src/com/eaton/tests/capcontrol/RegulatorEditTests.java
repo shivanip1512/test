@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.RegulatorDetailPage;
 import com.eaton.pages.capcontrol.RegulatorEditPage;
@@ -25,7 +25,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();        
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Regulator: AT Regulator";
         
@@ -38,7 +38,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void editRegulatorUpdateNameOnlySuccess() {
         
         navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
@@ -65,7 +65,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, "Regulator: " + name, "Expected Page title: 'Regulator: " + name + "' but found: " + actualPageTitle);
     }   
     
-    @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteRegulatorSuccess() {
         
         navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);

@@ -4,7 +4,7 @@ import com.eaton.elements.MultiLineTextElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 
-public class UserGroupCreateModal extends BaseModal {
+public class CreateUserGroupModal extends BaseModal {
 
     private DriverExtensions driverExt;
     private TextEditElement name;
@@ -13,7 +13,7 @@ public class UserGroupCreateModal extends BaseModal {
     // TODO no unique way to get modal
     // TODO cancel and save buttons do not have a unique way to select them
     
-    public UserGroupCreateModal(DriverExtensions driverExt, String modalName) {
+    public CreateUserGroupModal(DriverExtensions driverExt, String modalName) {
         super(driverExt, modalName);
         
         this.driverExt = driverExt;

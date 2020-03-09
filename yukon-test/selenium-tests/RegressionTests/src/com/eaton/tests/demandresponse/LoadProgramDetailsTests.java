@@ -11,7 +11,7 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CopyLoadGroupModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
-import com.eaton.framework.TestNgGroupConstants;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
@@ -26,7 +26,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_07_CopyLoadPgm()()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_07_CopyLoadPgm()()"})
     public void pageTitleCorrect() {        
         final String EXPECTED_TITLE = "Load Program: AT Load Program";
         
@@ -39,7 +39,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_07_CopyLoadPgm()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_07_CopyLoadPgm()"})
     public void copyLoadProgramSuccess() {
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
@@ -63,7 +63,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, name +" copied successfully.", "Expected User Msg: '" + name +" copied successfully.' but found: " + userMsg);
     }
     
-    @Test(enabled = false, groups = {TestNgGroupConstants.SMOKE_TESTS, "SM06_08_DeleteLoadPgm()"})
+    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_08_DeleteLoadPgm()"})
     public void deleteLoadProgramSuccess() {
         final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
         
