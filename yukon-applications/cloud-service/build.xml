@@ -6,7 +6,6 @@
     <target name="all" depends="clean,build" />
 
     <target name="build">
-    	   <antcall target="build-cloud"/>
         <echo message="Building Jar : yukon-cloud-service.jar"/>
         <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
