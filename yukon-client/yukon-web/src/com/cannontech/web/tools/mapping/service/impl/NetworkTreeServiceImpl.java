@@ -444,6 +444,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                         deviceData.add(data);
                     }
                 });
+
                 log.info("Updating device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
                 rfnDeviceDao.saveDynamicRfnDeviceData(deviceData);
                 log.info("Updated device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());

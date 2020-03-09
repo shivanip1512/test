@@ -518,7 +518,15 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         return data.stream()
                 .collect(Collectors.groupingBy(d -> d.getGateway().getPaoIdentifier().getPaoId()));
     }
-
+    
+    @Override
+    public Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds) {
+        SqlStatementBuilder sql = getSelectFromDynamicRfnDeviceData();
+        sql.append("WHERE dd.gatewayId").in(gatewayIds);
+        List<DynamicRfnDeviceData> data = jdbcTemplate.query(sql, rfnDynamicRfnDeviceDataRowMapper);
+        return data.stream().map(d -> d.getDevice().getRfnIdentifier()).collect(Collectors.toSet());
+    }
+    
     @Override
     public List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds) {
         if(IterableUtils.isEmpty(deviceIds)) {
