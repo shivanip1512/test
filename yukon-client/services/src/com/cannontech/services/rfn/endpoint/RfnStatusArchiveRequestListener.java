@@ -75,6 +75,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     {
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ARM, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.RESUME, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.RESUME, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
