@@ -29,6 +29,7 @@
            <class name = "com.cannontech.rest.api.documentation.controlarea.ControlAreaSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.scenario.ControlScenarioSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.uicomponent.PickerApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.devicereading.DeviceReadingsApiControllerTest" />
         </classes>
     </test>
 </suite>

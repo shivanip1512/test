@@ -6,5 +6,6 @@
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/drsetupLoadGroup.xml"></suite-file>
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/drsetupLoadProgram.xml"></suite-file>
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/drsetupControlArea.xml"></suite-file>
+        <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/deviceReadings.xml"></suite-file>
     </suite-files>
 </suite>
