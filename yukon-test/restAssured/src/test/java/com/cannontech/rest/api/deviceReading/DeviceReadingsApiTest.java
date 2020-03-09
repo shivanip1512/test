@@ -25,6 +25,8 @@ public class DeviceReadingsApiTest {
     private final static String meterNumber = "101026";
     private final static String paoId = "7777";
     private final static String paoName = "InvalidPaoName";
+    private final static String validPaoName = "104983";
+    private final static String validPaoId = "43995";
 
     @Test
     public void DeviceReadings_01_Get(ITestContext context) {
@@ -116,9 +118,23 @@ public class DeviceReadingsApiTest {
     }
 
     @Test
-    public void DeviceReadings_06_InvalidPaoId(ITestContext context) {
+    public void DeviceReadings_06_ValidPaoId(ITestContext context) {
 
-        Log.startTestCase("DeviceReadings_06_InvalidPaoId");
+        Log.startTestCase("DeviceReadings_06_ValidPaoId");
+
+        MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper
+                .buildDeviceReadingRequest(MockIdentifierType.PAOID, validPaoId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
+
+        assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
+
+        Log.endTestCase("DeviceReadings_06_ValidPaoId");
+    }
+
+    @Test
+    public void DeviceReadings_07_InvalidPaoId(ITestContext context) {
+
+        Log.startTestCase("DeviceReadings_07_InvalidPaoId");
         MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper.buildDeviceReadingRequest(MockIdentifierType.PAOID,
                 paoId);
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
@@ -126,20 +142,33 @@ public class DeviceReadingsApiTest {
         assertTrue(ValidationHelper.validateErrorMessage(getResponse, "A PAObject with id "+ paoId +" cannot be found."),
                 "Expected error message Should contains Text: " + "A PAObject with id "+ paoId +" cannot be found.");
 
-        Log.endTestCase("DeviceReadings_06_InvalidPaoId");
+        Log.endTestCase("DeviceReadings_07_InvalidPaoId");
 
     }
 
     @Test
-    public void DeviceReadings_06_InvalidPaoName(ITestContext context) {
+    public void DeviceReadings_08_ValidPaoName(ITestContext context) {
 
-        Log.startTestCase("DeviceReadings_06_InvalidPaoName");
+        Log.startTestCase("DeviceReadings_08_ValidPaoName");
+
+        MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper.buildDeviceReadingRequest(MockIdentifierType.PAONAME, validPaoName);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
+
+        assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
+
+        Log.endTestCase("DeviceReadings_08_ValidPaoName");
+    }
+
+    @Test
+    public void DeviceReadings_09_InvalidPaoName(ITestContext context) {
+
+        Log.startTestCase("DeviceReadings_09_InvalidPaoName");
         MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper.buildDeviceReadingRequest( MockIdentifierType.PAONAME, paoName);
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
         assertTrue(getResponse.statusCode() == 500, "Status code should be 500");
         assertTrue(ValidationHelper.validateErrorMessage(getResponse, "Pao Object not found for Pao name: " + paoName),
                 "Expected error message Should contains Text: " + "Pao Object not found for Pao name: " + paoName);
 
-        Log.endTestCase("DeviceReadings_06_InvalidPaoName");
+        Log.endTestCase("DeviceReadings_09_InvalidPaoName");
     }
 }
