@@ -7,21 +7,28 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Duration;
 
 /**
  * Represents a complete JMS messaging "feature", covering the related request and responses for that feature. This is 
  * intended to make all JMS messaging self-documenting.<br><br>
  * 
- * Requires that all APIs have a name, description, communicationPattern, sender, receiver, queue and requestMessage 
+ * Requires that all APIs have a name, description, communicationPattern, sender, receiver, queue, timeToLive and requestMessage 
  * specified. Additionally, you will need to specify ackQueue, responseQueue, ackMessage and responseMessage if the 
  * communicationPattern involves ack or response. Multiple senders and receivers may also be specified. (For example, 
  * if NM or a Yukon simulator can both receive a particular message.)<br><br>
  * 
+ * Default time-to-live is set to 1 Day. You can also specify your own time-to live as per 
+ * your requirements (For example 12 Hours: Duration.standardHours(12)).<br><br>
+ * 
  * To define any messaging that is sent over a temp queue, use {@code JmsQueue.TEMP_QUEUE}.
+ * To define any messaging that is sent over a topic, set topic as true.
  */
 public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Serializable> {
     private String name;
     private String description;
+    private boolean topic;
+    private Duration timeToLive = Duration.standardDays(1);
     private final JmsCommunicationPattern pattern;
     private final Set<JmsCommunicatingService> senders;
     private final Set<JmsCommunicatingService> receivers;
@@ -37,6 +44,8 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
      */
     private JmsApi(String name,
                    String description,
+                   boolean topic,
+                   Duration timeToLive,
                    JmsCommunicationPattern pattern, 
                    Set<JmsCommunicatingService> senders,
                    Set<JmsCommunicatingService> receivers,
@@ -110,6 +119,8 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
                                                "REQUEST_ACK_RESPONSE or REQUEST_MULTI_RESPONSE pattern");
         }
         this.responseMessage = Optional.ofNullable(responseMessage);
+        this.topic = topic;
+        this.timeToLive = timeToLive;
     }
     
     public String getName() {
@@ -120,6 +131,14 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         return description;
     }
     
+    public boolean isTopic() {
+        return topic;
+    }
+
+    public Duration getTimeToLive() {
+        return timeToLive;
+    }
+
     public JmsCommunicationPattern getPattern() {
         return pattern;
     }
@@ -205,6 +224,8 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         result = prime * result + ((ackMessage == null) ? 0 : ackMessage.hashCode());
         result = prime * result + ((ackQueue == null) ? 0 : ackQueue.hashCode());
         result = prime * result + ((description == null) ? 0 : description.hashCode());
+        result = prime * result + (topic ? 1231 : 1237);
+        result = prime * result + timeToLive.hashCode();
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((pattern == null) ? 0 : pattern.hashCode());
         result = prime * result + ((queue == null) ? 0 : queue.hashCode());
@@ -301,6 +322,12 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         } else if (!senders.equals(other.senders)) {
             return false;
         }
+        if (topic != other.topic) {
+            return false;
+        }
+        if (!timeToLive.isEqual(other.timeToLive)) {
+            return false;
+        }
         return true;
     }
     
@@ -312,6 +339,8 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
     public static class Builder<Rq extends Serializable,A extends Serializable,Rp extends Serializable> {
         private String name;
         private String description;
+        private boolean topic;
+        private Duration timeToLive;
         private JmsCommunicationPattern pattern;
         private Set<JmsCommunicatingService> senders;
         private Set<JmsCommunicatingService> receivers;
@@ -327,8 +356,8 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
         }
         
         public JmsApi<Rq,A,Rp> build() {
-            return new JmsApi<>(name, description, pattern, senders, receivers, queue, ackQueue, responseQueue, 
-                              requestMessage, ackMessage, responseMessage);
+            return new JmsApi<>(name, description, topic, timeToLive, pattern, senders, receivers, queue, ackQueue, responseQueue,
+                    requestMessage, ackMessage, responseMessage);
         }
         
         public Builder<Rq,A,Rp> name(String name) {
@@ -340,7 +369,17 @@ public class JmsApi<Rq extends Serializable,A extends Serializable,Rp extends Se
             this.description = description;
             return this;
         }
-        
+        public Builder<Rq, A, Rp> topic(boolean topic) {
+            this.topic = topic;
+            return this;
+        }
+        public Builder<Rq, A, Rp> timeToLive(Duration timeToLive) {
+            if (timeToLive == null) {
+                timeToLive = Duration.standardDays(1);
+            }
+            this.timeToLive = timeToLive;
+            return this;
+        }
         public Builder<Rq,A,Rp> communicationPattern(JmsCommunicationPattern pattern) {
             this.pattern = pattern;
             return this;
