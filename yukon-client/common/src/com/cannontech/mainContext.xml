@@ -146,6 +146,7 @@
     <bean id="i18nBasenames" class="com.cannontech.common.i18n.I18nBasenamesFactory" factory-method="getBaseNames">
         <constructor-arg>
             <list>
+                <value>classpath:com/cannontech/yukon/api/deviceReading/deviceData</value>
                 <value>classpath:com/cannontech/yukon/common/general</value>
                 <value>classpath:com/cannontech/yukon/common/reports</value>
                 <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
