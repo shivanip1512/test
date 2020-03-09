@@ -591,14 +591,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<Integer, RfnIdentifier> gatewayIdsToIdentifiers = gateways.stream()
                 .filter(g -> filter.getSelectedGatewayIds().contains(g.getId()))
                 .collect(Collectors.toMap(g -> g.getId(), g -> g.getRfnIdentifier()));
-        log.debug("Getting network map by filter: {} gateways {}", filter, gatewayNames);
         NetworkMap map = new NetworkMap();
         Set<RfnIdentifier> filteredDevices = new HashSet<>();
         Set<RfnIdentifier> gatewaysToAddToMap = new HashSet<>(gatewayIdsToIdentifiers.values());
         Set<RfnMetadataMulti> multi = getMulti(filter);
         if (!multi.isEmpty()) {
+            Set<RfnIdentifier> devices = rfnDeviceDao.getDeviceRfnIdentifiersByGatewayIds(filter.getSelectedGatewayIds());
+            log.debug("Getting network map by filter: {} gateways {} devices {}", filter, gatewayNames, devices.size());
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = metadataMultiService
-                    .getMetadataForGatewayRfnIdentifiers(new HashSet<>(gatewayIdsToIdentifiers.values()), multi);
+                    .getMetadataForDeviceRfnIdentifiers(devices, multi);
 
             filteredDevices.addAll(metaData.keySet());
             log.debug("All devices {}", filteredDevices.size());
@@ -649,14 +650,26 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
 
     private void filterByDataInDynamicRfnDeviceData(NetworkMapFilter filter, Set<RfnIdentifier> filteredDevices) {
-        if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))){
+        if (!filter.getDescendantCount().containsAll(Arrays.asList(DescendantCount.values()))) {
             Set<Integer> ids = rfnDeviceDao.getDeviceIdsForRfnIdentifiers(filteredDevices);
             List<DynamicRfnDeviceData> data = rfnDeviceDao.getDynamicRfnDeviceData(ids);
             Map<RfnIdentifier, DynamicRfnDeviceData> map = data.stream()
-                    .collect(Collectors.toMap(d -> d.getDevice().getRfnIdentifier()  , d -> d));
+                    .collect(Collectors.toMap(d -> d.getDevice().getRfnIdentifier(), d -> d));
             filteredDevices.removeIf(filteredDevice -> {
                 DynamicRfnDeviceData deviceData = map.get(filteredDevice);
-                return !filter.getDescendantCount().contains(DescendantCount.getDescendantCount(deviceData.getDescendantCount()));
+                if (deviceData == null) {
+                    log.debug("No entry in DynamicRfnDeviceData for {}", filteredDevice);
+                    return false;
+                }
+                try {
+                    return !filter.getDescendantCount()
+                            .contains(DescendantCount.getDescendantCount(deviceData.getDescendantCount()));
+                } catch (Exception e) {
+                    String text = "Filter:" + filter.getDescendantCount() + " deviceData.getDescendantCount():"
+                            + deviceData.getDescendantCount();
+                    log.error(text, e);
+                    return false;
+                }
             });
         }
     }
