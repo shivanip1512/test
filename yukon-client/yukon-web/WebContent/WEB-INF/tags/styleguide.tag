@@ -53,6 +53,10 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/group-pickers"/>">Group Pickers</a></li>
             <c:set var="clazz" value="${page == 'device-collections' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/device-collections"/>">Device Collections</a></li>
+            <c:set var="clazz" value="${page == 'reactPoc' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/react-poc"/>">React POC</a></li>
+            <c:set var="clazz" value="${page == 'react-test-page' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/react-test-page"/>">React Test Page</a></li>
         </ul>
     </div>
     <div class="column two nogutter"><jsp:doBody/></div>

@@ -68,6 +68,16 @@ public class StyleGuideController {
         return "styleguide/grids.jsp";
     }
     
+    @RequestMapping("/styleguide/react-poc")
+    public String reactPoc() {
+        return "styleguide/react-poc.jsp";
+    }
+    
+    @RequestMapping("/styleguide/react-test-page")
+    public String reactTestPage() {
+        return "styleguide/react-test-page.jsp";
+    }
+    
     @RequestMapping("/styleguide/containers")
     public String containers() {
         return "styleguide/containers.jsp";
