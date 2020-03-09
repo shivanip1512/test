@@ -2,6 +2,52 @@
 /**** SQL Server DBupdates             ****/
 /******************************************/
 
+/* @start YUK-21642 */
+DROP INDEX INDX_DynRfnDevData_GatewayId ON DynamicRfnDeviceData;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ALTER COLUMN GatewayId NUMERIC NOT NULL;
+GO
+
+CREATE INDEX INDX_DynRfnDevData_GatewayId ON DynamicRfnDeviceData (
+GatewayId ASC
+)
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ADD DescendantCount NUMERIC NULL;
+GO
+
+UPDATE DynamicRfnDeviceData
+SET DescendantCount = -1;
+
+ALTER TABLE DynamicRfnDeviceData
+ALTER COLUMN DescendantCount NUMERIC NOT NULL;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ADD LastTransferTimeNew datetime NULL;
+GO
+
+UPDATE DynamicRfnDeviceData
+SET LastTransferTimeNew = LastTransferTime;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ALTER COLUMN LastTransferTimeNew datetime NOT NULL;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+DROP COLUMN LastTransferTime;
+GO
+
+EXEC sp_rename 'DynamicRfnDeviceData.LastTransferTimeNew', 'LastTransferTime', 'COLUMN';
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-21642', '7.5.0', GETDATE());
+/* @end YUK-21642 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/6/2020 3:26:13 PM                          */
+/* Created on:     3/4/2020 3:28:44 PM                          */
 /*==============================================================*/
 
 
@@ -5333,7 +5333,8 @@ go
 /*==============================================================*/
 create table DynamicRfnDeviceData (
    DeviceId             numeric              not null,
-   GatewayId            numeric              null,
+   GatewayId            numeric              not null,
+   DescendantCount      numeric              not null,
    LastTransferTime     datetime             not null,
    constraint PK_NmToRfnDeviceData primary key (DeviceId)
 )
