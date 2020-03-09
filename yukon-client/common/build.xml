@@ -4,13 +4,17 @@
 	<property file="../build/build.properties"/>
     <property file="../../yukon-build/build_version.properties"/>
 
-    <macrodef name="math">
-        <attribute name="operand1"/>
-        <attribute name="operand2"/>
+    <macrodef name="gitlogcount">
         <attribute name="result"/>
         <sequential>
+            <exec executable="git" outputproperty="git-commit-current-count">
+                <arg value="rev-list"/>
+                <arg value="HEAD"/>
+                <arg value="--count"/>
+            </exec>
+            <property name="git-commit-init-count" value="${git.commit.init.count}"></property>
             <script language="javascript">
-                project.setProperty("@{result}", parseInt("@{operand1}") - parseInt("@{operand2}"));
+                project.setProperty("@{result}", parseInt(project.getProperty("git-commit-current-count")) - parseInt(project.getProperty("git-commit-init-count")));
             </script>
         </sequential>
     </macrodef>
@@ -43,12 +47,7 @@
         </path>
         <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
 
-        <exec executable="git" outputproperty="git-commit-current-count">
-            <arg value="rev-list"/>
-            <arg value="HEAD"/>
-            <arg value="--count"/>
-        </exec>
-        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
+        <gitlogcount result="yukon-build-number"/>
 
 		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
 			<manifest>

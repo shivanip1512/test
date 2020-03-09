@@ -28,13 +28,17 @@
         <echo message=" compile-java    - Builds all java/war but does not run unit tests " />
         <echo message=" jsdoctoolkit    - generates documentation from commented JavaScript source code" />
    </target>
-    <macrodef name="math">
-        <attribute name="operand1"/>
-        <attribute name="operand2"/>
+    <macrodef name="gitlogcount">
         <attribute name="result"/>
         <sequential>
+            <exec executable="git" outputproperty="git-commit-current-count">
+                <arg value="rev-list"/>
+                <arg value="HEAD"/>
+                <arg value="--count"/>
+            </exec>
+            <property name="git-commit-init-count" value="${git.commit.init.count}"></property>
             <script language="javascript">
-                project.setProperty("@{result}", parseInt("@{operand1}") - parseInt("@{operand2}"));
+                project.setProperty("@{result}", parseInt(project.getProperty("git-commit-current-count")) - parseInt(project.getProperty("git-commit-init-count")));
             </script>
         </sequential>
     </macrodef>
@@ -266,13 +270,8 @@
         <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012SpringSP1 SAB\System\IsCmdBld.exe" />
         <!-- Location of the installer data file -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
-        
-        <exec executable="git" outputproperty="git-commit-current-count">
-            <arg value="rev-list"/>
-            <arg value="HEAD"/>
-            <arg value="--count"/>
-        </exec>
-        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
+
+        <gitlogcount result="yukon-build-number"/>
         
         <!-- Build the installer -->
         <exec failonerror="false" executable="${isshield}" resultproperty="installererrorcode">
@@ -373,12 +372,7 @@
     </target>
 
     <target name="build-dist" depends="updatedbscripts">
-        <exec executable="git" outputproperty="git-commit-current-count">
-            <arg value="rev-list"/>
-            <arg value="HEAD"/>
-            <arg value="--count"/>
-        </exec>
-        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
+        <gitlogcount result="yukon-build-number"/>
         <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/YukonInstall">
             <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
@@ -407,12 +401,7 @@
 
     <target name="build-dist-pdb" depends="build-dist">
         <mkdir dir="${temp.dir}" />
-        <exec executable="git" outputproperty="git-commit-current-count">
-            <arg value="rev-list"/>
-            <arg value="HEAD"/>
-            <arg value="--count"/>
-        </exec>
-        <math result="yukon-build-number" operand1="${git-commit-current-count}" operand2="${git.commit.init.count}"/>
+        <gitlogcount result="yukon-build-number"/>
         <zip destfile="${temp.dir}/YukonInstall/yukon-pdb.zip" update="true">
           <fileset dir="${basedir}/yukon-server/pdb" />
         </zip>
