@@ -95,6 +95,7 @@ public class GearFieldHelper {
             break;
         case HoneywellCycle:
                 gearFields = MockHoneywellCycleGearFields.builder()
+                                                     .mandatory(true)
                                                      .rampInOut(true)
                                                      .controlPercent(3)
                                                      .cyclePeriodInMinutes(30)

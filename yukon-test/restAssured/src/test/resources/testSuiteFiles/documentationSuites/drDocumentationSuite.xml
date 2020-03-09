@@ -26,6 +26,8 @@
            <class name = "com.cannontech.rest.api.documentation.loadprogram.MeterDisconnectProgramSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramGearSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramGearSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.EcobeeProgramGearSetupApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.HoneywellProgramGearSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.controlarea.ControlAreaSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.scenario.ControlScenarioSetupApiControllerTest" />
            <class name = "com.cannontech.rest.api.documentation.uicomponent.PickerApiControllerTest" />
