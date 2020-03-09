@@ -34,6 +34,7 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.mapNetwork.NearbyMiles;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Lists;
@@ -92,6 +93,8 @@ public class GatewayDetailController {
         model.addAttribute("displayNearbyLayer", true);
         model.addAttribute("numLayers", 1);
         model.addAttribute("isVirtualGateway", gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY);
+        
+        model.addAttribute("mileValues", NearbyMiles.values());
         
         return "gateways/detail.jsp";
     }
