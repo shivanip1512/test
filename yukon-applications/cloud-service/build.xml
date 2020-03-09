@@ -28,6 +28,7 @@
         <mkdir dir="${cloud.build.dir}"/>
         <mkdir dir="${cloud.build.dir}/Runtime"/>
         <mkdir dir="${cloud.build.dir}/Client/bin"/>
+    	<mkdir dir="${cloud.build.dir}/Server/Log"/>
 
         <!-- Yukon Base Component (Client) -->
         <copy todir="${cloud.build.dir}/Client/bin" preservelastmodified="yes">
@@ -65,7 +66,7 @@
         <copy todir="${cloud.build.dir}/Runtime" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE"/>
         </copy> 
-        <zip destfile="${cloud.build.dir}/yukon_cloud.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**"/>
+        <zip destfile="${cloud.build.dir}/yukon_cloud.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**,Server/**"/>
     </target>
 
     <target name="clean">
