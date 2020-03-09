@@ -107,7 +107,7 @@ pipeline {
                         script {
                             try {
                                 checkout([$class: 'GitSCM',
-                                          branches: [[name: 'refs/heads/master']],
+                                          branches: [[name: "${env.GIT_COMMIT}"]],
                                           doGenerateSubmoduleConfigurations: false,
                                           extensions: [],
                                           submoduleCfg: [],
