@@ -403,7 +403,7 @@
         <mkdir dir="${temp.dir}" />
         <gitlogcount result="yukon-build-number"/>
         <zip destfile="${temp.dir}/YukonInstall/yukon-pdb.zip" update="true">
-          <fileset dir="${basedir}/yukon-server/pdb" />
+          <fileset dir="${basedir}/yukon-server" />
         </zip>
         <zip destfile="${dist.dir}/yukon_${DSTAMP}_${TSTAMP}_${version.external.filenameSafe}_${yukon-build-number}.zip" update="true">
             <fileset dir="${temp.dir}" />
