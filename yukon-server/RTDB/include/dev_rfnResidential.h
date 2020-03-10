@@ -6,8 +6,7 @@
 #include "cmd_rfn_RemoteDisconnect.h"
 
 
-namespace Cti       {
-namespace Devices   {
+namespace Cti::Devices {
 
 
 class IM_EX_DEVDB RfnResidentialDevice
@@ -56,6 +55,7 @@ protected:
 
 protected:
 
+    static std::optional<bool> isDisconnectType(DeviceTypes t);
     static bool isDisconnectConfigSupported(DeviceTypes t);
     bool isDisconnectConfigSupported() const;
 
@@ -82,5 +82,3 @@ typedef RfnResidentialDevice Rfn410fxDevice;
 typedef RfnResidentialDevice Rfn410fdDevice;
 
 }
-}
-
