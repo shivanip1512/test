@@ -606,7 +606,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             filterByDataRecievedFromNM(filter, metaData, filteredDevices);
             log.debug("After filtered by data recieved from NM devices {}", filteredDevices.size());
             filterByDataInDynamicRfnDeviceData(filter, filteredDevices);
-            log.debug("After filtered by data recieved from NM devices {}", filteredDevices.size());
+            log.debug("After filtered by data in {} DynamicRfnDeviceData", filteredDevices.size());
             metaData.entrySet().removeIf(data -> !filteredDevices.contains(data.getKey()));
             if (filter.getColorCodeBy() == ColorCodeBy.DESCENDANT_COUNT) {
                 List<DynamicRfnDeviceData> data = rfnDeviceDao
