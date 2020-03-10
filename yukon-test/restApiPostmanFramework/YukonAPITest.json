@@ -2410,6 +2410,49 @@
                     "_postman_isSubFolder": true
                 }
             ]
+        },
+        {
+            "name": "PointDataAPI",
+            "item": [
+                {
+                    "name": "GetDeviceReadings",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n   \"deviceReadingsSelectors\":[\r\n      {\r\n         \"identifier\":{\r\n            \"value\":\"43995\",\r\n            \"identifierType\":\"PAOID\"\r\n         },\r\n         \"attributes\":[\r\n             \"CONTROL_STATUS\",\"BLINK_COUNT\"\r\n         ]\r\n      }\r\n   ]\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{api-url}}/api/device/getLatestReading",
+                            "host": [
+                                "{{api-url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "device",
+                                "getLatestReading"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "auth": {
