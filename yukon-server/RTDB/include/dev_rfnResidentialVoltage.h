@@ -5,8 +5,7 @@
 #include "cmd_rfn_OvUvConfiguration.h"
 
 
-namespace Cti       {
-namespace Devices   {
+namespace Cti::Devices {
 
 class IM_EX_DEVDB RfnResidentialVoltageDevice
     :   public RfnResidentialDevice
@@ -45,10 +44,6 @@ protected:
     void handleCommandResult( const Commands::RfnLoadProfileGetRecordingCommand          & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetTemporaryRecordingCommand & cmd ) override;
     void handleCommandResult( const Commands::RfnLoadProfileSetPermanentRecordingCommand & cmd ) override;
-
-public:
-
-    RfnResidentialVoltageDevice() {};
 };
 
 
@@ -63,6 +58,4 @@ typedef RfnResidentialVoltageDevice Rfn520frxdDevice;
 typedef RfnResidentialVoltageDevice Rfn530faxDevice;
 typedef RfnResidentialVoltageDevice Rfn530frxDevice;
 
-}   // Devices
-}   // Cti
-
+}
