@@ -76,6 +76,8 @@ public enum ItronDataEventType {
     private final Integer value;
     
     private static final Logger log = YukonLogManager.getLogger(ItronDataEventType.class);
+    private static final DateTime year2000 = new DateTime(2000, 1, 1, 0, 0, 0);
+    
     private static final Cache<String, PointData> voltageCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     private static final ImmutableSet<ItronDataEventType> incrementalTypes;
     private static final ImmutableSet<ItronDataEventType> voltageTypes;
@@ -281,9 +283,17 @@ public enum ItronDataEventType {
             pointData.setValue(decodedData);
         } else {
             // Date comes in as seconds since epoch
-            Date date = new Date(decodedData * 1000);
+            Date date = getLcrTimestamp(decodedData);
             log.debug("Setting point data date: {}", date.toString());
             pointData.setTime(date);
         }
+    }
+    
+    /**
+     * @return The Date representation of an LCR data timestamp, given the seconds since the start of the year 2000.
+     */
+    private static Date getLcrTimestamp(long secondsSinceYear2000) {
+        return year2000.plus(secondsSinceYear2000 * 1000)
+                       .toDate();
     }
 }
