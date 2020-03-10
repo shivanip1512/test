@@ -171,7 +171,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
         Lists.partition(batchUpdater.getColumnValues(), batchSize)
                 .forEach(batchList -> {
                     try {
-                        if (log.isTraceEnabled()) {
+                        if (log.isDebugEnabled()) {
                             inserted.increment(batchList.size());
                             log.trace("Inserting {} rows, inserted {} out of {}", batchList.size(), inserted.count, total);
                         }
