@@ -1,5 +1,6 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_TREE;
 
@@ -46,7 +47,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
@@ -69,7 +69,6 @@ import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * This service contains cached (networkTreeCache) Network Trees we receive from NM 
@@ -412,43 +411,29 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                 .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
         try {
             Map<RfnIdentifier, RfnMetadataMultiQueryResult> response = metadataMultiService
-                    .getMetadataForGatewayRfnIdentifiers(gatewayIds.keySet(), Set.of(RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY));
-            Map<RfnIdentifier, DynamicRfnDeviceData> datas = new HashMap<>();
+                    .getMetadataForGatewayRfnIdentifiers(gatewayIds.keySet(),
+                            Set.of(PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_DESCENDANT_COUNT));
+            Set<DynamicRfnDeviceData> deviceData = new HashSet<>();
             response.forEach((deviceRfnIdentifier, queryResult) -> {
                 RfnDevice device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
                 // Li confirmed PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_DESCENDANT_COUNT will always be returned
-                if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)) {
+                if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)
+                        && queryResult.isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {
                     RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
                     // if gateway doesn't exists in Yukon, RfnIdentifier is not enough information to create gateway
                     if (gatewayIds.containsKey(gatewayRfnIdentifier)) {
+                        int descendantCount = (Integer) queryResult.getMetadatas().get(PRIMARY_FORWARD_DESCENDANT_COUNT);
                         DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gatewayIds.get(gatewayRfnIdentifier),
-                                treeGenerationEndTime);
-                        datas.put(deviceRfnIdentifier, data);
+                                descendantCount, treeGenerationEndTime);
+                        deviceData.add(data);
                     }
                 }
             });
 
-            Set<DynamicRfnDeviceData> deviceData = new HashSet<>();
-            if (!response.isEmpty()) {
-                log.info("Sending request to NM for descendant count for {} devices", response.keySet().size());
-                Map<RfnIdentifier, RfnMetadataMultiQueryResult> descCountResponse = metadataMultiService
-                        .getMetadataForDeviceRfnIdentifiers(response.keySet(),
-                                Sets.newHashSet(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT));
-                descCountResponse.forEach((deviceRfnIdentifier, queryResult) -> {
-                    if (datas.get(deviceRfnIdentifier) != null
-                            && queryResult.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT)) {
-                        int descendantCount = (Integer) queryResult.getMetadatas()
-                                .get(RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT);
-                        DynamicRfnDeviceData data = datas.get(deviceRfnIdentifier);
-                        data.setDescendantCount(descendantCount);
-                        deviceData.add(data);
-                    }
-                });
+            log.info("Updating device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
+            rfnDeviceDao.saveDynamicRfnDeviceData(deviceData);
+            log.info("Updated device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
 
-                log.info("Updating device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
-                rfnDeviceDao.saveDynamicRfnDeviceData(deviceData);
-                log.info("Updated device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
-            }
         } catch (NmCommunicationException e) {
             log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
         }
