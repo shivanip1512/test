@@ -1410,13 +1410,13 @@ public class CcHomeController {
                 customerPointService.savePointValues(customer, customerModel.getPointValues());
             }
 
+            List<LiteYukonPAObject> activeProgramPaos = new ArrayList<>();      //empty list will remove all
             if (customerModel.getActivePrograms() != null) {
-                List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms().stream()
+                activeProgramPaos = customerModel.getActivePrograms().stream()
                         .mapToInt(model -> model.getPaoId())
                         .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId)).collect(Collectors.toList());
-
-                customerLMProgramService.saveProgramList(customer, activeProgramPaos);
             }
+            customerLMProgramService.saveProgramList(customer, activeProgramPaos);
 
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.success",
                     customer.getCompanyName()));
