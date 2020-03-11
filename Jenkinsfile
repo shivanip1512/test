@@ -214,4 +214,4 @@ def sendEmailNotification(String stageName) {
             recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
             subject: "${stageName} failed in Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
 
-}
+} 
