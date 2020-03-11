@@ -3,13 +3,13 @@
 # Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 # Unzip the yukon zip file to get the required binaries
-Expand-Archive -Path "dist\yukon*.zip" -DestinationPath "yukon-pdb"
+Expand-Archive -Path "yukon-build\dist\yukon*.zip" -DestinationPath "yukon-pdb"
 
 # Unzip the pdb and other bianries so that the same can be sent to symbols store
 Expand-Archive -Path "yukon-pdb\YukonInstall\*.zip" -DestinationPath "symbols"
 
 #Remove the zip file whihc consist of pdb and other file as they are not needed for release artifact
-$zip = Get-ChildItem dist -Filter *.zip
+$zip = Get-ChildItem yukon-build\dist -Filter *.zip
 add-type -AssemblyName 'System.IO.Compression.filesystem'
 
 # Find and remove the yukon-pdb.zip file
