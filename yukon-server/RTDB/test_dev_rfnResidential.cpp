@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectType )
         {
             std::unique_ptr<CtiDeviceBase> dev(createDeviceType(type));
 
-            const auto deviceType = DeviceTypes { type };
+            const auto deviceType = static_cast<DeviceTypes>(type);
 
             const bool isResidentialDevice = !! dynamic_cast<RfnResidentialDevice*>(dev.get());
 
