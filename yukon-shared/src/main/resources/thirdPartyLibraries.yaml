@@ -5444,15 +5444,15 @@ JavaScript :
     notes : 
 
   - project : fileupload
-    version : 5.40.0
+    version : 10.8.0
     project URL : "https://github.com/blueimp/jQuery-File-Upload"
     license : MIT
     license URLs : "https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/blueimp-file-upload"
-    md5 : 8b57a1ec5a3e7c98e572e50ac84951b7
-    sha1 : 5825b88f821c97568ae53fce2c775f553da19a28
-    jira : YUK-13033
-    updated : 2014-02-17
+    md5 : 5c9fd37430aaf4921c583b36cd25acec
+    sha1 : 725eafdc49086908d9500fc3d59f4fa482b53a00
+    jira : YUK-21524
+    updated : 2020-03-11
     notes : 
 
   - project : flotcharts
