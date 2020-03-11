@@ -5636,15 +5636,15 @@ JavaScript :
     notes : 
 
   - project : spectrum
-    version : 1.2.0
+    version : 1.8.0
     project URL : "https://github.com/bgrins/spectrum"
     license : MIT
     license URLs : "https://github.com/bgrins/spectrum/blob/master/LICENSE"
     npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
-    md5 : e96ec007ba38f187022f39bd884555d8
-    sha1 : 58674fdfe0f5e10ca9b4fc476da4625f5654d7df
+    md5 : b623be7db1bfa95379c323c95a991c43
+    sha1 : c7071fb0b10b25ec6315e36f3c25e39a713cf917
     jira : YUK-13033
-    updated : 2014-02-17
+    updated : 2020-03-11
     notes : 
 
   - project : time-picker
