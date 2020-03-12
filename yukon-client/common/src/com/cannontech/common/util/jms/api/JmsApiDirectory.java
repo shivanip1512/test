@@ -1026,7 +1026,7 @@ public final class JmsApiDirectory {
             JmsApi.builder(DynamicRfnDeviceDataRequest.class, DynamicRfnDeviceDataResponse.class)
                   .name("Dynamic rfn device data collection")
                   .description("Sends message to SM to initiate dynamic rfn device data collection")
-                  .communicationPattern(REQUEST_MULTI_RESPONSE)
+                  .communicationPattern(REQUEST_RESPONSE)
                   .queue(new JmsQueue("com.eaton.eas.yukon.DynamicRfnDeviceDataRequest"))
                   .responseQueue(JmsQueue.TEMP_QUEUE)
                   .requestMessage(DynamicRfnDeviceDataRequest.class)
