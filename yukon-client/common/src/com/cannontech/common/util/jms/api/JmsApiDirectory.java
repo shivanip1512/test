@@ -21,6 +21,8 @@ import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveResponse;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveResponse;
+import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataRequest;
+import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataResponse;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
@@ -1020,6 +1022,19 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
+    public static final JmsApi<DynamicRfnDeviceDataRequest,?,DynamicRfnDeviceDataResponse> DYNAMIC_RFN_DEVICE_DATA_COLLECTION =
+            JmsApi.builder(DynamicRfnDeviceDataRequest.class, DynamicRfnDeviceDataResponse.class)
+                  .name("Dynamic rfn device data collection")
+                  .description("Sends message to SM to initiate dynamic rfn device data collection")
+                  .communicationPattern(REQUEST_MULTI_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.DynamicRfnDeviceDataRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(DynamicRfnDeviceDataRequest.class)
+                  .responseMessage(DynamicRfnDeviceDataResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     public static final JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
             JmsApi.builder(EcobeeAuthTokenRequest.class, EcobeeAuthTokenResponse.class)
             .name("Ecobee Auth Token")
@@ -1239,7 +1254,8 @@ public final class JmsApiDirectory {
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE,
                 RFN_STATUS_ARCHIVE,
-                RFN_NODE_WIFI_COMM_ARCHIVE);
+                RFN_NODE_WIFI_COMM_ARCHIVE,
+                DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         
         addApis(jmsApis, SMART_NOTIFICATION,
                 SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,

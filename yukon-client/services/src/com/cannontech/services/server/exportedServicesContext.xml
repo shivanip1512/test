@@ -31,4 +31,12 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="dataCollectionListener"/>
     </bean>
+    <bean id="dynamicRfnDeviceDataCollectionListener" class="com.cannontech.amr.rfn.service.DynamicRfnDeviceDataCollectionService"/>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.DynamicRfnDeviceDataRequest" />
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="dynamicRfnDeviceDataCollectionListener"/>
+    </bean>
 </beans>

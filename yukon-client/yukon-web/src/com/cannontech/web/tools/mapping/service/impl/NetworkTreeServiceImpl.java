@@ -1,7 +1,5 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT;
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_GATEWAY;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_TREE;
 
 import java.io.Serializable;
@@ -12,7 +10,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -41,9 +38,10 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
-import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
+import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataRequest;
+import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataResponse;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -54,15 +52,16 @@ import com.cannontech.common.rfn.message.tree.RfnVertex;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
+import com.cannontech.common.util.jms.RequestReplyTemplate;
+import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.common.util.tree.Node.TreeDebugStatistics;
-import com.cannontech.core.dao.PersistedSystemValueDao;
-import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NetworkTreeService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
@@ -99,8 +98,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private ConfigurationSource configSource;
     protected JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeServiceImpl.class);
     private final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
@@ -112,6 +110,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     private Instant nextForceReloadTime;
     private int reloadFrequencyInMinutes = 30;
     private int MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE = 3;
+    private RequestReplyTemplate<DynamicRfnDeviceDataResponse> deviceDataRequestTemplate;
 
     
     @PostConstruct
@@ -358,6 +357,8 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         jmsTemplate = new JmsTemplate(connectionFactory);
         jmsTemplate.setExplicitQosEnabled(true);
         jmsTemplate.setDeliveryPersistent(false);
+        deviceDataRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getName(),
+                configSource, connectionFactory, JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getQueue().getName(), false);
     }
 
     @Override
@@ -366,76 +367,53 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 Serializable object = objMessage.getObject();
-       
-                
+
                 if (object instanceof NetworkTreeUpdateTimeResponse) {
                     NetworkTreeUpdateTimeResponse response = (NetworkTreeUpdateTimeResponse) object;
-                    
-                    Instant lastUpdateTime =
-                            persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME);
-                    
-                    if (lastUpdateTime == null
-                            || response.getTreeGenerationEndTimeMillis() > lastUpdateTime.getMillis()) {
-                        updateDeviceToGatewayMapping(new Instant(response.getTreeGenerationEndTimeMillis()));
-                        persistedSystemValueDao.setValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME, new Instant(response.getTreeGenerationEndTimeMillis()));
-                    }
-                    
-                    if (treeUpdateResponse == null || response.getTreeGenerationEndTimeMillis() > treeUpdateResponse.getTreeGenerationEndTimeMillis()) {
-                        log.info(
-                                "Received Network Tree Update Time - Start {} End {} Next automatic refresh {} Next forced refresh after {}",
-                                format(response.getTreeGenerationStartTimeMillis()),
-                                format(response.getTreeGenerationEndTimeMillis()),
-                                format(response.getNextScheduledRefreshTimeMillis()),
-                                format(response.getNoForceRefreshBeforeTimeMillis()));
-
-                        //Reloads only cached trees
+                    logUpdateTime(response, false);
+                    boolean isSuccess = sendRequestToSMtoUpdateDynamicRfnDeviceData(
+                            new Instant(response.getTreeGenerationEndTimeMillis()));
+                    if (isSuccess) {
+                        // Reloads only cached trees
                         reloadNetworkTrees();
+                        treeUpdateResponse = response;
+                    } else {
+                        logUpdateTime(response, true);
                     }
-                    treeUpdateResponse = response;                   
-                } 
+                }
             } catch (JMSException e) {
                 log.warn("Unable to extract NetworkTreeUpdateTimeResponse from message", e);
             }
-        }   
+        }
     }
-    
+
+    private void logUpdateTime(NetworkTreeUpdateTimeResponse response, boolean failure) {
+        String info = "Received Network Tree Update Time";
+        if (failure) {
+            info = "Failed to upadate DynamicRfnDeviceData and reload Network Trees";
+        }
+        log.info(
+                info + " - Start {} End {} Next automatic refresh {} Next forced refresh after {}",
+                format(response.getTreeGenerationStartTimeMillis()),
+                format(response.getTreeGenerationEndTimeMillis()),
+                format(response.getNextScheduledRefreshTimeMillis()),
+                format(response.getNoForceRefreshBeforeTimeMillis()));
+    }
+
     /**
-     * Sends message to NM to get device to gateway mapping information for all gateways. When message is received the device to
-     * gateway mapping is persisted in DynamicRfnDeviceData.
+     * Returns true is the table was updated or if the table contains the most recent data
      */
-    private void updateDeviceToGatewayMapping(Instant treeGenerationEndTime) {
-        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
-        String gatewayNames = gateways.stream().map(gateway -> gateway.getName()).collect(Collectors.joining(", "));
-        log.info("Sending request to NM for device to gateway mapping information for {}", gatewayNames);
-        Map<RfnIdentifier, RfnDevice> gatewayIds = gateways.stream()
-                .collect(Collectors.toMap(gateway -> gateway.getRfnIdentifier(), gateway -> gateway));
+    private boolean sendRequestToSMtoUpdateDynamicRfnDeviceData(Instant treeGenerationEndTimeMillis) {
+        BlockingJmsReplyHandler<DynamicRfnDeviceDataResponse> reply = new BlockingJmsReplyHandler<>(
+                DynamicRfnDeviceDataResponse.class);
+        DynamicRfnDeviceDataRequest request = new DynamicRfnDeviceDataRequest(treeGenerationEndTimeMillis);
+        deviceDataRequestTemplate.send(request, reply);
         try {
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> response = metadataMultiService
-                    .getMetadataForGatewayRfnIdentifiers(gatewayIds.keySet(),
-                            Set.of(PRIMARY_FORWARD_GATEWAY, PRIMARY_FORWARD_DESCENDANT_COUNT));
-            Set<DynamicRfnDeviceData> deviceData = new HashSet<>();
-            response.forEach((deviceRfnIdentifier, queryResult) -> {
-                RfnDevice device = rfnDeviceCreationService.createIfNotFound(deviceRfnIdentifier);
-                // Li confirmed PRIMARY_FORWARD_GATEWAY and PRIMARY_FORWARD_DESCENDANT_COUNT will always be returned
-                if (device != null && queryResult.isValidResultForMulti(PRIMARY_FORWARD_GATEWAY)
-                        && queryResult.isValidResultForMulti(PRIMARY_FORWARD_DESCENDANT_COUNT)) {
-                    RfnIdentifier gatewayRfnIdentifier = (RfnIdentifier) queryResult.getMetadatas().get(PRIMARY_FORWARD_GATEWAY);
-                    // if gateway doesn't exists in Yukon, RfnIdentifier is not enough information to create gateway
-                    if (gatewayIds.containsKey(gatewayRfnIdentifier)) {
-                        int descendantCount = (Integer) queryResult.getMetadatas().get(PRIMARY_FORWARD_DESCENDANT_COUNT);
-                        DynamicRfnDeviceData data = new DynamicRfnDeviceData(device, gatewayIds.get(gatewayRfnIdentifier),
-                                descendantCount, treeGenerationEndTime);
-                        deviceData.add(data);
-                    }
-                }
-            });
-
-            log.info("Updating device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
-            rfnDeviceDao.saveDynamicRfnDeviceData(deviceData);
-            log.info("Updated device to gateway mapping information for {} devices {}", gatewayNames, deviceData.size());
-
-        } catch (NmCommunicationException e) {
-            log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
+            DynamicRfnDeviceDataResponse response = reply.waitForCompletion();
+            return response.isSuccess();
+        } catch (Exception e) {
+            log.debug("Error updating DynamicRfnDeviceData", e);
+            return false;
         }
     }
 
