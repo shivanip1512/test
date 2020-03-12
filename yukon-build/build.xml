@@ -448,14 +448,6 @@
         </exec>   
     </target>
 
-    <target name="releasesymstore">
-        <!-- Now put these PDB files into the Symbol Store -->
-        <property name="symbol_server" value="p:\YukonSWBuild\SYMBOLS" />
-        <exec failonerror="true" dir="yukon-build/symbolserver/" executable="cmd.exe">
-        <arg line='/c symstore.exe add /r /f ${basedir}\SYMBOLS\*.* /s ${symbol_server} /t "Yukon Server" /v "${yukon.build.details}"'/>
-        </exec>   
-    </target>
-
     <target name="updatedbscripts" depends="init">
         <echo message="version: ${version.major}.${version.minor}.${version.revision}" />
         <ant dir="${basedir}/yukon-database"
