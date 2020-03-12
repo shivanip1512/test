@@ -57,7 +57,7 @@ public class SystemHealthStatusHelper {
         for (SystemHealthMetricIdentifier metric : SystemHealthMetricIdentifier.values()) {
             metricStatusCache.put(metric, unknownStatus);
         }
-     /*   
+        
         Runnable metricUpdater = () -> {
             log.debug("Updating system health metric statuses.");
             
@@ -73,8 +73,7 @@ public class SystemHealthStatusHelper {
             }
         };
         
-        
-        executor.scheduleAtFixedRate(metricUpdater, 0, updateFrequencyMinutes, TimeUnit.MINUTES);*/
+        executor.scheduleAtFixedRate(metricUpdater, 0, updateFrequencyMinutes, TimeUnit.MINUTES);
     }
     
     /**
