@@ -20,7 +20,7 @@ public class RfnDeviceDataResponse implements Serializable {
         this.success = success;
     }
 
-    public boolean isSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 }
