@@ -22,8 +22,8 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
-import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataRequest;
-import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataResponse;
+import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataRequest;
+import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataResponse;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -36,7 +36,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 
-public class DynamicRfnDeviceDataCollectionService implements MessageListener {
+public class RfnDeviceDataCollectionService implements MessageListener {
     
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
@@ -45,16 +45,16 @@ public class DynamicRfnDeviceDataCollectionService implements MessageListener {
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     
     protected JmsTemplate jmsTemplate;
-    private static final Logger log = YukonLogManager.getLogger(DynamicRfnDeviceDataCollectionService.class);
+    private static final Logger log = YukonLogManager.getLogger(RfnDeviceDataCollectionService.class);
     
     @Override
     public void onMessage(Message message) {
         if (message instanceof ObjectMessage) {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
-                if (objMessage.getObject() instanceof DynamicRfnDeviceDataRequest) {
+                if (objMessage.getObject() instanceof RfnDeviceDataRequest) {
                     
-                    DynamicRfnDeviceDataRequest request = (DynamicRfnDeviceDataRequest) objMessage.getObject();
+                    RfnDeviceDataRequest request = (RfnDeviceDataRequest) objMessage.getObject();
                     Instant lastUpdateTime =
                             persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME);
                     
@@ -62,13 +62,15 @@ public class DynamicRfnDeviceDataCollectionService implements MessageListener {
                         updateDeviceToGatewayMapping(request.getLastUpdateTime());
                         persistedSystemValueDao.setValue(PersistedSystemValueKey.DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME,
                                 request.getLastUpdateTime());
+                        jmsTemplate.convertAndSend(message.getJMSReplyTo(), new RfnDeviceDataResponse(true));
+                    } else {
+                        jmsTemplate.convertAndSend(message.getJMSReplyTo(), new RfnDeviceDataResponse());
                     }
-                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), new DynamicRfnDeviceDataResponse(true));
                 }
             } catch (Exception e) {
                 log.error("Unable to process message", e);
                 try {
-                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), new DynamicRfnDeviceDataResponse(false));
+                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), new RfnDeviceDataResponse(false));
                 } catch (JmsException | JMSException e1) {
                     log.error("Unable to send message", e1);
                 }

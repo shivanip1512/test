@@ -7,12 +7,12 @@ import org.joda.time.Instant;
 /**
  * Sent from WS to SM to initiate DynamicRfnDeviceData update.
  */
-public class DynamicRfnDeviceDataRequest implements Serializable {
+public class RfnDeviceDataRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Instant lastUpdateTime;
 
-    public DynamicRfnDeviceDataRequest(Instant lastUpdateTime) {
+    public RfnDeviceDataRequest(Instant lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
 

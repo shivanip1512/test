@@ -38,8 +38,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataRequest;
-import com.cannontech.amr.rfn.message.dataRequest.DynamicRfnDeviceDataResponse;
+import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataRequest;
+import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataResponse;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -110,7 +110,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     private Instant nextForceReloadTime;
     private int reloadFrequencyInMinutes = 30;
     private int MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE = 3;
-    private RequestReplyTemplate<DynamicRfnDeviceDataResponse> deviceDataRequestTemplate;
+    private RequestReplyTemplate<RfnDeviceDataResponse> deviceDataRequestTemplate;
 
     
     @PostConstruct
@@ -371,14 +371,15 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
                 if (object instanceof NetworkTreeUpdateTimeResponse) {
                     NetworkTreeUpdateTimeResponse response = (NetworkTreeUpdateTimeResponse) object;
                     logUpdateTime(response, false);
-                    boolean isSuccess = sendRequestToSMtoUpdateDynamicRfnDeviceData(
-                            new Instant(response.getTreeGenerationEndTimeMillis()));
-                    if (isSuccess) {
-                        // Reloads only cached trees
-                        reloadNetworkTrees();
-                        treeUpdateResponse = response;
-                    } else {
-                        logUpdateTime(response, true);
+                    Boolean isSuccess = sendRfnDeviceDataRequest(new Instant(response.getTreeGenerationEndTimeMillis()));
+                    if(isSuccess != null) {
+                        if (isSuccess) {
+                            // Reloads only cached trees
+                            reloadNetworkTrees();
+                            treeUpdateResponse = response;
+                        } else {
+                            logUpdateTime(response, true);
+                        }
                     }
                 }
             } catch (JMSException e) {
@@ -390,7 +391,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     private void logUpdateTime(NetworkTreeUpdateTimeResponse response, boolean failure) {
         String info = "Received Network Tree Update Time";
         if (failure) {
-            info = "Failed to upadate DynamicRfnDeviceData and reload Network Trees";
+            info = "Failed to update DynamicRfnDeviceData and reload Network Trees";
         }
         log.info(
                 info + " - Start {} End {} Next automatic refresh {} Next forced refresh after {}",
@@ -401,15 +402,15 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     }
 
     /**
-     * Returns true is the table was updated or if the table contains the most recent data
+     * Returns true is the table was updated
      */
-    private boolean sendRequestToSMtoUpdateDynamicRfnDeviceData(Instant treeGenerationEndTimeMillis) {
-        BlockingJmsReplyHandler<DynamicRfnDeviceDataResponse> reply = new BlockingJmsReplyHandler<>(
-                DynamicRfnDeviceDataResponse.class);
-        DynamicRfnDeviceDataRequest request = new DynamicRfnDeviceDataRequest(treeGenerationEndTimeMillis);
+    private Boolean sendRfnDeviceDataRequest(Instant treeGenerationEndTimeMillis) {
+        BlockingJmsReplyHandler<RfnDeviceDataResponse> reply = new BlockingJmsReplyHandler<>(
+                RfnDeviceDataResponse.class);
+        RfnDeviceDataRequest request = new RfnDeviceDataRequest(treeGenerationEndTimeMillis);
         deviceDataRequestTemplate.send(request, reply);
         try {
-            DynamicRfnDeviceDataResponse response = reply.waitForCompletion();
+            RfnDeviceDataResponse response = reply.waitForCompletion();
             return response.isSuccess();
         } catch (Exception e) {
             log.debug("Error updating DynamicRfnDeviceData", e);
