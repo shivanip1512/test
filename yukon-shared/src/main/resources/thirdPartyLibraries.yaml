@@ -5609,7 +5609,7 @@ JavaScript :
     sha1 : e589b55b5cc33cd489a7cc138c3bc85705133196
     jira : YUK-21526
     updated : 2020-03-11
-    notes : 
+    notes : This is used for animated scrolling in Yukon.
 
   - project : sortable
     version : 0.8.0
