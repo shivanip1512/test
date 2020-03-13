@@ -5643,7 +5643,7 @@ JavaScript :
     npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
     md5 : b623be7db1bfa95379c323c95a991c43
     sha1 : c7071fb0b10b25ec6315e36f3c25e39a713cf917
-    jira : YUK-13033
+    jira : YUK-21527
     updated : 2020-03-11
     notes : This library is used for selecting colors in Themes for Yukon.
 
