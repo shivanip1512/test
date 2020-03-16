@@ -15,6 +15,7 @@ using namespace Cti::Config;
 
 struct test_RfnResidentialDevice : RfnResidentialDevice
 {
+    using RfnResidentialDevice::isDisconnectType;
     using RfnResidentialDevice::isDisconnectConfigSupported;
     using CtiDeviceBase::setDeviceType;
 
@@ -106,6 +107,8 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectSupported )
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN410CL) );
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420CL) );
     BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN420CD) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_WRL420CL) );
+    BOOST_CHECK(   test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_WRL420CD) );
 
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430A3D) );
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430A3T) );
@@ -126,6 +129,26 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectSupported )
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERX) );
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERXR) );
 }
+
+
+BOOST_AUTO_TEST_CASE( test_isDisconnectType )
+{
+    for( int type = 0; type < 10000; ++type )
+    {
+        BOOST_TEST_CONTEXT("Device type " << type)
+        {
+            std::unique_ptr<CtiDeviceBase> dev(createDeviceType(type));
+
+            const auto deviceType = DeviceTypes { type };
+
+            const bool isResidentialDevice = !! dynamic_cast<RfnResidentialDevice*>(dev.get());
+
+            //  Only RfnResidentialDevice types must have an entry in the isDisconnectType map.
+            BOOST_CHECK_EQUAL(test_RfnResidentialDevice::isDisconnectType(deviceType).has_value(), isResidentialDevice);
+        }
+    }
+}
+
 
 BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule )
 {

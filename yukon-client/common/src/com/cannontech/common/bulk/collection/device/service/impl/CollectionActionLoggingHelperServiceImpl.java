@@ -365,13 +365,13 @@ public class CollectionActionLoggingHelperServiceImpl implements CollectionActio
     private void logReadAttribute(CollectionActionResult result) {
         switch (result.getStatus()) {
         case STARTED:
-            log(deviceConfigEventLogService::readConfigInitiated, result);
+            log(commanderEventLogService::attributeReadInitiated, result);
             break;
         case COMPLETE:
-            log(deviceConfigEventLogService::readConfigCompleted, result);
+            log(commanderEventLogService::attributeReadCompleted, result);
             break;
         case CANCELLED:
-            log(deviceConfigEventLogService::readConfigCancelled, result);
+            log(commanderEventLogService::attributeReadCancelled, result);
             break;
         }
     }
