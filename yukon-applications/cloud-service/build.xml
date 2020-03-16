@@ -1,11 +1,15 @@
 <?xml version="1.0" ?>
 <project name="cloud-service" default="all" basedir="../..">
 
-    <property file="../../yukon-client/build/build.properties"/>
+	<property file="${basedir}/yukon-build/build_version.properties"/>
 
     <target name="all" depends="clean,build" />
+    <tstamp>
+        <format property="currenttime" pattern="yyyy-MM-dd HH:mm:ss z" locale="en,US"/>
+    </tstamp>
 
     <target name="build">
+    	<antcall target="yukon-cloud"/>
         <echo message="Building Jar : yukon-cloud-service.jar"/>
         <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
@@ -66,7 +70,8 @@
         <copy todir="${cloud.build.dir}/Runtime" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE"/>
         </copy> 
-        <zip destfile="${cloud.build.dir}/yukon_cloud.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**,Server/**"/>
+
+        <zip destfile="${cloud.build.dir}/YukonCloudService_${DSTAMP}_${TSTAMP}_${version.major}.${version.minor}.${version.revision}.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**,Server/**"/>
     </target>
 
     <target name="clean">
