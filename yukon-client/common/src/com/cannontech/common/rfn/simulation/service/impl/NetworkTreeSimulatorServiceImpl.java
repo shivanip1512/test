@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -20,6 +21,7 @@ import com.cannontech.common.rfn.simulation.util.NetworkDebugHelper;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
+import com.google.common.collect.Lists;
 
 public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorService {
 
@@ -59,26 +61,31 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
             return node;
         }
         // System.out.println(allDevices);
-
-        ListIterator<RfnDevice> it = allDevices.listIterator();
-
+        List<List<RfnDevice>> list = Lists.partition(allDevices, devicesAroundTheGateway);
         List<Node<RfnIdentifier>> endNodes = new ArrayList<>();
-
-        while (devicesAroundTheGateway-- > 0) {
-            List<Node<RfnIdentifier>> branch = getNodes(it);
-            // System.out.println("Added devices " + branch.size());
-            endNodes.addAll(fork(it, addToBranch(node, branch)));
-        }
-
-        while (it.hasNext()) {
-            if (endNodes.size() > 3) {
-                // remove half end nodes
-                endNodes.subList(0, (int) endNodes.size() / 2).clear();
+        for (int i = 0; i < list.size(); i++) {
+            ListIterator<RfnDevice> it = list.get(i).listIterator();
+            if (i == 0) {
+                while (it.hasNext()) {
+                    RfnIdentifier rfnIdentifier = it.next().getRfnIdentifier();
+                    Node<RfnIdentifier> newNode = random.nextInt(100) < nodeNullPercent ? getNullNode(rfnIdentifier) : new Node<>(
+                            rfnIdentifier);
+                    node.addChild(newNode);
+                    endNodes.add(newNode);
+                }
+                Collections.shuffle(endNodes);
+            } else {
+                while (it.hasNext()) {
+                    if (endNodes.size() > 3) {
+                        // remove half end nodes
+                        endNodes.subList(0, (int) endNodes.size() / 2).clear();
+                    }
+                    // fork from a random node
+                    endNodes.addAll(fork(it, endNodes.get(random.nextInt(endNodes.size()))));
+                    Collections.shuffle(endNodes);
+                }
             }
-            // fork from a random node
-            endNodes.addAll(fork(it, endNodes.get(random.nextInt(endNodes.size()))));
         }
-
         // log.info(root.print());
         return node;
     }
@@ -159,7 +166,7 @@ public class NetworkTreeSimulatorServiceImpl implements NetworkTreeSimulatorServ
         log.info("{} Created NM VERTEX from Yukon Node node count {} added nodes {}", vertex.getRfnIdentifier(),
                 NetworkDebugHelper.count(vertex), totalNodesAdded);
 
-        //log.trace("{}", NetworkDebugHelper.print(vertex));
+        log.trace("{}", NetworkDebugHelper.print(vertex));
         return vertex;
     }
 
