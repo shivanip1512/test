@@ -100,7 +100,7 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
             log.trace(request.getRequestURI() + REQUEST_CSRF_TOKEN + ": " + requestToken);
             if (!request.getRequestURI().contains("/updater/update"))
                 request.getSession().removeAttribute(SESSION_CSRF_TOKEN); // owasp recomendation
-            
+
             if (StringUtils.isEmpty(requestToken)) {
                 throw new SecurityException("Request token not found: " + request.getRequestURL());
             } else {
