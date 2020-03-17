@@ -1,5 +1,5 @@
 <!DOCTYPE html SYSTEM "about:legacy-compat">
-<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.20) - The AJP Connector</title><meta name="author" content="Yoav Shapira"><meta name="author" content="Andrew R. Jaquith"><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/config/ajp">
+<html lang="en"><head><META http-equiv="Content-Type" content="text/html; charset=UTF-8"><link href="../images/docs-stylesheet.css" rel="stylesheet" type="text/css"><title>Apache Tomcat 9 Configuration Reference (9.0.31) - The AJP Connector</title><meta name="author" content="Yoav Shapira"><meta name="author" content="Andrew R. Jaquith"><script type="application/javascript" data-comments-identifier="tomcat-9.0-doc/config/ajp">
     "use strict"; // Enable strict mode
 
     (function() {
@@ -30,8 +30,8 @@
       }), false);
     })();
   </script></head><body><div id="wrapper"><header><div id="header"><div><div><div class="logo noPrint"><a href="https://tomcat.apache.org/"><img alt="Tomcat Home" src="../images/tomcat.png"></a></div><div style="height: 1px;"></div><div class="asfLogo noPrint"><a href="https://www.apache.org/" target="_blank"><img src="../images/asf-logo.svg" alt="The Apache Software Foundation" style="width: 266px; height: 83px;"></a></div><h1>Apache Tomcat 9 Configuration Reference</h1><div class="versionInfo">
-          Version 9.0.20,
-          <time datetime="2019-05-03">May 3 2019</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The AJP Connector</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
+          Version 9.0.31,
+          <time datetime="2020-02-05">Feb 5 2020</time></div><div style="height: 1px;"></div><div style="clear: left;"></div></div></div></div></header><div id="middle"><div><div id="mainLeft" class="noprint"><div><nav><div><h2>Links</h2><ul><li><a href="../index.html">Docs Home</a></li><li><a href="index.html">Config Ref. Home</a></li><li><a href="https://wiki.apache.org/tomcat/FAQ">FAQ</a></li><li><a href="#comments_section">User Comments</a></li></ul></div><div><h2>Top Level Elements</h2><ul><li><a href="server.html">Server</a></li><li><a href="service.html">Service</a></li></ul></div><div><h2>Executors</h2><ul><li><a href="executor.html">Executor</a></li></ul></div><div><h2>Connectors</h2><ul><li><a href="http.html">HTTP/1.1</a></li><li><a href="http2.html">HTTP/2</a></li><li><a href="ajp.html">AJP</a></li></ul></div><div><h2>Containers</h2><ul><li><a href="context.html">Context</a></li><li><a href="engine.html">Engine</a></li><li><a href="host.html">Host</a></li><li><a href="cluster.html">Cluster</a></li></ul></div><div><h2>Nested Components</h2><ul><li><a href="cookie-processor.html">CookieProcessor</a></li><li><a href="credentialhandler.html">CredentialHandler</a></li><li><a href="globalresources.html">Global Resources</a></li><li><a href="jar-scanner.html">JarScanner</a></li><li><a href="jar-scan-filter.html">JarScanFilter</a></li><li><a href="listeners.html">Listeners</a></li><li><a href="loader.html">Loader</a></li><li><a href="manager.html">Manager</a></li><li><a href="realm.html">Realm</a></li><li><a href="resources.html">Resources</a></li><li><a href="sessionidgenerator.html">SessionIdGenerator</a></li><li><a href="valve.html">Valve</a></li></ul></div><div><h2>Cluster Elements</h2><ul><li><a href="cluster.html">Cluster</a></li><li><a href="cluster-manager.html">Manager</a></li><li><a href="cluster-channel.html">Channel</a></li><li><a href="cluster-membership.html">Channel/Membership</a></li><li><a href="cluster-sender.html">Channel/Sender</a></li><li><a href="cluster-receiver.html">Channel/Receiver</a></li><li><a href="cluster-interceptor.html">Channel/Interceptor</a></li><li><a href="cluster-valve.html">Valve</a></li><li><a href="cluster-deployer.html">Deployer</a></li><li><a href="cluster-listener.html">ClusterListener</a></li></ul></div><div><h2>web.xml</h2><ul><li><a href="filter.html">Filter</a></li></ul></div><div><h2>Other</h2><ul><li><a href="systemprops.html">System properties</a></li><li><a href="jaspic.html">JASPIC</a></li></ul></div></nav></div></div><div id="mainRight"><div id="content"><h2>The AJP Connector</h2><h3 id="Table_of_Contents">Table of Contents</h3><div class="text">
 <ul><li><a href="#Introduction">Introduction</a></li><li><a href="#Attributes">Attributes</a><ol><li><a href="#Common_Attributes">Common Attributes</a></li><li><a href="#Standard_Implementations">Standard Implementations</a></li><li><a href="#Java_TCP_socket_attributes">Java TCP socket attributes</a></li><li><a href="#NIO_specific_configuration">NIO specific configuration</a></li><li><a href="#NIO2_specific_configuration">NIO2 specific configuration</a></li><li><a href="#APR/native_specific_configuration">APR/native specific configuration</a></li></ol></li><li><a href="#Nested_Components">Nested Components</a></li><li><a href="#Special_Features">Special Features</a><ol><li><a href="#Proxy_Support">Proxy Support</a></li><li><a href="#Connector_Comparison">Connector Comparison</a></li></ol></li></ul>
 </div><h3 id="Introduction">Introduction</h3><div class="text">
 
@@ -42,6 +42,13 @@
   Apache installation, and you want Apache to handle the static content
   contained in the web application, and/or utilize Apache's SSL
   processing.</p>
+
+  <p>Use of the AJP protocol requires additional security considerations because
+  it allows greater direct manipulation of Tomcat's internal data structures
+  than the HTTP connectors. Particular attention should be paid to the values
+  used for the <code>address</code>, <code>secret</code>,
+  <code>secretRequired</code> and <code>allowedRequestAttributesPattern</code>
+  attributes.</p>
 
   <p>This connector supports load balancing when used in conjunction with
   the <code>jvmRoute</code> attribute of the
@@ -200,7 +207,7 @@
       calls to <code>request.isSecure()</code> to return <code>true</code>
       for requests received by this Connector. You would want this on an
       SSL Connector or a non SSL connector that is receiving data from a
-      SSL accelerator, like a crypto card, a SSL appliance or even a webserver.
+      SSL accelerator, like a crypto card, an SSL appliance or even a webserver.
       The default value is <code>false</code>.</p>
     </td></tr><tr><td><code class="attributeName">URIEncoding</code></td><td>
       <p>This specifies the character encoding used to decode the URI bytes,
@@ -262,10 +269,24 @@
     </td></tr><tr><td><code class="attributeName">address</code></td><td>
       <p>For servers with more than one IP address, this attribute
       specifies which address will be used for listening on the specified
-      port.  By default, this port will be used on all IP addresses
-      associated with the server. A value of <code>127.0.0.1</code>
-      indicates that the Connector will only listen on the loopback
-      interface.</p>
+      port. By default, the loopback address will be used.</p>
+    </td></tr><tr><td><code class="attributeName">allowedRequestAttributesPattern</code></td><td>
+      <p>The AJP protocol passes some information from the reverse proxy to the
+      AJP connector using request attributes. These attributes are:</p>
+      <ul>
+        <li>javax.servlet.request.cipher_suite</li>
+        <li>javax.servlet.request.key_size</li>
+        <li>javax.servlet.request.ssl_session</li>
+        <li>javax.servlet.request.X509Certificate</li>
+        <li>AJP_LOCAL_ADDR</li>
+        <li>AJP_REMOTE_PORT</li>
+        <li>AJP_SSL_PROTOCOL</li>
+        <li>JK_LB_ACTIVATION</li>
+      </ul>
+      <p>The AJP protocol supports the passing of arbitrary request attributes.
+      Requests containing arbitrary request attributes will be rejected with a
+      403 response unless the entire attribute name matches this regular
+      expression. If not specified, the default value is <code>null</code>.</p>
     </td></tr><tr><td><code class="attributeName">bindOnInit</code></td><td>
       <p>Controls when the socket used by the connector is bound. By default it
       is bound when the connector is initiated and unbound when the connector is
@@ -314,14 +335,10 @@
       falls below <strong>maxConnections</strong> at which point the server will
       start accepting and processing new connections again. Note that once the
       limit has been reached, the operating system may still accept connections
-      based on the <code>acceptCount</code> setting. The default value varies by
-      connector type. For NIO and NIO2 the default is <code>10000</code>.
-      For APR/native, the default is <code>8192</code>.</p>
-      <p>Note that for APR/native on Windows, the configured value will be
-      reduced to the highest multiple of 1024 that is less than or equal to
-      maxConnections. This is done for performance reasons.<br>
-      If set to a value of -1, the maxConnections feature is disabled
-      and connections are not counted.</p>
+      based on the <code>acceptCount</code> setting. The default value
+      is <code>8192</code>.</p>
+      <p>For NIO/NIO2 only, setting the value to -1, will disable the
+      maxConnections feature and connections will not be counted.</p>
     </td></tr><tr><td><code class="attributeName">maxCookieCount</code></td><td>
       <p>The maximum number of cookies that are permitted for a request. A value
       of less than zero means no limit. If not specified, a default value of 200
@@ -361,9 +378,18 @@
       the maxThreads setting. If using Servlet 3.0 asynchronous processing, a
       good default is to use the larger of maxThreads and the maximum number of
       expected concurrent requests (synchronous and asynchronous).</p>
-    </td></tr><tr><td><code class="attributeName">requiredSecret</code></td><td>
+    </td></tr><tr><td><code class="attributeName">secret</code></td><td>
       <p>Only requests from workers with this secret keyword will be accepted.
-      </p>
+      The default value is <code>null</code>. This attrbute must be specified
+      with a non-null, non-zero length value unless
+      <strong>secretRequired</strong> is explicitly configured to be
+      <code>false</code>.</p>
+    </td></tr><tr><td><code class="attributeName">secretRequired</code></td><td>
+      <p>If this attribute is <code>true</code>, the AJP Connector will only
+      start if the <strong>secret</strong> attribute is configured with a
+      non-null, non-zero length value. The default value is <code>true</code>.
+      This attributue should only be set to <code>false</code> when the
+      Connector is used on a trusted network.</p>
     </td></tr><tr><td><code class="attributeName">tcpNoDelay</code></td><td>
       <p>If set to <code>true</code>, the TCP_NO_DELAY option will be
       set on the server socket, which improves performance under most
@@ -421,7 +447,9 @@
         used if not set.</p>
       </td></tr><tr><td><code class="attributeName">socket.txBufSize</code></td><td>
         <p>(int)The socket send buffer (SO_SNDBUF) size in bytes. JVM default
-        used if not set.</p>
+        used if not set. Care should be taken if explicitly setting this value.
+        Very poor performance has been observed on some JVMs with values less
+        than ~8k.</p>
       </td></tr><tr><td><code class="attributeName">socket.tcpNoDelay</code></td><td>
         <p>(bool)This is equivalent to standard attribute
         <strong>tcpNoDelay</strong>.</p>
@@ -731,5 +759,5 @@
                     Comments may be removed by our moderators if they are either
                     implemented or considered invalid/off-topic.
                   </p><div id="comments_thread"></div></div></div></div></div></div></div><footer><div id="footer">
-    Copyright &copy; 1999-2019, The Apache Software Foundation
+    Copyright &copy; 1999-2020, The Apache Software Foundation
   </div></footer></div></body></html>
