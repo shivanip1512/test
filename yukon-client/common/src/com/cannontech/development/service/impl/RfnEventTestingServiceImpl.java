@@ -418,6 +418,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     private void buildAndSendAlarm(RfnTestEvent event, int serialNum) {
         RfnAlarm rfnAlarm = buildEvent(event, new RfnAlarm(), serialNum);
+        rfnAlarm.setEventData(null); // Alarms from meters and relays do not include event data
         
         RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
         archiveRequest.setAlarm(rfnAlarm);

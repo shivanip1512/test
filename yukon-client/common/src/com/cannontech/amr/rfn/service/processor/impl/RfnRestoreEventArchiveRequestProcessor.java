@@ -50,7 +50,7 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnOutageLogEventCon
                                                            now);
         } catch (InvalidEventMessageException ex) {
             if (event instanceof RfnAlarm) {
-                log.trace(device + " restore alarm received with no COUNT, not sending RFN_OUTAGE_RESTORE_COUNT update");
+                log.trace("{} restore alarm received with no COUNT, not sending RFN_OUTAGE_RESTORE_COUNT update", device);
             } else {
                 throw ex;
             }
