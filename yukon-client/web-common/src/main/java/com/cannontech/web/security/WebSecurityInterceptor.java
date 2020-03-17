@@ -18,6 +18,7 @@ import com.cannontech.web.security.csrf.CsrfTokenService;
 
 public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
     private static final String INVALID_CSRF_TOKEN = "invalidCsrfToken";
+    private static final String SESSION_CSRF_TOKEN = "com.cannontech.yukon.session.csrf.token";
     private static final Logger log = YukonLogManager.getLogger(WebSecurityInterceptor.class);
 
     private WebSecurityAnnotationProcessor annotationProcessor;
@@ -47,6 +48,7 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
                 csrfTokenService.validateToken(request);
             } catch (SecurityException se) {
                 if (!request.getRequestURI().contains("/updater/update")) {
+                    request.getSession().removeAttribute(SESSION_CSRF_TOKEN);
                     log.error("Invalid CSRF token :", se);
                     String redirect =
                         ServletUtil.createSafeRedirectUrl(request, "/login.jsp?" + INVALID_CSRF_TOKEN + "=true");
