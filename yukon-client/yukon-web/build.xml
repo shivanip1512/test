@@ -19,12 +19,8 @@
 	
 	<target name="all" depends="clean, build" />
 
-    <target name="build">
-        <parallel>
-            <antcall target="build_src"/>
-            <antcall target="precompile_java"/>
-        </parallel>
-    </target>
+	<target name="build" depends="build_src, precompile_java"/>
+
     <!-- 
         Target to delete all of the files and directories from any previous builds
      -->
