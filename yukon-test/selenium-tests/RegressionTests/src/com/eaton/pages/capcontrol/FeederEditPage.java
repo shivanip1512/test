@@ -1,9 +1,13 @@
 package com.eaton.pages.capcontrol;
 
+import java.util.Optional;
+
 import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.pages.PageBase;
 
 public class FeederEditPage extends PageBase {
@@ -48,5 +52,14 @@ public class FeederEditPage extends PageBase {
     
     public Button getDeleteBtn() {
         return deleteBtn;
+    }
+    
+    public ConfirmModal showAndWaitConfirmDeleteModal() {
+        
+        getDeleteBtn().click();       
+                      
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));  
     }
 }

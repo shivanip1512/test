@@ -65,7 +65,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }  
     
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteSubstationBusSuccess() {
         final String EXPECTED_MSG = "Bus AT Delete Bus deleted successfully.";
         
@@ -73,11 +73,9 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
 
         SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, Urls.CapControl.SUBSTATION_BUS_EDIT + "574" + Urls.EDIT);
         
-        editPage.getDeleteBtn().click();   
+        ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
-        ConfirmModal modal = new ConfirmModal(driverExt, "yukon_dialog_confirm");
-        
-        modal.clickOk();
+        modal.clickOkAndWait();
         
         waitForPageToLoad("Orphans", Optional.empty());
         

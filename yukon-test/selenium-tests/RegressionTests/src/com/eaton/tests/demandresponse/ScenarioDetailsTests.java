@@ -36,7 +36,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }    
     
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_14_DeleteScenario"})
     public void deleteScenarioSuccess() {
         final String EXPECTED_MSG = "AT Delete Scenario deleted successfully.";
         
@@ -46,7 +46,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         
         ConfirmModal  confirmModal = detailPage.showDeleteControlAreaModal();
         
-        confirmModal.clickOk();
+        confirmModal.clickOkAndWait();
         
         waitForPageToLoad("Setup", Optional.empty());
         

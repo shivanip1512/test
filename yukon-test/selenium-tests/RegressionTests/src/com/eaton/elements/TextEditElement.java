@@ -7,11 +7,8 @@ import com.eaton.framework.DriverExtensions;
 
 public class TextEditElement extends EditElement {
     
-    private DriverExtensions driverExt;
-    
     public TextEditElement(DriverExtensions driverExt, String elementName) {
         super(driverExt, elementName); 
-        this.driverExt = driverExt;
     }
     
     public TextEditElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
@@ -31,7 +28,7 @@ public class TextEditElement extends EditElement {
         
         input.clear();
         
-        Actions action = new Actions(this.driverExt.getDriver());
+        Actions action = new Actions(driverExt.getDriver());
         action.sendKeys(input, value).build().perform();
     }
 }

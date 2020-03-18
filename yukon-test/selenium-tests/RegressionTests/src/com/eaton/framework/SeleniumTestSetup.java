@@ -1,5 +1,6 @@
 package com.eaton.framework;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.logging.ConsoleHandler;
@@ -8,6 +9,9 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -213,30 +217,92 @@ public class SeleniumTestSetup {
         String display = "";
 
         long startTime = System.currentTimeMillis();
-        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 5000) {
-            display = driver.findElement(By.id("modal-glass")).getAttribute("style");
+        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 2000) {            
+            try {
+                display = driverExt.findElement(By.id("modal-glass"), Optional.of(0)).getAttribute("style");
+            }
+            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
+            }  
         }
 
     }
 
-    public static void waitUntilModalVisible(String name) {
+    public static void waitUntilModalVisibleByDescribedBy(String describedBy) {
         boolean displayed = false;
 
         long startTime = System.currentTimeMillis();
 
-        while (!displayed && System.currentTimeMillis() - startTime < 3000) {
-            displayed = driver.findElement(By.cssSelector("[aria-describedby='" + name + "']")).isDisplayed();
+        while (!displayed && System.currentTimeMillis() - startTime < 300) {
+            try {
+                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).isDisplayed();
+            }
+            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {               
+            }  
+        }
+    }
+    
+    public static void waitUntilModalVisibleByTitle(String modalTitle) {       
+        List<WebElement> elements;
+        Optional<WebElement> el;
+        boolean found = false;
+
+        long startTime = System.currentTimeMillis();                
+        
+        while (!found && System.currentTimeMillis() - startTime < 300) {            
+            try {
+                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));            
+            
+                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();  
+                found = el.isPresent();
+            } catch(StaleElementReferenceException | NoSuchElementException | TimeoutException ex) { }            
         }
     }
 
-    public static void waitUntilModalClosed(String name) {
+    public static void waitUntilModalClosedByDescribedBy(String describedBy) {
         boolean displayed = true;
 
         long startTime = System.currentTimeMillis();
 
-        while (displayed && System.currentTimeMillis() - startTime > 3000) {
-            displayed = driver.findElement(By.cssSelector("[aria-describedby='" + name + "']")).isDisplayed();
+        while (displayed && System.currentTimeMillis() - startTime < 100) {
+            try {
+                displayed = driverExt.findElement(By.cssSelector("[aria-describedby='" + describedBy + "']"), Optional.of(0)).isDisplayed();
+            }
+            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {  
+                displayed = false;
+            }            
         }
+    }
+    
+    public static void waitUntilModalClosedByTitle(String modalTitle) {
+        List<WebElement> elements;
+        Optional<WebElement> el;
+        boolean found = true;
+
+        long startTime = System.currentTimeMillis();                
+        
+        while (found && System.currentTimeMillis() - startTime < 100) {              
+            try {
+                elements = driverExt.findElements(By.cssSelector(".ui-dialog .ui-dialog-title"), Optional.of(0));            
+            
+                el = elements.stream().filter(element -> element.getText().equals(modalTitle)).findFirst();  
+                found = el.isPresent();
+            } catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) { 
+                found = false;
+            }            
+        }
+    }
+    
+    public static void waitUntilModalClosed(WebElement modal) {               
+        String display = "";
+
+        long startTime = System.currentTimeMillis();
+        while (!display.equals("display: none;") && System.currentTimeMillis() - startTime < 100) {
+            try {
+                display = modal.getAttribute("style");
+            }
+            catch (StaleElementReferenceException | NoSuchElementException | TimeoutException ex) {                      
+            }            
+        }        
     }
 
     public void navigate(String url) {

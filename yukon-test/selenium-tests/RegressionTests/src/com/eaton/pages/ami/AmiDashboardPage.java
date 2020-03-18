@@ -1,5 +1,7 @@
 package com.eaton.pages.ami;
 
+import java.util.Optional;
+
 import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.modals.CreateMeterModal;
 import com.eaton.framework.DriverExtensions;
@@ -24,8 +26,8 @@ public class AmiDashboardPage extends PageBase {
         
         actionBtn.clickAndSelectOptionByText("Create Meter");        
                       
-        SeleniumTestSetup.waitUntilModalVisible("contentPopup");
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("contentPopup");
         
-        return new CreateMeterModal(this.driverExt, "contentPopup");        
+        return new CreateMeterModal(this.driverExt, Optional.empty(), Optional.of("contentPopup"));
     }    
 }

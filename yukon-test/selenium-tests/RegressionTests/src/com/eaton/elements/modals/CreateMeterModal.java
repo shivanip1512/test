@@ -1,23 +1,24 @@
 package com.eaton.elements.modals;
 
+import java.util.Optional;
+
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.DropDownSearchElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.SeleniumTestSetup;
 
 public class CreateMeterModal extends BaseModal {
+
+    public CreateMeterModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+        super(driverExt, modalTitle, describedBy);
+
+        this.driverExt = driverExt;
+    }
 
     private DriverExtensions driverExt;
     private static final String PARENT_NAME = "contentPopup";
     
-    public CreateMeterModal(DriverExtensions driverExt, String modalName) {
-        super(driverExt, modalName);
-        
-        this.driverExt = driverExt;
-    }
-
     public DropDownSearchElement getType() {
         return new DropDownSearchElement(this.driverExt, "meter_type_chosen", PARENT_NAME);
     }

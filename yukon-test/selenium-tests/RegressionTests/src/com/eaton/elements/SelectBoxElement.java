@@ -5,10 +5,8 @@ import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.eaton.framework.DriverExtensions;
-import com.eaton.framework.SeleniumTestSetup;
 
 public class SelectBoxElement {
 
@@ -53,9 +51,9 @@ public class SelectBoxElement {
 
         WebTable availableTable = getAvailabeTable();
 
-        availableTable.searchTable(value);
-        waitForSearch();
-
+        WebElement column = getColumnByColumnName(AVAILABLE);
+        availableTable.searchTable(value, column);
+        
         availableTable = getAvailabeTable();
         WebTableRow row = availableTable.getDataRowByName(value);
 
@@ -68,9 +66,9 @@ public class SelectBoxElement {
         for (String value : values) {
             WebTable availableTable = getAvailabeTable();
 
-            availableTable.searchTable(value);
-            waitForSearch();
-
+            WebElement column = getColumnByColumnName(AVAILABLE);
+            availableTable.searchTable(value, column);
+            
             WebTableRow row = availableTable.getDataRowByName(value);
 
             row.selectCellByLink();
@@ -79,24 +77,6 @@ public class SelectBoxElement {
         }
 
         clickAdd();
-    }
-
-    private void waitForSearch() {
-        WebElement column = getColumnByColumnName(AVAILABLE);
-
-        WebElement table = column.findElement(By.cssSelector(".compact-results-table"));
-
-        List<WebElement> rows = table.findElements(By.cssSelector("tbody tr"));
-        
-        WebElement row = rows.get(0);
-        
-        SeleniumTestSetup.getDriverExt().getDriverWait().until(ExpectedConditions.stalenessOf(row));
-
-        long startTime = System.currentTimeMillis();
-        while (rows.size() != 1 && (System.currentTimeMillis() - startTime) < 5000) {
-            table = column.findElement(By.cssSelector(".compact-results-table"));
-            rows = table.findElements(By.cssSelector("tbody tr"));
-        }
     }
 
     private WebTable getAvailabeTable() {

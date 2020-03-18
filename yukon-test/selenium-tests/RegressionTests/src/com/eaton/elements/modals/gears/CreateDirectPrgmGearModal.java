@@ -1,5 +1,7 @@
 package com.eaton.elements.modals.gears;
 
+import java.util.Optional;
+
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
@@ -8,8 +10,8 @@ import com.eaton.framework.DriverExtensions;
 
 public class CreateDirectPrgmGearModal extends CreateGearsModal {
 
-    public CreateDirectPrgmGearModal(DriverExtensions driverExt, String modalName) {
-        super(driverExt, modalName);
+    public CreateDirectPrgmGearModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+        super(driverExt, modalTitle, describedBy);
     }
 
     // CONTROL PARAMETERS

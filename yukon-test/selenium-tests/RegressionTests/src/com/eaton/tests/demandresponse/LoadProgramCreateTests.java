@@ -58,7 +58,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         modal.getGearName().setInputValue("TC " + timeStamp); 
         modal.getGearType().selectItemByText("True Cycle");   
         waitForLoadingSpinner();
-        modal.clickOk();
+        modal.clickOkAndWait();
         
         LoadGroupsTab groupsTab = createPage.getLoadGroupTab();
         
@@ -75,8 +75,6 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         
         Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully." + "' but found: " + userMsg);
     } 
-    
-    //DELETE ME deleted successfully.
     
     @AfterMethod
     public void afterTest() {        

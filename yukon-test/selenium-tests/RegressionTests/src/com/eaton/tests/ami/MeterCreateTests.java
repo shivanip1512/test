@@ -59,7 +59,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         createModal.getManufacturer().setInputValue(manufacturer);
         createModal.getModel().setInputValue("A3K");
 
-        createModal.clickOk();
+        createModal.clickOkAndWait();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
@@ -87,7 +87,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         createModal.getManufacturer().setInputValue(manufacturer);
         createModal.getModel().setInputValue("A3K");
 
-        createModal.clickOk();
+        createModal.clickOkAndWait();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
@@ -116,7 +116,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         createModal.getManufacturer().setInputValue(manufacturer);
         createModal.getModel().setInputValue("A3K");
 
-        createModal.clickOk();
+        createModal.clickOkAndWait();
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 

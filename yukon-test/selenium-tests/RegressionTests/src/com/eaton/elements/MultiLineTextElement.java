@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import com.eaton.framework.DriverExtensions;
 
@@ -14,29 +15,22 @@ public class MultiLineTextElement {
     private String elementName;
     private String parentName;
     private WebElement parentElement;
-    private WebElement multiEditElement;
 
     public MultiLineTextElement(DriverExtensions driverExt, String elementName) {
         this.driverExt = driverExt;
-        this.elementName = elementName;
-        
-        setMultiLineTextElement();
+        this.elementName = elementName;        
     }   
     
     public MultiLineTextElement(DriverExtensions driverExt, String elementName, String parentName) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentName = parentName;
-        
-        setMultiLineTextElement();
     }  
     
     public MultiLineTextElement(DriverExtensions driverExt, String elementName, WebElement parentElement) {
         this.driverExt = driverExt;
         this.elementName = elementName;
         this.parentElement = parentElement;
-        
-        setMultiLineTextElement();
     }  
 
     public Boolean errorDisplayed() {
@@ -54,20 +48,18 @@ public class MultiLineTextElement {
         WebElement input = getMultiLineTextElement();
         
         input.clear();
-        input.sendKeys(value);
+        
+        Actions action = new Actions(this.driverExt.getDriver());
+        action.sendKeys(input, value).build().perform();
     }
-
-    private WebElement setMultiLineTextElement() {
+    
+    private WebElement getMultiLineTextElement() {
         if (this.parentName != null) {
             return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] textarea[name='" + this.elementName + "']"), Optional.empty());
         } else if (this.parentElement != null) {
             return this.parentElement.findElement(By.cssSelector("textarea[name='" + this.elementName + "']"));
         } else {
             return this.driverExt.findElement(By.cssSelector("textarea[name='" + this.elementName + "']"), Optional.empty());
-        }        
-    }
-    
-    private WebElement getMultiLineTextElement() {
-        return this.multiEditElement;
+        } 
     }
 }

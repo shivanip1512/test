@@ -50,9 +50,18 @@ public class CreateBtnDropDownElement {
         WebElement el = SeleniumTestSetup.getDriverExt().getDriverWait()
                 .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".dropdown-menu[style*='display: block;']")));
 
-        List<WebElement> options = el.findElements(By.cssSelector(".dropdown-option-label"));
+        List<WebElement> options = el.findElements(By.cssSelector(".dropdown-option"));
+        
+//        for (WebElement webElement : options) {
+//            
+//            String text = webElement.findElement(By.cssSelector(".dropdown-option-label")).getText();
+//            
+//            if (text.equals(value)) {
+//                webElement.click();
+//            }
+//        }
 
-        WebElement optionValue = options.stream().filter(option -> option.getText().equals(value)).findFirst().orElseThrow();
+        WebElement optionValue = options.stream().filter(option -> option.findElement(By.cssSelector(".dropdown-option-label")).getText().equals(value)).findFirst().orElseThrow();
 
         optionValue.click();
 

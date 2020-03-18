@@ -73,9 +73,9 @@ public class CbcEditTests extends SeleniumTestSetup {
         
         editPage.getDeleteBtn().click();   
         
-        ConfirmModal modal = new ConfirmModal(driverExt, "yukon_dialog_confirm");
+        ConfirmModal modal = new ConfirmModal(driverExt, Optional.of("yukon_dialog_confirm"), Optional.empty());
         
-        modal.clickOk();
+        modal.clickOkAndWait();
         
         waitForPageToLoad("Orphans", Optional.empty());
         

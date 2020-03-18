@@ -1,5 +1,7 @@
 package com.eaton.elements.modals.gears;
 
+import java.util.Optional;
+
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
@@ -7,8 +9,8 @@ import com.eaton.framework.DriverExtensions;
 
 public class CreateEcobeePrgmGearModal extends CreateGearsModal {
 
-    public CreateEcobeePrgmGearModal(DriverExtensions driverExt, String modalName) {
-        super(driverExt, modalName);
+    public CreateEcobeePrgmGearModal(DriverExtensions driverExt, Optional<String> modalName, Optional<String> describedBy) {
+        super(driverExt, modalName, describedBy);
     }
 
     // Control Parameters

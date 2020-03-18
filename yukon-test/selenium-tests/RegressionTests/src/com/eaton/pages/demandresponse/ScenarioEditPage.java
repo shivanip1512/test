@@ -1,7 +1,7 @@
 package com.eaton.pages.demandresponse;
 
 import com.eaton.elements.Button;
-import com.eaton.elements.Sections;
+import com.eaton.elements.Section;
 import com.eaton.elements.SelectBoxElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
@@ -31,8 +31,8 @@ public class ScenarioEditPage extends PageBase {
     }       
     
     public SelectBoxElement getLoadProgramAssignments() {
-        Sections section = new Sections(this.driverExt, "js-control-scenario-form");
+        Section section = new Section(this.driverExt, "Add/Remove Load Programs");
                 
-        return new SelectBoxElement(this.driverExt, section.getSectionByName("Add/Remove Load Programs"));        
+        return new SelectBoxElement(this.driverExt, section.getSection());        
     }
 }

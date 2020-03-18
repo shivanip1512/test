@@ -64,9 +64,4 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
         softAssertion.assertTrue(demandPage.getActionBtn().isEnabled());
         softAssertion.assertTrue(demandPage.getActionBtn().isDisplayed());
     }
-
-    @Test(enabled = false)
-    public void resetSeasonControlHoursModelTitleCorrect() {
-        // TODO get modals update to be able to grab them uniquely
-    }
 }

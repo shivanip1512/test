@@ -72,11 +72,9 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
         RegulatorEditPage editPage = new RegulatorEditPage(driverExt, Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
         
-        editPage.getDeleteBtn().click();   
+        ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
-        ConfirmModal modal = new ConfirmModal(driverExt, "yukon_dialog_confirm");
-        
-        modal.clickOk();
+        modal.clickOkAndWait();
         
         waitForPageToLoad("Orphans", Optional.empty());
         

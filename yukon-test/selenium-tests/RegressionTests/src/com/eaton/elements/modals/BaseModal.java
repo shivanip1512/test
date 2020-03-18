@@ -1,5 +1,6 @@
 package com.eaton.elements.modals;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
@@ -10,43 +11,88 @@ import com.eaton.framework.SeleniumTestSetup;
 
 public class BaseModal {
 
-    private DriverExtensions driverExt;
-    private String modalName;
-    private WebElement modal;
+    protected DriverExtensions driverExt;
+    private String modalTitle;
+    private String describedBy;
 
-    public BaseModal(DriverExtensions driverExt, String modalName) {
+    public BaseModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
         this.driverExt = driverExt;
-        this.modalName = modalName;
-        
-        this.modal = this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.modalName + "']"), Optional.empty());
+
+        if (modalTitle.isPresent())
+            this.modalTitle = modalTitle.get();
+        if (describedBy.isPresent())
+            this.describedBy = describedBy.get();
     }
 
-    // TODO need a unique way to select the new user, new user group and new role group the describedby changes
-    protected WebElement getModal() {
-        return this.modal;
+    public WebElement getModal() {
+
+        if (describedBy != null) {
+            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.describedBy + "']"), Optional.empty());
+        }
+
+        Optional<WebElement> found = Optional.empty();
+
+        long startTime = System.currentTimeMillis();
+
+        while (found.isEmpty() && System.currentTimeMillis() - startTime < 3000) {
+
+            List<WebElement> elements = this.driverExt.findElements(By.cssSelector(".ui-dialog"), Optional.of(0));
+
+            found = elements.stream()
+                    .filter(element -> element.findElement(By.cssSelector(".ui-dialog-title")).getText().equals(this.modalTitle))
+                    .findFirst();
+        }
+
+        return found.get();
     }
-    
+
     public String getModalTitle() {
         return getModal().findElement(By.cssSelector(".ui-dialog-titlebar .ui-dialog-title")).getText();
     }
 
-    public void clickClose() {
+    public void clickCloseAndWait() {
         getModal().findElement(By.cssSelector(".ui-dialog-titlebar-close")).click();
         
-        SeleniumTestSetup.waitUntilModalClosed(modalName);
+        if (describedBy != null) {
+            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
+        } else if(modalTitle != null) {
+            SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
+        }
     }
 
     // TODO need a unique way to select the save button
-    public void clickOk() {
+    public void clickOkAndWait() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .primary")).click();
         
-        SeleniumTestSetup.waitUntilModalClosed(modalName);
+        if (describedBy != null) {
+            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
+        } else if(modalTitle != null) {
+            SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
+        }
     }
 
-    ///TODO need a unique way to select the cancel button
-    public void clickCancel() {
+    /// TODO need a unique way to select the cancel button
+    public void clickCancelAndWait() {
         getModal().findElement(By.cssSelector(".ui-dialog-buttonset .js-secondary-action")).click();
         
-        SeleniumTestSetup.waitUntilModalClosed(modalName);
-    }  
+        if (describedBy != null) {
+            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
+        } else if(modalTitle != null) {
+            SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
+        }
+    }
+    
+    public void clickCancelBtnByNameAndWait() {
+        List<WebElement> el = getModal().findElements(By.cssSelector("button"));
+        
+        WebElement button = el.stream().filter(element -> element.getText().equals("Cancel")).findFirst().orElseThrow();
+        
+        button.click();
+        
+        if (this.describedBy.isEmpty()) {
+            SeleniumTestSetup.waitUntilModalClosedByDescribedBy(describedBy);
+        } else if(this.modalTitle.isEmpty()) {
+            SeleniumTestSetup.waitUntilModalClosedByTitle(modalTitle);
+        }
+    }
 }

@@ -1,8 +1,10 @@
 package com.eaton.pages.demandresponse;
 
+import java.util.Optional;
+
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
-import com.eaton.elements.Sections;
+import com.eaton.elements.Section;
 import com.eaton.elements.SelectBoxElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
@@ -71,13 +73,13 @@ public class ControlAreaEditPage extends PageBase {
         
         getCreateTrigger().click();
         
-        return new CreateTriggersModal(this.driverExt, "js-add-triggers");
+        return new CreateTriggersModal(this.driverExt, Optional.of("js-add-triggers"), Optional.empty());
         
     }
     
     public SelectBoxElement getProgramAssignments() {
-        Sections section = new Sections(this.driverExt, "js-control-area-form");
+        Section section = new Section(this.driverExt, "Program Assignments");
                 
-        return new SelectBoxElement(this.driverExt, section.getSectionByName("Program Assignments"));        
+        return new SelectBoxElement(this.driverExt, section.getSection());        
     }
 }

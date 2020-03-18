@@ -1,5 +1,7 @@
 package com.eaton.elements.modals;
 
+import java.util.Optional;
+
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
@@ -9,11 +11,13 @@ public class EditMeterModal extends BaseModal {
 
     private DriverExtensions driverExt;
     
-    public EditMeterModal(DriverExtensions driverExt, String modalName) {
-        super(driverExt, modalName);
+    public EditMeterModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+        super(driverExt, modalTitle, describedBy);
         
         this.driverExt = driverExt;
     }
+    
+    //TODO need to add all fields as there are more based on the device you select
     
     public TextEditElement getdeviceName() {
         return new TextEditElement(this.driverExt, "name", getModal());

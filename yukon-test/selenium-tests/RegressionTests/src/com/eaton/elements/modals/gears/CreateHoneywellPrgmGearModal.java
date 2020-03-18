@@ -1,13 +1,15 @@
 package com.eaton.elements.modals.gears;
 
+import java.util.Optional;
+
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
 
 public class CreateHoneywellPrgmGearModal extends CreateGearsModal {
 
-    public CreateHoneywellPrgmGearModal(DriverExtensions driverExt, String modalName) {
-        super(driverExt, modalName);
+    public CreateHoneywellPrgmGearModal(DriverExtensions driverExt, Optional<String> modalName, Optional<String> describedBy) {
+        super(driverExt, modalName, describedBy);
     }
 
     // Control Parameters

@@ -1,5 +1,7 @@
 package com.eaton.pages.demandresponse;
 
+import java.util.Optional;
+
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
@@ -8,7 +10,7 @@ import com.eaton.elements.modals.gears.CreateDirectPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateEcobeePrgmGearModal;
 import com.eaton.elements.modals.gears.CreateHoneywellPrgmGearModal;
 import com.eaton.elements.modals.gears.CreateItronPrgmGearModal;
-import com.eaton.elements.modals.gears.CreateMeterDiconnectPrgmModal;
+import com.eaton.elements.modals.gears.CreateMeterDisconnectPrgmModal;
 import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.framework.DriverExtensions;
@@ -77,37 +79,37 @@ public class LoadProgramCreatePage extends PageBase {
     public CreateDirectPrgmGearModal showCreateDirectPrgmGearsModal() {
         getGearsCreateBtn().click();
 
-        return new CreateDirectPrgmGearModal(this.driverExt, PARENT_NAME);
+        return new CreateDirectPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(PARENT_NAME));
     }
 
     public CreateEcobeePrgmGearModal showCreateEcobeePrgmGearModal() {
         getGearsCreateBtn().click();
 
-        return new CreateEcobeePrgmGearModal(this.driverExt, PARENT_NAME);
+        return new CreateEcobeePrgmGearModal(this.driverExt, Optional.empty(), Optional.of(PARENT_NAME));
     }
 
     public CreateHoneywellPrgmGearModal showCreateHoneywellPrgmGearModal() {
         getGearsCreateBtn().click();
 
-        return new CreateHoneywellPrgmGearModal(this.driverExt, PARENT_NAME);
+        return new CreateHoneywellPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(PARENT_NAME));
     }
 
     public CreateItronPrgmGearModal showCreateItronPrgmGearModal() {
         getGearsCreateBtn().click();
 
-        return new CreateItronPrgmGearModal(this.driverExt, PARENT_NAME);
+        return new CreateItronPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(PARENT_NAME));
     }
 
-    public CreateMeterDiconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
+    public CreateMeterDisconnectPrgmModal showCreateMeterDiconnectPrgmModal() {
         getGearsCreateBtn().click();
 
-        return new CreateMeterDiconnectPrgmModal(this.driverExt, PARENT_NAME);
+        return new CreateMeterDisconnectPrgmModal(this.driverExt, Optional.empty(), Optional.of(PARENT_NAME));
     }
 
     public CreateSepPrgmGearModal showCreateSepPrgmGearModal() {
         getGearsCreateBtn().click();
 
-        return new CreateSepPrgmGearModal(this.driverExt, PARENT_NAME);
+        return new CreateSepPrgmGearModal(this.driverExt, Optional.empty(), Optional.of(PARENT_NAME));
     }
 
     public LoadGroupsTab getLoadGroupTab() {

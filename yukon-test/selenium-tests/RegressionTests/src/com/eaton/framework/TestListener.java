@@ -1,51 +1,65 @@
 package com.eaton.framework;
 
 import java.io.File;
-import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestContext;
-import org.testng.ITestListener;
 import org.testng.ITestResult;
+import org.testng.TestListenerAdapter;
 
-import com.google.common.io.Files;
-
-public class TestListener implements ITestListener{
-    
-    WebDriver driver = null;
-    String filePath = "C:\\code\\screenshots";
+public class TestListener extends TestListenerAdapter {
+    WebDriver driver;
+    private static String fileSeperator = System.getProperty("file.separator");
 
     @Override
     public void onTestFailure(ITestResult result) {
-        System.out.println("***** Error "+result.getName()+" test has failed *****");
-        String methodName=result.getName().toString().trim();
-        ITestContext context = result.getTestContext();
-        WebDriver driver = (WebDriver)context.getAttribute("driver");
-        takeScreenShot(methodName, driver);
+            System.out.println("***** Error " + result.getName() + " test has failed *****");
+
+            ITestContext context = result.getTestContext();
+            WebDriver driver = (WebDriver)context.getAttribute("driver");
+
+            String testClassName = getTestClassName(result.getInstanceName()).trim();
+
+            String testMethodName = result.getName().toString().trim();
+            String screenShotName = testMethodName + ".png";
+
+            if (driver != null) {
+                    String imagePath = ".." + fileSeperator + "Screenshots"
+                                    + fileSeperator + "Results" + fileSeperator + testClassName
+                                    + fileSeperator
+                                    + takeScreenShot(driver, screenShotName, testClassName);
+                    System.out.println("Screenshot can be found : " + imagePath);
+            }
     }
-    
-    public void takeScreenShot(String methodName, WebDriver driver) {
-        File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
-        //The below method will save the screen shot in d drive with test method name 
-           try {
-                               Files.copy(scrFile, new File(filePath+methodName+".png"));
-                               System.out.println("***Placed screen shot in "+filePath+" ***");
-                       } catch (IOException e) {
-                               e.printStackTrace();
-                       }
-   }
-    
-    public void onFinish(ITestContext context) {}
-    
-    public void onTestStart(ITestResult result) {   }
-  
-    public void onTestSuccess(ITestResult result) {   }
 
-    public void onTestSkipped(ITestResult result) {   }
+    public static String takeScreenShot(WebDriver driver,
+                    String screenShotName, String testName) {
+            try {
+                    File file = new File("Screenshots" + fileSeperator + "Results");
+                    if (!file.exists()) {
+                            System.out.println("File created " + file);
+                            file.mkdir();
+                    }
 
-    public void onTestFailedButWithinSuccessPercentage(ITestResult result) {   }
+                    File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+                    File targetFile = new File("Screenshots" + fileSeperator + "Results" + fileSeperator + testName, screenShotName);
+                    FileUtils.copyFile(screenshotFile, targetFile);
 
-    public void onStart(ITestContext context) {   }
+                    return screenShotName;
+            } catch (Exception e) {
+                    System.out.println("An exception occured while taking screenshot " + e.getCause());
+                    return null;
+            }
+    }
+
+    public String getTestClassName(String testName) {
+            String[] reqTestClassname = testName.split("\\.");
+            int i = reqTestClassname.length - 1;
+            System.out.println("Required Test Name : " + reqTestClassname[i]);
+            return reqTestClassname[i];
+    }
+
 }

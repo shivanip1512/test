@@ -51,14 +51,4 @@ public class ScenariosListTests extends SeleniumTestSetup {
         softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
         softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
     }
-
-    @Test(enabled = false)
-    public void startScenarioModalTitleCorrect() {
-        // TODO get modal to be selected uniquely
-    }
-
-    @Test(enabled = false)
-    public void stopScenarioModalTitleCorrect() {
-        // TODO get modal to be selected uniquely
-    }
 }

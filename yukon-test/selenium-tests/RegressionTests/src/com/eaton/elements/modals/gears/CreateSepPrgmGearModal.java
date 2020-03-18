@@ -1,5 +1,7 @@
 package com.eaton.elements.modals.gears;
 
+import java.util.Optional;
+
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
@@ -7,16 +9,16 @@ import com.eaton.framework.DriverExtensions;
 
 public class CreateSepPrgmGearModal extends CreateGearsModal {
 
-    public CreateSepPrgmGearModal(DriverExtensions driverExt, String modalName) {
-        super(driverExt, modalName);
-    }
-
     // CONTROL PARAMETERS
     // Control Percent
     // TODO Control Percent need to create numeric spinner element
 
     // Criticality
     // TODO Criticality need to create numeric spinner element
+
+    public CreateSepPrgmGearModal(DriverExtensions driverExt, Optional<String> modalName, Optional<String> describedBy) {
+        super(driverExt, modalName, describedBy);
+    }
 
     // TrueCycleOrAdaptiveAlgorithm
     public TrueFalseCheckboxElement getTrueCycleOrAdaptiveAlgorithm() {

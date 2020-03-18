@@ -14,7 +14,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.AreaDetailPage;
 import com.eaton.pages.capcontrol.AreaEditPage;
-import com.eaton.pages.capcontrol.orphans.OrphansPage;
+import com.eaton.pages.capcontrol.CapControlDashboardPage;
 
 public class AreaEditTests extends SeleniumTestSetup {
 
@@ -63,23 +63,21 @@ public class AreaEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }      
     
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteAreaSuccess() {
-        final String EXPECTED_MSG = "Area AT Delete Area deleted successfully.";
+        final String EXPECTED_MSG = "Area AT Delete Area Deleted successfully.";
         
         navigate(Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);
 
         AreaEditPage editPage = new AreaEditPage(driverExt, Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);
         
-        editPage.getDeleteBtn().click();   
+        ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
-        ConfirmModal modal = new ConfirmModal(driverExt, "yukon_dialog_confirm");
+        modal.clickOkAndWait();
         
-        modal.clickOk();
+        waitForUrlToLoad(Urls.CapControl.DASHBOARD, Optional.empty());
         
-        waitForPageToLoad("Orphans", Optional.empty());
-        
-        OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
+        CapControlDashboardPage detailsPage = new CapControlDashboardPage(driverExt, Urls.CapControl.DASHBOARD);
         
         String userMsg = detailsPage.getUserMessage();
 

@@ -3,6 +3,7 @@ package com.eaton.framework;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -47,7 +48,10 @@ public class DriverExtensions {
         
         if ( timeOut == null ) { return this.driverWait.until(drv -> drv.findElement(by)); }
         
-        if ( timeOut == 0 ) { return this.driver.findElement(by); }                
+        if ( timeOut == 0 ) { 
+            driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS); 
+            
+            return this.driver.findElement(by); }                 
         
         driverWait.withTimeout(Duration.ofSeconds(timeOut));
         
@@ -89,7 +93,10 @@ public class DriverExtensions {
         
         if ( timeOut == null ) { return this.driverWait.until(drv -> drv.findElements(by)); }
         
-        if ( timeOut == 0 ) { return this.driver.findElements(by); }       
+        if ( timeOut == 0 ) { 
+            driver.manage().timeouts().implicitlyWait(0, TimeUnit.SECONDS); 
+            
+            return this.driver.findElements(by); }       
         
         driverWait.withTimeout(Duration.ofSeconds(timeOut));
         

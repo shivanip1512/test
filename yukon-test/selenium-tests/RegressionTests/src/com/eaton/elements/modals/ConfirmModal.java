@@ -1,13 +1,15 @@
 package com.eaton.elements.modals;
 
+import java.util.Optional;
+
 import org.openqa.selenium.By;
 
 import com.eaton.framework.DriverExtensions;
 
 public class ConfirmModal extends BaseModal {
     
-    public ConfirmModal(DriverExtensions driverExt, String modalName) {
-        super(driverExt, modalName);
+    public ConfirmModal(DriverExtensions driverExt, Optional<String> modalTitle, Optional<String> describedBy) {
+        super(driverExt, modalTitle, describedBy);
         
     }
     

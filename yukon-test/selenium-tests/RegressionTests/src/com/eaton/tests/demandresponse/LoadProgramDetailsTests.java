@@ -8,13 +8,12 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.eaton.elements.modals.ConfirmModal;
-import com.eaton.elements.modals.CopyLoadGroupModal;
+import com.eaton.elements.modals.CopyLoadProgramModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
-import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 import com.eaton.pages.demandresponse.LoadProgramDetailPage;
 
 public class LoadProgramDetailsTests extends SeleniumTestSetup {
@@ -46,13 +45,13 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
         LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
         
-        CopyLoadGroupModal modal = detailPage.showCopyLoadProgramModal();
+        CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         String name = "AT Copied Program " + timeStamp;
         modal.getName().setInputValue(name);
         
-        modal.clickOk();
+        modal.clickOkAndWait();
         
         waitForPageToLoad("Load Program: " + name, Optional.of(8));
         
@@ -63,17 +62,17 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, name +" copied successfully.", "Expected User Msg: '" + name +" copied successfully.' but found: " + userMsg);
     }
     
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_08_DeleteLoadPgm()"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_08_DeleteLoadPgm()"})
     public void deleteLoadProgramSuccess() {
         final String EXPECTED_MSG = "AT Delete Direct Program deleted successfully.";
         
-        navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "605");
+        navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");
 
-        LoadGroupDetailPage detailPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL + "605");
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");
         
-        ConfirmModal modal = detailPage.showDeleteLoadGroupModal();
+        ConfirmModal modal = detailPage.showDeleteLoadProgramModal();
         
-        modal.clickOk();
+        modal.clickOkAndWait();
         
         waitForPageToLoad("Setup", Optional.empty());
         

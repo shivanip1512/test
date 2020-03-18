@@ -51,7 +51,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         String name = "AT Copied RFN Expresscom Ldgrp " + timeStamp;
         modal.getName().setInputValue(name);
         
-        modal.clickOk();
+        modal.clickOkAndWait();
         
         waitForPageToLoad("Load Group: " + name, Optional.of(8));
         
@@ -62,7 +62,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, name + " copied successfully.", "Expected User Msg: '" + name + " copied succssfully' but found: " + userMsg); 
     }
     
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_04_DeleteLoadGrp"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_04_DeleteLoadGrp"})
     public void deleteLoadGroupSuccess() {
         final String EXPECTED_MSG = "AT Delete RFN Expresscom Ldgrp deleted successfully.";
         
@@ -72,7 +72,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal();
         
-        confirmModal.clickOk();
+        confirmModal.clickOkAndWait();
         
         waitForPageToLoad("Setup", Optional.empty());
         

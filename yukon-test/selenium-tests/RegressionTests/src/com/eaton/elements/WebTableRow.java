@@ -17,6 +17,6 @@ public class WebTableRow{
     } 
     
     public void selectCellByLink() {
-        this.row.findElement(By.cssSelector("a")).click();
+            this.row.findElement(By.cssSelector("a")).click();    
     }
 }

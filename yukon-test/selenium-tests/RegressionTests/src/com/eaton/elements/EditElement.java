@@ -4,14 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import com.eaton.framework.DriverExtensions;
 
 public class EditElement {
 
-    private DriverExtensions driverExt;
+    protected DriverExtensions driverExt;
     private String elementName;
     private String parentName;
     private WebElement parentElement;

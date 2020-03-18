@@ -184,8 +184,26 @@ public final class Urls {
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=ADMINISTRATIVE";
         
         public static final String USER_DETAILS = "/admin/users/";
+        public static final String USER_EDIT = "/admin/users/";
+        public static final String ROLE_GROUP_DETAILS = "/admin/role-groups/";
+        public static final String ROLE_GROUP_EDIT = "/admin/role-groups/";
+        public static final String USER_GROUP_DETAILS = "/admin/user-groups/";
+        public static final String USER_GROUP_EDIT = "/admin/user-groups/";
         public static final String USERS_TAB = "/admin/users-groups/home#users-tab";
         public static final String USER_GROUPS_TAB = "/admin/users-groups/home#users-groups-tab";
         public static final String ROLE_GROUPS_TAB = "/admin/users-groups/home#role-groups-tab";
+        
+        public static final String CREATE_ENERGY_COMPANY = "/admin/energyCompany/new?create=";
+        public static final String ENERGY_COMPANY_GENERAL_INFO = "/admin/energyCompany/general/view?ecId=";
+        public static final String ENERGY_COMPANY_LIST = "/admin/energyCompany/home";
+        public static final String ENERGY_COMPANY_EDIT = "/admin/energyCompany/general/update";
+        public static final String ENERGY_COMPANY_DELETE = "/admin/energyCompany/general/delete?ecId=";
+        public static final String ENERGY_COMPANY_WAREHOUSE_LIST = "/admin/energyCompany/warehouse/home?ecId=";
+        public static final String ENERGY_COMPANY_WAREHOUSE_CREATE = "/admin/energyCompany/warehouse/new?ecId=";
+        public static final String ENERGY_COMPANY_OPERATOR_USER_CREATE = "/admin/energyCompany/operatorLogin/new?ecId=";
+        public static final String ENERGY_COMPANY_OPERATOR_USER_LIST = "/admin/energyCompany/operatorLogin/home?ecId=";
+        public static final String ENERGY_COMPANY_OPERATOR_USER_EDIT = "/admin/energyCompany/operatorLogin/edit?ecId=";
+        public static final String ENERGY_COMPANY_OPERATOR_USER_DETAILS = "/admin/energyCompany/operatorLogin/view?ecId=";
+        public static final String ENERGY_COMPANY_OPERATOR_LOGIN_ID = "&operatorLoginId=";
     }    
 }
