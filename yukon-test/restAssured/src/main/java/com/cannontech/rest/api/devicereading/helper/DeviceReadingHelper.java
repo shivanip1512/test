@@ -27,8 +27,7 @@ public class DeviceReadingHelper {
 
     public static MockDeviceReadingsSelector buildDeviceReadingSelector(MockIdentifierType identifierType, String value) {
         List<MockBuiltInAttribute> builtInAttribute = new ArrayList<MockBuiltInAttribute>();
-        builtInAttribute.add(MockBuiltInAttribute.BLINK_COUNT);
-        builtInAttribute.add(MockBuiltInAttribute.USAGE);
+        builtInAttribute.add(MockBuiltInAttribute.RFN_BLINK_COUNT);
         return MockDeviceReadingsSelector.builder()
                                          .identifier(buildIdentifier(identifierType, value))
                                          .attributes(builtInAttribute)
