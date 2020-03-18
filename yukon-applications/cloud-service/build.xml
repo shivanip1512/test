@@ -71,7 +71,7 @@
             <fileset dir="${basedir}/yukon-install/JRE"/>
         </copy> 
 
-        <zip destfile="${cloud.build.dir}/YukonCloudService_${DSTAMP}_${TSTAMP}_${version.major}.${version.minor}.${version.revision}.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**,Server/**"/>
+        <zip destfile="${cloud.build.dir}/cloudservice_${DSTAMP}_${TSTAMP}_${version.major}.${version.minor}.${version.revision}.zip" basedir ="${cloud.build.dir}" includes="Client/**,Runtime/**,Server/**"/>
     </target>
 
     <target name="clean">
