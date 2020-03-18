@@ -1,8 +1,8 @@
 # Unzip the yukon artifact file to get the required binaries.
-Expand-Archive -Path "yukon-build\dist\yukon*.zip" -DestinationPath "yukon-server"
+Expand-Archive -Path "yukon-build\dist\yukon*.zip" -DestinationPath "yukon-artifact"
 
 # Unzip the pdb and other binaries so that the same can be sent to symbols store.
-Expand-Archive -Path "yukon-server\YukonInstall\*.zip" -DestinationPath "yukon-server"
+Expand-Archive -Path "yukon-artifact\YukonInstall\*.zip" -DestinationPath "yukon-server"
 
 # Remove yukon-server.zip file from yukon artifact.
 $zip = Get-ChildItem yukon-build\dist -Filter *.zip
