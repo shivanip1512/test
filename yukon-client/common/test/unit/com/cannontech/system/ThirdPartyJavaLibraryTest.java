@@ -39,9 +39,10 @@ public class ThirdPartyJavaLibraryTest {
             "annotations-api.jar",
             "catalina-ant.jar",
             "catalina-ha.jar",
+            "catalina-ssi1.jar",
             "catalina-storeconfig.jar",
             "catalina-tribes.jar",
-            "ecj-4.10.jar",
+            "ecj-4.13.jar",
             "el-api.jar",
             "jasper-el.jar",
             "jasper.jar",
@@ -62,7 +63,7 @@ public class ThirdPartyJavaLibraryTest {
             "tomcat-websocket.jar",
             "websocket-api.jar",
             "catalina.jar",
-            "tomcat-juli-9.0.20.jar");
+            "tomcat-juli-9.0.31.jar");
 
     private static Stream<File> recurse(File f) {
         if (f.isDirectory()) {
