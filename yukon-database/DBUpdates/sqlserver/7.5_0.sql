@@ -48,6 +48,52 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-21642', '7.5.0', GETDATE());
 /* @end YUK-21642 */
 
+/* @start YUK-20982 */
+ALTER TABLE MSPInterface ADD UseVendorAuth CHAR(1);
+GO
+UPDATE MSPInterface SET UseVendorAuth = 'N' WHERE UseVendorAuth IS NULL;
+GO
+ALTER TABLE MSPInterface ALTER COLUMN UseVendorAuth CHAR(1) NOT NULL;
+GO
+
+ALTER TABLE MSPInterface ADD InUserName VARCHAR(64);
+GO
+UPDATE MSPInterface SET InUserName = ' ' WHERE InUserName IS NULL;
+GO
+ALTER TABLE MSPInterface ALTER COLUMN InUserName VARCHAR(64) NOT NULL;
+GO
+
+ALTER TABLE MSPInterface ADD InPassword VARCHAR(64);
+GO
+UPDATE MSPInterface SET InPassword = ' ' WHERE InPassword IS NULL;
+GO
+ALTER TABLE MSPInterface ALTER COLUMN InPassword VARCHAR(64) NOT NULL;
+GO
+
+ALTER TABLE MSPInterface ADD OutUserName VARCHAR(64);
+GO
+UPDATE MSPInterface SET OutUserName = ' ' WHERE OutUserName IS NULL;
+GO
+ALTER TABLE MSPInterface ALTER COLUMN OutUserName VARCHAR(64) NOT NULL;
+GO
+
+ALTER TABLE MSPInterface ADD OutPassword VARCHAR(64);
+GO
+UPDATE MSPInterface SET OutPassword = ' ' WHERE OutPassword IS NULL;
+GO
+ALTER TABLE MSPInterface ALTER COLUMN OutPassword VARCHAR(64) NOT NULL;
+GO
+
+ALTER TABLE MSPInterface ADD ValidateCertificate CHAR(1);
+GO
+UPDATE MSPInterface SET ValidateCertificate = '1' WHERE ValidateCertificate IS NULL;
+GO
+ALTER TABLE MSPInterface ALTER COLUMN ValidateCertificate CHAR(1) NOT NULL;
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-20982', '7.5.0', GETDATE());
+/* @end YUK-20982 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
