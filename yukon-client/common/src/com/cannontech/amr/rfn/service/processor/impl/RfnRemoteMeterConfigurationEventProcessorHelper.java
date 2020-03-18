@@ -75,7 +75,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
 
         rfnMeterEventService.processAttributePointData(device,
                 pointDatas,
-                BuiltInAttribute.REMOTE_METER_CONFIGURATION_ATTEMPTED,
+                BuiltInAttribute.METER_PROGRAMMING_ATTEMPTED,
                 eventInstant,
                 EventStatus.ACTIVE.getRawState(),
                 now);

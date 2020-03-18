@@ -342,6 +342,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.MASS_MEMORY_ERROR">Mass Memory Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MEASUREMENT_ERROR">Measurement Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METER_FUNCTIONING_CORRECTLY">Meter Functioning Correctly</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_PROGRAMMING_ATTEMPTED">Meter Programming Attempted</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METROLOGY_COMM_FAILURE">Metrology Communication Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.METER_RECONFIGURE">Meter Reconfigure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NON_VOLATILE_MEM_FAILURE">Non Volatile Mem Failure</entry>
@@ -357,7 +358,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.RAM_ERROR">Ram Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REGISTER_FULL_SCALE_EXCEEDED">Register Full-scale Exceeded</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_FLOW">Reverse Flow</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.REMOTE_METER_CONFIGURATION_ATTEMPTED">Remote Meter Configuration Attempted</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_ROTATION">Reverse Rotation</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_AGGREGATE">Reversed Aggregate</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSED_PHASE_A">Reversed Phase A</entry>
