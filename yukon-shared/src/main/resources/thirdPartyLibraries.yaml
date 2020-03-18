@@ -5614,16 +5614,16 @@ JavaScript :
     notes : 
 
   - project : scroll.to
-    version : 1.4.13
+    version : 2.1.2
     project URL : "https://github.com/flesler/jquery.scrollTo"
     license : MIT
     license URLs : "https://github.com/flesler/jquery.scrollTo/blob/master/LICENSE"
-    npm URL : "https://www.npmjs.com/package/jquery.scrollto/v/1.4.13"
-    md5 : 76db3f636b7a018cc5591511b90bcad1
-    sha1 : 9e9207ded113ca7e068acf14870adb52d86ffe7f
-    jira : YUK-12661
-    updated : 2014-09-16
-    notes : 
+    npm URL : "https://www.npmjs.com/package/jquery.scrollto/v/2.1.2"
+    md5 : e15416a593fe4591c76610ffc36fd108
+    sha1 : e589b55b5cc33cd489a7cc138c3bc85705133196
+    jira : YUK-21526
+    updated : 2020-03-11
+    notes : This is used for animated scrolling in Yukon.
 
   - project : sortable
     version : 0.8.0
