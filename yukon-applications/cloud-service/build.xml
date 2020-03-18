@@ -9,7 +9,6 @@
     </tstamp>
 
     <target name="build">
-    	<antcall target="yukon-cloud"/>
         <echo message="Building Jar : yukon-cloud-service.jar"/>
         <exec dir="" executable="cmd" failonerror="true" failifexecutionfails="true">
                  <arg value="/c"/>
