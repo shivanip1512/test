@@ -80,6 +80,7 @@
         <pointInfo name="Max Voltage Phase B" attributes="MAXIMUM_VOLTAGE_PHASE_B"/>
         <pointInfo name="Max Voltage Phase C" attributes="MAXIMUM_VOLTAGE_PHASE_C"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
+        <pointInfo name="Meter Programming Attempted" attributes="METER_PROGRAMMING_ATTEMPTED"/>
         <pointInfo name="Min Voltage Phase A" attributes="MINIMUM_VOLTAGE_PHASE_A"/>
         <pointInfo name="Min Voltage Phase B" attributes="MINIMUM_VOLTAGE_PHASE_B"/>
         <pointInfo name="Min Voltage Phase C" attributes="MINIMUM_VOLTAGE_PHASE_C"/>
@@ -152,7 +153,6 @@
         <pointInfo name="Received Peak kW (Rate B kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_B"/>
         <pointInfo name="Received Peak kW (Rate C kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_C"/>
         <pointInfo name="Received Peak kW (Rate D kW)" attributes="RECEIVED_PEAK_DEMAND_RATE_D"/>
-        <pointInfo name="Remote Meter Configuration Attempted" attributes="REMOTE_METER_CONFIGURATION_ATTEMPTED"/>
         <pointInfo name="Reverse Rotation" attributes="REVERSE_POWER_FLAG"/>
         <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
         <pointInfo name="RFN High Temperature Threshold Exceeded" attributes="RFN_TEMPERATURE_ALARM"/>
