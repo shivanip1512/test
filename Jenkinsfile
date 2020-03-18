@@ -121,7 +121,7 @@ pipeline {
                                 unstash 'yukon-server'
                                 bat './yukon-build/go.bat build-install'
 
-                                bat './yukon-build/go.bat clean build-dist-pdb'
+                                bat './yukon-build/go.bat clean build-dist-server'
 
                                 archiveArtifacts artifacts: 'yukon-build/dist/*'
                             } catch (Exception) {
