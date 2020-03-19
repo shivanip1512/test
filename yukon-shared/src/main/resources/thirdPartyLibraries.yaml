@@ -5962,3 +5962,48 @@ C++ :
     updated : 2019-01-21  
     jira : YUK-19388
     notes :
+# -------
+Css :
+  - project : animate.css
+    version : 3.7.2
+    project URL : "http://daneden.github.io/animate.css/"
+    license : MIT
+    license URLs : "https://github.com/daneden/animate.css/blob/3.7.2/LICENSE"
+    md5 : 91cc40989e5e96e8d6bddc0f19598441
+    sha1 : 77b5378a2b4bfc120e52782dd869aeab7efe2fd4
+    jira : YUK-21538
+    updated : 2020-03-19
+    notes : This library is used to animate shaking the event alarm alert count.
+        
+  - project : normalize.css
+    version : 2.1.2
+    project URL : "http://necolas.github.io/normalize.css/"
+    license : MIT
+    license URLs : "https://github.com/necolas/normalize.css/blob/v2.1.2/LICENSE.md"
+    md5 : 6bc10f9f90af75ddd7742ed35da857c8
+    sha1 : 4f7638582786a145304a4ac92ded24370f4c6554
+    updated : 2014-10-14
+    jira : YUK-12661
+    notes :
+
+  - project : keys.css
+    version : ??
+    project URL : "https://github.com/michaelhue/keyscss"
+    license : MIT
+    license URLs : "https://github.com/michaelhue/keyscss/blob/master/LICENSE.txt"
+    md5 : 165d58f9b3b011c84aea34cc09e5ae0d
+    sha1 : 9f9b5bd3d3252d576a3cc4b0f8f4f45a104e65df
+    updated : 2015-06-25
+    jira : YUK-13373
+    notes : This library is used in /js-api/home.jsp.
+    
+  - project : bootstrap
+    version : 2.3.2
+    project URL : "https://getbootstrap.com/"
+    license : Apache 2.0
+    license URLs : "http://www.apache.org/licenses/LICENSE-2.0"
+    md5 : 0baee5489e84dc3ff3a1970e47993db2
+    sha1 : 05a8e3b7b48e51a887192e6532103bd544cf5f0c
+    updated : 2015-04-10
+    jira : YUK-14174
+    notes : 
