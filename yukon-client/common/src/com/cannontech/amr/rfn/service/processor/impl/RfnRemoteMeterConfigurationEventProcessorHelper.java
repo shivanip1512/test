@@ -9,10 +9,10 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.errors.dao.DeviceError;
+import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode.Status;
 import com.cannontech.amr.rfn.message.event.MeterConfigurationStatus;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
-import com.cannontech.amr.rfn.message.event.RfnConditionType;
 import com.cannontech.amr.rfn.message.event.RfnEvent;
 import com.cannontech.amr.rfn.service.processor.RfnArchiveRequestProcessor;
 import com.cannontech.amr.rfn.service.processor.RfnEventConditionDataProcessorHelper;
@@ -24,7 +24,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.ThriftRequestTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.database.db.point.stategroup.EventStatus;
+import com.cannontech.database.db.point.stategroup.MeterProgramming;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.messaging.serialization.thrift.serializer.MeterProgramStatusArchiveRequestSerializer;
 import com.google.common.collect.ImmutableMap;
@@ -73,12 +73,20 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
 
         archiveProgramStatus(device, meterConfigurationId, meterConfigurationStatus);
 
+        MeterProgramming attemptStatus = translateDetailStatus(meterConfigurationStatus.getDetailedConfigurationStatusCode());
+        
         rfnMeterEventService.processAttributePointData(device,
                 pointDatas,
                 BuiltInAttribute.METER_PROGRAMMING_ATTEMPTED,
                 eventInstant,
-                EventStatus.ACTIVE.getRawState(),
+                attemptStatus.getRawState(),
                 now);
+    }
+
+    private MeterProgramming translateDetailStatus(DetailedConfigurationStatusCode detailedConfigurationStatusCode) {
+        return (detailedConfigurationStatusCode.getStatus() == DetailedConfigurationStatusCode.Status.SUCCESS) 
+                ? MeterProgramming.SUCCESS 
+                : MeterProgramming.FAILURE;
     }
 
     /**
@@ -89,17 +97,17 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
         if (meterConfigurationStatus.getDetailedConfigurationStatusCode() != null
                 && meterConfigurationStatus.getDetailedConfigurationStatusCode().getStatus() != null
                 && meterConfigurationId != null) {
-            Status status = meterConfigurationStatus.getDetailedConfigurationStatusCode().getStatus();
+            var detail = meterConfigurationStatus.getDetailedConfigurationStatusCode().getStatus();
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
             request.setSource(Source.SM_CONFIG_FAILURE);
             request.setRfnIdentifier(device.getRfnIdentifier());
             request.setConfigurationId(meterConfigurationId);
-            if (status == Status.SUCCESS) {
+            if (detail == DetailedConfigurationStatusCode.Status.SUCCESS) {
                 request.setStatus(ProgrammingStatus.IDLE);
                 request.setError(DeviceError.SUCCESS);
             } else {
                 request.setStatus(ProgrammingStatus.FAILED);
-                request.setError(statusCodesToErrors.get(status));
+                request.setError(statusCodesToErrors.get(detail));
             }
             request.setTimeStamp(System.currentTimeMillis());
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
