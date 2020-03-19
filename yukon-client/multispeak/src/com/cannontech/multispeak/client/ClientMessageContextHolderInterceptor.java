@@ -8,7 +8,7 @@ import org.springframework.ws.context.MessageContext;
  * This class intercepts the response from the third party web service and
  * set the context in message holder in handleResponse.
  */
-public class ClientMessageContextHolderInterceptor implements ClientInterceptor {
+public class ClientMessageContextHolderInterceptor extends LoggingInterceptor implements ClientInterceptor {
 
     @Override
     public boolean handleFault(MessageContext arg0) throws WebServiceClientException {
@@ -17,11 +17,16 @@ public class ClientMessageContextHolderInterceptor implements ClientInterceptor 
 
     @Override
     public boolean handleRequest(MessageContext messageContext) throws WebServiceClientException {
+
+        logMessageSource("Request: ", getSource(messageContext.getRequest()));
+
         return true;
     }
 
     @Override
     public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
+
+        logMessageSource("Response: ", getSource(messageContext.getResponse()));
 
         MessageContextHolder.setMessageContext(messageContext);
 
