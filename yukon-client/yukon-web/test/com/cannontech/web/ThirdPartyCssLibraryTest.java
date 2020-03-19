@@ -58,7 +58,7 @@ private static String cssPath = "../yukon-web/WebContent/resources/css/lib";
         assertTrue("Unknown Css projects found: " + unknownFiles, unknownFiles.isEmpty());
 
         Set<String> missingFiles = Sets.difference(documentedLibrariesByProject.keySet(), thirdPartyProjects.keySet());
-        assertTrue("JavaScript projects listed in thirdPartyLibraries.yaml, but missing from WebContent/resources/css/lib: " + missingFiles, missingFiles.isEmpty());
+        assertTrue("Css projects listed in thirdPartyLibraries.yaml, but missing from WebContent/resources/css/lib: " + missingFiles, missingFiles.isEmpty());
         
         MessageDigest md_md5 = MessageDigest.getInstance("MD5");
         MessageDigest md_sha1 = MessageDigest.getInstance("SHA1");
