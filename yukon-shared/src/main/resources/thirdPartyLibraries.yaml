@@ -5398,16 +5398,16 @@ JavaScript :
     notes : 
 
   - project : chosen
-    version : 1.1.0
+    version : 1.8.7
     project URL : "https://github.com/harvesthq/chosen/releases"
     license : MIT
     license URLs : "https://github.com/harvesthq/chosen/blob/f093b3930e83f2fd656fe63d6cdb35cac52a74dc/LICENSE.md"
     npm URL : "https://www.npmjs.com/package/chosen-js"
-    md5 : c8e16998bbb406d52fca3ff418f783e6
-    sha1 : e8e830f5a97ebb67afec0019acf1e3b3871cc803
-    jira : YUK-13080
-    updated : 2014-04-19
-    notes : 
+    md5 : 53d0855f4d28d272589e9022a529228d
+    sha1 : 31c805cfc2b2e82e5daa05b5c65be45bd3c79fde
+    jira : YUK-21528
+    updated : 2020-03-13
+    notes : This library is used to render a chosen drop-down. This is a multiselect dropdown. Eg. DR -> Setup -> FilterBy Load Program -> the dropdown for load program types.
 
   - project : cookie
     version : 1.4.1
