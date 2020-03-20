@@ -1,7 +1,5 @@
 package com.cannontech.multispeak.db;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 
 public class MultispeakInterface
@@ -12,12 +10,12 @@ public class MultispeakInterface
     private String mspInterface = null;
     private String mspEndpoint = null;
     private MultiSpeakVersion version = null;
-    private String inUserName = StringUtils.EMPTY;
-    private String inPassword = StringUtils.EMPTY;
-    private String outUserName = StringUtils.EMPTY;
-    private String outPassword = StringUtils.EMPTY;
-    private Boolean useVendorAuth = false;
-    private Boolean validateCertificate = true;
+    private String inUserName;
+    private String inPassword;
+    private String outUserName;
+    private String outPassword;
+    private Boolean useVendorAuth = true;
+    private Boolean validateCertificate ;
     private Boolean interfaceEnabled;
 
     public MultispeakInterface() {
@@ -38,7 +36,7 @@ public class MultispeakInterface
         this(vendorID, mspInterface, mspEndpoint, version);
         this.inUserName = inUserName;
         this.inPassword = inPassword;
-        this.outUserName = outPassword;
+        this.outUserName = outUserName;
         this.outPassword = outPassword;
         this.validateCertificate = validateCertificate;
         this.useVendorAuth = useVendorAuth;
