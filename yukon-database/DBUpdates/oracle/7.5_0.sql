@@ -42,28 +42,15 @@ INSERT INTO DBUpdates VALUES ('YUK-21642', '7.5.0', SYSDATE);
 
 /* @start YUK-20982 */
 ALTER TABLE MSPInterface ADD UseVendorAuth CHAR(1);
-UPDATE MSPInterface SET UseVendorAuth = 'N' WHERE UseVendorAuth IS NULL;
+UPDATE MSPInterface SET UseVendorAuth = '1' WHERE UseVendorAuth IS NULL;
 ALTER TABLE MSPInterface MODIFY UseVendorAuth CHAR(1) NOT NULL;
 
-ALTER TABLE MSPInterface ADD InUserName VARCHAR2(64);
-UPDATE MSPInterface SET InUserName = ' ' WHERE InUserName IS NULL;
-ALTER TABLE MSPInterface MODIFY InUserName VARCHAR2(64) NOT NULL;
-
-ALTER TABLE MSPInterface ADD InPassword VARCHAR2(64);
-UPDATE MSPInterface SET InPassword = ' ' WHERE InPassword IS NULL;
-ALTER TABLE MSPInterface MODIFY InPassword VARCHAR2(64) NOT NULL;
-
-ALTER TABLE MSPInterface ADD OutUserName VARCHAR2(64);
-UPDATE MSPInterface SET OutUserName = ' ' WHERE OutUserName IS NULL;
-ALTER TABLE MSPInterface MODIFY OutUserName VARCHAR2(64) NOT NULL;
-
-ALTER TABLE MSPInterface ADD OutPassword VARCHAR2(64);
-UPDATE MSPInterface SET OutPassword = ' ' WHERE OutPassword IS NULL;
-ALTER TABLE MSPInterface MODIFY OutPassword VARCHAR2(64) NOT NULL;
-
-ALTER TABLE MSPInterface ADD ValidateCertificate CHAR(1);
-UPDATE MSPInterface SET ValidateCertificate = '1' WHERE ValidateCertificate IS NULL;
-ALTER TABLE MSPInterface MODIFY ValidateCertificate CHAR(1) NOT NULL;
+ALTER TABLE MSPInterface
+ADD (InUserName VARCHAR2(64),
+    InPassword VARCHAR2(64),
+    OutUserName VARCHAR2(64),
+    OutPassword VARCHAR2(64),
+    ValidateCertificate CHAR(1));
 
 INSERT INTO DBUpdates VALUES ('YUK-20982', '7.5.0', SYSDATE);
 /* @end YUK-20982 */

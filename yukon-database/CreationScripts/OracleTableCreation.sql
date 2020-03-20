@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/18/2020 3:05:58 AM                         */
+/* Created on:     3/20/2020 6:18:01 AM                         */
 /*==============================================================*/
 
 
@@ -7180,22 +7180,22 @@ create table MSPInterface  (
    Endpoint             VARCHAR2(255)                   not null,
    Version              VARCHAR2(12)                    not null,
    UseVendorAuth        CHAR(1)                         not null,
-   InUserName           VARCHAR2(64)                    not null,
-   InPassword           VARCHAR2(64)                    not null,
-   OutUserName          VARCHAR2(64)                    not null,
-   OutPassword          VARCHAR2(64)                    not null,
-   ValidateCertificate  CHAR(1)                         not null,
+   InUserName           VARCHAR2(64),
+   InPassword           VARCHAR2(64),
+   OutUserName          VARCHAR2(64),
+   OutPassword          VARCHAR2(64),
+   ValidateCertificate  CHAR(1),
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)
 );
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0', 'N', ' ', ' ', ' ', ' ', '1');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0', 'N', ' ', ' ', ' ', ' ', '1');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0', 'N', ' ', ' ', ' ', ' ', '1');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0', '1', ' ', ' ', ' ', ' ', '1');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0', '1', ' ', ' ', ' ', ' ', '1');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0', '1', ' ', ' ', ' ', ' ', '1');
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0', 'N', ' ', ' ', ' ', ' ', '1');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0', 'N', ' ', ' ', ' ', ' ', '1');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0', 'N', ' ', ' ', ' ', ' ', '1');
-INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0', 'N', ' ', ' ', ' ', ' ', '1');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0', '1', ' ', ' ', ' ', ' ', '1');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0', '1', ' ', ' ', ' ', ' ', '1');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0', '1', ' ', ' ', ' ', ' ', '1');
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0', '1', ' ', ' ', ' ', ' ', '1');
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */
