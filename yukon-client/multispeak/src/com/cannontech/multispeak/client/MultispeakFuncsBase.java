@@ -351,7 +351,7 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
     }
     
     /**
-     * Filter MultispeakInterface from multispeak vendor based on interface name.
+     * Filter MultispeakInterface from multispeak vendor based on interface name and Use Vendor Authentication Settings.
      * Return null if no match found in vendor.
      */
     public MultispeakInterface getMultispeakInterface(MultispeakVendor mspVendor, String interfaceName){
