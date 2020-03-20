@@ -1333,10 +1333,6 @@ License: http://creativecommons.org/licenses/by/3.0/
     opacity: 0.5; 
 }
 
-.icon-drag { background-image: url(../Icons/Drag.png); }
-
-
-
 
 /* jquery ui icons */
 .ui-icon.excel { background-image: url(../Icons/icons.png) !important; background-position: -128px -256px; }
