@@ -86,6 +86,7 @@
     <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnOverVoltageEventArchiveRequestProcessor"/>
     <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnUnderVoltageEventArchiveRequestProcessor"/>
     <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnRemoteMeterConfigurationFailureEventArchiveRequestProcessor"/>
+    <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnRemoteMeterConfigurationFinishedEventArchiveRequestProcessor"/>
 
     <!-- RFDA Event Processors -->
     <bean class="com.cannontech.amr.rfn.service.processor.impl.RfnDNP3AddressChangedEventArchiveRequestProcessor"/>
