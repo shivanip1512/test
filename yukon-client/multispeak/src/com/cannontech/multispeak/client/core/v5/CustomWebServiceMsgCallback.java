@@ -19,13 +19,14 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
+import com.cannontech.multispeak.db.MultispeakInterface;
 
 public class CustomWebServiceMsgCallback {
     private final static Logger log = YukonLogManager.getLogger(CustomWebServiceMsgCallback.class);
 
     @Autowired public MultispeakFuncs multispeakFuncs;
 
-    public WebServiceMessageCallback addRequestHeader(final MultispeakVendor mspVendor) {
+    public WebServiceMessageCallback addRequestHeader(final MultispeakVendor mspVendor, String interfaceName) {
         return new WebServiceMessageCallback() {
             @Override
             public void doWithMessage(WebServiceMessage message) {
@@ -58,7 +59,14 @@ public class CustomWebServiceMsgCallback {
                     headElement.setAttribute("MessageID", UUID.randomUUID().toString().replace("-", ""));
                     
                     headElement.setAttribute("TimeStamp", Iso8601DateUtil.formatIso8601Date(Instant.now().toDate(), true));
-                    multispeakFuncs.getHeader(headElement, "req", mspVendor);
+                    
+                    MultispeakInterface mspInterface = multispeakFuncs.getMultispeakInterface(mspVendor, interfaceName);
+
+                    if (mspInterface != null) {
+                        multispeakFuncs.getHeader(headElement, "req", mspInterface.getOutUserName(), mspInterface.getOutPassword());
+                    } else {
+                        multispeakFuncs.getHeader(headElement, "req", mspVendor.getOutUserName(), mspVendor.getOutPassword());
+                    }
 
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);

@@ -15,12 +15,13 @@ import org.w3c.dom.Node;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.db.MultispeakInterface;
 
 public class CustomWebServiceMsgCallback {
     private final static Logger log = YukonLogManager.getLogger(CustomWebServiceMsgCallback.class);
 
     @Autowired public MultispeakFuncs multispeakFuncs;
-    public WebServiceMessageCallback addRequestHeader(final MultispeakVendor mspVendor) {
+    public WebServiceMessageCallback addRequestHeader(final MultispeakVendor mspVendor, String interfaceName) {
         return new WebServiceMessageCallback() {
             @Override
             public void doWithMessage(WebServiceMessage message) {
@@ -39,8 +40,15 @@ public class CustomWebServiceMsgCallback {
                 }
 
                 SoapHeader header = soapMessage.getSoapHeader();
+                MultispeakInterface mspInterface = multispeakFuncs.getMultispeakInterface(mspVendor, interfaceName);
+
                 try {
-                    multispeakFuncs.getHeader(header, mspVendor);
+                    if (mspInterface != null) {
+                        multispeakFuncs.getHeader(header, mspInterface.getOutUserName(), mspInterface.getOutPassword());
+                    } else {
+                        multispeakFuncs.getHeader(header, mspVendor.getOutUserName(), mspVendor.getOutPassword());
+                    }
+
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);
                 }

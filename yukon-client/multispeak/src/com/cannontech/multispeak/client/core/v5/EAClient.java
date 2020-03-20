@@ -14,6 +14,7 @@ import com.cannontech.msp.beans.v5.ea_server.GetMethods;
 import com.cannontech.msp.beans.v5.ea_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.ea_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.ea_server.PingURL;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -43,7 +44,7 @@ public class EAClient implements IEAClient {
 
             webServiceTemplate.marshalSendAndReceive(uri,
                                                      pingURL,
-                                                     customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                                                     customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.EA_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -59,7 +60,7 @@ public class EAClient implements IEAClient {
 
             GetMethodsResponse response = (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri,
                                                                                                         getMethods,
-                                                                                                        customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                                                                                                        customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.EA_Server_STR));
 
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();

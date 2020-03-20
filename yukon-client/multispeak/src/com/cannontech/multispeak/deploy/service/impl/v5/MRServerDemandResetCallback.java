@@ -141,7 +141,7 @@ public class MRServerDemandResetCallback implements DemandResetCallback {
             EndDeviceEventsNotification deviceEventsNotification = objectFactory.createEndDeviceEventsNotification();
             deviceEventsNotification.setArrayOfEndDeviceEventList(arrayOfEndDeviceEventList);
             deviceEventsNotification.setTransactionID(transactionId);
-            notClient.endDeviceEventsNotification(vendor, responseUrl, deviceEventsNotification);
+            notClient.endDeviceEventsNotification(vendor, responseUrl, MultispeakDefines.NOT_Server_STR, deviceEventsNotification);
             List<ErrorObject> errObjects = new ArrayList<>();
             errObjects = multispeakFuncs.getErrorObjectsFromResponse();
             if (errObjects != null) {

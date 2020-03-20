@@ -45,7 +45,7 @@ public class NOTClient implements INOTClient {
     }
 
     @Override
-    public List<String> getMethods(final MultispeakVendor mspVendor, String uri)
+    public List<String> getMethods(final MultispeakVendor mspVendor, String uri , String interfaceName)
             throws MultispeakWebServiceClientException {
         List<String> methodList = new ArrayList<>();
         try {
@@ -54,7 +54,7 @@ public class NOTClient implements INOTClient {
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                    customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();
                 if (arrayOfString != null) {
@@ -68,91 +68,91 @@ public class NOTClient implements INOTClient {
     }
 
     @Override
-    public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri)
+    public PingURLResponse pingURL(final MultispeakVendor mspVendor, String uri, String interfaceName)
             throws MultispeakWebServiceClientException {
         try {
             PingURL pingURL = objectFactory.createPingURL();
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void endDeviceStatesNotification(MultispeakVendor mspVendor, String uri,
+    public void endDeviceStatesNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
             EndDeviceStatesNotification endDeviceStatesNotification) throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, endDeviceStatesNotification,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void cdStatesChangedNotification(MultispeakVendor mspVendor, String uri,
+    public void cdStatesChangedNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
             CDStatesChangedNotification cdStatesChangedNotification) throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, cdStatesChangedNotification,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void endDeviceEventsNotification(MultispeakVendor mspVendor, String uri,
+    public void endDeviceEventsNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
             EndDeviceEventsNotification deviceEventsNotification) throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, deviceEventsNotification,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void meterReadingsNotification(MultispeakVendor mspVendor, String uri,
+    public void meterReadingsNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
             MeterReadingsNotification meterReadingsNotification) throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, meterReadingsNotification,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void formattedBlockNotification(MultispeakVendor mspVendor, String uri,
+    public void formattedBlockNotification(MultispeakVendor mspVendor, String uri, String interfaceName,
             FormattedBlockNotification formattedBlockNotification) throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             webServiceTemplate.marshalSendAndReceive(uri, formattedBlockNotification,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void drProgramEnrollmentsNotification(MultispeakVendor mspVendor, String uri, DRProgramEnrollmentsNotification drProgramEnrollmentsNotification)
+    public void drProgramEnrollmentsNotification(MultispeakVendor mspVendor, String uri, String interfaceName, DRProgramEnrollmentsNotification drProgramEnrollmentsNotification)
             throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
-            webServiceTemplate.marshalSendAndReceive(uri, drProgramEnrollmentsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+            webServiceTemplate.marshalSendAndReceive(uri, drProgramEnrollmentsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -160,36 +160,36 @@ public class NOTClient implements INOTClient {
     }
 
     @Override
-    public void drProgramUnenrollmentsNotification(MultispeakVendor mspVendor, String uri,
+    public void drProgramUnenrollmentsNotification(MultispeakVendor mspVendor, String uri, String interfaceName, 
             DRProgramUnenrollmentsNotification drProgramUnenrollmentsNotification) throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
-            webServiceTemplate.marshalSendAndReceive(uri, drProgramUnenrollmentsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+            webServiceTemplate.marshalSendAndReceive(uri, drProgramUnenrollmentsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void intervalDataNotification(MultispeakVendor mspVendor, String uri, IntervalDataNotification intervalDataNotification)
+    public void intervalDataNotification(MultispeakVendor mspVendor, String uri, String interfaceName, IntervalDataNotification intervalDataNotification)
             throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
-            webServiceTemplate.marshalSendAndReceive(uri, intervalDataNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+            webServiceTemplate.marshalSendAndReceive(uri, intervalDataNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
     }
 
     @Override
-    public void alarmAndEventDataNotification(MultispeakVendor mspVendor, String uri, EndDeviceEventsNotification endDeviceEventsNotification)
+    public void alarmAndEventDataNotification(MultispeakVendor mspVendor, String uri, String interfaceName, EndDeviceEventsNotification endDeviceEventsNotification)
             throws MultispeakWebServiceClientException {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
-            webServiceTemplate.marshalSendAndReceive(uri, endDeviceEventsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+            webServiceTemplate.marshalSendAndReceive(uri, endDeviceEventsNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, interfaceName));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

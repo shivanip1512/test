@@ -63,6 +63,7 @@ import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroupResponse;
 import com.cannontech.msp.beans.v3.ServiceLocationChangedNotification;
 import com.cannontech.msp.beans.v3.ServiceLocationChangedNotificationResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -87,7 +88,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -100,7 +101,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -114,7 +115,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateMeterReadByMeterNoAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateMeterReadByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                initiateMeterReadByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -128,7 +129,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateMeterReadByMeterNumberResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateMeterReadByMeterNumber, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                initiateMeterReadByMeterNumber, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -141,7 +142,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateDemandResetResponse) webServiceTemplate.marshalSendAndReceive(uri, initiateDemandReset,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -153,7 +154,7 @@ public class MRClient implements IMRClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (IsAMRMeterResponse) webServiceTemplate.marshalSendAndReceive(uri, isAMRMeter,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -166,7 +167,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetReadingsByDateResponse) webServiceTemplate.marshalSendAndReceive(uri, getReadingsByDate,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -179,7 +180,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetAMRSupportedMetersResponse) webServiceTemplate.marshalSendAndReceive(uri, getAMRSupportedMeters,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -192,7 +193,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetLatestReadingByMeterNoResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getLatestReadingByMeterNo, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                getLatestReadingByMeterNo, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -205,7 +206,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetLatestReadingsResponse) webServiceTemplate.marshalSendAndReceive(uri, getLatestReadings,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -219,7 +220,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetLatestReadingByMeterNoAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getLatestReadingByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                getLatestReadingByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -232,7 +233,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetLatestReadingByTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getLatestReadingByType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                getLatestReadingByType, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -245,7 +246,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetReadingsByMeterNoResponse) webServiceTemplate.marshalSendAndReceive(uri, getReadingsByMeterNo,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -258,7 +259,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetReadingsByDateAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getReadingsByDateAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                getReadingsByDateAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -271,7 +272,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetReadingsByMeterNoAndTypeResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getReadingsByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                getReadingsByMeterNoAndType, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -284,7 +285,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetSupportedReadingTypesResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getSupportedReadingTypes, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                getSupportedReadingTypes, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -297,7 +298,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (MeterAddNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, meterAddNotification,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -310,7 +311,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (MeterRemoveNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                meterRemoveNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                meterRemoveNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -323,7 +324,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (MeterChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                meterChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                meterChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -336,7 +337,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateUsageMonitoringResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateUsageMonitoring, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                initiateUsageMonitoring, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -349,7 +350,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (CancelUsageMonitoringResponse) webServiceTemplate.marshalSendAndReceive(uri, cancelUsageMonitoring,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -362,7 +363,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateDisconnectedStatusResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateDisconnectedStatus, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                initiateDisconnectedStatus, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -375,7 +376,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (CancelDisconnectedStatusResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                cancelDisconnectedStatus, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                cancelDisconnectedStatus, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -389,7 +390,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (ServiceLocationChangedNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                serviceLocationChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                serviceLocationChangedNotification, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -402,7 +403,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (DeleteMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri, deleteMeterGroup,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -415,7 +416,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (EstablishMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri, establishMeterGroup,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -428,7 +429,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InsertMeterInMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                insertMeterInMeterGroup, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                insertMeterInMeterGroup, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -441,7 +442,7 @@ public class MRClient implements IMRClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (RemoveMetersFromMeterGroupResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                removeMetersFromMeterGroup, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                removeMetersFromMeterGroup, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MR_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

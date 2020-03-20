@@ -349,4 +349,18 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         mspCisVendorList.add(0, MultispeakVendor.noneVendor);
         return mspCisVendorList;
     }
+    
+    /**
+     * Filter MultispeakInterface from multispeak vendor based on interface name.
+     * Return null if no match found in vendor.
+     */
+    public MultispeakInterface getMultispeakInterface(MultispeakVendor mspVendor, String interfaceName){
+        MultispeakInterface mspInterface = mspVendor.getMspInterfaces().stream()
+                                                                       .filter(m -> m.getMspInterface().equals(interfaceName) && 
+                                                                              !m.isUseVendorAuth())
+                                                                       .findFirst()
+                                                                       .orElse(null);
+        return mspInterface;
+
+    }
 }
