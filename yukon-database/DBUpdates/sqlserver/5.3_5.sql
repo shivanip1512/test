@@ -7,7 +7,16 @@ DELETE FROM YukonServices
 WHERE ServiceID = 18 
   AND ServiceName = 'CymDISTMessageListener';
 /* End YUK-10174 */
-    
+
+/* Start YUK-10287 */
+  /* @error ignore-begin */
+insert into command values(-106, 'getvalue outage ?''Outage Log (1 - 6)''', 'Read two outages per read.  Specify 1 (returns 1&2), 3 (returns 3&4), 5 (returns 5&6)', 'MCT-410IL');
+insert into command values(-107, 'getvalue peak frozen', 'Read frozen demand - kW and kWh', 'MCT-410IL');
+insert into command values(-108, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
+insert into command values(-109, 'getvalue powerfail reset', 'Reset blink counter', 'MCT-410IL');
+/* @error ignore-end */
+/* End YUK-10287 */
+
 /* Start YUK-10287 */ 
 INSERT INTO DeviceTypeCommand VALUES (-820, -1, 'MCT-420CLD', 1, 'Y', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-821, -81, 'MCT-420CLD', 2, 'Y', -1); 

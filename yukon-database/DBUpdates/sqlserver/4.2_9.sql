@@ -24,7 +24,9 @@ CREATE INDEX INDX_LMThermSeaEntry_SeaId ON LMThermostatSeasonEntry (
 /* End YUK-7257 */
 
 /* Start YUK-7452 */
+/* @error ignore-begin */
 INSERT INTO FDRInterfaceOption VALUES(28, 'Multiplier', 5, 'Text', '1.0');
+/* @error ignore-end */
 /* End YUK-7452 */
 
 /* Start YUK-6565 */
