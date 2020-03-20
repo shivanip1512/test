@@ -10,13 +10,13 @@
 <table class="compact-results-table">
 <tr>
     <td>
-        <spring:escapeBody>${fn:escapeXml(row.name)}</spring:escapeBody>
+        <spring:escapeBody htmlEscape="true">${row.name}</spring:escapeBody>
         <input type="hidden" value="${row.id}" name="pointAssignments[${itemIndex}].id"/>
         <input type="hidden" value="<spring:escapeBody>${row.name}</spring:escapeBody>" name="pointAssignments[${itemIndex}].name"/>
         <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="pointAssignments[${itemIndex}].device"/>
         <input type="hidden" value="false" name="pointAssignments[${itemIndex}].deletion" class="isDeletionField">
     </td>
-    <td><spring:escapeBody>${fn:escapeXml(row.device)}</spring:escapeBody></td>
+    <td><spring:escapeBody htmlEscape="true">${row.device}</spring:escapeBody></td>
     <td>
         <c:choose>
             <c:when test="${phaseUneditable}">
