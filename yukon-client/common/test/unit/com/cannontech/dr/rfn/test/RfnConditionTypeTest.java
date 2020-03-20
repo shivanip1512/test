@@ -26,6 +26,8 @@ public class RfnConditionTypeTest {
         // these are special types to ignore
         Set<RfnConditionType> specialTypes = Sets.newHashSet(RfnConditionType.OUTAGE,
                                                              RfnConditionType.OUTAGE_BLINK,
+                                                             RfnConditionType.REMOTE_METER_CONFIGURATION_FAILURE,
+                                                             RfnConditionType.REMOTE_METER_CONFIGURATION_FINISHED,
                                                              RfnConditionType.RESTORE,
                                                              RfnConditionType.RESTORE_BLINK,
                                                              RfnConditionType.POWER_FAILURE, 
