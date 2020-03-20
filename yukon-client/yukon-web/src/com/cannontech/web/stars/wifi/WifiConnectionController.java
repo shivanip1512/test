@@ -93,6 +93,7 @@ public class WifiConnectionController {
         List<LiteState> states = phaseStateGroup.getStatesList().stream()
                 .filter(state -> state.getLiteID() > -1).collect(Collectors.toList());
         model.addAttribute("commStatusValues", states);
+        model.addAttribute("connectedStatusValue", CommStatusState.CONNECTED.getRawState());
         
         return "gateways/wifiConnection.jsp";
     }
