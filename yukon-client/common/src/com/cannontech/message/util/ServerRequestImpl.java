@@ -79,21 +79,35 @@ public class ServerRequestImpl implements ServerRequest
          * @return
          * @throws Exception
          */
-        private synchronized ServerResponseMsg execute(long timeout) {
-            try { 
-                //Add this as a listener so we can look for a response
-                _connection.addMessageListener(this);
-                _connection.write(_requestMsg);
-                if (log.isDebugEnabled()) {
-                    log.debug("Server Request execute; request=" + _requestMsg + ", this=" + this);
+        private synchronized ServerResponseMsg execute(long timeout, boolean isPrivate) {
+            if (isPrivate) {
+                try { 
+                    _connection.writePrivateServerRequest(_requestMsg, this);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Server Request private execute; request=" + _requestMsg + ", this=" + this);
+                    }
+                    wait(timeout);
+                } catch(InterruptedException ie) {
+                } finally {
+                    //Make sure to remove us or else there will be a leak!
+                    _connection.removePrivateListener(_requestMsg.getId());
                 }
-                wait(timeout);
-            }
-            catch(InterruptedException ie) {
-            }
-            finally {
-                //Make sure to remove us or else there will be a leak!
-                _connection.removeMessageListener(this);
+            } else {
+                try { 
+                    //Add this as a listener so we can look for a response
+                    _connection.addMessageListener(this);
+                    _connection.write(_requestMsg);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Server Request execute; request=" + _requestMsg + ", this=" + this);
+                    }
+                    wait(timeout);
+                }
+                catch(InterruptedException ie) {
+                }
+                finally {
+                    //Make sure to remove us or else there will be a leak!
+                    _connection.removeMessageListener(this);
+                }
             }
             
             // Did we get a response that matched our request id?
@@ -110,6 +124,7 @@ public class ServerRequestImpl implements ServerRequest
         /* (non-Javadoc)
          * @see com.cannontech.message.util.ServerRequest#messageReceived(com.cannontech.message.util.MessageEvent)
          */
+        @Override
         public synchronized void messageReceived(MessageEvent e) {
             Message msg = e.getMessage();
             if(msg instanceof ServerResponseMsg) {
@@ -130,17 +145,28 @@ public class ServerRequestImpl implements ServerRequest
         }
     }
 
+    @Override
+    public ServerResponseMsg makePrivateRequest(IServerConnection conn, Message msg) {
+        return makeServerRequest(conn,msg,DEFAULT_TIMEOUT, true);
+    }
+    
     /* (non-Javadoc)
      * @see com.cannontech.message.util.ServerRequest#makeServerRequest(com.cannontech.yukon.IServerConnection, com.cannontech.message.util.Message)
      */
+    @Override
     public ServerResponseMsg makeServerRequest(IServerConnection conn, Message msg) {
-        return makeServerRequest(conn,msg,DEFAULT_TIMEOUT);
+        return makeServerRequest(conn,msg,DEFAULT_TIMEOUT, false);
     }
     
 	/* (non-Javadoc)
      * @see com.cannontech.message.util.ServerRequest#makeServerRequest(com.cannontech.yukon.IServerConnection, com.cannontech.message.util.Message, long)
      */
+    @Override
     public ServerResponseMsg makeServerRequest(IServerConnection conn, Message msg, long timeout) {
+        return makeServerRequest(conn,msg,timeout, false);
+    }
+
+    private ServerResponseMsg makeServerRequest(IServerConnection conn, Message msg, long timeout, boolean isPrivate) {
         int reqId = nextClientMessageID();
         ServerRequestMsg reqMsg = new ServerRequestMsg();
         reqMsg.setPayload(msg);
@@ -148,7 +174,7 @@ public class ServerRequestImpl implements ServerRequest
         
         InnerServerRequest innerReq = new InnerServerRequest(conn, reqMsg);
         
-        return innerReq.execute(timeout);
+        return innerReq.execute(timeout, isPrivate);
 	}
 	
    public ServerRequestImpl() {

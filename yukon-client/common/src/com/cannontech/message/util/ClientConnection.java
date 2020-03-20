@@ -2,8 +2,10 @@ package com.cannontech.message.util;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -15,6 +17,8 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.message.server.ServerRequestMsg;
+import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.messaging.connection.Connection;
 import com.cannontech.messaging.connection.Connection.ConnectionState;
 import com.cannontech.messaging.connection.MessagingConnectionException;
@@ -32,8 +36,10 @@ public abstract class ClientConnection extends Observable implements IServerConn
     private Connection connection;
     private ConnectionFactory connectionFactory;
 
-    // Keep track of all of this connections MessageListeners
+    // Keep track of all of this connection's MessageListeners
     private List<MessageListener> messageListeners = new CopyOnWriteArrayList<>();
+    // Listeners tied to a specific serverRequestId
+    private Map<Integer, MessageListener> privateListeners = new ConcurrentHashMap<>();
     private final int EXCEPTIONS_BEFORE_LOG_SNOOZE = 20;
     private final int LOG_SNOOZE_MINUTES = 5;
     private LoadingCache<MessageListener, Integer> listenerExceptions = CacheBuilder.newBuilder().expireAfterWrite(
@@ -266,6 +272,16 @@ public abstract class ClientConnection extends Observable implements IServerConn
             }
         } else {
             MessageEvent messageEvent = new MessageEvent(this, msg);
+            if (msg instanceof ServerResponseMsg) {
+                var privateListener = privateListeners.get(((ServerResponseMsg) msg).getId());
+                if (privateListener != null) {
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("sending MessageEvent to private listener: " + messageEvent);
+                    }
+                    privateListener.messageReceived(messageEvent);
+                    return;
+                }
+            }
             if (logger.isDebugEnabled()) {
                 logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + messageEvent);
             }
@@ -396,6 +412,12 @@ public abstract class ClientConnection extends Observable implements IServerConn
         }
         queue(msg);
     }
+    
+    @Override
+    public final void writePrivateServerRequest(ServerRequestMsg msg, MessageListener l) {
+        privateListeners.put(msg.getId(), l);
+        write(msg);
+    }
 
     /**
      * Writes an object to the output queue.
@@ -434,6 +456,11 @@ public abstract class ClientConnection extends Observable implements IServerConn
     @Override
     public final void removeMessageListener(MessageListener l) {
         messageListeners.remove(l);
+    }
+    
+    @Override
+    public final void removePrivateListener(Integer serverRequestId) {
+        privateListeners.remove(serverRequestId);
     }
 
     @Override

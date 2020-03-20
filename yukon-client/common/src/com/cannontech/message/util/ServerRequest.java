@@ -9,6 +9,17 @@ public interface ServerRequest {
     public final static long DEFAULT_TIMEOUT = 30L * 1000L;
 
     /**
+     * Executes a private server request, where the response is only
+     * sent to the requester. If we don't hear back from the server
+     * a server response will be generated with an error status
+     * @param conn - Connection to a Yukon server
+     * @param msg - Some type of message that represents a request
+     * @return
+     */
+    public abstract ServerResponseMsg makePrivateRequest(IServerConnection conn,
+            Message msg);
+
+    /**
      * Executes a server request, if we don't hear back from the server
      * a server response will be generated with an error status
      * @param conn - Connection to a Yukon server
@@ -21,8 +32,8 @@ public interface ServerRequest {
     /**
      * Executes a server request, if we don't hear back from the server
      * a server response will be generated with an error status
-     * @param conn - Connection to a Yukon server
-     * @param msg - Some type of message that represents a request
+     * @param conn   - Connection to a Yukon server
+     * @param msg    - Some type of message that represents a request
      * @param timout - Timeout in millis
      * @return
      */

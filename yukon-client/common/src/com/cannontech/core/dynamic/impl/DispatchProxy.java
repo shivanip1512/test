@@ -124,7 +124,7 @@ class DispatchProxy {
      */
     Set<Signal> getSignalsByCategory(int alarmCategoryId) {
         Command cmd = makeCommandMsg(Command.ALARM_CATEGORY_REQUEST, ImmutableSet.of(alarmCategoryId));
-        Multi m = (Multi) makeRequest(cmd);
+        Multi m = (Multi) makeRequest(cmd, false);
         Set<Signal> signals = new HashSet<Signal>();
         extractSignals(signals, m);
         return signals;
@@ -181,7 +181,8 @@ class DispatchProxy {
                 registerForPointIds(pointIds);
             }
             Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
-            m = (Multi) makeRequest(cmd);
+            // Only registered pointdata should be broadcast, otherwise it should only be returned to the requester
+            m = (Multi) makeRequest(cmd, shouldRegister);
         } catch (DynamicDataAccessException e) {
             throw new DynamicDataAccessException("There was an error retreiving the value for pointIds: " + pointIds, e);
         }
@@ -192,9 +193,12 @@ class DispatchProxy {
      * Handles sending a request to dispatch and waiting for a response.
      * @throws {@link DynamicDataAccessException}
      */
-    private Object makeRequest(Command cmd) {
+    private Object makeRequest(Command cmd, boolean isPublic) {
         validateDispatchConnection();
-        ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection, cmd);
+        ServerResponseMsg resp = isPublic
+                ? serverRequest.makeServerRequest(dispatchConnection, cmd)
+                : serverRequest.makePrivateRequest(dispatchConnection, cmd);
+                
         if (resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
             log.error("Dispatch returned the following message: " + resp.getMessage());
             throw new DynamicDataAccessException(resp.getStatusStr() + ": " + resp.getMessage());
