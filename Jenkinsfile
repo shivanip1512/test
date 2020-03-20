@@ -124,6 +124,7 @@ pipeline {
                                     deleteDir()
                                 }
                                 unstash 'yukon-server'
+								bat './yukon-applications/cloud-service/go.bat build-cloud'
                                 bat './yukon-build/go.bat build-install'
 
                                 if (params.RELEASE_MODE) {
@@ -134,7 +135,7 @@ pipeline {
                                     bat './yukon-build/go.bat clean build-dist-pdb'
                                 }
 
-                                archiveArtifacts artifacts: 'yukon-build/dist/*'
+                                archiveArtifacts artifacts: 'yukon-build/dist/*, yukon-applications/cloud-service/build/*.zip'
                             } catch (Exception) {
                                 currentBuild.result = 'FAILURE'
                                 //Added sleep so that it capture full log for current stage

@@ -5398,16 +5398,16 @@ JavaScript :
     notes : 
 
   - project : chosen
-    version : 1.1.0
+    version : 1.8.7
     project URL : "https://github.com/harvesthq/chosen/releases"
     license : MIT
     license URLs : "https://github.com/harvesthq/chosen/blob/f093b3930e83f2fd656fe63d6cdb35cac52a74dc/LICENSE.md"
     npm URL : "https://www.npmjs.com/package/chosen-js"
-    md5 : c8e16998bbb406d52fca3ff418f783e6
-    sha1 : e8e830f5a97ebb67afec0019acf1e3b3871cc803
-    jira : YUK-13080
-    updated : 2014-04-19
-    notes : 
+    md5 : 53d0855f4d28d272589e9022a529228d
+    sha1 : 31c805cfc2b2e82e5daa05b5c65be45bd3c79fde
+    jira : YUK-21528
+    updated : 2020-03-13
+    notes : This library is used to render a chosen drop-down. This is a multiselect dropdown. Eg. DR -> Setup -> FilterBy Load Program -> the dropdown for load program types.
 
   - project : cookie
     version : 1.4.1
@@ -5458,16 +5458,16 @@ JavaScript :
     notes : 
 
   - project : fileupload
-    version : 5.40.0
+    version : 10.8.0
     project URL : "https://github.com/blueimp/jQuery-File-Upload"
     license : MIT
     license URLs : "https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/blueimp-file-upload"
-    md5 : 8b57a1ec5a3e7c98e572e50ac84951b7
-    sha1 : 5825b88f821c97568ae53fce2c775f553da19a28
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : 
+    md5 : 5c9fd37430aaf4921c583b36cd25acec
+    sha1 : 725eafdc49086908d9500fc3d59f4fa482b53a00
+    jira : YUK-21524
+    updated : 2020-03-11
+    notes : The jquery.iframe-transport.js and jquery.ui.widget.js files comes along with this package. It is used for file Upload widget with multiple file selection and drag&drop support for jQuery in Yukon.
 
   - project : flotcharts
     version : 1.8.1?

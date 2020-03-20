@@ -101,6 +101,7 @@ pipeline {
                 // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
                 script {
                     try {
+					    bat './yukon-applications/cloud-service/go.bat build-cloud'
                         bat './yukon-build/go.bat build-install'
 
                         if (params.RELEASE_MODE) {
@@ -111,7 +112,7 @@ pipeline {
                             bat './yukon-build/go.bat clean build-dist-pdb'
                         }
 
-                        archiveArtifacts artifacts: 'yukon-build/dist/*'
+                        archiveArtifacts artifacts: 'yukon-build/dist/*, yukon-applications/cloud-service/build/*.zip'
                     } catch (Exception) {
                         currentBuild.result = 'FAILURE'
                         //Added sleep so that it capture full log for current stage
