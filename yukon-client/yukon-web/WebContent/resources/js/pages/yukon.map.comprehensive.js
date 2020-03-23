@@ -347,6 +347,7 @@ yukon.map.comprehensive = (function () {
             
             $(document).on('click', '.js-filter-map', function (ev) {
                 var form = $('#filter-form');
+                yukon.ui.block('#comprehensive-map-container');
                 $.ajax({
                     url: yukon.url('/stars/comprehensiveMap/filter'),
                     type: 'get',
@@ -392,7 +393,7 @@ yukon.map.comprehensive = (function () {
                         yukon.mapping.showHideAllRoutes(gatewayIds);                    
                     }
                 }).always(function () {
-                    yukon.ui.unbusy('.js-filter-map');
+                    yukon.ui.unblock('#comprehensive-map-container');
                 });
             });
             
