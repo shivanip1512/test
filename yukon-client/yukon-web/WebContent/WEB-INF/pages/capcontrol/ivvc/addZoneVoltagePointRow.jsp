@@ -16,7 +16,7 @@
         <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="pointAssignments[${itemIndex}].device"/>
         <input type="hidden" value="false" name="pointAssignments[${itemIndex}].deletion" class="isDeletionField">
     </td>
-	 <td>${fn:escapeXml(row.device)}</td>
+	<td>${fn:escapeXml(row.device)}</td>
     <td>
         <c:choose>
             <c:when test="${phaseUneditable}">
