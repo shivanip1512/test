@@ -78,8 +78,12 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         try {
             oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
         } catch (@SuppressWarnings("unused") NotFoundException e) {
-            log.info("Creating status. \nNew Status {}", newStatus);
-            meterProgrammingDao.createMeterProgramStatus(newStatus);
+            if (newStatus.getStatus() == ProgrammingStatus.IDLE) {
+                log.info("Creating status. \nNew Status {}", newStatus);
+                meterProgrammingDao.createMeterProgramStatus(newStatus);
+                return;
+            }
+            log.info("No existing status for device, discarding non-idle status report. \nNew Status {}", newStatus);
             return;
         }
 
@@ -99,15 +103,21 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                      oldStatus);
             return;
         }
-        MeterProgram program = meterProgrammingDao.getProgramByDeviceId(deviceId);
-        if (!program.getGuid().equals(newStatus.getReportedGuid())) {
+        MeterProgram assignedProgram = meterProgrammingDao.getProgramByDeviceId(deviceId);
+        if (!assignedProgram.getGuid().equals(newStatus.getReportedGuid())) {
             if (newStatus.getStatus() == ProgrammingStatus.FAILED) {
-                log.info("Status recieved is failure and guids are mismatched. Discarding the record. \nNew Status {} \nExisting status {}",
+                log.info("Status recieved is failure, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
                          newStatus,
                          oldStatus);
                 return;
             }
-            log.info("Status recieved is failure and guids are mismatched. Updating status to mismatched");
+            if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
+                log.info("Status recieved is failure, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
+                        newStatus,
+                        oldStatus);
+                return;
+            }
+            log.info("Status recieved is idle and guids are mismatched. Updating status to mismatched");
             newStatus.setStatus(ProgrammingStatus.MISMATCHED);
         }
         log.info("Updating meter program status.  \nNew Status {} \nExisting status {}", newStatus, oldStatus);
