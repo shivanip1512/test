@@ -48,6 +48,25 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-21642', '7.5.0', GETDATE());
 /* @end YUK-21642 */
 
+/* @start YUK-20982 */
+ALTER TABLE MSPInterface ADD UseVendorAuth CHAR(1);
+GO
+UPDATE MSPInterface SET UseVendorAuth = '1' WHERE UseVendorAuth IS NULL;
+GO
+ALTER TABLE MSPInterface ALTER COLUMN UseVendorAuth CHAR(1) NOT NULL;
+GO
+
+ALTER TABLE MSPInterface
+ADD InUserName VARCHAR(64),
+    InPassword VARCHAR(64),
+    OutUserName VARCHAR(64),
+    OutPassword VARCHAR(64),
+    ValidateCertificate CHAR(1);
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-20982', '7.5.0', GETDATE());
+/* @end YUK-20982 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

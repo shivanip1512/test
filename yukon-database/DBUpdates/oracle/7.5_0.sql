@@ -40,6 +40,21 @@ TO LastTransferTime;
 INSERT INTO DBUpdates VALUES ('YUK-21642', '7.5.0', SYSDATE);
 /* @end YUK-21642 */
 
+/* @start YUK-20982 */
+ALTER TABLE MSPInterface ADD UseVendorAuth CHAR(1);
+UPDATE MSPInterface SET UseVendorAuth = '1' WHERE UseVendorAuth IS NULL;
+ALTER TABLE MSPInterface MODIFY UseVendorAuth CHAR(1) NOT NULL;
+
+ALTER TABLE MSPInterface
+ADD (InUserName VARCHAR2(64),
+    InPassword VARCHAR2(64),
+    OutUserName VARCHAR2(64),
+    OutPassword VARCHAR2(64),
+    ValidateCertificate CHAR(1));
+
+INSERT INTO DBUpdates VALUES ('YUK-20982', '7.5.0', SYSDATE);
+/* @end YUK-20982 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
