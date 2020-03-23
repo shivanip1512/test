@@ -32,9 +32,6 @@
             <tags:nameValue name="Node SN">
                 <tags:input path="parentData.nodeSN"/>
             </tags:nameValue>
-            <tags:nameValue name="Node Mac Address">
-                <tags:input path="parentData.nodeMacAddress"/>
-            </tags:nameValue>
             <tags:nameValue name="Reply Type">
                 <tags:selectWithItems items="${parentReplys}" path="parentReplyType" />
             </tags:nameValue>
@@ -82,13 +79,7 @@
     
     <tags:sectionContainer title="Primary Route Settings">
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Destination Address">
-                <tags:input path="routeData.destinationAddress"/>
-            </tags:nameValue>
-            <tags:nameValue name="Next Hop Address">
-                <tags:input path="routeData.nextHopAddress"/>
-            </tags:nameValue>
-            <tags:nameValue name="Total Cost">
+            <tags:nameValue name="Path Cost">
                 <tags:input path="routeData.totalCost"/>
             </tags:nameValue>
             <tags:nameValue name="Hop Count">

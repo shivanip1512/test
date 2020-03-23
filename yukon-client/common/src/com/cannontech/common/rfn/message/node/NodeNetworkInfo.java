@@ -1,15 +1,20 @@
 package com.cannontech.common.rfn.message.node;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class NodeNetworkInfo implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    private final Set<String> nodeGroupNames = new HashSet<>();
+    // NM DB allows duplicate node group names but different node group id
+    // So a node may belong to multiple groups with the same group name.
+    private final List<String> nodeGroupNames = new ArrayList<>();
     
+    // NM DB restricts unique node name per node
     private final Set<String> nodeNames = new HashSet<>();
     
     private String ipv6Address;
@@ -32,14 +37,22 @@ public class NodeNetworkInfo implements Serializable {
         this.hostname = hostname;
     }
 
-    public Set<String> getNodeGroupNames() {
+    public List<String> getNodeGroupNames() {
         return nodeGroupNames;
     }
 
     public Set<String> getNodeNames() {
         return nodeNames;
     }
-
+    
+    public void addNodeGroupName(String nodeGroupName) {
+        nodeGroupNames.add(nodeGroupName);
+    }
+    
+    public void addNodeName(String nodeName) {
+        nodeNames.add(nodeName);
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;

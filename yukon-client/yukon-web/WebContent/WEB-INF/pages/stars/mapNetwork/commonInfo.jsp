@@ -11,7 +11,6 @@
     <tags:nameValue2 nameKey=".primaryGateway" nameClass="js-primary-gateway-display" valueClass="js-primary-gateway js-primary-gateway-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".gatewaySerialNumber" nameClass="js-gateway-serial-number-display" valueClass="js-gateway-serial-number js-gateway-serial-number-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".ipAddress" nameClass="js-ip-address-display" valueClass="js-ip-address js-ip-address-display"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".macAddress" nameClass="js-address-display" valueClass="js-address js-address-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".nodeSN" nameClass="js-node-sn-display" valueClass="js-node-sn js-node-sn-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".status" nameClass="js-status-display" valueClass="js-status js-status-display"></tags:nameValue2>
 </cti:msgScope>

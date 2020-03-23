@@ -11,6 +11,7 @@ import com.cannontech.msp.beans.v3.GetMethodsResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -34,7 +35,7 @@ public class MDMClient implements IMDMClient {
         try {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MDM_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -47,7 +48,7 @@ public class MDMClient implements IMDMClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MDM_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

@@ -4,7 +4,6 @@
     display: inline-block;
     float: left;
     height: 16px;
-    image-rendering: pixelated;
     line-height: 16px;
     margin-top: 0px;
     margin-right: 7px;
@@ -1333,10 +1332,6 @@ License: http://creativecommons.org/licenses/by/3.0/
     background-image: url(../Icons/plus-minus.png);
     opacity: 0.5; 
 }
-
-.icon-drag { background-image: url(../Icons/Drag.png); }
-
-
 
 
 /* jquery ui icons */

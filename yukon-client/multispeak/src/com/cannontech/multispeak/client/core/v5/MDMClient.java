@@ -14,6 +14,7 @@ import com.cannontech.msp.beans.v5.mdm_server.GetMethods;
 import com.cannontech.msp.beans.v5.mdm_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.mdm_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.mdm_server.PingURL;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
@@ -40,7 +41,7 @@ public class MDMClient implements IMDMClient {
             PingURL pingURL = objectFactory.createPingURL();
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
             webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MDM_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -56,7 +57,7 @@ public class MDMClient implements IMDMClient {
 
             GetMethodsResponse response =
                 (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                    customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                    customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.MDM_Server_STR));
 
             if (response != null) {
                 ArrayOfString arrayOfString = response.getArrayOfString();

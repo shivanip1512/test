@@ -34,7 +34,7 @@ public enum JsLibrary {
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
     JQUERY_TREE_HELPERS("/resources/js/tags/yukon.dynatree.js"), //in-house
     JQUERY_CHOSEN("/resources/js/lib/chosen/chosen.jquery.min.js",
-                  "/resources/js/lib/chosen/chosen.jquery.src.js"), // https://github.com/harvesthq/chosen/releases
+                  "/resources/js/lib/chosen/chosen.jquery.js"), // https://github.com/harvesthq/chosen/releases
     JQUERY_ACTUAL("/resources/js/lib/actual/jquery.actual.min.js",
                   "/resources/js/lib/actual/jquery.actual.js"), // https://github.com/dreamerslab/jquery.actual
     

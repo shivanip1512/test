@@ -29,7 +29,7 @@ yukon.map.network = (function () {
     _neighborsLayerIndex = 0,
     _primaryRouteLayerIndex = 1,
     _parentLayerIndex = 2,
-    _iconLayerIndex = 3,
+    _iconLayerIndex = yukon.mapping.getIconLayerZIndex(),
     
     _devicePoints = [],
     _deviceIcon,
@@ -559,7 +559,7 @@ yukon.map.network = (function () {
                 });
                 yukon.mapping.initializeMap(_map);
                 _destProjection = _map.getView().getProjection().getCode();
-                _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
+                _map.addLayer(new ol.layer.Vector({ name: 'icons', zIndex: _iconLayerIndex, source: new ol.source.Vector({ projection: _destProjection }) }));
                 /** Hide any cog dropdowns on zoom or map move **/
                 _map.getView().on('change:resolution', function(ev) {
                     $('.dropdown-menu').css('display', 'none');

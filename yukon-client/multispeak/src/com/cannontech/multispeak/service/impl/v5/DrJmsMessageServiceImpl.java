@@ -192,7 +192,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
                 String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_DR_STR);
                 try {
-                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl);
+                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR);
 
                     addSupportedVendors(mspMethodNames, ENROLLMENT_METHOD, mspVendor, supportsEnrollmentOrOptIn);
                     addSupportedVendors(mspMethodNames, UNENROLLMENT_METHOD, mspVendor, supportsUnEnrollmentOrOptOut);
@@ -316,7 +316,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramEnrollmentsNotification.setTransactionID(transactionId);
             try {
-                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, drProgramEnrollmentsNotification);
+                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramEnrollmentsNotification);
 
                 logEvent(serialNumber, enrollmentJmsMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
             } catch (MultispeakWebServiceClientException e) {
@@ -350,7 +350,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramUnenrollmentsNotification.setTransactionID(transactionId);
 
             try {
-                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, drProgramUnenrollmentsNotification);
+                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramUnenrollmentsNotification);
 
                 logEvent(serialNumber, unEnrollmentMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
@@ -382,7 +382,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramUnEnrollmentsNotification.setArrayOfDRProgramEnrollment(arrayOfDrProgramEnrollment);
             drProgramUnEnrollmentsNotification.setTransactionID(transactionId);
             try {
-                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, drProgramUnEnrollmentsNotification);
+                notClient.drProgramUnenrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramUnEnrollmentsNotification);
 
                 logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), UNENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
 
@@ -415,7 +415,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             drProgramEnrollmentsNotification.setTransactionID(transactionId);
 
             try {
-                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, drProgramEnrollmentsNotification);
+                notClient.drProgramEnrollmentsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, drProgramEnrollmentsNotification);
 
 
                 logEvent(serialNumber, optOutOptInJmsMessage.getMessageType().toString(), ENROLLMENT_METHOD, mspVendor, transactionId, endpointUrl);
@@ -452,7 +452,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             log.info("Sending " + INTERVALDATA_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : "
                     + DrJmsMessageType.RELAYDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
-                notClient.intervalDataNotification(mspVendor, endpointUrl, intervalDataNotification);
+                notClient.intervalDataNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, intervalDataNotification);
                 for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
                     logEvent(serialNo, DrJmsMessageType.RELAYDATA.toString(), INTERVALDATA_METHOD, mspVendor, transactionId,
                             endpointUrl);
@@ -488,7 +488,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             log.info("Sending " + VOLTAGEREADINGS_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : "
                     + DrJmsMessageType.VOLTAGEDATA + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
-                notClient.meterReadingsNotification(mspVendor, endpointUrl, meterReadingsNotification);
+                notClient.meterReadingsNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, meterReadingsNotification);
 
                 for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
                     logEvent(serialNo, DrJmsMessageType.VOLTAGEDATA.toString(), VOLTAGEREADINGS_METHOD, mspVendor, transactionId,
@@ -527,7 +527,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             String serialNumbers = StringUtils.toStringList(serialNumberAttributeDataMapping.keySet());
             log.info("Sending " + ALARMANDEVENTDATA_METHOD + ", Serial Numbers : " + serialNumbers + " with Message Type : " + DrJmsMessageType.ALARMANDEVENT + " (" + mspVendor.getCompanyName() + ") " + endpointUrl);
             try {
-                notClient.alarmAndEventDataNotification(mspVendor, endpointUrl, endDeviceEventsNotification);
+                notClient.alarmAndEventDataNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, endDeviceEventsNotification);
                 for (String serialNo : serialNumberAttributeDataMapping.keySet()) {
                 logEvent(serialNo, DrJmsMessageType.ALARMANDEVENT.toString(), ALARMANDEVENTDATA_METHOD, mspVendor, transactionId, endpointUrl);
                 }
@@ -572,7 +572,7 @@ public class DrJmsMessageServiceImpl implements DrJmsMessageService, MessageList
             formattedBlockNotification.setArrayOfFormattedBlock(arrayOfFormattedBlock);
 
             try {
-                notClient.formattedBlockNotification(mspVendor, endpointUrl, formattedBlockNotification);
+                notClient.formattedBlockNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_DR_STR, formattedBlockNotification);
 
                 List<ErrorObject> errObjects = new ArrayList<>();
                 errObjects = multispeakFuncs.getErrorObjectsFromResponse();

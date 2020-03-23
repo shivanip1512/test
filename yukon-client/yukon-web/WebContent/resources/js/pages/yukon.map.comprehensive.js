@@ -22,7 +22,7 @@ yukon.map.comprehensive = (function () {
     _largerScale = yukon.mapping.getLargerScale(),
     
     //lines should go beneath icons
-    _lineLayerIndex = yukon.mapping.getLineLayerIndex(),
+    _iconLayerZIndex = yukon.mapping.getIconLayerZIndex(),
     
     _primaryRoutePreviousPoints,
     _deviceFocusCurrentIcon,
@@ -183,7 +183,7 @@ yukon.map.comprehensive = (function () {
             });
             
             _deviceFocusLines.push(layerLines);
-            _map.getLayers().insertAt(_lineLayerIndex, layerLines);
+            _map.addLayer(layerLines);
         }
         
         var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _deviceFocusIcons})});
@@ -260,7 +260,7 @@ yukon.map.comprehensive = (function () {
             });
             
             _deviceFocusLines.push(layerLines);
-            _map.getLayers().insertAt(_lineLayerIndex, layerLines);
+            _map.addLayer(layerLines);
         }
         
         var allIcons = [];
@@ -304,7 +304,7 @@ yukon.map.comprehensive = (function () {
             });
             yukon.mapping.initializeMap(_map);
             _destProjection = _map.getView().getProjection().getCode();
-            _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
+            _map.addLayer(new ol.layer.Vector({ name: 'icons', zIndex: _iconLayerZIndex, source: new ol.source.Vector({ projection: _destProjection }) }));
             
             /** Display marker info popup on marker clicks. */
             var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
