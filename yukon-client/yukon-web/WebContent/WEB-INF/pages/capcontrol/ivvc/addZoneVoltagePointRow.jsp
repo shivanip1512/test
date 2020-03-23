@@ -1,21 +1,22 @@
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <tags:standardPageFragment pageName="ivvc" module="capcontrol" fragmentName="zoneWizard">
 
 <table class="compact-results-table">
 <tr>
-	<td>
-        <spring:escapeBody>${row.name}</spring:escapeBody>
+    <td>
+        ${fn:escapeXml(row.name)}
         <input type="hidden" value="${row.id}" name="pointAssignments[${itemIndex}].id"/>
         <input type="hidden" value="<spring:escapeBody>${row.name}</spring:escapeBody>" name="pointAssignments[${itemIndex}].name"/>
         <input type="hidden" value="<spring:escapeBody>${row.device}</spring:escapeBody>" name="pointAssignments[${itemIndex}].device"/>
         <input type="hidden" value="false" name="pointAssignments[${itemIndex}].deletion" class="isDeletionField">
     </td>
-	<td><spring:escapeBody>${row.device}</spring:escapeBody></td>
+    <td>${fn:escapeXml(row.device)}</td>
     <td>
         <c:choose>
             <c:when test="${phaseUneditable}">

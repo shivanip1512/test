@@ -19,13 +19,12 @@ pipeline {
 
                     steps {
                         script {
-                            if (params.RELEASE_MODE) {
-                                cleanWs()
-                            } else {
+                            try {
+                                if (params.CLEAN_WORKSPACE) {
+                                    cleanWs()
+                                }
                                 //Use Jenkins build number to create Yukon Build version for normal builds.
                                 env.YUKON_BUILD_RELEASE_NUMBER = "${env.BUILD_NUMBER}"
-                            }
-                            try {
                                 bat 'java -version'
 
                                 bat './yukon-build/go.bat build-client'
@@ -53,11 +52,11 @@ pipeline {
 
                     steps {
                         script {
-                            if (params.RELEASE_MODE) {
-                                cleanWs()
-                            }
                             try {
-                                
+                                if (params.CLEAN_WORKSPACE) {
+                                    cleanWs()
+                                }
+
                                 bat './yukon-build/go.bat build-server'
 
                                 stash name: 'yukon-server', includes: 'yukon-server/bin/*, yukon-server/pdb/*, yukon-server/Message/Static_Release/ctithriftmsg/I386/*'
@@ -81,11 +80,6 @@ pipeline {
                 jdk "jdk-11(18.9)"
             }
             steps {
-                script {
-                    if (params.RELEASE_MODE) {
-                        cleanWs()
-                    }
-                }
                 // The stashed folders are modified during the build, which means a simple
                 // unstash leaves data behind. Here we manually wipe these folders before unstashing.
                 dir('yukon-client') {
@@ -101,16 +95,15 @@ pipeline {
                 // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
                 script {
                     try {
-					    bat './yukon-applications/cloud-service/go.bat build-cloud'
+
+					    if (params.CLEAN_WORKSPACE) {
+                            cleanWs()
+                        }
+                        bat './yukon-applications/cloud-service/go.bat clean build-cloud'
+
                         bat './yukon-build/go.bat build-install'
 
-                        if (params.RELEASE_MODE) {
-                            bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
-                            bat './yukon-build/go.bat init clean symstore build-dist'
-                            bat 'net use p: /delete'
-                        } else {
-                            bat './yukon-build/go.bat clean build-dist-pdb'
-                        }
+                        bat './yukon-build/go.bat clean build-dist-server'
 
                         archiveArtifacts artifacts: 'yukon-build/dist/*, yukon-applications/cloud-service/build/*.zip'
                     } catch (Exception) {
@@ -134,9 +127,9 @@ def verifyLastBuild() {
     if (currentBuild.currentResult == 'SUCCESS') {
         if (currentBuild?.getPreviousBuild()?.result == 'FAILURE') {
             emailext body: " See<${env.BUILD_URL}display/redirect> \n ",
-                to: '$DEFAULT_RECIPIENTS',
-                recipientProviders: [culprits(), requestor(), brokenTestsSuspects(), brokenBuildSuspects()],
-                subject: "Jenkins build is back to normal : ${env.JOB_NAME} #${env.BUILD_NUMBER}"
+                    to: '$DEFAULT_RECIPIENTS',
+                    recipientProviders: [culprits(), requestor(), brokenTestsSuspects(), brokenBuildSuspects()],
+                    subject: "Jenkins build is back to normal : ${env.JOB_NAME} #${env.BUILD_NUMBER}"
         }
     }
 }
@@ -165,8 +158,8 @@ def sendEmailNotification(String stageName) {
         }
     }
     emailext body: "${stageName} Failed : Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}\n ${changeString}     ${logString}",
-        to: '$DEFAULT_RECIPIENTS',
-        recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
-        subject: "${stageName} failed in Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
+            to: '$DEFAULT_RECIPIENTS',
+            recipientProviders: [culprits(), brokenTestsSuspects(), brokenBuildSuspects()],
+            subject: "${stageName} failed in Jenkins:  ${env.JOB_NAME}#${env.BUILD_NUMBER}"
 
 }

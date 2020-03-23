@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <project name="cloud-service" default="all" basedir="../..">
 
-	<property file="${basedir}/yukon-build/build_version.properties"/>
+    <property file="${basedir}/yukon-build/build_version.properties"/>
 
     <target name="all" depends="clean,build" />
     <tstamp>
@@ -74,13 +74,8 @@
     </target>
 
     <target name="clean">
-        <echo message="Deleting cloud service build directory."/>
-        <exec dir="" executable="cmd" failonerror="false" failifexecutionfails="false">
-                 <arg value="/c"/>
-                 <arg value="gradlew"/>
-                 <arg value="clean"/>
-        </exec>
-        <echo message="Cloud service build directory deleted."/>
+       <delete dir="${basedir}/yukon-applications/cloud-service/build" />
+       <delete dir="${basedir}/yukon-applications/cloud-service/bin" />
     </target>
 
     <target name="runUnitTests" />

@@ -41,7 +41,7 @@
 }
 </style>
 <script>
-    $("#meter-type").chosen({width: '250px;'});
+    $("#meter-type").chosen({width: '250px'});
 </script>
 
 </cti:msgScope>
