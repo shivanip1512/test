@@ -23,9 +23,16 @@ public class RfnConditionTypeTest {
     public void rfnConditionTypeAttributeExistsTest() {
         Map<AttributeGroup, Set<BuiltInAttribute>> eventGroupedAttributes = BuiltInAttribute.getRfnEventGroupedAttributes();
 
-        // these are special types to ignore
+        // these are special types to ignore:
+        //   the OUTAGE/RESTORE conditions go to the OUTAGE_STATUS/RFN_OUTAGE_COUNT attributes
+        //   the REMOTE_METER_CONFIGURATION_FAILURE/FINISHED conditions go to the METER_PROGRAMMING_ATTEMPTED attribute 
+        //   the POWER_FAILURE condition goes to the POWER_FAIL_FLAG attribute
+        //   the REVERSE_ROTATION condition goes to the REVERSE_POWER_FLAG attribute
+        //   the TAMPER_DETECT condition goes to the TAMPER_FLAG attribute
         Set<RfnConditionType> specialTypes = Sets.newHashSet(RfnConditionType.OUTAGE,
                                                              RfnConditionType.OUTAGE_BLINK,
+                                                             RfnConditionType.REMOTE_METER_CONFIGURATION_FAILURE,
+                                                             RfnConditionType.REMOTE_METER_CONFIGURATION_FINISHED,
                                                              RfnConditionType.RESTORE,
                                                              RfnConditionType.RESTORE_BLINK,
                                                              RfnConditionType.POWER_FAILURE, 
