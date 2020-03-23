@@ -124,7 +124,9 @@ pipeline {
                                     deleteDir()
                                 }
                                 unstash 'yukon-server'
-								bat './yukon-applications/cloud-service/go.bat build-cloud'
+
+                                bat './yukon-applications/cloud-service/go.bat clean build-cloud'
+
                                 bat './yukon-build/go.bat build-install'
 
                                 if (params.RELEASE_MODE) {
@@ -161,7 +163,7 @@ pipeline {
                                 //Added sleep so that it capture full log for current stage
                                 sleep(5)
                                 sendEmailNotification("${env.STAGE_NAME}")
-							}
+                            }
                         }
                     }
                 }
