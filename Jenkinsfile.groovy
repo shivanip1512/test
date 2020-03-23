@@ -95,11 +95,11 @@ pipeline {
                 // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
                 script {
                     try {
-					
+
 					    if (params.CLEAN_WORKSPACE) {
                             cleanWs()
                         }
-					    bat './yukon-applications/cloud-service/go.bat build-cloud'
+                        bat './yukon-applications/cloud-service/go.bat clean build-cloud'
 
                         bat './yukon-build/go.bat build-install'
 

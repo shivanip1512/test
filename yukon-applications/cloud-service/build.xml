@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <project name="cloud-service" default="all" basedir="../..">
 
-	<property file="${basedir}/yukon-build/build_version.properties"/>
+    <property file="${basedir}/yukon-build/build_version.properties"/>
 
     <target name="all" depends="clean,build" />
     <tstamp>
