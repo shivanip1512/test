@@ -24,7 +24,7 @@ yukon.tools.map = (function() {
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,
     _primaryRouteLayerIndex = 1,
-    _iconLayerIndex = 3,
+    _iconLayerIndex = yukon.mapping.getIconLayerZIndex(),
     
     /** @type {number} - The setTimeout reference for periodic updating of device collection. */
     _updater = -1, 
@@ -484,7 +484,7 @@ yukon.tools.map = (function() {
             });
             yukon.mapping.initializeMap(_map);
             _destProjection = _map.getView().getProjection().getCode();
-            _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
+            _map.addLayer(new ol.layer.Vector({ name: 'icons', zIndex: _iconLayerIndex, source: new ol.source.Vector({ projection: _destProjection }) }));
             _loadIcons();
             /** Hide any cog dropdowns on zoom or map move **/
             _map.getView().on('change:resolution', function(ev) {
