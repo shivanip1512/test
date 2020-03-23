@@ -589,9 +589,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     
             //RouteData
             RouteData routeData = new RouteData();
-            routeData.setDestinationAddress((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_DEST_ADDR.getDefaultValue());
             routeData.setHopCount((short) ((int)YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT.getDefaultValue()));
-            routeData.setNextHopAddress((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_HOP_ADDR.getDefaultValue());
             routeData.setRouteColor((short) ((int)YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_COLOR.getDefaultValue()));
             routeData.setRouteDataTimestamp(new Date().getTime());
             //flags
@@ -629,7 +627,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     
             //ParentData
             ParentData parentData = new ParentData();
-            parentData.setNodeMacAddress((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_MAC_ADDR.getDefaultValue());
             parentData.setNodeSN((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_SN.getDefaultValue());
             simulatedNmMappingSettings.setParentData(parentData);
             
