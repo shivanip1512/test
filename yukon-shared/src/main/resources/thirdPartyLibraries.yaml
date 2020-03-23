@@ -5491,7 +5491,7 @@ JavaScript :
     sha1 : bbc84d21ce03ee9995d1c5c3aa21b451025b13ee
     jira : YUK-21525
     updated : 2020-03-23
-    notes : This YUK is used for ajaxSumbit and ajaxForm methods used in jQuery code.
+    notes : The jQuery code in Yukon intensively uses ajaxSumbit method. We also use ajaxForm method. These methods are offered by this library.
 
   - project : google-code-prettify
     version : 2013-03-04
