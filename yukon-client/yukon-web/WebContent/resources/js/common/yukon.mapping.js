@@ -360,10 +360,6 @@ yukon.mapping = (function () {
             $('.js-ip-address').text(routeInfo.ipAddress);
             $('.js-address-display').toggleClass('dn', routeInfo.macAddress === null);
             $('.js-address').text(routeInfo.macAddress);
-            $('.js-destination-address-display').toggleClass('dn', routeInfo.route.destinationAddress === null);
-            $('.js-destination-address').text(routeInfo.route.destinationAddress);
-            $('.js-next-hop-address-display').toggleClass('dn', routeInfo.route.nextHopAddress === null);
-            $('.js-next-hop-address').text(routeInfo.route.nextHopAddress);
             $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost === null);
             $('.js-total-cost').text(routeInfo.route.totalCost);
             $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount === null);
@@ -479,14 +475,10 @@ yukon.mapping = (function () {
                 routeInfo = properties.routeInfo,
                 nearby = properties.nearby,
                 primaryRoutesExists = $('.js-all-routes').exists(),
-                fromComprehensiveMap = $('.js-all-routes-comprehensive').exists(),
                 allRoutesChecked = false,
-                paoId = feature.get('pao').paoId,
-                includeRouteData = false;
+                paoId = feature.get('pao').paoId;
                 if (primaryRoutesExists) {
                     allRoutesChecked = $('.js-all-routes').find(':checkbox').prop('checked');
-                    //always display route data for comprehensive map
-                    includeRouteData = fromComprehensiveMap ? true : allRoutesChecked;
                 }
             if (parent != null) {
                 mod.displayCommonPopupProperties(parent);
@@ -504,7 +496,7 @@ yukon.mapping = (function () {
                 $('#parent-info').hide();
                 $('#neighbor-info').hide();
                 $('#route-info').hide();
-                var url = yukon.url('/tools/map/device/' + paoId + '/info?includePrimaryRoute=' + includeRouteData);
+                var url = yukon.url('/tools/map/device/' + paoId + '/info');
                 $('#device-info').load(url, function() {
                     if (nearby != null) {
                         $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");

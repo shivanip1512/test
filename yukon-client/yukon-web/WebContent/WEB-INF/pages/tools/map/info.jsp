@@ -47,9 +47,6 @@
     <c:if test="${!empty gatewayIPAddress}">
         <tags:nameValue2 nameKey=".ipAddress">${fn:escapeXml(gatewayIPAddress)}</tags:nameValue2>
     </c:if>
-    <c:if test="${!empty macAddress}">
-        <tags:nameValue2 nameKey=".macAddress">${fn:escapeXml(macAddress)}</tags:nameValue2>
-    </c:if>
     <c:if test="${!empty nodeSN}">
         <tags:nameValue2 nameKey=".nodeSN">${fn:escapeXml(nodeSN)}</tags:nameValue2>
     </c:if>
@@ -77,8 +74,6 @@
         <tags:nameValue2 nameKey=".route">${fn:escapeXml(pao.meter.route)}</tags:nameValue2>
     </c:if>
     <c:if test="${!empty routeData}">
-        <tags:nameValue2 nameKey=".destinationAddress">${fn:escapeXml(routeData.destinationAddress)}</tags:nameValue2>
-        <tags:nameValue2 nameKey=".nextHopAddress">${fn:escapeXml(routeData.nextHopAddress)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".totalCost">${fn:escapeXml(routeData.totalCost)}</tags:nameValue2>
         <tags:nameValue2 nameKey=".hopCount">${fn:escapeXml(routeData.hopCount)}</tags:nameValue2>
         <c:if test="${!empty descendantCount}">
@@ -96,15 +91,6 @@
 
 <c:if test="${not empty errorMsg}">
     <tags:hideReveal2 styleClass="mw300" titleClass="error" titleKey="yukon.web.modules.tools.map.network.error" showInitially="false">${errorMsg}</tags:hideReveal2>
-</c:if>
-
-<c:if test="${empty routeData}">
-    <c:forEach items="${attributes}" var="attr">
-        <div>
-            <h4><i:inline key="${attr}"/></h4>
-            <div style="padding: 2px 10px;"><tags:attributeValue attribute="${attr}" pao="${pao}"/></div>
-        </div>
-    </c:forEach>
 </c:if>
 
 <div class="dn" 

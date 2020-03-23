@@ -99,8 +99,6 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_NEIGHBOR_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
 
     //RouteData
-    RFN_NETWORK_SIMULATOR_ROUTE_DEST_ADDR("00:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_ROUTE_HOP_ADDR("00:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_ROUTE_COST(2, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
     RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
     RFN_NETWORK_SIMULATOR_PRIM_FORW_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
@@ -116,7 +114,6 @@ public enum YukonSimulatorSettingsKey {
 
     //ParentData
     RFN_NETWORK_SIMULATOR_PARENT_SN("123", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_PARENT_MAC_ADDR("17:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     
