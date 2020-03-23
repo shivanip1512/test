@@ -55,6 +55,14 @@ ADD (InUserName VARCHAR2(64),
 INSERT INTO DBUpdates VALUES ('YUK-20982', '7.5.0', SYSDATE);
 /* @end YUK-20982 */
 
+/* @start YUK-21621 */
+INSERT INTO StateGroup VALUES(-29, 'Meter Programming', 'Status');
+INSERT INTO State VALUES(-29, 0, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-29, 1, 'Failure', 1, 6, 0);
+
+INSERT INTO DBUpdates VALUES ('YUK-21621', '7.5.0', SYSDATE);
+/* @end YUK-21621 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
