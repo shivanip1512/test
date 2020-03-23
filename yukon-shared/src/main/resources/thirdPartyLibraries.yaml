@@ -5482,16 +5482,16 @@ JavaScript :
     notes : Minified, cannot determine version
 
   - project : form
-    version : 3.46.0-2013.11.21
+    version : 4.2.2
     project URL : "http://malsup.com/jquery/form/"
     license : MIT,GPL
     license URLs : "https://github.com/malsup/form#copyright-and-license"
     npm URL : "n/a"
-    md5 : fe81c1e488719d60cb3043d1f3b26e8b
-    sha1 : 6a31f44b8cd57ec03e6a7abc5fdff333b9d8d47c
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : 
+    md5 : 39eb832aa48f3a60b905928c2d879e03
+    sha1 : bbc84d21ce03ee9995d1c5c3aa21b451025b13ee
+    jira : YUK-21525
+    updated : 2020-03-23
+    notes : This YUK is used for ajaxSumbit and ajaxForm methods used in jQuery code.
 
   - project : google-code-prettify
     version : 2013-03-04

@@ -18,7 +18,7 @@ public enum JsLibrary {
     JQUERY_DATE_TIME_ENTRY("/resources/js/lib/datetimeentry/jquery.datetimeentry.min.js",
                            "/resources/js/lib/datetimeentry/jquery.datetimeentry.js"), // http://keith-wood.name/datetimeEntry.html
     JQUERY_FILE_UPLOAD("/resources/js/lib/fileupload/jquery.fileupload.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js
-    JQUERY_FORM("/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
+    JQUERY_FORM("/resources/js/lib/form/jquery.form.min.js", "/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
     JQUERY_GRID("/resources/js/lib/jqgrid/js/jquery.jqGrid.min.js",
                 "/resources/js/lib/jqgrid/js/jquery.jqGrid.src.js"), // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs
     JQUERY_GRID_HELPER("/resources/js/lib/jqgrid/jqGridHelper.js"), //in-house
