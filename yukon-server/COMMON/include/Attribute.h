@@ -444,6 +444,7 @@ public:
     static const Attribute  MeasurementError;
     static const Attribute  MeterFunctioningCorrectly;
     static const Attribute  MeterReconfigure;
+    static const Attribute  MeterProgrammingAttempted;
     static const Attribute  MetrologyCommunicationFailure;
     static const Attribute  NonVolatileMemFailure;
     static const Attribute  OutstationDNP3SerCommLocked;
@@ -457,7 +458,6 @@ public:
     static const Attribute  RamError;
     static const Attribute  RegisterFullScaleExceeded;
     static const Attribute  ReverseFlow;
-    static const Attribute  RemoteMeterConfigurationFailure;
     static const Attribute  ReversedAggregate;
     static const Attribute  ReversedPhaseA;
     static const Attribute  ReversedPhaseC;
