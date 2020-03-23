@@ -104,7 +104,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
                 String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_STR);
                 try {
-                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl);
+                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_STR);
                     // not sure where a static variable containing this method exists.. doing this for now
                     if (mspMethodNames.stream().anyMatch("EndDeviceStatesNotification"::equalsIgnoreCase)) {
                         supportsOutage.add(mspVendor);
@@ -145,7 +145,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
                 endDeviceStateList.add(deviceState);
                 endDeviceStatesNotification.setTransactionID(transactionId);
                 endDeviceStatesNotification.setArrayOfEndDeviceState(arrayOfEndDeviceState);
-                notClient.endDeviceStatesNotification(mspVendor, endpointUrl, endDeviceStatesNotification);
+                notClient.endDeviceStatesNotification(mspVendor, endpointUrl, MultispeakDefines.NOT_Server_STR, endDeviceStatesNotification);
 
                 List<ErrorObject> errObjects = new ArrayList<>();
                 errObjects = multispeakFuncs.getErrorObjectsFromResponse();

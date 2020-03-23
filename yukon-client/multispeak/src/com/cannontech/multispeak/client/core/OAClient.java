@@ -13,6 +13,7 @@ import com.cannontech.msp.beans.v3.ODEventNotificationResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -37,7 +38,7 @@ public class OAClient implements IOAClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -50,7 +51,7 @@ public class OAClient implements IOAClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -71,7 +72,7 @@ public class OAClient implements IOAClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (ODEventNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, odEventNotification,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OA_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

@@ -175,11 +175,11 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         SOAPHeader header = env.getHeader();
         SOAPElement headElement = header.addChildElement("MultiSpeakResponseMsgHeader", "res");
-        getHeader(headElement, "res", mspVendor);
+        getHeader(headElement, "res", mspVendor.getOutUserName(), mspVendor.getOutPassword() );
 
     }
 
-    public void getHeader(SOAPElement headElement, String prefix, MultispeakVendor mspVendor) throws SOAPException {
+    public void getHeader(SOAPElement headElement, String prefix, String outUserName, String outPassword) throws SOAPException {
 
         SOAPElement callerElement = headElement.addChildElement("Caller", prefix);
         SOAPElement appNameElement = callerElement.addChildElement("AppName", "com");
@@ -188,13 +188,13 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         appVersionElement.addTextNode(VersionTools.getYUKON_VERSION());
         SOAPElement companyElement = callerElement.addChildElement("Company", "com");
         companyElement.addTextNode("Cannon");
-        if (StringUtils.isNotBlank(mspVendor.getOutUserName())) {
+        if (StringUtils.isNotBlank(outUserName)) {
             SOAPElement systemIDElement = callerElement.addChildElement("SystemID", "com");
-            systemIDElement.addTextNode(mspVendor.getOutUserName());
+            systemIDElement.addTextNode(outUserName);
         }
-        if (StringUtils.isNotBlank(mspVendor.getOutPassword())) {
+        if (StringUtils.isNotBlank(outPassword)) {
             SOAPElement passwordElement = callerElement.addChildElement("Password", "com");
-            passwordElement.addTextNode(mspVendor.getOutPassword());
+            passwordElement.addTextNode(outPassword);
         }
         SOAPElement coordSysInforElement = headElement.addChildElement("CoordinateSystemInformation", prefix);
         SOAPElement csUnit = coordSysInforElement.addChildElement("CSUnits", "com");
