@@ -452,6 +452,7 @@ INIT_ATTRIBUTE( LowLossPotential,                                   "LOW_LOSS_PO
 INIT_ATTRIBUTE( MassMemoryError,                                    "MASS_MEMORY_ERROR" );
 INIT_ATTRIBUTE( MeasurementError,                                   "MEASUREMENT_ERROR" );
 INIT_ATTRIBUTE( MeterFunctioningCorrectly,                          "METER_FUNCTIONING_CORRECTLY" );
+INIT_ATTRIBUTE( MeterProgrammingAttempted,                          "METER_PROGRAMMING_ATTEMPTED" );
 INIT_ATTRIBUTE( MeterReconfigure,                                   "METER_RECONFIGURE" );
 INIT_ATTRIBUTE( MetrologyCommunicationFailure,                      "METROLOGY_COMM_FAILURE" );
 INIT_ATTRIBUTE( NonVolatileMemFailure,                              "NON_VOLATILE_MEM_FAILURE" );
@@ -466,7 +467,6 @@ INIT_ATTRIBUTE( PqmTestFailureWarning,                              "PQM_TEST_FA
 INIT_ATTRIBUTE( RamError,                                           "RAM_ERROR" );
 INIT_ATTRIBUTE( RegisterFullScaleExceeded,                          "REGISTER_FULL_SCALE_EXCEEDED" );
 INIT_ATTRIBUTE( ReverseFlow,                                        "REVERSE_FLOW" );
-INIT_ATTRIBUTE( RemoteMeterConfigurationFailure,                    "REMOTE_METER_CONFIGURATION_FAILURE" );
 INIT_ATTRIBUTE( ReversedAggregate,                                  "REVERSED_AGGREGATE" );
 INIT_ATTRIBUTE( ReversedPhaseA,                                     "REVERSED_PHASE_A" );
 INIT_ATTRIBUTE( ReversedPhaseC,                                     "REVERSED_PHASE_C" );
