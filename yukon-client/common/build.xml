@@ -49,32 +49,33 @@
 
         <gitlogcount result="yukon-build-number"/>
 
-		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
-			<manifest>
-				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
-				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
-				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Hudson-Build-Details" value="YUKON_BUILD_NUMBER=${yukon-build-number},${build.info}"/>
-			</manifest>
-			<fileset dir="resource">
-				<include name="**/*.gif"/>
-				<include name="**/*.png"/>
-				<include name="**/*.au"/>
-				<include name="**/*.yaml"/>
-			</fileset>
-			<fileset dir="src">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</jar>
-
-		<jar destfile="${yukon.lib}/i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
-			<manifest>
-				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
-				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
-				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Hudson-Build-Details" value="${build.info}"/>
-			</manifest>
-		</jar>
+        <parallel>
+            <jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
+                <manifest>
+                    <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                    <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+                    <attribute name="Permissions" value="all-permissions"/>
+                    <attribute name="Hudson-Build-Details" value="YUKON_BUILD_NUMBER=${yukon-build-number},${build.info}"/>
+                </manifest>
+                <fileset dir="resource">
+                    <include name="**/*.gif"/>
+                    <include name="**/*.png"/>
+                    <include name="**/*.au"/>
+                    <include name="**/*.yaml"/>
+                </fileset>
+                <fileset dir="src">
+                    <exclude name="**/*.java"/>
+                </fileset>
+            </jar>
+            <jar destfile="${yukon.lib}/i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
+                <manifest>
+                    <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                    <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+                    <attribute name="Permissions" value="all-permissions"/>
+                    <attribute name="Hudson-Build-Details" value="${build.info}"/>
+                </manifest>
+            </jar>
+        </parallel>
 
 	</target>
 

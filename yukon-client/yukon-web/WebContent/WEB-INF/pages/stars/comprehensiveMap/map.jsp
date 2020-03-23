@@ -55,7 +55,7 @@
                         <i:inline key=".colorCodeBy"/>&nbsp;
                         <tags:selectWithItems items="${colorCodeByOptions}" path="colorCodeBy"/>
                         
-                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab" busy="true" disabled="true"/>
+                        <cti:button nameKey="filter" classes="js-filter-map primary action fr vab" disabled="true"/>
                     </div>
                     
                 </form:form>

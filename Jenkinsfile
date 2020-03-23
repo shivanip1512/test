@@ -19,20 +19,18 @@ pipeline {
 
                     steps {
                         script {
-                            if (params.RELEASE_MODE) {
-                                cleanWs()
-                            } else {
-                                //Use Jenkins build number to create Yukon Build version for normal builds.
-                                env.YUKON_BUILD_RELEASE_NUMBER = "${env.BUILD_NUMBER}"
-                            }
                             try {
+                                if (params.CLEAN_WORKSPACE) {
+                                    cleanWs()
+                                }
+                                env.YUKON_BUILD_RELEASE_NUMBER = "${env.BUILD_NUMBER}"
                                 bat 'java -version'
                                 def scmVars = checkout([$class: 'GitSCM',
-                                          branches: [[name: 'refs/heads/master']],
-                                          doGenerateSubmoduleConfigurations: false,
-                                          extensions: [],
-                                          submoduleCfg: [],
-                                          userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
+                                                        branches: [[name: 'refs/heads/master']],
+                                                        doGenerateSubmoduleConfigurations: false,
+                                                        extensions: [],
+                                                        submoduleCfg: [],
+                                                        userRemoteConfigs: [[refspec: '+refs/heads/master:refs/remotes/origin/master', credentialsId: 'PSPLSoftwareBuildSSH', url: 'ssh://git@bitbucket-prod.tcc.etn.com:7999/easd_sw/yukon.git']]])
 
                                 env.GIT_COMMIT = scmVars.GIT_COMMIT
 
@@ -61,10 +59,10 @@ pipeline {
 
                     steps {
                         script {
-                            if (params.RELEASE_MODE) {
-                                cleanWs()
-                            }
                             try {
+                                if (params.CLEAN_WORKSPACE) {
+                                    cleanWs()
+                                }
                                 checkout([$class: 'GitSCM',
                                           branches: [[name: 'refs/heads/master']],
                                           doGenerateSubmoduleConfigurations: false,
@@ -97,15 +95,12 @@ pipeline {
                         jdk "jdk-11(18.9)"
                     }
                     steps {
-                        script {
-                            if (params.RELEASE_MODE) {
-                                cleanWs()
-                            }
-                        }
-
                         // These are checked out clean, of note yukon-build contains the installer which will be wiped out by the UpdateWithCleanUpdater setting
                         script {
                             try {
+                                if (params.CLEAN_WORKSPACE) {
+                                    cleanWs()
+                                }
                                 checkout([$class: 'GitSCM',
                                           branches: [[name: "${env.GIT_COMMIT}"]],
                                           doGenerateSubmoduleConfigurations: false,
@@ -129,13 +124,7 @@ pipeline {
 
                                 bat './yukon-build/go.bat build-install'
 
-                                if (params.RELEASE_MODE) {
-                                    bat 'net use p: \\\\pspl0003.eaton.ad.etn.com\\Public /user:eaton\\psplsoftwarebuild 13aq4xHAB'
-                                    bat './yukon-build/go.bat init clean symstore build-dist'
-                                    bat 'net use p: /delete'
-                                } else {
-                                    bat './yukon-build/go.bat clean build-dist-pdb'
-                                }
+                                bat './yukon-build/go.bat clean build-dist-server'
 
                                 archiveArtifacts artifacts: 'yukon-build/dist/*, yukon-applications/cloud-service/build/*.zip'
                             } catch (Exception) {
@@ -152,7 +141,7 @@ pipeline {
                         label "java"
                     }
                     tools {
-                            jdk "jdk-11(18.9)"
+                        jdk "jdk-11(18.9)"
                     }
                     steps {
                         script {
