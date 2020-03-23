@@ -13,7 +13,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.multispeak.client.Credential;
+import com.cannontech.multispeak.client.Credentials;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 
@@ -40,10 +40,10 @@ public class CustomWebServiceMsgCallback {
                 }
 
                 SoapHeader header = soapMessage.getSoapHeader();
-                Credential credential = multispeakFuncs.getOutgoingCredential(mspVendor, interfaceName);
+                Credentials credentials = multispeakFuncs.getOutgoingCredentials(mspVendor, interfaceName);
 
                 try {   
-                    multispeakFuncs.getHeader(header, credential.getUserName(), credential.getPassword());
+                    multispeakFuncs.getHeader(header, credentials.getUserName(), credentials.getPassword());
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);
                 }

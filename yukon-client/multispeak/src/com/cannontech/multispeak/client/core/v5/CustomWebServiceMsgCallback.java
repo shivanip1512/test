@@ -17,7 +17,7 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.multispeak.client.Credential;
+import com.cannontech.multispeak.client.Credentials;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 
@@ -60,9 +60,9 @@ public class CustomWebServiceMsgCallback {
                     
                     headElement.setAttribute("TimeStamp", Iso8601DateUtil.formatIso8601Date(Instant.now().toDate(), true));
 
-                    Credential credential = multispeakFuncs.getOutgoingCredential(mspVendor, interfaceName);
+                    Credentials credentials = multispeakFuncs.getOutgoingCredentials(mspVendor, interfaceName);
 
-                    multispeakFuncs.getHeader(headElement, "req", credential.getUserName(), credential.getPassword());
+                    multispeakFuncs.getHeader(headElement, "req", credentials.getUserName(), credentials.getPassword());
 
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);
