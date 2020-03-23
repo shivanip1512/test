@@ -206,10 +206,10 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             sink.addValue("Interface", mspInterface.getMspInterface().trim());
             sink.addValue("Endpoint", mspInterface.getMspEndpoint().trim());
             sink.addValue("Version", mspInterface.getVersion());
-            sink.addValueSafe("InUserName", mspInterface.getInUserName());
-            sink.addValueSafe("InPassword", mspInterface.getInPassword());
-            sink.addValueSafe("OutUserName", mspInterface.getOutUserName());
-            sink.addValueSafe("OutPassword", mspInterface.getOutPassword());
+            sink.addValue("InUserName", mspInterface.getInUserName());
+            sink.addValue("InPassword", mspInterface.getInPassword());
+            sink.addValue("OutUserName", mspInterface.getOutUserName());
+            sink.addValue("OutPassword", mspInterface.getOutPassword());
             sink.addValue("UseVendorAuth", mspInterface.isUseVendorAuth());
             sink.addValue("ValidateCertificate", mspInterface.getValidateCertificate());
             
@@ -368,10 +368,10 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         String interfaceStr = rset.getString("Interface");
         String endpoint = rset.getString("Endpoint");
         MultiSpeakVersion version = rset.getEnum("Version", MultiSpeakVersion.class);
-        String inUserName = rset.getStringSafe("InUserName");
-        String inPassword = rset.getStringSafe("InPassword");
-        String outUserName = rset.getStringSafe("OutUserName");
-        String outPassword = rset.getStringSafe("OutPassword");
+        String inUserName = rset.getString("InUserName");
+        String inPassword = rset.getString("InPassword");
+        String outUserName = rset.getString("OutUserName");
+        String outPassword = rset.getString("OutPassword");
         boolean useVendorAuth = rset.getBoolean("UseVendorAuth");
         boolean validateCertificate = rset.getBoolean("ValidateCertificate");
         MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint, version,

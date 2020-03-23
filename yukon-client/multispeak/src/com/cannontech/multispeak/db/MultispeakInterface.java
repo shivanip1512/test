@@ -15,7 +15,7 @@ public class MultispeakInterface
     private String outUserName;
     private String outPassword;
     private Boolean useVendorAuth = true;
-    private Boolean validateCertificate ;
+    private Boolean validateCertificate;
     private Boolean interfaceEnabled;
 
     public MultispeakInterface() {
