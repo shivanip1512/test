@@ -10,6 +10,14 @@
     
     <div id="page-buttons">
         <c:if test="${not empty trends}">
+            <span class="form-control"><i:inline key=".trends.liveUpdate"/></span>
+            <div id="trend-updater" class="button-group button-group-toggle">
+                <c:set var="onClasses" value="${autoUpdate ? 'on yes' : 'yes'}"/>
+                <cti:button nameKey="on" classes="${onClasses}"/>
+                <c:set var="offClasses" value="${autoUpdate ? 'no' : 'on no'}"/>
+                <cti:button nameKey="off" classes="${offClasses}"/>
+            </div>
+    
             <cm:dropdown type="button" icon="icon-download" key="yukon.web.components.button.export.label">
                 <cm:dropdownOption key=".printChart" icon="icon-printer" classes="js-print"/>
                 <li class="divider">

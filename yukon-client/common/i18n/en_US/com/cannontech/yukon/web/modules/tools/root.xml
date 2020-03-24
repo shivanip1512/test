@@ -139,6 +139,7 @@
     <entry key="yukon.web.modules.tools.trend.noTrends">No Trends</entry>
     <!-- /trends -->
     <entry key="yukon.web.modules.tools.trends.pageName">Trends</entry>
+    <entry key="yukon.web.modules.tools.trends.liveUpdate">Live Update:</entry>
     <entry key="yukon.web.modules.tools.trends.axis">Axis: {0}</entry>
     <entry key="yukon.web.modules.tools.trends.day">1d</entry>
     <entry key="yukon.web.modules.tools.trends.week">1w</entry>

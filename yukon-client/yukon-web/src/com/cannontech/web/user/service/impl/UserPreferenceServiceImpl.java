@@ -174,4 +174,17 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
         this.savePreference(user, UserPreferenceName.TREND_TEMPERATURE, prefValue);
         return true;
     }
+    
+    @Override
+    public boolean getDefaultTrendAutoUpdateSelection(LiteYukonUser user) {
+        String prefValue = this.getPreference(user, UserPreferenceName.TREND_AUTO_UPDATE);
+        return "Y".equalsIgnoreCase(prefValue) ? true : false;
+    }
+
+    @Override
+    public boolean updateTrendAutoUpdateSelection(LiteYukonUser user, boolean isSelected) {
+        String prefValue = YNBoolean.valueOf(isSelected).getDatabaseRepresentation().toString();
+        this.savePreference(user, UserPreferenceName.TREND_AUTO_UPDATE, prefValue);
+        return true;
+    }
 }

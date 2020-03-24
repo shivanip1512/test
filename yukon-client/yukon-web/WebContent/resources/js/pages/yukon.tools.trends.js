@@ -121,6 +121,18 @@ yukon.tools.trends = (function () {
                 window.location = yukon.url('/tools/trends/' + trendId + '/csv?' 
                 + 'from=' + new Date(min).getTime() + '&to=' + new Date(max).getTime()); 
             });
+            /** Pause/Resume updating on updater button clicks. */
+            $('#trend-updater .button').on('click', function(ev) {
+                var pause = $('#trend-updater .yes').is('.on'),
+                    url = yukon.url('/tools/trends/setAutoUpdate/' + !pause);
+                $.ajax({ type: 'post', url: url});
+                if (pause) {
+                    //clearTimeout(_updater);
+                } else {
+                    //_updater = setTimeout(_update, _updateInterval);
+                }
+                $('#trend-updater .button').toggleClass('on');
+            });
         }
     };
     

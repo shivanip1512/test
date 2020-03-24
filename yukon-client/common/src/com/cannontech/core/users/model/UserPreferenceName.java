@@ -35,6 +35,7 @@ public enum UserPreferenceName implements DisplayableEnum {
                PreferenceGraphVisualTypeOption.getDefault().name(), PreferenceType.NONEDITABLE),
     TREND_ZOOM(InputTypeFactory.enumType(PreferenceTrendZoomOption.class),
                PreferenceTrendZoomOption.getDefault().name(), PreferenceType.NONEDITABLE),
+    TREND_AUTO_UPDATE(InputTypeFactory.enumType(YNBoolean.class), YNBoolean.YES.getDatabaseRepresentation().toString(), PreferenceType.NONEDITABLE),
     DISPLAY_EVENT_RANGE(InputTypeFactory.enumType(TimeRange.class), TimeRange.DAY_1.name(), PreferenceType.NONEDITABLE),
     COMMANDER_RECENT_TARGETS(InputTypeFactory.stringType(), null, PreferenceType.NONEDITABLE),
     PORTER_QUEUE_COUNTS_ZOOM(InputTypeFactory.enumType(PreferencePorterQueueCountsZoomOption.class),
