@@ -153,9 +153,12 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         return errorObjects;
     }
 
-    
-    
-    public void getHeader(SOAPMessage soapMessage, MultispeakVendor mspVendor) throws SOAPException {
+    /**
+     * the MultiSpeakResponseMsgHeader.Caller will be built with "dummy" values for userId and pwd fields. The
+     * expectation is that getMultispeakVendorFromHeader will replace these values with the correct values from the
+     * other vendor once it is loaded.
+     */
+    private void getDefaultHeader(SOAPMessage soapMessage) throws SOAPException {
         SOAPEnvelope env = soapMessage.getSOAPPart().getEnvelope();
 
         Node nxtNode = getRequestSOAPMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
@@ -175,6 +178,8 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         SOAPHeader header = env.getHeader();
         SOAPElement headElement = header.addChildElement("MultiSpeakResponseMsgHeader", "res");
+        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
+                                                                                MultispeakDefines.MSP_APPNAME_YUKON);
         getHeader(headElement, "res", mspVendor.getOutUserName(), mspVendor.getOutPassword() );
 
     }
@@ -215,12 +220,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         SOAPMessage soapMessage;
         try {
             soapMessage = getResponseSOAPMessage();
-            // the MultiSpeakResponseMsgHeader.Caller will be built with "dummy" values for userId and pwd
-            // fields. The expectation is that getMultispeakVendorFromHeader will replace these values with
-            // the correct values from the other vendor once it is loaded.
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                MultispeakDefines.MSP_APPNAME_YUKON);
-            getHeader(soapMessage, mspVendor);
+            getDefaultHeader(soapMessage);
 
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
