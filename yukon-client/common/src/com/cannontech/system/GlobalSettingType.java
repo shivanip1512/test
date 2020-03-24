@@ -171,7 +171,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com", GlobalSettingTypeValidators.emailValidator),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
     SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),
-    PRODUCER_WINDOW_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1024),
+    PRODUCER_WINDOW_SIZE(GlobalSettingSubCategory.MISC, integerType(), 8192),
     MAX_INACTIVITY_DURATION(GlobalSettingSubCategory.MISC, integerType(), 30),
     ERROR_REPORTING(GlobalSettingSubCategory.MISC, booleanType(), false),
     MAX_LOG_FILE_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1),

@@ -131,7 +131,7 @@ bool CtiClientConnection::establishConnection()
                     // producerWindowSize sets the size in Bytes of messages that a producer can send before it is blocked
                     // to await a ProducerAck from the broker that frees enough memory to allow another message to be sent.
                     const string producerWindowSize = "connection.producerWindowSize=" +
-                        to_string( GlobalSettings::getInteger( GlobalSettings::Integers::ProducerWindowSize, 1024 ) * 1024 );
+                        to_string( GlobalSettings::getInteger( GlobalSettings::Integers::ProducerWindowSize, 8192 ) * 1024 );
 
                     // MaxInactivityDuration controls how long AMQ keeps a socket open when it's not heard from it.
                     const string maxInactivityDuration = "wireFormat.MaxInactivityDuration=" +
