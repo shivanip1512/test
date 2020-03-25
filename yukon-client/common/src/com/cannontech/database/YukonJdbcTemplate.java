@@ -125,7 +125,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
      * @param sql An SqlStatementBuilder configured for batch update via the batchInsertInto method.
      */
     public void yukonBatchUpdate(SqlStatementBuilder sql) {
-        yukonBatchUpdate(sql, ChunkingSqlTemplate.DEFAULT_SIZE);
+        yukonBatchUpdate(sql, 50000);
     }
 
     /**
