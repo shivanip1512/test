@@ -136,14 +136,14 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
 
 
                 // Used for sending follow up messages for the end of an infrastructure warning
-                List<InfrastructureWarning> expiredWanringSmartNotifications = getSmartNotifications(infrastructureWarnings, oldWarnings);
+                List<InfrastructureWarning> expiredWarningSmartNotifications = getSmartNotifications(infrastructureWarnings, oldWarnings);
 
                 log.info("Infrastructure warnings calculation complete");
 
                 sendSmartNotifications(smartNotificationWarnings);
 
                 List<InfrastructureWarning> clearedWarnings = new ArrayList<InfrastructureWarning>();
-                for (InfrastructureWarning warning : expiredWanringSmartNotifications) {
+                for (InfrastructureWarning warning : expiredWarningSmartNotifications) {
                     clearedWarnings.add(new InfrastructureWarning(warning.getPaoIdentifier(),
                                                                      warning.getWarningType(),
                                                                      InfrastructureWarningSeverity.CLEAR,
