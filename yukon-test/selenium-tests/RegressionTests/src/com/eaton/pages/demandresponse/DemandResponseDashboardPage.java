@@ -11,14 +11,13 @@ import com.eaton.pages.PageBase;
 
 public class DemandResponseDashboardPage extends PageBase {
 
-    public static final String DEFAULT_URL = Urls.DemandResponse.DASHBOARD;
     private ActionBtnDropDownElement actionBtn;
 
-    public DemandResponseDashboardPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public DemandResponseDashboardPage(DriverExtensions driverExt) {
+        super(driverExt);
 
         this.requiresLogin = true;
-        pageUrl = DEFAULT_URL;
+        pageUrl = Urls.DemandResponse.DASHBOARD;
         actionBtn = new ActionBtnDropDownElement(this.driverExt);
     }
 

@@ -8,11 +8,11 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.cicurtailment.ProgramsPage;
+import com.eaton.pages.demandresponse.ProgramListPage;
 
-public class ProgramsTests extends SeleniumTestSetup {
+public class CiProgramListTests extends SeleniumTestSetup {
 
-    private ProgramsPage programPage;
+    private ProgramListPage programPage;
 
     @BeforeClass
     public void beforeClass() {
@@ -21,7 +21,7 @@ public class ProgramsTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.CI_PROGRAM_LIST);
 
-        programPage = new ProgramsPage(driverExt, Urls.DemandResponse.CI_PROGRAM_LIST);
+        programPage = new ProgramListPage(driverExt);
     }
 
     @Test

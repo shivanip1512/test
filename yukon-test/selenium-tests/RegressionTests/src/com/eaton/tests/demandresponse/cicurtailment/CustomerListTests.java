@@ -22,7 +22,7 @@ public class CustomerListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.CI_CUSTOMER_LIST);
 
-        listPage = new CustomerListPage(driverExt, Urls.DemandResponse.CI_CUSTOMER_LIST);
+        listPage = new CustomerListPage(driverExt);
     }
 
     @Test

@@ -8,20 +8,18 @@ import com.eaton.framework.DriverExtensions;
 
 public class PageBase implements ISeleniumPage {
 
-    protected String pageUrl;
     protected Boolean requiresLogin;
+    protected String pageUrl;
     protected DriverExtensions driverExt;
 
-    public PageBase(DriverExtensions driverExt, String pageUrl) {
+    public PageBase(DriverExtensions driverExt) {
 
         this.driverExt = driverExt;
-        this.pageUrl = pageUrl;
     }
-
+    
     @Override
     public String getPageUrl() {
-
-        return this.pageUrl;
+        return pageUrl;
     }
 
     @Override

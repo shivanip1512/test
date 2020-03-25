@@ -25,7 +25,7 @@ public class EnergyCompanyGeneralInfoTests extends SeleniumTestSetup {
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");
         
-        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt, Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");
+        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt, 64);
                                  
         String actualPageTitle = page.getPageTitle();
         

@@ -2,14 +2,18 @@ package com.eaton.pages.capcontrol;
 
 import com.eaton.elements.WebTable;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class RegulatorListPage extends PageBase {
 
     private WebTable table;
 
-    public RegulatorListPage(DriverExtensions driverExt, String baseUrl) {
-        super(driverExt, baseUrl);
+    public RegulatorListPage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.REGULATOR_LIST;
 
         setTable(new WebTable(driverExt, "compact-results-table"));
     }

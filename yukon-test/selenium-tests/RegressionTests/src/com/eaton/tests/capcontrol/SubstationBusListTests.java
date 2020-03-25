@@ -26,7 +26,7 @@ public class SubstationBusListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_BUS_LIST);
 
-        listPage = new SubstationBusListPage(driverExt, null);
+        listPage = new SubstationBusListPage(driverExt);
     }
 
     @Test

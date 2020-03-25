@@ -26,7 +26,7 @@ public class RegulatorListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_LIST);
 
-        this.listPage = new RegulatorListPage(driverExt, null);
+        this.listPage = new RegulatorListPage(driverExt);
     }
 
     @Test

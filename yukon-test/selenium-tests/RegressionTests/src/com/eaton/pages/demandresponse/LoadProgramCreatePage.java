@@ -14,6 +14,7 @@ import com.eaton.elements.modals.gears.CreateMeterDisconnectPrgmModal;
 import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class LoadProgramCreatePage extends PageBase {
@@ -22,8 +23,11 @@ public class LoadProgramCreatePage extends PageBase {
     private DropDownElement type;
     private static final String PARENT_NAME = "gear-create-popup-LM_DIRECT_PROGRAM";
 
-    public LoadProgramCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public LoadProgramCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.DemandResponse.LOAD_PROGRAM_CREATE;
 
         name = new TextEditElement(this.driverExt, "name");
         type = new DropDownElement(this.driverExt, "type");

@@ -31,7 +31,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "664");
         
-        LoadGroupDetailPage editPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "664");
+        LoadGroupDetailPage editPage = new LoadGroupDetailPage(driverExt, 664);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -43,7 +43,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "592");
 
-        LoadGroupDetailPage detailPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL + "592");
+        LoadGroupDetailPage detailPage = new LoadGroupDetailPage(driverExt, 592);
         
         CopyLoadGroupModal modal = detailPage.showCopyLoadGroupModal();
         
@@ -55,7 +55,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Load Group: " + name, Optional.of(8));
         
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL);
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, 592);
         
         String userMsg = detailsPage.getUserMessage();
         
@@ -68,7 +68,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "593");
 
-        LoadGroupDetailPage detailPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL + "593");
+        LoadGroupDetailPage detailPage = new LoadGroupDetailPage(driverExt, 593);
         
         ConfirmModal  confirmModal = detailPage.showDeleteLoadGroupModal();
         
@@ -76,7 +76,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Setup", Optional.empty());
         
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.DemandResponse.SETUP_FILTER + Urls.Filters.LOAD_GROUP);
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_GROUP);
         
         String userMsg = setupPage.getUserMessage();
         

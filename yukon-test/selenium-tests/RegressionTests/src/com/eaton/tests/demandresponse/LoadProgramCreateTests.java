@@ -31,7 +31,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_PROGRAM_CREATE);
 
-        createPage = new LoadProgramCreatePage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_CREATE);                
+        createPage = new LoadProgramCreatePage(driverExt);                
     }  
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_05_CreateLoadPgm()"})
@@ -69,7 +69,7 @@ public class LoadProgramCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Load Program: " + name, Optional.empty());
         
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS);
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

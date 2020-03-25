@@ -29,7 +29,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "662" + Urls.EDIT);
         
-        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, Urls.DemandResponse.CONTROL_AREA_EDIT + "662" + Urls.EDIT);
+        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, 662);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -40,7 +40,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
     public void editControlAreaNameOnlySuccess() {
         navigate(Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
         
-        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, Urls.DemandResponse.CONTROL_AREA_EDIT + "514" + Urls.EDIT);
+        ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, 514);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
                  
@@ -51,7 +51,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Control Area: " + name, Optional.empty());
         
-        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, Urls.DemandResponse.CONTROL_AREA_DETAILS);
+        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, 514);
         
         String userMsg = detailsPage.getUserMessage();
         

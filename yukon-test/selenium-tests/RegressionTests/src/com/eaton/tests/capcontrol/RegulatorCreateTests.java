@@ -29,7 +29,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_CREATE);
 
-        createPage = new RegulatorCreatePage(driverExt, Urls.CapControl.REGULATOR_CREATE);
+        createPage = new RegulatorCreatePage(driverExt);
     }
 
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
@@ -53,7 +53,7 @@ public class RegulatorCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Regulator: " + name, Optional.empty());
         
-        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, Urls.CapControl.REGULATOR_DETAIL);
+        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt);
         
         //The saved successfully message is missing why?
 //        String userMsg = detailsPage.getUserMessageSuccess();

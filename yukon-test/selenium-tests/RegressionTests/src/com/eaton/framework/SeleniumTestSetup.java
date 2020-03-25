@@ -41,7 +41,9 @@ public class SeleniumTestSetup {
     private static Random randomNum;
 
     private static boolean loggedIn = false;
-
+    
+    private static String screenShotPath;
+    
     @BeforeSuite
     public static void beforeSuite() {
 
@@ -68,6 +70,7 @@ public class SeleniumTestSetup {
                     Boolean.parseBoolean(configFileReader.getUseRemoteDriver()), configFileReader.getDriverPath(),
                     Boolean.parseBoolean(configFileReader.getRunHeadless())));
             setDriverExt();
+            setScreenShotPath(configFileReader.getScreenShotPath());
         } catch (Exception ex) {
             logger.fine(EXCEPTION_MSG + ex);
         }
@@ -101,7 +104,7 @@ public class SeleniumTestSetup {
 
     public static void login() {
         if (!loggedIn) {
-            LoginPage loginPage = new LoginPage(SeleniumTestSetup.driverExt, getBaseUrl());
+            LoginPage loginPage = new LoginPage(SeleniumTestSetup.driverExt);
 
             loggedIn = loginPage.login();
         }
@@ -122,9 +125,26 @@ public class SeleniumTestSetup {
     private static void setDriverExt() {
         SeleniumTestSetup.driverExt = new DriverExtensions(SeleniumTestSetup.driver);
     }
-
+    
+    private static void setScreenShotPath(String screenShotPath) {
+        SeleniumTestSetup.screenShotPath = screenShotPath;
+    }
+    
+    public static String getScreenShotPath() {
+        return SeleniumTestSetup.screenShotPath;
+    }
+    
+    
     public static String getCurrentUrl() {
         return SeleniumTestSetup.driver.getCurrentUrl();
+    }
+    
+    public static String getPageUrlFromCurrentUrl() {
+        String baseUrl = getCurrentUrl();
+        
+        String[] parts = baseUrl.split("/", 2);
+        
+        return parts[1];
     }
 
     private static void setBaseUrl(String baseUrl) {
@@ -149,7 +169,7 @@ public class SeleniumTestSetup {
 
     public static void setRandomNum(Random randomNum) {
         SeleniumTestSetup.randomNum = randomNum;
-    }
+    }    
 
     public static Logger getLogger() {
         return logger;
@@ -312,8 +332,7 @@ public class SeleniumTestSetup {
     }
 
     @AfterSuite(alwaysRun = true)
-    public static void afterSuite() {
-        SeleniumTestSetup.driver.close();
-        SeleniumTestSetup.driver.quit();
+    public static void afterSuite() {        
+        getDriver().quit();
     }
 }

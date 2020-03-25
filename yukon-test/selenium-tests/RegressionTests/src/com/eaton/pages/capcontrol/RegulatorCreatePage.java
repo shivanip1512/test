@@ -6,6 +6,7 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.WebTable;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class RegulatorCreatePage extends PageBase {
@@ -17,8 +18,11 @@ public class RegulatorCreatePage extends PageBase {
     private TrueFalseCheckboxElement status;
     private WebTable table;
 
-    public RegulatorCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public RegulatorCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.REGULATOR_CREATE;
 
         name = new TextEditElement(this.driverExt, "name");
         description = new TextEditElement(this.driverExt, "description");

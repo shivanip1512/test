@@ -9,6 +9,7 @@ import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class EnergyCompanyOperatorUserEditPage extends PageBase {
@@ -26,8 +27,11 @@ public class EnergyCompanyOperatorUserEditPage extends PageBase {
     private Button delete;
     private Button cancel;
     
-    public EnergyCompanyOperatorUserEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public EnergyCompanyOperatorUserEditPage(DriverExtensions driverExt, int energyCompanyId, int loginId) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + energyCompanyId + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + loginId;
         
         operatorGroup = new DropDownElement(this.driverExt, "userGroupName");
         loginEnabled = new TrueFalseCheckboxElement(this.driverExt, "loginEnabled");

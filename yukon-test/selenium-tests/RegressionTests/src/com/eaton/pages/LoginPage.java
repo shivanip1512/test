@@ -4,16 +4,19 @@ import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.framework.ValidUserLogin;
 
 public class LoginPage extends PageBase {
 
     private boolean loggedIn;
+    public static final String DEFAULT_URL = Urls.LOGIN;
 
-    public LoginPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public LoginPage(DriverExtensions driverExt) {
+        super(driverExt);
 
         SeleniumTestSetup.navigateToLoginPage();
+        pageUrl = DEFAULT_URL;
         requiresLogin = false;
         loggedIn = false;
     }

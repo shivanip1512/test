@@ -29,7 +29,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_CREATE);
 
-        this.createPage = new CapBankCreatePage(driverExt, Urls.CapControl.CAP_BANK_CREATE);
+        this.createPage = new CapBankCreatePage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
@@ -54,7 +54,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
 
         waitForPageToLoad("CapBank: " + name, Optional.empty());
 
-        CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt, Urls.CapControl.CAP_BANK_DETAIL);
+        CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt);
 
         String userMsg = detailsPage.getUserMessage();
 

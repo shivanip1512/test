@@ -31,7 +31,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.CBC_CREATE);
 
-        this.createPage = new CbcCreatePage(driverExt, Urls.CapControl.CBC_CREATE);
+        this.createPage = new CbcCreatePage(driverExt);
 
         randomNum = getRandomNum();
     }
@@ -45,9 +45,9 @@ public class CbcCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
 
-    @Test(enabled = false, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
     public void createCbcRequiredFieldsOnlySuccess() {
-        final String EXPECTED_MSG = "CBC was saved successfully.";
+        final String EXPECTED_MSG = "CBC was successfully saved.";
         
         int masterAddress = randomNum.nextInt(65000);
 
@@ -62,7 +62,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         waitForPageToLoad("CBC: " + name, Optional.empty());
 
-        CbcDetailPage detailPage = new CbcDetailPage(driverExt, Urls.CapControl.CBC_DETAIL);
+        CbcDetailPage detailPage = new CbcDetailPage(driverExt);
 
         String userMsg = detailPage.getUserMessage();
 

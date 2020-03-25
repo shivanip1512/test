@@ -8,14 +8,18 @@ import com.eaton.elements.RadioButtonElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class LoadGroupEditPage extends PageBase {
 
     private TextEditElement name;
 
-    public LoadGroupEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public LoadGroupEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.DemandResponse.LOAD_PROGRAM_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
     }    

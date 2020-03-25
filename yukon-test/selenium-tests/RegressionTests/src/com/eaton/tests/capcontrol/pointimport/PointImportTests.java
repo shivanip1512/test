@@ -22,7 +22,7 @@ public class PointImportTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.POINT_IMPORT);
 
-        importPage = new PointImportPage(driverExt, null);
+        importPage = new PointImportPage(driverExt);
     }
 
     @Test

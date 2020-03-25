@@ -21,7 +21,7 @@ public class GroupCreateTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.CI_GROUP_CREATE);
 
-        createPage = new GroupCreatePage(driverExt, null);
+        createPage = new GroupCreatePage(driverExt);
     }
 
     @Test

@@ -32,7 +32,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.CAP_BANK_EDIT + "669" + Urls.EDIT);
 
-        CapBankEditPage editPage = new CapBankEditPage(driverExt, Urls.CapControl.CAP_BANK_EDIT + "669" + Urls.EDIT);
+        CapBankEditPage editPage = new CapBankEditPage(driverExt, 669);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -45,7 +45,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
 
-        CapBankEditPage editPage = new CapBankEditPage(driverExt, Urls.CapControl.CAP_BANK_EDIT + "459" + Urls.EDIT);
+        CapBankEditPage editPage = new CapBankEditPage(driverExt, 459);
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
@@ -56,7 +56,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("CapBank: " + name, Optional.empty());
         
-        CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt, Urls.CapControl.CAP_BANK_DETAIL);
+        CapBankDetailPage detailsPage = new CapBankDetailPage(driverExt, 459);
         
         String userMsg = detailsPage.getUserMessage();
 
@@ -69,7 +69,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.CAP_BANK_EDIT + "576" + Urls.EDIT);
 
-        CapBankEditPage editPage = new CapBankEditPage(driverExt, Urls.CapControl.CAP_BANK_EDIT + "576" + Urls.EDIT);
+        CapBankEditPage editPage = new CapBankEditPage(driverExt, 576);
         
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
@@ -77,7 +77,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Orphans", Optional.empty());
         
-        OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
+        OrphansPage detailsPage = new OrphansPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

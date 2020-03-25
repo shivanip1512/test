@@ -4,6 +4,7 @@ import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class SubstationCreatePage extends PageBase {
@@ -15,8 +16,11 @@ public class SubstationCreatePage extends PageBase {
     private Button saveBtn;
     private Button cancelBtn;
 
-    public SubstationCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public SubstationCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.SUBSTATION_CREATE;
 
         name = new TextEditElement(this.driverExt, "name");
         geoName = new TextEditElement(this.driverExt, "geoAreaName");

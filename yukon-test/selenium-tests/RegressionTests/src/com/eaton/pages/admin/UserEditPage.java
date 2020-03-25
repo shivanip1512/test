@@ -9,8 +9,6 @@ import com.eaton.pages.PageBase;
 
 public class UserEditPage extends PageBase {
 
-    public static final String DEFAULT_URL = Urls.Admin.USERS_AND_GROUPS;
-    
     private TextEditElement userName;
     private DropDownElement authentication;
     private DropDownElement userGroup;
@@ -20,11 +18,11 @@ public class UserEditPage extends PageBase {
     private Button delete;
     private Button cancel;
 
-    public UserEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public UserEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
 
         this.requiresLogin = true;
-        //pageUrl = DEFAULT_URL;
+        pageUrl = Urls.Admin.USER_EDIT + id + Urls.EDIT;
         
         userName = new TextEditElement(this.driverExt, "username");
         authentication = new DropDownElement(this.driverExt, "authCategory");

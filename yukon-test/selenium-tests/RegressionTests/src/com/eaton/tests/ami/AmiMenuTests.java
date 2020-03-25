@@ -27,7 +27,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.HOME);
 
-        page = new HomePage(driverExt, getBaseUrl());
+        page = new HomePage(driverExt);
     }
     
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })

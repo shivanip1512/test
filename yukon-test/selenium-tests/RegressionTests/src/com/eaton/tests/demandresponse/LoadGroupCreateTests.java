@@ -31,7 +31,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUP_CREATE);
 
-        createPage = new LoadGroupCreatePage(driverExt, Urls.DemandResponse.LOAD_GROUP_CREATE);
+        createPage = new LoadGroupCreatePage(driverExt);
         
         randomNum = getRandomNum();
     }
@@ -65,7 +65,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Load Group: " + name, Optional.empty());
         
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL);
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

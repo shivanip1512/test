@@ -22,7 +22,7 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.REGULATOR_SETUP);
 
-        regulatorSetupPage = new RegulatorSetupPage(driverExt, null);
+        regulatorSetupPage = new RegulatorSetupPage(driverExt);
     }
 
     @Test

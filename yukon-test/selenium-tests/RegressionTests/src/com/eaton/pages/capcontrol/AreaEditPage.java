@@ -7,6 +7,7 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class AreaEditPage extends PageBase {
@@ -16,8 +17,11 @@ public class AreaEditPage extends PageBase {
     private Button cancelBtn;
     private Button deleteBtn;
 
-    public AreaEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public AreaEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.AREA_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
         saveBtn = new Button(this.driverExt, "Save");

@@ -8,11 +8,11 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
-import com.eaton.pages.demandresponse.cicurtailment.GroupListPage;
+import com.eaton.pages.demandresponse.cicurtailment.CiGroupListPage;
 
 public class GroupListTests extends SeleniumTestSetup {
 
-    private GroupListPage listPage;
+    private CiGroupListPage listPage;
 
     @BeforeClass
     public void beforeClass() {
@@ -22,7 +22,7 @@ public class GroupListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.CI_GROUP_LIST);
 
-        listPage = new GroupListPage(driverExt, Urls.DemandResponse.CI_GROUP_LIST);
+        listPage = new CiGroupListPage(driverExt);
     }
 
     @Test

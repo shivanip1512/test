@@ -32,46 +32,44 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
 
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "667" + Urls.EDIT);
 
-        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, Urls.CapControl.SUBSTATION_BUS_EDIT + "667" + Urls.EDIT);
+        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, 667);
 
         String actualPageTitle = editPage.getPageTitle();
         
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
     
-    //TODO this keeps failing due to an issue
-    @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
     public void editSubstationBusUpdateNameOnlySuccess() {
         final String EXPECTED_MSG = "Bus was saved successfully.";
         
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "430" + Urls.EDIT);
 
-        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, Urls.CapControl.SUBSTATION_BUS_EDIT + "430" + Urls.EDIT);
+        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, 430);
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
         String name = "AT Edited Bus " + timeStamp;
         editPage.getName().setInputValue(name);
-        editPage.getStatus().setValue(false);
         
         editPage.getSaveBtn().click();
         
         waitForPageToLoad("Bus: " + name, Optional.empty());
         
-        SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt, Urls.CapControl.SUBSTATION_BUS_DETAIL);
+        SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt, 430);
         
         String userMsg = detailsPage.getUserMessage();
         
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
     }  
     
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
     public void deleteSubstationBusSuccess() {
         final String EXPECTED_MSG = "Bus AT Delete Bus deleted successfully.";
         
         navigate(Urls.CapControl.SUBSTATION_BUS_EDIT + "574" + Urls.EDIT);
 
-        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, Urls.CapControl.SUBSTATION_BUS_EDIT + "574" + Urls.EDIT);
+        SubstationBusEditPage editPage = new SubstationBusEditPage(driverExt, 574);
         
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
@@ -79,7 +77,7 @@ public class SubstationBusEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Orphans", Optional.empty());
         
-        OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
+        OrphansPage detailsPage = new OrphansPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

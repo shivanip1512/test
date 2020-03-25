@@ -33,15 +33,17 @@ public class Button {
 
     public WebElement getButton() {
         if (this.parentName != null) {
-            return this.driverExt.findElement(By.cssSelector("[aria-describedby='" + this.parentName + "'] [aria-label='" + this.elementName + "']"), Optional.empty());
+            return this.driverExt.findElement(
+                    By.cssSelector("[aria-describedby='" + this.parentName + "'] [aria-label='" + this.elementName + "']"),
+                    Optional.empty());
         } else if (this.parentElement != null) {
             return parentElement.findElement(By.cssSelector("[aria-label='" + this.elementName + "']"));
         } else {
-            return this.driverExt.findElement(By.cssSelector("[aria-label='" + this.elementName + "']"), Optional.empty()); 
+            return this.driverExt.findElement(By.cssSelector("[aria-label='" + this.elementName + "']"), Optional.empty());
         }
     }
-    
+
     public void click() {
         getButton().click();
-    } 
+    }
 }

@@ -27,7 +27,7 @@ public class CapBankListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_LIST);
 
-        listPage = new CapBankListPage(driverExt, null);
+        listPage = new CapBankListPage(driverExt);
     }
 
     @Test

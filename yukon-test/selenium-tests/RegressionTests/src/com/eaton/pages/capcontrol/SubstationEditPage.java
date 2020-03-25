@@ -8,6 +8,7 @@ import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class SubstationEditPage extends PageBase {
@@ -20,8 +21,11 @@ public class SubstationEditPage extends PageBase {
     private Button cancelBtn;
     private Button deleteBtn;
 
-    public SubstationEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public SubstationEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.SUBSTATION_EDIT + id + Urls.EDIT;
         
         name = new TextEditElement(this.driverExt, "name");
         geoName = new TextEditElement(this.driverExt, "geoAreaName");

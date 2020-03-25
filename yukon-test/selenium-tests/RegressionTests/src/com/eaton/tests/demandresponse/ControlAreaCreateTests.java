@@ -29,7 +29,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA_CREATE);
 
-        createPage = new ControlAreaCreatePage(driverExt, Urls.DemandResponse.CONTROL_AREA_CREATE);                
+        createPage = new ControlAreaCreatePage(driverExt);                
     }  
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_09_CreateControlArea"})
@@ -55,7 +55,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Control Area: " + name, Optional.empty());
         
-        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, Urls.DemandResponse.CONTROL_AREA_DETAILS);
+        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

@@ -7,18 +7,24 @@ import com.eaton.pages.PageBase;
 
 public class UserGroupDetailPage extends PageBase {
 
-    public static final String DEFAULT_URL = Urls.Admin.ROLE_GROUP_DETAILS;
+    public static final String DEFAULT_URL = Urls.Admin.USER_GROUP_DETAILS;
     
     private Button edit;
 
-    public UserGroupDetailPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
-
-        this.requiresLogin = true;
-        pageUrl = DEFAULT_URL;
+    public UserGroupDetailPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
         
+        requiresLogin = true;
+        pageUrl = DEFAULT_URL + id;
+
         edit = new Button(this.driverExt, "Edit");
-    }    
+    }  
+    
+    public UserGroupDetailPage(DriverExtensions driverExt) {
+        super(driverExt);
+
+        edit = new Button(this.driverExt, "Edit");
+    } 
     
     public Button getEdit() {
         return edit;

@@ -29,7 +29,7 @@ public class LoadGroupEditTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "664" + Urls.EDIT);
         
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "664" + Urls.EDIT);
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 664);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -40,7 +40,7 @@ public class LoadGroupEditTests extends SeleniumTestSetup {
     public void editLoadGroupNameOnlySuccess() {              
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
         
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 596);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Ecobee Ldgrp " + timeStamp;
@@ -50,7 +50,7 @@ public class LoadGroupEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Load Group: " + name, Optional.empty());
         
-        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, Urls.DemandResponse.LOAD_GROUP_DETAIL + "596");
+        LoadGroupDetailPage detailsPage = new LoadGroupDetailPage(driverExt, 596);
         
         String userMsg = detailsPage.getUserMessage();
         

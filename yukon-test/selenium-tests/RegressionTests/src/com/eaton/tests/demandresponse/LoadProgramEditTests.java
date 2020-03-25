@@ -30,7 +30,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "665" + Urls.EDIT);
         
-        LoadProgramEditPage editPage = new LoadProgramEditPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_EDIT + "665" + Urls.EDIT);
+        LoadProgramEditPage editPage = new LoadProgramEditPage(driverExt, 665);
 
         String actualPageTitle = editPage.getPageTitle();
 
@@ -41,7 +41,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     public void editLoadProgramNameOnlySuccess() {        
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "599" + Urls.EDIT);
         
-        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_EDIT + "599" + Urls.EDIT);
+        LoadGroupEditPage editPage = new LoadGroupEditPage(driverExt, 599);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Direct Program " + timeStamp;
@@ -51,7 +51,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Load Program: " + name, Optional.empty());
         
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "599");
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, 599);
         
         String userMsg = detailsPage.getUserMessage();
         

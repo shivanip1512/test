@@ -13,13 +13,11 @@ public class UsersAndGroupsPage extends PageBase {
 
     public static final String DEFAULT_URL = Urls.Admin.USERS_AND_GROUPS;
     private CreateBtnDropDownElement createBtn;
-    private DriverExtensions driverExt;
     
-    public UsersAndGroupsPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
-
-        this.driverExt = driverExt;
-        this.requiresLogin = true;
+    public UsersAndGroupsPage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
         pageUrl = DEFAULT_URL;
         createBtn = new CreateBtnDropDownElement(this.driverExt);
     }

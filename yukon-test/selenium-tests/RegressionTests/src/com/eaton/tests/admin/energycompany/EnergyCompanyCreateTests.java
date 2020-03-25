@@ -29,7 +29,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.Admin.CREATE_ENERGY_COMPANY);
 
-        createPage = new EnergyCompanyCreatePage(driverExt, Urls.Admin.CREATE_ENERGY_COMPANY);
+        createPage = new EnergyCompanyCreatePage(driverExt);
     }
 
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
@@ -62,7 +62,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad(name, Optional.empty());
         
-        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt, Urls.Admin.ENERGY_COMPANY_GENERAL_INFO);
+        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt);
         
         String userMsg = page.getUserMessage();
         

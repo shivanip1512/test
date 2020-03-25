@@ -7,14 +7,13 @@ import com.eaton.pages.PageBase;
 
 public class CapControlDashboardPage extends PageBase {
 
-    private static final String DEFAULT_URL = Urls.CapControl.DASHBOARD;
     private ActionBtnDropDownElement actionBtn;
 
-    public CapControlDashboardPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public CapControlDashboardPage(DriverExtensions driverExt) {
+        super(driverExt);
 
-        this.requiresLogin = true;
-        pageUrl = DEFAULT_URL;
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.DASHBOARD;
         actionBtn = new ActionBtnDropDownElement(this.driverExt);
     }
     

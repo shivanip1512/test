@@ -29,7 +29,7 @@ public class SubstationCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_CREATE);
 
-        createPage = new SubstationCreatePage(driverExt, Urls.CapControl.SUBSTATION_CREATE);
+        createPage = new SubstationCreatePage(driverExt);
     }
 
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
@@ -54,7 +54,7 @@ public class SubstationCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Substation: " + name, Optional.empty());
         
-        SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, Urls.CapControl.SUBSTATION_DETAIL);
+        SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

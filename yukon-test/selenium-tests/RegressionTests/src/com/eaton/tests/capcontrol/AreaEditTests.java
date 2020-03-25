@@ -32,7 +32,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.AREA_EDIT + "672" + Urls.EDIT);
         
-        AreaEditPage editPage = new AreaEditPage(driverExt, Urls.CapControl.AREA_EDIT + "672" + Urls.EDIT);
+        AreaEditPage editPage = new AreaEditPage(driverExt, 672);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -45,7 +45,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
         
-        AreaEditPage editPage = new AreaEditPage(driverExt, Urls.CapControl.AREA_EDIT + "449" + Urls.EDIT);
+        AreaEditPage editPage = new AreaEditPage(driverExt, 449);
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
@@ -56,7 +56,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Area: " + name, Optional.empty());
         
-        AreaDetailPage detailsPage = new AreaDetailPage(driverExt, Urls.CapControl.AREA_DETAIL);
+        AreaDetailPage detailsPage = new AreaDetailPage(driverExt, 449);
         
         String userMsg = detailsPage.getUserMessage();
 
@@ -69,7 +69,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);
 
-        AreaEditPage editPage = new AreaEditPage(driverExt, Urls.CapControl.AREA_EDIT + "579" + Urls.EDIT);
+        AreaEditPage editPage = new AreaEditPage(driverExt, 579);
         
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
@@ -77,7 +77,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         waitForUrlToLoad(Urls.CapControl.DASHBOARD, Optional.empty());
         
-        CapControlDashboardPage detailsPage = new CapControlDashboardPage(driverExt, Urls.CapControl.DASHBOARD);
+        CapControlDashboardPage detailsPage = new CapControlDashboardPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
 

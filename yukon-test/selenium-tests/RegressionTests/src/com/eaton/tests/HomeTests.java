@@ -25,7 +25,7 @@ public class HomeTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.HOME);
 
-        page = new HomePage(driverExt, getBaseUrl());
+        page = new HomePage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
@@ -40,5 +40,10 @@ public class HomeTests extends SeleniumTestSetup {
         String url = page.getUtilityUrl("Site Map");
 
         Assert.assertTrue(url.contains(Urls.SITE_MAP), EXPECTED_URL + Urls.SITE_MAP + ACTUAL_URL + url);
+    }
+    
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_01_CheckYukonBuild" })
+    public void versionDisplayed() {        
+        Assert.assertTrue(page.versionDisplayed());        
     }
 }

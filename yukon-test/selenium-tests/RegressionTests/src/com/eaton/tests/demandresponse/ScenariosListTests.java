@@ -28,7 +28,7 @@ public class ScenariosListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIOS);
 
-        this.listPage = new ScenariosListPage(driverExt, Urls.DemandResponse.SCENARIOS);
+        this.listPage = new ScenariosListPage(driverExt);
     }
 
     @Test

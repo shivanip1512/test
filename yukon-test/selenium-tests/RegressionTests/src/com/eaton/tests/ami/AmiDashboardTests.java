@@ -23,7 +23,7 @@ public class AmiDashboardTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.Ami.DASHBOARD);
 
-        amiPage = new AmiDashboardPage(driverExt, getBaseUrl());
+        amiPage = new AmiDashboardPage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })

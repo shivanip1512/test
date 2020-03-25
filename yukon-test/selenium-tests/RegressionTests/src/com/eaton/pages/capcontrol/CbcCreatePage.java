@@ -5,6 +5,7 @@ import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CbcCreatePage extends PageBase {
@@ -15,8 +16,11 @@ public class CbcCreatePage extends PageBase {
     private TextEditElement serialNumber;
     private DropDownElement controlRoute;
 
-    public CbcCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public CbcCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.CBC_CREATE;
 
         name = new TextEditElement(this.driverExt, "name");
         type = new DropDownElement(this.driverExt, "paoType");

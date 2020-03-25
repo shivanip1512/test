@@ -7,7 +7,7 @@ import org.testng.annotations.Test;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
-import com.eaton.pages.DefaultMainDashboardPage;
+import com.eaton.pages.HomePage;
 import com.eaton.pages.LoginPage;
 
 public class LoginTests extends SeleniumTestSetup {
@@ -23,14 +23,14 @@ public class LoginTests extends SeleniumTestSetup {
         
         driver.get(SeleniumTestSetup.getBaseUrl() + Urls.LOGIN);
 
-        page = new LoginPage(driverExt, null);
+        page = new LoginPage(driverExt);
 
         page.getUserName().setInputValue("ea");
         page.getPassword().setInputValue("ea");
         page.getLoginBtn().click();
 
-        DefaultMainDashboardPage dashboardPage = new DefaultMainDashboardPage(driverExt, null);
-        String actualPageTitle = dashboardPage.getPageTitle();
+        HomePage homePage = new HomePage(driverExt);
+        String actualPageTitle = homePage.getPageTitle();
 
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }

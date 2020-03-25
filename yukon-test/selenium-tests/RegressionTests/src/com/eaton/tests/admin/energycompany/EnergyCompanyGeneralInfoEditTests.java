@@ -30,13 +30,13 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");
         
-        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(this.driverExt, Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "64");
+        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(this.driverExt, 64);
         
         page.getEditBtn().click();
         
         waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_EDIT, Optional.empty());
         
-        EnergyCompanyGeneralInfoEditPage editPage = new EnergyCompanyGeneralInfoEditPage(this.driverExt, Urls.Admin.ENERGY_COMPANY_EDIT);
+        EnergyCompanyGeneralInfoEditPage editPage = new EnergyCompanyGeneralInfoEditPage(this.driverExt, 64);
         
         String actualPageTitle = editPage.getPageTitle();
         
@@ -51,25 +51,25 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "822");
         
-        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(this.driverExt, Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "822");
+        EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(this.driverExt, 822);
         
         page.getEditBtn().click();
         
         waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_EDIT, Optional.empty());
         
-        EnergyCompanyGeneralInfoEditPage editPage = new EnergyCompanyGeneralInfoEditPage(this.driverExt, Urls.Admin.ENERGY_COMPANY_EDIT);
+        EnergyCompanyGeneralInfoEditPage editPage = new EnergyCompanyGeneralInfoEditPage(this.driverExt, 822);
         
         editPage.getDeleteBtn().click();
         
         waitForPageToLoad("deleteEnergyCompanyConfirm: " + NAME, Optional.empty()); 
         
-        EnergyCompanyDeleteConfirmationPage  deletePage = new EnergyCompanyDeleteConfirmationPage(driverExt, Urls.Admin.ENERGY_COMPANY_DELETE + "822");
+        EnergyCompanyDeleteConfirmationPage  deletePage = new EnergyCompanyDeleteConfirmationPage(driverExt, 822);
         
         deletePage.getDeleteBtn().click();
         
         waitForPageToLoad("Energy Companies", Optional.empty());
         
-        EnergyCompanyListPage listPage = new EnergyCompanyListPage(driverExt, Urls.Admin.ENERGY_COMPANY_LIST);
+        EnergyCompanyListPage listPage = new EnergyCompanyListPage(driverExt);
         
         String userMsg = listPage.getUserMessage();
         

@@ -1,10 +1,15 @@
 package com.eaton.pages.capcontrol;
 
+import java.util.Optional;
+
 import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
+import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CbcEditPage extends PageBase {
@@ -20,8 +25,11 @@ public class CbcEditPage extends PageBase {
     private TrueFalseCheckboxElement class0123Scan;
     private TrueFalseCheckboxElement class123Scan;
 
-    public CbcEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public CbcEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.CBC_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
         status = new TrueFalseCheckboxElement(this.driverExt, "disableFlag");
@@ -85,5 +93,14 @@ public class CbcEditPage extends PageBase {
     
     public Button getDeleteBtn() {
         return new Button(this.driverExt, "Delete");
+    }
+    
+    public ConfirmModal showAndWaitConfirmDeleteModal() {
+        
+        getDeleteBtn().click();       
+                      
+        SeleniumTestSetup.waitUntilModalVisibleByDescribedBy("yukon_dialog_confirm");
+        
+        return new ConfirmModal(this.driverExt, Optional.empty(), Optional.of("yukon_dialog_confirm"));  
     }
 }

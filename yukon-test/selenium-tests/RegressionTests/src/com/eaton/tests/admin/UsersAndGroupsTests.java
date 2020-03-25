@@ -18,12 +18,15 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.admin.RoleGroupDetailsPage;
 import com.eaton.pages.admin.UserDetailPage;
+import com.eaton.pages.admin.UserGroupDetailPage;
 import com.eaton.pages.admin.UsersAndGroupsPage;
 
 public class UsersAndGroupsTests extends SeleniumTestSetup {
     
     private UsersAndGroupsPage page;
     private DriverExtensions driverExt;
+    private static final String FOUND = "' but found: ";
+    private static final String EXPECTED = "Expected Page title: '";
 
     @BeforeClass
     public void beforeClass() {
@@ -32,7 +35,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.Admin.USERS_AND_GROUPS);
 
-        page = new UsersAndGroupsPage(driverExt, Urls.Admin.USERS_AND_GROUPS);
+        page = new UsersAndGroupsPage(driverExt);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_06_CreateUser"})
@@ -41,7 +44,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         
         String actualPageTitle = page.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, EXPECTED + EXPECTED_TITLE + FOUND + actualPageTitle);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_06_CreateUser"})
@@ -61,11 +64,11 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         
         waitForUrlToLoad(Urls.Admin.USER_DETAILS, Optional.empty());
 
-        UserDetailPage detailPage = new UserDetailPage(driverExt, Urls.Admin.USER_DETAILS);
+        UserDetailPage detailPage = new UserDetailPage(driverExt);
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, "User (" + name + ")", "Expected Page title: '" + "User ( " + name + ")" + "' but found: " + actualPageTitle);
+        Assert.assertEquals(actualPageTitle, "User (" + name + ")", EXPECTED + "User ( " + name + ")" + FOUND + actualPageTitle);
     }  
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_05_CreateRoleGroup"})
@@ -82,11 +85,11 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         
         waitForUrlToLoad(Urls.Admin.ROLE_GROUP_DETAILS, Optional.empty());
 
-        RoleGroupDetailsPage detailPage = new RoleGroupDetailsPage(driverExt, Urls.Admin.ROLE_GROUP_DETAILS);
+        RoleGroupDetailsPage detailPage = new RoleGroupDetailsPage(driverExt);
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, "Role Group (" + name + ")", "Expected Page title: '" + "User ( " + name + ")" + "' but found: " + actualPageTitle);
+        Assert.assertEquals(actualPageTitle, "Role Group (" + name + ")", EXPECTED + "User ( " + name + ")" + FOUND + actualPageTitle);
     } 
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_04_CreateUserGroup"})
@@ -103,11 +106,11 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         
         waitForUrlToLoad(Urls.Admin.USER_GROUP_DETAILS, Optional.empty());
 
-        RoleGroupDetailsPage detailPage = new RoleGroupDetailsPage(driverExt, Urls.Admin.USER_GROUP_DETAILS);
+        UserGroupDetailPage detailPage = new UserGroupDetailPage(driverExt);
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, "User Group (" + name + ")", "Expected Page title: '" + "User ( " + name + ")" + "' but found: " + actualPageTitle);
+        Assert.assertEquals(actualPageTitle, "User Group (" + name + ")", EXPECTED + "User ( " + name + ")" + FOUND + actualPageTitle);
     }
     
     @AfterMethod

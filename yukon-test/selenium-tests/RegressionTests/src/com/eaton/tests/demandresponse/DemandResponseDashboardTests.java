@@ -26,7 +26,7 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.DASHBOARD);
 
-        demandPage = new DemandResponseDashboardPage(driverExt, getBaseUrl());
+        demandPage = new DemandResponseDashboardPage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })

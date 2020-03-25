@@ -5,6 +5,7 @@ import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class EnergyCompanyOperatorUserCreatePage extends PageBase {
@@ -21,8 +22,11 @@ public class EnergyCompanyOperatorUserCreatePage extends PageBase {
     private Button save;
     private Button cancel;
     
-    public EnergyCompanyOperatorUserCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public EnergyCompanyOperatorUserCreatePage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_CREATE + id;
         
         operatorGroup = new DropDownElement(this.driverExt, "userGroupName");
         loginEnabled = new TrueFalseCheckboxElement(this.driverExt, "loginEnabled");

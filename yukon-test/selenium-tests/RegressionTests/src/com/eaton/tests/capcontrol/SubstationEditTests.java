@@ -32,7 +32,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
         
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, Urls.CapControl.SUBSTATION_EDIT + "666" + Urls.EDIT);
+        SubstationEditPage editPage = new SubstationEditPage(driverExt, 666);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -45,7 +45,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.SUBSTATION_EDIT + "451" + Urls.EDIT);
         
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, Urls.CapControl.SUBSTATION_EDIT + "451/edit");        
+        SubstationEditPage editPage = new SubstationEditPage(driverExt, 451);        
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
@@ -56,7 +56,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Substation: " + name, Optional.empty());
         
-        SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, Urls.CapControl.SUBSTATION_DETAIL);
+        SubstationDetailPage detailsPage = new SubstationDetailPage(driverExt, 451);
         
         String userMsg = detailsPage.getUserMessage();
         
@@ -69,7 +69,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);
 
-        SubstationEditPage editPage = new SubstationEditPage(driverExt, Urls.CapControl.SUBSTATION_EDIT + "573" + Urls.EDIT);
+        SubstationEditPage editPage = new SubstationEditPage(driverExt, 573);
         
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
@@ -77,7 +77,7 @@ public class SubstationEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Orphans", Optional.empty());
         
-        OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
+        OrphansPage detailsPage = new OrphansPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

@@ -29,7 +29,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + "663");
         
-        ScenarioDetailPage editPage = new ScenarioDetailPage(driverExt, Urls.DemandResponse.SCENARIO_DETAILS + "663");
+        ScenarioDetailPage editPage = new ScenarioDetailPage(driverExt, 663);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -42,7 +42,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.SCENARIO_DETAILS + "619");
 
-        ScenarioDetailPage detailPage = new ScenarioDetailPage(driverExt, Urls.DemandResponse.SCENARIO_DETAILS + "619");
+        ScenarioDetailPage detailPage = new ScenarioDetailPage(driverExt, 619);
         
         ConfirmModal  confirmModal = detailPage.showDeleteControlAreaModal();
         
@@ -50,7 +50,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Setup", Optional.empty());
         
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.DemandResponse.SETUP_FILTER + Urls.Filters.CONTROl_SCENARIO);
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROl_SCENARIO);
         
         String userMsg = setupPage.getUserMessage();
         

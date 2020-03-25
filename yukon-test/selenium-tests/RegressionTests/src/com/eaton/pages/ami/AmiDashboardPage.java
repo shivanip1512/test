@@ -6,14 +6,18 @@ import com.eaton.elements.ActionBtnDropDownElement;
 import com.eaton.elements.modals.CreateMeterModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class AmiDashboardPage extends PageBase {
 
     private ActionBtnDropDownElement actionBtn;
 
-    public AmiDashboardPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public AmiDashboardPage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.Ami.AMI;
 
         actionBtn = new ActionBtnDropDownElement(this.driverExt);
     }

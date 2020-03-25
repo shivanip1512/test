@@ -10,6 +10,7 @@ import com.eaton.elements.WebTable;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class RegulatorEditPage extends PageBase {
@@ -21,8 +22,11 @@ public class RegulatorEditPage extends PageBase {
     private TrueFalseCheckboxElement status;
     private WebTable table;
 
-    public RegulatorEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public RegulatorEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.REGULATOR_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
         description = new TextEditElement(this.driverExt, "description");

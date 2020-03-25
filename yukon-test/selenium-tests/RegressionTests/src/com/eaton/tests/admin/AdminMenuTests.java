@@ -27,7 +27,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
 
         driver.get(baseUrl + Urls.HOME);
 
-        page = new HomePage(driverExt, getBaseUrl());
+        page = new HomePage(driverExt);
     }
 
     @Test

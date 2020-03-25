@@ -31,7 +31,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");
         
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "665");
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 665);
 
         String actualPageTitle = detailPage.getPageTitle();
         
@@ -43,7 +43,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
 
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "604");
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 604);
         
         CopyLoadProgramModal modal = detailPage.showCopyLoadProgramModal();
         
@@ -55,7 +55,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Load Program: " + name, Optional.of(8));
         
-        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS);
+        LoadProgramDetailPage detailsPage = new LoadProgramDetailPage(driverExt, 604);
         
         String userMsg = detailsPage.getUserMessage();
         
@@ -68,7 +68,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");
 
-        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, Urls.DemandResponse.LOAD_PROGRAM_DETAILS + "605");
+        LoadProgramDetailPage detailPage = new LoadProgramDetailPage(driverExt, 605);
         
         ConfirmModal modal = detailPage.showDeleteLoadProgramModal();
         
@@ -76,7 +76,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Setup", Optional.empty());
         
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.DemandResponse.SETUP_FILTER + Urls.Filters.LOAD_PROGRAM);
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.LOAD_PROGRAM);
         
         String userMsg = setupPage.getUserMessage();
         

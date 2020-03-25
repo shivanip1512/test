@@ -29,7 +29,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "663" + Urls.EDIT);
         
-        ScenarioEditPage editPage = new ScenarioEditPage(driverExt, Urls.DemandResponse.SCENARIO_EDIT + "663" + Urls.EDIT);
+        ScenarioEditPage editPage = new ScenarioEditPage(driverExt, 663);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -40,7 +40,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
     public void editScenarioNameOnlySuccess() {
         navigate(Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
         
-        ScenarioEditPage editPage = new ScenarioEditPage(driverExt, Urls.DemandResponse.SCENARIO_EDIT + "590" + Urls.EDIT);
+        ScenarioEditPage editPage = new ScenarioEditPage(driverExt, 590);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
                  
@@ -51,7 +51,7 @@ public class ScenarioEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Scenario: " + name, Optional.empty());
         
-        ScenarioDetailPage detailsPage = new ScenarioDetailPage(driverExt, Urls.DemandResponse.CONTROL_AREA_DETAILS);
+        ScenarioDetailPage detailsPage = new ScenarioDetailPage(driverExt, 590);
         
         String userMsg = detailsPage.getUserMessage();
         

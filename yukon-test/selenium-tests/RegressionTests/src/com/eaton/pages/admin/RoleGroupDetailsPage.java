@@ -11,14 +11,20 @@ public class RoleGroupDetailsPage extends PageBase {
     
     private Button edit;
 
-    public RoleGroupDetailsPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public RoleGroupDetailsPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
 
-        this.requiresLogin = true;
-        pageUrl = DEFAULT_URL;
+        requiresLogin = true;
+        pageUrl = DEFAULT_URL + id;
         
         edit = new Button(this.driverExt, "Edit");
-    }    
+    } 
+    
+    public RoleGroupDetailsPage(DriverExtensions driverExt) {
+        super(driverExt);
+
+        edit = new Button(this.driverExt, "Edit");
+    }
     
     public Button getEdit() {
         return edit;

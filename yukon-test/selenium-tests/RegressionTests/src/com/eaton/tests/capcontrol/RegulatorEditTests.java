@@ -31,7 +31,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
 
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, Urls.CapControl.REGULATOR_EDIT + "671" + Urls.EDIT);
+        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 671);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -43,7 +43,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.REGULATOR_EDIT + "490" + Urls.EDIT);
 
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, Urls.CapControl.REGULATOR_EDIT + "490/edit");
+        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 490);
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         
@@ -54,7 +54,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Regulator: " + name, Optional.empty());
         
-        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, Urls.CapControl.REGULATOR_DETAIL);
+        RegulatorDetailPage detailsPage = new RegulatorDetailPage(driverExt, 490);
         
         //The saved successfully message is missing why?
 //        String userMsg = detailsPage.getUserMessageSuccess();
@@ -70,7 +70,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
 
-        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, Urls.CapControl.REGULATOR_EDIT + "578" + Urls.EDIT);
+        RegulatorEditPage editPage = new RegulatorEditPage(driverExt, 578);
         
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
@@ -78,7 +78,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Orphans", Optional.empty());
         
-        OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
+        OrphansPage detailsPage = new OrphansPage(driverExt);
         
         //TODO need to figure out what to assert since there is no message like the other volt/var objects that it has been deleted
         

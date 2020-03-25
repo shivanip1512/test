@@ -26,7 +26,7 @@ public class FeederListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.FEEDER_LIST);
 
-        this.listPage = new FeederListPage(driverExt, Urls.CapControl.FEEDER_LIST);
+        this.listPage = new FeederListPage(driverExt);
     }
 
     @Test

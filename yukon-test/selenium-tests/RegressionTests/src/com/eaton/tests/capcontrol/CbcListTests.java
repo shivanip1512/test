@@ -25,7 +25,7 @@ public class CbcListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.CBC_LIST);
 
-        this.listPage = new CbcListPage(driverExt, null);
+        this.listPage = new CbcListPage(driverExt);
     }
 
     @Test

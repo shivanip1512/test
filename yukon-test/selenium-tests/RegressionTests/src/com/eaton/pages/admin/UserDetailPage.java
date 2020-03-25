@@ -7,22 +7,28 @@ import com.eaton.pages.PageBase;
 
 public class UserDetailPage extends PageBase {
 
-    public static final String DEFAULT_URL = Urls.Admin.USERS_AND_GROUPS;
-    
     private Button edit;
     private Button changePassword;
     private Button unlockUser;
 
-    public UserDetailPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public UserDetailPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
 
-        this.requiresLogin = true;
-        //pageUrl = DEFAULT_URL;
+        requiresLogin = true;
+        pageUrl = Urls.Admin.USER_DETAILS + id;
         
         edit = new Button(this.driverExt, "Edit");
         changePassword = new Button(this.driverExt, "Change Password");
         unlockUser = new Button(this.driverExt, "Unlock User");
-    }    
+    } 
+    
+    public UserDetailPage(DriverExtensions driverExt) {
+        super(driverExt);
+
+        edit = new Button(this.driverExt, "Edit");
+        changePassword = new Button(this.driverExt, "Change Password");
+        unlockUser = new Button(this.driverExt, "Unlock User");
+    } 
     
     public Button getEdit() {
         return edit;

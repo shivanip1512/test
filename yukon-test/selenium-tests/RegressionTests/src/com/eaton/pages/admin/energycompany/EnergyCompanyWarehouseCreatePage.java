@@ -4,6 +4,7 @@ import com.eaton.elements.Button;
 import com.eaton.elements.MultiLineTextElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class EnergyCompanyWarehouseCreatePage extends PageBase {
@@ -19,8 +20,11 @@ public class EnergyCompanyWarehouseCreatePage extends PageBase {
     private Button save;
     private Button cancel;
 
-    public EnergyCompanyWarehouseCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public EnergyCompanyWarehouseCreatePage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + id;
         
         warehouseName = new TextEditElement(this.driverExt, "warehouse.warehouseName");
         address = new TextEditElement(this.driverExt, "address.locationAddress1");

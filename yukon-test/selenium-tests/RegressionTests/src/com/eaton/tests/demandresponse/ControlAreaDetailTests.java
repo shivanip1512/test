@@ -29,7 +29,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.CONTROL_AREA_DETAILS + "662");
         
-        ControlAreaDetailPage editPage = new ControlAreaDetailPage(driverExt, Urls.DemandResponse.CONTROL_AREA_DETAILS + "662");
+        ControlAreaDetailPage editPage = new ControlAreaDetailPage(driverExt, 662);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -42,7 +42,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.DemandResponse.CONTROL_AREA_DETAILS + "589");
 
-        ControlAreaDetailPage detailPage = new ControlAreaDetailPage(driverExt, Urls.DemandResponse.CONTROL_AREA_DETAILS + "589");
+        ControlAreaDetailPage detailPage = new ControlAreaDetailPage(driverExt, 589);
         
         ConfirmModal  confirmModal = detailPage.showDeleteControlAreaModal();
         
@@ -50,7 +50,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Setup", Optional.empty());
         
-        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.DemandResponse.SETUP_FILTER + Urls.Filters.CONTROL_AREA);
+        DemandResponseSetupPage setupPage = new DemandResponseSetupPage(driverExt, Urls.Filters.CONTROL_AREA);
         
         String userMsg = setupPage.getUserMessage();
         

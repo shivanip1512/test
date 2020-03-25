@@ -23,7 +23,7 @@ public class AssetsDashboardTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.Assets.DASHBOARD);
 
-        assetsPage = new AssetDashboardPage(driverExt, getBaseUrl());
+        assetsPage = new AssetDashboardPage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })

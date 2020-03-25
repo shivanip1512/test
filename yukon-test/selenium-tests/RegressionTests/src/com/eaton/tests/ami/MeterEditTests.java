@@ -32,7 +32,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited RFN-420fL " + timeStamp;
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL + "492");
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 492);
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
         
@@ -41,7 +41,7 @@ public class MeterEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
+        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 492);
 
         String userMsg = detailPage.getUserMessage();
 
@@ -54,7 +54,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited RFN-430SL4 " + timeStamp;
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL + "585");
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 585);
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
@@ -63,7 +63,7 @@ public class MeterEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
+        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 585);
 
         String userMsg = detailPage.getUserMessage();
 
@@ -76,7 +76,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited RFN-530S4x " + timeStamp;
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL + "587");
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 587);
 
         EditMeterModal editModal = meterDetailsPage.showMeterEditModal();
 
@@ -85,7 +85,7 @@ public class MeterEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Ami.METER_DETAIL, Optional.of(10));
 
-        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL);
+        MeterDetailsPage detailPage = new MeterDetailsPage(driverExt, 587);
 
         String userMsg = detailPage.getUserMessage();
 

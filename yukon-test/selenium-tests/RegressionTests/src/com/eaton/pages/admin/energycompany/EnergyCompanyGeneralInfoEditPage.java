@@ -4,6 +4,7 @@ import com.eaton.elements.Button;
 import com.eaton.elements.DropDownElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class EnergyCompanyGeneralInfoEditPage extends PageBase {
@@ -24,8 +25,11 @@ public class EnergyCompanyGeneralInfoEditPage extends PageBase {
     private Button deleteBtn;
     private Button cancelBtn;
 
-    public EnergyCompanyGeneralInfoEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public EnergyCompanyGeneralInfoEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.Admin.ENERGY_COMPANY_EDIT + id;
 
         companyName = new TextEditElement(this.driverExt, "name");
         address1 = new TextEditElement(this.driverExt, "address.locationAddress1");

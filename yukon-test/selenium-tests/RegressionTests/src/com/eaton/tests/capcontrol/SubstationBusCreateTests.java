@@ -29,7 +29,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.CapControl.SUBSTATION_BUS_CREATE);
 
-        createPage = new SubstationBusCreatePage(driverExt, Urls.CapControl.SUBSTATION_BUS_CREATE);
+        createPage = new SubstationBusCreatePage(driverExt);
     }
 
     @Test(groups = {"smoketest", "SM03_03_CreateCCObjects"})
@@ -54,7 +54,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Bus: " + name, Optional.empty());
         
-        SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt, Urls.CapControl.SUBSTATION_BUS_DETAIL);
+        SubstationBusDetailPage detailsPage = new SubstationBusDetailPage(driverExt);
         
         String actualUserMsg = detailsPage.getUserMessage();
         

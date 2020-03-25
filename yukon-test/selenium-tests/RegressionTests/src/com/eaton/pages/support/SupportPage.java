@@ -8,10 +8,10 @@ public class SupportPage extends PageBase {
 
     public static final String DEFAULT_URL = Urls.SUPPORT;
 
-    public SupportPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public SupportPage(DriverExtensions driverExt) {
+        super(driverExt);
 
-        this.requiresLogin = true;
+        requiresLogin = true;
         pageUrl = DEFAULT_URL;
     }
 }

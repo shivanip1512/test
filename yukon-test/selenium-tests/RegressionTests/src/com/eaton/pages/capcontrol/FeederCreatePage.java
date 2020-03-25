@@ -4,6 +4,7 @@ import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class FeederCreatePage extends PageBase {
@@ -14,8 +15,11 @@ public class FeederCreatePage extends PageBase {
     private Button saveBtn;
     private Button cancelBtn;
 
-    public FeederCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public FeederCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.FEEDER_CREATE;
 
         name = new TextEditElement(this.driverExt, "name");
         status = new TrueFalseCheckboxElement(this.driverExt, "disabled");

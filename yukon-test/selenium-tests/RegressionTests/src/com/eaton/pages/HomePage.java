@@ -8,14 +8,18 @@ import org.openqa.selenium.WebElement;
 
 import com.eaton.elements.MenuElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 
 public class HomePage extends PageBase {
 
     private MenuElement menu;
+    public static final String DEFAULT_URL = Urls.HOME;
 
-    public HomePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public HomePage(DriverExtensions driverExt) {
+        super(driverExt);
 
+        requiresLogin = true;
+        pageUrl = DEFAULT_URL;
         menu = new MenuElement(this.driverExt);
     }
 
@@ -67,5 +71,13 @@ public class HomePage extends PageBase {
                 option.click();
             }
         }
+    }
+    
+    public boolean versionDisplayed() {
+        List<WebElement> list = this.driverExt.findElements(By.cssSelector(".legal>ul>li"), Optional.empty());
+        
+        Optional<WebElement> version = list.stream().filter(element -> element.getText().contains("Yukon Version")).findFirst();
+        
+        return !version.isEmpty();
     }
 }

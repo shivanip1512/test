@@ -28,7 +28,7 @@ public class ControlAreaListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA);
 
-        listPage = new ControlAreaListPage(driverExt, null);
+        listPage = new ControlAreaListPage(driverExt);
     }
     
     @Test

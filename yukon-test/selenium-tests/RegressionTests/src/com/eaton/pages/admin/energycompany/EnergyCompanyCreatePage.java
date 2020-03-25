@@ -9,6 +9,7 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.elements.modals.SelectUserGroupModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class EnergyCompanyCreatePage extends PageBase {
@@ -24,9 +25,12 @@ public class EnergyCompanyCreatePage extends PageBase {
     private Button saveBtn;
     private Button cancelBtn;
 
-    public EnergyCompanyCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public EnergyCompanyCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
 
+        requiresLogin = true;
+        pageUrl = Urls.Admin.CREATE_ENERGY_COMPANY;
+        
         companyName = new TextEditElement(this.driverExt, "name");
         email = new TextEditElement(this.driverExt, "email");
         defaultRoute = new DropDownElement(this.driverExt, "defaultRouteId");

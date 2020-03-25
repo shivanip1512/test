@@ -28,7 +28,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_CREATE + "64");
 
-        createPage = new EnergyCompanyOperatorUserCreatePage(driverExt, Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_CREATE + "64");
+        createPage = new EnergyCompanyOperatorUserCreatePage(driverExt, 64);
     }
 
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
@@ -57,7 +57,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Operator Users: QA_Test", Optional.empty());
         
-        EnergyCompanyWarehouseListPage listPage = new EnergyCompanyWarehouseListPage(this.driverExt, Urls.Admin.ENERGY_COMPANY_LIST);     
+        EnergyCompanyWarehouseListPage listPage = new EnergyCompanyWarehouseListPage(this.driverExt);     
         
         String actualUserMsg = listPage.getUserMessage();
         

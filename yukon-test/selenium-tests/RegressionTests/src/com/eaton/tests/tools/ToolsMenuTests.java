@@ -24,7 +24,7 @@ public class ToolsMenuTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.HOME);
 
-        page = new HomePage(driverExt, Urls.HOME);
+        page = new HomePage(driverExt);
     }
 
     @Test

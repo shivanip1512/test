@@ -5,14 +5,18 @@ import com.eaton.elements.Section;
 import com.eaton.elements.SelectBoxElement;
 import com.eaton.elements.TextEditElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class ScenarioCreatePage extends PageBase {
 
     private TextEditElement name;
 
-    public ScenarioCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public ScenarioCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.DemandResponse.SCENARIO_CREATE;
 
         name = new TextEditElement(this.driverExt, "name");
     }

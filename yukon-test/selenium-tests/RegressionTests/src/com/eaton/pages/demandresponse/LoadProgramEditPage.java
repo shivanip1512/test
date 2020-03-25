@@ -14,6 +14,7 @@ import com.eaton.elements.modals.gears.CreateMeterDisconnectPrgmModal;
 import com.eaton.elements.modals.gears.CreateSepPrgmGearModal;
 import com.eaton.elements.tabs.LoadGroupsTab;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class LoadProgramEditPage extends PageBase {
@@ -21,8 +22,11 @@ public class LoadProgramEditPage extends PageBase {
     private TextEditElement name;
     private static final String PARENT_NAME = "gear-create-popup-LM_DIRECT_PROGRAM";
 
-    public LoadProgramEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public LoadProgramEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.DemandResponse.LOAD_PROGRAM_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
     }

@@ -29,7 +29,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIO_CREATE);
 
-        createPage = new ScenarioCreatePage(driverExt, Urls.DemandResponse.SCENARIO_CREATE);                
+        createPage = new ScenarioCreatePage(driverExt);                
     }  
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_12_CreateScenario"})
@@ -54,7 +54,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Scenario: " + name, Optional.empty());
         
-        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt, Urls.DemandResponse.SCENARIO_DETAILS);
+        ControlAreaDetailPage detailsPage = new ControlAreaDetailPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

@@ -32,7 +32,7 @@ public class FeederEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.FEEDER_EDIT + "668" + Urls.EDIT);
 
-        FeederEditPage editPage = new FeederEditPage(driverExt, Urls.CapControl.FEEDER_EDIT + "668" + Urls.EDIT);
+        FeederEditPage editPage = new FeederEditPage(driverExt, 668);
 
         String actualPageTitle = editPage.getPageTitle();
         
@@ -45,7 +45,7 @@ public class FeederEditTests extends SeleniumTestSetup {
         
         navigate(Urls.CapControl.FEEDER_EDIT + "458" + Urls.EDIT);
 
-        FeederEditPage editPage = new FeederEditPage(driverExt, Urls.CapControl.FEEDER_EDIT + "458" + Urls.EDIT);
+        FeederEditPage editPage = new FeederEditPage(driverExt, 458);
 
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
 
@@ -56,7 +56,7 @@ public class FeederEditTests extends SeleniumTestSetup {
 
         waitForPageToLoad("Feeder: " + name, Optional.empty());
 
-        FeederDetailPage detailsPage = new FeederDetailPage(driverExt, Urls.CapControl.FEEDER_DETAIL);
+        FeederDetailPage detailsPage = new FeederDetailPage(driverExt, 458);
 
         String userMsg = detailsPage.getUserMessage();
 
@@ -69,7 +69,7 @@ public class FeederEditTests extends SeleniumTestSetup {
                 
         navigate(Urls.CapControl.FEEDER_EDIT + "575" + Urls.EDIT);
 
-        FeederEditPage editPage = new FeederEditPage(driverExt, Urls.CapControl.FEEDER_EDIT + "575" + Urls.EDIT);
+        FeederEditPage editPage = new FeederEditPage(driverExt, 575);
         
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
@@ -77,7 +77,7 @@ public class FeederEditTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Orphans", Optional.empty());
         
-        OrphansPage detailsPage = new OrphansPage(driverExt, Urls.CapControl.ORPHANS);
+        OrphansPage detailsPage = new OrphansPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

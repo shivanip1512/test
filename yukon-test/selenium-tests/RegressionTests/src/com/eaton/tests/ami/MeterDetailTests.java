@@ -29,7 +29,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.Ami.METER_DETAIL + "588");
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL + "588");
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 588);
         
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
         
@@ -37,7 +37,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         
         waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
         
-        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt, Urls.Ami.AMI);
+        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt);
         
         String userMsg = dashboardPage.getUserMessage();
         
@@ -50,7 +50,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.Ami.METER_DETAIL + "584");
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL + "584");
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 584);
         
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
         
@@ -58,7 +58,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         
         waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
         
-        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt, Urls.Ami.AMI);
+        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt);
         
         String userMsg = dashboardPage.getUserMessage();
         
@@ -71,7 +71,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         
         navigate(Urls.Ami.METER_DETAIL + "586");
 
-        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, Urls.Ami.METER_DETAIL + "586");
+        MeterDetailsPage meterDetailsPage = new MeterDetailsPage(driverExt, 586);
         
         ConfirmModal modal = meterDetailsPage.showAndWaitConfirmDeleteModal();
         
@@ -79,7 +79,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         
         waitForUrlToLoad(Urls.Ami.AMI, Optional.of(10));
         
-        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt, Urls.Ami.AMI);
+        AmiDashboardPage dashboardPage = new AmiDashboardPage(driverExt);
         
         String userMsg = dashboardPage.getUserMessage();
         

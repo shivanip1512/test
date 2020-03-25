@@ -8,13 +8,20 @@ import com.eaton.elements.modals.EditMeterModal;
 import com.eaton.elements.panels.MeterInfoPanel;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class MeterDetailsPage extends PageBase {
 
-    public MeterDetailsPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public MeterDetailsPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
 
+        requiresLogin = true;
+        pageUrl = Urls.Ami.METER_DETAIL + id;
+    }
+    
+    public MeterDetailsPage(DriverExtensions driverExt) {
+        super(driverExt);
     }
     
     public ActionBtnDropDownElement getAction() {

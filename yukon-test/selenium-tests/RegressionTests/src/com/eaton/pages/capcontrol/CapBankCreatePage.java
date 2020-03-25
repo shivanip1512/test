@@ -4,6 +4,7 @@ import com.eaton.elements.Button;
 import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CapBankCreatePage  extends PageBase {
@@ -14,8 +15,11 @@ public class CapBankCreatePage  extends PageBase {
     private Button saveBtn;
     private Button cancelBtn;
 
-    public CapBankCreatePage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public CapBankCreatePage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.CAP_BANK_CREATE;
 
         name = new TextEditElement(driverExt, "name");
         status = new TrueFalseCheckboxElement(driverExt, "disabled");

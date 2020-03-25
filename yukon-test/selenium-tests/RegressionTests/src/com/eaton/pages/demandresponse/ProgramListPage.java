@@ -2,14 +2,18 @@ package com.eaton.pages.demandresponse;
 
 import com.eaton.elements.WebTable;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
-public class LoadProgramListPage extends PageBase {
+public class ProgramListPage extends PageBase {
 
     private WebTable table;
 
-    public LoadProgramListPage(DriverExtensions driverExt, String baseUrl) {
-        super(driverExt, baseUrl);
+    public ProgramListPage(DriverExtensions driverExt) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.DemandResponse.PROGRAMS;
 
         setTable(new WebTable(driverExt, "compact-results-table"));
     }

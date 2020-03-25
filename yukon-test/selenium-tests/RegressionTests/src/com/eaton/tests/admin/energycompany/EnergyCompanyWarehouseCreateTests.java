@@ -28,7 +28,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + "64");
 
-        createPage = new EnergyCompanyWarehouseCreatePage(driverExt, Urls.Admin.ENERGY_COMPANY_WAREHOUSE_CREATE + "64");
+        createPage = new EnergyCompanyWarehouseCreatePage(driverExt, 64);
     }
 
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
@@ -59,7 +59,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Warehouses: QA_Test", Optional.empty());
         
-        EnergyCompanyWarehouseListPage listPage = new EnergyCompanyWarehouseListPage(this.driverExt, Urls.Admin.ENERGY_COMPANY_LIST + "64");     
+        EnergyCompanyWarehouseListPage listPage = new EnergyCompanyWarehouseListPage(this.driverExt, 64);     
         
         String userMsg = listPage.getUserMessage();
         

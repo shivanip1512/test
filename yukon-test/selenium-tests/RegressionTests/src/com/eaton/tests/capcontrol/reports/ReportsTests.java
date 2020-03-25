@@ -6,11 +6,11 @@ import org.testng.annotations.BeforeClass;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
-import com.eaton.pages.capcontrol.reports.ReportsPage;
+import com.eaton.pages.capcontrol.reports.CapControlReportsPage;
 
 public class ReportsTests extends SeleniumTestSetup {
 
-    private ReportsPage reportPage;
+    private CapControlReportsPage reportPage;
 
     @BeforeClass
     public void beforeClass() {
@@ -20,6 +20,6 @@ public class ReportsTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.REPORTS);
 
-        reportPage = new ReportsPage(driverExt, null);
+        reportPage = new CapControlReportsPage(driverExt);
     }
 }

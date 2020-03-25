@@ -29,7 +29,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.CapControl.FEEDER_CREATE);
 
-        createPage = new FeederCreatePage(driverExt, Urls.CapControl.FEEDER_CREATE);
+        createPage = new FeederCreatePage(driverExt);
     }
 
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
@@ -54,7 +54,7 @@ public class FeederCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Feeder: " + name, Optional.empty());
         
-        FeederDetailPage detailsPage = new FeederDetailPage(driverExt, Urls.CapControl.FEEDER_DETAIL);
+        FeederDetailPage detailsPage = new FeederDetailPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         

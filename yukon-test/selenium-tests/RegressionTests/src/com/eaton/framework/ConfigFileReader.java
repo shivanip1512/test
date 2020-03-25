@@ -84,4 +84,13 @@ public class ConfigFileReader {
 
         throw new RuntimeException("runHeadless is not specified in the Configuration.properties file.");
     }
+    
+    public String getScreenShotPath() {
+        String screenShotPath = properties.getProperty("screenShotsPath");
+        
+        if (screenShotPath != null)
+            return screenShotPath;
+        
+        throw new RuntimeException("screenShotPath is not specified in the Configuration.properties file.");
+    }
 }

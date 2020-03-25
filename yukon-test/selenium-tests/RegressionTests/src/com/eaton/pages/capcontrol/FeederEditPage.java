@@ -8,6 +8,7 @@ import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class FeederEditPage extends PageBase {
@@ -19,8 +20,11 @@ public class FeederEditPage extends PageBase {
     private Button cancelBtn;
     private Button deleteBtn;
 
-    public FeederEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public FeederEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.CapControl.FEEDER_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
         status = new TrueFalseCheckboxElement(this.driverExt, "disabled");

@@ -34,7 +34,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "212");
         
-        EnergyCompanyOperatorUserEditPage page = new EnergyCompanyOperatorUserEditPage(driverExt, Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "212");
+        EnergyCompanyOperatorUserEditPage page = new EnergyCompanyOperatorUserEditPage(driverExt, 64, 212);
                                  
         String actualPageTitle = page.getPageTitle();
         
@@ -48,7 +48,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "302");
 
-        EnergyCompanyOperatorUserEditPage editPage = new EnergyCompanyOperatorUserEditPage(driverExt, Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "302");
+        EnergyCompanyOperatorUserEditPage editPage = new EnergyCompanyOperatorUserEditPage(driverExt, 64, 302);
 
         ConfirmModal modal = editPage.showAndWaitConfirmDeleteModal();
         
@@ -56,7 +56,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
 
         waitForUrlToLoad(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_LIST + "64", Optional.empty());
 
-        EnergyCompanyOperatorUserListPage listPage = new EnergyCompanyOperatorUserListPage(driverExt, Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_LIST + "64");
+        EnergyCompanyOperatorUserListPage listPage = new EnergyCompanyOperatorUserListPage(driverExt, 64);
 
         String actualUserMsg = listPage.getUserMessage();
         WebTable table = listPage.getTable();

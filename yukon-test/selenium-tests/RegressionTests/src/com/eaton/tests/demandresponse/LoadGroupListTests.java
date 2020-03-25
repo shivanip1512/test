@@ -27,7 +27,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUPS);
 
-        listPage = new LoadGroupListPage(driverExt, Urls.DemandResponse.LOAD_GROUPS);
+        listPage = new LoadGroupListPage(driverExt);
     }
 
     @Test

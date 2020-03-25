@@ -22,7 +22,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.SUPPORT);
 
-        supportPage = new SupportPage(driverExt, Urls.SUPPORT);
+        supportPage = new SupportPage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })

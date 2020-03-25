@@ -23,7 +23,7 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
 
         driver.get(getBaseUrl() + Urls.CapControl.DASHBOARD);
 
-        dashboardPage = new CapControlDashboardPage(driverExt, getBaseUrl());
+        dashboardPage = new CapControlDashboardPage(driverExt);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })

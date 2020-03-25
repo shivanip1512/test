@@ -10,6 +10,7 @@ import com.eaton.elements.TextEditElement;
 import com.eaton.elements.TrueFalseCheckboxElement;
 import com.eaton.elements.modals.CreateTriggersModal;
 import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class ControlAreaEditPage extends PageBase {
@@ -21,8 +22,11 @@ public class ControlAreaEditPage extends PageBase {
     private TrueFalseCheckboxElement requireAllTriggersActive;
     private TrueFalseCheckboxElement useOptionControlWindow;
 
-    public ControlAreaEditPage(DriverExtensions driverExt, String pageUrl) {
-        super(driverExt, pageUrl);
+    public ControlAreaEditPage(DriverExtensions driverExt, int id) {
+        super(driverExt);
+        
+        requiresLogin = true;
+        pageUrl = Urls.DemandResponse.CONTROL_AREA_EDIT + id + Urls.EDIT;
 
         name = new TextEditElement(this.driverExt, "name");
         controlInterval = new DropDownElement(this.driverExt, "controlInterval");

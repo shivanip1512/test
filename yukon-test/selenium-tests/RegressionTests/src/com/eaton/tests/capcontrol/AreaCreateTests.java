@@ -28,7 +28,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         
         driver.get(getBaseUrl() + Urls.CapControl.AREA_CREATE);
 
-        this.createPage = new AreaCreatePage(driverExt, Urls.CapControl.AREA_CREATE);
+        this.createPage = new AreaCreatePage(driverExt);
     }
 
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
@@ -53,7 +53,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         
         waitForPageToLoad("Area: " + name, Optional.empty());       
         
-        AreaDetailPage detailsPage = new AreaDetailPage(driverExt, Urls.CapControl.AREA_DETAIL);
+        AreaDetailPage detailsPage = new AreaDetailPage(driverExt);
         
         String userMsg = detailsPage.getUserMessage();
         
