@@ -83,14 +83,14 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             // values from the other vendor once it is loaded.
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
                 MultispeakDefines.MSP_APPNAME_YUKON);
-            getHeader(header, mspVendor.getOutUserName(), mspVendor.getOutPassword());
+            getDefaultHeader(header, mspVendor.getOutUserName(), mspVendor.getOutPassword());
 
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
         }
     }
     
-    public SoapHeaderElement getHeader(SoapHeader header, String outUserName, String outPassword) throws SOAPException {
+    public SoapHeaderElement getDefaultHeader(SoapHeader header, String outUserName, String outPassword) throws SOAPException {
 
         YukonMultispeakMsgHeader yukonMspMsgHeader =
             new YukonMultispeakMsgHeader(outUserName, outPassword, version().getVersion());
