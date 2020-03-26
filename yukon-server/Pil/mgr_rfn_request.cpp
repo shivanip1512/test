@@ -283,7 +283,9 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 sendMeterProgramStatusUpdate( {
                         rfnIdentifier,
                         command->getMeterConfigurationID(),
-                        ProgrammingStatus::Idle,
+                        command->getStatusCode()
+                            ? ProgrammingStatus::Failed
+                            : ProgrammingStatus::Idle,
                         command->getStatusCode(),
                         std::chrono::system_clock::now() } );
             }
