@@ -19,6 +19,7 @@ import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.support.interceptor.ClientInterceptor;
 import org.springframework.ws.context.MessageContext;
 import org.springframework.xml.transform.ResourceSource;
+import org.springframework.xml.transform.TransformerObjectSupport;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -28,7 +29,7 @@ import com.cannontech.clientutils.YukonLogManager;
  * This class takes the JAXB output, parses the document and writes a new document without the unused
  * namespace definitions (This class removed all the unused namespace generated in JAXB output )
  */
-public class PayloadTransformingInterceptor extends LoggingInterceptor implements ClientInterceptor {
+public class PayloadTransformingInterceptor extends TransformerObjectSupport implements ClientInterceptor {
 
     private final static Logger log = YukonLogManager.getLogger(PayloadTransformingInterceptor.class);
 
@@ -62,19 +63,15 @@ public class PayloadTransformingInterceptor extends LoggingInterceptor implement
             } catch (TransformerException e) {
                 log.info("Request message is not transformed");
             }
+
         }
-
-        logMessageSource("Request: ", getSource(messageContext.getRequest()));
-
         return true;
     }
 
     @Override
     public boolean handleResponse(MessageContext messageContext) throws WebServiceClientException {
-
-        logMessageSource("Response: ", getSource(messageContext.getResponse()));
-
         MessageContextHolder.setMessageContext(messageContext);
+
         return false;
     }
 
@@ -92,5 +89,4 @@ public class PayloadTransformingInterceptor extends LoggingInterceptor implement
     public void afterCompletion(MessageContext arg0, Exception arg1) throws WebServiceClientException {
 
     }
-
 }

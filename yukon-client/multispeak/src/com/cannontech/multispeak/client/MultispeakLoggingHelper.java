@@ -16,27 +16,28 @@ import org.springframework.xml.transform.TransformerObjectSupport;
 
 import com.cannontech.clientutils.YukonLogManager;
 
-public class LoggingInterceptor extends TransformerObjectSupport {
+public class MultispeakLoggingHelper extends TransformerObjectSupport {
 
-    private final static Logger log = YukonLogManager.getLogger(LoggingInterceptor.class);
+    private final static Logger log = YukonLogManager.getLogger(MultispeakLoggingHelper.class);
 
     /**
-     * Log intercepted Request/Response message in debug mode.
+     * Log response message.
      */
-    protected void logMessageSource(String logMessage, Source source) {
-        if (log.isDebugEnabled()) {
-            try {
-                if (source != null) {
-                    Transformer transformer = createNonIndentingTransformer();
-                    StringWriter writer = new StringWriter();
-                    transformer.transform(source, new StreamResult(writer));
-                    String message = logMessage + writer.toString();
-                    log.debug(message);
-                }
-            } catch (TransformerException e) {
-                log.error("Message is not transformed " + e);
+    public void logResponseMessageSource(WebServiceMessage message) {
+
+        Source source = getSource(message);
+        try {
+            if (source != null) {
+                Transformer transformer = createNonIndentingTransformer();
+                StringWriter writer = new StringWriter();
+                transformer.transform(source, new StreamResult(writer));
+                String msg = "Response :  " + writer.toString();
+                log.info(msg);
             }
+        } catch (TransformerException e) {
+            log.error("Message is not transformed " + e);
         }
+
     }
 
     /**

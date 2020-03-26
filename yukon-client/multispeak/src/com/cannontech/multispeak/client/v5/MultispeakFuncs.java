@@ -74,6 +74,7 @@ import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
+import com.cannontech.multispeak.client.MultispeakLoggingHelper;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspReturnList;
@@ -92,6 +93,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private MultispeakLoggingHelper loggingHelper;
     
     @Resource(name="domainMarshallerV5") Jaxb2Marshaller jaxb2Marshaller;
 
@@ -148,6 +150,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
                 responseHeader.getResult() == null ? null : responseHeader.getResult().getErrorObjects() != null
                     ? responseHeader.getResult().getErrorObjects().getErrorObject() : null;
         } catch (Exception e) {
+            loggingHelper.logResponseMessageSource(requestMessage);
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
         return errorObjects;
