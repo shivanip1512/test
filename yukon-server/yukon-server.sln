@@ -757,8 +757,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_libraries", "COMMON\te
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "loadmanagement-common", "loadmanagement\loadmanagement-common.vcxproj", "{7B2D9318-7354-4A53-880D-7992D8BAD9A4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749B109C-FECA-1BAD-4657-EE4C0659BB9E} = {749B109C-FECA-1BAD-4657-EE4C0659BB9E}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "capcontrol-common", "capcontrol\capcontrol-common.vcxproj", "{A5301B79-BC9B-4024-B617-3E0E773204D2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{749B109C-FECA-1BAD-4657-EE4C0659BB9E} = {749B109C-FECA-1BAD-4657-EE4C0659BB9E}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
