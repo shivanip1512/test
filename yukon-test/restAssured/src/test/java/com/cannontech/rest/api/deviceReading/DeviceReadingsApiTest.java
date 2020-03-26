@@ -27,6 +27,8 @@ public class DeviceReadingsApiTest {
     private final static String InvalidPaoName = "856326";
     private final static String validPaoName = "789456";
     private final static String validPaoId = "78945";
+    private final static String validSensorSerialNumber= "456123";
+    private final static String invalidSensorSerialNumber= "45556";
 
     @Test
     public void DeviceReadings_01_Get(ITestContext context) {
@@ -170,5 +172,32 @@ public class DeviceReadingsApiTest {
                 "Expected error message Should contains Text: " + "Pao Object not found for Pao name: " + InvalidPaoName);
 
         Log.endTestCase("DeviceReadings_09_InvalidPaoName");
+    }
+    
+    @Test
+    public void DeviceReadings_10_ValidSensorSerialNumber(ITestContext context) {
+
+        Log.startTestCase("DeviceReadings_10_ValidSensorSerialNumber");
+
+        MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper.buildDeviceReadingRequest(MockIdentifierType.SERIALNUMBER, validSensorSerialNumber);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
+
+        assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
+
+        Log.endTestCase("DeviceReadings_10_ValidSensorSerialNumber");
+    }
+
+    @Test
+    public void DeviceReadings_11_InvalidSensorSerialNumber(ITestContext context) {
+
+        Log.startTestCase("DeviceReadings_11_InvalidSensorSerialNumber");
+        
+        MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper.buildDeviceReadingRequest( MockIdentifierType.SERIALNUMBER, invalidSensorSerialNumber);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
+        assertTrue(getResponse.statusCode() == 400, "Status code should be 400");
+        assertTrue(ValidationHelper.validateErrorMessage(getResponse, "No device found for Serial Number: " + invalidSensorSerialNumber),
+                "Expected error message Should contains Text: " + "No device found for Serial Number: " + invalidSensorSerialNumber);
+
+        Log.endTestCase("DeviceReadings_11_InvalidSensorSerialNumber");
     }
 }

@@ -12,12 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -36,6 +40,7 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired protected DeviceDao deviceDao;
+    @Autowired protected RfnDeviceDao rfnDeviceDao;
 
     private ImmutableMap<IdentifierType, PaoSelector> paoSelectors;
 
@@ -115,7 +120,7 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse response = null;
             Identifier identifier = deviceReadingsSelector.getIdentifier();
-            if (identifier != null && identifier.getValue() != null) {
+            if (identifier.getValue() != null) {
                 try {
                     YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(identifier.getValue());
                     response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
@@ -146,7 +151,7 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse response = null;
             Identifier identifier = deviceReadingsSelector.getIdentifier();
-            if (identifier.getValue() != null && identifier.getValue() != null) {
+            if (identifier.getValue() != null) {
                 try {
                     YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByName(identifier.getValue());
                     response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
@@ -174,7 +179,7 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse response = null;
             Identifier identifier = deviceReadingsSelector.getIdentifier();
-            if (identifier.getValue() != null && identifier.getValue() != null) {
+            if (identifier.getValue() != null) {
                 try {
                     YukonDevice yukonDevice = deviceDao.getYukonDevice(Integer.parseInt(identifier.getValue()));
                     response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
@@ -189,7 +194,59 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
     }
 
     /**
+     * Class for Serial Number as a selector in request,
+     * 
+     * @param deviceReadingsSelector
+     * @return DeviceReadingsResponse - Return DeviceReadingsResponse object for Serial Number selector.
+     * We will get IncorrectResultSizeDataAccessException here if more than one devices found for Serial Number.
+     */
+    private class BySerialNumberSelector extends PaoSelector {
+        @Override
+        public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
+            YukonDevice device = null;
+            Identifier identifier = deviceReadingsSelector.getIdentifier();
+
+            if (identifier.getSensorManufacturer() != null && identifier.getSensorModel() != null) {
+                RfnIdentifier rfnIdentifier = new RfnIdentifier(identifier.getValue(), identifier.getSensorManufacturer(),
+                        identifier.getSensorModel());
+                Integer deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(rfnIdentifier);
+                device = rfnDeviceDao.getDeviceForId(deviceId);
+            } else if (identifier.getPaoType() != null) {
+                List<RfnDevice> listOfDevices = rfnDeviceDao.getDevicesByPaoType(identifier.getPaoType());
+                if (CollectionUtils.isNotEmpty(listOfDevices)) {
+                    for (RfnDevice rfnDevice : listOfDevices) {
+                        if (rfnDevice.getRfnIdentifier().getSensorSerialNumber().equals(identifier.getValue())) {
+                            device = rfnDevice;
+                        }
+                    }
+                }
+                if (device == null) {
+                    String exceptionMessage = "No device found for Serial Number: " + identifier.getValue() + " and Pao Type: "
+                            + identifier.getPaoType();
+                    throw new NotFoundException(exceptionMessage);
+                }
+            } else {
+                try {
+                    Integer deviceId = rfnDeviceDao.findDeviceBySensorSerialNumber(identifier.getValue());
+                    if (deviceId != null) {
+                        device = rfnDeviceDao.getDeviceForId(deviceId);
+                    } else {
+                        String exceptionMessage = "No device found for Serial Number: " + identifier.getValue();
+                        throw new NotFoundException(exceptionMessage);
+                    }
+                } catch (IncorrectResultSizeDataAccessException e) {
+                    String exceptionMessage = "Duplicate devices found for Sensor Serial Number: " + identifier.getValue();
+                    log.error(e);
+                    throw new IncorrectResultSizeDataAccessException(exceptionMessage, e.getExpectedSize(), e.getActualSize());
+                }
+            }
+            return buildDeviceReadingResponse(deviceReadingsSelector, device);
+        }
+    }
+
+    /**
      * Class for GroupName as a selector in request,
+     * 
      * @param deviceReadingsSelector
      * @return DeviceReadingsResponse - Return DeviceReadingsResponse object for GroupName selector.
      */
@@ -202,19 +259,6 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
 
         }
 
-    }
-
-    /**
-     * Class for Serial Number as a selector in request,
-     * @param deviceReadingsSelector
-     * @return DeviceReadingsResponse - Return DeviceReadingsResponse object for Serial Number selector.
-     */
-    private class BySerialNumberSelector extends PaoSelector {
-        @Override
-        public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
-            return null;
-            // TODO Implementation for Serial Number selector.
-        }
     }
 
 }
