@@ -43,7 +43,7 @@ public class CustomWebServiceMsgCallback {
                 Credentials credentials = multispeakFuncs.getOutgoingCredentials(mspVendor, interfaceName);
 
                 try {   
-                    multispeakFuncs.getDefaultHeader(header, credentials.getUserName(), credentials.getPassword());
+                    multispeakFuncs.getHeader(header, credentials.getUserName(), credentials.getPassword());
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);
                 }
