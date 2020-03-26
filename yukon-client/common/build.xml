@@ -27,8 +27,7 @@
 		<javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
-              source="${yukon.javac.source}" 
-              debug="on">
+              source="${yukon.javac.source}">
             <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
 			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
             <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
@@ -48,7 +47,23 @@
         </path>
         <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
 
-        <gitlogcount result="yukon-build-number"/>
+		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
+			<manifest>
+				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
+				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
+				<attribute name="Permissions" value="all-permissions"/>
+				<attribute name="Hudson-Build-Details" value="${build.info}"/>
+			</manifest>
+			<fileset dir="resource">
+				<include name="**/*.gif"/>
+				<include name="**/*.png"/>
+				<include name="**/*.au"/>
+				<include name="**/*.yaml"/>
+			</fileset>
+			<fileset dir="src">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</jar>
 
         <parallel>
             <jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">

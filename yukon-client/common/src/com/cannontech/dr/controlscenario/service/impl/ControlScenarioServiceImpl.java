@@ -79,8 +79,6 @@ public class ControlScenarioServiceImpl implements LMSetupService <ControlScenar
         if (pao == null) {
             throw new NotFoundException("Scenario Id not found");
         }
-        int t = 2/0;
-        System.out.println(t);                  //testing arithmatic exception
         LMScenario lmScenario = (LMScenario) dbPersistentDao.retrieveDBPersistent(pao);
         ControlScenario controlScenario = new ControlScenario();
         controlScenario.buildModel(lmScenario);
