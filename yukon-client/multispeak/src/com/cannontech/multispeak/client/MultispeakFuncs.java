@@ -81,16 +81,13 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
             // the YukonMultispeakMsgHeader will be built with "dummy" values for userId and pwd fields. The
             // expectation is that getMultispeakVendorFromHeader will replace these values with the correct
             // values from the other vendor once it is loaded.
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                MultispeakDefines.MSP_APPNAME_YUKON);
-            getDefaultHeader(header, mspVendor.getOutUserName(), mspVendor.getOutPassword());
-
+            getHeader(header, "unauthorized", "unauthorized");
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
         }
     }
     
-    public SoapHeaderElement getDefaultHeader(SoapHeader header, String outUserName, String outPassword) throws SOAPException {
+    public SoapHeaderElement getHeader(SoapHeader header, String outUserName, String outPassword) throws SOAPException {
 
         YukonMultispeakMsgHeader yukonMspMsgHeader =
             new YukonMultispeakMsgHeader(outUserName, outPassword, version().getVersion());

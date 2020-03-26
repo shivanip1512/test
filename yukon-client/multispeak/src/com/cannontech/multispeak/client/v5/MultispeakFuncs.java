@@ -158,7 +158,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
      * expectation is that getMultispeakVendorFromHeader will replace these values with the correct values from the
      * other vendor once it is loaded.
      */
-    private void getDefaultHeader(SOAPMessage soapMessage) throws SOAPException {
+    private void getHeader(SOAPMessage soapMessage) throws SOAPException {
         SOAPEnvelope env = soapMessage.getSOAPPart().getEnvelope();
 
         Node nxtNode = getRequestSOAPMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
@@ -178,9 +178,8 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         SOAPHeader header = env.getHeader();
         SOAPElement headElement = header.addChildElement("MultiSpeakResponseMsgHeader", "res");
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                                                                                MultispeakDefines.MSP_APPNAME_YUKON);
-        getHeader(headElement, "res", mspVendor.getOutUserName(), mspVendor.getOutPassword() );
+
+        getHeader(headElement, "res", "unauthorized", "unauthorized");
 
     }
 
@@ -220,7 +219,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         SOAPMessage soapMessage;
         try {
             soapMessage = getResponseSOAPMessage();
-            getDefaultHeader(soapMessage);
+            getHeader(soapMessage);
 
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
