@@ -59,7 +59,7 @@
         <input type="hidden" name="selectedLoadGroupIds" id="js-selected-load-group-ids"/>
         <tags:sectionContainer2 nameKey="general">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name">
+                <tags:nameValue2x1 nameKey=".name">
                     <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
