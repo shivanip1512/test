@@ -96,7 +96,7 @@
                         </c:choose>
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".holidayUsage">
+                <tags:nameValue2 nameKey=".holidayUsage1">
                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                         <div class="button-group">
                             <tags:radio path="holidayUsage" key=".modules.dr.setup.constraint.EXCLUDE" classes="left yes ML0" value="EXCLUDE"/>
