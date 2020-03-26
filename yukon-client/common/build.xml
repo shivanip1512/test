@@ -47,23 +47,7 @@
         </path>
         <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
 
-		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
-			<manifest>
-				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
-				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
-				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Hudson-Build-Details" value="${build.info}"/>
-			</manifest>
-			<fileset dir="resource">
-				<include name="**/*.gif"/>
-				<include name="**/*.png"/>
-				<include name="**/*.au"/>
-				<include name="**/*.yaml"/>
-			</fileset>
-			<fileset dir="src">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</jar>
+        <gitlogcount result="yukon-build-number"/>
 
         <parallel>
             <jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
