@@ -144,26 +144,47 @@
   </menu>
   <menu name="vv">
     <permissions>
-      <roleProperty name="CAP_CONTROL_ACCESS" />
+      <or>
+        <roleProperty name="CAP_CONTROL_ACCESS" />
+        <roleProperty name="FDR_TRANSLATION_MANAGER" />
+      </or>
     </permissions>
     <link>/capcontrol/tier/areas</link>
     <options>
       <option name="dashboard">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_ACCESS" />
+        </permissions>
         <link>/capcontrol/tier/areas</link>
       </option>
       <option name="schedules">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_ACCESS" />
+        </permissions>
         <link>/capcontrol/schedules</link>
       </option>
       <option name="strategies">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_ACCESS" />
+        </permissions>
         <link>/capcontrol/strategies</link>
       </option>
       <option name="movedBanks">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_ACCESS" />
+        </permissions>
         <link>/capcontrol/move/movedCapBanks</link>
       </option>
       <option name="orphans">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_ACCESS" />
+        </permissions>
         <link>/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
       </option>
       <option name="regulatorSetup">
+        <permissions>
+          <roleProperty name="CAP_CONTROL_ACCESS" />
+        </permissions>
         <link>/capcontrol/regulator-setup</link>
       </option>
     <option name="dmvTest">
