@@ -15,6 +15,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.api.JmsApi;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -90,7 +91,7 @@ public class GatewayFirmwareUpdateResponseListener extends ArchiveRequestListene
     
     //Not needed, no response is sent for this message
     @Override
-    protected String getRfnArchiveResponseQueueName() {
+    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
         return null;
     }
 }

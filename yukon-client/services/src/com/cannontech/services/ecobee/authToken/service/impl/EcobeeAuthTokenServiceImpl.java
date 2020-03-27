@@ -4,8 +4,6 @@ import static com.cannontech.dr.ecobee.service.EcobeeStatusCode.SUCCESS;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -13,14 +11,15 @@ import javax.jms.ObjectMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.YukonHttpProxy;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.AuthenticationRequest;
@@ -39,23 +38,16 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
 
     
     @Autowired private GlobalSettingDao settingDao;
-    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private final RestTemplate restTemplate;
 
     private Cache<String,String> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();
     private static final String authTokenKey = "authTokenKey";
     private static final String authUrlPart = "register?format=json";
-    private JmsTemplate jmsTemplate;
 
-    private static final int incomingMessageWaitMillis = 1000;
+    private static final Duration incomingMessageWaitMillis = new Duration(1000);
 
-    
-    @PostConstruct
-    public void init() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
-    }
-    
     public EcobeeAuthTokenServiceImpl(RestTemplate proxiedTemplate) {
         this.restTemplate = proxiedTemplate;
     }
@@ -127,7 +119,7 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
             try {
                 if (objMessage.getObject() instanceof EcobeeAuthTokenRequest) {
                     EcobeeAuthTokenResponse response = handle((EcobeeAuthTokenRequest) objMessage.getObject());
-                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), response);
+                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), response, incomingMessageWaitMillis);
                 }
             } catch (Exception e) {
                 log.error("Unable to process message", e);

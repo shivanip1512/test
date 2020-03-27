@@ -32,6 +32,7 @@
     </bean>
     
     <bean class="com.cannontech.message.service.BrokerService"/>
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate"/>
     
     <bean id="brokerSystemMetrics" class="com.cannontech.broker.systemMetrics.BrokerSystemMetricsImpl"
            init-method="init"  destroy-method="destroy">

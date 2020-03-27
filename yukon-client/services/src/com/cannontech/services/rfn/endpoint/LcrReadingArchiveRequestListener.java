@@ -24,6 +24,8 @@ import com.cannontech.common.device.commands.exception.CommandCompletionExceptio
 import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -61,7 +63,6 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
 
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private  Map<Schema, RfnLcrParsingStrategy> strategies;
-    private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
@@ -199,8 +200,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     }
     
     @Override
-    protected String getRfnArchiveResponseQueueName() {
-        return archiveResponseQueueName;
+    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+        return JmsApiDirectory.RFN_LCR_ARCHIVE;
     }
     
     @ManagedAttribute
