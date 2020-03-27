@@ -27,7 +27,8 @@
 		<javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
-              source="${yukon.javac.source}">
+              source="${yukon.javac.source}" 
+              debug="${yukon.javac.debug}">
             <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
 			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
             <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
