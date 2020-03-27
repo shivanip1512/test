@@ -49,9 +49,8 @@
 
         <Logger name="org.springframework" level = "warn"/>
 
-        <logger name="org.springframework.ws.client.MessageTracing" level = "debug"/>
-        <logger name="org.springframework.ws.server.MessageTracing" level = "debug"/>
-
+        <logger name="org.springframework.ws.client.MessageTracing" level = "trace"/>
+        <logger name="org.springframework.ws.server.MessageTracing" level = "trace"/>
 
         <!-- Controls rfn comms logging to the Yukon\Server\Log directory -->
         <Logger name="rfnCommsLogger" level="info" additivity="false">
