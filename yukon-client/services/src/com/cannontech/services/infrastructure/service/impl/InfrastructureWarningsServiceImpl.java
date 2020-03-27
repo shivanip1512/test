@@ -173,7 +173,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 //update warning but maintain date/time
                 InfrastructureWarning existingWarning = optional.get();
                 warnings.add(new InfrastructureWarning(currentWarning.getPaoIdentifier(), currentWarning.getWarningType(), 
-                                                       currentWarning.getSeverity(), existingWarning.getTimestamp(), currentWarning.getArguments()));
+                                                       currentWarning.getSeverity(), existingWarning.getTimestamp(), new Object[0]));
             } else {
                 warnings.add(currentWarning);
             }
