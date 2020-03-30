@@ -289,7 +289,7 @@ public class MapController {
                             List<String> flags = new ArrayList<>();
                             if (routeData.getRouteFlags() != null && !routeData.getRouteFlags().isEmpty()) {
                                 routeData.getRouteFlags().forEach(flag -> {
-                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlagType." + flag.name()));
+                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlag." + flag.name()));
                                 });
                                 model.addAttribute("routeFlags", String.join(", ", flags));
                                 //get distance to next hop
