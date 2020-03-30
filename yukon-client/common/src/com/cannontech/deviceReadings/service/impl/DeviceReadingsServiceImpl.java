@@ -195,52 +195,36 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
 
     /**
      * Class for Serial Number as a selector in request,
-     * 
      * @param deviceReadingsSelector
      * @return DeviceReadingsResponse - Return DeviceReadingsResponse object for Serial Number selector.
-     * We will get IncorrectResultSizeDataAccessException here if more than one devices found for Serial Number.
+     * Here we are expecting we will get unique device for serial number
+     *  IncorrectResultSizeDataAccessException is thrown here if more than one devices found for Serial Number.
      */
     private class BySerialNumberSelector extends PaoSelector {
         @Override
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
-            YukonDevice device = null;
+            DeviceReadingsResponse deviceReadingResponse = null;
             Identifier identifier = deviceReadingsSelector.getIdentifier();
 
-            if (identifier.getSensorManufacturer() != null && identifier.getSensorModel() != null) {
-                RfnIdentifier rfnIdentifier = new RfnIdentifier(identifier.getValue(), identifier.getSensorManufacturer(),
-                        identifier.getSensorModel());
-                Integer deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(rfnIdentifier);
-                device = rfnDeviceDao.getDeviceForId(deviceId);
-            } else if (identifier.getPaoType() != null) {
-                List<RfnDevice> listOfDevices = rfnDeviceDao.getDevicesByPaoType(identifier.getPaoType());
-                if (CollectionUtils.isNotEmpty(listOfDevices)) {
-                    for (RfnDevice rfnDevice : listOfDevices) {
-                        if (rfnDevice.getRfnIdentifier().getSensorSerialNumber().equals(identifier.getValue())) {
-                            device = rfnDevice;
-                        }
-                    }
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(identifier.getValue(), identifier.getSensorManufacturer(),
+                    identifier.getSensorModel());
+
+            List<RfnDevice> rfnDevice = rfnDeviceDao.getDevicesByIdentifierOrPaoType(rfnIdentifier, identifier.getPaoType());
+
+            if (CollectionUtils.isNotEmpty(rfnDevice)) {
+                if (rfnDevice.size() == 1) {
+                    deviceReadingResponse = buildDeviceReadingResponse(deviceReadingsSelector, rfnDevice.get(0));
+                } else {
+                    throw new IncorrectResultSizeDataAccessException(
+                            "Duplicate devices found for Serial number: " + identifier.getValue(), rfnDevice.size());
                 }
-                if (device == null) {
-                    String exceptionMessage = "No device found for Serial Number: " + identifier.getValue() + " and Pao Type: "
-                            + identifier.getPaoType();
-                    throw new NotFoundException(exceptionMessage);
-                }
+
             } else {
-                try {
-                    Integer deviceId = rfnDeviceDao.findDeviceBySensorSerialNumber(identifier.getValue());
-                    if (deviceId != null) {
-                        device = rfnDeviceDao.getDeviceForId(deviceId);
-                    } else {
-                        String exceptionMessage = "No device found for Serial Number: " + identifier.getValue();
-                        throw new NotFoundException(exceptionMessage);
-                    }
-                } catch (IncorrectResultSizeDataAccessException e) {
-                    String exceptionMessage = "Duplicate devices found for Sensor Serial Number: " + identifier.getValue();
-                    log.error(e);
-                    throw new IncorrectResultSizeDataAccessException(exceptionMessage, e.getExpectedSize(), e.getActualSize());
-                }
+                String exceptionMessage = "No device found for Serial Number: " + identifier.getValue();
+                throw new NotFoundException(exceptionMessage);
             }
-            return buildDeviceReadingResponse(deviceReadingsSelector, device);
+
+            return deviceReadingResponse;
         }
     }
 

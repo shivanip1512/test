@@ -1,6 +1,5 @@
 package com.cannontech.amr.rfn.dao;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -170,4 +169,8 @@ public interface RfnDeviceDao {
      * Returns device RfnIdentifiers by gateway ids
      */
     Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds);
+    /**
+     * Returns devices by RfnIdentifier Or PaoType and Serial number.
+     */
+    List<RfnDevice> getDevicesByIdentifierOrPaoType(RfnIdentifier rfnIdentifier, PaoType paoType);
 }

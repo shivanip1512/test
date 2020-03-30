@@ -1,6 +1,5 @@
 package com.cannontech.common.mock;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -158,5 +157,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     @Override
     public Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds) {
         throw new MethodNotImplementedException();
-    }  
+    }
+
+    @Override
+    public List<RfnDevice> getDevicesByIdentifierOrPaoType(RfnIdentifier rfnIdentifier, PaoType paoType) {
+        throw new MethodNotImplementedException();
+    }
+
 }
