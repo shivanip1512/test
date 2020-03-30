@@ -34,8 +34,8 @@ import com.google.common.collect.Sets;
 public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiService {
 	private static final Logger rfnCommsLog = YukonLogManager.getRfnLogger();
 	private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
-	public static final String commsError = "Unable to send request due to a communication error between Yukon and Network Manager.";
-	public static final String nmError = "Received error from Network Manager.";
+	private static final String commsError = "Unable to send request due to a communication error between Yukon and Network Manager.";
+	private static final String nmError = "Received error from Network Manager.";
         
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private NextValueHelper nextValueHelper;

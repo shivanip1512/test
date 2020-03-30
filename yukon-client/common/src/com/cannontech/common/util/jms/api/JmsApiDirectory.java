@@ -1,30 +1,8 @@
 package com.cannontech.common.util.jms.api;
 
-
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DATA_STREAMING;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DIGI_ZIGBEE;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.DR_NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.MONITOR;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.OTHER;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_LCR;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
