@@ -6018,15 +6018,15 @@ Css :
     notes : This library is used to animate shaking the event alarm alert count.
         
   - project : normalize.css
-    version : 2.1.2
+    version : 8.0.1
     project URL : "http://necolas.github.io/normalize.css/"
     license : MIT
     license URLs : "https://github.com/necolas/normalize.css/blob/v2.1.2/LICENSE.md"
-    md5 : 6bc10f9f90af75ddd7742ed35da857c8
-    sha1 : 4f7638582786a145304a4ac92ded24370f4c6554
-    updated : 2014-10-14
-    jira : YUK-12661
-    notes :
+    md5 : 112272e51c80ffe5bd01becd2ce7d656
+    sha1 : 7ffde343bdf10add1f052f3c4308a15180eb4404
+    updated : 2020-03-25
+    jira : YUK-21539
+    notes : This library is used to render elements consistently across all the browsers.
 
   - project : keys.css
     version : ??

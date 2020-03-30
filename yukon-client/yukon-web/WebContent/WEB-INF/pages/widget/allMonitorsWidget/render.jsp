@@ -20,7 +20,7 @@
 <cti:msgScope paths="widgetClasses.DeviceDataMonitorsWidget">
     <c:if test="${not empty deviceDataMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".name"/></th>
@@ -86,7 +86,7 @@
 <cti:msgScope paths="widgets.outageMonitorsWidget">
     <c:if test="${not empty outageMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -156,7 +156,7 @@
 
     <c:if test="${not empty tamperFlagMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -225,7 +225,7 @@
     </c:if>
     <c:if test="${not empty statusPointMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
@@ -288,7 +288,7 @@
 
     <c:if test="${not empty porterResponseMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".name"/></th>
@@ -349,7 +349,7 @@
 
     <c:if test="${not empty validationMonitors}">
      <div class="scroll-lg">
-    <table class="compact-results-table monitor-subs dashed stacked bcs has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
+    <table class="compact-results-table monitor-subs dashed stacked has-alerts has-actions" data-removed-text="${removedText}" data-undo-text="${undoText}">
         <thead>
             <tr>
                 <th class="name"><i:inline key=".tableHeader.name"/></th>
