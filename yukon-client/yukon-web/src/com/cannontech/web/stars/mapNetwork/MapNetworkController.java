@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +57,9 @@ import com.cannontech.web.tools.mapping.model.NearbyDevice;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
-import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
-import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
 
 @RequestMapping("/mapNetwork/*")
 @Controller
@@ -216,16 +216,18 @@ public class MapNetworkController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            Route entireRoute = nmNetworkService.getRoute(deviceId, accessor);
-            if (entireRoute.getErrorMsg() != null) {
-                json.put("errorMsg", entireRoute.getErrorMsg());
+            List<Pair<RfnDevice, FeatureCollection>> entireRoute = nmNetworkService.getRoute(deviceId, accessor);
+            json.put("entireRoute",  entireRoute);
+            if (entireRoute.isEmpty()) {
+               //display error
             }
-            List<RouteInfo> route = entireRoute.getRoute();
-            json.put("routeInfo",  route);
-            //check if any devices in the route have missing location data
-            RfnDevice missingRoute = entireRoute.getDeviceWithoutLocation();
+            //devices in the route that have missing location data
+            List<String> missingRoute = entireRoute.stream()
+            		.filter(value -> value != null && value.getRight() == null)
+            		.map(value -> value.getKey().getName())
+            		.collect(Collectors.toList());
             if (missingRoute != null) {
-                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", missingRoute.getName()));
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(",", missingRoute)));
             }
         } catch (NmNetworkException e) {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));

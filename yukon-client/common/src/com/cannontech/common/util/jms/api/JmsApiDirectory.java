@@ -1,9 +1,30 @@
 package com.cannontech.common.util.jms.api;
 
 
-import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DATA_STREAMING;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DIGI_ZIGBEE;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DR_NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.MONITOR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.OTHER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_LCR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_RESPONSE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -75,16 +96,12 @@ import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersion
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.LocationResponseAck;
-import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
-import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
 import com.cannontech.common.rfn.message.network.RfnParentReply;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
@@ -341,23 +358,6 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
-    
-    public static final JmsApi<RfnPrimaryRouteDataRequest,?,RfnPrimaryRouteDataReply> NETWORK_PRIMARY_ROUTE =
-        JmsApi.builder(RfnPrimaryRouteDataRequest.class, RfnPrimaryRouteDataReply.class)
-              .name("Network Primary Route")
-              .description("Asks NM for the device's route. NM can return NO_PARENT if primary route information is"
-                           + " requested for battery node (water meter). NM searches for the battery node's parent "
-                           + "first, then finds the parent's primary route and returns that as the battery node's "
-                           + "primary route.")
-              .communicationPattern(REQUEST_RESPONSE)
-              .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.network.data.request"))
-              .responseQueue(JmsQueue.TEMP_QUEUE)
-              .requestMessage(RfnPrimaryRouteDataRequest.class)
-              .responseMessage(RfnPrimaryRouteDataReply.class)
-              .sender(YUKON_WEBSERVER)
-              .receiver(NETWORK_MANAGER)
-              .receiver(YUKON_SIMULATORS)
-              .build();
     
     public static final JmsApi<RfnNeighborDataRequest,?,RfnNeighborDataReply> NETWORK_NEIGHBOR =
         JmsApi.builder(RfnNeighborDataRequest.class, RfnNeighborDataReply.class)
@@ -651,20 +651,6 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_EIM)
                   .receiver(NETWORK_MANAGER)
-                  .build();
-    
-    public static final JmsApi<RfnMetadataRequest,?,RfnMetadataResponse> RFN_METADATA =
-            JmsApi.builder(RfnMetadataRequest.class, RfnMetadataResponse.class)
-                  .name("RFN Metadata")
-                  .description("Sends a request for an RFN device's metadata from Yukon to Network Manager.")
-                  .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("yukon.qr.obj.common.rfn.MetadataRequest"))
-                  .responseQueue(JmsQueue.TEMP_QUEUE)
-                  .requestMessage(RfnMetadataRequest.class)
-                  .responseMessage(RfnMetadataResponse.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(NETWORK_MANAGER)
-                  .receiver(YUKON_SIMULATORS)
                   .build();
     
     public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT =
@@ -1243,12 +1229,10 @@ public final class JmsApiDirectory {
         addApis(jmsApis, RF_NETWORK, 
                 NETWORK_NEIGHBOR, 
                 NETWORK_PARENT,
-                NETWORK_PRIMARY_ROUTE,
                 NETWORK_TREE_UPDATE_REQUEST,
                 NETWORK_TREE_UPDATE_RESPONSE);
         
         addApis(jmsApis, RF_MISC, 
-                RFN_METADATA, 
                 RF_METADATA_MULTI,
                 RF_ALARM_ARCHIVE,
                 RF_EVENT_ARCHIVE,

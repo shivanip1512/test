@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
@@ -67,11 +66,9 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
-import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
-import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -292,24 +289,7 @@ public class MapController {
                             List<String> flags = new ArrayList<>();
                             if (routeData.getRouteFlags() != null && !routeData.getRouteFlags().isEmpty()) {
                                 routeData.getRouteFlags().forEach(flag -> {
-                                    //convert to FlagType
-                                    RouteFlagType flagType = RouteFlagType.BR;
-                                    if (flag == RouteFlag.ROUTE_FLAG_IGNORED) {
-                                        flagType = RouteFlagType.IR;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_PRIMARY_FORWARD) {
-                                        flagType = RouteFlagType.PF;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_PRIMARY_REVERSE) {
-                                        flagType = RouteFlagType.PR;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE) {
-                                        flagType = RouteFlagType.RU;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_ROUTE_START_GC) {
-                                        flagType = RouteFlagType.GC;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_TIMED_OUT) {
-                                        flagType = RouteFlagType.TO;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_VALID) {
-                                        flagType = RouteFlagType.VR;
-                                    }
-                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlagType." + flagType.name()));
+                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlagType." + flag.name()));
                                 });
                                 model.addAttribute("routeFlags", String.join(", ", flags));
                                 //get distance to next hop
