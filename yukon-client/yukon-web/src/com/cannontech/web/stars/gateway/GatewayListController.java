@@ -35,10 +35,10 @@ import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
-import com.cannontech.common.rfn.model.RfnRelay;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -49,7 +49,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -59,10 +59,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
 @Controller
-@CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
-                    YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, 
-                    YukonRoleProperty.INFRASTRUCTURE_DELETE, 
-                    YukonRoleProperty.INFRASTRUCTURE_VIEW})
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayListController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
@@ -178,7 +175,7 @@ public class GatewayListController {
         return json;
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping("/gateways/{id}/connect")
     public @ResponseBody Map<String, Object> connect(YukonUserContext userContext, @PathVariable int id) {
         
@@ -198,7 +195,7 @@ public class GatewayListController {
         return json;
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping("/gateways/{id}/disconnect")
     public @ResponseBody Map<String, Object> disconnect(YukonUserContext userContext, @PathVariable int id) {
         

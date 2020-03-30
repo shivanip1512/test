@@ -24,6 +24,7 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -33,17 +34,14 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.mapNetwork.NearbyMiles;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
-    YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, 
-    YukonRoleProperty.INFRASTRUCTURE_DELETE, 
-    YukonRoleProperty.INFRASTRUCTURE_VIEW})
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayDetailController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDetailController.class);
@@ -99,7 +97,7 @@ public class GatewayDetailController {
         return "gateways/detail.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_DELETE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, LiteYukonUser user, ModelMap model, @PathVariable int id) {
         

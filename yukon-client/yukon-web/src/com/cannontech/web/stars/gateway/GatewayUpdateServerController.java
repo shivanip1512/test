@@ -34,6 +34,7 @@ import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.LazyList;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -41,8 +42,8 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
@@ -78,7 +79,7 @@ public class GatewayUpdateServerController {
         }
     }
 
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/update-servers")
     public String editUpdateServers(ModelMap model, YukonUserContext userContext) {
 
@@ -116,7 +117,7 @@ public class GatewayUpdateServerController {
         return "gateways/update-servers.jsp";
     }
 
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="/gateways/update-servers", method=RequestMethod.POST)
     public String saveUpdateServers(
         ModelMap model,
@@ -168,7 +169,7 @@ public class GatewayUpdateServerController {
         return JsonUtils.writeResponse(resp, json);
     }
 
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value = "/gateways/firmware-upgrade", method=RequestMethod.GET)
     public String firmwareUpgrade(ModelMap model, YukonUserContext userContext) {
         try {
@@ -233,7 +234,7 @@ public class GatewayUpdateServerController {
         }
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value = "/gateways/firmware-upgrade", method=RequestMethod.POST)
     public String sendFirmwareUpgrade(
         HttpServletResponse resp,
