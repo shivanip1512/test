@@ -226,7 +226,7 @@ public class MapNetworkController {
             		.filter(value -> value != null && value.getRight() == null)
             		.map(value -> value.getKey().getName())
             		.collect(Collectors.toList());
-            if (missingRoute != null) {
+            if (!missingRoute.isEmpty()) {
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(",", missingRoute)));
             }
         } catch (NmNetworkException e) {
