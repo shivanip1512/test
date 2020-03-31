@@ -12,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -40,6 +41,7 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired protected DeviceDao deviceDao;
+    @Autowired protected MeterDao meterDao;
     @Autowired protected RfnDeviceDao rfnDeviceDao;
 
     private ImmutableMap<IdentifierType, PaoSelector> paoSelectors;
@@ -74,8 +76,13 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         for (DeviceReadingsSelector deviceReadingsSelector : deviceReadingRequest.getDeviceReadingsSelectors()) {
             Identifier identifier = deviceReadingsSelector.getIdentifier();
             if (identifier != null && identifier.getIdentifierType() != null) {
-                listDeviceReadingResponse
+                try {
+                    listDeviceReadingResponse
                         .add(paoSelectors.get(identifier.getIdentifierType()).selectPaos(deviceReadingsSelector));
+                } catch (NotFoundException ex) {
+                    log.error("Lookup device by {} failed. {}", identifier.getIdentifierType(), ex.getMessage());
+                    throw ex;
+                }
             }
         }
         return listDeviceReadingResponse;
@@ -119,19 +126,14 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         @Override
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse response = null;
-            Identifier identifier = deviceReadingsSelector.getIdentifier();
-            if (identifier.getValue() != null) {
+            String meterNumber = deviceReadingsSelector.getIdentifier().getValue();
+            if (meterNumber != null) {
                 try {
-                    YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(identifier.getValue());
-                    response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
-                } catch (EmptyResultDataAccessException e) {
-                    String exceptionMessage = "Unknown meter number " + identifier.getValue();
+                    YukonMeter yukonMeter = meterDao.getForMeterNumber(meterNumber);
+                    response = buildDeviceReadingResponse(deviceReadingsSelector, yukonMeter);
+                } catch (NotFoundException e) {
                     log.error(e);
-                    throw new EmptyResultDataAccessException(exceptionMessage, e.getExpectedSize());
-                } catch (IncorrectResultSizeDataAccessException e) {
-                    String exceptionMessage = "Duplicate meters were found for this meter number  " + identifier.getValue();
-                    log.error(e);
-                    throw new IncorrectResultSizeDataAccessException(exceptionMessage, e.getExpectedSize(), e.getActualSize());
+                    throw e;
                 }
             }
             return response;
@@ -150,19 +152,15 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         @Override
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse response = null;
-            Identifier identifier = deviceReadingsSelector.getIdentifier();
-            if (identifier.getValue() != null) {
+            String deviceName = deviceReadingsSelector.getIdentifier().getValue();
+            if (deviceName != null) {
                 try {
-                    YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByName(identifier.getValue());
+                    YukonDevice yukonDevice = deviceDao.getYukonDeviceObjectByName(deviceName);
                     response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
                 } catch (EmptyResultDataAccessException e) {
-                    String exceptionMessage = "Pao Object not found for Pao name: " + identifier.getValue();
-                    log.error(e);
-                    throw new EmptyResultDataAccessException(exceptionMessage, e.getExpectedSize());
+                    throw new NotFoundException("Unknown device name: " + deviceName);
                 } catch (IncorrectResultSizeDataAccessException e) {
-                    String exceptionMessage = "Duplicate Pao Object found for Pao name: " + identifier.getValue();
-                    log.error(e);
-                    throw new IncorrectResultSizeDataAccessException(exceptionMessage, e.getExpectedSize(), e.getActualSize());
+                    throw new NotFoundException("Duplicate devices found for device name: " + deviceName);
                 }
             }
             return response;
@@ -178,15 +176,18 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         @Override
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse response = null;
-            Identifier identifier = deviceReadingsSelector.getIdentifier();
-            if (identifier.getValue() != null) {
+            String paoIdStr = deviceReadingsSelector.getIdentifier().getValue();
+            if (paoIdStr != null) {
                 try {
-                    YukonDevice yukonDevice = deviceDao.getYukonDevice(Integer.parseInt(identifier.getValue()));
-                    response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
-                } catch (EmptyResultDataAccessException e) {
-                    String exceptionMessage = "Pao Object not found for PaoId: " + identifier.getValue();
-                    log.error(e);
-                    throw new EmptyResultDataAccessException(exceptionMessage, e.getExpectedSize());
+                    Integer paoId = Integer.parseInt(deviceReadingsSelector.getIdentifier().getValue());
+                    try {
+                        YukonDevice yukonDevice = deviceDao.getYukonDevice(paoId);
+                        response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
+                    } catch (NotFoundException e) {
+                        throw e;
+                    }
+                } catch (NumberFormatException e) {
+                    throw new NotFoundException("Unknown paoId: " + paoIdStr);
                 }
             }
             return response;
@@ -205,25 +206,18 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse deviceReadingResponse = null;
             Identifier identifier = deviceReadingsSelector.getIdentifier();
-
-            RfnIdentifier rfnIdentifier = new RfnIdentifier(identifier.getValue(), identifier.getSensorManufacturer(),
-                    identifier.getSensorModel());
-
-            List<RfnDevice> rfnDevice = rfnDeviceDao.getDevicesByIdentifierOrPaoType(rfnIdentifier, identifier.getPaoType());
-
-            if (CollectionUtils.isNotEmpty(rfnDevice)) {
-                if (rfnDevice.size() == 1) {
-                    deviceReadingResponse = buildDeviceReadingResponse(deviceReadingsSelector, rfnDevice.get(0));
-                } else {
-                    throw new IncorrectResultSizeDataAccessException(
-                            "Duplicate devices found for Serial number: " + identifier.getValue(), rfnDevice.size());
+            if (identifier.getValue() != null) {
+                try {
+                    RfnDevice rfnDevice = rfnDeviceDao.findDeviceBySensorSerialNumber(identifier.getValue());
+                    if (rfnDevice != null) {
+                        deviceReadingResponse = buildDeviceReadingResponse(deviceReadingsSelector, rfnDevice);
+                    } else {
+                        throw new NotFoundException("Unknown serial number: " + identifier.getValue());
+                    }
+                } catch (IncorrectResultSizeDataAccessException e) {
+                    throw new NotFoundException("Duplicate devices found for serial number: " + identifier.getValue());
                 }
-
-            } else {
-                String exceptionMessage = "No device found for Serial Number: " + identifier.getValue();
-                throw new NotFoundException(exceptionMessage);
             }
-
             return deviceReadingResponse;
         }
     }

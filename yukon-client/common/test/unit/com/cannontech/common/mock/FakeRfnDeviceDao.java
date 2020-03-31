@@ -100,7 +100,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
+    public RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber) {
         throw new MethodNotImplementedException();
     }
 
@@ -158,10 +158,4 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     public Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds) {
         throw new MethodNotImplementedException();
     }
-
-    @Override
-    public List<RfnDevice> getDevicesByIdentifierOrPaoType(RfnIdentifier rfnIdentifier, PaoType paoType) {
-        throw new MethodNotImplementedException();
-    }
-
 }

@@ -329,13 +329,16 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
-    public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
+    public RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId");
-        sql.append("FROM RfnAddress WHERE SerialNumber").eq(sensorSerialNumber);
+        sql.append("SELECT pao.paoName, pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM YukonPaobject pao");
+        sql.append("  JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
+        sql.append("WHERE SerialNumber").eq(sensorSerialNumber);
         
         try {
-            return jdbcTemplate.queryForInt(sql);
+            RfnDevice rfnDevice= jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
+            return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -598,28 +601,5 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             log.error("Device " + deviceId + " is not assiciated with a gateway");
             return null;
         }
-    }
-    
-    /**
-     * Returns List<RfnDevice> for RfnIdentifier or PaoType and serialNumber.
-     */
-    @Override
-    public List<RfnDevice> getDevicesByIdentifierOrPaoType(RfnIdentifier rfnIdentifier, PaoType paoType) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("FROM YukonPaObject ypo");
-        sql.append("  JOIN  RfnAddress rfn ON ypo.PAObjectID = rfn.DeviceId");
-        sql.append("WHERE rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
-
-        if (rfnIdentifier.getSensorManufacturer() != null && rfnIdentifier.getSensorModel() != null) {
-            sql.append("  AND rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
-            sql.append("  AND rfn.Model").eq(rfnIdentifier.getSensorModel());
-        }
-
-        if (paoType != null) {
-            sql.append("  AND ypo.Type").eq(paoType);
-        }
-
-        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
 }

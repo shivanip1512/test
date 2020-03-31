@@ -125,7 +125,7 @@ public interface RfnDeviceDao {
      */
     Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
 
-    Integer findDeviceBySensorSerialNumber(String sensorSerialNumber);
+    RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber);
 
     /**
      * Returns device id for rfn identifier. Cache lookup.
@@ -169,8 +169,4 @@ public interface RfnDeviceDao {
      * Returns device RfnIdentifiers by gateway ids
      */
     Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds);
-    /**
-     * Returns devices by RfnIdentifier Or PaoType and Serial number.
-     */
-    List<RfnDevice> getDevicesByIdentifierOrPaoType(RfnIdentifier rfnIdentifier, PaoType paoType);
 }
