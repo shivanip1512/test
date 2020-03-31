@@ -144,6 +144,8 @@ import com.cannontech.common.point.AccumulatorType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnMessageClass;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.survey.model.QuestionType;
 import com.cannontech.common.temperature.CelsiusTemperature;
 import com.cannontech.common.temperature.FahrenheitTemperature;
@@ -387,6 +389,8 @@ public class SimpleImmutabilityTest {
             RfnIdentifier.class,
             RfnLcrTlvPointDataType.class,
             RfnMessageClass.class,
+            RfnMetadataMulti.class,
+            RouteFlag.class,
             RphTag.class,
             SelectionListCategory.class,
             SimpleDevice.class,
