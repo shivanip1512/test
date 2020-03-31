@@ -36,6 +36,8 @@ import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
@@ -52,6 +54,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private NmNetworkService nmNetworkService;
+    @Autowired private DateFormattingService dateFormattingService;
     
     private String keyPrefix = "yukon.web.widgets.RfnDeviceMetadataWidget.";
        
@@ -109,11 +112,11 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
 					metadataPairs.add(pair);
 					csrMetadataPairs.add(pair);
 				} else {
-					pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), commStatus.getNodeCommStatus());
+					pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), commStatus.getNodeCommStatus().name());
 					metadataPairs.add(pair);
 					csrMetadataPairs.add(pair);
-					pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS_TIMESTAMP"),
-							commStatus.getNodeCommStatusTimestamp());
+		            String dateTime = dateFormattingService.format(commStatus.getNodeCommStatusTimestamp(), DateFormatEnum.DATEHM, context);
+					pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS_TIMESTAMP"), dateTime);
 					metadataPairs.add(pair);
 					csrMetadataPairs.add(pair);
 				}
@@ -126,10 +129,11 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
 				metadataPairs.add(pair);
 				csrMetadataPairs.add(pair);
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HARDWARE_VERSION"), data.getHardwareVersion()));
-				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IN_NETWORK_TIMESTAMP"), data.getInNetworkTimestamp()));
+                String dateTime = dateFormattingService.format(data.getInNetworkTimestamp(), DateFormatEnum.DATEHM, context);
+				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IN_NETWORK_TIMESTAMP"), dateTime));
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_ADDRESS"), data.getFirmwareVersion()));
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_FIRMWARE_VERSION"), data.getFirmwareVersion()));
-				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_TYPE"), data.getNodeType()));
+				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_TYPE"), accessor.getMessage(keyPrefix + "NODE_TYPE." + data.getNodeType())));
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRODUCT_NUMBER"), data.getProductNumber()));
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "SUB_MODULE_FIRMWARE_VERSION"), data.getSecondaryModuleFirmwareVersion()));
 				if(data.getWifiSuperMeterData() != null) {
@@ -142,13 +146,13 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
 				NodeNetworkInfo info = (NodeNetworkInfo) metadataMulti.getMetadatas().get(NODE_NETWORK_INFO);
 				if (!info.getNodeGroupNames().isEmpty()) {
 					Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "GROUPS"),
-							String.join(",", info.getNodeGroupNames()));
+							String.join(", ", info.getNodeGroupNames()));
 					metadataPairs.add(pair);
 					csrMetadataPairs.add(pair);
 				}
 				if (!info.getNodeNames().isEmpty()) {
 					metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_NAMES"),
-							String.join(",", info.getNodeNames())));
+							String.join(", ", info.getNodeNames())));
 				}
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), info.getIpv6Address()));
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HOSTNAME"), info.getHostname()));
@@ -172,7 +176,8 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
 			if (metadataMulti.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA)) {
 				NeighborData data = (NeighborData) metadataMulti.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_NEIGHBOR"), data.getNeighborMacAddress()));
-				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_NEIGHBOR_DATA_TIMESTAMP"), data.getNeighborDataTimestamp()));
+				String dateTime = dateFormattingService.format(data.getNeighborDataTimestamp(), DateFormatEnum.DATEHM, context);
+				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_NEIGHBOR_DATA_TIMESTAMP"), dateTime));
 				metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_NEIGHBOR_LINK_COST"), data.getNeighborLinkCost()));
 			} else {
 				log.info("PRIMARY_FORWARD_NEIGHBOR_DATA not found for {}", device);
@@ -197,6 +202,9 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
 			model.addAttribute("error", nmError);
 			log.error("Failed to get metadata for " + device.getPaoIdentifier().getPaoId(), e);
 		}
+        if (model.get("error") == null) {
+            model.addAttribute("showAll", true);
+        }
 		return "rfnDeviceMetadataWidget/render.jsp";
     }
 }
