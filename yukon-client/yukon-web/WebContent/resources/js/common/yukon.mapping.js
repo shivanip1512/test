@@ -700,6 +700,20 @@ yukon.mapping = (function () {
                 }
             }
         },
+        
+        getFeatureFromRouteData: function(routeData) {
+            if (routeData != null) {
+                var features = Object.keys(routeData).map(function (key) {
+                    var device = routeData[key];
+                    if (device != null && device.features != null) {
+                        return device.features[0];
+                    }
+                });
+                if (features != null) {
+                    return features[0];
+                }
+            }
+        },
                 
         showHideAllRoutes: function(gatewayIds) {
             $('.js-no-location-message').addClass('dn');

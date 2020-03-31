@@ -112,7 +112,6 @@ yukon.map.comprehensive = (function () {
         for (var i in _icons) {
             var icon = _icons[i];
             icon.unset("neighbor");
-            icon.unset("routeInfo");
         }
         if (_deviceFocusCurrentIcon != null) {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
@@ -123,6 +122,7 @@ yukon.map.comprehensive = (function () {
         var source = yukon.mapping.getIconLayerSource(),
             focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
+            dashedLine = false;
             routeLineWidth = 2.5;
 
         _primaryRoutePreviousPoints = null;
@@ -132,58 +132,69 @@ yukon.map.comprehensive = (function () {
 
         for (var x in routeInfo) {
             var route = routeInfo[x],
-                feature = route.location.features[0],
-                pao = feature.properties.paoIdentifier,
-                style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-                icon = new ol.Feature({ routeInfo: route, pao: pao });
-            icon.setId(feature.id);
+                feature = yukon.mapping.getFeatureFromRouteData(route);
             
-            //check if device already exists on map...the first device will always be the original device so make the icon larger
-            var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, x == 0);
-            if (deviceFound) {
-                icon = deviceFound;
-                icon.set("routeInfo", route);
-                icon.unset("neighbor");
+            if (feature == null) {
+                dashedLine = true;
+                $('.js-no-location-message').removeClass('dn');
             } else {
-                icon.setStyle(style);
-                if (x == 0) {
-                    yukon.mapping.makeDeviceIconLarger(icon);
-                }
-                if (_srcProjection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                var pao = feature.properties.paoIdentifier,
+                    style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                    icon = new ol.Feature({ pao: pao });
+                icon.setId(feature.id);
+                
+                //check if device already exists on map...the first device will always be the original device so make the icon larger
+                var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, x == 0);
+                if (deviceFound) {
+                    icon = deviceFound;
+                    icon.unset("neighbor");
                 } else {
-                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                    icon.setGeometry(new ol.geom.Point(coord));
+                    icon.setStyle(style);
+                    if (x == 0) {
+                        yukon.mapping.makeDeviceIconLarger(icon);
+                    }
+                    if (_srcProjection === _destProjection) {
+                        icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                    } else {
+                        var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                        icon.setGeometry(new ol.geom.Point(coord));
+                    }
+                    
+                    _deviceFocusIcons.push(icon);
+                    source.addFeature(icon);
                 }
                 
-                _deviceFocusIcons.push(icon);
-                source.addFeature(icon);
+                //draw line
+                var points = [];
+                points.push(icon.getGeometry().getCoordinates());
+                if (_primaryRoutePreviousPoints != null) {
+                    points.push(_primaryRoutePreviousPoints);
+                } else {
+                    points.push(focusPoints);
+                }
+                _primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                
+                var layerLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        })]
+                    }),
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ 
+                            color: _routeColor, 
+                            width: routeLineWidth,
+                            lineDash: dashedLine ? [10,10] : null
+                        })
+                    })
+                });
+                
+                _deviceFocusLines.push(layerLines);
+                _map.addLayer(layerLines);
+                dashedLine = false;
             }
-            
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            if (_primaryRoutePreviousPoints != null) {
-                points.push(_primaryRoutePreviousPoints);
-            } else {
-                points.push(focusPoints);
-            }
-            _primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: _routeColor, width: routeLineWidth })
-                })
-            });
-            
-            _deviceFocusLines.push(layerLines);
-            _map.addLayer(layerLines);
+
         }
         
         var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _deviceFocusIcons})});
@@ -198,7 +209,6 @@ yukon.map.comprehensive = (function () {
             clonedFocusDevice = focusDevice.clone();
             
         clonedFocusDevice.setStyle(focusDevice.getStyle().clone());
-        clonedFocusDevice.unset("routeInfo");
         clonedFocusDevice.unset("neighbor");
             
         _removeDeviceFocusLayers();
@@ -223,7 +233,6 @@ yukon.map.comprehensive = (function () {
             if (neighborFound) {
                 icon = neighborFound;
                 icon.set("neighbor", neighbor);
-                icon.unset("routeInfo");
             } else {
                 icon.setStyle(style);
 
@@ -489,8 +498,8 @@ yukon.map.comprehensive = (function () {
                 yukon.ui.block(mapContainer);
                 $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute') + '?' + $.param({ deviceId: deviceId }))
                 .done(function (json) {
-                    if (json.routeInfo) {
-                        _addPrimaryRouteToMap(deviceId, json.routeInfo);
+                    if (json.entireRoute) {
+                        _addPrimaryRouteToMap(deviceId, json.entireRoute);
                     }
                     if (json.errorMsg) {
                         yukon.ui.alertError(json.errorMsg);

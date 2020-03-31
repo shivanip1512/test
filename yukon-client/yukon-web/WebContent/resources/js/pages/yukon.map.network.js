@@ -213,7 +213,6 @@ yukon.map.network = (function () {
             if (neighborFound) {
                 icon = neighborFound;
                 icon.set("neighbor", neighbor);
-                icon.unset("routeInfo");
             } else {
                 icon.setStyle(style);
                 
@@ -295,17 +294,6 @@ yukon.map.network = (function () {
     _loadDeviceNeighbors = function(deviceId, neighbors) {
         _addNeighborDataToMap(deviceId, neighbors);
     },
-    
-    _getFeatureFromRouteData = function(routeData) {
-        if (routeData != null) {
-            var features = Object.keys(routeData).map(function (key) {
-                    return routeData[key].features[0];
-                });
-            if (features != null) {
-                return features[0];
-            }
-        }
-    },
 
     _addPrimaryRouteToMap = function(deviceId, routeInfo) {
         var source = yukon.mapping.getIconLayerSource(),
@@ -327,10 +315,11 @@ yukon.map.network = (function () {
 
         for (x in routeInfo) {
             var route = routeInfo[x];
-                feature = _getFeatureFromRouteData(route);
+                feature = yukon.mapping.getFeatureFromRouteData(route);
                 
             if (feature == null) {
                 dashedLine = true;
+                $('.js-no-location-message').removeClass('dn');
             } else {
                 var pao = feature.properties.paoIdentifier,
                     style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
