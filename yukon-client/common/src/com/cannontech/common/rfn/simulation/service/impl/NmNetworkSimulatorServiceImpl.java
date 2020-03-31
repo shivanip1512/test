@@ -278,12 +278,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         log.debug("devicesToGatewayMap size {}", deviceDataMap.size());
         log.debug("rfnIdentifiers size {}", rfnIdentifiers.size());
 
-
         for (RfnIdentifier device : rfnIdentifiers) {
             try {
                 RfnDevice rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(device);
                 RfnIdentifier gateway = null;
-                if(deviceDataMap.get(device) != null) {
+                if (deviceDataMap.get(device) != null) {
                     gateway = deviceDataMap.get(device).getGateway().getRfnIdentifier();
                 }
                 for (RfnMetadataMulti multi : request.getRfnMetadatas()) {
@@ -303,13 +302,13 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         Integer descendantCount = deviceDataMap.get(device).getDescendantCount();
                         addObjectToResult(results, device, multi, descendantCount);
                     } else if (multi == RfnMetadataMulti.PRIMARY_FORWARD_ROUTE) {
-                    	addObjectToResult(results, device, multi, getRoute(rfnDevice.getRfnIdentifier(), gateway));
+                        addObjectToResult(results, device, multi, getRoute(rfnDevice.getRfnIdentifier(), gateway));
                     } else if (multi == RfnMetadataMulti.NODE_NETWORK_INFO) {
-                    	addObjectToResult(results, device, multi, getNetworkInfo(rfnDevice.getRfnIdentifier()));
+                        addObjectToResult(results, device, multi, getNetworkInfo(rfnDevice.getRfnIdentifier()));
                     } else if (multi == RfnMetadataMulti.READY_BATTERY_NODE_COUNT) {
-                    	addObjectToResult(results, device, multi, 3);
+                        addObjectToResult(results, device, multi, 3);
                     } else if (multi == RfnMetadataMulti.NEIGHBOR_COUNT) {
-                    	addObjectToResult(results, device, multi, 4);
+                        addObjectToResult(results, device, multi, 4);
                     }
                 }
             } catch (Exception e) {
@@ -321,23 +320,23 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     }
 
     private NodeNetworkInfo getNetworkInfo(RfnIdentifier rfnIdentifier) {
-    	NodeNetworkInfo info = new NodeNetworkInfo();
-    	info.setHostname("Hostname");
-    	info.setIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
-    	info.addNodeGroupName("Group 1");
-    	info.addNodeName("Group 1");
-    	if(new Random().nextBoolean()) {
-    	  	info.addNodeGroupName("Group 2");
-        	info.addNodeName("Group 2");
-    	}
-    	if(new Random().nextBoolean()) {
-    	  	info.addNodeGroupName("Group 3");
-        	info.addNodeName("Group 3");
-    	}
-		return info;
-	}
+        NodeNetworkInfo info = new NodeNetworkInfo();
+        info.setHostname("Hostname");
+        info.setIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
+        info.addNodeGroupName("Group 1");
+        info.addNodeName("Group 1");
+        if (new Random().nextBoolean()) {
+            info.addNodeGroupName("Group 2");
+            info.addNodeName("Group 2");
+        }
+        if (new Random().nextBoolean()) {
+            info.addNodeGroupName("Group 3");
+            info.addNodeName("Group 3");
+        }
+        return info;
+    }
 
-	private void addObjectToResult(Map<RfnIdentifier, RfnMetadataMultiQueryResult> results, RfnIdentifier device,
+    private void addObjectToResult(Map<RfnIdentifier, RfnMetadataMultiQueryResult> results, RfnIdentifier device,
             RfnMetadataMulti multi, Object object) {
         if (!results.containsKey(device)) {
             RfnMetadataMultiQueryResult newResult = new RfnMetadataMultiQueryResult();
@@ -375,8 +374,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
         int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
         neighborData.setNeighborLinkCost((float) randomElement);
-        //Generates random short between 1 and 6 for the ExtBand
-        short randomEtxBand = (short)(Math.random() * (5) + 1);
+        // Generates random short between 1 and 6 for the ExtBand
+        short randomEtxBand = (short) (Math.random() * (5) + 1);
         neighborData.setEtxBand(randomEtxBand);
         List<Integer> numSamples = Arrays.asList(49, 50, 51);
         randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
@@ -398,7 +397,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         node.setProductNumber("123456789 (Sim)");
         node.setNodeSerialNumber("4260060913");
         node.setSecondaryModuleFirmwareVersion("R2.2.0Wp");
-        if(wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
+        if (wiFiSuperMeters.contains(rfnDevice.getPaoIdentifier().getPaoType())) {
             node.setWifiSuperMeterData(getSuperMeterData());
         }
         return node;
@@ -406,7 +405,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
 
     private Set<RfnIdentifier> getRfnIdentifiers(RfnMetadataMultiRequest request) {
         Set<RfnIdentifier> rfnIdentifiers = new HashSet<>();
-        //by gateway identifier
+        // by gateway identifier
         if (!CollectionUtils.isEmpty(request.getPrimaryForwardNodesForGatewayRfnIdentifiers())) {
             for (RfnIdentifier device : request.getPrimaryForwardNodesForGatewayRfnIdentifiers()) {
                 RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(device);
@@ -419,7 +418,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         }
         return rfnIdentifiers;
     }
-    
+
     private RfnVertex getVertex(RfnDevice gateway) {
         RfnVertex vertex = vertexCache.getIfPresent(gateway.getRfnIdentifier());
         if (vertex == null) {
@@ -441,15 +440,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         superMeterData.setVirtualGatewayIpv6Address("FD30:0000:0000:0001:0214:08FF:FE0A:BF91");
         return superMeterData;
     }
-    
+
     private List<RfnIdentifier> getDevicesForGateway(RfnDevice gateway) {
         // int connectedNodesWarningLimit =
         // globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD);
-        //since mapping simulator is now configurable (we can map the # of devices to gateway), the limitation is removed here
+        // since mapping simulator is now configurable (we can map the # of devices to gateway), the limitation is removed here
         return rfnDeviceDao.getRfnIdentifiersForGateway(gateway.getPaoIdentifier().getPaoId(), 100000);
     }
-    
-   private NodeComm getNodeComm(RfnIdentifier device, RfnIdentifier gateway) {
+
+    private NodeComm getNodeComm(RfnIdentifier device, RfnIdentifier gateway) {
         boolean isReady = new Random().nextBoolean();
         NodeComm comm = new NodeComm();
         comm.setNodeCommStatusTimestamp(1517588257267L);
@@ -458,7 +457,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         comm.setDeviceRfnIdentifier(device);
         return comm;
     }
- 
+
     @Override
     public void stop() {
         log.info("Stopping NM Network Simulator");
@@ -606,18 +605,18 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     /**
      * Creates a response with the route information.
      */
-    public RfnRoute getRoute(RfnIdentifier identifier,  RfnIdentifier gateway) {
-        RfnDevice device= rfnDeviceDao.getDeviceForExactIdentifier(identifier);
+    public RfnRoute getRoute(RfnIdentifier identifier, RfnIdentifier gateway) {
+        RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
         int max = getRandomNumberInRange(2, 8);
         List<RfnDevice> neighbors = getNeighbors(device, max);
         RfnRoute route = new RfnRoute();
-        route.add(gateway);
         Integer nodeNullPercent = yukonSimulatorSettingsDao
                 .getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL);
-		neighbors.forEach(neighbor -> {
-			route.add(new Random().nextInt(100) < nodeNullPercent ? getNullIdentifier(neighbor.getRfnIdentifier())
-					: neighbor.getRfnIdentifier());
+        neighbors.forEach(neighbor -> {
+            route.add(new Random().nextInt(100) < nodeNullPercent ? getNullIdentifier(neighbor.getRfnIdentifier()) : neighbor
+                    .getRfnIdentifier());
         });
+        route.add(gateway);
         return route;
     }
     
