@@ -1,0 +1,55 @@
+package com.cannontech.common.device.port.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.TcpPortDetail;
+import com.cannontech.common.device.port.service.PortService;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.TransactionType;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.port.DirectPort;
+import com.cannontech.database.data.port.PortFactory;
+import com.cannontech.yukon.IDatabaseCache;
+
+public class PortServiceImpl implements PortService {
+
+    @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private IDatabaseCache dbCache;
+
+    @Override
+    @Transactional
+    public Integer create(PortBase portInfo) {
+        DirectPort port = (DirectPort ) PortFactory.createPort(portInfo.getType());
+        portInfo.buildDBPersistent(port);
+        dbPersistentDao.performDBChange(port, TransactionType.INSERT);
+        return port.getPAObjectID();
+    }
+
+    @Override
+    public PortBase retrieve(int portId) {
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(portId);
+        if (pao == null) {
+            throw new NotFoundException("Port Id not found");
+        }
+        DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(pao);
+        PortBase portBase = getModel(directPort.getPaoType());
+        portBase.buildModel(directPort);
+        return portBase;
+    }
+
+    private PortBase getModel(PaoType paoType) {
+        PortBase port = null;
+        switch (paoType) {
+        case TCPPORT :
+            port = new TcpPortDetail();
+            break;
+        // TODO : Add for other Ports here.
+        }
+        
+        return port;
+    }
+}
