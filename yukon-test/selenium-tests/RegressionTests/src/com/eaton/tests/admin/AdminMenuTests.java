@@ -13,12 +13,12 @@ import com.eaton.pages.HomePage;
 public class AdminMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
-    private static final String ADMIN = "Admin";
+    private static final int ADMIN_INDEX = 5;
     private static final String EXPECTED = "Expected Url: ";
     private static final String ACTUAL = " Actual Url: ";
     private String baseUrl;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
@@ -33,7 +33,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     @Test
     public void configurationUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ADMIN, "Configuration");
+        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 0);
 
         Assert.assertTrue(url.contains(Urls.Admin.CONFIGURATION), EXPECTED + baseUrl + Urls.Admin.CONFIGURATION + ACTUAL + url);
     }
@@ -41,7 +41,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     @Test
     public void energyCompanyUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ADMIN, "Energy Company");
+        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 1);
 
         Assert.assertTrue(url.contains(Urls.Admin.ENERGY_COMPANY), EXPECTED + baseUrl + Urls.Admin.ENERGY_COMPANY + ACTUAL + url);
     }
@@ -49,7 +49,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     @Test
     public void maintenanceUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ADMIN, "Maintenance");
+        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 2);
 
         Assert.assertTrue(url.contains(Urls.Admin.MAINTENANCE), EXPECTED + baseUrl + Urls.Admin.MAINTENANCE + ACTUAL + url);
     }
@@ -57,7 +57,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     @Test
     public void multiSpeakUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ADMIN, "MultiSpeak");
+        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 3);
 
         Assert.assertTrue(url.contains(Urls.Admin.MULTI_SPEAK), EXPECTED + baseUrl + Urls.Admin.MULTI_SPEAK + ACTUAL + url);
     }
@@ -65,7 +65,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     @Test
     public void substationsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ADMIN, "Substations");
+        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 4);
 
         Assert.assertTrue(url.contains(Urls.Admin.SUBSTATIONS), EXPECTED + baseUrl + Urls.Admin.SUBSTATIONS + ACTUAL + url);
     }
@@ -73,7 +73,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     @Test
     public void usersAndGroupsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ADMIN, "Users and Groups");
+        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 5);
 
         Assert.assertTrue(url.contains(Urls.Admin.USERS_AND_GROUPS), EXPECTED + baseUrl + Urls.Admin.USERS_AND_GROUPS + ACTUAL + url);
     }
@@ -81,7 +81,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
     @Test
     public void reportsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(ADMIN, "Reports");
+        String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 6);
 
         Assert.assertTrue(url.contains(Urls.Admin.REPORTS), EXPECTED + baseUrl + Urls.Admin.REPORTS + ACTUAL + url);
     }

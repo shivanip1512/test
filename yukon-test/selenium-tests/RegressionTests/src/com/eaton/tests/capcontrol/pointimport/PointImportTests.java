@@ -14,7 +14,7 @@ public class PointImportTests extends SeleniumTestSetup {
 
     PointImportPage importPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

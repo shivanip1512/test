@@ -26,6 +26,7 @@ public class TextEditElement extends EditElement {
     public void setInputValue(String value) {
         WebElement input = getEditElement();
         
+        input.click();
         input.clear();
         
         Actions action = new Actions(driverExt.getDriver());

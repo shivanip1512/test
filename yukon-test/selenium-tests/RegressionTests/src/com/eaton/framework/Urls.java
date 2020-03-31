@@ -19,6 +19,7 @@ public final class Urls {
         public static final String BILLING = "/billing/home";
         public static final String BULK_IMPORT = "/bulk/import/upload";
         public static final String BULK_UPDATE = "/bulk/update/upload";
+        public static final String POINT_IMPORT = "/bulk/pointImport/upload";
         public static final String LEGACY_IMPORTER = "/amr/bulkimporter/home";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=METERING";
         

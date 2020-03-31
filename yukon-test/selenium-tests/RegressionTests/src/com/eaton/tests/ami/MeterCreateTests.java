@@ -31,7 +31,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
     
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -138,7 +138,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         return sb.toString();
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {
         refreshPage(amiDashboardPage);
     }

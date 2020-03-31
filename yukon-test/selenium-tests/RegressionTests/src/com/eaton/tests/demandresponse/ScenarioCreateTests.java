@@ -21,7 +21,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
     private ScenarioCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();  
@@ -61,7 +61,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
     }    
     
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {        
         refreshPage(createPage);
     }

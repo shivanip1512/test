@@ -14,7 +14,7 @@ public class CiProgramListTests extends SeleniumTestSetup {
 
     private ProgramListPage programPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();

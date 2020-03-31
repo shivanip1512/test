@@ -22,7 +22,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
     private EnergyCompanyCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();        
         driverExt = getDriverExt();
@@ -69,7 +69,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, START_EXPECTED_MSG + name + END_EXPECTED_MSG, "Expected User Msg: '" + START_EXPECTED_MSG + name + END_EXPECTED_MSG + "' but found: " + userMsg);
     }    
     
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {        
         refreshPage(createPage);
     }

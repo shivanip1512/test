@@ -14,7 +14,7 @@ public class GroupListTests extends SeleniumTestSetup {
 
     private CiGroupListPage listPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

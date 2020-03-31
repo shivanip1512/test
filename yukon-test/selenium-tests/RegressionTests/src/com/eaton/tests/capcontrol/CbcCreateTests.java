@@ -23,7 +23,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     Random randomNum;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -69,7 +69,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User MsgL:'" + EXPECTED_MSG + "' but found: " + userMsg);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {
         refreshPage(createPage);
     }

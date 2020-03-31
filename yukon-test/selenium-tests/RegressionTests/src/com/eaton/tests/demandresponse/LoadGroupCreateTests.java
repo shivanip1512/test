@@ -23,7 +23,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private Random randomNum;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -72,7 +72,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
     }    
     
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {        
         refreshPage(createPage);
     }

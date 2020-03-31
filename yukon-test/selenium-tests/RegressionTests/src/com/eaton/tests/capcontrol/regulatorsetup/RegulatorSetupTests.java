@@ -14,7 +14,7 @@ public class RegulatorSetupTests extends SeleniumTestSetup {
 
     private RegulatorSetupPage regulatorSetupPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

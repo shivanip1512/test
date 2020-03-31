@@ -16,7 +16,7 @@ public class DemandResponseSetupTests extends SeleniumTestSetup {
     private DemandResponseSetupPage page;
     private DriverExtensions driverExt;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

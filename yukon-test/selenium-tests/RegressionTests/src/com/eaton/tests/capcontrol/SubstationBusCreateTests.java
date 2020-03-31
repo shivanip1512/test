@@ -21,7 +21,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
     private SubstationBusCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -32,7 +32,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         createPage = new SubstationBusCreatePage(driverExt);
     }
 
-    @Test(groups = {"smoketest", "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Bus";
         
@@ -41,7 +41,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
     }
     
-    @Test(groups = {"smoketest", "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
     public void createSubstationBusRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Bus was saved successfully.";
         
@@ -61,7 +61,7 @@ public class SubstationBusCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(actualUserMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + actualUserMsg);
     }    
     
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {        
         refreshPage(createPage);
     }

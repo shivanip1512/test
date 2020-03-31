@@ -44,7 +44,7 @@ public class SeleniumTestSetup {
     
     private static String screenShotPath;
     
-    @BeforeSuite
+    @BeforeSuite(alwaysRun=true)
     public static void beforeSuite() {
 
         try {

@@ -17,7 +17,7 @@ public class HomeTests extends SeleniumTestSetup {
     private static final String EXPECTED_URL = "Expected Url: ";
     private static final String ACTUAL_URL = " Actual Url: ";
     
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -27,8 +27,9 @@ public class HomeTests extends SeleniumTestSetup {
 
         page = new HomePage(driverExt);
     }
-
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    
+    //"SM03_02_NavigateToLinks"
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
     public void supportUrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
@@ -42,7 +43,8 @@ public class HomeTests extends SeleniumTestSetup {
         Assert.assertTrue(url.contains(Urls.SITE_MAP), EXPECTED_URL + Urls.SITE_MAP + ACTUAL_URL + url);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_01_CheckYukonBuild" })
+    //"SM03_01_CheckYukonBuild"
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
     public void versionDisplayed() {        
         Assert.assertTrue(page.versionDisplayed());        
     }

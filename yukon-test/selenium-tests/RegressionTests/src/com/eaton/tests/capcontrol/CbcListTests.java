@@ -17,7 +17,7 @@ public class CbcListTests extends SeleniumTestSetup {
     CbcListPage listPage;
     SoftAssert softAssertion;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();

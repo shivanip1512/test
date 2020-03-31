@@ -17,7 +17,7 @@ public class RegulatorListTests extends SeleniumTestSetup {
     RegulatorListPage listPage;
     SoftAssert softAssertion;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

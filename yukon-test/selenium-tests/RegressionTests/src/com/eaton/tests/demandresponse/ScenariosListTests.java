@@ -19,7 +19,7 @@ public class ScenariosListTests extends SeleniumTestSetup {
     ScenariosListPage listPage;
     SoftAssert softAssertion;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

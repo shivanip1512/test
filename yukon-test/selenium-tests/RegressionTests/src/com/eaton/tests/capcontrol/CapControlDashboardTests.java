@@ -15,7 +15,7 @@ public class CapControlDashboardTests extends SeleniumTestSetup {
 
     private CapControlDashboardPage dashboardPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

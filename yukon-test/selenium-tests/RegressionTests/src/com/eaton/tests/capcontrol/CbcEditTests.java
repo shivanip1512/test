@@ -21,7 +21,7 @@ public class CbcEditTests extends SeleniumTestSetup {
     DriverExtensions driverExt;
     private static final String FOUND = "' but found: ";
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();
     }

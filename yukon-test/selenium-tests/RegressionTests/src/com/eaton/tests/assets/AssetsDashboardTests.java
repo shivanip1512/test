@@ -15,7 +15,7 @@ public class AssetsDashboardTests extends SeleniumTestSetup {
 
     private AssetDashboardPage assetsPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

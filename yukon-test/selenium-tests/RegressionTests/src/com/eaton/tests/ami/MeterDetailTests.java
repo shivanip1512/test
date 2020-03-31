@@ -18,7 +18,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
     
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();                
     }     

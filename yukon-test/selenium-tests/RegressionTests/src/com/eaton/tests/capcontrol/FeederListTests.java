@@ -17,7 +17,7 @@ public class FeederListTests extends SeleniumTestSetup {
     FeederListPage listPage;
     SoftAssert softAssertion;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

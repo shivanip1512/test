@@ -24,12 +24,12 @@ public final class MyInternetExplorerDriver {
         InternetExplorerOptions options = new InternetExplorerOptions();
 
         options.introduceFlakinessByIgnoringSecurityDomains();
-        options.enablePersistentHovering();
+        //options.enablePersistentHovering();       
         options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
         options.disableNativeEvents();
         options.ignoreZoomSettings();
+        options.disableNativeEvents();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-        options.setCapability(InternetExplorerDriver.NATIVE_EVENTS, true);
         options.requireWindowFocus();
 
         if (useRemoteDriver) {

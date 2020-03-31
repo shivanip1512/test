@@ -17,7 +17,7 @@ public class DemandResponseDashboardTests extends SeleniumTestSetup {
     private DemandResponseDashboardPage demandPage;
     private SoftAssert softAssertion;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

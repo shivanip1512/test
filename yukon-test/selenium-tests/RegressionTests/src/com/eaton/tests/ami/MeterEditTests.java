@@ -21,7 +21,7 @@ public class MeterEditTests extends SeleniumTestSetup {
     private static final String UPDATED = " updated successfully.";
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
     
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();                
     }

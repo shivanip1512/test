@@ -14,7 +14,7 @@ public class CiProgramCreateTests extends SeleniumTestSetup {
 
     private CiProgramCreatePage createPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();
 

@@ -21,7 +21,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
     private ControlAreaCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();  
@@ -62,7 +62,7 @@ public class ControlAreaCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
     }    
     
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {        
         refreshPage(createPage);
     }

@@ -22,7 +22,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
     private CapBankCreatePage createPage;
     private DriverExtensions driverExt;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
@@ -61,7 +61,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {
         refreshPage(createPage);
     }

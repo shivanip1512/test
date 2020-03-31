@@ -17,9 +17,9 @@ public class AmiMenuTests extends SeleniumTestSetup {
     private static final String EXPECTED = "Expected Url: ";
     private static final String ACTUAL = " Actual Url: ";
     private HomePage page;
-    private static final String AMI =  "AMI";
+    private static final int AMI_INDEX =  0;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -32,7 +32,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void dashboardUrlCorrect() {        
-        String url = page.getMenu().getMenuOptionUrl(AMI, "Dashboard");
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 0);
 
         Assert.assertTrue(url.contains(Urls.Ami.DASHBOARD), EXPECTED + Urls.Assets.DASHBOARD + ACTUAL + url);
     }
@@ -40,7 +40,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test
     public void billingUrlCorrect() {
         
-        String url = page.getMenu().getMenuOptionUrl(AMI, "Billing");
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 1);
 
         Assert.assertTrue(url.contains(Urls.Ami.BILLING), EXPECTED + Urls.Ami.BILLING + ACTUAL + url);
     }
@@ -48,7 +48,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test
     public void bulkImportUrlCorrect() {
         
-        String url = page.getMenu().getMenuOptionUrl(AMI, "Bulk Import");
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
 
         Assert.assertTrue(url.contains(Urls.Ami.BULK_IMPORT), EXPECTED + Urls.Ami.BULK_IMPORT + ACTUAL + url);
     }
@@ -56,7 +56,7 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test
     public void bulkUpdateUrlCorrect() {
         
-        String url = page.getMenu().getMenuOptionUrl(AMI, "Bulk Update");
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
 
         Assert.assertTrue(url.contains(Urls.Ami.BULK_UPDATE), EXPECTED + Urls.Ami.BULK_UPDATE + ACTUAL + url);
     }
@@ -64,15 +64,23 @@ public class AmiMenuTests extends SeleniumTestSetup {
     @Test
     public void legacyImporterUrlCorrect() {
         
-        String url = page.getMenu().getMenuOptionUrl(AMI, "Legacy Importer");
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
 
         Assert.assertTrue(url.contains(Urls.Ami.LEGACY_IMPORTER), EXPECTED + Urls.Ami.LEGACY_IMPORTER + ACTUAL + url);
     }
     
     @Test
+    public void pointImportUrlCorrect() {
+        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
+
+        Assert.assertTrue(url.contains(Urls.Ami.POINT_IMPORT), EXPECTED + Urls.Ami.POINT_IMPORT + ACTUAL + url);
+    }
+    
+    @Test
     public void reportsUrlCorrect() {
         
-        String url = page.getMenu().getMenuOptionUrl(AMI, "Reports");
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);
 
         Assert.assertTrue(url.contains(Urls.Ami.REPORTS), EXPECTED + Urls.Ami.REPORTS + ACTUAL + url);
     }

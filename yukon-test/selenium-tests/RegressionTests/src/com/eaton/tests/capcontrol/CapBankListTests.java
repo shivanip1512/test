@@ -17,7 +17,7 @@ public class CapBankListTests extends SeleniumTestSetup {
     private CapBankListPage listPage;
     private SoftAssert softAssertion;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

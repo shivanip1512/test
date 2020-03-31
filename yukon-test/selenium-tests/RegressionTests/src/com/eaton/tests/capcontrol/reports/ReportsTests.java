@@ -12,7 +12,7 @@ public class ReportsTests extends SeleniumTestSetup {
 
     private CapControlReportsPage reportPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

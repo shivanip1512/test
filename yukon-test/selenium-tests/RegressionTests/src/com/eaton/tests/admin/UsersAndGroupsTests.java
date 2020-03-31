@@ -28,7 +28,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
     private static final String FOUND = "' but found: ";
     private static final String EXPECTED = "Expected Page title: '";
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();        
         driverExt = getDriverExt();
@@ -113,7 +113,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         Assert.assertEquals(actualPageTitle, "User Group (" + name + ")", EXPECTED + "User ( " + name + ")" + FOUND + actualPageTitle);
     }
     
-    @AfterMethod
+    @AfterMethod(alwaysRun=true)
     public void afterTest() {        
         refreshPage(page);
     }

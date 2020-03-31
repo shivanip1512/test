@@ -15,7 +15,7 @@ public class MenuElement {
     public MenuElement(DriverExtensions driverExt) {
         this.driverExt = driverExt;
     }
-    
+
     private WebElement getMenu() {
         return this.driverExt.findElement(By.cssSelector(".menus"), Optional.empty());
     }
@@ -25,71 +25,27 @@ public class MenuElement {
         return getMenu().findElements(By.cssSelector(".menu.dropdown"));
     }
 
-    private WebElement findParent(String menuTitle) {
+    private WebElement getParent(int parentIndex) {
         List<WebElement> elementList = getAllMenuItems();
-        
-        WebElement parentElement = null;
-        for (WebElement element : elementList) {
 
-            WebElement menuItem = element.findElement(By.cssSelector(".menu-title"));
-
-            String itemText = menuItem.getText();
-            if (itemText.equals(menuTitle)) {                
-               parentElement = element;
-               return parentElement;
-            } 
-        }
-        
-        return parentElement;
-    }
-    
-    private WebElement getMenuItem(String menuTitle) {
-        
-        List<WebElement> elementList = getAllMenuItems();
-        
-        WebElement menuItem = null;
-        for (WebElement element : elementList) {
-
-            WebElement item = element.findElement(By.cssSelector(".menu-title"));
-
-            String itemText = item.getText();
-            if (itemText.equals(menuTitle)) {                
-                menuItem = item;
-
-                return menuItem;
-            } 
-        }
-        
-        return menuItem;
+        return elementList.get(parentIndex);
     }
 
-    private List<WebElement> getMenuOptions(String menuTitle) {
-        
-        WebElement item = findParent(menuTitle);
+    public void clickMenuTitle(int parentIndex) {
+        WebElement item = getParent(parentIndex);
 
-        return item.findElements(By.cssSelector(".menu-options .menu-option"));        
-    }
-    
-    public void clickMenuTitle(String menuTitle) {
-
-        WebElement item = getMenuItem(menuTitle);
         item.click();
     }
-    
-    public String getMenuOptionUrl(String menuTitle, String optionTitle) {
-        
-        List<WebElement> options = getMenuOptions(menuTitle);                
-        
-        String url = null;
-        for (WebElement option : options) {
-            WebElement element = option.findElement(By.cssSelector(".menu-option-link"));
-            String optionText = element.getAttribute("innerText");
-            if (optionText.equals(optionTitle)) {
-                url = element.getAttribute("href");
-                return url;
-            }
-        }
-        
-        return url;        
+
+    public String getMenuOptionUrl(int parentIndex, int childIndex) {
+        WebElement parent = getParent(parentIndex);
+
+        List<WebElement> children = parent.findElements(By.cssSelector(".menu-options .menu-option"));
+
+        WebElement child = children.get(childIndex);
+
+        WebElement option = child.findElement(By.cssSelector(".menu-option-link"));
+
+        return option.getAttribute("href");
     }
 }

@@ -14,11 +14,11 @@ import com.eaton.pages.HomePage;
 public class DemandResponseMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
-    private static final String DEMAND_RESPONSE =  "Demand Response";
+    private static final int DEMAND_RESPONSE_INDEX =  1;
     private static final String EXPECTED = "Expected Url: ";
     private static final String ACTUAL = " Actual Url: ";
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
@@ -32,7 +32,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
     public void dashboardUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Dashboard");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 0);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.DASHBOARD), EXPECTED + Urls.DemandResponse.DASHBOARD + ACTUAL + url);
     }
@@ -40,7 +40,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void scenariosUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Scenarios");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 1);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.SCENARIOS), EXPECTED + Urls.DemandResponse.SCENARIOS + ACTUAL + url);
     }
@@ -48,7 +48,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void controlAreasUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Control Areas");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 2);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.CONTROL_AREA), EXPECTED + Urls.DemandResponse.CONTROL_AREA + ACTUAL + url);
     }
@@ -56,7 +56,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void programsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Programs");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 3);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.PROGRAMS), EXPECTED + Urls.DemandResponse.PROGRAMS + ACTUAL + url);
     }
@@ -64,7 +64,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void loadGroupsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Load Groups");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 4);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.LOAD_GROUPS), EXPECTED + Urls.DemandResponse.LOAD_GROUPS + ACTUAL + url);
     }    
@@ -72,7 +72,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void setupUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Setup");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 5);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.SETUP), EXPECTED + Urls.DemandResponse.SETUP + ACTUAL + url);
     }
@@ -80,7 +80,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void ciCurtailmentUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "C&I Curtailment");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 6);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.CI_CURTAILMENT), EXPECTED + Urls.DemandResponse.CI_CURTAILMENT + ACTUAL + url);
     }    
@@ -88,7 +88,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void bulkUpdateUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Bulk Update");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 7);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.BULK_UPDATE), EXPECTED + Urls.DemandResponse.BULK_UPDATE + ACTUAL + url);
     }
@@ -96,7 +96,7 @@ public class DemandResponseMenuTests extends SeleniumTestSetup {
     @Test
     public void reportsUrlCorrect() {
 
-        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE, "Reports");
+        String url = page.getMenu().getMenuOptionUrl(DEMAND_RESPONSE_INDEX, 8);
 
         Assert.assertTrue(url.contains(Urls.DemandResponse.REPORTS), EXPECTED + Urls.DemandResponse.REPORTS + ACTUAL + url);
     }

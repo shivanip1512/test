@@ -22,7 +22,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
     private DriverExtensions driverExt;
     private SoftAssert softAssertion;
     
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();   
         softAssertion = getSoftAssertion();

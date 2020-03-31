@@ -15,7 +15,7 @@ public class SupportDetailsTests extends SeleniumTestSetup {
 
     private SupportPage supportPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();

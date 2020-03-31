@@ -14,7 +14,7 @@ public class GroupCreateTests extends SeleniumTestSetup {
 
     private GroupCreatePage createPage;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();

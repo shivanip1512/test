@@ -17,7 +17,7 @@ public class SubstationBusListTests extends SeleniumTestSetup {
     private SubstationBusListPage listPage;
     private SoftAssert softAssertion;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();

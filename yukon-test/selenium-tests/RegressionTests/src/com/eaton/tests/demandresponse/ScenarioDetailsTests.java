@@ -18,7 +18,7 @@ public class ScenarioDetailsTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
-    @BeforeClass
+    @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();                
     }
