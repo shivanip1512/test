@@ -208,68 +208,68 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         }
     }
 
-	@Override
-	public List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor)
-			throws NmNetworkException {
-		RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+    @Override
+    public List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor)
+            throws NmNetworkException {
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
 
-		try {
-			Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
-					.getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
-							Set.of(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE));
+        try {
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                            Set.of(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE));
 
-			RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
+            RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
 
-			if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE)) {
-				RfnRoute route = (RfnRoute) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE);
-				
-				if (route.isEmpty()) {
-					log.error("Route is empty for device {}", deviceId);
-					throw new NmNetworkException(noRoute, "noRoute");
-				}
+            if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE)) {
+                RfnRoute route = (RfnRoute) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE);
 
-				Map<RfnIdentifier, RfnDevice> devices = route.stream()
-						// remove nulls returned from NM
-						.filter(Objects::nonNull)
-						.filter(identifier -> !identifier.is_Empty_())
-						.map(identifier -> rfnDeviceCreationService.createIfNotFound(identifier))
-						// remove devices not created or found
-						.filter(Objects::nonNull)
-						.collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
+                if (route.isEmpty()) {
+                    log.error("Route is empty for device {}", deviceId);
+                    throw new NmNetworkException(noRoute, "noRoute");
+                }
 
-				Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
-				Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
+                Map<RfnIdentifier, RfnDevice> devices = route.stream()
+                        // remove nulls returned from NM
+                        .filter(Objects::nonNull)
+                        .filter(identifier -> !identifier.is_Empty_())
+                        .map(identifier -> rfnDeviceCreationService.createIfNotFound(identifier))
+                        // remove devices not created or found
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
 
-				List<Pair<RfnDevice, FeatureCollection>> result = new ArrayList<>();
+                Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
+                Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
 
-				route.forEach(identifier -> {
-					if (identifier == null || identifier.is_Empty_()) {
-						result.add(null);
-					} else {
-						RfnDevice routeDevice = devices.get(identifier);
-						if (routeDevice == null) {
-							result.add(null);
-						} else {
-							PaoLocation location = locations.get(routeDevice.getPaoIdentifier());
-							if (location == null) {
-								result.add(Pair.of(routeDevice, null));
-							} else {
-								FeatureCollection feature = paoLocationService
-										.getFeatureCollection(Lists.newArrayList(location));
-								result.add(Pair.of(routeDevice, feature));
-							}
-						}
-					}
-				});
-				return result;
-			} else {
-				log.error("PRIMARY_FORWARD_ROUTE for device {} is not valid", "PRIMARY_FORWARD_ROUTE", device);
-				throw new NmNetworkException(noRoute, "noRoute");
-			}
-		} catch (NmCommunicationException e) {
-			log.error(commsError, e);
-			throw new NmNetworkException(commsError, e, "commsError");
-		}
+                List<Pair<RfnDevice, FeatureCollection>> result = new ArrayList<>();
+
+                route.forEach(identifier -> {
+                    if (identifier == null || identifier.is_Empty_()) {
+                        result.add(null);
+                    } else {
+                        RfnDevice routeDevice = devices.get(identifier);
+                        if (routeDevice == null) {
+                            result.add(null);
+                        } else {
+                            PaoLocation location = locations.get(routeDevice.getPaoIdentifier());
+                            if (location == null) {
+                                result.add(Pair.of(routeDevice, null));
+                            } else {
+                                FeatureCollection feature = paoLocationService
+                                        .getFeatureCollection(Lists.newArrayList(location));
+                                result.add(Pair.of(routeDevice, feature));
+                            }
+                        }
+                    }
+                });
+                return result;
+            } else {
+                log.error("PRIMARY_FORWARD_ROUTE for device {} is not valid", "PRIMARY_FORWARD_ROUTE", device);
+                throw new NmNetworkException(noRoute, "noRoute");
+            }
+        } catch (NmCommunicationException e) {
+            log.error(commsError, e);
+            throw new NmNetworkException(commsError, e, "commsError");
+        }
     }
 
     @Override
