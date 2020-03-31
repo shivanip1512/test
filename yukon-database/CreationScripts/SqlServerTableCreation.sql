@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/23/2020 5:46:51 AM                         */
+/* Created on:     3/31/2020 9:40:05 AM                         */
 /*==============================================================*/
 
 
@@ -11118,10 +11118,7 @@ INSERT INTO YukonRoleProperty VALUES (-21315,-213,'Demand Reset','true','Control
 INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
 
 /* Device Management Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Infrastructure Create/Edit', 'false', 'Controls the ability to create and edit infrastructure devices. i.e. RF Gateways.');
-INSERT INTO YukonRoleProperty VALUES(-21401, -214, 'Infrastructure Delete', 'false', 'Controls the ability to delete infrastructure devices. i.e. RF Gateways.');
-INSERT INTO YukonRoleProperty VALUES(-21402, -214, 'Infrastructure Administration', 'false', 'Controls the ability to send configuration commands to infrastructure devices. i.e. RF Gateways.');
-INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Infrastructure View', 'false', 'Controls the ability to view infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Manage Infrastructure', 'NO_ACCESS', 'Controls the ability to view, create, edit, or delete infrastructure devices. i.e. RF Gateways, Relays.');
 INSERT INTO YukonRoleProperty VALUES(-21404, -214, 'Endpoint Permission', 'UPDATE', 'Controls the ability to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.');
 INSERT INTO YukonRoleProperty VALUES(-21405, -214, 'Manage Point Data', 'UPDATE', 'Controls the ability to edit, delete, or manually add point data values.');
 INSERT INTO YukonRoleProperty VALUES(-21406, -214, 'Manage Points', 'UPDATE', 'Controls the ability to view, create, edit, or delete points.');
