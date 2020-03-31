@@ -40,14 +40,7 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private String commsError;
     private String nmError;
-    
-    @PostConstruct
-    public void init() {
-        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
-        commsError = messageSourceAccessor.getMessage("yukon.web.error.nm.commsError");
-        nmError = messageSourceAccessor.getMessage("yukon.web.error.nm.error");
-    }
-        
+  
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ConfigurationSource configSource;
@@ -145,9 +138,11 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
 
     @PostConstruct
     public void initialize() {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        commsError = messageSourceAccessor.getMessage("yukon.web.error.nm.commsError");
+        nmError = messageSourceAccessor.getMessage("yukon.web.error.nm.error");
         Duration timeout = configSource.getDuration("RFN_META_DATA_REPLY_TIMEOUT", Duration.standardMinutes(2));
         multiReplyTemplate = new RequestMultiReplyTemplate<>(connectionFactory, null, JmsApiDirectory.RF_METADATA_MULTI,
                 timeout, false);
     }
-
 }
