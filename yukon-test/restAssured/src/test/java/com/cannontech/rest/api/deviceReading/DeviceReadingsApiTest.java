@@ -70,7 +70,7 @@ public class DeviceReadingsApiTest {
         MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper
                 .buildDeviceReadingRequest(MockIdentifierType.METERNUMBER, meterNumber);
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
-        assertTrue(getResponse.statusCode() == 500, "Status code should be 500");
+        assertTrue(getResponse.statusCode() == 400, "Status code should be 400");
         assertTrue(ValidationHelper.validateErrorMessage(getResponse, "Unknown meter number " + meterNumber),
                   "Expected error message Should contains Text: " + "Unknown meter number " + meterNumber);
 
@@ -167,9 +167,9 @@ public class DeviceReadingsApiTest {
         Log.startTestCase("DeviceReadings_09_InvalidPaoName");
         MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper.buildDeviceReadingRequest( MockIdentifierType.PAONAME, InvalidPaoName);
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
-        assertTrue(getResponse.statusCode() == 500, "Status code should be 500");
-        assertTrue(ValidationHelper.validateErrorMessage(getResponse, "Pao Object not found for Pao name: " + InvalidPaoName),
-                "Expected error message Should contains Text: " + "Pao Object not found for Pao name: " + InvalidPaoName);
+        assertTrue(getResponse.statusCode() == 400, "Status code should be 400");
+        assertTrue(ValidationHelper.validateErrorMessage(getResponse, "Unknown device name: " + InvalidPaoName),
+                "Expected error message Should contains Text: " + "Unknown device name: " + InvalidPaoName);
 
         Log.endTestCase("DeviceReadings_09_InvalidPaoName");
     }
@@ -195,8 +195,8 @@ public class DeviceReadingsApiTest {
         MockDeviceReadingsRequest deviceReadingsRequest = DeviceReadingHelper.buildDeviceReadingRequest( MockIdentifierType.SERIALNUMBER, invalidSensorSerialNumber);
         ExtractableResponse<?> getResponse = ApiCallHelper.get("getLatestReading", "getLatestReading", deviceReadingsRequest);
         assertTrue(getResponse.statusCode() == 400, "Status code should be 400");
-        assertTrue(ValidationHelper.validateErrorMessage(getResponse, "No device found for Serial Number: " + invalidSensorSerialNumber),
-                "Expected error message Should contains Text: " + "No device found for Serial Number: " + invalidSensorSerialNumber);
+        assertTrue(ValidationHelper.validateErrorMessage(getResponse, "Unknown serial number: " + invalidSensorSerialNumber),
+                "Expected error message Should contains Text: " + "Unknown serial number: " + invalidSensorSerialNumber);
 
         Log.endTestCase("DeviceReadings_11_InvalidSensorSerialNumber");
     }
