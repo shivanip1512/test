@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -29,13 +30,23 @@ import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.util.jms.RequestMultiReplyTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
 public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiService {
-	private static final Logger rfnCommsLog = YukonLogManager.getRfnLogger();
-	private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
-	private static final String commsError = "Unable to send request due to a communication error between Yukon and Network Manager.";
-	private static final String nmError = "Received error from Network Manager.";
+    private static final Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private String commsError;
+    private String nmError;
+    
+    @PostConstruct
+    public void init() {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        commsError = messageSourceAccessor.getMessage("yukon.web.error.nm.commsError");
+        nmError = messageSourceAccessor.getMessage("yukon.web.error.nm.error");
+    }
         
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private NextValueHelper nextValueHelper;
