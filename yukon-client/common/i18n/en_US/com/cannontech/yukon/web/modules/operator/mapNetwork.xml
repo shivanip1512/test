@@ -58,11 +58,11 @@
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_ROUTE_START_GC">Route start GC</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE">Route remedial update</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_IGNORED">Ignored route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_IGNORED2">Ignored route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_IGNORED2">Ignored route2</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_VALID">Valid route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_VALID2">Valid route2</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_TIMED_OUT">Route timed out</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_TIMED_OUT2">Route timed out</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_VALID2"></entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_TIMED_OUT2">Route timed out2</entry>
                        
     <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PF">Primary forward route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PR">Primary reverse route</entry>
