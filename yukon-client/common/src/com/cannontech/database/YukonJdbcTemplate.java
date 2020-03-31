@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,8 +23,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
