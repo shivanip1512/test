@@ -41,6 +41,9 @@
                                     <c:if test="${event.severity == 'HIGH'}">
                                         <c:set var="warningColor" value="error"/>
                                     </c:if>
+                                    <c:if test="${event.severity == 'CLEAR'}">
+                                        <c:set var="warningColor" value="green"/>
+                                    </c:if>
                                     <c:set var="arguments" value="${[event.argument1, event.argument2, event.argument3]}"/>
                                     <span class="${warningColor}"><cti:msg2 key="yukon.web.widgets.infrastructureWarnings.warningType.${event.status}.${event.severity}" arguments="${arguments}"/></span>
                                 </c:when>
