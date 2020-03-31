@@ -131,9 +131,8 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
                 try {
                     YukonMeter yukonMeter = meterDao.getForMeterNumber(meterNumber);
                     response = buildDeviceReadingResponse(deviceReadingsSelector, yukonMeter);
-                } catch (NotFoundException e) {
-                    log.error(e);
-                    throw e;
+                } catch (NotFoundException ex) {
+                    throw ex;
                 }
             }
             return response;
@@ -179,7 +178,7 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
             String paoIdStr = deviceReadingsSelector.getIdentifier().getValue();
             if (paoIdStr != null) {
                 try {
-                    Integer paoId = Integer.parseInt(deviceReadingsSelector.getIdentifier().getValue());
+                    Integer paoId = Integer.parseInt(paoIdStr);
                     try {
                         YukonDevice yukonDevice = deviceDao.getYukonDevice(paoId);
                         response = buildDeviceReadingResponse(deviceReadingsSelector, yukonDevice);
@@ -205,17 +204,17 @@ public class DeviceReadingsServiceImpl implements DeviceReadingsService {
         @Override
         public DeviceReadingsResponse selectPaos(DeviceReadingsSelector deviceReadingsSelector) {
             DeviceReadingsResponse deviceReadingResponse = null;
-            Identifier identifier = deviceReadingsSelector.getIdentifier();
-            if (identifier.getValue() != null) {
+            String serialNumber = deviceReadingsSelector.getIdentifier().getValue();
+            if (serialNumber != null) {
                 try {
-                    RfnDevice rfnDevice = rfnDeviceDao.findDeviceBySensorSerialNumber(identifier.getValue());
+                    RfnDevice rfnDevice = rfnDeviceDao.findDeviceBySensorSerialNumber(serialNumber);
                     if (rfnDevice != null) {
                         deviceReadingResponse = buildDeviceReadingResponse(deviceReadingsSelector, rfnDevice);
                     } else {
-                        throw new NotFoundException("Unknown serial number: " + identifier.getValue());
+                        throw new NotFoundException("Unknown serial number: " + serialNumber);
                     }
                 } catch (IncorrectResultSizeDataAccessException e) {
-                    throw new NotFoundException("Duplicate devices found for serial number: " + identifier.getValue());
+                    throw new NotFoundException("Duplicate devices found for serial number: " + serialNumber);
                 }
             }
             return deviceReadingResponse;
