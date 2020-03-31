@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,10 +36,7 @@ import com.google.common.collect.Lists;
 public class YukonJdbcTemplate extends JdbcTemplate {
     private static final Logger log = YukonLogManager.getLogger(YukonJdbcTemplate.class);
     
-    private static final int defaultBatchSize = 1000;
-    
-    private static ConfigurationSource configSource = null;
-    private int masterConfigBatchSize = configSource.getInteger(MasterConfigInteger.DATABASE_BATCH_SIZE, defaultBatchSize);
+    private static final int defaultBatchSize = 50000;
 
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);
@@ -131,7 +129,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
      * @param sql An SqlStatementBuilder configured for batch update via the batchInsertInto method.
      */
     public void yukonBatchUpdate(SqlStatementBuilder sql) {
-        yukonBatchUpdate(sql, masterConfigBatchSize);
+        yukonBatchUpdate(sql, defaultBatchSize);
     }
 
     /**
