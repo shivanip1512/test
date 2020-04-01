@@ -53,8 +53,8 @@
     <div style="height:800px">
     
         <tags:alertBox classes="dn js-no-location-message" type="warning" includeCloseButton="true">
-        <i:inline key="yukon.web.modules.operator.comprehensiveMap.missingLocations"/>
-    </tags:alertBox>
+            <i:inline key="yukon.web.modules.operator.comprehensiveMap.missingLocations"/>
+        </tags:alertBox>
     
         <div id="map-container" style="height:100%;width:100%;background:white;">
     

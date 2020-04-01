@@ -336,13 +336,6 @@ yukon.map.network = (function () {
                 icon.setId(feature.id);
                 icon.setStyle(style);
                 
-                //the first device in the route will be the focus device
-/*                if (x == 0) {
-                    var largerStyle = icon.getStyle().clone();
-                    largerStyle.getImage().setScale(_largerScale);
-                    icon.setStyle(largerStyle);
-                }*/
-                
                 if (_srcProjection === _destProjection) {
                     icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
                 } else {
