@@ -4,8 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
-
+import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -218,10 +217,9 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         jmsTemplate.convertAndSendToResponseQueue(JmsApiDirectory.RFN_STATUS_ARCHIVE, response);
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, 
-                                                      JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
-                                                      new MeterProgramStatusArchiveRequestSerializer());
+    @PostConstruct
+    public void initialize() {
+        thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                new MeterProgramStatusArchiveRequestSerializer());
     }
 }
