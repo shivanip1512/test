@@ -6,8 +6,6 @@ import javax.jms.ObjectMessage;
 
 import org.apache.activemq.DestinationDoesNotExistException;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -26,8 +24,6 @@ public class SimulatorMessageListener {
     private Set<SimulatorMessageHandler> messageHandlers;
     private Thread listenerThread;
     private volatile boolean isActive;
-    private static final Duration incomingMessageWaitMillis = new Duration(1000);
-    
     public SimulatorMessageListener(YukonJmsTemplate jmsTemplate, Set<SimulatorMessageHandler> messageHandlers) {
         this.jmsTemplate = jmsTemplate;
         this.messageHandlers = messageHandlers;
@@ -46,7 +42,7 @@ public class SimulatorMessageListener {
             public void run() {
                 while (isActive) {
                     try {
-                        Object message = jmsTemplate.receive(JmsApiDirectory.SIMULATORS, incomingMessageWaitMillis);
+                        Object message = jmsTemplate.receive(JmsApiDirectory.SIMULATORS);
                         if (message != null && message instanceof ObjectMessage) {
                             log.debug("Processing simulator request message");
                             ObjectMessage request = (ObjectMessage) message;
@@ -55,7 +51,7 @@ public class SimulatorMessageListener {
                             SimulatorResponse response = processRequest(simulatorRequest);
                             log.debug(response);
                             if (response != null) {
-                                jmsTemplate.convertAndSend(request.getJMSReplyTo(), response, incomingMessageWaitMillis);
+                                jmsTemplate.convertAndSendWithReceiveTimeout(request.getJMSReplyTo(), response);
                             }
                         }
                     } catch (Exception e) {

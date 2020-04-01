@@ -11,7 +11,6 @@ import javax.jms.ObjectMessage;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
@@ -45,8 +44,6 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
     private Cache<String,String> tokenCache = CacheBuilder.newBuilder().expireAfterWrite(59, TimeUnit.MINUTES).build();
     private static final String authTokenKey = "authTokenKey";
     private static final String authUrlPart = "register?format=json";
-
-    private static final Duration incomingMessageWaitMillis = new Duration(1000);
 
     public EcobeeAuthTokenServiceImpl(RestTemplate proxiedTemplate) {
         this.restTemplate = proxiedTemplate;
@@ -119,7 +116,7 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
             try {
                 if (objMessage.getObject() instanceof EcobeeAuthTokenRequest) {
                     EcobeeAuthTokenResponse response = handle((EcobeeAuthTokenRequest) objMessage.getObject());
-                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), response, incomingMessageWaitMillis);
+                    jmsTemplate.convertAndSendWithReceiveTimeout(message.getJMSReplyTo(), response);
                 }
             } catch (Exception e) {
                 log.error("Unable to process message", e);

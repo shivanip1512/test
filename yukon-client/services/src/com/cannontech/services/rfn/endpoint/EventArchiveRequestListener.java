@@ -95,7 +95,7 @@ public class EventArchiveRequestListener extends ArchiveRequestListenerBase<RfnE
     }
 
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return JmsApiDirectory.RF_EVENT_ARCHIVE;
     }
 

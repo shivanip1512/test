@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -38,14 +37,14 @@ import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorServic
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.Lists;
 
 public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulatorService {
     private static final Logger log = YukonLogManager.getLogger(DataStreamingSimulatorServiceImpl.class);
-    private static final Duration incomingMessageWaitMillis = new Duration(1000);
-    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.dataStreaming.request";
-
     @Autowired private DataStreamingAttributeHelper attributeHelper;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService gatewayService;
@@ -112,8 +111,9 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                 isRunning = true;
                 while (!isStopping) {
                     try {
-                        //DATA_STREAMING_CONFIG and GATEWAY_DATA_STREAMING_INFO uses same queueName. 
-                        Object message = jmsTemplate.receive(requestQueue, incomingMessageWaitMillis);
+                        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                                JmsApiDirectory.DATA_STREAMING_CONFIG, JmsApiDirectory.GATEWAY_DATA_STREAMING_INFO);
+                        Object message = jmsTemplate.receive(requestQueue);
                         if (message != null && message instanceof ObjectMessage) {
                            // log.info("Processing data streaming request.");
                             ObjectMessage objectMessage = (ObjectMessage) message;
@@ -125,7 +125,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                             } else if (requestMessage instanceof GatewayDataStreamingInfoRequest) {
                                 response = processGatewayInfoRequest((GatewayDataStreamingInfoRequest)objectMessage.getObject());
                             }
-                            jmsTemplate.convertAndSend(objectMessage.getJMSReplyTo(), response);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(objectMessage.getJMSReplyTo(), response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in data streaming simulator.", e);

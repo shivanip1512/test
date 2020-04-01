@@ -179,7 +179,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     
     //Not needed, no response is sent for this message
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return null;
     }
 

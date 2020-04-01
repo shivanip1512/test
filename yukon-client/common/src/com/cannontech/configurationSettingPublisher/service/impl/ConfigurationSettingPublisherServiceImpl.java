@@ -1,8 +1,9 @@
 package com.cannontech.configurationSettingPublisher.service.impl;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
-import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.converter.MessageType;
 
 import com.cannontech.common.util.jms.YukonJmsTemplate;
@@ -14,15 +15,16 @@ public class ConfigurationSettingPublisherServiceImpl implements ConfigurationSe
 
     @Autowired private YukonJmsTemplate jmsTemplate;
 
+    private MappingJackson2MessageConverter converter;
+
     @Override
     public void publish(ConfigurationSettings configurationSetting) {
-        jmsTemplate.convertAndSend(JmsApiDirectory.CLOUD_CONFIGURATION_SETTINGS, configurationSetting,
-                jacksonJmsMessageConverter());
+        jmsTemplate.convertAndSend(JmsApiDirectory.CLOUD_CONFIGURATION_SETTINGS, configurationSetting, converter);
     }
 
-    public MessageConverter jacksonJmsMessageConverter() {
-        MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+    @PostConstruct
+    public void initialize() {
+        converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
-        return converter;
     }
 }

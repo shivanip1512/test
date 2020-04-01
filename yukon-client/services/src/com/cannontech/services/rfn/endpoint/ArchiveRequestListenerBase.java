@@ -316,7 +316,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     public abstract void init();
     protected abstract List<? extends ConverterBase> getConverters();
     protected abstract Object getRfnArchiveResponse(T archiveRequest);
-    protected abstract JmsApi<?, ?, ?> getRfnArchiveResponseQueue();
+    protected abstract JmsApi<?, ?, ?> getRfnArchiveQueueApi();
     
     @PreDestroy
     protected abstract void shutdown();
@@ -345,7 +345,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
-        JmsApi<?, ?, ?> jmsApi = getRfnArchiveResponseQueue();
+        JmsApi<?, ?, ?> jmsApi = getRfnArchiveQueueApi();
         log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsApi.getResponseQueueName());
         jmsTemplate.convertAndSendToResponseQueue(jmsApi, response);
     }

@@ -4,7 +4,6 @@ import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
@@ -18,6 +17,8 @@ import com.cannontech.common.util.jms.api.JmsApi;
  */
 
 public class YukonJmsTemplate extends JmsTemplate {
+
+    public static final int receiveTimeoutInMillis = 1000;
 
     @Autowired
     public YukonJmsTemplate(ConnectionFactory connectionFactory) {
@@ -37,11 +38,11 @@ public class YukonJmsTemplate extends JmsTemplate {
     }
 
     /**
-     * This method send the message to the destination provided in JmsApi with specified Receive Timeout.
+     * This method send the message to the destination provided in JmsApi with default Receive Timeout of 1 second.
      * 
      */
-    public void convertAndSend(JmsApi<?, ?, ?> jmsApi, Object message, Duration receiveTimeout) throws JmsException {
-        setReceiveTimeout(receiveTimeout.getMillis());
+    public void convertAndSendWithReceiveTimeout(JmsApi<?, ?, ?> jmsApi, Object message) throws JmsException {
+        setReceiveTimeout(receiveTimeoutInMillis);
         convertAndSend(jmsApi, message);
     }
 
@@ -75,11 +76,11 @@ public class YukonJmsTemplate extends JmsTemplate {
     }
 
     /**
-     * This method send the message to the Destination with specified Receive Timeout.
+     * This method send the message to the Destination with default Receive Timeout of 1 second.
      * 
      */
-    public void convertAndSend(Destination destination, Object message, Duration receiveTimeout) throws JmsException {
-        setReceiveTimeout(receiveTimeout.getMillis());
+    public void convertAndSendWithReceiveTimeout(Destination destination, Object message) throws JmsException {
+        setReceiveTimeout(receiveTimeoutInMillis);
         convertAndSend(destination, message);
     }
 
@@ -95,32 +96,23 @@ public class YukonJmsTemplate extends JmsTemplate {
     }
 
     /**
-     * This method send the acknowledgement message to the destination defined in responseQueue with specified Receive Timeout.
+     * This method send the acknowledgement message to the destination defined in responseQueue with default Receive Timeout of 1
+     * second.
      * 
      */
-    public void convertAndSendToResponseQueue(JmsApi<?, ?, ?> jmsApi, Object message, Duration receiveTimeout)
+    public void convertAndSendToResponseQueueWithReceiveTimeout(JmsApi<?, ?, ?> jmsApi, Object message)
             throws JmsException {
-        setReceiveTimeout(receiveTimeout.getMillis());
+        setReceiveTimeout(receiveTimeoutInMillis);
         convertAndSendToResponseQueue(jmsApi, message);
     }
 
     /**
-     * This method receive a message synchronously from the specified queueName, but only wait up to a specified time for
-     * delivery. This method will be used when multiple Queue has same queueName.
-     * 
-     */
-    public Object receive(String queueName, Duration receiveTimeout) throws JmsException {
-        setReceiveTimeout(receiveTimeout.getMillis());
-        return receive(queueName);
-    }
-
-    /**
-     * This method receive a message synchronously from the specified queueName defined in JmsApi, but only wait up to a specified
+     * This method receive a message synchronously from the specified queueName defined in JmsApi, but only wait up to 1 second
      * time for delivery.
      * 
      */
-    public Object receive(JmsApi<?, ?, ?> jmsApi, Duration receiveTimeout) throws JmsException {
-        setReceiveTimeout(receiveTimeout.getMillis());
+    public Object receive(JmsApi<?, ?, ?> jmsApi) throws JmsException {
+        setReceiveTimeout(receiveTimeoutInMillis);
         return receive(jmsApi.getQueue().getName());
     }
 

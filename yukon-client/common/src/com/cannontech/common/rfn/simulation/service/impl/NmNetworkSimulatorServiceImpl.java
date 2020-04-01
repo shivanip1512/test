@@ -23,7 +23,6 @@ import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -94,7 +93,9 @@ import com.cannontech.common.rfn.simulation.service.NetworkTreeSimulatorService;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
@@ -104,8 +105,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 
 public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService {
-    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
-    public static final Duration incomingMessageWaitMillis = new Duration(1000);
     
     private final static Logger log = YukonLogManager.getLogger(NmNetworkSimulatorServiceImpl.class);
    
@@ -143,26 +142,28 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             @Override
             public void run() {
                 try {
-                    // NETWORK_PRIMARY_ROUTE, NETWORK_NEIGHBOR and NETWORK_PARENT have same queueName.
-                    Object message = jmsTemplate.receive(requestQueue, incomingMessageWaitMillis);
+                    JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                            JmsApiDirectory.NETWORK_PRIMARY_ROUTE, JmsApiDirectory.NETWORK_NEIGHBOR,
+                            JmsApiDirectory.NETWORK_PARENT);
+                    Object message = jmsTemplate.receive(requestQueue);
                     if (message != null) {
                         ObjectMessage requestMessage = (ObjectMessage) message;
                         if (requestMessage.getObject() instanceof RfnParentRequest) {
                             RfnParentRequest request = (RfnParentRequest) requestMessage.getObject();
                             RfnParentReply reply = getParent(request.getRfnIdentifier());
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
                         } else if (requestMessage.getObject() instanceof RfnNeighborDataRequest) {
                             RfnNeighborDataRequest request = (RfnNeighborDataRequest) requestMessage.getObject();
                             RfnNeighborDataReply reply = getNeighbors(request.getRfnIdentifier());
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
                         } else if (requestMessage.getObject() instanceof RfnPrimaryRouteDataRequest) {
                             RfnPrimaryRouteDataRequest request =
                                 (RfnPrimaryRouteDataRequest) requestMessage.getObject();
                             RfnPrimaryRouteDataReply reply = getRoute(request.getRfnIdentifier());
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
-                    Object metaDataMessage = jmsTemplate.receive(JmsApiDirectory.RFN_METADATA, incomingMessageWaitMillis);
+                    Object metaDataMessage = jmsTemplate.receive(JmsApiDirectory.RFN_METADATA);
                     if (metaDataMessage != null) {
                         ObjectMessage requestMessage = (ObjectMessage) metaDataMessage;
                         if (requestMessage.getObject() instanceof RfnMetadataRequest) {
@@ -216,7 +217,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                                 metadata.put(RfnMetadata.WIFI_SUPER_METER_DATA, getSuperMeterData());
                             }
                             reply.setMetadata(metadata);
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
                     
@@ -230,7 +231,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
 
             private void receiveNetworkTreeUpdateTimeMessage() throws JMSException {
-                Object message = jmsTemplate.receive(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST, incomingMessageWaitMillis);
+                Object message = jmsTemplate.receive(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
                 if (message != null) {
                     ObjectMessage requestMessage = (ObjectMessage) message;
                     if (requestMessage.getObject() instanceof NetworkTreeUpdateTimeRequest) {
@@ -263,8 +264,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
 
             private void receiveDemandResetMessage() throws JMSException {
-                Object demandResetMessage = jmsTemplate.receive(JmsApiDirectory.RFN_METER_DEMAND_RESET,
-                        incomingMessageWaitMillis);
+                Object demandResetMessage = jmsTemplate.receive(JmsApiDirectory.RFN_METER_DEMAND_RESET);
                 if (demandResetMessage != null) {
                     ObjectMessage requestMessage = (ObjectMessage) demandResetMessage;
                     if (requestMessage.getObject() instanceof RfnMeterDemandResetRequest) {
@@ -276,7 +276,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                                 request.getRfnMeterIdentifiers().stream()
                                     .collect(Collectors.toMap(Function.identity(), identifier -> RfnMeterDemandResetReplyType.OK));
                         reply.setReplyTypes(replies);
-                        jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply, incomingMessageWaitMillis);
+                        jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
 
                         String statusCode = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DEMAND_RESET_STATUS_ARCHIVE);
 
@@ -286,7 +286,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
 
             private void receiveMetaDataMultiMessage() throws JMSException {
-                Object metaDataMultiMessage = jmsTemplate.receive(JmsApiDirectory.RF_METADATA_MULTI, incomingMessageWaitMillis);
+                Object metaDataMultiMessage = jmsTemplate.receive(JmsApiDirectory.RF_METADATA_MULTI);
                 if (metaDataMultiMessage != null) {
                     ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
                     if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
@@ -295,7 +295,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             log.info("RfnMetadataMultiRequest identifier: {} segment: {} response: {} sending response on {}",
                                     request.getRequestID(), reply.getSegmentNumber(), reply.getResponseType(),
                                     requestMessage.getJMSReplyTo());
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
                 }

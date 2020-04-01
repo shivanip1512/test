@@ -106,7 +106,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     
     //Not needed, no response is sent for this message
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return null;
     }
     

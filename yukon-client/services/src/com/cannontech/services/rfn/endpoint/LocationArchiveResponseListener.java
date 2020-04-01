@@ -85,7 +85,7 @@ public class LocationArchiveResponseListener extends ArchiveRequestListenerBase<
     }
 
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return JmsApiDirectory.LOCATION;
     }
 

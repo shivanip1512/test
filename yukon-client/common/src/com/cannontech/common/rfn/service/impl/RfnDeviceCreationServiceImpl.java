@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,8 +63,6 @@ import com.google.common.collect.ImmutableSet;
 public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceCreationServiceImpl.class);
-    private static final Duration incomingMessageWaitMillis = new Duration(1000);
-
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private DeviceDao deviceDao;
@@ -212,7 +209,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                             resolvableTemplate.addData("rfnIdentifier", rfnIdentifier.toString());
                             resolvableTemplate.addData("errMessage", e.getMessage());
                             SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FAILED, new Date(), resolvableTemplate);
-                            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT, simpleAlert, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT, simpleAlert);
                         }
                     }
                     throw e;

@@ -200,7 +200,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     }
     
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return JmsApiDirectory.RFN_LCR_ARCHIVE;
     }
     

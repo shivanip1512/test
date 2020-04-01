@@ -174,7 +174,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     }
 
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return JmsApiDirectory.RFN_METER_READ_ARCHIVE;
     }
 

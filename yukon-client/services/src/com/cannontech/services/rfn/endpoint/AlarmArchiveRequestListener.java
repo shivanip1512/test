@@ -96,7 +96,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
     }
 
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveResponseQueue() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return JmsApiDirectory.RF_ALARM_ARCHIVE;
     }
 

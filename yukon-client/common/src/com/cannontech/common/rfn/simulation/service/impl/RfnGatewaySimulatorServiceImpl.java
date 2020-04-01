@@ -13,7 +13,6 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,17 +52,15 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
 //Switch info logs to debug
 public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorService {
     private static final Logger log = YukonLogManager.getLogger(RfnGatewaySimulatorServiceImpl.class);
-    
-    private static final String gatewayUpdateQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
-    
-    private static final Duration incomingMessageWaitMillis = new Duration(1000);
     
     private static Map<RfnIdentifier, GatewaySaveData> gatewayDataCache = new HashMap<>();
     
@@ -100,7 +97,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
             gateways.forEach(gateway -> {
                 GatewayDataResponse response = setUpDataResponse(gateway.getRfnIdentifier(), settings);
-                jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, response, incomingMessageWaitMillis);
+                jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, response);
             });
             Thread autoDataThread = getAutoDataRunnerThread(settings);
             autoDataThread.start();
@@ -214,7 +211,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
         
         GatewayDataResponse response = setUpDataResponse(rfnIdentifier, settings);
-        jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, response, incomingMessageWaitMillis);
+        jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, response);
     }
 
     @Override
@@ -225,7 +222,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
         request.setRfnIdentifier(rfnIdentifier);
         
-        jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_ARCHIVE, request, incomingMessageWaitMillis);
+        jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RF_GATEWAY_ARCHIVE, request);
     }
 
     @Override
@@ -235,7 +232,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         RfnIdentifier rfnIdentifier = new RfnIdentifier(serial, "CPS", model);
         request.setRfnIdentifier(rfnIdentifier);
 
-        jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_DELETE_FROM_NM, request, incomingMessageWaitMillis);
+        jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RF_GATEWAY_DELETE_FROM_NM, request);
     }
 
     private Thread getAutoFirmwareThread(SimulatedFirmwareReplySettings settings) {
@@ -245,7 +242,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 log.info("Auto firmware reply thread starting up.");
                 while (!autoFirmwareReplyStopping) {
                     try {
-                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE, incomingMessageWaitMillis);
+                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE);
                         if (message != null && message instanceof ObjectMessage) {
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             RfnGatewayFirmwareUpdateRequest request = 
@@ -254,7 +251,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                             log.info("Sending firmware upgrade response for updateId: " + request.getUpdateId() +
                                      ", gateway: " + request.getGateway());
                             RfnGatewayFirmwareUpdateResponse response = setUpFirmwareUpdateResponse(request, settings);
-                            jmsTemplate.convertAndSendToResponseQueue(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE, response, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendToResponseQueueWithReceiveTimeout(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE, response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in auto firmware reply.", e);
@@ -281,8 +278,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 log.info("Auto firmware server version reply thread starting up.");
                 while (!autoFirmwareVersionReplyStopping) {
                     try {
-                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION,
-                                incomingMessageWaitMillis);
+                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION);
                         if (message != null && message instanceof ObjectMessage) {
                             log.info("Processing firmware server available version message.");
                             ObjectMessage requestMessage = (ObjectMessage) message;
@@ -292,7 +288,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                             RfnUpdateServerAvailableVersionResponse response = 
                                     setUpFirmwareVersionResponse(request, settings);
                             
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in auto firmware server version reply.", e);
@@ -319,7 +315,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 log.info("Auto certificate update reply thread starting up.");
                 while (!autoCertificateUpgradeReplyStopping) {
                     try {
-                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE, incomingMessageWaitMillis);
+                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE);
                         if (message != null && message instanceof ObjectMessage) {
                             log.info("Processing certificate upgrade message");
                             ObjectMessage requestMessage = (ObjectMessage) message;
@@ -327,7 +323,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                             
                             RfnGatewayUpgradeRequestAck ack = setUpCertificateUpgradeAck(request, settings);
                             
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), ack, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), ack);
                             
                             if (settings != null && 
                                     (settings.getAckType() == RfnGatewayUpgradeRequestAckType.ACCEPTED_FULLY ||
@@ -336,8 +332,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                                 List<RfnGatewayUpgradeResponse> responses = setUpCertificateUpgradeResponses(request, settings);
                                 
                                 for (RfnGatewayUpgradeResponse response : responses) {
-                                    jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, response,
-                                            incomingMessageWaitMillis);
+                                    jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, response);
                                 }
                             }
                         }
@@ -383,8 +378,9 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     private void processGatewayUpdateMsg(SimulatedUpdateReplySettings settings) throws JMSException {
-        //RF_GATEWAY_CREATE, RF_GATEWAY_EDIT and RF_GATEWAY_DELETE have same queueName.
-        Object message = jmsTemplate.receive(gatewayUpdateQueue, incomingMessageWaitMillis);
+        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                JmsApiDirectory.RF_GATEWAY_CREATE, JmsApiDirectory.RF_GATEWAY_EDIT, JmsApiDirectory.RF_GATEWAY_DELETE);
+        Object message = jmsTemplate.receive(requestQueue);
         if (message != null && message instanceof ObjectMessage) {
             log.info("Processing gateway update message.");
             ObjectMessage requestMessage = (ObjectMessage) message;
@@ -393,7 +389,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             GatewayUpdateResponse response = setUpUpdateResponse(request, settings);
 
             if (requestMessage.getJMSReplyTo() != null) {
-                jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response, incomingMessageWaitMillis);
+                jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response);
             } else if (request instanceof GatewayEditRequest) {
                 // Update gateway message is also sent to sync gateway names, no reply is required.
                 GatewayEditRequest editRequest = (GatewayEditRequest) request;
@@ -403,7 +399,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     private void processIpv6PrefixUpdateMsg(SimulatedUpdateReplySettings settings) throws JMSException {
-        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_SET_CONFIG, incomingMessageWaitMillis);
+        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_SET_CONFIG);
         if (message != null && message instanceof ObjectMessage) {
             log.info("Processing Ipv6 prefix update message.");
             ObjectMessage requestMessage = (ObjectMessage) message;
@@ -413,14 +409,13 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             if(settings.getIpv6PrefixUpdateResult() == GatewayConfigResult.SUCCESSFUL) {
                 GatewayDataResponse gwResponse = setUpDataResponse(request.getRfnIdentifier(), getGatewayDataSettings());
                 gwResponse.setIpv6Prefix(request.getIpv6Prefix());
-                jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, gwResponse,
-                        incomingMessageWaitMillis);
+                jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED, gwResponse);
             }
             
             GatewaySetConfigResponse response = new GatewaySetConfigResponse();
             response.setRfnIdentifier(request.getRfnIdentifier());
             response.setIpv6PrefixResult(settings.getIpv6PrefixUpdateResult());
-            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response, incomingMessageWaitMillis);
+            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response);
         }
     }
     
@@ -435,14 +430,14 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 while (!autoDataReplyStopping) {
                     try {
                         
-                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_DATA, incomingMessageWaitMillis);
+                        Object message = jmsTemplate.receive(JmsApiDirectory.RF_GATEWAY_DATA);
                         if (message != null && message instanceof ObjectMessage) {
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             GatewayDataRequest request = (GatewayDataRequest) requestMessage.getObject();
                             
                             GatewayDataResponse response = setUpDataResponse(request.getRfnIdentifier(), settings);
 
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response, incomingMessageWaitMillis);
+                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in auto data reply.", e);
