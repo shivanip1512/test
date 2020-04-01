@@ -3649,19 +3649,19 @@ Network Manager :
     jira : NM-1421
     notes : YAJSW
 
-  - filename : commons-logging-1.1.1.jar
+  - filename : commons-logging-1.2.jar
     yukon group : Apache Commons
     project : Apache Commons Logging
-    version : 1.1.1
+    version : 1.2
     project URL : "https://commons.apache.org/proper/commons-logging/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/commons-logging/commons-logging/1.1.1"
-    md5 : e2c390fe739b2550a218262b28f290ce
-    sha1 : 2d859791fbf7d880591864bd4004d8442a8a3b81
-    updated : 2008-12-05
-    jira : none
-    notes : 
+    maven URL : "https://mvnrepository.com/artifact/commons-logging/commons-logging/1.2"
+    md5 : 040b4b4d8eac886f6b4a2a3bd2f31b00
+    sha1 : 4bfc12adfe4842bf07b657f0369c4cb522955686
+    updated : 2014-07-05
+    jira : NM-706
+    notes : Update to log4j2
 
   - filename : commons-pool-1.4.jar
     yukon group : Apache Commons
@@ -4237,19 +4237,47 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : log4j-1.2.17.jar
+  - filename : log4j-api-2.12.1.jar
     yukon group : Log4j
-    project : Apache Log4j 1.2
-    version : 1.2.17
-    project URL : "https://logging.apache.org/log4j/1.2/"
+    project : Apache Log4j
+    version : 2.12.1
+    project URL : "https://logging.apache.org/log4j/2.x/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j/1.2.17"
-    md5 : 9edb774aa71e703191588cac26ed88ce
-    sha1 : 5bc55514dffe39d77101f95abe90453689c8d133
-    updated : 2013-01-22
-    jira : none
-    notes : 
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.12.1"
+    md5 : 3f1096824abdcfe5b930efb0ce59ada3
+    sha1 : 4f952311a8cab7f8ffda787c1b5216fee9317d2f
+    updated : 2019-08-09
+    jira : NM-706
+    notes : Apache Log4j API
+  
+  - filename : log4j-core-2.12.1.jar
+    yukon group : Log4j
+    project : Apache Log4j
+    version : 2.12.1
+    project URL : "https://logging.apache.org/log4j/2.x/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.12.1"
+    md5 : df949e7d73479ab717e5770814de0ae9
+    sha1 : c28f281548582ec68376e66dbde48be24fcdb457
+    updated : 2019-08-09
+    jira : NM-706
+    notes : Apache Log4j Core
+  
+  - filename : log4j-jcl-2.12.1.jar
+    yukon group : Log4j
+    project : Apache Log4j
+    version : 2.12.1
+    project URL : "https://logging.apache.org/log4j/2.x/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-jcl/2.12.1"
+    md5 : b3ac6a7a4c85ecae715afa48a1188677
+    sha1 : d88f017f3f33502f44626aab3f131548e2a7fb7d
+    updated : 2019-08-09
+    jira : NM-706
+    notes : Apache Commons Logging Bridge for Log4j
 
   - filename : netty-all-4.1.25.Final.jar
     yukon group : Yet Another Java Service Wrapper
@@ -5482,16 +5510,16 @@ JavaScript :
     notes : Minified, cannot determine version
 
   - project : form
-    version : 3.46.0-2013.11.21
+    version : 4.2.2
     project URL : "http://malsup.com/jquery/form/"
     license : MIT,GPL
     license URLs : "https://github.com/malsup/form#copyright-and-license"
     npm URL : "n/a"
-    md5 : fe81c1e488719d60cb3043d1f3b26e8b
-    sha1 : 6a31f44b8cd57ec03e6a7abc5fdff333b9d8d47c
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : 
+    md5 : 39eb832aa48f3a60b905928c2d879e03
+    sha1 : bbc84d21ce03ee9995d1c5c3aa21b451025b13ee
+    jira : YUK-21525
+    updated : 2020-03-23
+    notes : The jQuery code in Yukon intensively uses ajaxSumbit method. We also use ajaxForm method. These methods are offered by this library.
 
   - project : google-code-prettify
     version : 2013-03-04
@@ -5990,15 +6018,15 @@ Css :
     notes : This library is used to animate shaking the event alarm alert count.
         
   - project : normalize.css
-    version : 2.1.2
+    version : 8.0.1
     project URL : "http://necolas.github.io/normalize.css/"
     license : MIT
     license URLs : "https://github.com/necolas/normalize.css/blob/v2.1.2/LICENSE.md"
-    md5 : 6bc10f9f90af75ddd7742ed35da857c8
-    sha1 : 4f7638582786a145304a4ac92ded24370f4c6554
-    updated : 2014-10-14
-    jira : YUK-12661
-    notes :
+    md5 : 112272e51c80ffe5bd01becd2ce7d656
+    sha1 : 7ffde343bdf10add1f052f3c4308a15180eb4404
+    updated : 2020-03-25
+    jira : YUK-21539
+    notes : This library is used to render elements consistently across all the browsers.
 
   - project : keys.css
     version : ??

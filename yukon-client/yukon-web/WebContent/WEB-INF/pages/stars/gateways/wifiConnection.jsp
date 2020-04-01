@@ -10,6 +10,7 @@
     <tags:alertBox type="success" key=".refreshMsg" classes="js-refresh-msg dn"></tags:alertBox>
     <input type="hidden" id="gatewayId" value="${gateway.id}"/>
     <input type="hidden" id="deviceIds" value="${deviceIds}"/>
+    <input type="hidden" id="connectedStatusValue" value="${connectedStatusValue}"/>
 
     <div>
         <hr/>

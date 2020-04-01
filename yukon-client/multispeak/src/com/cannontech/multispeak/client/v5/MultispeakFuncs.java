@@ -74,6 +74,7 @@ import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
+import com.cannontech.multispeak.client.MultispeakLoggingHelper;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspReturnList;
@@ -92,6 +93,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
+    @Autowired private MultispeakLoggingHelper loggingHelper;
     
     @Resource(name="domainMarshallerV5") Jaxb2Marshaller jaxb2Marshaller;
 
@@ -148,14 +150,18 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
                 responseHeader.getResult() == null ? null : responseHeader.getResult().getErrorObjects() != null
                     ? responseHeader.getResult().getErrorObjects().getErrorObject() : null;
         } catch (Exception e) {
+            loggingHelper.logResponseMessageSource(requestMessage);
             throw new MultispeakWebServiceClientException(e.getMessage());
         }
         return errorObjects;
     }
 
-    
-    
-    public void getHeader(SOAPMessage soapMessage, MultispeakVendor mspVendor) throws SOAPException {
+    /**
+     * the MultiSpeakResponseMsgHeader.Caller will be built with "dummy" values for userId and pwd fields. The
+     * expectation is that getMultispeakVendorFromHeader will replace these values with the correct values from the
+     * other vendor once it is loaded.
+     */
+    private void getHeader(SOAPMessage soapMessage) throws SOAPException {
         SOAPEnvelope env = soapMessage.getSOAPPart().getEnvelope();
 
         Node nxtNode = getRequestSOAPMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
@@ -175,7 +181,8 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         SOAPHeader header = env.getHeader();
         SOAPElement headElement = header.addChildElement("MultiSpeakResponseMsgHeader", "res");
-        getHeader(headElement, "res", mspVendor.getOutUserName(), mspVendor.getOutPassword() );
+
+        getHeader(headElement, "res", "unauthorized", "unauthorized");
 
     }
 
@@ -215,12 +222,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         SOAPMessage soapMessage;
         try {
             soapMessage = getResponseSOAPMessage();
-            // the MultiSpeakResponseMsgHeader.Caller will be built with "dummy" values for userId and pwd
-            // fields. The expectation is that getMultispeakVendorFromHeader will replace these values with
-            // the correct values from the other vendor once it is loaded.
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                MultispeakDefines.MSP_APPNAME_YUKON);
-            getHeader(soapMessage, mspVendor);
+            getHeader(soapMessage);
 
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
