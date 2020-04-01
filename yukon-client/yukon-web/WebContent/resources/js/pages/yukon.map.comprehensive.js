@@ -129,6 +129,13 @@ yukon.map.comprehensive = (function () {
         _removeDeviceFocusLayers();
         _setIconsBack();
         _deviceFocusCurrentIcon = focusDevice;
+        
+        //if focus device was removed, add it back
+        var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
+        if (deviceFound == null) {
+            source.addFeature(focusDevice);
+            _deviceFocusIcons.push(focusDevice);
+        }
 
         for (var x in routeInfo) {
             var route = routeInfo[x],
@@ -143,16 +150,13 @@ yukon.map.comprehensive = (function () {
                     icon = new ol.Feature({ pao: pao });
                 icon.setId(feature.id);
                 
-                //check if device already exists on map...the first device will always be the original device so make the icon larger
-                var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, x == 0);
+                //check if device already exists on map
+                var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, false);
                 if (deviceFound) {
                     icon = deviceFound;
                     icon.unset("neighbor");
                 } else {
                     icon.setStyle(style);
-                    if (x == 0) {
-                        yukon.mapping.makeDeviceIconLarger(icon);
-                    }
                     if (_srcProjection === _destProjection) {
                         icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
                     } else {

@@ -312,6 +312,15 @@ yukon.map.network = (function () {
             _removeDeviceFocusLayers();
             _deviceFocusCurrentIcon = focusDevice;
         }
+        
+        //if focus device was removed, add it back
+        if (deviceId != null) {
+            var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
+            if (deviceFound == null) {
+                source.addFeature(focusDevice);
+                _deviceFocusIcons.push(focusDevice);
+            }
+        }
 
         for (x in routeInfo) {
             var route = routeInfo[x];
@@ -324,15 +333,15 @@ yukon.map.network = (function () {
                 var pao = feature.properties.paoIdentifier,
                     style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
                     icon = new ol.Feature({ pao: pao });
-            
+                icon.setId(feature.id);
                 icon.setStyle(style);
                 
                 //the first device in the route will be the focus device
-                if (x == 0) {
+/*                if (x == 0) {
                     var largerStyle = icon.getStyle().clone();
                     largerStyle.getImage().setScale(_largerScale);
                     icon.setStyle(largerStyle);
-                }
+                }*/
                 
                 if (_srcProjection === _destProjection) {
                     icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));

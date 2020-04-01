@@ -32,6 +32,8 @@
 
 </style>
 
+
+
     <input id="filtered-msg" type="hidden" value="<cti:msg2 key=".filtered"/>">
     <input id="unfiltered-msg" type="hidden" value="<cti:msg2 key=".filter.label"/>">
     <%@ include file="/WEB-INF/pages/stars/mapNetwork/mapPopup.jsp" %>
@@ -49,6 +51,11 @@
     <input type="hidden" id="getGatewaysUrl" value="${getGatewaysUrl}"/>
     
     <div style="height:800px">
+    
+        <tags:alertBox classes="dn js-no-location-message" type="warning" includeCloseButton="true">
+        <i:inline key="yukon.web.modules.operator.comprehensiveMap.missingLocations"/>
+    </tags:alertBox>
+    
         <div id="map-container" style="height:100%;width:100%;background:white;">
     
             <div class="column-10-14 clearfix stacked">
