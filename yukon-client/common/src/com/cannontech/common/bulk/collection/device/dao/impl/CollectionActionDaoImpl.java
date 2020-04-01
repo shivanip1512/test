@@ -93,9 +93,6 @@ public class CollectionActionDaoImpl implements CollectionActionDao {
             result.setStatus(rs.getEnum("Status", CommandRequestExecutionStatus.class));
             result.setStartTime(rs.getInstant("StartTime"));
             result.setStopTime(rs.getInstant("StopTime"));
-            result.setLogger(log);
-            log.debug("--------Loaded result:");
-            result.log();
             return result;      
         }
     };
