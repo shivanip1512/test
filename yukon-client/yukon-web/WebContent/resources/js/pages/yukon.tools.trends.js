@@ -12,7 +12,7 @@ yukon.tools.trends = (function () {
     
     var
     _initialized = false,
-    _updateInterval = 9000, // 15 minutes
+    _updateInterval = 900000, // 15 minutes
     _updateTimeout = null,
     _trendChartContainer,
     _trendId,
