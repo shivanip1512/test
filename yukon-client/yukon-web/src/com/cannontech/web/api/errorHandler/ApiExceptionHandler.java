@@ -307,26 +307,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
-    
-    @ExceptionHandler({ EmptyResultDataAccessException.class })
-    public ResponseEntity<Object> handleEmptyResultDataAccessException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    
-    @ExceptionHandler({ IncorrectResultSizeDataAccessException.class })
-    public ResponseEntity<Object> handleIncorrectResultSizeDataAccessException(final Exception ex, final WebRequest request) {
-
-        String uniqueKey = CtiUtilities.getYKUniqueKey();
-        logApiException(request, ex, uniqueKey);
-
-        final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), uniqueKey);
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
     /**
      * Handle Method Not Supported exception for API calls

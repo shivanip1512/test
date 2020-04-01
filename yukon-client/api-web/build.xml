@@ -14,7 +14,12 @@
      -->
     <target name="clean">
         <delete file="${yukon.lib}/api.war" />
-        <delete dir="build" />
+        <move file="build" tofile="build-delete" failonerror="false"/>
+        <parallel>
+            <daemons>
+                <delete dir="build-delete"/>  
+            </daemons>
+        </parallel>
     </target>
     
     <fileset dir="${yukon.lib}" id="yukon.lib.files">
@@ -130,6 +135,7 @@
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
             <classpath>
                 <fileset refid="yukon.lib.files"/>
             </classpath>
@@ -182,6 +188,7 @@
             source="${yukon.javac.source}"
             bootclasspath="${yukon.javac.bootclasspath}"
             debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
             <classpath>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />

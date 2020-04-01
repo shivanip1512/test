@@ -174,9 +174,9 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();
         Set<Integer> foundPaoIds = new HashSet<Integer>();
         //search for a Sensor Serial Number with the provided text
-        Integer sensor = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
+        RfnDevice sensor = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
         if (sensor != null) {
-            foundPaoIds.add(sensor);
+            foundPaoIds.add(sensor.getPaoIdentifier().getPaoId());
         }
         //search for a Meter Number with the provided text
         try {
