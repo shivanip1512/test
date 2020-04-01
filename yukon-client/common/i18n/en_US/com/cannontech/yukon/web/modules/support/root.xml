@@ -494,4 +494,7 @@
     <entry key="yukon.web.modules.support.thirdPartyLibraries.library">Library</entry>
     <entry key="yukon.web.modules.support.thirdPartyLibraries.license">License</entry>
     
+    <!-- trends.jsp -->
+    <entry key="yukon.web.modules.support.trends.msgError.trendRefreshFailed">An error was encountered or you may have logged out and this trend is no longer updating.</entry>
+
 </properties>
