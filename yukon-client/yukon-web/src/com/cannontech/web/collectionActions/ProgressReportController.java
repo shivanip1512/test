@@ -57,7 +57,6 @@ public class ProgressReportController {
     
     private void setupModel(ModelMap model, Integer key) {
         CollectionActionResult result = collectionActionService.getResult(key);
-        result.log();
         model.addAttribute("result", result);
         model.addAttribute("details", CollectionActionDetail.values());
         model.addAttribute("status", CommandRequestExecutionStatus.values());
