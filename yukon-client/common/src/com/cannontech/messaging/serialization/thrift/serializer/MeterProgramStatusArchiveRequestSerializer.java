@@ -14,6 +14,8 @@ import static com.cannontech.messaging.serialization.thrift.generated.meterProgr
 
 import java.util.Map;
 
+import org.joda.time.Instant;
+
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest;
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
@@ -59,7 +61,7 @@ public class MeterProgramStatusArchiveRequestSerializer extends SimpleThriftSeri
 
         entity.setSource(sourceMapping.get(requestPayload.getSource()));
         entity.setStatus(statusMapping.get(requestPayload.getStatus()));
-        entity.setTimeStamp(requestPayload.getTimeStamp());
+        entity.setTimeStamp(requestPayload.getTimestamp().getMillis());
         
         return serialize(entity);
     }
@@ -82,7 +84,7 @@ public class MeterProgramStatusArchiveRequestSerializer extends SimpleThriftSeri
 
         message.setSource(sourceMapping.inverse().get(entity.getSource()));
         message.setStatus(statusMapping.inverse().get(entity.getStatus()));
-        message.setTimeStamp(entity.getTimeStamp());
+        message.setTimestamp(new Instant(entity.getTimeStamp()));
 
         return message;
     }

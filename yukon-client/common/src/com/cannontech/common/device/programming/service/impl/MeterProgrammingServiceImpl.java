@@ -263,7 +263,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
             request.setSource(Source.WS_COLLECTION_ACTION);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
             request.setStatus(ProgrammingStatus.INITIATING);
-            request.setTimeStamp(System.currentTimeMillis());
+            request.setTimestamp(Instant.now());
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
          
             thriftMessenger.send(request);

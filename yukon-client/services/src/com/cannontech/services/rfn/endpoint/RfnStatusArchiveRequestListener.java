@@ -9,6 +9,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -165,7 +166,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
 			request.setRfnIdentifier(status.getRfnIdentifier());
 			request.setConfigurationId(status.getData().getMeterConfigurationID());
 			request.setStatus(ProgrammingStatus.IDLE);
-			request.setTimeStamp(status.getTimeStamp());
+			request.setTimestamp(new Instant(status.getTimeStamp()));
 			log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
 			thriftMessenger.send(request);
 		} else {
