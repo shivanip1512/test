@@ -27,10 +27,11 @@
 		<javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
-              source="${yukon.javac.source}"
+              source="${yukon.javac.source}" 
               debug="${yukon.javac.debug}">
-			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
+            <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
 			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar"/>
@@ -79,9 +80,14 @@
 
 	</target>
 
-	<target name="clean">
-		<delete dir="build"/>
-	</target>
+   <target name="clean">
+       <move file="build" tofile="build-delete" failonerror="false"/>
+       <parallel>
+           <daemons>
+               <delete dir="build-delete"/>  
+           </daemons>
+       </parallel>
+   </target>
 
 	<!-- Target to generate the jaxb classes for the paoDefinition schema -->
 	<target name="generateJaxbClasses">
@@ -178,6 +184,7 @@
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar" />
@@ -252,7 +259,8 @@
 		<jar destfile="${third-party}/itronDeviceManagerTypes_v1_8_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8" destdir="build">
-			<classpath refid="jaxb-impl"/>
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
+            <classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronDeviceManagerTypes_v1_8.jar" basedir="build" />
 		<delete dir="build"/>
@@ -269,7 +277,8 @@
 		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" destdir="build">
-			<classpath refid="jaxb-impl"/>
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
+            <classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3.jar" basedir="build" />
 		<delete dir="build"/>
@@ -286,6 +295,7 @@
 		<jar destfile="${third-party}/itronProgramEventManagerTypes_v1_6_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/programEventManagerTypes_v1_6/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/programEventManagerTypes_v1_6" destdir="build">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronProgramEventManagerTypes_v1_6.jar" basedir="build" />
@@ -303,6 +313,7 @@
 		<jar destfile="${third-party}/itronProgramManagerTypes_v1_1_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/programManagerTypes_v1_1/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/programManagerTypes_v1_1" destdir="build">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronProgramManagerTypes_v1_1.jar" basedir="build" />
@@ -319,6 +330,7 @@
 		<jar destfile="${third-party}/itronReportManagerTypes_v1_2_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/reportManagerTypes_v1_2/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/reportManagerTypes_v1_2" destdir="build">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronReportManagerTypes_v1_2.jar" basedir="build" />

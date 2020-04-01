@@ -17,6 +17,7 @@
  	          source="${yukon.javac.source}"
               debug="${yukon.javac.debug}">
           <compilerarg line="--add-exports java.xml/javax.xml.namespace=ALL-UNNAMED"/>
+          <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
           <classpath>
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
@@ -41,7 +42,12 @@
 	</target>
 
    <target name="clean">
-       <delete dir="build"/>        
+       <move file="build" tofile="build-delete" failonerror="false"/>
+       <parallel>
+           <daemons>
+               <delete dir="build-delete"/>  
+           </daemons>
+       </parallel>
    </target>
 
    <!-- Run unit tests - will stop running if a failure or error occurs during a test -->
