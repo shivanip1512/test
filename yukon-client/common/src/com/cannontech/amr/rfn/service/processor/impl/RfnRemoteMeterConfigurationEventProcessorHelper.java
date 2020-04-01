@@ -109,7 +109,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
                 request.setStatus(ProgrammingStatus.FAILED);
                 request.setError(statusCodesToErrors.get(detail));
             }
-            request.setTimeStamp(System.currentTimeMillis());
+            request.setTimestamp(Instant.now());
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
             thriftMessenger.send(request);
         } else {
