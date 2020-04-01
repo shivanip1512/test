@@ -12,12 +12,12 @@ yukon.tools.trends = (function () {
     
     var
     _initialized = false,
-    _updateInterval = 900000, // 15 minutes
+    _updateInterval = 9000, // 15 minutes
     _updateTimeout = null,
-    trendChartContainer,
-    trendId,
-    labels,
-    rangeSelectorButtons,
+    _trendChartContainer,
+    _trendId,
+    _labels,
+    _rangeSelectorButtons,
     
     _updateChart = function(blockPage) {
 
@@ -29,11 +29,11 @@ yukon.tools.trends = (function () {
             type: 'get'
         }).done(function (data) {
             var selectedZoomOption = data.prefZoom;
-            $.getJSON(yukon.url('/tools/trends/' + trendId + '/data'), function (trend) {
+            $.getJSON(yukon.url('/tools/trends/' + _trendId + '/data'), function (trend) {
                 var trendChartOptions = {
                         rangeSelector: {
                             inputEnabled: true,
-                            rangeSelectorButtons : rangeSelectorButtons,
+                            rangeSelectorButtons : _rangeSelectorButtons,
                             selected: selectedZoomOption,
                             inputStyle : {
                                 color: '#333333'
@@ -45,8 +45,8 @@ yukon.tools.trends = (function () {
                     },
                     highChartOptions = {};
                 
-                if (trendChartContainer.exists()) {
-                    yukon.trends.buildChart(trendChartContainer, trend, trendChartOptions, highChartOptions);
+                if (_trendChartContainer.exists()) {
+                    yukon.trends.buildChart(_trendChartContainer, trend, trendChartOptions, highChartOptions);
                 }
             }).always(function () {
                 if (blockPage) {
@@ -71,46 +71,46 @@ yukon.tools.trends = (function () {
             
             if (_initialized) return;
             
-            trendChartContainer = $('[data-trend]'),
-            trendId = $(trendChartContainer).data("trend"),
-            labels = JSON.parse(decodeURIComponent($('#label-json').html())),
-            rangeSelectorButtons = [{
+            _trendChartContainer = $('[data-trend]'),
+            _trendId = $(_trendChartContainer).data("trend"),
+            _labels = JSON.parse(decodeURIComponent($('#label-json').html())),
+            _rangeSelectorButtons = [{
                 type: 'day',
                 count: 1,
-                text: labels.day,
+                text: _labels.day,
                 value: 'DAY_1'
             }, {
                 type: 'week',
                 count: 1,
-                text: labels.week,
+                text: _labels.week,
                 value: 'WEEK_1'
             }, {
                 type: 'month',
                 count: 1,
-                text: labels.month,
+                text: _labels.month,
                 value: 'MONTH_1'
             }, {
                 type: 'month',
                 count: 3,
-                text: labels.threeMonths,
+                text: _labels.threeMonths,
                 value: 'MONTH_3'
             }, {
                 type: 'month',
                 count: 6,
-                text: labels.sixMonths,
+                text: _labels.sixMonths,
                 value: 'MONTH_6'
             }, {
                 type: 'ytd',
-                text: labels.ytd,
+                text: _labels.ytd,
                 value: 'YTD'
             }, {
                 type: 'year',
                 count: 1,
-                text: labels.year,
+                text: _labels.year,
                 value: 'YEAR_1'
             }, {
                 type: 'all',
-                text: labels.all,
+                text: _labels.all,
                 value: 'ALL'
             }];
 
@@ -121,7 +121,7 @@ yukon.tools.trends = (function () {
                 $('.trend-list').scrollTo(trendList);
             }
             $(document).on('click', '.js-print', function (ev) {
-                var chart = trendChartContainer.highcharts(),
+                var chart = _trendChartContainer.highcharts(),
                     width = chart.chartWidth,
                     height = chart.chartHeight;
                 chart.print();
@@ -130,25 +130,24 @@ yukon.tools.trends = (function () {
                 }, 100);
             });
             $(document).on('click', '.js-dl-png', function (ev) {
-                var chart = trendChartContainer.highcharts();
+                var chart = _trendChartContainer.highcharts();
                 chart.exportChart({type: 'image/png'});
             });
             $(document).on('click', '.js-dl-jpg', function (ev) {
-                var chart = trendChartContainer.highcharts();
+                var chart = _trendChartContainer.highcharts();
                 chart.exportChart({type: 'image/jpeg'});
             });
             $(document).on('click', '.js-dl-pdf', function (ev) {
-                var chart = trendChartContainer.highcharts();
+                var chart = _trendChartContainer.highcharts();
                 chart.exportChart({type: 'application/pdf'});
             });
             $(document).on('click', '.js-dl-csv', function (ev) {
-                var chart = trendChartContainer.highcharts(),
+                var chart = _trendChartContainer.highcharts(),
                     ex = chart.series[0].xAxis.getExtremes(),
-                    trendId = $(this).closest('li').data('trendId'),
                     max = ex.max ? ex.max : 0,
                     min = ex.min ? ex.min : 0;
                 
-                window.location = yukon.url('/tools/trends/' + trendId + '/csv?' 
+                window.location = yukon.url('/tools/trends/' + _trendId + '/csv?' 
                 + 'from=' + new Date(min).getTime() + '&to=' + new Date(max).getTime()); 
             });
             /** Pause/Resume updating on updater button clicks. */

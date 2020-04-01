@@ -165,7 +165,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     @Override
     public boolean getDefaultTemperatureSelection(LiteYukonUser user) {
         String prefValue = this.getPreference(user, UserPreferenceName.TREND_TEMPERATURE);
-        return "Y".equalsIgnoreCase(prefValue) ? true : false;
+        return YNBoolean.getForDbString(prefValue).getBoolean();
     }
 
     @Override
@@ -178,7 +178,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     @Override
     public boolean getDefaultTrendAutoUpdateSelection(LiteYukonUser user) {
         String prefValue = this.getPreference(user, UserPreferenceName.TREND_AUTO_UPDATE);
-        return "Y".equalsIgnoreCase(prefValue) ? true : false;
+        return YNBoolean.getForDbString(prefValue).getBoolean();
     }
 
     @Override

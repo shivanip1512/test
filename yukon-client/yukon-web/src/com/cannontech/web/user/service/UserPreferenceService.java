@@ -128,11 +128,12 @@ public interface UserPreferenceService {
     public boolean updateTemperatureSelection(LiteYukonUser user, boolean isSelected);
 
     /**
-     * Return trend auto update preference for a user in cache / DB
+     * Returns trend auto update preference for a user in cache / DB
      * 
      * @param LiteYukonUser
      */
     boolean getDefaultTrendAutoUpdateSelection(LiteYukonUser user);
+    
     /**
      * Updates new trend auto update selection preferences for a user in cache / DB
      * 
