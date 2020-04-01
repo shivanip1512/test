@@ -16,6 +16,7 @@ public enum MasterConfigInteger {
     INFRASTRUCTURE_WARNING_MINIMUM_TIME_BETWEEN_RUNS,
     INFRASTRUCTURE_WARNING_RUN_FREQUENCY_MINUTES,
     
-    ITRON_RECORD_IDS_PER_READ
+    ITRON_RECORD_IDS_PER_READ, 
+    DATABASE_BATCH_SIZE // Sets the default batch size for the YukonJdbcTemplate
     ;
 }

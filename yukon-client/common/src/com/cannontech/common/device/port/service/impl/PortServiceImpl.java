@@ -3,10 +3,12 @@ package com.cannontech.common.device.port.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
@@ -19,6 +21,7 @@ public class PortServiceImpl implements PortService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private PaoCreationHelper paoCreationHelper;
 
     @Override
     @Transactional
@@ -26,6 +29,8 @@ public class PortServiceImpl implements PortService {
         DirectPort port = (DirectPort ) PortFactory.createPort(portInfo.getType());
         portInfo.buildDBPersistent(port);
         dbPersistentDao.performDBChange(port, TransactionType.INSERT);
+        SimpleDevice device = SimpleDevice.of(port.getPAObjectID(), port.getPaoType());
+        paoCreationHelper.addDefaultPointsToPao(device);
         return port.getPAObjectID();
     }
 

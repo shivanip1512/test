@@ -54,12 +54,12 @@ public class PortBase implements Port {
         setEnable(port.getPAODisableFlag() == 'N' ? true : false );
         setBaudRate(BaudRate.getForRate(port.getPortSettings().getBaudRate()));
         setType(port.getPaoType());
-    };
+    }
 
     @Override
     public void buildDBPersistent(DirectPort port) {
         port.getPortSettings().setBaudRate(getBaudRate().getBaudRateValue());
         port.setPAOName(getName());
         port.setDisableFlag(isEnable() == true ? 'N' : 'Y');
-    };
+    }
 }

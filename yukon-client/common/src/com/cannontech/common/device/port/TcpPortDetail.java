@@ -17,17 +17,10 @@ public class TcpPortDetail extends TcpPortInfo {
 
     @Override
     public void buildModel(DirectPort port) {
-    super.buildModel(port);
-
-    TcpPort tctPort = (TcpPort) port;
-    PortTiming timing = new PortTiming();
-    // Set port timings
-    com.cannontech.database.db.port.PortTiming portTiming = tctPort.getPortTiming();
-    timing.setExtraTimeOut(portTiming.getExtraTimeOut());
-    timing.setPostTxWait(portTiming.getPostTxWait());
-    timing.setPreTxWait(portTiming.getPreTxWait());
-    timing.setReceiveDataWait(portTiming.getReceiveDataWait());
-    timing.setRtsToTxWait(portTiming.getRtsToTxWait());
-    this.setTiming(timing);
+        super.buildModel(port);
+        TcpPort tctPort = (TcpPort) port;
+        PortTiming timing = new PortTiming();
+        timing.buildModel(tctPort.getPortTiming());
+        this.setTiming(timing);
     }
 }

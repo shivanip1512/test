@@ -1,6 +1,5 @@
 package com.cannontech.amr.rfn.dao;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -126,7 +125,7 @@ public interface RfnDeviceDao {
      */
     Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
 
-    Integer findDeviceBySensorSerialNumber(String sensorSerialNumber);
+    RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber);
 
     /**
      * Returns device id for rfn identifier. Cache lookup.

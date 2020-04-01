@@ -5,7 +5,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.dr.setup.ControlPriority;
 import com.google.common.collect.ImmutableMap;
 
 public enum BaudRate {
@@ -23,7 +22,7 @@ public enum BaudRate {
 
     private Integer baudRate;
 
-    private final static Logger log = YukonLogManager.getLogger(ControlPriority.class);
+    private final static Logger log = YukonLogManager.getLogger(BaudRate.class);
     private final static ImmutableMap<Integer, BaudRate> lookupByRate;
 
     static {

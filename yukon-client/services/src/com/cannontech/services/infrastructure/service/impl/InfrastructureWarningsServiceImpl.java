@@ -36,6 +36,7 @@ import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
+import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningsService;
@@ -125,7 +126,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 List<InfrastructureWarning> eventLogWarnings = getAndLogEventLogWarnings(oldWarnings, warnings);
                 
                 // Used for smart notifications. Warning arguments NOT checked for equality.
-                List<InfrastructureWarning> smartNotificationWarnings = getSmartNotificationWarnings(oldWarnings, eventLogWarnings);
+                List<InfrastructureWarning> smartNotificationWarnings = getSmartNotifications(oldWarnings, eventLogWarnings);
                 
                 // Get the old warnings and non-repeated warnings that we want to put in the Infrastructure
                 // Warnings table, then insert warnings into DB (overwriting previous warnings in the table).
@@ -133,9 +134,24 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 List<InfrastructureWarning> infrastructureWarnings = getInfrastructureWarnings(oldWarnings, warnings);
                 infrastructureWarningsDao.insert(infrastructureWarnings);
 
+
+                // Used for sending follow up messages for the end of an infrastructure warning
+                List<InfrastructureWarning> expiredWarningSmartNotifications = getSmartNotifications(infrastructureWarnings, oldWarnings);
+
                 log.info("Infrastructure warnings calculation complete");
-                
+
                 sendSmartNotifications(smartNotificationWarnings);
+
+                List<InfrastructureWarning> clearedWarnings = new ArrayList<InfrastructureWarning>();
+                for (InfrastructureWarning warning : expiredWarningSmartNotifications) {
+                    clearedWarnings.add(new InfrastructureWarning(warning.getPaoIdentifier(),
+                                                                     warning.getWarningType(),
+                                                                     InfrastructureWarningSeverity.CLEAR,
+                                                                     warning.getTimestamp(),
+                                                                     warning.getArguments()));
+                }
+                sendSmartNotifications(clearedWarnings);
+                
                 sendCacheRefreshRequest(lastRun);
                 
                 isRunning.set(false);
@@ -157,7 +173,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 //update warning but maintain date/time
                 InfrastructureWarning existingWarning = optional.get();
                 warnings.add(new InfrastructureWarning(currentWarning.getPaoIdentifier(), currentWarning.getWarningType(), 
-                                                       currentWarning.getSeverity(), existingWarning.getTimestamp(), currentWarning.getArguments()));
+                                                       currentWarning.getSeverity(), existingWarning.getTimestamp(), new Object[0]));
             } else {
                 warnings.add(currentWarning);
             }
@@ -204,9 +220,9 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     }
     
     /**
-     * Get the list of warnings that are not repeats from the previous calculation (without comparing arguments)
+     * Get the list of warnings that are in the second list but not in the first list (without comparing arguments)
      */
-    private List<InfrastructureWarning> getSmartNotificationWarnings(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
+    private List<InfrastructureWarning> getSmartNotifications(List<InfrastructureWarning> oldWarnings, List<InfrastructureWarning> newWarnings) {
         return newWarnings.stream()
                           .filter(warning -> !oldWarnings.contains(warning))
                           .collect(Collectors.toList());
