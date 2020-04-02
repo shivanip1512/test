@@ -26,7 +26,7 @@ import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfigException;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingCommunicationService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -76,7 +76,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
             new RequestReplyTemplateImpl<>(configRequestCparm, configSource, connectionFactory, requestQueue, false);
         gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource,
             connectionFactory, requestQueue, false);
-        isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+        isDataStreamingEnabled = configSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
     }
    
     @Override
