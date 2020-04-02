@@ -287,7 +287,7 @@ public enum YukonRoleProperty {
     WORK_ORDER_REPORT(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 2, booleanType()),
     ADDTL_ORDER_NUMBER_LABEL(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 3, stringType()),
     
-    MANAGE_INFRASTRUCTURE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 3, InputTypeFactory.permissionType(OWNER, CREATE, VIEW, NO_ACCESS)),
+    MANAGE_INFRASTRUCTURE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId(), InputTypeFactory.permissionType(OWNER, CREATE, VIEW, NO_ACCESS)),
     ENDPOINT_PERMISSION(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 4, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW, INTERACT)),
     MANAGE_POINT_DATA(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 5, InputTypeFactory.permissionType(VIEW, UPDATE, OWNER)),
     MANAGE_POINTS(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 6, InputTypeFactory.permissionType(OWNER, CREATE, UPDATE, VIEW, NO_ACCESS)),

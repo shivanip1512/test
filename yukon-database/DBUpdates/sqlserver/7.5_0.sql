@@ -80,7 +80,8 @@ DECLARE @RoleGroupID AS NUMERIC,
         @CreateEditParm AS VARCHAR(20),
         @DeleteParm AS VARCHAR(20),
         @AdminPerm AS VARCHAR(20),
-        @ViewPerm AS VARCHAR(20)
+        @ViewPerm AS VARCHAR(20),
+        @NewPermissionLevel AS VARCHAR(20)
 ;
 
 DECLARE setting_cursor CURSOR STATIC FOR (
@@ -100,39 +101,43 @@ BEGIN
     BEGIN
         IF @ViewPerm = 'false'
         BEGIN
-            UPDATE YukonGroupRole SET Value = 'NO_ACCESS' WHERE GroupID = @RoleGroupID AND RolePropertyID = -21403;
+            SET @NewPermissionLevel = 'NO_ACCESS';
         END
         IF @ViewPerm = 'true'
         BEGIN
-            UPDATE YukonGroupRole SET Value = 'VIEW' WHERE GroupID = @RoleGroupID AND RolePropertyID = -21403;
+            SET @NewPermissionLevel = 'VIEW';
         END
         IF @CreateEditParm = 'true'
         BEGIN
-            UPDATE YukonGroupRole SET Value = 'CREATE' WHERE GroupID = @RoleGroupID AND RolePropertyID = -21403;
+            SET @NewPermissionLevel = 'CREATE';
         END
         IF @DeleteParm = 'true'
         BEGIN
-            UPDATE YukonGroupRole SET Value = 'OWNER' WHERE GroupID = @RoleGroupID AND RolePropertyID = -21403;
+            SET @NewPermissionLevel = 'OWNER';
         END
         IF @AdminPerm = 'true'
         BEGIN
-            UPDATE YukonGroupRole SET Value = 'OWNER' WHERE GroupID = @RoleGroupID AND RolePropertyID = -21403;
+            SET @NewPermissionLevel = 'OWNER';
         END
+
+        UPDATE YukonGroupRole SET Value = @NewPermissionLevel WHERE GroupID = @RoleGroupID AND RolePropertyID = -21400;
         FETCH NEXT FROM setting_cursor INTO @RoleGroupID, @CreateEditParm, @DeleteParm, @AdminPerm, @ViewPerm
     END
 
     CLOSE setting_cursor;
     DEALLOCATE setting_cursor;
 END;
+GO
 /* @end-block */
 
 UPDATE YukonRoleProperty
 SET KeyName = 'Manage Infrastructure', Description = 'Controls access to manage infrastructure devices. i.e. RF Gateways.', DefaultValue = 'NO_ACCESS'
-WHERE RolePropertyID = -21403;
+WHERE RolePropertyID = -21400;
 
-DELETE FROM YukonGroupRole WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
-DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
+DELETE FROM YukonGroupRole WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
+DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
 
+INSERT INTO DBUpdates VALUES ('YUK-20774', '7.5.0', GETDATE());
 /* @end YUK-20774 */
 
 /**************************************************************/

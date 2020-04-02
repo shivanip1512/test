@@ -71,6 +71,7 @@ DECLARE
     v_AdminPerm VARCHAR(20);
     v_ViewPerm VARCHAR(20);
     v_RoleGroupIDText VARCHAR(20);
+    v_NewPermissionLevel VARCHAR(20);
 
     CURSOR setting_cursor IS (
         SELECT DISTINCT YGR.GroupID, YGR_21400.Value AS CreateEditPerm, YGR_21401.Value AS DeletePerm, YGR_21402.Value AS AdminPerm, YGR_21403.Value AS ViewPerm FROM YukonGroupRole YGR
@@ -89,33 +90,40 @@ BEGIN
     WHILE (setting_cursor%found)
     LOOP
         IF v_ViewPerm = 'false' THEN
-            UPDATE YukonGroupRole SET Value = 'NO_ACCESS' WHERE GroupID = v_RoleGroupID AND RolePropertyID = -21403;
+            v_NewPermissionLevel := 'NO_ACCESS';
         END IF;
         IF v_ViewPerm = 'true' THEN
-            UPDATE YukonGroupRole SET Value = 'VIEW' WHERE GroupID = v_RoleGroupID AND RolePropertyID = -21403;
+            v_NewPermissionLevel := 'VIEW';
         END IF;
         IF v_CreateEditParm = 'true' THEN
-            UPDATE YukonGroupRole SET Value = 'CREATE' WHERE GroupID = v_RoleGroupID AND RolePropertyID = -21403;
+            v_NewPermissionLevel := 'CREATE';
         END IF;
         IF v_DeleteParm = 'true' THEN
-            UPDATE YukonGroupRole SET Value = 'OWNER' WHERE GroupID = v_RoleGroupID AND RolePropertyID = -21403;
+            v_NewPermissionLevel := 'OWNER';
         END IF;
         IF v_AdminPerm = 'true' THEN
-            UPDATE YukonGroupRole SET Value = 'OWNER' WHERE GroupID = v_RoleGroupID AND RolePropertyID = -21403;
+            v_NewPermissionLevel := 'OWNER';
         END IF;
+
+        UPDATE YukonGroupRole SET Value = v_NewPermissionLevel WHERE GroupID = v_RoleGroupID AND RolePropertyID = -21400;
         FETCH setting_cursor INTO v_RoleGroupID, v_CreateEditParm, v_DeleteParm, v_AdminPerm, v_ViewPerm;
     END LOOP;
 
     CLOSE setting_cursor;
-
-    UPDATE YukonRoleProperty
-    SET KeyName = 'Manage Infrastructure', Description = 'Controls access to manage infrastructure devices. i.e. RF Gateways.', DefaultValue = 'NO_ACCESS'
-    WHERE RolePropertyID = -21403;
-
-    DELETE FROM YukonGroupRole WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
-    DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
 END;
+/
 /* @end-block */
+
+BEGIN
+	UPDATE YukonRoleProperty
+		SET KeyName = 'Manage Infrastructure', Description = 'Controls access to manage infrastructure devices. i.e. RF Gateways.', DefaultValue = 'NO_ACCESS'
+		WHERE RolePropertyID = -21400;
+
+	DELETE FROM YukonGroupRole WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
+	DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
+
+	INSERT INTO DBUpdates VALUES ('YUK-20774', '7.5.0', GETDATE());
+END;
 /* @end YUK-20774 */
 
 /**************************************************************/
