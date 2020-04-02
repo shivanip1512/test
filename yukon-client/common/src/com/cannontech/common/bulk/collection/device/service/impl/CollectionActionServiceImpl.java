@@ -216,10 +216,8 @@ public class CollectionActionServiceImpl implements CollectionActionService {
      */
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
-        log.debug("Created new collection action result:");
         eventLogHelper.log(result);
-        log.info("Created collection action {}.", result.getCacheKey());
-        log.info(result);
+        log.info("Created new collection action {}", result);
         cache.put(result.getCacheKey(), result);
     }
 }
