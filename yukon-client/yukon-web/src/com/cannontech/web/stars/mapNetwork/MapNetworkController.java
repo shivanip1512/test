@@ -219,14 +219,14 @@ public class MapNetworkController {
             List<Pair<RfnDevice, FeatureCollection>> entireRoute = nmNetworkService.getRoute(deviceId, accessor);
             json.put("entireRoute",  entireRoute);
             if (entireRoute.isEmpty()) {
-               //display error
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.noDevicesReturned"));
             }
             //devices in the route that have missing location data
             List<String> missingRoute = entireRoute.stream()
             		.filter(value -> value != null && value.getRight() == null)
             		.map(value -> value.getKey().getName())
             		.collect(Collectors.toList());
-            if (missingRoute != null) {
+            if (!missingRoute.isEmpty()) {
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(",", missingRoute)));
             }
         } catch (NmNetworkException e) {
