@@ -50,7 +50,7 @@ public class PortBase implements Port {
 
     @Override
     public void buildModel(DirectPort port) {
-        setName(port.getPAOName());
+        setName(port.getPortName());
         setEnable(port.getPAODisableFlag() == 'N' ? true : false );
         setBaudRate(BaudRate.getForRate(port.getPortSettings().getBaudRate()));
         setType(port.getPaoType());
