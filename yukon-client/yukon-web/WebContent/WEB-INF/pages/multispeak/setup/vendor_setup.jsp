@@ -233,13 +233,11 @@
                                                             <c:forEach var="item" items="${multispeakInterfaces}" varStatus="status">
                                                                 <div id="${item.vendorID}" class="js-assigned-endpoint-settings" data-id="${item.vendorID}">
                                                                     <cti:url var="viewUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
-                                                                    <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuth" />
                                                                     <cti:button icon="icon-lock"
                                                                                 id="interfaceAuth${currentInterface.mspInterface}" 
                                                                                 name="interfaceAuth"
                                                                                 renderMode="buttonImage" 
-                                                                                title="${interfaceAuthTitle}"
-                                                                                disabled="${!currentInterface.interfaceEnabled}"
+                                                                                title="<cti:msg2 key=".interfaceAuth" />"
                                                                                 href="${viewUrl}"
                                                                                 classes="js-endpoint-auth-details-link"/>
                                                                 </div>
@@ -254,13 +252,11 @@
                                                         </cti:displayForPageEditModes>
                                                         <cti:displayForPageEditModes modes="VIEW">
                                                             <cti:url var="viewUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
-                                                            <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuth" />
                                                             <cti:button icon="icon-lock"
                                                                         id="interfaceAuth${currentInterface.mspInterface}" 
                                                                         name="interfaceAuth"
                                                                         renderMode="buttonImage" 
-                                                                        title="${interfaceAuthTitle}"
-                                                                        disabled="${!currentInterface.interfaceEnabled}"
+                                                                        title="<cti:msg2 key=".interfaceAuth" />"
                                                                         href="${viewUrl}"
                                                                         classes="js-endpoint-auth-details-link"/>
                                                         </cti:displayForPageEditModes>
