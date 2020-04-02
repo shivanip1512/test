@@ -29,6 +29,7 @@
             </cm:dropdown>
         </c:if>
     </div>
+    <hr>
 
     <div class="column-7-17 clearfix">
         <c:choose>
