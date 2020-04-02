@@ -110,11 +110,7 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_PRIM_VALID_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_PRIM_TIMED_OUT(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_ROUTE_COLOR(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
-    RFN_NETWORK_SIMULATOR_PRIMARY_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
 
-    //ParentData
-    RFN_NETWORK_SIMULATOR_PARENT_SN("123", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     
     //NetworkTree Settings

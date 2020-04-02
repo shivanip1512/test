@@ -1,8 +1,29 @@
 package com.cannontech.common.util.jms.api;
 
-import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DATA_STREAMING;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DIGI_ZIGBEE;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DR_NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.MONITOR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.OTHER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_LCR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_RESPONSE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -78,8 +99,6 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
-import com.cannontech.common.rfn.message.network.RfnParentReply;
-import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
@@ -346,20 +365,6 @@ public final class JmsApiDirectory {
               .responseQueue(JmsQueue.TEMP_QUEUE)
               .requestMessage(RfnNeighborDataRequest.class)
               .responseMessage(RfnNeighborDataReply.class)
-              .sender(YUKON_WEBSERVER)
-              .receiver(NETWORK_MANAGER)
-              .receiver(YUKON_SIMULATORS)
-              .build();
-    
-    public static final JmsApi<RfnParentRequest,?,RfnParentReply> NETWORK_PARENT =
-        JmsApi.builder(RfnParentRequest.class, RfnParentReply.class)
-              .name("Network Parent")
-              .description("Asks NM for the device's parent information.")
-              .communicationPattern(REQUEST_RESPONSE)
-              .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.network.data.request"))
-              .responseQueue(JmsQueue.TEMP_QUEUE)
-              .requestMessage(RfnParentRequest.class)
-              .responseMessage(RfnParentReply.class)
               .sender(YUKON_WEBSERVER)
               .receiver(NETWORK_MANAGER)
               .receiver(YUKON_SIMULATORS)
@@ -1206,7 +1211,6 @@ public final class JmsApiDirectory {
         
         addApis(jmsApis, RF_NETWORK, 
                 NETWORK_NEIGHBOR, 
-                NETWORK_PARENT,
                 NETWORK_TREE_UPDATE_REQUEST,
                 NETWORK_TREE_UPDATE_RESPONSE);
         

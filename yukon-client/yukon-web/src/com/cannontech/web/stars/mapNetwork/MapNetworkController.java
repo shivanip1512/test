@@ -41,6 +41,7 @@ import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -56,7 +57,6 @@ import com.cannontech.web.tools.mapping.LocationValidator;
 import com.cannontech.web.tools.mapping.model.NearbyDevice;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
-import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
@@ -175,14 +175,20 @@ public class MapNetworkController {
     }
 
     @RequestMapping("parentNode")
-    public @ResponseBody Map<String, Object> parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+    public @ResponseBody Map<String, Object> parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId,
+            YukonUserContext userContext) throws ServletException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            Parent parent = nmNetworkService.getParent(deviceId, accessor);
-            json.put("parent",  parent);
-        } catch (NmNetworkException e) {
-            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
+            Pair<RfnDevice, FeatureCollection> parent = nmNetworkService.getParent(deviceId, accessor);
+            if (parent == null) {
+                // no parent
+            } else if (parent.getValue() == null) {
+                // no location
+            }
+            json.put("parent", parent);
+        } catch (NmCommunicationException e) {
+            json.put("errorMsg", e.getMessage());
         }
         return json;
     }
@@ -229,8 +235,8 @@ public class MapNetworkController {
             if (!missingRoute.isEmpty()) {
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(",", missingRoute)));
             }
-        } catch (NmNetworkException e) {
-            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
+        } catch (NmCommunicationException e) {
+            json.put("errorMsg",  e.getMessage());
         }
         return json;
     }

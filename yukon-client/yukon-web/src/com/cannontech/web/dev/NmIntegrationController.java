@@ -68,7 +68,6 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResu
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -948,7 +947,6 @@ public class NmIntegrationController {
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("routeFlags", RouteFlag.values());
         model.addAttribute("neighborFlags", NeighborFlagType.values());
-        model.addAttribute("parentReplys", RfnParentReplyType.values());
         model.addAttribute("neighborReplys", RfnNeighborDataReplyType.values());
         model.addAttribute("metadataResponseTypes", RfnMetadataMultiResponseType.values());
         model.addAttribute("metadataQueryResponseTypes", RfnMetadataMultiQueryResultType.values());

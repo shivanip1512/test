@@ -26,17 +26,6 @@
                 </tags:nameValue>
             </tags:nameValueContainer>
         </tags:sectionContainer>
-
-    <tags:sectionContainer title="Parent Node Settings">
-        <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Node SN">
-                <tags:input path="parentData.nodeSN"/>
-            </tags:nameValue>
-            <tags:nameValue name="Reply Type">
-                <tags:selectWithItems items="${parentReplys}" path="parentReplyType" />
-            </tags:nameValue>
-        </tags:nameValueContainer>
-    </tags:sectionContainer>
     
     <tags:sectionContainer title="Neighbor Data Settings">
         <tags:nameValueContainer tableClass="natural-width">

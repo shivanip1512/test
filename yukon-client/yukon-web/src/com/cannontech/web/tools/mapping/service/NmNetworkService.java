@@ -13,7 +13,6 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
-import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
 
 public interface NmNetworkService {
@@ -29,9 +28,9 @@ public interface NmNetworkService {
      * NM searches for the battery node's parent first, then finds the parent's primary route and returns that as the
      * battery node's primary route.
      * 
-     * @throws NmNetworkException if the there is a communication error or if NM returned an error
+     * @throws NmCommunicationException 
      */
-    List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
+    List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
 
     /**
      * Asks NM for the device neighbors.
@@ -50,14 +49,11 @@ public interface NmNetworkService {
     /**
      * Asks NM for the parent information.
      * 
-     * If NM returns a parent device that Yukon doesn't have created, the device will be created, NmNetworkException will be thrown
-     * since Yukon doesn't have a location information.
-     * If NM returns "no parent" NmNetworkException will be thrown.
-     * If the parent device has no location information in Yukon NmNetworkException will be thrown.
+     * If NM returns a parent device that Yukon doesn't have created, the device will be created.
      * 
-     * @throws NmNetworkException if the there is a communication error or if NM returned an error
+     * @throws NmCommunicationException 
      */
-    Parent getParent(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
+    Pair<RfnDevice, FeatureCollection> getParent(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
     
     /**
      * Returns a network map representation (legend and a list of devices by color).

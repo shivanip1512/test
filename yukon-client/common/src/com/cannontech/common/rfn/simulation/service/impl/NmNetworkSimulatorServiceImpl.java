@@ -60,13 +60,9 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
-import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
-import com.cannontech.common.rfn.message.network.RfnParentReply;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeCommStatus;
 import com.cannontech.common.rfn.message.node.NodeData;
@@ -145,11 +141,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     Object message = jmsTemplate.receive(requestQueue);
                     if (message != null) {
                         ObjectMessage requestMessage = (ObjectMessage) message;
-                        if (requestMessage.getObject() instanceof RfnParentRequest) {
-                            RfnParentRequest request = (RfnParentRequest) requestMessage.getObject();
-                            RfnParentReply reply = getParent(request.getRfnIdentifier());
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
-                        } else if (requestMessage.getObject() instanceof RfnNeighborDataRequest) {
+                        if (requestMessage.getObject() instanceof RfnNeighborDataRequest) {
                             RfnNeighborDataRequest request = (RfnNeighborDataRequest) requestMessage.getObject();
                             RfnNeighborDataReply reply = getNeighbors(request.getRfnIdentifier());
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
@@ -309,6 +301,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         addObjectToResult(results, device, multi, 3);
                     } else if (multi == RfnMetadataMulti.NEIGHBOR_COUNT) {
                         addObjectToResult(results, device, multi, 4);
+                    } else if (multi == RfnMetadataMulti.BATTERY_NODE_PARENT) {
+                        addObjectToResult(results, device, multi, getParent(rfnDevice.getRfnIdentifier()));
                     }
                 }
             } catch (Exception e) {
@@ -556,13 +550,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             routeData.setTotalCost((short) ((int)YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_COST.getDefaultValue()));
             simulatedNmMappingSettings.setRouteData(routeData);
     
-            //ParentData
-            ParentData parentData = new ParentData();
-            parentData.setNodeSN((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_SN.getDefaultValue());
-            simulatedNmMappingSettings.setParentData(parentData);
             
             simulatedNmMappingSettings.setNeighborReplyType(RfnNeighborDataReplyType.valueOf((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHBOR_DATA_REPLY_TYPE.getDefaultValue()));
-            simulatedNmMappingSettings.setParentReplyType(RfnParentReplyType.valueOf((String) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE.getDefaultValue()));
             
             //Network Tree
             simulatedNmMappingSettings.setEmptyNullPercent(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL));
@@ -584,7 +573,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
      * guaranteed to have an available powerline in places they want to measure water usage
      * The parent of the water meter can be LCR, CBC, RELAY, RF METER
      */
-    public RfnParentReply getParent(RfnIdentifier identifier) {
+    public RfnIdentifier getParent(RfnIdentifier identifier) {
         RfnDevice device= rfnDeviceDao.getDeviceForExactIdentifier(identifier);
         // get 10 closest neighbors
         List<RfnDevice> neighbors = getNeighbors(device, 10);
@@ -594,12 +583,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         if(parent == null){
             return null;
         }
-        
-        RfnParentReply reply = new RfnParentReply();
-        reply.setReplyType(settings.getParentReplyType());
-        reply.setParentData(getParentDataFromSettings(parent.getRfnIdentifier()));
-        reply.setRfnIdentifier(parent.getRfnIdentifier());
-        return reply;
+        return parent.getRfnIdentifier();
     }
     
     /**
@@ -646,14 +630,6 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         log.info("identifier="+ identifier+" neighborData="+neighborData);
         
         return reply;
-    }
-    
-    private ParentData getParentDataFromSettings(RfnIdentifier rfnIdentifier){
-        ParentData data = new ParentData();
-        data.setNodeMacAddress(settings.getParentData().getNodeMacAddress());
-        data.setNodeSN(settings.getParentData().getNodeSN());
-        data.setRfnIdentifier(rfnIdentifier);
-        return data;
     }
     
     private  Set<com.cannontech.common.rfn.message.network.NeighborData> getNeighborDataFromSettings(List<RfnDevice> neighbors){

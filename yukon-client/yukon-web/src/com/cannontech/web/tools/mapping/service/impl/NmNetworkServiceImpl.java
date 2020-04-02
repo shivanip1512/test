@@ -42,13 +42,9 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.neighbor.NeighborData;
-import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
-import com.cannontech.common.rfn.message.network.RfnParentReply;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RfnRoute;
@@ -64,7 +60,6 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.tools.mapping.model.MappingInfo;
@@ -79,7 +74,6 @@ import com.cannontech.web.tools.mapping.model.NetworkMapFilter.HopCountColors;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
-import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.HashMultimap;
@@ -89,13 +83,10 @@ import com.google.common.collect.Maps;
 public class NmNetworkServiceImpl implements NmNetworkService {
 
     private static final Logger log = YukonLogManager.getLogger(NmNetworkServiceImpl.class);
-    private static final String parentRequest = "NM_NETWORK_PARENT_REQUEST";
     private static final String neighborRequest = "NM_NETWORK_NEIGHBOR_REQUEST";
 
     private static final String commsError = "Unable to send request due to a communication error between Yukon and Network Manager.";
     private static final String nmError = "Received error from Network Manager.";
-    private static final String noRoute = "One or more devices within the route could not be located.";
-    private static final String noParent = "No location in Yukon was found for this parent device.";
     private static final String metadataErrorKey = "yukon.web.modules.operator.mapNetwork.exception.metadataError";
 
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
@@ -113,13 +104,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Autowired private MeterDao meterDao;
     @Autowired private ServerDatabaseCache dbCache;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
-    private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
 
     @PostConstruct
     public void init() {
         neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, connectionFactory, requestQueue,
                 false);
-        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, connectionFactory, requestQueue, false);
     }
 
     public class Neighbors {
@@ -151,124 +140,94 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
 
     @Override
-    public Parent getParent(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
-
+    public Pair<RfnDevice, FeatureCollection> getParent(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        PaoLocation deviceLocation = paoLocationDao.getLocation(deviceId);
-        BlockingJmsReplyHandler<RfnParentReply> reply = new BlockingJmsReplyHandler<>(RfnParentReply.class);
-        RfnParentRequest request = new RfnParentRequest();
-        request.setRfnIdentifier(device.getRfnIdentifier());
 
-        log.debug("Sending get parent request to Network Manager: " + request);
-
-        RfnParentReply response;
-        try {
-            parentReplyTemplate.send(request, reply);
-            response = reply.waitForCompletion();
-        } catch (ExecutionException e) {
-            log.error(commsError, e);
-            throw new NmNetworkException(commsError, e, "commsError");
-        }
-        if (response.getReplyType() != RfnParentReplyType.OK) {
-            log.error(nmError + " (" + response.getReplyType() + ")");
-            throw new NmNetworkException(nmError, response.getReplyType().name());
-        }
-
-        log.debug("response: " + response);
-
-        ParentData data = response.getParentData();
-        try {
-            RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(data.getRfnIdentifier());
-            PaoLocation parentLocation = paoLocationDao.getLocation(parentDevice.getPaoIdentifier().getPaoId());
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
+                .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                        Set.of(RfnMetadataMulti.BATTERY_NODE_PARENT));
+        RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
+        if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.BATTERY_NODE_PARENT)) {
+            RfnIdentifier rfnIdentifier = (RfnIdentifier) metadataMulti.getMetadatas()
+                    .get(RfnMetadataMulti.BATTERY_NODE_PARENT);
+            if(rfnIdentifier.is_Empty_()) {
+                return null;
+            }
+            RfnDevice parent = rfnDeviceCreationService.createIfNotFound(rfnIdentifier);
+            if (parent == null) {
+                // couldn't find or create parent
+                return null;
+            }
+            PaoLocation parentLocation = paoLocationDao.getLocation(parent.getPaoIdentifier().getPaoId());
             if (parentLocation == null) {
-                log.error("No parent found for device=" + device);
-                throw new NmNetworkException(noParent, "noParentLocation");
+                return Pair.of(parent, null);
             }
-            FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(parentLocation));
-            Parent parent = new Parent(parentDevice, location, data, accessor);
-            parent.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(parentDevice));
+            FeatureCollection feature = paoLocationService
+                    .getFeatureCollection(Lists.newArrayList(parentLocation));
+            return Pair.of(parent, feature);
 
-            try {
-                Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = getMetaData(Lists.newArrayList(parentDevice));
-                addMappingInfo(metaData, parent);
-            } catch (NmNetworkException e) {
-                parent.setErrorMsg(accessor.getMessage(metadataErrorKey));
-            }
-
-            addDistance(parent, deviceLocation, parentLocation);
-            log.debug(parent);
-            log.debug("-----" + deviceLocation + " <<>> " + parentLocation);
-            return parent;
-        } catch (NotFoundException e) {
-            // create new device if it doesn't exist
-            rfnDeviceCreationService.create(data.getRfnIdentifier());
-            log.info(data.getRfnIdentifier() + " is not found. Creating device.");
-            log.error("No parent found for device=" + device);
-            throw new NmNetworkException(noParent, "noParentLocation");
+        } else {
+            // no parent
+            return null;
         }
     }
 
     @Override
     public List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor)
-            throws NmNetworkException {
+            throws NmCommunicationException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
 
-        try {
-            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
-                    .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
-                            Set.of(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE));
+        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
+                .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                        Set.of(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE));
 
-            RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
+        RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
 
-            if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE)) {
-                RfnRoute route = (RfnRoute) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE);
+        if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE)) {
+            RfnRoute route = (RfnRoute) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE);
 
-                if (route.isEmpty()) {
-                    log.error("Route is empty for device {}", deviceId);
-                    throw new NmNetworkException(noRoute, "noRoute");
-                }
+            if (route.isEmpty()) {
+                log.error("Route is empty for device {}", deviceId);
+                return new ArrayList<>();
+            }
 
-                Map<RfnIdentifier, RfnDevice> devices = route.stream()
-                        // remove nulls returned from NM
-                        .filter(Objects::nonNull)
-                        .filter(identifier -> !identifier.is_Empty_())
-                        .map(identifier -> rfnDeviceCreationService.createIfNotFound(identifier))
-                        // remove devices not created or found
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
+            Map<RfnIdentifier, RfnDevice> devices = route.stream()
+                    // remove nulls returned from NM
+                    .filter(Objects::nonNull)
+                    .filter(identifier -> !identifier.is_Empty_())
+                    .map(identifier -> rfnDeviceCreationService.createIfNotFound(identifier))
+                    // remove devices not created or found
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
 
-                Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
-                Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
+            Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
+            Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
 
-                List<Pair<RfnDevice, FeatureCollection>> result = new ArrayList<>();
+            List<Pair<RfnDevice, FeatureCollection>> result = new ArrayList<>();
 
-                route.forEach(identifier -> {
-                    if (identifier == null || identifier.is_Empty_()) {
+            route.forEach(identifier -> {
+                if (identifier == null || identifier.is_Empty_()) {
+                    result.add(null);
+                } else {
+                    RfnDevice routeDevice = devices.get(identifier);
+                    if (routeDevice == null) {
                         result.add(null);
                     } else {
-                        RfnDevice routeDevice = devices.get(identifier);
-                        if (routeDevice == null) {
-                            result.add(null);
+                        PaoLocation location = locations.get(routeDevice.getPaoIdentifier());
+                        if (location == null) {
+                            result.add(Pair.of(routeDevice, null));
                         } else {
-                            PaoLocation location = locations.get(routeDevice.getPaoIdentifier());
-                            if (location == null) {
-                                result.add(Pair.of(routeDevice, null));
-                            } else {
-                                FeatureCollection feature = paoLocationService
-                                        .getFeatureCollection(Lists.newArrayList(location));
-                                result.add(Pair.of(routeDevice, feature));
-                            }
+                            FeatureCollection feature = paoLocationService
+                                    .getFeatureCollection(Lists.newArrayList(location));
+                            result.add(Pair.of(routeDevice, feature));
                         }
                     }
-                });
-                return result;
-            } else {
-                log.error("PRIMARY_FORWARD_ROUTE for device {} is not valid", "PRIMARY_FORWARD_ROUTE", device);
-                throw new NmNetworkException(noRoute, "noRoute");
-            }
-        } catch (NmCommunicationException e) {
-            log.error(commsError, e);
-            throw new NmNetworkException(commsError, e, "commsError");
+                }
+            });
+            return result;
+        } else {
+            log.error("PRIMARY_FORWARD_ROUTE for device {} is not valid", "PRIMARY_FORWARD_ROUTE", device);
+            return new ArrayList<>();
         }
     }
 
