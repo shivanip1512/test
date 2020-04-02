@@ -210,7 +210,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             sink.addValue("InPassword", mspInterface.getInPassword());
             sink.addValue("OutUserName", mspInterface.getOutUserName());
             sink.addValue("OutPassword", mspInterface.getOutPassword());
-            sink.addValue("UseVendorAuth", mspInterface.isUseVendorAuth());
+            sink.addValue("UseVendorAuth", mspInterface.getUseVendorAuth());
             sink.addValue("ValidateCertificate", mspInterface.getValidateCertificate());
             
             int numAdded = jdbcTemplate.update(sql);

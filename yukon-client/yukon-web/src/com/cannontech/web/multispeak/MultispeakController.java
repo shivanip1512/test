@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +19,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -38,6 +43,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
+import com.cannontech.multispeak.db.MSPEndPointAuth;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.system.GlobalSettingType;
@@ -50,6 +56,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.MultispeakModel;
 import com.cannontech.web.multispeak.validators.MultispeakValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 @RequestMapping("/setup/*")
 @Controller
@@ -68,6 +76,8 @@ public class MultispeakController {
     private MultispeakVendor defaultMspVendor;
 
     private static String RESULT_COLOR_ATT = "resultColor";
+
+    private Cache<String, List<MSPEndPointAuth>> endpointAuthSettingsCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
 
     // HOME
     @RequestMapping("home")
@@ -104,6 +114,13 @@ public class MultispeakController {
         }
         multispeak.setMspVendor(mspVendor);
         addSystemModelAndViewObjects(map, mspVendor, true, multispeak, false);
+        
+        if (map.containsAttribute("multispeakInterfaces")) {
+            List<MultispeakInterface> multispeakInterfaces = (List<MultispeakInterface>) map.get("multispeakInterfaces");
+            map.addAttribute("multispeakInterfaces", multispeakInterfaces);
+        } else {
+            buildVendorEndPointAuthInfo(map, mspVendor);
+        }
         return "setup/vendor_setup.jsp";
 
     }
@@ -134,9 +151,33 @@ public class MultispeakController {
         }
         addSystemModelAndViewObjects(map, mspVendor, true, multispeak, false);
         map.addAttribute("mode", PageEditMode.VIEW);
+        buildVendorEndPointAuthInfo(map, mspVendor);
         return "setup/vendor_setup.jsp";
     }
 
+    private void buildVendorEndPointAuthInfo(ModelMap model, MultispeakVendor mspVendor) {
+
+        if (CollectionUtils.isNotEmpty(mspVendor.getMspInterfaces())) {
+            List<MSPEndPointAuth> mspEndPointAuthSettingsList = new ArrayList<>();
+            mspVendor.getMspInterfaces().forEach(mspInterface -> {
+                MSPEndPointAuth mspEndPointAuth = new MSPEndPointAuth();
+                mspEndPointAuth.setVendorID(mspInterface.getVendorID());
+                mspEndPointAuth.setInPassword(mspInterface.getInPassword());
+                mspEndPointAuth.setInUserName(mspInterface.getInUserName());
+                mspEndPointAuth.setOutUserName(mspInterface.getOutUserName());
+                mspEndPointAuth.setOutPassword(mspInterface.getOutPassword());
+                mspEndPointAuth.setMspInterface(mspInterface.getMspInterface());
+                mspEndPointAuth.setVersion(mspInterface.getVersion());
+                mspEndPointAuth.setValidateCertificate(mspInterface.getValidateCertificate());
+                mspEndPointAuth.setUseVendorAuth(mspInterface.getUseVendorAuth());
+                mspEndPointAuthSettingsList.add(mspEndPointAuth);
+            });
+            endpointAuthSettingsCache.put(String.valueOf(mspVendor.getVendorID()), mspEndPointAuthSettingsList);
+            model.addAttribute("mspEndPointAuthSettingsList", mspEndPointAuthSettingsList);
+        }
+
+    }
+    
     @RequestMapping(value = "save", method = RequestMethod.POST)
     public String save(HttpServletRequest request, ModelMap map, RedirectAttributes redirectAttributes,
             FlashScope flashScope, @ModelAttribute("multispeak") MultispeakModel multispeak, BindingResult result,
@@ -162,6 +203,56 @@ public class MultispeakController {
         } else {
             return "redirect:vendorHome/" + mspVendor.getVendorID();
         }
+    }
+
+    @GetMapping("/endpointAuth/{id}/{mspInterface}/{version}")
+    public String endPointAuth(ModelMap model, @PathVariable String id, @PathVariable String mspInterface, @PathVariable String version, @RequestParam PageEditMode mode, YukonUserContext userContext, HttpServletRequest request) {
+        List<MSPEndPointAuth> mspEndPointAuthMap = endpointAuthSettingsCache.getIfPresent(id);
+        Optional<MSPEndPointAuth> mspEndPointAuth = mspEndPointAuthMap.stream()
+                                                                      .filter(mspEndPointInterface -> (mspEndPointInterface.getMspInterface().equals(mspInterface) 
+                                                                                                             || mspEndPointInterface.getVersion().getVersion().equals(version)))
+                                                                      .findFirst();
+        model.addAttribute("mode", mode);
+        model.addAttribute("mspEndPointAuth", mspEndPointAuth);
+        return "setup/endpoint_auth.jsp";
+    }
+
+    @PostMapping("/vendorAuth/save")
+    public @ResponseBody Map<String, String> save(ModelMap model, @ModelAttribute("mspEndPointAuth") MSPEndPointAuth mspEndPointAuth, @RequestParam String tempVendorId) {
+        Map<String, String> vendorEndPointAuthMap = new HashMap<>();
+        final String vendorId;
+        boolean isCreateNew = mspEndPointAuth.getVendorID() == null;
+/*        if (!isCreateNew) {
+            endpointAuthSettingsCache.put(mspEndPointAuth.getVendorID().toString(), mspEndPointAuth);
+        } else {
+            final String key = UUID.randomUUID().toString().replace("-", "");
+            endpointAuthSettingsCache.put(key, mspEndPointAuth);
+        }
+      
+        if (StringUtils.isNotBlank(tempVendorId)) {
+            vendorId = tempVendorId;
+            endpointAuthSettingsCache.put(tempVendorId, mspEndPointAuth);
+        } else {
+            vendorId = UUID.randomUUID().toString().replace("-", "");
+            endpointAuthSettingsCache.put(vendorId, mspEndPointAuth);
+        }*/
+
+        vendorEndPointAuthMap.put("id", tempVendorId);
+        vendorEndPointAuthMap.put("mspInterface", mspEndPointAuth.getMspInterface());
+        vendorEndPointAuthMap.put("version", mspEndPointAuth.getVersion().getVersion());
+        return vendorEndPointAuthMap;
+    }
+
+    @GetMapping("/createEndPointAuthPopup")
+    public String createGearPopup(ModelMap model) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        MSPEndPointAuth mspEndPointAuth = new MSPEndPointAuth();
+        if (model.containsAttribute("mspEndPointAuth")) {
+            mspEndPointAuth = (MSPEndPointAuth) model.get("mspEndPointAuth");
+        }
+        model.addAttribute("mspEndPointAuth", mspEndPointAuth);
+
+        return "setup/endpoint_auth.jsp";
     }
 
     private String bindAndForward(MultispeakModel multispeak, BindingResult result, RedirectAttributes attrs,
@@ -199,6 +290,10 @@ public class MultispeakController {
 
         model.addAttribute("mode", PageEditMode.CREATE);
         addSystemModelAndViewObjects(model, null, true, null, true);
+        if (model.containsAttribute("multispeakInterfaces")) {
+            List<MultispeakInterface> multispeakInterfaces = (List<MultispeakInterface>) model.get("multispeakInterfaces");
+            model.addAttribute("multispeakInterfaces", multispeakInterfaces);
+        }
         return "setup/vendor_setup.jsp";
     }
 

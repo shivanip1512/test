@@ -86,6 +86,41 @@ yukon.admin.multispeak = (function () {
 	            	 $(document).on('yukon:multispeak:vendor:delete', function () {
 	            		 $('#delete-vendor').submit();
 	                 });
+	                 
+                     $(document).on("yukon:multispeak:saveVendorEndPointAuth", function (event) {
+                         var dialog = $(event.target),
+                             vendorId,
+                             form = dialog.find('#js-program-gear-form');
+                         
+                         $.ajax({
+                             type: "POST",
+                             url: yukon.url("/multispeak/setup/vendorAuth/save"),
+                             data: form.serialize() + "&tempVendorId=" + vendorId
+                         }).done(function(data) {
+                         });
+	                     dialog.dialog('close');
+	                     dialog.empty();
+	                 });
+	                 
+                     $(document).on('click', '.js-endpoint-auth-details-link', function (event) {
+                         event.preventDefault();
+                         var dialogDivJson = {
+                             "data-url" : $(this).attr('href'),
+                             "data-load-event" : "yukon:multispeak:viewVendorEndPointAuth",
+                             "data-width" : "500",
+                             "data-height" : "300",
+                             "data-title" : $(this).text(),
+                             "data-destroy-dialog-on-close" : "",
+                         };
+                         if ($(".js-create-or-edit-endpoint").exists()) {
+                             dialogDivJson['data-dialog'] = '';
+                             dialogDivJson['data-event'] = "yukon:multispeak:saveVendorEndPointAuth";
+                             dialogDivJson['data-ok-text'] = yg.text.save;
+                         }
+                         dialogDivJson['id'] = "endpointAuthPopup";
+                         yukon.ui.dialog($("<div/>").attr(dialogDivJson));
+                     });
+                     
 	                if (_initialized) return;
 	                _initialized = true;
 	            }

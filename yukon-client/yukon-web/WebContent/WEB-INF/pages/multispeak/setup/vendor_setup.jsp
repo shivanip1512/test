@@ -1,12 +1,13 @@
 <%@ page import="com.cannontech.multispeak.client.*"%>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+
 <cti:standardPage module="adminSetup" page="vendor.${mode}" >
     <tags:setFormEditMode mode="${mode}" />
     <cti:msg2 var="pingTitle" key=".ping" />
@@ -48,6 +49,10 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
+        
+        <input type="hidden" name="selectedVendorId" id="js-selected-vendor-id" />
+        <input type="hidden" name="selectedVersion" id="js-selected-version" />
+        <input type="hidden" name="selectedMSPInterface" id="js-selected-msp-interface" />
         <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
                 <div class="column-12-12 clearfix">
@@ -210,7 +215,7 @@
                                                         disabled="${!currentInterface.interfaceEnabled}"
                                                         items="${versionOptions}" inputClass="with-option-hiding" />
                                                 </td>
-                                                <td style="width: 90px;">
+                                                <td style="width: 120px;">
                                                     <div class="button-group fr wsnw oh">
                                                         <cti:button icon="icon-ping"
                                                             id="ping${currentInterface.mspInterface}" name="pingURL"
@@ -223,6 +228,42 @@
                                                             title="${getMethods}"
                                                             disabled="${!currentInterface.interfaceEnabled}"
                                                             onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                                        <cti:displayForPageEditModes modes="EDIT">
+                                                            <input type="hidden" class="js-create-or-edit-endpoint"/>
+                                                            <c:forEach var="item" items="${multispeakInterfaces}" varStatus="status">
+                                                                <div id="${item.vendorID}" class="js-assigned-endpoint-settings" data-id="${item.vendorID}">
+                                                                    <cti:url var="viewUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
+                                                                    <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuth" />
+                                                                    <cti:button icon="icon-lock"
+                                                                                id="interfaceAuth${currentInterface.mspInterface}" 
+                                                                                name="interfaceAuth"
+                                                                                renderMode="buttonImage" 
+                                                                                title="${interfaceAuthTitle}"
+                                                                                disabled="${!currentInterface.interfaceEnabled}"
+                                                                                href="${viewUrl}"
+                                                                                classes="js-endpoint-auth-details-link"/>
+                                                                </div>
+                                                            </c:forEach>
+                                                        </cti:displayForPageEditModes>
+                                                        <cti:displayForPageEditModes modes="CREATE">
+                                                            <input type="hidden" class="js-create-or-edit-endpoint"/>
+                                                            <cti:button icon="icon-lock" 
+                                                                        name="interfaceAuth"
+                                                                        data-popup="#endpointAuthPopup" />
+                                                            <cti:url var="createEndPointAuthSettingsUrl" value="/multispeak/setup/createEndPointAuthPopup" />
+                                                        </cti:displayForPageEditModes>
+                                                        <cti:displayForPageEditModes modes="VIEW">
+                                                            <cti:url var="viewUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
+                                                            <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuth" />
+                                                            <cti:button icon="icon-lock"
+                                                                        id="interfaceAuth${currentInterface.mspInterface}" 
+                                                                        name="interfaceAuth"
+                                                                        renderMode="buttonImage" 
+                                                                        title="${interfaceAuthTitle}"
+                                                                        disabled="${!currentInterface.interfaceEnabled}"
+                                                                        href="${viewUrl}"
+                                                                        classes="js-endpoint-auth-details-link"/>
+                                                        </cti:displayForPageEditModes>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -278,6 +319,19 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
+
+    <cti:url var="createPopupUrl" value="/multispeak/setup/createEndPointAuthPopup/${mspVendor.vendorID}" />
+    <div class="js-endpoint" 
+         id="endpointAuthPopup" 
+         data-title="<cti:msg2 key="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle"/>"
+         data-url="${createPopupUrl}" 
+         data-width="500"
+         data-height="300"
+         data-event="yukon:multispeak:saveVendorEndPointAuth"
+         data-ok-text="<cti:msg2 key="yukon.common.save"/>"
+         data-dialog>
+     </div>
+
     <cti:url var="url" value="/multispeak/setup/vendorHome/${mspVendor.vendorID}" />
     <form:form id="delete-vendor" method="DELETE" action="${url}">
         <cti:csrfToken />
