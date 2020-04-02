@@ -642,7 +642,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> result : metaData.entrySet()) {
             if (result.getValue().isValidResultForMulti(multi)) {
-				RouteData routeData = (RouteData) result.getValue().getMetadatas().get(multi);
+                RouteData routeData = (RouteData) result.getValue().getMetadatas().get(multi);
                 int hopCount = (int) routeData.getHopCount();
                 identifiers.put(HopCountColors.getHopCountColor(hopCount), result.getKey());
             } else {
