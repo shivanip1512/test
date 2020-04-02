@@ -1,6 +1,7 @@
 package com.cannontech.common.device.port.service;
 
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.PortDetailBase;
 
 public interface PortService {
 
@@ -12,5 +13,5 @@ public interface PortService {
     /**
      * Retrieve Port for passed portId.
      */
-    PortBase retrieve(int portId);
+    PortDetailBase retrieve(int portId);
 }

@@ -2,25 +2,16 @@ package com.cannontech.common.device.port;
 
 import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.TcpPort;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
-public class TcpPortDetail extends TcpPortInfo {
-
-    private PortTiming timing;
-    
-    public PortTiming getTiming() {
-        return timing;
-    }
-
-    public void setTiming(PortTiming timing) {
-        this.timing = timing;
-    }
+@JsonTypeName("TCPPORT")
+public class TcpPortDetail extends PortDetailBase {
 
     @Override
     public void buildModel(DirectPort port) {
         super.buildModel(port);
         TcpPort tctPort = (TcpPort) port;
-        PortTiming timing = new PortTiming();
-        timing.buildModel(tctPort.getPortTiming());
-        this.setTiming(timing);
+        getTiming().buildModel(tctPort.getPortTiming());
+        setTiming(getTiming());
     }
 }

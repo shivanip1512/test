@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.PortDetailBase;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.pao.PaoType;
@@ -35,26 +36,26 @@ public class PortServiceImpl implements PortService {
     }
 
     @Override
-    public PortBase retrieve(int portId) {
+    public PortDetailBase retrieve(int portId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(portId);
         if (pao == null) {
             throw new NotFoundException("Port Id not found");
         }
         DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(pao);
-        PortBase portBase = getModel(directPort.getPaoType());
-        portBase.buildModel(directPort);
-        return portBase;
+        PortDetailBase portDetailBase = getModel(directPort.getPaoType());
+        portDetailBase.buildModel(directPort);
+        return portDetailBase;
     }
 
-    private PortBase getModel(PaoType paoType) {
-        PortBase port = null;
+    private PortDetailBase getModel(PaoType paoType) {
+        PortDetailBase portDetailBase = null;
         switch (paoType) {
         case TCPPORT :
-            port = new TcpPortDetail();
+            portDetailBase = new TcpPortDetail();
             break;
         // TODO : Add for other Ports here.
         }
         
-        return port;
+        return portDetailBase;
     }
 }
