@@ -21,6 +21,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
  *         N5    N6
  * </pre>
  * 
+ * @author lizhu2
  */
 public class RfnVertex implements Serializable  {
     

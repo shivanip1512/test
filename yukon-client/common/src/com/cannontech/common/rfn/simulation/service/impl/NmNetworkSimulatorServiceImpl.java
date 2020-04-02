@@ -354,7 +354,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         routeData.setHopCount((short)getRandomNumberInRange(1, 25));
         routeData.setNextHopAddress(settings.getRouteData().getNextHopAddress());
         routeData.setRouteColor(settings.getRouteData().getRouteColor());
-        routeData.setRouteDataTimeStamp(settings.getRouteData().getRouteDataTimeStamp());
+        routeData.setRouteDataTimestamp(settings.getRouteData().getRouteDataTimestamp());
         routeData.setRouteFlags(settings.getRouteData().getRouteFlags());
         routeData.setRouteTimeout(settings.getRouteData().getRouteTimeout());
         routeData.setTotalCost(settings.getRouteData().getTotalCost());
@@ -523,7 +523,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             RouteData routeData = new RouteData();
             routeData.setHopCount((short) ((int)YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT.getDefaultValue()));
             routeData.setRouteColor((short) ((int)YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_COLOR.getDefaultValue()));
-            routeData.setRouteDataTimeStamp(new Date().getTime());
+            routeData.setRouteDataTimestamp(new Date().getTime());
             //flags
             Set<RouteFlag> routeTypes = new HashSet<>();
             if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_FORW_ROUTE.getDefaultValue()) {    

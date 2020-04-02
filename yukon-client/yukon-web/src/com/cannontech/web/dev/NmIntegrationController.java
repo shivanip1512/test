@@ -983,7 +983,7 @@ public class NmIntegrationController {
             }
         }
         if (currentSettings.getRouteData() != null) {
-            currentSettings.getRouteData().setRouteDataTimeStamp(dateTime);
+            currentSettings.getRouteData().setRouteDataTimestamp(dateTime);
             currentSettings.getRouteData().setRouteTimeout(dateTime);
             currentSettings.getRouteData().setRouteFlags(new HashSet<>());
             for (RouteFlag flag : RouteFlag.values()) {

@@ -9,9 +9,6 @@ public enum RouteFlag {
     ROUTE_FLAG_IGNORED(32),                 // Ignored route
     ROUTE_FLAG_VALID(64),                   // Valid route
     ROUTE_FLAG_TIMED_OUT(128),              // Route timed out
-    ROUTE_FLAG_TIMED_OUT2(256),             // Route timed out
-    ROUTE_FLAG_IGNORED2(512),               // Ignored route
-    ROUTE_FLAG_VALID2(32768),               // Valid route
     ;
     
     private final int routeFlagCodeID;
