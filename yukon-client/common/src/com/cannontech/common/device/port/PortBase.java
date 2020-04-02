@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
 @JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortInfo.class, name = "TCPPORT") })
 public class PortBase implements Port {
 
@@ -50,7 +50,7 @@ public class PortBase implements Port {
 
     @Override
     public void buildModel(DirectPort port) {
-        setName(port.getPAOName());
+        setName(port.getPortName());
         setEnable(port.getPAODisableFlag() == 'N' ? true : false );
         setBaudRate(BaudRate.getForRate(port.getPortSettings().getBaudRate()));
         setType(port.getPaoType());

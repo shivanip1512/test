@@ -9,8 +9,11 @@ public class TcpPortDetail extends PortDetailBase {
 
     @Override
     public void buildModel(DirectPort port) {
-        super.buildModel(port);
         TcpPort tctPort = (TcpPort) port;
+        // build info
+        getInfo().buildModel(tctPort);
+        setInfo(getInfo());
+        // build timing
         getTiming().buildModel(tctPort.getPortTiming());
         setTiming(getTiming());
     }

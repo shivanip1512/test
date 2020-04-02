@@ -15,7 +15,7 @@ public class PortValidatorHelper {
 
     @Autowired private PaoDao paoDao;
 
-    private final static String key = "yukon.web.api.port.setup.error.";
+    private final static String key = "yukon.web.api.error.";
 
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
         if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {

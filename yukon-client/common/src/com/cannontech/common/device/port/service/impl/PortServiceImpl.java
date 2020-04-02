@@ -7,6 +7,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.PortDetailBase;
 import com.cannontech.common.device.port.TcpPortDetail;
+import com.cannontech.common.device.port.TcpPortInfo;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -52,6 +53,7 @@ public class PortServiceImpl implements PortService {
         switch (paoType) {
         case TCPPORT :
             portDetailBase = new TcpPortDetail();
+            portDetailBase.setInfo(new TcpPortInfo());
             break;
         // TODO : Add for other Ports here.
         }

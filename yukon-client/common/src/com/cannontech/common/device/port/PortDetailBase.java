@@ -1,53 +1,25 @@
 package com.cannontech.common.device.port;
 
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.typeResolver.NestedTypeResolver;
 import com.cannontech.database.data.port.DirectPort;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonTypeResolver;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "info.type")
 @JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortDetail.class, name = "TCPPORT") })
+@JsonTypeResolver(NestedTypeResolver.class)
 public class PortDetailBase {
 
-    private String name;
-    private boolean enable;
-    private BaudRate baudRate;
-    @JsonTypeId
-    private PaoType type;
-
+    private PortBase info;
     private PortTiming timing;
 
-    public String getName() {
-        return name;
+    public PortBase getInfo() {
+        return info;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isEnable() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
-
-    public BaudRate getBaudRate() {
-        return baudRate;
-    }
-
-    public void setBaudRate(BaudRate baudRate) {
-        this.baudRate = baudRate;
-    }
-
-    public PaoType getType() {
-        return type;
-    }
-
-    public void setType(PaoType type) {
-        this.type = type;
+    public void setInfo(PortBase info) {
+        this.info = info;
     }
 
     public PortTiming getTiming() {
@@ -62,9 +34,6 @@ public class PortDetailBase {
     }
 
     public void buildModel(DirectPort port) {
-        setName(port.getPAOName());
-        setEnable(port.getPAODisableFlag() == 'N' ? true : false );
-        setBaudRate(BaudRate.getForRate(port.getPortSettings().getBaudRate()));
-        setType(port.getPaoType());
+        getInfo().buildDBPersistent(port);
     }
 }
