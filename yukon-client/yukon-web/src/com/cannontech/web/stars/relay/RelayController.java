@@ -41,6 +41,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class RelayController {
     
     @Autowired private DeviceDao deviceDao;

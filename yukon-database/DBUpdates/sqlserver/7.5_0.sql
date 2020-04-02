@@ -92,11 +92,8 @@ DECLARE setting_cursor CURSOR STATIC FOR (
     WHERE YGR.RolePropertyID <= -21400 AND YGR.RolePropertyID >= -21403
 );
 
+/* @start-block */
 BEGIN
-    UPDATE YukonRoleProperty
-    SET KeyName = 'Manage Infrastructure', Description = 'Controls access to manage infrastructure devices. i.e. RF Gateways.', DefaultValue = 'NO_ACCESS'
-    WHERE RolePropertyID = -21403;
-
     OPEN setting_cursor;
     FETCH NEXT FROM setting_cursor INTO @RoleGroupID, @CreateEditParm, @DeleteParm, @AdminPerm, @ViewPerm
     WHILE @@FETCH_STATUS = 0
@@ -126,10 +123,16 @@ BEGIN
 
     CLOSE setting_cursor;
     DEALLOCATE setting_cursor;
-
-    DELETE FROM YukonGroupRole WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
-    DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
 END;
+/* @end-block */
+
+UPDATE YukonRoleProperty
+SET KeyName = 'Manage Infrastructure', Description = 'Controls access to manage infrastructure devices. i.e. RF Gateways.', DefaultValue = 'NO_ACCESS'
+WHERE RolePropertyID = -21403;
+
+DELETE FROM YukonGroupRole WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
+DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
+
 /* @end YUK-20774 */
 
 /**************************************************************/

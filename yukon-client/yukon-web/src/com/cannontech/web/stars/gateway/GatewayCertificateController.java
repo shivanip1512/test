@@ -32,16 +32,14 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRole(YukonRole.DEVICE_MANAGEMENT)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayCertificateController {
     
     private static final String baseKey = "yukon.web.modules.operator.gateways.";

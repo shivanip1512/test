@@ -52,6 +52,7 @@ import com.cannontech.web.widget.support.SimpleWidgetInput;
  */
 @Controller
 @RequestMapping("/gatewayInformationWidget/*")
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayInformationWidget.class);

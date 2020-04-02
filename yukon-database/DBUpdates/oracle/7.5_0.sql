@@ -81,6 +81,7 @@ DECLARE
         WHERE YGR.RolePropertyID <= -21400 AND YGR.RolePropertyID >= -21403
     );
 
+/* @start-block */
 BEGIN
     OPEN setting_cursor;
     FETCH setting_cursor INTO v_RoleGroupID, v_CreateEditParm, v_DeleteParm, v_AdminPerm, v_ViewPerm;
@@ -114,6 +115,7 @@ BEGIN
     DELETE FROM YukonGroupRole WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
     DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21400 OR RolePropertyID = -21401 OR RolePropertyID = -21402;
 END;
+/* @end-block */
 /* @end YUK-20774 */
 
 /**************************************************************/
