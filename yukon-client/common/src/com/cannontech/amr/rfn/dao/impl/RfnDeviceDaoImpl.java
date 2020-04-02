@@ -329,13 +329,16 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     }
     
     @Override
-    public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
+    public RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DeviceId");
-        sql.append("FROM RfnAddress WHERE SerialNumber").eq(sensorSerialNumber);
+        sql.append("SELECT pao.paoName, pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("FROM YukonPaobject pao");
+        sql.append("  JOIN RfnAddress rfn ON rfn.DeviceId = pao.PaobjectId");
+        sql.append("WHERE SerialNumber").eq(sensorSerialNumber);
         
         try {
-            return jdbcTemplate.queryForInt(sql);
+            RfnDevice rfnDevice= jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
+            return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
