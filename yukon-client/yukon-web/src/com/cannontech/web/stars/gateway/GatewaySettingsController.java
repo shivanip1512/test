@@ -158,7 +158,7 @@ public class GatewaySettingsController {
     
     /** Set schedule popup. 
      * @throws NmCommunicationException */
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/{id}/schedule/options")
     public String schedule(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
@@ -174,7 +174,7 @@ public class GatewaySettingsController {
     
     /** Set schedule. 
      * @throws ServletRequestBindingException */ 
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/{id}/schedule")
     public String schedule(HttpServletResponse resp, HttpServletRequest req, ModelMap model, FlashScope flash,
             YukonUserContext userContext, @PathVariable int id, String uid) throws ServletRequestBindingException {

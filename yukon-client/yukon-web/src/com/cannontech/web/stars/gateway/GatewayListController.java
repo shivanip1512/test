@@ -175,7 +175,7 @@ public class GatewayListController {
         return json;
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.INTERACT)
     @RequestMapping("/gateways/{id}/connect")
     public @ResponseBody Map<String, Object> connect(YukonUserContext userContext, @PathVariable int id) {
         
@@ -195,7 +195,7 @@ public class GatewayListController {
         return json;
     }
     
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping("/gateways/{id}/disconnect")
     public @ResponseBody Map<String, Object> disconnect(YukonUserContext userContext, @PathVariable int id) {
         
