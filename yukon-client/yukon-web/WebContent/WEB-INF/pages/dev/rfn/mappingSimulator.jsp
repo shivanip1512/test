@@ -91,14 +91,11 @@
                     <c:if test="${fn:contains(currentSettings.routeData.routeFlags, flag)}">
                         <c:set var="checked" value="checked"/>
                     </c:if>
-                    <input type="checkbox" name="routeFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.routeFlagType.${flag}"/><br>
+                    <input type="checkbox" name="routeFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.routeFlag.${flag}"/><br>
                 </c:forEach>
             </tags:nameValue>
             <tags:nameValue name="Route Color">
                 <tags:input path="routeData.routeColor"/>
-            </tags:nameValue>
-            <tags:nameValue name="Reply Type">
-                <tags:selectWithItems items="${routeReplys}" path="routeReplyType" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>

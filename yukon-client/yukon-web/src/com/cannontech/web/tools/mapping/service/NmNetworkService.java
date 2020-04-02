@@ -1,5 +1,10 @@
 package com.cannontech.web.tools.mapping.service;
 
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.geojson.FeatureCollection;
+
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.node.NodeComm;
@@ -10,7 +15,6 @@ import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
-import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
 
 public interface NmNetworkService {
 
@@ -25,10 +29,9 @@ public interface NmNetworkService {
      * NM searches for the battery node's parent first, then finds the parent's primary route and returns that as the
      * battery node's primary route.
      * 
-     * @return Route - device route and first device without location
      * @throws NmNetworkException if the there is a communication error or if NM returned an error
      */
-    Route getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
+    List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
 
     /**
      * Asks NM for the device neighbors.
