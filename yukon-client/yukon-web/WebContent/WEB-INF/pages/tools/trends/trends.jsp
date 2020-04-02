@@ -7,7 +7,7 @@
 <cti:standardPage module="tools" page="${pageName}">
 
     <div id="error-message" class="user-message error dn" >
-        <cti:msg2 key="yukon.web.modules.support.trends.msgError.trendRefreshFailed"/>
+        <cti:msg2 key="yukon.web.error.pageUpdateFailed"/>
     </div>
 
     

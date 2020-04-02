@@ -70,7 +70,6 @@
     <entry key="yukon.web.modules.support.logTail.change.label">Change</entry>
     <entry key="yukon.web.modules.support.logTail.pause.label">Pause</entry>
     <entry key="yukon.web.modules.support.logTail.resume.label">Resume</entry>
-    <entry key="yukon.web.modules.support.logTail.msgError.logUpdateFailed">An error was encountered or you may have logged out and this page is no longer updating.</entry>
 
     <!-- database/info.jsp -->
     <entry key="yukon.web.modules.support.databaseInfo.pageName">Database Information</entry>
@@ -493,8 +492,5 @@
     <entry key="yukon.web.modules.support.thirdPartyLibraries.sourceCredits.title">Source Credits</entry>
     <entry key="yukon.web.modules.support.thirdPartyLibraries.library">Library</entry>
     <entry key="yukon.web.modules.support.thirdPartyLibraries.license">License</entry>
-    
-    <!-- trends.jsp -->
-    <entry key="yukon.web.modules.support.trends.msgError.trendRefreshFailed">An error was encountered or you may have logged out and this trend is no longer updating.</entry>
 
 </properties>
