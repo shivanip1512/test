@@ -23,8 +23,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -35,10 +33,7 @@ import com.google.common.collect.Lists;
 public class YukonJdbcTemplate extends JdbcTemplate {
     private static final Logger log = YukonLogManager.getLogger(YukonJdbcTemplate.class);
     
-    private static final int defaultBatchSize = 1000;
-    
-    private static ConfigurationSource configSource = null;
-    private int masterConfigBatchSize = configSource.getInteger(MasterConfigInteger.DATABASE_BATCH_SIZE, defaultBatchSize);
+    private static final int defaultBatchSize = 50000;
 
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);
@@ -131,7 +126,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
      * @param sql An SqlStatementBuilder configured for batch update via the batchInsertInto method.
      */
     public void yukonBatchUpdate(SqlStatementBuilder sql) {
-        yukonBatchUpdate(sql, masterConfigBatchSize);
+        yukonBatchUpdate(sql, defaultBatchSize);
     }
 
     /**
