@@ -157,6 +157,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.copy">Copy Load Program</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.copyMemberControl">Copy Member Control</entry>
 <entry key="yukon.web.modules.dr.setup.loadProgram.retrieve.error">Load Program could not be retrieved.</entry>
+<entry key="yukon.web.modules.dr.setup.loadProgram.associatedControlAreaAndScenario.warning">Deleting this program will remove it from any control area or scenario it is currently assigned to. The program’s control history will be deleted</entry>
 <entry key="yukon.web.modules.dr.setup.gear.error">Please check gear field errors in {0}.</entry>
 
 <!-- MCT Load Group -->
