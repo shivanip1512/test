@@ -51,13 +51,13 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
         if (request.getStatus() == ProgrammingStatus.INITIATING) {
             MeterProgramStatus oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
-            if (oldStatus.getLastUpdate().isAfter(request.getTimeStamp())) {
-                log.info("(Request to initiate download recieved and is older then existing status. Discarding the record. Existing status {}",
+            if (!request.getTimestamp().isAfter(oldStatus.getLastUpdate())) {
+                log.info("(Request to initiate download is not newer then existing status. Discarding the record. Existing status {}",
                          oldStatus);
                 return;
             }
             log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
-            meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, new Instant(request.getTimeStamp()));
+            meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, new Instant(request.getTimestamp()));
             return;
         }
         
@@ -87,8 +87,8 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
             return;
         }
 
-        if (oldStatus.getLastUpdate().isAfter(newStatus.getLastUpdate())) {
-            log.info("Status recieved is older then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
+        if (!newStatus.getLastUpdate().isAfter(oldStatus.getLastUpdate())) {
+            log.info("Status recieved is not newer then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
                      newStatus,
                      oldStatus);
             return;
@@ -127,7 +127,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
     private MeterProgramStatus getMeterProgramStatus(MeterProgramStatusArchiveRequest request, MeterProgramSource prefix) {
         MeterProgramStatus status = new MeterProgramStatus();
         status.setDeviceId(rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier()));
-        status.setLastUpdate(new Instant(request.getTimeStamp()));
+        status.setLastUpdate(new Instant(request.getTimestamp()));
         status.setReportedGuid(UUID.fromString(request.getConfigurationId()));
         status.setSource(prefix);
         status.setError(request.getError());
