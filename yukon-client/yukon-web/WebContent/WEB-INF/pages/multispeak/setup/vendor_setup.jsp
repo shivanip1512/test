@@ -49,10 +49,6 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
-        
-        <input type="hidden" name="selectedVendorId" id="js-selected-vendor-id" />
-        <input type="hidden" name="selectedVersion" id="js-selected-version" />
-        <input type="hidden" name="selectedMSPInterface" id="js-selected-msp-interface" />
         <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
                 <div class="column-12-12 clearfix">
@@ -228,41 +224,25 @@
                                                             title="${getMethods}"
                                                             disabled="${!currentInterface.interfaceEnabled}"
                                                             onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                                        <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuthPopupTitle" />
                                                         <cti:displayForPageEditModes modes="EDIT">
                                                             <input type="hidden" class="js-create-or-edit-endpoint"/>
-                                                            <c:forEach var="item" items="${multispeakInterfaces}" varStatus="status">
-                                                                <div id="${item.vendorID}" class="js-assigned-endpoint-settings" data-id="${item.vendorID}">
-                                                                    <cti:url var="viewUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
-                                                                    <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuth" />
-                                                                    <cti:button icon="icon-lock"
-                                                                                id="interfaceAuth${currentInterface.mspInterface}" 
-                                                                                name="interfaceAuth"
-                                                                                renderMode="buttonImage" 
-                                                                                title="${interfaceAuthTitle}"
-                                                                                disabled="${!currentInterface.interfaceEnabled}"
-                                                                                href="${viewUrl}"
-                                                                                classes="js-endpoint-auth-details-link"/>
-                                                                </div>
-                                                            </c:forEach>
+                                                            <cti:url var="popupUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
                                                         </cti:displayForPageEditModes>
                                                         <cti:displayForPageEditModes modes="CREATE">
                                                             <input type="hidden" class="js-create-or-edit-endpoint"/>
-                                                            <cti:button icon="icon-lock" 
-                                                                        name="interfaceAuth"
-                                                                        data-popup="#endpointAuthPopup" />
-                                                            <cti:url var="createEndPointAuthSettingsUrl" value="/multispeak/setup/createEndPointAuthPopup" />
+                                                            <cti:url var="popupUrl" value="/multispeak/setup/createEndPointAuthPopup" />
                                                         </cti:displayForPageEditModes>
                                                         <cti:displayForPageEditModes modes="VIEW">
-                                                            <cti:url var="viewUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
-                                                            <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuth" />
-                                                            <cti:button icon="icon-lock"
-                                                                        id="interfaceAuth${currentInterface.mspInterface}" 
-                                                                        name="interfaceAuth"
-                                                                        renderMode="buttonImage" 
-                                                                        title="${interfaceAuthTitle}"
-                                                                        href="${viewUrl}"
-                                                                        classes="js-endpoint-auth-details-link"/>
+                                                            <cti:url var="popupUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
                                                         </cti:displayForPageEditModes>
+                                                        <cti:button icon="icon-lock"
+                                                                    id="interfaceAuth${currentInterface.mspInterface}" 
+                                                                    name="interfaceAuth"
+                                                                    renderMode="buttonImage" 
+                                                                    data-title="${interfaceAuthTitle}"
+                                                                    data-url="${popupUrl}"
+                                                                    classes="js-endpoint-auth-details-link"/>
                                                     </div>
                                                 </td>
                                             </tr>

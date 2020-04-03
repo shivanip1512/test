@@ -89,8 +89,8 @@ yukon.admin.multispeak = (function () {
 	                 
                      $(document).on("yukon:multispeak:saveVendorEndPointAuth", function (event) {
                          var dialog = $(event.target),
-                             vendorId,
-                             form = dialog.find('#js-program-gear-form');
+                             vendorId = dialog.find("#js-vendor-id").val(),
+                             form = dialog.find('#js-vendor-endpointauth-form');
                          
                          $.ajax({
                              type: "POST",
@@ -98,18 +98,18 @@ yukon.admin.multispeak = (function () {
                              data: form.serialize() + "&tempVendorId=" + vendorId
                          }).done(function(data) {
                          });
-	                     dialog.dialog('close');
-	                     dialog.empty();
-	                 });
+                         dialog.dialog('close');
+                         dialog.empty();
+                     });
 	                 
                      $(document).on('click', '.js-endpoint-auth-details-link', function (event) {
                          event.preventDefault();
                          var dialogDivJson = {
-                             "data-url" : $(this).attr('href'),
+                             "data-url" : $(this).data("url"),
                              "data-load-event" : "yukon:multispeak:viewVendorEndPointAuth",
                              "data-width" : "500",
                              "data-height" : "300",
-                             "data-title" : $(this).text(),
+                             "data-title" : $(this).data("title"),
                              "data-destroy-dialog-on-close" : "",
                          };
                          if ($(".js-create-or-edit-endpoint").exists()) {
