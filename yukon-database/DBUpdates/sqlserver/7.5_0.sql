@@ -76,6 +76,7 @@ INSERT INTO DBUpdates VALUES ('YUK-21621', '7.5.0', GETDATE());
 /* @end YUK-21621 */
 
 /* @start YUK-20774 */
+/* @start-block */
 DECLARE @RoleGroupID AS NUMERIC,
         @CreateEditParm AS VARCHAR(20),
         @DeleteParm AS VARCHAR(20),
@@ -93,7 +94,6 @@ DECLARE setting_cursor CURSOR STATIC FOR (
     WHERE YGR.RolePropertyID <= -21400 AND YGR.RolePropertyID >= -21403
 );
 
-/* @start-block */
 BEGIN
     OPEN setting_cursor;
     FETCH NEXT FROM setting_cursor INTO @RoleGroupID, @CreateEditParm, @DeleteParm, @AdminPerm, @ViewPerm

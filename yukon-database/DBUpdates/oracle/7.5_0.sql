@@ -64,6 +64,7 @@ INSERT INTO DBUpdates VALUES ('YUK-21621', '7.5.0', SYSDATE);
 /* @end YUK-21621 */
 
 /* @start YUK-20774 */
+/* @start-block */
 DECLARE 
     v_RoleGroupID NUMBER;
     v_CreateEditParm VARCHAR(20);
@@ -82,7 +83,6 @@ DECLARE
         WHERE YGR.RolePropertyID <= -21400 AND YGR.RolePropertyID >= -21403
     );
 
-/* @start-block */
 BEGIN
     OPEN setting_cursor;
     FETCH setting_cursor INTO v_RoleGroupID, v_CreateEditParm, v_DeleteParm, v_AdminPerm, v_ViewPerm;
@@ -114,16 +114,14 @@ END;
 /
 /* @end-block */
 
-BEGIN
-	UPDATE YukonRoleProperty
-		SET KeyName = 'Manage Infrastructure', Description = 'Controls access to manage infrastructure devices. i.e. RF Gateways.', DefaultValue = 'NO_ACCESS'
-		WHERE RolePropertyID = -21400;
+UPDATE YukonRoleProperty
+    SET KeyName = 'Manage Infrastructure', Description = 'Controls access to manage infrastructure devices. i.e. RF Gateways.', DefaultValue = 'NO_ACCESS'
+    WHERE RolePropertyID = -21400;
 
-	DELETE FROM YukonGroupRole WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
-	DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
+DELETE FROM YukonGroupRole WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
+DELETE FROM YukonRoleProperty WHERE RolePropertyID = -21401 OR RolePropertyID = -21402 OR RolePropertyID = -21403;
 
-	INSERT INTO DBUpdates VALUES ('YUK-20774', '7.5.0', GETDATE());
-END;
+INSERT INTO DBUpdates VALUES ('YUK-20774', '7.5.0', SYSDATE);
 /* @end YUK-20774 */
 
 /**************************************************************/
