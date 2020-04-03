@@ -26,6 +26,9 @@ yukon.admin.multispeak = (function () {
 	    			if($('#getMethods'+mspInterface) != null){
 	    				$('#getMethods'+mspInterface).prop('disabled', !selected);
 	    			}
+                    if($('#interfaceAuth'+mspInterface) != null){
+                        $('#interfaceAuth'+mspInterface).prop('disabled', !selected);
+                    }
 	            },
 	            
 	            enableExtension: function (selected) {
@@ -89,13 +92,12 @@ yukon.admin.multispeak = (function () {
 	                 
                      $(document).on("yukon:multispeak:saveVendorEndPointAuth", function (event) {
                          var dialog = $(event.target),
-                             vendorId = dialog.find("#js-vendor-id").val(),
                              form = dialog.find('#js-vendor-endpointauth-form');
                          
                          $.ajax({
                              type: "POST",
                              url: yukon.url("/multispeak/setup/vendorAuth/save"),
-                             data: form.serialize() + "&tempVendorId=" + vendorId
+                             data: form.serialize()
                          }).done(function(data) {
                          });
                          dialog.dialog('close');

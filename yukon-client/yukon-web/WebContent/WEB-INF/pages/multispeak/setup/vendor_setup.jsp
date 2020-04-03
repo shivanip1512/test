@@ -241,6 +241,7 @@
                                                                     name="interfaceAuth"
                                                                     renderMode="buttonImage" 
                                                                     data-title="${interfaceAuthTitle}"
+                                                                    disabled="${!currentInterface.interfaceEnabled}"
                                                                     data-url="${popupUrl}"
                                                                     classes="js-endpoint-auth-details-link"/>
                                                     </div>

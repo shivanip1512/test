@@ -6,10 +6,11 @@
     <tags:setFormEditMode mode="${mode}" />
     <cti:url var="action" value="/multispeak/setup/vendorAuth/save" />
     <form:form modelAttribute="mspInterfaceSettings" action="${action}" method="post" id="js-vendor-endpointauth-form">
-        <tags:hidden path="vendorID" id="js-vendor-id"/>
+        <tags:hidden path="vendorID"/>
         <tags:hidden path="version"/>
         <tags:hidden path="mspInterface"/>
         <tags:hidden path="mspEndpoint"/>
+        <tags:hidden path="interfaceEnabled"/>
         <tags:checkbox path="useVendorAuth" descriptionNameKey="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle.useVendorAuth"/>
         <tags:sectionContainer2 nameKey="interfaceAuthPopupTitle.incomingAuth">
             <tags:nameValueContainer2>
