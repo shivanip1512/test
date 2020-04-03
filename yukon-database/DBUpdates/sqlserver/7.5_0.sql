@@ -99,10 +99,7 @@ BEGIN
     FETCH NEXT FROM setting_cursor INTO @RoleGroupID, @CreateEditParm, @DeleteParm, @AdminPerm, @ViewPerm
     WHILE @@FETCH_STATUS = 0
     BEGIN
-        IF @ViewPerm = 'false'
-        BEGIN
-            SET @NewPermissionLevel = 'NO_ACCESS';
-        END
+        SET @NewPermissionLevel = 'NO_ACCESS';
         IF @ViewPerm = 'true'
         BEGIN
             SET @NewPermissionLevel = 'VIEW';

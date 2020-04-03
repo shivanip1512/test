@@ -89,9 +89,7 @@ BEGIN
 
     WHILE (setting_cursor%found)
     LOOP
-        IF v_ViewPerm = 'false' THEN
-            v_NewPermissionLevel := 'NO_ACCESS';
-        END IF;
+        v_NewPermissionLevel := 'NO_ACCESS';
         IF v_ViewPerm = 'true' THEN
             v_NewPermissionLevel := 'VIEW';
         END IF;
