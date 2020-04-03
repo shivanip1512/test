@@ -53,6 +53,8 @@ yukon.tools.trends = (function () {
                     yukon.ui.unblockPage();
                 }
             });
+        }).fail(function (xhr, status) {
+            $("#error-message").removeClass('dn');
         });
         
         
