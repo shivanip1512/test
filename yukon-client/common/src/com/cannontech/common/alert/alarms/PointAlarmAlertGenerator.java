@@ -37,7 +37,7 @@ public class PointAlarmAlertGenerator implements SignalListener {
     public void signalReceived(Signal signal) {
         final int tags = signal.getTags();
         
-        boolean isAlarmActive = TagUtils.isAlarmActive(tags);
+        boolean isAlarmActive = TagUtils.isAlarmActive(tags) && TagUtils.isAlarmUnacked(tags);
         if (!isAlarmActive) return;
         
         ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.alarm");
