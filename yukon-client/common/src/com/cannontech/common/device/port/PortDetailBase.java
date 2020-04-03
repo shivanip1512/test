@@ -34,6 +34,6 @@ public class PortDetailBase {
     }
 
     public void buildModel(DirectPort port) {
-        getInfo().buildDBPersistent(port);
+        getInfo().buildModel(port);
     }
 }
