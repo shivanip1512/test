@@ -1,26 +1,21 @@
-<cti:msg2 key="${pair.first.formatKey}" var="label"/>
-<tags:nameValue name="${label}">
-    <c:if test="${not empty pair.second}">
+<tags:nameValue name="${pair.left}">
+    <c:if test="${not empty pair.right}">
         <c:choose>
-            <c:when test="${pair.first.time}">
-                <cti:formatDate type="DATEHM" value="${pair.second}"/>
-            </c:when>
-            <c:when test="${pair.first == 'COMM_STATUS'}">
-                <c:if test="${pair.second == 'UNKNOWN'}">
+            <c:when test="${pair.left == 'Comm Status'}">
+                <c:if test="${pair.right == 'UNKNOWN'}">
                     <c:set var="colorClass" value="warning"/> 
                 </c:if>
-                <c:if test="${pair.second == 'READY'}">
+                <c:if test="${pair.right == 'READY'}">
                     <c:set var="colorClass" value="success"/> 
                 </c:if>
-                <c:if test="${pair.second == 'NOT_READY'}">
+                <c:if test="${pair.right == 'NOT_READY'}">
                     <c:set var="colorClass" value="error"/> 
                 </c:if>
-                <c:set var="valueKey">${pair.first.formatKey}.value.${pair.second}</c:set>
-                <span class="${colorClass}"><i:inline key="${valueKey}"/></span>
+                <span class="${colorClass}"><i:inline key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS.value.${pair.right}"/></span>
             </c:when>
             <c:otherwise>
-                <spring:escapeBody htmlEscape="true">${pair.second}</spring:escapeBody>
-            </c:otherwise>
+                ${fn:escapeXml(pair.right)}
+             </c:otherwise>
         </c:choose>
     </c:if>
 </tags:nameValue>
