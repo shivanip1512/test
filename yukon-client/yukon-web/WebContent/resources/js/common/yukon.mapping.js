@@ -20,6 +20,9 @@ yukon.mapping = (function () {
     _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
     //dark blue
     _routeColor = "#0000CC",
+    //grey
+    _focusRouteColor = "#808080",
+    //yellow
     _highlightRouteColor = "#FFFF00",
     
     /** @type {string} - The default projection code of our map tiles. */
@@ -231,6 +234,10 @@ yukon.mapping = (function () {
         
         getRouteColor: function() {
             return _routeColor;
+        },
+        
+        getFocusRouteColor: function() {
+            return _focusRouteColor;
         },
         
         getLargerScale: function() {
