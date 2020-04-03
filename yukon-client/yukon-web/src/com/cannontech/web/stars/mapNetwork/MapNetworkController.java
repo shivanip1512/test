@@ -41,6 +41,7 @@ import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
+import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.JsonUtils;
@@ -55,11 +56,10 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.LocationValidator;
 import com.cannontech.web.tools.mapping.model.NearbyDevice;
-import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
-import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
+import com.google.common.collect.Lists;
 
 @RequestMapping("/mapNetwork/*")
 @Controller
@@ -194,25 +194,30 @@ public class MapNetworkController {
     }
     
     @RequestMapping("neighbors")
-    public @ResponseBody Map<String, Object> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+    public @ResponseBody Map<String, Object> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId,
+            YukonUserContext userContext) throws ServletException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            Neighbors allNeighbors = nmNetworkService.getNeighbors(deviceId, accessor);
-            if (allNeighbors.getErrorMsg() != null) {
-                json.put("errorMsg",  allNeighbors.getErrorMsg());
+            Map<RfnDevice, Pair<FeatureCollection, Neighbor>> neighbors = nmNetworkService.getNeighbors(deviceId, accessor);
+            if (neighbors.isEmpty()) {
+                // no neighbors
+                json.put("errorMsg", "");
             }
-            List<Neighbor> neighbors =  allNeighbors.getNeighbors();
-            json.put("neighbors",  neighbors);
-            //check for any neighbors that have missing location data
-            List<RfnDevice> missingNeighbors = allNeighbors.getNeighborsWithoutLocation();
-            if (missingNeighbors.size() > 0) {
-                List<String> missingNeighborNames = new ArrayList<>();
-                missingNeighbors.forEach(neighbor -> missingNeighborNames.add(neighbor.getName()));
-                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.neighbors.missingLocationData", String.join(", ",  missingNeighborNames)));
+            json.put("neighbors", neighbors);
+            // check for any neighbors that have missing location data
+            List<String> missingNeighborNames = new ArrayList<>();
+            neighbors.forEach((device, info) -> {
+                if (info == null) {
+                    missingNeighborNames.add(device.getName());
+                }
+            });
+            if (!missingNeighborNames.isEmpty()) {
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.neighbors.missingLocationData",
+                        String.join(", ", missingNeighborNames)));
             }
-        } catch (NmNetworkException e) {
-            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
+        } catch (NmCommunicationException e) {
+            json.put("errorMsg", e.getMessage());
         }
         return json;
     }
@@ -227,11 +232,11 @@ public class MapNetworkController {
             if (entireRoute.isEmpty()) {
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.noDevicesReturned"));
             }
-            //devices in the route that have missing location data
+            // devices in the route that have missing location data
             List<String> missingRoute = entireRoute.stream()
-            		.filter(value -> value != null && value.getRight() == null)
-            		.map(value -> value.getKey().getName())
-            		.collect(Collectors.toList());
+                    .filter(value -> value != null && value.getRight() == null)
+                    .map(value -> value.getKey().getName())
+                    .collect(Collectors.toList());
             if (!missingRoute.isEmpty()) {
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(",", missingRoute)));
             }

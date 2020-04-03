@@ -97,8 +97,6 @@ import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.LocationResponseAck;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
@@ -355,21 +353,7 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
-    
-    public static final JmsApi<RfnNeighborDataRequest,?,RfnNeighborDataReply> NETWORK_NEIGHBOR =
-        JmsApi.builder(RfnNeighborDataRequest.class, RfnNeighborDataReply.class)
-              .name("Network Neighbor")
-              .description("Asks NM for the device's neighbors.")
-              .communicationPattern(REQUEST_RESPONSE)
-              .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.network.data.request"))
-              .responseQueue(JmsQueue.TEMP_QUEUE)
-              .requestMessage(RfnNeighborDataRequest.class)
-              .responseMessage(RfnNeighborDataReply.class)
-              .sender(YUKON_WEBSERVER)
-              .receiver(NETWORK_MANAGER)
-              .receiver(YUKON_SIMULATORS)
-              .build();
-    
+        
     public static final JmsApi<NetworkTreeUpdateTimeRequest,?,?> NETWORK_TREE_UPDATE_REQUEST =
             JmsApi.builder(NetworkTreeUpdateTimeRequest.class)
                   .name("Network Tree Update Request")
@@ -1210,7 +1194,6 @@ public final class JmsApiDirectory {
                 NM_ALARM);
         
         addApis(jmsApis, RF_NETWORK, 
-                NETWORK_NEIGHBOR, 
                 NETWORK_TREE_UPDATE_REQUEST,
                 NETWORK_TREE_UPDATE_RESPONSE);
         

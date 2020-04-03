@@ -330,8 +330,8 @@ yukon.mapping = (function () {
             $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
             $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress === null);
             $('.js-ip-address').text(neighbor.ipAddress);
-            $('.js-address-display').toggleClass('dn', neighborData.neighborAddress === null);
-            $('.js-address').text(neighborData.neighborAddress);
+            $('.js-address-display').toggleClass('dn', neighborData.neighborMacAddress === null);
+            $('.js-address').text(neighborData.neighborMacAddress);
             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags === null);
             $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
             $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost === null);

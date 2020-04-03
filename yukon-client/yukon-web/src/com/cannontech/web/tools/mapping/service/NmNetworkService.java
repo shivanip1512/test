@@ -1,19 +1,20 @@
 package com.cannontech.web.tools.mapping.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
+import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
-import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
 
 public interface NmNetworkService {
 
@@ -43,8 +44,9 @@ public interface NmNetworkService {
      * 
      * @return Neighbors - neighbor list and list of neighbor devices without location
      * @throws NmNetworkException if the there is a communication error or if NM returned an error
+     * @throws NmCommunicationException 
      */
-    Neighbors getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
+    Map<RfnDevice, Pair<FeatureCollection, Neighbor>> getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
 
     /**
      * Asks NM for the parent information.

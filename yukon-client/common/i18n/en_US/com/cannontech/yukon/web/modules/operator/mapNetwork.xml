@@ -61,13 +61,13 @@
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_VALID">Valid route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_TIMED_OUT">Route timed out</entry>
                        
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PF">Primary forward route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PR">Primary reverse route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S2">Secondary neighbor for alternate gateway</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.F">Float neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.IN">Ignored neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.BN">Battery neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S1">Secondary neighbor for serving gateway</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.NEIGHBOR_FLAG_PRIMARY_FORWARD">Primary forward route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.NEIGHBOR_FLAG_PRIMARY_REVERSE">Primary reverse route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.NEIGHBOR_FLAG_SECONDARY_FOR_ALT_GW">Secondary neighbor for alternate gateway</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.NEIGHBOR_FLAG_FLOAT">Float neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.NEIGHBOR_FLAG_IGNORED">Ignored neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.NEIGHBOR_FLAG_BATTERY">Battery neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.NEIGHBOR_FLAG_SECONDARY_FOR_SERVING_GW">Secondary neighbor for serving gateway</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.exception.NO_PARENT">No parent was found for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.INVALID_DEVICE">Retrieving parent information for this device is not supported.</entry>

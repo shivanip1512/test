@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.network.NeighborData;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.route.RouteData;
 
 public class SimulatedNmMappingSettings implements Serializable {
@@ -13,7 +12,6 @@ public class SimulatedNmMappingSettings implements Serializable {
 
     private NeighborData neighborData;
     private RouteData routeData;
-    private RfnNeighborDataReplyType neighborReplyType;
     private RfnMetadataMultiResponseType metadataResponseType;
     private RfnMetadataMultiQueryResultType metadataQueryResponseType;
     private String metadataResponseString;
@@ -35,12 +33,6 @@ public class SimulatedNmMappingSettings implements Serializable {
     }
     public void setRouteData(RouteData routeData) {
         this.routeData = routeData;
-    }
-    public RfnNeighborDataReplyType getNeighborReplyType() {
-        return neighborReplyType;
-    }
-    public void setNeighborReplyType(RfnNeighborDataReplyType neighborReplyType) {
-        this.neighborReplyType = neighborReplyType;
     }
     public RfnMetadataMultiResponseType getMetadataResponseType() {
         return metadataResponseType;

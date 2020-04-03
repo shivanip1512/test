@@ -30,7 +30,7 @@
     <tags:sectionContainer title="Neighbor Data Settings">
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Address">
-                <tags:input path="neighborData.neighborAddress"/>
+                <tags:input path="neighborData.neighborMacAddress"/>
             </tags:nameValue>
             <tags:nameValue name="Flags">
                 <c:forEach var="flag" items="${neighborFlags}">
@@ -38,26 +38,17 @@
                     <c:if test="${fn:contains(currentSettings.neighborData.neighborFlags, flag)}">
                         <c:set var="checked" value="checked"/>
                     </c:if>
-                    <input type="checkbox" name="neighborFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.neighborFlagType.${flag}"/><br>
+                    <input type="checkbox" name="neighborFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.neighborFlag.${flag}"/><br>
                 </c:forEach>
-            </tags:nameValue>
-            <tags:nameValue name="Link Cost">
-                <tags:input path="neighborData.neighborLinkCost"/>
-            </tags:nameValue>
-            <tags:nameValue name="Number of Samples">
-                <tags:input path="neighborData.numSamples"/>
             </tags:nameValue>
             <tags:nameValue name="ETX Band">
                 <tags:input path="neighborData.etxBand"/>
             </tags:nameValue>
-            <tags:nameValue name="Link Rate">
-                <tags:input path="neighborData.linkRate"/>
+           <tags:nameValue name="Link Rate">
+               <tags:selectWithItems items="${currentLinkRate}" path="neighborData.currentLinkRate" />
             </tags:nameValue>
             <tags:nameValue name="Link Power">
-                <tags:input path="neighborData.linkPower"/>
-            </tags:nameValue>
-            <tags:nameValue name="Reply Type">
-                <tags:selectWithItems items="${neighborReplys}" path="neighborReplyType" />
+               <tags:selectWithItems items="${currentLinkPower}" path="neighborData.currentLinkPower" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
