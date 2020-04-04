@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
 import com.cannontech.common.dr.setup.LMServiceHelper;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.util.TimeUtil;
@@ -45,6 +47,7 @@ import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
+import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
@@ -59,6 +62,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private ControlAreaDao controlAreaDao;
 
     /**
      * Retrieve control area based on control area Id.
@@ -167,6 +171,10 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                                                          .equalsIgnoreCase(areaName))
                                                          .findFirst()
                                                          .orElseThrow(() -> new NotFoundException("Control Area Id and Name combination not found"));
+
+        // Checks if any assigned load program(s) is associated with any control scenario(s) 
+        deletionCheckForAssignedProgramsAssociationWithScenario(areaId);
+
         YukonPAObject lmControlArea = (YukonPAObject) LiteFactory.createDBPersistent(controlArea);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.DELETE);
 
@@ -431,4 +439,20 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 
+    /**
+     * Checks that before deleting control area is there any assigned load program(s) is associated with any control scenario(s).
+     * @throws LMObjectDeletionFailureException if any assigned program is associated to any scenario.
+     */
+    private void deletionCheckForAssignedProgramsAssociationWithScenario(int controlAreaId) {
+        Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(controlAreaId);
+        for (Integer programId : programIds) {
+            boolean isAssignedProgramsAssociatedWithScenario = dbCache.getAllLMScenarioProgs().stream()
+                                                                                              .anyMatch(scenarioProg -> scenarioProg.getProgramID() == programId);
+
+            if (isAssignedProgramsAssociatedWithScenario) {
+                throw new LMObjectDeletionFailureException(
+                        "A program on this control area is assigned to a scenario. Program must be removed from scenario before it can be removed from a control area.");
+            }
+        }
+    }
 }
