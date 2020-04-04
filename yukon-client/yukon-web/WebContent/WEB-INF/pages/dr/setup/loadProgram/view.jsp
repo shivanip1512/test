@@ -35,7 +35,7 @@
                 <!-- Delete -->
                 <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
                     data-ok-event="yukon:load-program:delete" />
-                <cti:msg2 var="userWarningMessage" key="yukon.web.modules.dr.setup.loadProgram.associatedControlAreaAndScenario.warning"/>
+                <cti:msg2 var="userWarningMessage" key="yukon.web.modules.dr.setup.loadProgram.delete.warning"/>
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${loadProgram.name}" userMessage="${userWarningMessage}" userMessageClass="warning"/>
                 <cti:url var="deleteUrl" value="/dr/setup/loadProgram/${loadProgram.programId}/delete" />
                 <form:form id="js-delete-load-program-form" action="${deleteUrl}" method="delete" modelAttribute="loadProgram">
