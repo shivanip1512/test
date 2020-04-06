@@ -120,8 +120,10 @@ yukon.dialogConfirm = (function () {
                     var b = $(button);
                     b.addClass('js-disable-after-click');
                     b.attr('data-disable-group', args.disable_group);
-                    
                 });
+            }
+            if (args.strings.userMessage) {
+                _current_dialog.addMessage({message: args.strings.userMessage, messageClass: args.strings.userMessageClass});
             }
         },
         
@@ -181,7 +183,8 @@ yukon.dialogConfirm = (function () {
                     'title': "UNDEFINED TITLE",
                     'message': "UNDEFINED MESSAGE",
                     'ok': 'UNDEFINED OK TEXT',
-                    'cancel': 'UNDEFINED CANCEL TEXT'}
+                    'cancel': 'UNDEFINED CANCEL TEXT',
+                    'userMessageClass' : 'info'}
             };
 
         $.extend(defaults, args);

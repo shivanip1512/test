@@ -5,6 +5,11 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="tools" page="${pageName}">
+
+    <div id="error-message" class="user-message error dn" >
+        <cti:msg2 key="yukon.web.error.pageUpdateFailed"/>
+    </div>
+
     
     <div id="label-json" class="dn">${fn:escapeXml(labels)}</div>
     

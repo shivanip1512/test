@@ -53,6 +53,8 @@ yukon.tools.trends = (function () {
                     yukon.ui.unblockPage();
                 }
             });
+        }).fail(function (xhr, status) {
+            $("#error-message").removeClass('dn');
         });
         
         
@@ -155,12 +157,12 @@ yukon.tools.trends = (function () {
                 var pause = $('#trend-updater .yes').is('.on'),
                     url = yukon.url('/tools/trends/setAutoUpdate/' + !pause);
                 $.ajax({ type: 'post', url: url});
+                $('#trend-updater .button').toggleClass('on');
                 if (pause) {
                     clearTimeout(_updateTimeout);
                 } else {
                     _updateChart(false);
                 }
-                $('#trend-updater .button').toggleClass('on');
             });
             
             _initialized = true;
