@@ -534,14 +534,6 @@
 <entry key="yukon.common.roleProperty.ADDTL_ORDER_NUMBER_LABEL.description">Label for the additional order number field.</entry>
 
 <!-- Device Management RoleProperties -->
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE">Infrastructure Create/Edit</entry>
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE.description">Controls access to create and edit infrastructure devices. i.e. RF Gateways.</entry>
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_DELETE">Infrastructure Delete</entry>
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_DELETE.description">Controls access to delete infrastructure devices. i.e. RF Gateways.</entry>
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_ADMIN">Infrastructure Administration</entry>
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_ADMIN.description">Controls access to send configuration commands to infrastructure devices. i.e. RF Gateways.</entry>
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_VIEW">Infrastructure View</entry>
-<entry key="yukon.common.roleProperty.INFRASTRUCTURE_VIEW.description">Controls access to view infrastructure devices. i.e. RF Gateways.</entry>
 <entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION">Endpoint Permission</entry>
 <entry key="yukon.common.roleProperty.ENDPOINT_PERMISSION.description">Controls access to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_POINT_DATA">Manage Point Data</entry>
@@ -550,5 +542,7 @@
 <entry key="yukon.common.roleProperty.MANAGE_POINTS.description">Controls access to view, create, edit, or delete points.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_NOTES">Manage Notes</entry>
 <entry key="yukon.common.roleProperty.MANAGE_NOTES.description">Controls access to view, create, edit, or delete notes.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE">Manage Infrastructure</entry>
+<entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE.description">Controls access to manage infrastructure devices. i.e. RF Gateways.</entry>
 
 </properties>
