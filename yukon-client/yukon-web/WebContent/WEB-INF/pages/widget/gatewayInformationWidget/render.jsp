@@ -90,7 +90,7 @@
         </c:if>
     </tags:nameValueContainer2>
     
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
         <div class="buffered clearfix fr">
             <c:set var="clazz" value="${empty gateway.data ? 'dn' : ''}"/>
             <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" 

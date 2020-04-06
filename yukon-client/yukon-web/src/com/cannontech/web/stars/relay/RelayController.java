@@ -29,6 +29,7 @@ import com.cannontech.common.rfn.model.RfnRelay;
 import com.cannontech.common.rfn.service.RfnRelayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -36,10 +37,11 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 public class RelayController {
     
     @Autowired private DeviceDao deviceDao;
@@ -110,7 +112,7 @@ public class RelayController {
         return "/relay/relayHome.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_DELETE)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/relay/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, @PathVariable int id, ModelMap model) {
         boolean success = rfnRelayService.deleteRelay(id);
