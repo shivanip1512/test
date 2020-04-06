@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -72,12 +71,12 @@ public class MultispeakController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     @Autowired private MultispeakValidator multispeakValidator;
+    
+    private Cache<String, MultispeakInterface> mspInterfaceEndpointAuthCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
 
     private MultispeakVendor defaultMspVendor;
 
     private static String RESULT_COLOR_ATT = "resultColor";
-
-    private Cache<String, List<MultispeakInterface>> endpointAuthSettingsCache = CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.DAYS).build();
 
     // HOME
     @RequestMapping("home")
@@ -114,13 +113,6 @@ public class MultispeakController {
         }
         multispeak.setMspVendor(mspVendor);
         addSystemModelAndViewObjects(map, mspVendor, true, multispeak, false);
-        
-        if (map.containsAttribute("mspInterfaceSettings")) {
-            List<MultispeakInterface> mspInterfaceSettings = (List<MultispeakInterface>) map.get("mspInterfaceSettings");
-            map.addAttribute("mspInterfaceSettings", mspInterfaceSettings);
-        } else {
-            buildVendorEndPointAuthInfo(mspVendor);
-        }
         return "setup/vendor_setup.jsp";
 
     }
@@ -150,17 +142,21 @@ public class MultispeakController {
             mspVendor = multispeakDao.getMultispeakVendors(true).get(0);
         }
         addSystemModelAndViewObjects(map, mspVendor, true, multispeak, false);
+        buildVendorEndPointAuthCache(mspVendor);
         map.addAttribute("mode", PageEditMode.VIEW);
-        buildVendorEndPointAuthInfo(mspVendor);
         return "setup/vendor_setup.jsp";
     }
 
-    private void buildVendorEndPointAuthInfo(MultispeakVendor mspVendor) {
+    /** Build the multispeak vendor endpoint authentication settings cache */
+    private void buildVendorEndPointAuthCache(MultispeakVendor mspVendor) {
+        mspInterfaceEndpointAuthCache.invalidateAll();
         if (CollectionUtils.isNotEmpty(mspVendor.getMspInterfaces())) {
-            endpointAuthSettingsCache.put(String.valueOf(mspVendor.getVendorID()), mspVendor.getMspInterfaces());
+            mspVendor.getMspInterfaces().forEach(mspInterface -> {
+                mspInterfaceEndpointAuthCache.put(mspInterface.getMspInterface(), mspInterface);
+            });
         }
     }
-    
+
     @RequestMapping(value = "save", method = RequestMethod.POST)
     public String save(HttpServletRequest request, ModelMap map, RedirectAttributes redirectAttributes,
             FlashScope flashScope, @ModelAttribute("multispeak") MultispeakModel multispeak, BindingResult result,
@@ -173,57 +169,13 @@ public class MultispeakController {
         }
 
         // Set the updated details for MSP endpoint authentication settings for multispeak vendor
-        if (!isCreateNew) {
-            List<MultispeakInterface> mspInterfaceList = endpointAuthSettingsCache
-                                                                                  .getIfPresent(multispeak.getMspVendor().getVendorID().toString());
-            Map<String, MultispeakInterface> enabledMSPInterfaceMap = new HashMap<>();
-            if (CollectionUtils.isNotEmpty(mspInterfaceList)) {
-                // Find the settings for the msp vendor interface from cache and update the msp vendor interface details
-                for (MultispeakInterface mspInterface : multispeak.getMspInterfaceList()) {
-                    // If msp vendor interface is empty move to next msp vendor interface
-                    if (StringUtils.isNotEmpty(mspInterface.getMspInterface())) {
-                        // Check for the msp vendor from cache
-                        for (MultispeakInterface mspInterfaceSettings : mspInterfaceList) {
-                            // Find the msp vendor interface authentication settings from the cache
-                            if (mspInterfaceSettings.getMspInterface().equals(mspInterface.getMspInterface())
-                                    && mspInterface.getInterfaceEnabled()) {
-                                // If the msp interface was enabled earlier and if version or endpoint url are updated then
-                                // update the settings for msp vendor interface
-                                // If version, endpoint and interface status are changed then update them
-                                if (!mspInterfaceSettings.getVersion().equals(mspInterface.getVersion())
-                                        || !mspInterfaceSettings.getMspEndpoint()
-                                                .equals(mspInterface.getMspEndpoint())
-                                        || !mspInterfaceSettings.getInterfaceEnabled()
-                                                .equals(mspInterface.getInterfaceEnabled())) {
-                                    mspInterfaceSettings.setVersion(mspInterface.getVersion());
-                                    mspInterfaceSettings.setMspEndpoint(mspInterface.getMspEndpoint());
-                                    mspInterfaceSettings.setInterfaceEnabled(mspInterface.getInterfaceEnabled());
-                                }
-                                enabledMSPInterfaceMap.put(mspInterfaceSettings.getMspInterface(), mspInterfaceSettings);
-                                break;
-                            }
-                        }
-
-                    }
-                }
-
-                // Add all the enabled interfaces which were earlier disabled
-                multispeak.getMspInterfaceList().forEach(enabledMSPInterface -> {
-                    if (StringUtils.isNotEmpty(enabledMSPInterface.getMspInterface()) && enabledMSPInterface.getInterfaceEnabled()
-                            && !enabledMSPInterfaceMap.keySet().contains(enabledMSPInterface.getMspInterface())) {
-                        enabledMSPInterfaceMap.put(enabledMSPInterface.getMspInterface(), enabledMSPInterface);
-                    }
-                });
-
-                // Set the updated interface list with details in the multispeak model
-                multispeak.setMspInterfaceList(new ArrayList<MultispeakInterface>(enabledMSPInterfaceMap.values()));
-            }
-        }
+        multispeak.setMspInterfaceList(getUpdatedMSPInterfaceList(multispeak));
 
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
+
         try {
             addOrUpdateMspVendor(mspVendor, flashScope, isCreateNew, multispeak, userContext.getYukonUser());
-            endpointAuthSettingsCache.cleanUp();
+            mspInterfaceEndpointAuthCache.invalidateAll();
         } catch (DataIntegrityViolationException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.multispeak.exception",
                     mspVendor.getCompanyName()));
@@ -237,63 +189,28 @@ public class MultispeakController {
         }
     }
 
-    @GetMapping("/endpointAuth/{id}/{mspInterfaceName}/{version}")
-    public String endPointAuth(ModelMap model, @PathVariable String id, @PathVariable String mspInterfaceName,
-            @PathVariable String version, @RequestParam PageEditMode mode, YukonUserContext userContext,
-            HttpServletRequest request) {
-        List<MultispeakInterface> mspInterfaceList = endpointAuthSettingsCache.getIfPresent(id);
-        Optional<MultispeakInterface> mspInterfaceSettings = mspInterfaceList.stream()
-                                                                             .filter(mspEndPointInterface -> (mspEndPointInterface.getMspInterface().equals(mspInterfaceName)))
-                                                                             .findFirst();
-        if (mspInterfaceSettings.isEmpty()) {
-            MultispeakInterface updateMSPInterface = new MultispeakInterface();
-            updateMSPInterface.setVendorID(Integer.parseInt(id));
-            updateMSPInterface.setMspInterface(mspInterfaceName);
-            updateMSPInterface.setVersion(MultiSpeakVersion.valueOf(version));
-            model.addAttribute("mspInterfaceSettings", updateMSPInterface);
-        } else {
-            model.addAttribute("mspInterfaceSettings", mspInterfaceSettings);
-        }
-        model.addAttribute("mode", mode);
-        return "setup/endpoint_auth.jsp";
-    }
-
-    @PostMapping("/vendorAuth/save")
-    public void save(ModelMap model, @ModelAttribute("mspInterfaceSettings") MultispeakInterface mspInterfaceSettings) {
-        if (mspInterfaceSettings.getVendorID() != null) {
-            List<MultispeakInterface> mspInterfaceList = endpointAuthSettingsCache.getIfPresent(mspInterfaceSettings.getVendorID().toString());
-            Optional<MultispeakInterface> findUpdatedMSPInterface = mspInterfaceList.stream()
-                                                                                    .filter(mspSelectedEndpoint -> mspSelectedEndpoint.getMspInterface()
-                                                                                                                                      .equals(mspInterfaceSettings.getMspInterface()))
-                                                                                    .findFirst();
-            if (findUpdatedMSPInterface.isPresent()) {
-                int interfaceIndex = mspInterfaceList.indexOf(findUpdatedMSPInterface.get());
-                boolean mspSelectedEndPointAuth = mspInterfaceList.removeIf(mspSelectedEndpoint -> mspSelectedEndpoint.getMspInterface()
-                                                                                                                      .equals(mspInterfaceSettings.getMspInterface()));
-                if (mspSelectedEndPointAuth) {
-                    mspInterfaceList.add(interfaceIndex, mspInterfaceSettings);
+    /**
+     * This method returns the enabled MSP vendor interface list with updated authentication settings, version and endpoint url
+     */
+    private List<MultispeakInterface> getUpdatedMSPInterfaceList(MultispeakModel multispeak) {
+        Map<String, MultispeakInterface> enabledMSPInterfaceMap = new HashMap<>();
+        multispeak.getMspInterfaceList().forEach(mspInterface -> {
+            if (StringUtils.isNotEmpty(mspInterface.getMspInterface())) {
+                MultispeakInterface multispeakInterface = mspInterfaceEndpointAuthCache.getIfPresent(mspInterface.getMspInterface());
+                if (mspInterface.getInterfaceEnabled()) {
+                    if (multispeakInterface != null && multispeakInterface.getMspInterface().equals(mspInterface.getMspInterface())) {
+                        mspInterface.setInPassword(multispeakInterface.getInPassword());
+                        mspInterface.setInUserName(multispeakInterface.getInUserName());
+                        mspInterface.setOutPassword(multispeakInterface.getOutPassword());
+                        mspInterface.setOutUserName(multispeakInterface.getOutUserName());
+                        mspInterface.setValidateCertificate(multispeakInterface.getValidateCertificate());
+                        mspInterface.setUseVendorAuth(multispeakInterface.getUseVendorAuth());
+                    }
+                    enabledMSPInterfaceMap.put(mspInterface.getMspInterface(), mspInterface);
                 }
-            } else {
-                mspInterfaceList.add(mspInterfaceSettings);
             }
-            endpointAuthSettingsCache.put(mspInterfaceSettings.getVendorID().toString(), mspInterfaceList);
-        } else {
-            final String key = UUID.randomUUID().toString().replace("-", "");
-            List<MultispeakInterface> mspInterfaceList = new ArrayList<>();
-            mspInterfaceList.add(mspInterfaceSettings);
-            endpointAuthSettingsCache.put(key, mspInterfaceList);
-        }
-    }
-
-    @GetMapping("/createEndPointAuthPopup")
-    public String createMSPInterfaceAuthPopup(ModelMap model) {
-        model.addAttribute("mode", PageEditMode.CREATE);
-        MultispeakInterface mspInterfaceSettings = new MultispeakInterface();
-        if (model.containsAttribute("mspInterfaceSettings")) {
-            mspInterfaceSettings = (MultispeakInterface) model.get("mspInterfaceSettings");
-        }
-        model.addAttribute("mspInterfaceSettings", mspInterfaceSettings);
-        return "setup/endpoint_auth.jsp";
+        });
+        return new ArrayList<MultispeakInterface>(enabledMSPInterfaceMap.values());
     }
 
     private String bindAndForward(MultispeakModel multispeak, BindingResult result, RedirectAttributes attrs,
@@ -330,6 +247,7 @@ public class MultispeakController {
     public String create(ModelMap model) {
 
         model.addAttribute("mode", PageEditMode.CREATE);
+        mspInterfaceEndpointAuthCache.invalidateAll();
         addSystemModelAndViewObjects(model, null, true, null, true);
         return "setup/vendor_setup.jsp";
     }
@@ -754,6 +672,24 @@ public class MultispeakController {
             }
         }
         return mspInterfaceList;
+    }
+
+    @GetMapping("renderEndpointAuthPopup/{mspInterface}")
+    public String renderEndpointAuthPopup(ModelMap model, @PathVariable("mspInterface") String mspInterface,
+            @RequestParam("mode") PageEditMode mode) {
+        MultispeakInterface multispeakInterface = mspInterfaceEndpointAuthCache.getIfPresent(mspInterface);
+        if (multispeakInterface == null) {
+            multispeakInterface = new MultispeakInterface();
+            multispeakInterface.setMspInterface(mspInterface);
+        }
+        model.addAttribute("mspInterface", multispeakInterface);
+        model.addAttribute("mode", mode);
+        return "setup/endpointauthsettingspopup.jsp";
+    }
+
+    @PostMapping("endpointAuth/save")
+    public void save(ModelMap model, @ModelAttribute("mspInterface") MultispeakInterface multispeakInterface) {
+        mspInterfaceEndpointAuthCache.put(multispeakInterface.getMspInterface(), multispeakInterface);
     }
 
     @PostConstruct

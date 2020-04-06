@@ -4,38 +4,34 @@
 
 <cti:msgScope paths="yukon.web.modules.adminSetup.vendor">
     <tags:setFormEditMode mode="${mode}" />
-    <cti:url var="action" value="/multispeak/setup/vendorAuth/save" />
-    <form:form modelAttribute="mspInterfaceSettings" action="${action}" method="post" id="js-vendor-endpointauth-form">
-        <tags:hidden path="vendorID"/>
-        <tags:hidden path="version"/>
+    <cti:url var="action" value="/multispeak/setup/endpointAuth/save" />
+    <form:form modelAttribute="mspInterface" action="${action}" method="post" id="js-vendor-endpointauth-form">
         <tags:hidden path="mspInterface"/>
-        <tags:hidden path="mspEndpoint"/>
-        <tags:hidden path="interfaceEnabled"/>
-        <tags:checkbox path="useVendorAuth" descriptionNameKey="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle.useVendorAuth"/>
+        <tags:checkbox path="useVendorAuth" descriptionNameKey="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle.useVendorAuth" />
         <tags:sectionContainer2 nameKey="interfaceAuthPopupTitle.incomingAuth">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".userName">
-                    <tags:input path="inUserName" maxlength="64"/>
+                    <tags:input path="inUserName" maxlength="64" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".password">
-                    <tags:password path="inPassword" showPassword="true" includeShowHideButton="true" maxlength="64"/>
+                    <tags:password path="inPassword" showPassword="true" includeShowHideButton="true" maxlength="64" />
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         <tags:sectionContainer2 nameKey="interfaceAuthPopupTitle.outcomingAuth">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".userName">
-                    <tags:input path="outUserName" maxlength="64"/>
+                    <tags:input path="outUserName" maxlength="64" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".password">
-                    <tags:password path="outPassword" showPassword="true" includeShowHideButton="true" maxlength="64"/>
+                    <tags:password path="outPassword" showPassword="true" includeShowHideButton="true" maxlength="64" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".validateCertificate">
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <tags:switch path="validateCertificate" classes="toggle-sm"/>
+                        <tags:switch path="validateCertificate" classes="toggle-sm" />
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
-                        <tags:switch path="validateCertificate" classes="toggle-sm" disabled="true"/>
+                        <tags:switch path="validateCertificate" classes="toggle-sm" disabled="true" />
                     </cti:displayForPageEditModes>
                 </tags:nameValue2>
             </tags:nameValueContainer2>

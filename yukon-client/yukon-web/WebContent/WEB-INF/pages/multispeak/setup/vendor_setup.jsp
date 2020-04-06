@@ -129,9 +129,11 @@
                             <tags:nameValue2 nameKey=".validateCertificate">
                                 <cti:displayForPageEditModes modes="EDIT,CREATE">
                                     <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm"/>
+                                    <input type="hidden" class="js-create-or-edit-mode">
                                 </cti:displayForPageEditModes>
                                 <cti:displayForPageEditModes modes="VIEW">
                                     <tags:switch path="mspVendor.validateCertificate" classes="toggle-sm" disabled="true"/>
+                                    <input type="hidden" class="js-view-mode">
                                 </cti:displayForPageEditModes>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
@@ -224,26 +226,19 @@
                                                             title="${getMethods}"
                                                             disabled="${!currentInterface.interfaceEnabled}"
                                                             onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                                            
+                                                        <cti:url var="endpointAuthUrl" value="/multispeak/setup/renderEndpointAuthPopup/${currentInterface.mspInterface}">
+                                                            <cti:param name="mode" value="${mode}"/>
+                                                        </cti:url>
                                                         <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuthPopupTitle" />
-                                                        <cti:displayForPageEditModes modes="EDIT">
-                                                            <input type="hidden" class="js-create-or-edit-endpoint"/>
-                                                            <cti:url var="popupUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
-                                                        </cti:displayForPageEditModes>
-                                                        <cti:displayForPageEditModes modes="CREATE">
-                                                            <input type="hidden" class="js-create-or-edit-endpoint"/>
-                                                            <cti:url var="popupUrl" value="/multispeak/setup/createEndPointAuthPopup" />
-                                                        </cti:displayForPageEditModes>
-                                                        <cti:displayForPageEditModes modes="VIEW">
-                                                            <cti:url var="popupUrl" value="/multispeak/setup/endpointAuth/${currentInterface.vendorID}/${currentInterface.mspInterface}/${currentInterface.version}?mode=${mode}"/> 
-                                                        </cti:displayForPageEditModes>
-                                                        <cti:button icon="icon-lock"
-                                                                    id="interfaceAuth${currentInterface.mspInterface}" 
-                                                                    name="interfaceAuth"
+                                                        <cti:button icon="icon-lock" 
                                                                     renderMode="buttonImage" 
+                                                                    classes="js-endpoint-auth-btn"
+                                                                    name="interfaceAuth" 
+                                                                    data-url="${endpointAuthUrl}"
                                                                     data-title="${interfaceAuthTitle}"
                                                                     disabled="${!currentInterface.interfaceEnabled}"
-                                                                    data-url="${popupUrl}"
-                                                                    classes="js-endpoint-auth-details-link"/>
+                                                                    id="interfaceAuth${currentInterface.mspInterface}"/>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -299,19 +294,6 @@
             </cti:displayForPageEditModes>
         </div>
     </form:form>
-
-    <cti:url var="createPopupUrl" value="/multispeak/setup/createEndPointAuthPopup/${mspVendor.vendorID}" />
-    <div class="js-endpoint" 
-         id="endpointAuthPopup" 
-         data-title="<cti:msg2 key="yukon.web.modules.adminSetup.vendor.interfaceAuthPopupTitle"/>"
-         data-url="${createPopupUrl}" 
-         data-width="500"
-         data-height="300"
-         data-event="yukon:multispeak:saveVendorEndPointAuth"
-         data-ok-text="<cti:msg2 key="yukon.common.save"/>"
-         data-dialog>
-     </div>
-
     <cti:url var="url" value="/multispeak/setup/vendorHome/${mspVendor.vendorID}" />
     <form:form id="delete-vendor" method="DELETE" action="${url}">
         <cti:csrfToken />
