@@ -27,7 +27,6 @@ private:
     RfnIdentifier _rfnId;
     std::string _configurationId;
 
-    bool load();
     void store();
 
     bool loadFromFile();
