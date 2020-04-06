@@ -22,13 +22,44 @@ extern std::mt19937_64 gen;
 
 namespace {
 
-    const std::string NodeInfoDirectory = "SimulatorRfNodeInfo";
+    const fs::path NodeInfoDirectory = fs::path("SimulatorRfNodeInfo");
 
     fs::path constructNodeInfoPath(const RfnIdentifier& rfnId)
     {
         const auto nodeInfoFilename = rfnId.toString() + ".json";
 
-        return fs::path(NodeInfoDirectory) / nodeInfoFilename;
+        return NodeInfoDirectory / nodeInfoFilename;
+    }
+
+    bool validateNodeInfoDirectory()
+    {
+        if( const auto dirStatus = fs::status(NodeInfoDirectory);
+            fs::exists(dirStatus) )
+        {
+            const auto canonicalDirName = fs::canonical(NodeInfoDirectory).string();
+
+            CTILOG_DEBUG(dout, "Path exists, confirming it is a directory: " << canonicalDirName);
+
+            if( ! fs::is_directory(dirStatus) )
+            {
+                CTILOG_ERROR(dout, "Path exists, but is not a directory, cannot use for storing NodeInfo: " << canonicalDirName);
+                return false;
+            }
+        }
+        else
+        {
+            const auto currentPathName = fs::current_path().string();
+
+            CTILOG_DEBUG(dout, "Path does not exist, creating directory: " << NodeInfoDirectory.string() << " in " << currentPathName);
+
+            if( ! fs::create_directory(NodeInfoDirectory) )
+            {
+                CTILOG_ERROR(dout, "Could not create directory: " << NodeInfoDirectory.string() << " in " << currentPathName << ", cannot store NodeInfo");
+                return false;
+            }
+        }
+
+        return true;
     }
 
     const std::string NodeInfo_ConfigurationId = "configurationId";
@@ -86,16 +117,15 @@ namespace {
 NodeInfo::NodeInfo(const RfnIdentifier& rfnId)
     :   _rfnId { rfnId }
 {
-    if( ! load() )
+    if( ! loadFromFile() )
     {
-        _configurationId = GenerateConfigurationId();
-    }
-}
+        if( ! loadFromDatabase() )
+        {
+            _configurationId = GenerateConfigurationId();
+        }
 
-bool NodeInfo::load()
-{
-    return loadFromFile()
-        || loadFromDatabase();
+        store();
+    }
 }
 
 bool NodeInfo::loadFromFile()
@@ -176,6 +206,14 @@ bool NodeInfo::loadFromDatabase()
 
 void NodeInfo::store()
 {
+    CTILOG_INFO(dout, "Storing info for " << _rfnId);
+
+    if( ! validateNodeInfoDirectory() )
+    {
+        CTILOG_ERROR(dout, "Could not validate node info directory, not persisting NodeInfo for " << _rfnId);
+        return;
+    }
+
     json serializer;
 
     serializer[NodeInfo_ConfigurationId] = _configurationId;
