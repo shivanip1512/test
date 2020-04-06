@@ -75,21 +75,17 @@ public class MeterProgramStatusArchiveRequestListenerTest {
     @Test
     public void test_newMessage() {
         var archiveRequest = message.getMessageWithTimestamp(NEW_TIMESTAMP);
+        
+        l.process(archiveRequest, "just testing");
 
-        try {
-            l.process(archiveRequest, "just testing");
-
-            expectedUpdate.ifPresentOrElse(
-                expected -> {
-                    assertTrue("State updated", updatedStatus.hasCaptured());
-                    assertEquals("State updated once", updatedStatus.getValues().size(), 1);
-                    assertEquals("State update matches", expected, updatedStatus.getValue());
-                },
-                () ->
-                    assertFalse("Unexpected state update: " + updatedStatus, updatedStatus.hasCaptured()));
-        } catch (@SuppressWarnings("unused") NotFoundException ex) {
-            //  FIXME - This should not happen, fix the processor
-        }
+        expectedUpdate.ifPresentOrElse(
+            expected -> {
+                assertTrue("State updated", updatedStatus.hasCaptured());
+                assertEquals("State updated once", updatedStatus.getValues().size(), 1);
+                assertEquals("State update matches", expected, updatedStatus.getValue());
+            },
+            () ->
+                assertFalse("Unexpected state update: " + updatedStatus, updatedStatus.hasCaptured()));
     }
 
     @Test
@@ -102,10 +98,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         //    1. we've never heard from the device yet AND 
         //    2. this is a success/idle notification
         if (state == States.UNREPORTED && archiveRequest.getStatus() == ProgrammingStatus.IDLE) {
-            //  FIXME - this INSUFFICIENT_IDLE case should not be excluded
-            if (message != Messages.INSUFFICIENT_IDLE) {
-                assertTrue("State updated", updatedStatus.hasCaptured());
-            }
+            assertTrue("State updated", updatedStatus.hasCaptured());
         } else {
             assertFalse("Unexpected state update: " + updatedStatus, updatedStatus.hasCaptured());
         }
@@ -261,7 +254,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
                 createMeterProgramStatus(INSUFFICIENT_FIRMWARE_CONFIG_ID, ProgrammingStatus.FAILED, NEW_TIMESTAMP));
         
         builder.put(States.UNREPORTED, Messages.UNKNOWN_IDLE, unknownIdle);
-        builder.put(States.UNREPORTED, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.UNREPORTED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.UNREPORTED, Messages.YUKON_CANCELED, __);
         builder.put(States.UNREPORTED, Messages.YUKON_CONFIRMING, __);
         builder.put(States.UNREPORTED, Messages.YUKON_FAILED, __);
@@ -285,7 +278,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.UNASSIGNED, Messages.YUKON_UPLOADING, __);
 
         builder.put(States.CANCELED, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.CANCELED, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.CANCELED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.CANCELED, Messages.YUKON_CANCELED, yukonCanceled);
         builder.put(States.CANCELED, Messages.YUKON_CONFIRMING, yukonConfirming);
         builder.put(States.CANCELED, Messages.YUKON_FAILED, yukonFailed);
@@ -293,7 +286,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.CANCELED, Messages.YUKON_UPLOADING, yukonUploading);
 
         builder.put(States.CONFIRMING, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.CONFIRMING, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.CONFIRMING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.CONFIRMING, Messages.YUKON_CANCELED, yukonCanceled);
         builder.put(States.CONFIRMING, Messages.YUKON_CONFIRMING, yukonConfirming);
         builder.put(States.CONFIRMING, Messages.YUKON_FAILED, yukonFailed);
@@ -301,7 +294,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.CONFIRMING, Messages.YUKON_UPLOADING, yukonUploading);
 
         builder.put(States.FAILED, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.FAILED, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.FAILED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.FAILED, Messages.YUKON_CANCELED, yukonCanceled);
         builder.put(States.FAILED, Messages.YUKON_CONFIRMING, yukonConfirming);
         builder.put(States.FAILED, Messages.YUKON_FAILED, yukonFailed);
@@ -309,7 +302,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.FAILED, Messages.YUKON_UPLOADING, yukonUploading);
 
         builder.put(States.INITIATING, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.INITIATING, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.INITIATING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.INITIATING, Messages.YUKON_CANCELED, yukonCanceled);
         builder.put(States.INITIATING, Messages.YUKON_CONFIRMING, yukonConfirming);
         builder.put(States.INITIATING, Messages.YUKON_FAILED, yukonFailed);
@@ -317,7 +310,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.INITIATING, Messages.YUKON_UPLOADING, yukonUploading);
 
         builder.put(States.MISMATCHED, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.MISMATCHED, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.MISMATCHED, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.MISMATCHED, Messages.YUKON_CANCELED, yukonCanceled);
         builder.put(States.MISMATCHED, Messages.YUKON_CONFIRMING, yukonConfirming);
         builder.put(States.MISMATCHED, Messages.YUKON_FAILED, yukonFailed);
@@ -325,7 +318,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.MISMATCHED, Messages.YUKON_UPLOADING, yukonUploading);
 
         builder.put(States.UPLOADING, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.UPLOADING, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.UPLOADING, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.UPLOADING, Messages.YUKON_CANCELED, yukonCanceled);
         builder.put(States.UPLOADING, Messages.YUKON_CONFIRMING, yukonConfirming);
         builder.put(States.UPLOADING, Messages.YUKON_FAILED, __);
@@ -333,7 +326,7 @@ public class MeterProgramStatusArchiveRequestListenerTest {
         builder.put(States.UPLOADING, Messages.YUKON_UPLOADING, yukonUploading);
 
         builder.put(States.IDLE, Messages.UNKNOWN_IDLE, unknownMismatch);
-        builder.put(States.IDLE, Messages.INSUFFICIENT_IDLE, __);
+        builder.put(States.IDLE, Messages.INSUFFICIENT_IDLE, insufficientFirmware);
         builder.put(States.IDLE, Messages.YUKON_CANCELED, yukonCanceled);
         builder.put(States.IDLE, Messages.YUKON_CONFIRMING, yukonConfirming);
         builder.put(States.IDLE, Messages.YUKON_FAILED, yukonFailed);
