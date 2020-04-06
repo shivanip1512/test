@@ -35,7 +35,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.creation.DeviceCreationException;
