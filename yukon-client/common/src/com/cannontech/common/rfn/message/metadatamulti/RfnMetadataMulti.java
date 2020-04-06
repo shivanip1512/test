@@ -27,78 +27,48 @@ import com.cannontech.common.rfn.message.tree.RfnVertex;
  */
 public enum RfnMetadataMulti implements Serializable {
 
-    // Replace RfnMetadata.PRIMARY_GATEWAY,
-    //         RfnMetadata.COMM_STATUS
-    //         RfnMetadata.COMM_STATUS_TIMESTAMP
     // Note: null indicates the reverse lookup gateway is unknown.
     REVERSE_LOOKUP_NODE_COMM(NodeComm.class, 1000, EntityType.NODE),
     
-    // Replace RfnMetadata.NODE_SERIAL_NUMBER
-    //         RfnMetadata.HARDWARE_VERSION
-    //         RfnMetadata.IN_NETWORK_TIMESTAMP
-    //         RfnMetadata.NODE_ADDRESS
-    //         RfnMetadata.NODE_FIRMWARE_VERSION
-    //         RfnMetadata.NODE_TYPE
-    //         RfnMetadata.PRODUCT_NUMBER
-    //         RfnMetadata.SUB_MODULE_FIRMWARE_VERSION
-    //         RfnMetadata.WIFI_SUPER_METER_DATA
     // Note: can't be null when RfnMetadataMultiQueryResultType is OK.
     NODE_DATA(NodeData.class, 1000, EntityType.NODE),
     
-    // Replace RfnMetadata.GROUPS
-    //         RfnMetadata.NODE_NAMES
-    //         RfnMetadata.IPV6_ADDRESS
-    //         RfnMetadata.HOSTNAME
     // Note: can't be null when RfnMetadataMultiQueryResultType is OK.
     NODE_NETWORK_INFO(NodeNetworkInfo.class, 1000, EntityType.NODE),
 
-    // Replace RfnMetadata.NUM_ASSOCIATIONS
     // Note: null indicates the meter doesn't support battery node association.
     READY_BATTERY_NODE_COUNT(Integer.class, 1000, EntityType.NODE),
     
-    // Replace RfnMetadata.NEIGHBOR_COUNT
     // Note: null indicates the entity haven't sent
     //       its neighbor data recently (default 9 days).
     NEIGHBOR_COUNT(Integer.class, 1000, EntityType.GATEWAY, EntityType.NODE),
 
-    // Replace RfnMetadata.PRIMARY_NEIGHBOR,
-    //         RfnMetadata.PRIMARY_NEIGHBOR_DATA_TIMESTAMP
-    //         RfnMetadata.PRIMARY_NEIGHBOR_LINK_COST
     // NeighborData provides neighborLinkCost, numSamples, etxBand, etc.
     // Note: null indicates the entity hasn't sent
     //       its primary neighbor data recently (default 9 days).
     PRIMARY_FORWARD_NEIGHBOR_DATA(NeighborData.class, 1000, EntityType.NODE),
     
-    // Replace RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT
     // RouteData provides totalCost, hopCount, etc.
     // Note: null indicates the entity hasn't sent
     //       its primary route data recently (default 9 days).
     PRIMARY_FORWARD_ROUTE_DATA(RouteData.class, 1000, EntityType.NODE),
-
     
-    // Replace network.RfnPrimaryRouteDataRequest
     // Note: null indicates the node does not have primary forward route
     PRIMARY_FORWARD_ROUTE(RfnRoute.class, 1000, EntityType.NODE),
     
-    // Replace network.RfnNeighborDataRequest
     // Note: null indicates the entity hasn't sent
     //       its neighbor data recently (default 9 days).
     NEIGHBORS(Neighbors.class, 1000, EntityType.GATEWAY, EntityType.NODE),
     
-    // Replace network.RfnParentRequest
     // Note: null indicates the battery node doesn't have a parent.
     BATTERY_NODE_PARENT(RfnIdentifier.class, 1000, EntityType.NODE),
     
-    
-    // New
     // Note: null indicates the entity is not under any tree.
     PRIMARY_FORWARD_DESCENDANT_COUNT(Integer.class, 1000, EntityType.GATEWAY, EntityType.NODE),
     
-    // New
     // Note: null indicates the entity is not under any tree.
     PRIMARY_FORWARD_TREE(RfnVertex.class, 1000, EntityType.GATEWAY, EntityType.NODE),
 
-    // New
     // Note: null indicates the node does not have primary forward gateway
     PRIMARY_FORWARD_GATEWAY(RfnIdentifier.class, 1000, EntityType.NODE),
     ;

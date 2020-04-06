@@ -41,9 +41,6 @@
                     <input type="checkbox" name="neighborFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.neighborFlag.${flag}"/><br>
                 </c:forEach>
             </tags:nameValue>
-            <tags:nameValue name="ETX Band">
-                <tags:input path="neighborData.etxBand"/>
-            </tags:nameValue>
            <tags:nameValue name="Link Rate">
                <tags:selectWithItems items="${currentLinkRate}" path="neighborData.currentLinkRate" />
             </tags:nameValue>

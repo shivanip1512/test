@@ -181,7 +181,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Neighbors neighbors = (Neighbors) metadataMulti.getMetadatas().get(RfnMetadataMulti.NEIGHBORS);
 
             if (neighbors.isEmpty()) {
-                log.error("No neighbors found for device {}", deviceId);
+                log.warn("No neighbors found for device {}", deviceId);
                 return new HashMap<>();
             }
 
@@ -216,7 +216,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             });
             return result;
         } else {
-            log.error("NEIGHBORS for device {} is not valid", device);
+            log.warn("NEIGHBORS for device {} is not valid", device);
             return new HashMap<>();
         }
     }

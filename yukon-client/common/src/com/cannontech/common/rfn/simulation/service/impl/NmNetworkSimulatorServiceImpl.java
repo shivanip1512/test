@@ -360,8 +360,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         List<Integer> linkCost = Arrays.asList(1, 2, 3, 4, 5);
         int randomElement = linkCost.get(new Random().nextInt(linkCost.size()));
         neighborData.setNeighborLinkCost((float) randomElement);
-        neighborData.setEtxBand(settings.getNeighborData().getEtxBand());
-        List<Integer> numSamples = Arrays.asList(49, 50, 51);
+        neighborData.setEtxBand((short) randomElement);
+        List<Integer> numSamples = Arrays.asList(0, 49, 50, 51, 52, 53, 499, 500, 501, 502);
         randomElement = numSamples.get(new Random().nextInt(numSamples.size()));
         neighborData.setNumSamples(randomElement);
         neighborData.setNeighborMacAddress(settings.getNeighborData().getNeighborMacAddress());
@@ -510,25 +510,25 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         // flags
         Set<NeighborFlag> types = new HashSet<>();
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_FORW_ROUTE.getDefaultValue()) {
-            types.add(NeighborFlag.NEIGHBOR_FLAG_PRIMARY_FORWARD);
+            types.add(NeighborFlag.PRIMARY_FORWARD);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_REV_ROUTE.getDefaultValue()) {
-            types.add(NeighborFlag.NEIGHBOR_FLAG_PRIMARY_REVERSE);
+            types.add(NeighborFlag.PRIMARY_REVERSE);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_SEC_ALT_GATEWAY.getDefaultValue()) {
-            types.add(NeighborFlag.NEIGHBOR_FLAG_SECONDARY_FOR_ALT_GW);
+            types.add(NeighborFlag.SECONDARY_FOR_ALT_GW);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_FLOAT_NEIGHB.getDefaultValue()) {
-            types.add(NeighborFlag.NEIGHBOR_FLAG_FLOAT);
+            types.add(NeighborFlag.FLOAT);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_IGNORED_NEIGHB.getDefaultValue()) {
-            types.add(NeighborFlag.NEIGHBOR_FLAG_IGNORED);
+            types.add(NeighborFlag.IGNORED);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_BATTERY_NEIGHB.getDefaultValue()) {
-            types.add(NeighborFlag.NEIGHBOR_FLAG_BATTERY);
+            types.add(NeighborFlag.BATTERY);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_SEC_SERV_GATEWAY.getDefaultValue()) {
-            types.add(NeighborFlag.NEIGHBOR_FLAG_SECONDARY_FOR_SERVING_GW);
+            types.add(NeighborFlag.SECONDARY_FOR_SERVING_GW);
         }
         neighborData.setNeighborFlags(types);
         neighborData.setNextCommTime(new Date().getTime());
@@ -543,28 +543,28 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         // flags
         Set<RouteFlag> routeTypes = new HashSet<>();
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_FORW_ROUTE.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_PRIMARY_FORWARD);
+            routeTypes.add(RouteFlag.PRIMARY_FORWARD);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_REV_ROUTE.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_PRIMARY_REVERSE);
+            routeTypes.add(RouteFlag.PRIMARY_REVERSE);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_BATTERY_ROUTE.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_BATTERY);
+            routeTypes.add(RouteFlag.BATTERY);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_START_GC.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_ROUTE_START_GC);
+            routeTypes.add(RouteFlag.ROUTE_START_GC);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_REM_UPDATE.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE);
+            routeTypes.add(RouteFlag.ROUTE_REMEDIAL_UPDATE);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_IGNORED_ROUTE.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_IGNORED);
+            routeTypes.add(RouteFlag.IGNORED);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_VALID_ROUTE.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_VALID);
+            routeTypes.add(RouteFlag.VALID);
         }
         if ((boolean) YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_TIMED_OUT.getDefaultValue()) {
-            routeTypes.add(RouteFlag.ROUTE_FLAG_TIMED_OUT);
+            routeTypes.add(RouteFlag.TIMED_OUT);
         }
         routeData.setRouteFlags(routeTypes);
 
