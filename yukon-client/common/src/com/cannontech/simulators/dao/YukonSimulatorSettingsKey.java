@@ -91,13 +91,10 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_NEIGHB_IGNORED_NEIGHB(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_NEIGHB_BATTERY_NEIGHB(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_SEC_SERV_GATEWAY(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_COST(3.0, InputTypeFactory.doubleType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHB_NUM_SAMPLES(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_NEIGHB_EXT_BAND(3, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
-    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_RATE("4x", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_POW("125 mWatt", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_NEIGHBOR_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-
+    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_RATE("LINK_RATE_HALF_X", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_POW("LINK_POWER_125_mW", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    
     //RouteData
     RFN_NETWORK_SIMULATOR_ROUTE_COST(2, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
     RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
@@ -110,11 +107,7 @@ public enum YukonSimulatorSettingsKey {
     RFN_NETWORK_SIMULATOR_PRIM_VALID_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_PRIM_TIMED_OUT(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_ROUTE_COLOR(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
-    RFN_NETWORK_SIMULATOR_PRIMARY_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
 
-    //ParentData
-    RFN_NETWORK_SIMULATOR_PARENT_SN("123", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
-    RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
     
     //NetworkTree Settings
