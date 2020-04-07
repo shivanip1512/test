@@ -173,7 +173,7 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                                                          .orElseThrow(() -> new NotFoundException("Control Area Id and Name combination not found"));
 
         // Checks if any assigned load program(s) is associated with any control scenario(s) 
-        deletionCheckForAssignedProgramsAssociationWithScenario(areaId);
+        validateDelete(areaId);
 
         YukonPAObject lmControlArea = (YukonPAObject) LiteFactory.createDBPersistent(controlArea);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.DELETE);
@@ -440,11 +440,18 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     /**
-     * Checks that before deleting control area is there any assigned load program(s) is associated with any control scenario(s).
+     * Validate deletion for Control Area
+     */
+    private void validateDelete(int controlAreaId) {
+        Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(controlAreaId);
+        checkProgramAssignment(programIds);
+    }
+
+    /**
+     * Checks that in control area is there any assigned load program(s) is associated with any control scenario(s).
      * @throws LMObjectDeletionFailureException if any assigned program is associated to any scenario.
      */
-    private void deletionCheckForAssignedProgramsAssociationWithScenario(int controlAreaId) {
-        Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(controlAreaId);
+    private void checkProgramAssignment(Set<Integer> programIds) {
         for (Integer programId : programIds) {
             boolean isAssignedProgramsAssociatedWithScenario = dbCache.getAllLMScenarioProgs().stream()
                                                                                               .anyMatch(scenarioProg -> scenarioProg.getProgramID() == programId);
