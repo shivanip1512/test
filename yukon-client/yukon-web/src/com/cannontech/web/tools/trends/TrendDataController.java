@@ -337,6 +337,12 @@ public class TrendDataController {
         userPreferenceService.updatePreferenceZoomType(trendZoom, user);
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
+    
+    @PostMapping("/trends/setAutoUpdate/{isSelected}")
+    public void setAutoUpdate(@PathVariable boolean isSelected, LiteYukonUser user, HttpServletResponse resp) {
+        userPreferenceService.updateTrendAutoUpdateSelection(user, isSelected);
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
+    }
 
     @RequestMapping("/trends/getZoom")
     @ResponseBody

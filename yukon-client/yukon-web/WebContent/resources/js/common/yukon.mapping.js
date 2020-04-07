@@ -344,36 +344,7 @@ yukon.mapping = (function () {
             $('.js-distance').text(neighbor.distanceDisplay);
             $('#parent-info').hide();
             $('#device-info').hide();
-            $('#route-info').hide();
             $('#neighbor-info').show();
-            $('#marker-info').show();
-        },
-        
-        displayPrimaryRoutePopupProperties: function(routeInfo) {
-            $('.js-node-sn-display').toggleClass('dn', (routeInfo.route.serialNumber === null || routeInfo.gatewayType));
-            $('.js-node-sn').text(routeInfo.route.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || routeInfo.gatewayType));
-            $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || !routeInfo.gatewayType));
-            $('.js-gateway-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', routeInfo.ipAddress === null);
-            $('.js-ip-address').text(routeInfo.ipAddress);
-            $('.js-address-display').toggleClass('dn', routeInfo.macAddress === null);
-            $('.js-address').text(routeInfo.macAddress);
-            $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost === null);
-            $('.js-total-cost').text(routeInfo.route.totalCost);
-            $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount === null);
-            $('.js-descendant-count-display').toggleClass('dn', routeInfo.descendantCount === null);
-            $('.js-hop-count').text(routeInfo.route.hopCount);
-            $('.js-descendant-count').text(routeInfo.descendantCount);
-            $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags === null);
-            $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
-            $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles === 0);
-            $('.js-distance').text(routeInfo.distanceDisplay);
-            $('#parent-info').hide();
-            $('#neighbor-info').hide();
-            $('#device-info').hide();
-            $('#route-info').show();
             $('#marker-info').show();
         },
         
@@ -393,7 +364,6 @@ yukon.mapping = (function () {
             $('.js-distance').text(parent.distanceDisplay);
             $('#neighbor-info').hide();
             $('#device-info').hide();
-            $('#route-info').hide();
             $('#parent-info').show();
             $('#marker-info').show();
         },
@@ -472,7 +442,6 @@ yukon.mapping = (function () {
                 properties = feature.getProperties(),
                 parent = properties.parent,
                 neighbor = properties.neighbor,
-                routeInfo = properties.routeInfo,
                 nearby = properties.nearby,
                 primaryRoutesExists = $('.js-all-routes').exists(),
                 allRoutesChecked = false,
@@ -484,10 +453,6 @@ yukon.mapping = (function () {
                 mod.displayCommonPopupProperties(parent);
                 mod.displayParentNodePopupProperties(parent);
                 overlay.setPosition(coord);
-            } else if (routeInfo != null) {
-                mod.displayCommonPopupProperties(routeInfo);
-                mod.displayPrimaryRoutePopupProperties(routeInfo);
-                overlay.setPosition(coord);
             } else if (neighbor != null) {
                 mod.displayCommonPopupProperties(neighbor);
                 mod.displayNeighborPopupProperties(neighbor);
@@ -495,7 +460,6 @@ yukon.mapping = (function () {
             } else {
                 $('#parent-info').hide();
                 $('#neighbor-info').hide();
-                $('#route-info').hide();
                 var url = yukon.url('/tools/map/device/' + paoId + '/info');
                 $('#device-info').load(url, function() {
                     if (nearby != null) {
@@ -697,6 +661,20 @@ yukon.mapping = (function () {
                 });
                 if (nodeData[0] != null) {
                     return nodeData[0].features[0];
+                }
+            }
+        },
+        
+        getFeatureFromRouteData: function(routeData) {
+            if (routeData != null) {
+                var features = Object.keys(routeData).map(function (key) {
+                    var device = routeData[key];
+                    if (device != null && device.features != null) {
+                        return device.features[0];
+                    }
+                });
+                if (features != null) {
+                    return features[0];
                 }
             }
         },

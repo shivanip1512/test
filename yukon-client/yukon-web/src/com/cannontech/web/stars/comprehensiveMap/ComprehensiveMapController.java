@@ -60,13 +60,14 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.tree.Node;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.NetworkMap;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.ColorCodeBy;
@@ -84,10 +85,7 @@ import com.google.common.collect.Maps;
 
 @RequestMapping("/comprehensiveMap/*")
 @Controller
-@CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
-                    YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, 
-                    YukonRoleProperty.INFRASTRUCTURE_DELETE, 
-                    YukonRoleProperty.INFRASTRUCTURE_VIEW})
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class ComprehensiveMapController {
     
     @Autowired private RfnGatewayService rfnGatewayService;
@@ -174,9 +172,9 @@ public class ComprehensiveMapController {
         Map<String, Object> json = new HashMap<>();
         Set<Integer> foundPaoIds = new HashSet<Integer>();
         //search for a Sensor Serial Number with the provided text
-        Integer sensor = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
+        RfnDevice sensor = rfnDeviceDao.findDeviceBySensorSerialNumber(searchText);
         if (sensor != null) {
-            foundPaoIds.add(sensor);
+            foundPaoIds.add(sensor.getPaoIdentifier().getPaoId());
         }
         //search for a Meter Number with the provided text
         try {

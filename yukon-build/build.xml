@@ -11,6 +11,7 @@
     <property name="log.dir" value="${basedir}/yukon-build/logs" />
     <property name="dist.dir" value="${basedir}/yukon-build/dist" />
     <property name="temp.dir" value="${basedir}/yukon-build/temp" />
+    <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
 
     <target name="targets">
         <echo message="The following targets are available" />

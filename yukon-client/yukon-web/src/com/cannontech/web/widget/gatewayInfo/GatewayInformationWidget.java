@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
@@ -34,6 +33,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -42,7 +42,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -52,6 +52,7 @@ import com.cannontech.web.widget.support.SimpleWidgetInput;
  */
 @Controller
 @RequestMapping("/gatewayInformationWidget/*")
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayInformationWidget.class);
@@ -92,7 +93,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         return "gatewayInformationWidget/render.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="edit", method=RequestMethod.GET)
     public String editDialog(ModelMap model, int deviceId, YukonUserContext userContext) {
         
@@ -114,7 +115,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         return "gatewayInformationWidget/settings.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="configure", method=RequestMethod.GET)
     public String configureDialog(ModelMap model, int deviceId, YukonUserContext userContext) {
         
@@ -138,7 +139,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     /** Configure the gateway */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="configure", method=RequestMethod.POST)
     public String configure(ModelMap model, YukonUserContext userContext, HttpServletResponse resp, FlashScope flash,
             int deviceId, @ModelAttribute("configuration") GatewayConfiguration configuration, BindingResult result) {
@@ -200,7 +201,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     /** Update the gateway */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     @RequestMapping(value="edit", method=RequestMethod.PUT)
     public String update(ModelMap model,
             YukonUserContext userContext,

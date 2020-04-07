@@ -67,8 +67,7 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseT
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
-import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
@@ -946,11 +945,10 @@ public class NmIntegrationController {
     
     @RequestMapping("viewMappingSimulator")
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
-        model.addAttribute("routeFlags", RouteFlagType.values());
+        model.addAttribute("routeFlags", RouteFlag.values());
         model.addAttribute("neighborFlags", NeighborFlagType.values());
         model.addAttribute("parentReplys", RfnParentReplyType.values());
         model.addAttribute("neighborReplys", RfnNeighborDataReplyType.values());
-        model.addAttribute("routeReplys", RfnPrimaryRouteDataReplyType.values());
         model.addAttribute("metadataResponseTypes", RfnMetadataMultiResponseType.values());
         model.addAttribute("metadataQueryResponseTypes", RfnMetadataMultiQueryResultType.values());
         
@@ -984,10 +982,10 @@ public class NmIntegrationController {
             }
         }
         if (currentSettings.getRouteData() != null) {
-            currentSettings.getRouteData().setRouteDataTimestamp(dateTime);
+            currentSettings.getRouteData().setRouteDataTimeStamp(dateTime);
             currentSettings.getRouteData().setRouteTimeout(dateTime);
             currentSettings.getRouteData().setRouteFlags(new HashSet<>());
-            for (RouteFlagType flag : RouteFlagType.values()) {
+            for (RouteFlag flag : RouteFlag.values()) {
                 boolean flagSet= ServletRequestUtils.getBooleanParameter(request, "routeFlag_" + flag, false);
                 if (flagSet) {
                     currentSettings.getRouteData().getRouteFlags().add(flag);
