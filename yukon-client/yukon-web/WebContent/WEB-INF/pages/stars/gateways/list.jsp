@@ -8,7 +8,7 @@
 
 <cti:standardPage module="operator" page="gateways.list">
 
-<cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+<cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
 
     <div id="gateway-create-popup" class="dn"
         data-dialog
@@ -47,19 +47,19 @@
 </cti:checkRolesAndProperties>
 
 <div id="page-actions" class="dn">
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
         <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
             <i:inline key=".create.gateway.label"/>
         </cm:dropdownOption>
     </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
         <cm:dropdownOption data-popup="#gateway-cert-popup" icon="icon-drive-go">
             <i:inline key=".cert.update.label"/>
         </cm:dropdownOption>
     </cti:checkRolesAndProperties>
     <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
     <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
         <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
             classes="update-servers disabled" disabled="true">
 
@@ -73,7 +73,7 @@
     </cti:checkRolesAndProperties>
 </div>
 
-<cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+<cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
     <div id="gateway-cert-popup" class="dn" data-dialog 
         data-title="<cti:msg2 key=".cert.update.label"/>"
         data-event="yukon:assets:gateway:cert:update"
@@ -190,7 +190,7 @@
                         </td>
                         <td>
                             <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
-                                <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+                                <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
                                     <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
                                     <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
                                     <li class="divider"></li>
