@@ -18,7 +18,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.jms.ConnectionFactory;
+
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +49,10 @@ import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
 import com.cannontech.common.rfn.message.network.RfnParentReply;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
-import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
+import com.cannontech.common.rfn.message.route.RfnRoute;
+import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -63,10 +64,6 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.api.JmsApi;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -83,7 +80,6 @@ import com.cannontech.web.tools.mapping.model.NetworkMapFilter.Legend;
 import com.cannontech.web.tools.mapping.model.NetworkMapFilter.LinkQuality;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
-import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.HashMultimap;
@@ -93,7 +89,6 @@ import com.google.common.collect.Maps;
 public class NmNetworkServiceImpl implements NmNetworkService {
 
     private static final Logger log = YukonLogManager.getLogger(NmNetworkServiceImpl.class);
-    private static final String routeRequest = "NM_NETWORK_ROUTE_REQUEST";
     private static final String parentRequest = "NM_NETWORK_PARENT_REQUEST";
     private static final String neighborRequest = "NM_NETWORK_NEIGHBOR_REQUEST";
 
@@ -103,30 +98,28 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private static final String noParent = "No location in Yukon was found for this parent device.";
     private static final String metadataErrorKey = "yukon.web.modules.operator.mapNetwork.exception.metadataError";
 
+    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
+
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MeterDao meterDao;
     @Autowired private ServerDatabaseCache dbCache;
-    @Autowired private YukonJmsTemplate jmsTemplate;
-
-    private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
 
     @PostConstruct
     public void init() {
-        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
-                JmsApiDirectory.NETWORK_PRIMARY_ROUTE, JmsApiDirectory.NETWORK_NEIGHBOR, JmsApiDirectory.NETWORK_PARENT);
-        routeReplyTemplate = new RequestReplyTemplateImpl<>(routeRequest, configSource, jmsTemplate, requestQueue);
-        neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, jmsTemplate, requestQueue);
-        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, jmsTemplate, requestQueue);
+        neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, connectionFactory, requestQueue,
+                false);
+        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, connectionFactory, requestQueue, false);
     }
 
     public class Neighbors {
@@ -146,34 +139,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         public List<RfnDevice> getNeighborsWithoutLocation() {
             return neighborsWithoutLocation;
-        }
-
-        public String getErrorMsg() {
-            return errorMsg;
-        }
-
-        public void setErrorMsg(String errorMsg) {
-            this.errorMsg = errorMsg;
-        }
-    }
-
-    public class Route {
-        private List<RouteInfo> route = new ArrayList<>();
-        private RfnDevice deviceWithoutLocation = null;
-        private String errorMsg;
-
-        public Route(List<RouteInfo> route, RfnDevice deviceWithoutLocation, String errorMsg) {
-            this.route = route;
-            this.deviceWithoutLocation = deviceWithoutLocation;
-            this.errorMsg = errorMsg;
-        }
-
-        public RfnDevice getDeviceWithoutLocation() {
-            return deviceWithoutLocation;
-        }
-
-        public List<RouteInfo> getRoute() {
-            return route;
         }
 
         public String getErrorMsg() {
@@ -244,99 +209,67 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
 
     @Override
-    public Route getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
-
+    public List<Pair<RfnDevice, FeatureCollection>> getRoute(int deviceId, MessageSourceAccessor accessor)
+            throws NmNetworkException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        RfnPrimaryRouteDataRequest request = new RfnPrimaryRouteDataRequest();
-        request.setRfnIdentifier(device.getRfnIdentifier());
-        String errorMsg = null;
 
-        log.debug("Sending get route request to Network Manager: " + request);
-
-        BlockingJmsReplyHandler<RfnPrimaryRouteDataReply> reply = new BlockingJmsReplyHandler<>(RfnPrimaryRouteDataReply.class);
-        RfnPrimaryRouteDataReply response;
         try {
-            routeReplyTemplate.send(request, reply);
-            response = reply.waitForCompletion();
-            if (response.getReplyType() != RfnPrimaryRouteDataReplyType.OK) {
-                log.error(nmError + " (" + response.getReplyType() + ")");
-                throw new NmNetworkException(nmError, response.getReplyType().name());
-            }
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                            Set.of(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE));
 
-        } catch (ExecutionException e) {
+            RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
+
+            if (metadataMulti.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE)) {
+                RfnRoute route = (RfnRoute) metadataMulti.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE);
+
+                if (route.isEmpty()) {
+                    log.error("Route is empty for device {}", deviceId);
+                    throw new NmNetworkException(noRoute, "noRoute");
+                }
+
+                Map<RfnIdentifier, RfnDevice> devices = route.stream()
+                        // remove nulls returned from NM
+                        .filter(Objects::nonNull)
+                        .filter(identifier -> !identifier.is_Empty_())
+                        .map(identifier -> rfnDeviceCreationService.createIfNotFound(identifier))
+                        // remove devices not created or found
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
+
+                Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
+                Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
+
+                List<Pair<RfnDevice, FeatureCollection>> result = new ArrayList<>();
+
+                route.forEach(identifier -> {
+                    if (identifier == null || identifier.is_Empty_()) {
+                        result.add(null);
+                    } else {
+                        RfnDevice routeDevice = devices.get(identifier);
+                        if (routeDevice == null) {
+                            result.add(null);
+                        } else {
+                            PaoLocation location = locations.get(routeDevice.getPaoIdentifier());
+                            if (location == null) {
+                                result.add(Pair.of(routeDevice, null));
+                            } else {
+                                FeatureCollection feature = paoLocationService
+                                        .getFeatureCollection(Lists.newArrayList(location));
+                                result.add(Pair.of(routeDevice, feature));
+                            }
+                        }
+                    }
+                });
+                return result;
+            } else {
+                log.error("PRIMARY_FORWARD_ROUTE for device {} is not valid", "PRIMARY_FORWARD_ROUTE", device);
+                throw new NmNetworkException(noRoute, "noRoute");
+            }
+        } catch (NmCommunicationException e) {
             log.error(commsError, e);
             throw new NmNetworkException(commsError, e, "commsError");
         }
-
-        log.debug("response: " + response);
-
-        Map<RfnIdentifier, RfnDevice> devices = response.getRouteData().stream()
-                .map(data -> rfnDeviceCreationService.createIfNotFound(data.getRfnIdentifier()))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toMap(data -> data.getRfnIdentifier(), data -> data));
-
-        Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData = new HashMap<>();
-        try {
-            metaData = getMetaData(devices.values());
-        } catch (NmNetworkException e) {
-            errorMsg = accessor.getMessage(metadataErrorKey);
-        }
-
-        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
-        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
-        PaoLocation nextHopLocation = null;
-        List<RouteInfo> routes = new ArrayList<>();
-        RfnDevice hopWithoutLocation = null;
-
-        for (int i = 0; i < response.getRouteData().size(); i++) {
-            RouteData data = response.getRouteData().get(i);
-            RfnDevice routeDevice = devices.get(data.getRfnIdentifier());
-            if (routeDevice == null) {
-                log.error("Device {} was not found", data.getRfnIdentifier());
-                continue;
-            }
-            PaoLocation paoLocation = locations.get(routeDevice.getPaoIdentifier());
-            if (paoLocation != null) {
-                FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
-                RouteInfo routeInfo = new RouteInfo(routeDevice, data, location, accessor);
-                DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(deviceId);
-                if(deviceData != null) {
-                    routeInfo.setDescendantCount(deviceData.getDescendantCount());
-                }
-                routeInfo.setDeviceDetailUrl(paoDetailUrlHelper.getUrlForPaoDetailPage(routeDevice));
-                // the first element shows the distance from the first element to the 2nd element
-                // only the last element has no distance, because it has no "next hop"
-                if (i < response.getRouteData().size() - 1) {
-                    RouteData nextHop = response.getRouteData().get(i + 1);
-                    RfnDevice nextHopDevice = devices.get(nextHop.getRfnIdentifier());
-                    if (nextHopDevice == null) {
-                        log.error("Device {} was not found", nextHop.getRfnIdentifier());
-                        break;
-                    }
-                    PaoIdentifier nextHopPaoIdentifier = nextHopDevice.getPaoIdentifier();
-                    nextHopLocation = locations.get(nextHopPaoIdentifier);
-                    if (nextHopLocation == null) {
-                        hopWithoutLocation = nextHopDevice;
-                    }
-                    addDistance(routeInfo, paoLocation, nextHopLocation);
-                }
-                addMappingInfo(metaData, routeInfo);
-                routes.add(routeInfo);
-                log.debug(routeInfo);
-                if (nextHopLocation == null) {
-                    break;
-                }
-            } else {
-                log.error("Location is not found for " + routeDevice);
-                // one of the devices has no location, can't display a route
-                throw new NmNetworkException(noRoute, "noRoute");
-            }
-        }
-        if (routes.isEmpty()) {
-            // one of the devices has no location, can't display a route
-            throw new NmNetworkException(noRoute, "noRoute");
-        }
-        return new Route(routes, hopWithoutLocation, errorMsg);
     }
 
     @Override
@@ -709,8 +642,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         for (Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> result : metaData.entrySet()) {
             if (result.getValue().isValidResultForMulti(multi)) {
-                com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) result
-                        .getValue().getMetadatas().get(multi);
+                RouteData routeData = (RouteData) result.getValue().getMetadatas().get(multi);
                 int hopCount = (int) routeData.getHopCount();
                 identifiers.put(HopCountColors.getHopCountColor(hopCount), result.getKey());
             } else {
@@ -821,8 +753,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Map.Entry<RfnIdentifier, RfnMetadataMultiQueryResult> data) {
         if (!filter.getHopCount().containsAll(Arrays.asList(HopCount.values()))) {
             if (data.getValue().isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
-                com.cannontech.common.rfn.message.route.RouteData routeData = (com.cannontech.common.rfn.message.route.RouteData) data
-                        .getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+				RouteData routeData = (RouteData) data.getValue().getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
                 if (!filter.getHopCount().contains(HopCount.getHopCount(routeData.getHopCount()))) {
                     filteredDevices.remove(data.getKey());
                 }
