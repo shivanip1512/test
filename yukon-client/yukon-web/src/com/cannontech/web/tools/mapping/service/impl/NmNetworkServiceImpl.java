@@ -64,6 +64,10 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -98,8 +102,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private static final String noParent = "No location in Yukon was found for this parent device.";
     private static final String metadataErrorKey = "yukon.web.modules.operator.mapNetwork.exception.metadataError";
 
-    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
-
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private PaoLocationService paoLocationService;
@@ -112,14 +114,16 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MeterDao meterDao;
     @Autowired private ServerDatabaseCache dbCache;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
 
     @PostConstruct
     public void init() {
-        neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, connectionFactory, requestQueue,
-                false);
-        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, connectionFactory, requestQueue, false);
+        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(JmsApiDirectory.NETWORK_NEIGHBOR,
+                JmsApiDirectory.NETWORK_PARENT);
+        neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, jmsTemplate, requestQueue);
+        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, jmsTemplate, requestQueue);
     }
 
     public class Neighbors {
