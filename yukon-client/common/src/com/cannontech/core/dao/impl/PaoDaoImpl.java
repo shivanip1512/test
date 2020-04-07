@@ -630,12 +630,28 @@ public final class PaoDaoImpl implements PaoDao {
     
     @Override
     public int getPaoCount(Set<PaoType> paoTypes) {
+        SqlStatementBuilder sql = getPaoCountSql(paoTypes);
+        return jdbcTemplate.queryForInt(sql);
+    }
+
+    @Override
+    public int getEnabledPaoCount(Set<PaoType> paoTypes) {
+        SqlStatementBuilder sql = getPaoCountSql(paoTypes);
+        sql.append("AND DisableFlag").eq(YNBoolean.NO);
+        sql.append("AND PaoName NOT").startsWith("*");
+
+        return jdbcTemplate.queryForInt(sql);
+    }
+
+    /*
+     * Returns SQL for getting count of pao's for passed paoTypes.
+     */
+    private SqlStatementBuilder getPaoCountSql(Set<PaoType> paoTypes) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(PAObjectID)");
         sql.append("FROM YukonPAObject");
         sql.append("WHERE Type").in(paoTypes);
-        
-        return jdbcTemplate.queryForInt(sql);
+        return sql;
     }
 
     @Override
