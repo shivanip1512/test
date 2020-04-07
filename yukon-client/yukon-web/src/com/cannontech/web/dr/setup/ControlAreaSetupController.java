@@ -201,7 +201,7 @@ public class ControlAreaSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating control area: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlArea.getName()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error.exception.message", ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
