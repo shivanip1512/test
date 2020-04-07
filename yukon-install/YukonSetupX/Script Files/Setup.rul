@@ -349,7 +349,7 @@ begin
 	
 	// Replace pre-7.5.0 RF_DATA_STREAMING cparm
 	if(IsInstalledVersionLesser("7.5.0")) then 
-        ReplaceStringInFile(sMasterConfig, "RF_DATA_STREAMING_ENABLED : true", "RF_DATA_STREAMING_ENABLED : E7A13FCA-C5E4-D7FD-6FF3-674CA0515A8C");
+        UpdateCparmValueInFile(sMasterConfig, "RF_DATA_STREAMING_ENABLED", "true", "E7A13FCA-C5E4-D7FD-6FF3-674CA0515A8C");
     endif;
 	
 	//Save the configuration of all installed services.
