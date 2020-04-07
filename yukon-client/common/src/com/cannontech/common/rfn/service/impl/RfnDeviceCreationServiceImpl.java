@@ -209,7 +209,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                             resolvableTemplate.addData("rfnIdentifier", rfnIdentifier.toString());
                             resolvableTemplate.addData("errMessage", e.getMessage());
                             SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FAILED, new Date(), resolvableTemplate);
-                            jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT, simpleAlert);
+                            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT, simpleAlert);
                         }
                     }
                     throw e;

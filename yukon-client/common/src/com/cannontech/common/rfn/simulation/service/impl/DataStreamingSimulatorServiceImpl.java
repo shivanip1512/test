@@ -125,7 +125,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                             } else if (requestMessage instanceof GatewayDataStreamingInfoRequest) {
                                 response = processGatewayInfoRequest((GatewayDataStreamingInfoRequest)objectMessage.getObject());
                             }
-                            jmsTemplate.convertAndSendWithReceiveTimeout(objectMessage.getJMSReplyTo(), response);
+                            jmsTemplate.convertAndSend(objectMessage.getJMSReplyTo(), response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in data streaming simulator.", e);

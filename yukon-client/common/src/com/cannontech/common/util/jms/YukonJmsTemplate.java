@@ -18,8 +18,6 @@ import com.cannontech.common.util.jms.api.JmsApi;
 
 public class YukonJmsTemplate extends JmsTemplate {
 
-    public static final int receiveTimeoutInMillis = 1000;
-
     @Autowired
     public YukonJmsTemplate(ConnectionFactory connectionFactory) {
         super(connectionFactory);
@@ -35,15 +33,6 @@ public class YukonJmsTemplate extends JmsTemplate {
         setPubSubDomain(jmsApi.isTopic());
         setTimeToLive(jmsApi.getTimeToLive().getMillis());
         convertAndSend(jmsApi.getQueue().getName(), message);
-    }
-
-    /**
-     * This method send the message to the destination provided in JmsApi with default Receive Timeout of 1 second.
-     * 
-     */
-    public void convertAndSendWithReceiveTimeout(JmsApi<?, ?, ?> jmsApi, Object message) throws JmsException {
-        setReceiveTimeout(receiveTimeoutInMillis);
-        convertAndSend(jmsApi, message);
     }
 
     /**
@@ -76,15 +65,6 @@ public class YukonJmsTemplate extends JmsTemplate {
     }
 
     /**
-     * This method send the message to the Destination with default Receive Timeout of 1 second.
-     * 
-     */
-    public void convertAndSendWithReceiveTimeout(Destination destination, Object message) throws JmsException {
-        setReceiveTimeout(receiveTimeoutInMillis);
-        convertAndSend(destination, message);
-    }
-
-    /**
      * This method set topic/queue flag, time-to-live and queueName from JmsApi, and send the acknowledgement message to the
      * destination defined in responseQueue.
      * 
@@ -96,23 +76,12 @@ public class YukonJmsTemplate extends JmsTemplate {
     }
 
     /**
-     * This method send the acknowledgement message to the destination defined in responseQueue with default Receive Timeout of 1
-     * second.
-     * 
-     */
-    public void convertAndSendToResponseQueueWithReceiveTimeout(JmsApi<?, ?, ?> jmsApi, Object message)
-            throws JmsException {
-        setReceiveTimeout(receiveTimeoutInMillis);
-        convertAndSendToResponseQueue(jmsApi, message);
-    }
-
-    /**
      * This method receive a message synchronously from the specified queueName defined in JmsApi, but only wait up to 1 second
      * time for delivery.
      * 
      */
     public Object receive(JmsApi<?, ?, ?> jmsApi) throws JmsException {
-        setReceiveTimeout(receiveTimeoutInMillis);
+        setReceiveTimeout(1000);
         return receive(jmsApi.getQueue().getName());
     }
 

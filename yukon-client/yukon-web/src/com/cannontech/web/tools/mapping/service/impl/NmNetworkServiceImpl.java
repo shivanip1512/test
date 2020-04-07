@@ -1,6 +1,5 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
-import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_DESCENDANT_COUNT;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA;
 
@@ -19,8 +18,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.geojson.FeatureCollection;
@@ -66,6 +63,10 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
@@ -102,30 +103,30 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private static final String noParent = "No location in Yukon was found for this parent device.";
     private static final String metadataErrorKey = "yukon.web.modules.operator.mapNetwork.exception.metadataError";
 
-    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
-
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private ConfigurationSource configSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     @Autowired private PaoDetailUrlHelper paoDetailUrlHelper;
     @Autowired private MeterDao meterDao;
     @Autowired private ServerDatabaseCache dbCache;
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private RequestReplyTemplate<RfnPrimaryRouteDataReply> routeReplyTemplate;
     private RequestReplyTemplate<RfnNeighborDataReply> neighborReplyTemplate;
     private RequestReplyTemplate<RfnParentReply> parentReplyTemplate;
 
     @PostConstruct
     public void init() {
-        routeReplyTemplate = new RequestReplyTemplateImpl<>(routeRequest, configSource, connectionFactory, requestQueue, false);
-        neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, connectionFactory, requestQueue,
-                false);
-        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, connectionFactory, requestQueue, false);
+        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                JmsApiDirectory.NETWORK_PRIMARY_ROUTE, JmsApiDirectory.NETWORK_NEIGHBOR, JmsApiDirectory.NETWORK_PARENT);
+        routeReplyTemplate = new RequestReplyTemplateImpl<>(routeRequest, configSource, jmsTemplate, requestQueue);
+        neighborReplyTemplate = new RequestReplyTemplateImpl<>(neighborRequest, configSource, jmsTemplate, requestQueue);
+        parentReplyTemplate = new RequestReplyTemplateImpl<>(parentRequest, configSource, jmsTemplate, requestQueue);
     }
 
     public class Neighbors {

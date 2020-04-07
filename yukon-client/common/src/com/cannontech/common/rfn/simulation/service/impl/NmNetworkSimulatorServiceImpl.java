@@ -151,16 +151,16 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         if (requestMessage.getObject() instanceof RfnParentRequest) {
                             RfnParentRequest request = (RfnParentRequest) requestMessage.getObject();
                             RfnParentReply reply = getParent(request.getRfnIdentifier());
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         } else if (requestMessage.getObject() instanceof RfnNeighborDataRequest) {
                             RfnNeighborDataRequest request = (RfnNeighborDataRequest) requestMessage.getObject();
                             RfnNeighborDataReply reply = getNeighbors(request.getRfnIdentifier());
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         } else if (requestMessage.getObject() instanceof RfnPrimaryRouteDataRequest) {
                             RfnPrimaryRouteDataRequest request =
                                 (RfnPrimaryRouteDataRequest) requestMessage.getObject();
                             RfnPrimaryRouteDataReply reply = getRoute(request.getRfnIdentifier());
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
                     Object metaDataMessage = jmsTemplate.receive(JmsApiDirectory.RFN_METADATA);
@@ -217,7 +217,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                                 metadata.put(RfnMetadata.WIFI_SUPER_METER_DATA, getSuperMeterData());
                             }
                             reply.setMetadata(metadata);
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
                     
@@ -276,7 +276,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                                 request.getRfnMeterIdentifiers().stream()
                                     .collect(Collectors.toMap(Function.identity(), identifier -> RfnMeterDemandResetReplyType.OK));
                         reply.setReplyTypes(replies);
-                        jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
+                        jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
 
                         String statusCode = yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DEMAND_RESET_STATUS_ARCHIVE);
 
@@ -295,7 +295,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             log.info("RfnMetadataMultiRequest identifier: {} segment: {} response: {} sending response on {}",
                                     request.getRequestID(), reply.getSegmentNumber(), reply.getResponseType(),
                                     requestMessage.getJMSReplyTo());
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), reply);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
                 }

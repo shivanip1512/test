@@ -51,7 +51,7 @@ public class SimulatorMessageListener {
                             SimulatorResponse response = processRequest(simulatorRequest);
                             log.debug(response);
                             if (response != null) {
-                                jmsTemplate.convertAndSendWithReceiveTimeout(request.getJMSReplyTo(), response);
+                                jmsTemplate.convertAndSend(request.getJMSReplyTo(), response);
                             }
                         }
                     } catch (Exception e) {

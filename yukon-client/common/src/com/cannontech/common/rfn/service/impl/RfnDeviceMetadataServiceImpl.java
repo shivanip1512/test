@@ -3,8 +3,6 @@ package com.cannontech.common.rfn.service.impl;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -19,6 +17,8 @@ import com.cannontech.common.rfn.service.DataCallback;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
@@ -31,9 +31,9 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
 
     private RequestReplyTemplateImpl<RfnMetadataResponse> qrTemplate;
     
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
-    
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     /**
      * Attempts to send a meta-data request for a RFN device.  Will use a separate thread to make the request.
      * Will expect one response. 
@@ -94,8 +94,8 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
     
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplateImpl<>("RFN_METADATA", configurationSource, connectionFactory,
-            "yukon.qr.obj.common.rfn.MetadataRequest", false);
+        qrTemplate = new RequestReplyTemplateImpl<>("RFN_METADATA", configurationSource, jmsTemplate,
+                JmsApiDirectory.RFN_METADATA);
     }
     
 }

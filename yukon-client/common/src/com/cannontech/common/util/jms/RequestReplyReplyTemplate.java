@@ -2,7 +2,6 @@ package com.cannontech.common.util.jms;
 
 import java.io.Serializable;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -17,6 +16,7 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.jms.api.JmsApi;
 
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
@@ -24,13 +24,13 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
 	private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
+            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi, boolean isInternalMessage) {
+        super(configurationName, configurationSource, jmsTemplate, jmsApi, isInternalMessage);
     }
-    
+
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, false);
+            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi) {
+        super(configurationName, configurationSource, jmsTemplate, jmsApi, false);
     }
 
     @Override

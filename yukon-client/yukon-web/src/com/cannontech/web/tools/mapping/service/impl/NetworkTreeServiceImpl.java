@@ -355,7 +355,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         deviceDataRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getName(),
-                configSource, connectionFactory, JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getQueue().getName(), false);
+                configSource, jmsTemplate, JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
     }
 
     @Override

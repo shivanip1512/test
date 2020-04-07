@@ -179,15 +179,15 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             RfnMeterReadDataReply response2 = setUpReadDataResponse(request, settings);
                             
                             // Sends the responses to Meter Read Queue
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response1);
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response2);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response1);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response2);
                             
                             // Sends response2 to the Meter Archive Request Queue
                             RfnMeterReadingArchiveRequest archiveRequest = new RfnMeterReadingArchiveRequest();
                             archiveRequest.setReadingType(RfnMeterReadingType.INTERVAL);
                             archiveRequest.setData(response2.getData());
                             archiveRequest.setDataPointId(1);
-                            jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RFN_METER_READ_ARCHIVE, archiveRequest);
+                            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_METER_READ_ARCHIVE, archiveRequest);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in meter read reply.", e);
@@ -261,12 +261,12 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             RfnMeterDisconnectInitialReply response1 = setUpDisconnectInitialResponse(settings);
                             RfnMeterDisconnectConfirmationReply response2 = setUpDisconnectConfirmationResponse(request, settings);
                             
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response1);
-                            jmsTemplate.convertAndSendWithReceiveTimeout(requestMessage.getJMSReplyTo(), response2);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response1);
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response2);
                             
                             
                             RfnStatusArchiveRequest response = setupStatusArchiveRequest(response2.getState(), request.getRfnIdentifier());
-                            jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.RFN_STATUS_ARCHIVE, response);
+                            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE, response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in meter disconnect reply.", e);

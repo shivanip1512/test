@@ -5,8 +5,6 @@ import java.util.Random;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -20,7 +18,9 @@ import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReply;
@@ -42,7 +42,6 @@ import com.google.common.collect.Sets;
 public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageService {
     
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RawExpressComCommandBuilder commandBuilder;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private YukonJmsTemplate jmsTemplate;
@@ -181,13 +180,11 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     
     @PostConstruct
     public void initialize() {
-        unicastWithDataTemplate = new RequestReplyReplyTemplate<>(
-                "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
-                "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
-        
-        unicastTemplate = new RequestReplyTemplateImpl<>(
-                "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
-                "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
+        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_WITH_DATA, JmsApiDirectory.RFN_EXPRESSCOM_UNICAST);
+        unicastWithDataTemplate = new RequestReplyReplyTemplate<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate,
+                requestQueue);
+        unicastTemplate = new RequestReplyTemplateImpl<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate, requestQueue);
     }
     
     /**

@@ -116,7 +116,7 @@ public class EcobeeAuthTokenServiceImpl implements EcobeeAuthTokenService, Messa
             try {
                 if (objMessage.getObject() instanceof EcobeeAuthTokenRequest) {
                     EcobeeAuthTokenResponse response = handle((EcobeeAuthTokenRequest) objMessage.getObject());
-                    jmsTemplate.convertAndSendWithReceiveTimeout(message.getJMSReplyTo(), response);
+                    jmsTemplate.convertAndSend(message.getJMSReplyTo(), response);
                 }
             } catch (Exception e) {
                 log.error("Unable to process message", e);

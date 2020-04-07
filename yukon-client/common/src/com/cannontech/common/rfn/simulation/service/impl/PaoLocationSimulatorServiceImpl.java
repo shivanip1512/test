@@ -154,7 +154,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
         request.setForceRefresh(true);
         log.debug("Sending NetworkTreeUpdateTimeRequest message to request reload of network tree information.");
-        jmsTemplate.convertAndSendWithReceiveTimeout(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST, request);
+        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST, request);
     }
 
     private Set<RfnGateway> createAdditionalGateways(Set<RfnGateway> gateways, List<List<LiteYukonPAObject>> rfnDevicesSplit) {

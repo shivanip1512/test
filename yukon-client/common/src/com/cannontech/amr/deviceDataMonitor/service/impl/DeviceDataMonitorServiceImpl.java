@@ -114,7 +114,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        statusRequestTemplate = new RequestTemplateImpl<>("DEVICE_DATA_MONITOR_CALC_STATUS",
-                configSource, connectionFactory, JmsApiDirectory.DEVICE_DATA_MONITOR_STATUS.getQueue().getName(), false, true);
+        statusRequestTemplate = new RequestTemplateImpl<>("DEVICE_DATA_MONITOR_CALC_STATUS", configSource, jmsTemplate,
+                JmsApiDirectory.DEVICE_DATA_MONITOR_STATUS, true);
     }
 }
