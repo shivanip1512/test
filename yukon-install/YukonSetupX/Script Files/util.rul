@@ -483,7 +483,7 @@ begin
                 colonLocation = StrFind(sGrepReturnLine, ":", keyLocation);
                 if(colonLocation > keyLocation) then
                     valueLocation = StrFind(sGrepReturnLine, sValue, colonLocation);
-                    if(valueLocation > coloonLocation && (valueLocation < commentLocation || commentLocation < 0) then
+                    if(valueLocation > colonLocation && (valueLocation < commentLocation || commentLocation < 0) then
                         StrReplace(sGrepReturnLine, sValue, sReplace, 0);
                         FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
                     endif;
