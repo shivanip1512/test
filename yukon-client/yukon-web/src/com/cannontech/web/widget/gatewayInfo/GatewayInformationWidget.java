@@ -104,11 +104,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         try {
             
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
-            if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
-                model.addAttribute("isVirtualGateway", true);
-            } else {
-                model.addAttribute("isVirtualGateway", false);
-            }
+            model.addAttribute("isVirtualGateway", gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY);
             GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
             model.addAttribute("settings", settings);
             
