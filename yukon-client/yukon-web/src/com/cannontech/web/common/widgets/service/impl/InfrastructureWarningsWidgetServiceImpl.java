@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -12,12 +11,11 @@ import javax.jms.ObjectMessage;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -38,7 +36,8 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private InfrastructureWarningsDao infrastructureWarningsDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private static List<InfrastructureWarning> cachedWarnings;
     private static InfrastructureWarningSummary cachedSummary;
     private boolean refreshWarnings;
@@ -94,8 +93,8 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
     @Override
     public void initiateRecalculation() {
         log.info("Manually initiating a recalculation of infrastructure warnings.");
-        jmsTemplate.convertAndSend(JmsApiDirectory.INFRASTRUCTURE_WARNINGS.getQueue().getName(),
-            new InfrastructureWarningsRequest());
+        jmsTemplate.convertAndSend(JmsApiDirectory.INFRASTRUCTURE_WARNINGS,
+                new InfrastructureWarningsRequest());
     }
 
     @Override
@@ -119,13 +118,7 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
             }
         }
     }
-        
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
-    
+
     @Override
     public void dbChangeReceived(DBChangeMsg dbChange) {
         switch (dbChange.getDbChangeType()) {

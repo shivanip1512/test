@@ -19,6 +19,8 @@ yukon.map.comprehensive = (function () {
     
     //dark blue
     _routeColor = yukon.mapping.getRouteColor(),
+    //grey
+    _focusRouteColor = yukon.mapping.getFocusRouteColor(),
     _largerScale = yukon.mapping.getLargerScale(),
     
     //lines should go beneath icons
@@ -28,7 +30,6 @@ yukon.map.comprehensive = (function () {
     _deviceFocusCurrentIcon,
     _deviceFocusIcons = [],
     _deviceFocusLines = [],
-    _deviceFocusIconLayer,
     
     _highlightedDevices = [],
         
@@ -71,13 +72,8 @@ yukon.map.comprehensive = (function () {
             currentStyle.setImage(new ol.style.Icon({ src: src, color: color, scale: scale, anchor: yukon.mapping.getAnchor() }));
             
             icon.setStyle(currentStyle);
-            
-            if (src_projection === _destProjection) {
-                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-            } else {
-                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-                icon.setGeometry(new ol.geom.Point(coord));
-            }
+            var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+            icon.setGeometry(new ol.geom.Point(coord));
                     
             _icons.push(icon);
             source.addFeature(icon);
@@ -96,10 +92,8 @@ yukon.map.comprehensive = (function () {
         _deviceFocusLines.forEach(function (line) {
             _map.removeLayer(line);
         });
-        _map.removeLayer(_deviceFocusIconLayer);
         _deviceFocusIcons = [];
         _deviceFocusLines = [];
-        _deviceFocusIconLayer = null;
         //set focus device back to normal style
         if (_deviceFocusCurrentIcon != null) {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
@@ -157,12 +151,8 @@ yukon.map.comprehensive = (function () {
                     icon.unset("neighbor");
                 } else {
                     icon.setStyle(style);
-                    if (_srcProjection === _destProjection) {
-                        icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                    } else {
-                        var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                        icon.setGeometry(new ol.geom.Point(coord));
-                    }
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
                     
                     _deviceFocusIcons.push(icon);
                     source.addFeature(icon);
@@ -187,7 +177,7 @@ yukon.map.comprehensive = (function () {
                     }),
                     style: new ol.style.Style({
                         stroke: new ol.style.Stroke({ 
-                            color: _routeColor, 
+                            color: _focusRouteColor, 
                             width: routeLineWidth,
                             lineDash: dashedLine ? [10,10] : null
                         })
@@ -200,10 +190,7 @@ yukon.map.comprehensive = (function () {
             }
 
         }
-        
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _deviceFocusIcons})});
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
+
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
@@ -226,10 +213,10 @@ yukon.map.comprehensive = (function () {
 
         for (var x in neighbors) {
             var neighbor = neighbors[x],
-            feature = neighbor.location.features[0],
-            pao = feature.properties.paoIdentifier;
-            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ neighbor: neighbor, pao: pao });
+                feature = neighbor.location.features[0],
+                pao = feature.properties.paoIdentifier,
+                style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                icon = new ol.Feature({ neighbor: neighbor, pao: pao });
             icon.setId(feature.id);
 
             //check if neighbor already exists on map
@@ -239,14 +226,8 @@ yukon.map.comprehensive = (function () {
                 icon.set("neighbor", neighbor);
             } else {
                 icon.setStyle(style);
-
-                if (_srcProjection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                } else {
-                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                    icon.setGeometry(new ol.geom.Point(coord));
-                }
-                
+                var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                icon.setGeometry(new ol.geom.Point(coord));
                 _deviceFocusIcons.push(icon);
                 source.addFeature(icon);
             }
@@ -275,12 +256,6 @@ yukon.map.comprehensive = (function () {
             _deviceFocusLines.push(layerLines);
             _map.addLayer(layerLines);
         }
-        
-        var allIcons = [];
-        allIcons.push.apply(allIcons, _deviceFocusIcons);
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
     },
     
     _addAllPrimaryRoutes = function() {

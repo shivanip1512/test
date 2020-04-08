@@ -369,7 +369,7 @@
       </property>
     </bean>
     
-    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate"/>
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate" scope="prototype"/>
     
     <bean class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="targetSource">      

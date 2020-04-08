@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +16,8 @@ import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.watchdog.base.YukonServices;
 import com.cannontech.watchdog.model.WatchdogWarningType;
@@ -32,17 +32,16 @@ public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
 
     private static final Logger log = YukonLogManager.getLogger(NetworkManagerWatcher.class);
 
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private WatchdogWatcherService watcherService;
+    @Autowired private YukonJmsTemplate jmsTemplate;
 
     private RequestReplyTemplate<GatewayDataResponse> requestTemplate;
-    private static final String gatewayDataRequestQueue = "yukon.qr.obj.common.rfn.GatewayDataRequest";
 
     @PostConstruct
     public void initialize() {
-        requestTemplate = new RequestReplyTemplateImpl<>("RF_GATEWAY_DATA", configurationSource, connectionFactory,
-            gatewayDataRequestQueue, false, true);
+        requestTemplate = new RequestReplyTemplateImpl<>("RF_GATEWAY_DATA", configurationSource, jmsTemplate,
+                JmsApiDirectory.RF_GATEWAY_DATA, true);
     }
 
     @Override
