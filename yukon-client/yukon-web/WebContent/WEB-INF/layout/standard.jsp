@@ -45,6 +45,7 @@
 <c:forEach items="${libraryScriptFiles}" var="file">
     <script src="<c:url value="${file}"/>"></script>
 </c:forEach>
+<script src="<c:url value="/resources/js/lib/datetimeentry/jquery.plugin.js"/>"></script>
 
 <tags:jsGlobals/>
 
