@@ -20,6 +20,9 @@ yukon.mapping = (function () {
     _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
     //dark blue
     _routeColor = "#0000CC",
+    //grey
+    _focusRouteColor = "#808080",
+    //yellow
     _highlightRouteColor = "#FFFF00",
     
     /** @type {string} - The default projection code of our map tiles. */
@@ -233,6 +236,10 @@ yukon.mapping = (function () {
             return _routeColor;
         },
         
+        getFocusRouteColor: function() {
+            return _focusRouteColor;
+        },
+        
         getLargerScale: function() {
             return _largerScale;
         },
@@ -330,8 +337,8 @@ yukon.mapping = (function () {
             $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
             $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress === null);
             $('.js-ip-address').text(neighbor.ipAddress);
-            $('.js-address-display').toggleClass('dn', neighborData.neighborAddress === null);
-            $('.js-address').text(neighborData.neighborAddress);
+            $('.js-address-display').toggleClass('dn', neighborData.neighborMacAddress === null);
+            $('.js-address').text(neighborData.neighborMacAddress);
             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags === null);
             $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
             $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost === null);

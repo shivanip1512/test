@@ -4,20 +4,14 @@ import java.io.Serializable;
 
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.network.NeighborData;
-import com.cannontech.common.rfn.message.network.ParentData;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
 import com.cannontech.common.rfn.message.route.RouteData;
 
 public class SimulatedNmMappingSettings implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private NeighborData neighborData;
-    private ParentData parentData;
     private RouteData routeData;
-    private RfnParentReplyType parentReplyType;
-    private RfnNeighborDataReplyType neighborReplyType;
     private RfnMetadataMultiResponseType metadataResponseType;
     private RfnMetadataMultiQueryResultType metadataQueryResponseType;
     private String metadataResponseString;
@@ -34,29 +28,11 @@ public class SimulatedNmMappingSettings implements Serializable {
     public void setNeighborData(NeighborData neighborData) {
         this.neighborData = neighborData;
     }
-    public ParentData getParentData() {
-        return parentData;
-    }
-    public void setParentData(ParentData parentData) {
-        this.parentData = parentData;
-    }
     public RouteData getRouteData() {
         return routeData;
     }
     public void setRouteData(RouteData routeData) {
         this.routeData = routeData;
-    }
-    public RfnParentReplyType getParentReplyType() {
-        return parentReplyType;
-    }
-    public void setParentReplyType(RfnParentReplyType parentReplyType) {
-        this.parentReplyType = parentReplyType;
-    }
-    public RfnNeighborDataReplyType getNeighborReplyType() {
-        return neighborReplyType;
-    }
-    public void setNeighborReplyType(RfnNeighborDataReplyType neighborReplyType) {
-        this.neighborReplyType = neighborReplyType;
     }
     public RfnMetadataMultiResponseType getMetadataResponseType() {
         return metadataResponseType;
