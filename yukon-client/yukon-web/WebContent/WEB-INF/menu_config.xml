@@ -224,10 +224,7 @@
       <or>
         <role name="CONSUMER_INFO" />
         <role name="INVENTORY" />
-        <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
-        <roleProperty name="INFRASTRUCTURE_DELETE"/>
-        <roleProperty name="INFRASTRUCTURE_ADMIN"/>
-        <roleProperty name="INFRASTRUCTURE_VIEW"/>
+        <roleProperty name="MANAGE_INFRASTRUCTURE" level="VIEW"/>
         <roleProperty name="CBC_DATABASE_EDIT"/>
       </or>
     </permissions>
@@ -244,23 +241,13 @@
       </option>
       <option name="gateways">
         <permissions>
-          <or>
-            <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
-            <roleProperty name="INFRASTRUCTURE_DELETE"/>
-            <roleProperty name="INFRASTRUCTURE_ADMIN"/>
-            <roleProperty name="INFRASTRUCTURE_VIEW"/>
-          </or>
+            <roleProperty name="MANAGE_INFRASTRUCTURE" level="VIEW"/>
         </permissions>
         <link>/stars/gateways</link>
       </option>
       <option name="relays">
         <permissions>
-          <or>
-            <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
-            <roleProperty name="INFRASTRUCTURE_DELETE"/>
-            <roleProperty name="INFRASTRUCTURE_ADMIN"/>
-            <roleProperty name="INFRASTRUCTURE_VIEW"/>
-          </or>
+            <roleProperty name="ENDPOINT_PERMISSION" level="VIEW"/>
         </permissions>
         <link>/stars/relay</link>
       </option>

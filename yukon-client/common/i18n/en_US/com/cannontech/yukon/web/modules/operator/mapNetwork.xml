@@ -52,25 +52,22 @@
     <entry key="yukon.web.modules.operator.mapNetwork.status.READY">Ready</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.status.NOT_READY">Not Ready</entry>
     
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_PRIMARY_FORWARD">Primary forward route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_PRIMARY_REVERSE">Primary reverse route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_BATTERY">Battery Route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_ROUTE_START_GC">Route start GC</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE">Route remedial update</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_IGNORED">Ignored route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_IGNORED2">Ignored route2</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_VALID">Valid route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_VALID2">Valid route2</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_TIMED_OUT">Route timed out</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_FLAG_TIMED_OUT2">Route timed out2</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_FORWARD">Primary forward route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.PRIMARY_REVERSE">Primary reverse route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.BATTERY">Battery Route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_START_GC">Route start GC</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.ROUTE_REMEDIAL_UPDATE">Route remedial update</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.IGNORED">Ignored route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.VALID">Valid route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlag.TIMED_OUT">Route timed out</entry>
                        
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PF">Primary forward route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PR">Primary reverse route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S2">Secondary neighbor for alternate gateway</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.F">Float neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.IN">Ignored neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.BN">Battery neighbor</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S1">Secondary neighbor for serving gateway</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.PRIMARY_FORWARD">Primary forward route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.PRIMARY_REVERSE">Primary reverse route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.SECONDARY_FOR_ALT_GW">Secondary neighbor for alternate gateway</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.FLOAT">Float neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.IGNORED">Ignored neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.BATTERY">Battery neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlag.SECONDARY_FOR_SERVING_GW">Secondary neighbor for serving gateway</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.exception.NO_PARENT">No parent was found for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.INVALID_DEVICE">Retrieving parent information for this device is not supported.</entry>

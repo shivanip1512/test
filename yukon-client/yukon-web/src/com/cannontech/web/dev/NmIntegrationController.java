@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +25,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -66,9 +64,9 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.network.NeighborFlagType;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
+import com.cannontech.common.rfn.message.neighbor.LinkPower;
+import com.cannontech.common.rfn.message.neighbor.LinkRate;
+import com.cannontech.common.rfn.message.neighbor.NeighborFlag;
 import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -82,6 +80,7 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
@@ -150,8 +149,8 @@ public class NmIntegrationController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private NmSyncService nmSyncService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-    protected JmsTemplate jmsTemplate;
-    
+    @Autowired protected YukonJmsTemplate jmsTemplate;
+
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
 
     @RequestMapping("viewBase")
@@ -947,11 +946,11 @@ public class NmIntegrationController {
     @RequestMapping("viewMappingSimulator")
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("routeFlags", RouteFlag.values());
-        model.addAttribute("neighborFlags", NeighborFlagType.values());
-        model.addAttribute("parentReplys", RfnParentReplyType.values());
-        model.addAttribute("neighborReplys", RfnNeighborDataReplyType.values());
+        model.addAttribute("neighborFlags", NeighborFlag.values());
         model.addAttribute("metadataResponseTypes", RfnMetadataMultiResponseType.values());
         model.addAttribute("metadataQueryResponseTypes", RfnMetadataMultiQueryResultType.values());
+        model.addAttribute("currentLinkRate", LinkRate.values());
+        model.addAttribute("currentLinkPower", LinkPower.values());
         
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
         SimulatorResponseBase response = sendRequest(simRequest, null, flash); 
@@ -975,7 +974,7 @@ public class NmIntegrationController {
             currentSettings.getNeighborData().setNeighborDataTimestamp(dateTime);
             currentSettings.getNeighborData().setNextCommTime(dateTime);
             currentSettings.getNeighborData().setNeighborFlags(new HashSet<>());
-            for (NeighborFlagType flag : NeighborFlagType.values()) {
+            for (NeighborFlag flag : NeighborFlag.values()) {
                 boolean flagSet= ServletRequestUtils.getBooleanParameter(request, "neighborFlag_" + flag, false);
                 if (flagSet) {
                     currentSettings.getNeighborData().getNeighborFlags().add(flag);
@@ -983,7 +982,7 @@ public class NmIntegrationController {
             }
         }
         if (currentSettings.getRouteData() != null) {
-            currentSettings.getRouteData().setRouteDataTimeStamp(dateTime);
+            currentSettings.getRouteData().setRouteDataTimestamp(dateTime);
             currentSettings.getRouteData().setRouteTimeout(dateTime);
             currentSettings.getRouteData().setRouteFlags(new HashSet<>());
             for (RouteFlag flag : RouteFlag.values()) {
@@ -1046,7 +1045,7 @@ public class NmIntegrationController {
         response.setNoForceRefreshBeforeTimeMillis(time);
         response.setTreeGenerationEndTimeMillis(time);
         response.setTreeGenerationStartTimeMillis(time);
-        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE.getQueue().getName(), response);
+        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE, response);
         return "redirect:viewMappingSimulator";
     }
     
@@ -1225,11 +1224,5 @@ public class NmIntegrationController {
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

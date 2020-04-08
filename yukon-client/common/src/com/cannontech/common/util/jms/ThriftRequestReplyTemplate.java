@@ -3,7 +3,6 @@ package com.cannontech.common.util.jms;
 import java.util.concurrent.CompletableFuture;
 
 import javax.jms.BytesMessage;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
@@ -13,28 +12,25 @@ import javax.jms.TemporaryQueue;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ExceptionHelper;
 import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
 import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
 
 public class ThriftRequestReplyTemplate<Q, R> {
-    
+
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private static final Logger log = YukonLogManager.getLogger(ThriftRequestReplyTemplate.class);
     private static final Duration timeout = Duration.standardMinutes(1); 
 
-    private JmsTemplate jmsTemplate;
     private String requestQueueName;
     
     private ThriftByteSerializer<Q> requestSerializer;
     private ThriftByteDeserializer<R> replyDeserializer;
     
-    public ThriftRequestReplyTemplate(ConnectionFactory connectionFactory, String requestQueueName, 
+    public ThriftRequestReplyTemplate(String requestQueueName, 
             ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer) {
-        this.jmsTemplate = new JmsTemplate(connectionFactory);
-        this.jmsTemplate.setExplicitQosEnabled(true);
-        this.jmsTemplate.setDeliveryPersistent(false);
         this.requestQueueName = requestQueueName;
         this.requestSerializer = requestSerializer;
         this.replyDeserializer = replyDeserializer;

@@ -22,20 +22,20 @@
             <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${gateway.paoIdentifier.paoId}"/>
             <cm:dropdownOption icon="icon-map" key=".mapNetwork" href="${mapNetworkUrl}"/>
         </c:if>
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
             <li class="divider"></li>
             <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
             <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
         </cti:checkRolesAndProperties>
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE, INFRASTRUCTURE_DELETE">
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
             <li class="divider"></li>
         </cti:checkRolesAndProperties>
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
             <c:set var="clazz" value="${empty data ? 'dn' : ''}"/>
             <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"
                     classes="js-edit ${clazz}"/>
         </cti:checkRolesAndProperties>
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
             <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
                 data-ok-event="yukon:assets:gateways:delete"/>
         </cti:checkRolesAndProperties>
@@ -47,7 +47,7 @@
 <div id="gateway-collect-data-popup" class="dn"></div>
 
 
-<cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+<cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
     <cti:url var="scheduleUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}/schedule/options"/>
     <div id="gateway-schedule-popup" data-dialog class="dn" 
             data-title="<cti:msg2 key=".schedule"/>"
@@ -188,7 +188,7 @@
                 <tags:nameValueContainer2 tableClass="with-form-controls">
                     <tags:nameValue2 nameKey=".schedule" valueClass="full-width">
                         <span class="js-gw-schedule"><cti:formatCron value="${data.collectionSchedule}"/></span>
-                        <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+                        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
                             <c:set var="clazz" value="${empty data ? 'dn' : ''}"/>
                             <cti:button nameKey="edit" icon="icon-pencil" classes="fr ${clazz} js-edit" 
                                 data-popup="#gateway-schedule-popup"/>

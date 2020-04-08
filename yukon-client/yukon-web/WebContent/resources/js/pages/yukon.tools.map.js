@@ -18,8 +18,10 @@ yukon.tools.map = (function() {
     _deviceFocusCurrentIcon,
     _deviceFocusIcons = [],
     _deviceFocusLines = [],
-    _deviceFocusIconLayer,
     _violationColor = '#ec971f',
+    
+    //grey
+    _focusRouteColor = yukon.mapping.getFocusRouteColor(),
     
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,
@@ -72,12 +74,8 @@ yukon.tools.map = (function() {
         
         icon.setId(feature.id);
         icon.setStyle(style);
-        if (src_projection === _destProjection) {
-            icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-        } else {
-            var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-            icon.setGeometry(new ol.geom.Point(coord));
-        }
+        var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+        icon.setGeometry(new ol.geom.Point(coord));
                 
         _icons[pao.paoId] = icon;
         _visibility[pao.paoId] = true;
@@ -262,10 +260,8 @@ yukon.tools.map = (function() {
         _deviceFocusLines.forEach(function (line) {
             _map.removeLayer(line);
         });
-        _map.removeLayer(_deviceFocusIconLayer);
         _deviceFocusIcons = [];
         _deviceFocusLines = [];
-        _deviceFocusIconLayer = null;
         //set focus device back to normal style
         if (_deviceFocusCurrentIcon != null) {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
@@ -289,7 +285,7 @@ yukon.tools.map = (function() {
             focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             dashedLine = false,
-            routeColor = '#808080',
+            routeColor = _focusRouteColor,
             routeLineWidth = 2.5;
 
         var primaryRoutePreviousPoints = null;
@@ -325,13 +321,8 @@ yukon.tools.map = (function() {
                     icon = deviceFound;
                     icon.unset("neighbor");
                 } else {
-                    if (_srcProjection === _destProjection) {
-                        icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                    } else {
-                        var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                        icon.setGeometry(new ol.geom.Point(coord));
-                    }
-                    
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
                     _deviceFocusIcons.push(icon);
                     source.addFeature(icon);
                 }
@@ -369,11 +360,6 @@ yukon.tools.map = (function() {
             }
 
         }
-        
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _deviceFocusIcons})});
-        iconsLayer.setZIndex(_iconLayerIndex);
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
@@ -411,14 +397,8 @@ yukon.tools.map = (function() {
             	icon.set("neighbor", neighbor);
             } else {
                 icon.setStyle(style);
-
-                if (_srcProjection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                } else {
-                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                    icon.setGeometry(new ol.geom.Point(coord));
-                }
-                
+                var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                icon.setGeometry(new ol.geom.Point(coord));  
                 _deviceFocusIcons.push(icon);
                 source.addFeature(icon);
             }
@@ -448,13 +428,6 @@ yukon.tools.map = (function() {
             _deviceFocusLines.push(layerLines);
             _map.addLayer(layerLines);
         }
-        
-        var allIcons = [];
-        allIcons.push.apply(allIcons, _deviceFocusIcons);
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
-        iconsLayer.setZIndex(_iconLayerIndex);
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
     },
     
     _addAllPrimaryRoutes = function() {
