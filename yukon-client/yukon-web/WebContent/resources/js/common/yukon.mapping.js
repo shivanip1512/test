@@ -293,40 +293,6 @@ yukon.mapping = (function () {
             feature.setStyle(currentStyle);
         },
         
-        displayCommonPopupProperties: function(pao) {
-            $('.js-device-display').toggleClass('dn', pao.device.name === null);
-            if (pao.deviceDetailUrl != null) {
-                var deviceLink = '<a href="' + yukon.url(pao.deviceDetailUrl) + '" target=_blank>' + yukon.escapeXml(pao.device.name) + '</a>',
-                    actionsDiv = $('#actionsDiv').clone().removeClass('dn');
-                actionsDiv.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
-                actionsDiv.find('.js-view-all-notes').attr('data-pao-id', pao.device.paoIdentifier.paoId);
-                yukon.tools.paonotespopup.hideShowNotesIcons(pao.device.paoIdentifier.paoId);
-                var gatewayTypes = $('#gatewayTypes').val();
-                if (gatewayTypes.indexOf(pao.device.paoIdentifier.paoType) > -1) {
-                    actionsDiv.find('.js-device-route').addClass('dn');
-                }
-                $('.js-device').html(deviceLink + actionsDiv[0].outerHTML);
-            } else {
-                $('.js-device').text(pao.device.name);
-            }
-            $('.js-meter-number-display').toggleClass('dn', pao.meterNumber === null);
-            $('.js-meter-number').text(pao.meterNumber);
-            $('.js-type-display').toggleClass('dn', pao.device.paoIdentifier.paoType === null);
-            $('.js-type').text(pao.device.paoIdentifier.paoType);
-            $('.js-status-display').toggleClass('dn', pao.statusDisplay === null);
-            $('.js-status').text(pao.statusDisplay);
-            mod.updateDeviceStatusClass(pao.statusDisplay);
-            $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway === null);
-            if (pao.primaryGatewayUrl != null) {
-                $('.js-primary-gateway').html('<a href="' + yukon.url(pao.primaryGatewayUrl) + '" target=_blank>' + yukon.escapeXml(pao.primaryGateway) + '</a>');
-            } else {
-                $('.js-primary-gateway').text(pao.primaryGateway);
-            }
-            //display NM error if applicable
-            $('.js-nm-error-text').text(pao.errorMsg);
-            $('.js-nm-error').toggleClass('dn', pao.errorMsg === null);
-        },
-        
         displayNeighborPopupProperties: function(neighbor) {
             var neighborData = neighbor.neighborData;
             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags === null);
@@ -342,23 +308,8 @@ yukon.mapping = (function () {
         },
         
         displayParentNodePopupProperties: function(parent) {
-            var parentData = parent.data;
-            $('.js-node-sn-display').toggleClass('dn', (parentData.nodeSN === null || parent.gatewayType));
-            $('.js-node-sn').text(parentData.nodeSN);
-            $('.js-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || parent.gatewayType));
-            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || !parent.gatewayType));
-            $('.js-gateway-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', parent.ipAddress === null);
-            $('.js-ip-address').text(parent.ipAddress);
-            $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress === null);
-            $('.js-mac-address').text(parentData.nodeMacAddress);
-            $('.js-distance-display').toggleClass('dn', parent.distanceDisplay === null);
-            $('.js-distance').text(parent.distanceDisplay);
-            $('#neighbor-info').hide();
-            $('#device-info').hide();
-            $('#parent-info').show();
-            $('#marker-info').show();
+            $('.js-distance-display').toggleClass('dn', parent.distance === null);
+            $('.js-distance').text(parent.distance);
         },
         
         getNeighborLineColor: function(etxBand) {
@@ -442,35 +393,32 @@ yukon.mapping = (function () {
                 if (primaryRoutesExists) {
                     allRoutesChecked = $('.js-all-routes').find(':checkbox').prop('checked');
                 }
-            if (parent != null) {
-                mod.displayCommonPopupProperties(parent);
-                mod.displayParentNodePopupProperties(parent);
-                overlay.setPosition(coord);
-            } else {
-                $('#parent-info').hide();
-                $('#neighbor-info').hide();
-                var includePrimaryRoute = neighbor != null ? 'false' : 'true',
-                    url = yukon.url('/tools/map/device/' + paoId + '/info?includePrimaryRoute=' + includePrimaryRoute);
-                $('#device-info').load(url, function() {
-                    if (nearby != null) {
-                        $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
-                        $('.js-distance-display').show();
-                    }
-                    if (neighbor != null) {
-                        mod.displayNeighborPopupProperties(neighbor);
-                    }
-                    $('#device-info').show();
-                    $('#marker-info').show();
-                    overlay.setPosition(coord);
-                    var deviceStatus = $('.js-status').text();
-                    mod.updateDeviceStatusClass(deviceStatus);
-                });
-                //close any lingering delete dialogs to simplify handling
-                var deleteDialog = $('#confirm-delete');
-                if (deleteDialog.hasClass('ui-dialog-content')) {
-                    deleteDialog.dialog('destroy');
+
+            var includePrimaryRoute = neighbor != null || parent != null ? 'false' : 'true',
+                url = yukon.url('/tools/map/device/' + paoId + '/info?includePrimaryRoute=' + includePrimaryRoute);
+            $('#device-info').load(url, function() {
+                if (nearby != null) {
+                    $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
+                    $('.js-distance-display').show();
                 }
+                if (neighbor != null) {
+                    mod.displayNeighborPopupProperties(neighbor);
+                }
+                if (parent != null) {
+                    mod.displayParentNodePopupProperties(parent);
+                }
+                $('#device-info').show();
+                $('#marker-info').show();
+                overlay.setPosition(coord);
+                var deviceStatus = $('.js-status').text();
+                mod.updateDeviceStatusClass(deviceStatus);
+            });
+            //close any lingering delete dialogs to simplify handling
+            var deleteDialog = $('#confirm-delete');
+            if (deleteDialog.hasClass('ui-dialog-content')) {
+                deleteDialog.dialog('destroy');
             }
+
             //highlight specific device primary route if viewing all routes
             if (allRoutesChecked) {
                 yukon.mapping.addPrimaryRouteToMap(paoId);

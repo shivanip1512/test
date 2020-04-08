@@ -77,6 +77,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Override
     public Pair<RfnDevice, FeatureCollection> getParent(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        PaoLocation deviceLocation = paoLocationDao.getLocation(deviceId);
 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
                 .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
@@ -99,6 +100,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             }
             FeatureCollection feature = paoLocationService
                     .getFeatureCollection(Lists.newArrayList(parentLocation));
+            if (deviceLocation != null && parentLocation != null) {
+                double distanceTo = deviceLocation.distanceTo(parentLocation, DistanceUnit.MILES);
+                DecimalFormat df = new DecimalFormat("#.####");
+                feature.setProperty("distance", df.format(distanceTo));
+            }
             return Pair.of(parent, feature);
 
         } else {
@@ -218,12 +224,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                         double distanceTo = deviceLocation.distanceTo(location, DistanceUnit.MILES);
                         DecimalFormat df = new DecimalFormat("#.####");
                         feature.setProperty("distance", df.format(distanceTo));
-                        List<String> flags = new ArrayList<>();
-                        neighbor.getNeighborData().getNeighborFlags().forEach(flag -> {
-                            flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.neighborFlag." + flag.name()));
-                        });
-                        feature.setProperty("commaDelimitedNeighborFlags", String.join(", ", flags));
                     }
+                    List<String> flags = new ArrayList<>();
+                    neighbor.getNeighborData().getNeighborFlags().forEach(flag -> {
+                        flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.neighborFlag." + flag.name()));
+                    });
+                    feature.setProperty("commaDelimitedNeighborFlags", String.join(", ", flags));
                     result.add(Pair.of(rfnDevice, feature));
                 }
             });

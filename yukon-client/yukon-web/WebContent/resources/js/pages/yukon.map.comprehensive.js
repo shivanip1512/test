@@ -213,7 +213,7 @@ yukon.map.comprehensive = (function () {
 
         for (var x in neighbors) {
             var device = neighbors[x];
-            yukon.mapping.createNeighborDevice(device, _deviceFocusIcons, _deviceFocusLines, focusPoints);
+            yukon.mapping.createNeighborDevice(device, _deviceFocusIcons, _deviceFocusLines, focusPoints, false);
          }
     },
     

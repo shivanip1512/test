@@ -180,8 +180,10 @@ public class MapNetworkController {
             Pair<RfnDevice, FeatureCollection> parent = nmNetworkService.getParent(deviceId, accessor);
             if (parent == null) {
                 // no parent
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.noParent"));
             } else if (parent.getValue() == null) {
                 // no location
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.noParentLocation", parent.getKey().getName()));
             }
             json.put("parent", parent);
         } catch (NmCommunicationException e) {
@@ -223,7 +225,7 @@ public class MapNetworkController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
             List<Pair<RfnDevice, FeatureCollection>> entireRoute = nmNetworkService.getRoute(deviceId, accessor);
-            json.put("entireRoute",  entireRoute);
+            json.put("entireRoute", entireRoute);
             if (entireRoute.isEmpty()) {
                 json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.noDevicesReturned"));
             }
