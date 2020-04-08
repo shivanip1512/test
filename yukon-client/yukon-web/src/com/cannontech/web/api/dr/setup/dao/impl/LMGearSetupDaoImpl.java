@@ -74,7 +74,10 @@ public class LMGearSetupDaoImpl extends AbstractLMSetupDaoImpl<LMProgramDirectGe
 
     @Override
     public String getColumnNames() {
-        return "*";
+        return "ChangeCondition, ChangeDuration, ChangePriority, ChangeTriggerNumber, ChangeTriggerOffset, ControlMethod, CycleRefreshRate, GearName"
+                + ", GearNumber, GroupSelectionMethod, kwReduction, MethodOptionMax, MethodOptionType, MethodPeriod, MethodRate, MethodRateCount"
+                + ", MethodStopType, RampInInterval, PercentReduction, RampInPercent, RampOutInterval, RampOutPercent, GearId, DeviceID "
+                + ", FrontRampOption, BackRampOption, StopCommandRepeat";
     }
 
 }
