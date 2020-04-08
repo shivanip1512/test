@@ -1,7 +1,9 @@
 package com.cannontech.services.systemDataPublisher.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.services.dictionariesField.publisher.service.DictionariesFieldPublisherService;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
@@ -20,6 +23,7 @@ public class SystemDataServiceInitializer {
 
     @Autowired private YamlConfigManager yamlConfigManager;
     @Autowired private SystemDataProcessorFactory systemDataProcessorFactory;
+    @Autowired private DictionariesFieldPublisherService dictionariesFieldPublisherService;
     private static final Logger log = YukonLogManager.getLogger(SystemDataServiceInitializer.class);
 
     /**
@@ -29,8 +33,40 @@ public class SystemDataServiceInitializer {
      */
     @PostConstruct
     private void init() {
-        Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict = readYamlConfiguration();
+        List<DictionariesField> dictionariesFields = readYamlConfiguration();
+        publishDictionariesFields(dictionariesFields);
+        Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict = filterRelevantDictionaries(dictionariesFields);
         createAndExecuteProcessor(mapOfPublisherToDict);
+    }
+
+    /**
+     * Method to publish Yukon and Other fields to the topic on startup.
+     */
+    private void publishDictionariesFields(List<DictionariesField> dictionariesFields) {
+        dictionariesFields.stream().forEach(
+                dictionariesField -> {
+                    if (dictionariesField.getDataPublisher() == SystemDataPublisher.YUKON
+                            || dictionariesField.getDataPublisher() == SystemDataPublisher.OTHER) {
+                        dictionariesFieldPublisherService.publish(dictionariesField);
+                    }
+                });
+    }
+
+    /**
+     * Filter the Yukon and Other fields only as these will be published from Yukon.
+     */
+    private Map<SystemDataPublisher, List<DictionariesField>> filterRelevantDictionaries(
+            List<DictionariesField> dictionariesFields) {
+        Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict = new HashMap<>();
+        mapOfPublisherToDict.put(SystemDataPublisher.YUKON,
+                dictionariesFields.stream()
+                                  .filter(dictionariesField -> dictionariesField.getDataPublisher() == SystemDataPublisher.YUKON)
+                                  .collect(Collectors.toList()));
+        mapOfPublisherToDict.put(SystemDataPublisher.OTHER,
+                dictionariesFields.stream()
+                                  .filter(dictionariesField -> dictionariesField.getDataPublisher() == SystemDataPublisher.OTHER)
+                                  .collect(Collectors.toList()));
+        return mapOfPublisherToDict;
     }
 
     /**
@@ -52,14 +88,14 @@ public class SystemDataServiceInitializer {
     /**
      * This method will read the yaml configuration file.
      */
-    private Map<SystemDataPublisher, List<DictionariesField>> readYamlConfiguration() {
-        Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict = yamlConfigManager.getMapOfPublisherToDictionaries();
+    private List<DictionariesField> readYamlConfiguration() {
+        List<DictionariesField> dictionariesFields = yamlConfigManager.getDictionariesFields();
         if (log.isDebugEnabled()) {
-            mapOfPublisherToDict.entrySet().stream()
-                                .forEach(entity -> {
-                                    log.debug("System Data Publisher = " + entity.getKey() + ", with dictionaries values = " + entity.getValue());
-                                });
+            dictionariesFields.stream()
+                    .forEach(dictionariesField -> {
+                        log.debug("Retrieved dictionarie values = " + dictionariesField.toString());
+                    });
         }
-        return mapOfPublisherToDict;
+        return dictionariesFields;
     }
 }

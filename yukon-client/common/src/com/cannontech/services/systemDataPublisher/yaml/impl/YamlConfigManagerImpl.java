@@ -3,8 +3,7 @@ package com.cannontech.services.systemDataPublisher.yaml.impl;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -33,7 +32,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     private final String SYSTEM_PUBLISHER_METADATA = "encryptedSystemPublisherMetadata.yaml";
     private final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
-    private final Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDictionaries = new ConcurrentHashMap<>();
+    private final List<DictionariesField> dictionariesFields = new CopyOnWriteArrayList <>();
 
     @PostConstruct
     private void init() {
@@ -63,14 +62,14 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
             log.debug("YAML configuration " + yamlObject);
             scalars = objectMapper.readValue(jsonBytes, ScalarField.class);
             if (scalars.getYukonDictionaries() != null) {
-                mapOfPublisherToDictionaries.put(SystemDataPublisher.YUKON, getDecryptedDictionaries(scalars.getYukonDictionaries()));
+                dictionariesFields.addAll(getDecryptedDictionaries(scalars.getYukonDictionaries(), SystemDataPublisher.YUKON));
             }
             if (scalars.getNmDictionaries() != null) {
-                mapOfPublisherToDictionaries.put(SystemDataPublisher.NETWORK_MANAGER, getDecryptedDictionaries(scalars.getNmDictionaries()));
+                dictionariesFields.addAll(getDecryptedDictionaries(scalars.getNmDictionaries(),
+                        SystemDataPublisher.NETWORK_MANAGER));
             }
             if (scalars.getOtherDictionaries() != null) {
-                mapOfPublisherToDictionaries.put(SystemDataPublisher.OTHER,
-                        getDecryptedDictionaries(scalars.getOtherDictionaries()));
+                dictionariesFields.addAll(getDecryptedDictionaries(scalars.getOtherDictionaries(), SystemDataPublisher.OTHER));
             }
         } catch (JsonParseException | JsonMappingException e) {
             log.error("Error while parsing the YAML file fields.", e);
@@ -85,12 +84,12 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
      * @param fields : List of DictionariesField with encrypted source field.
      * 
      */
-    private List<DictionariesField> getDecryptedDictionaries(List<DictionariesField> fields) {
+    private List<DictionariesField> getDecryptedDictionaries(List<DictionariesField> fields, SystemDataPublisher dataPublisher) {
         return fields.stream()
                      .map(dictionariesField -> {
                          return new DictionariesField(dictionariesField.getField(), dictionariesField.getDescription(),
                                     dictionariesField.getDetails(), getDecryptedSource(dictionariesField.getSource()),
-                                    dictionariesField.getIotType(), dictionariesField.getFrequency());})
+                                    dictionariesField.getIotType(), dictionariesField.getFrequency(), dataPublisher);})
                      .collect(Collectors.toList());
     }
 
@@ -108,8 +107,8 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     }
 
     @Override
-    public Map<SystemDataPublisher, List<DictionariesField>> getMapOfPublisherToDictionaries() {
-        return mapOfPublisherToDictionaries;
+    public List<DictionariesField> getDictionariesFields() {
+        return dictionariesFields;
     }
 
 }

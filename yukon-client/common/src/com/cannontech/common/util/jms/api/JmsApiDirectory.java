@@ -121,6 +121,7 @@ import com.cannontech.services.configurationSettingMessage.model.ConfigurationSe
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
+import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
@@ -1127,6 +1128,18 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
+    public static final JmsApi<DictionariesField,?,?> DICTIONARY_DATA =
+            JmsApi.builder(DictionariesField.class)
+                  .name("Yukon Dictionary Data")
+                  .description("Yukon Service Manager reads data and passes it to Yukon Message Broker on a topic.")
+                  .topic(true)
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.DictionaryData"))
+                  .requestMessage(DictionariesField.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+
     /*
      * WARNING: JmsApiDirectoryTest will fail if you don't add each new JmsApi to the category map below!
      */
@@ -1154,6 +1167,7 @@ public final class JmsApiDirectory {
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
+                DICTIONARY_DATA,
                 ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
