@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
@@ -103,6 +104,11 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         try {
             
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
+            if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
+                model.addAttribute("isVirtualGateway", true);
+            } else {
+                model.addAttribute("isVirtualGateway", false);
+            }
             GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
             model.addAttribute("settings", settings);
             
