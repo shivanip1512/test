@@ -3,7 +3,6 @@ package com.cannontech.common.util.jms;
 import java.io.Serializable;
 import java.util.UUID;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -18,6 +17,7 @@ import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.jms.api.JmsApi;
 
 /**
  * This template will create destination queue for the replies.
@@ -31,9 +31,9 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
      *        services (not Network Manager). This prevents message details from be logged to the RFN comms
      *        log.
      */
-    public RequestTemplateImpl(String configurationName, ConfigurationSource configurationSource,
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
+    public RequestTemplateImpl(String configurationName, ConfigurationSource configurationSource, YukonJmsTemplate jmsTemplate,
+            JmsApi<?, ?, ?> jmsApi, boolean isInternalMessage) {
+        super(configurationName, configurationSource, jmsTemplate, jmsApi, isInternalMessage);
     }
 
     @Override

@@ -3,11 +3,9 @@ package com.cannontech.amr.rfn.service.processor.impl;
 import java.util.List;
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
-
+import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode.Status;
@@ -119,10 +117,9 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
         }
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory,
-                JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+    @PostConstruct
+    public void initialize() {
+        thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
                 new MeterProgramStatusArchiveRequestSerializer());
     }
 }

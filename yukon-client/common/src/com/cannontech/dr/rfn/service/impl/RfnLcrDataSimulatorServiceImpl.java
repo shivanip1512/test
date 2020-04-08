@@ -36,6 +36,7 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
 import com.cannontech.dr.rfn.dao.PerformanceVerificationDao;
@@ -146,7 +147,6 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     private final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorServiceImpl.class);
     
     private static final int pqrEventBlobTlvTypeId = 87;
-    private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService<SimpleXPathTemplate> exiParsingService;
@@ -359,7 +359,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     private void simulateLcrReadRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters, RfnDataSimulatorStatus status) {
         try {
             RfnLcrReadingArchiveRequest readArchiveRequest = createReadArchiveRequest(deviceParameters);
-            jmsTemplate.convertAndSend(lcrReadingArchiveRequestQueueName, readArchiveRequest);
+            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_LCR_READ_ARCHIVE, readArchiveRequest);
             status.getSuccess().incrementAndGet();
             
         } catch (RfnLcrSimulatorException | IOException e) {

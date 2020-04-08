@@ -209,6 +209,7 @@ public final class JmsApiDirectory {
                   .name("Status Point Monitor Outage")
                   .description("Outage notification sent from the Status Point Monitor to Multispeak code, which will "
                           + "send an outage event to any connected Multispeak vendors that support it.")
+                  .topic(true)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.amr.OutageJmsMessage"))
                   .requestMessage(OutageJmsMessage.class)
@@ -573,6 +574,7 @@ public final class JmsApiDirectory {
                   .name("RF Gateway Data (Internal)")
                   .description("Yukon Service Manager takes gateway data (which receives it first, from Network "
                           + "Manager) and passes it to Yukon webserver on a topic.")
+                  .topic(true)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.qr.obj.common.rfn.GatewayDataTopic"))
                   .requestMessage(Serializable.class)
@@ -1106,6 +1108,7 @@ public final class JmsApiDirectory {
             JmsApi.builder(SystemData.class)
                   .name("Yukon System Data")
                   .description("Yukon Service Manager takes Yukon System Data and passes it to Yukon Message Broker on a topic.")
+                  .topic(true)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("com.eaton.eas.SystemData"))
                   .requestMessage(SystemData.class)

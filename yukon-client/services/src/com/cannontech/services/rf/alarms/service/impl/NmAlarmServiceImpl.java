@@ -7,8 +7,6 @@ import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.alarm.AlarmArchiveRequest;
@@ -20,6 +18,7 @@ import com.cannontech.common.rfn.message.alarm.AlarmType;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.database.db.point.stategroup.EventStatus;
 import com.cannontech.services.rf.alarms.service.NmAlarmService;
 
@@ -27,8 +26,8 @@ public class NmAlarmServiceImpl implements NmAlarmService, MessageListener{
 
     @Autowired RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired RfnGatewayService rfnGatewayService;
-    
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private static final Logger log = YukonLogManager.getLogger(NmAlarmServiceImpl.class);
 
     @Override
