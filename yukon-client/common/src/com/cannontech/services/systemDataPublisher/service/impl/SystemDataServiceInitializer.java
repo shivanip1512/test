@@ -93,7 +93,7 @@ public class SystemDataServiceInitializer {
         if (log.isDebugEnabled()) {
             dictionariesFields.stream()
                     .forEach(dictionariesField -> {
-                        log.debug("Retrieved dictionarie values = " + dictionariesField.toString());
+                        log.debug("Retrieved dictionaries values = " + dictionariesField.toString());
                     });
         }
         return dictionariesFields;
