@@ -17,6 +17,8 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.DisplayableDevice;
@@ -71,6 +73,7 @@ public final class PaoDaoImpl implements PaoDao {
     @Autowired private AuthDao authDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private ConfigurationSource configurationSource;
 
     @Override
     public YukonPao getYukonPao(int paoId) {
@@ -636,9 +639,10 @@ public final class PaoDaoImpl implements PaoDao {
 
     @Override
     public int getEnabledPaoCount(Set<PaoType> paoTypes) {
+        String templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         SqlStatementBuilder sql = getPaoCountSql(paoTypes);
-        sql.append("AND DisableFlag").eq(YNBoolean.NO);
-        sql.append("AND PaoName NOT").startsWith("*");
+        sql.append("AND DisableFlag").eq_k(YNBoolean.NO);
+        sql.append("AND PaoName NOT").startsWith(templatePrefix);
 
         return jdbcTemplate.queryForInt(sql);
     }
