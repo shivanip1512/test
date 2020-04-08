@@ -40,21 +40,17 @@ public class SystemDataServiceInitializer {
     }
 
     /**
-     * Method to publish Yukon and Other fields to the topic on startup.
+     * Method to publish DictionariesField data to the topic on startup.
      */
     private void publishDictionariesFields(List<DictionariesField> dictionariesFields) {
         dictionariesFields.stream().forEach(
                 dictionariesField -> {
-                    if (dictionariesField.getDataPublisher() == SystemDataPublisher.YUKON
-                            || dictionariesField.getDataPublisher() == SystemDataPublisher.OTHER) {
-                        dictionariesFieldPublisherService.publish(dictionariesField);
-                    }
+                    dictionariesFieldPublisherService.publish(dictionariesField);
                 });
     }
 
-    /**
-     * Filter the Yukon and Other fields only as these will be published from Yukon.
-     */
+    // TODO: Created the the Map for supporting the Existing framework.We will update this method on once all the NM publishes its
+    // own data.
     private Map<SystemDataPublisher, List<DictionariesField>> filterRelevantDictionaries(
             List<DictionariesField> dictionariesFields) {
         Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict = new HashMap<>();
@@ -65,6 +61,10 @@ public class SystemDataServiceInitializer {
         mapOfPublisherToDict.put(SystemDataPublisher.OTHER,
                 dictionariesFields.stream()
                                   .filter(dictionariesField -> dictionariesField.getDataPublisher() == SystemDataPublisher.OTHER)
+                                  .collect(Collectors.toList()));
+        mapOfPublisherToDict.put(SystemDataPublisher.NETWORK_MANAGER,
+                dictionariesFields.stream()
+                                  .filter(dictionariesField -> dictionariesField.getDataPublisher() == SystemDataPublisher.NETWORK_MANAGER)
                                   .collect(Collectors.toList()));
         return mapOfPublisherToDict;
     }
