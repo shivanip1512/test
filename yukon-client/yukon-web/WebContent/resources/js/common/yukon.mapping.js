@@ -328,17 +328,7 @@ yukon.mapping = (function () {
         },
         
         displayNeighborPopupProperties: function(neighbor) {
-            var neighborData = neighbor.data;
-            $('.js-node-sn-display').toggleClass('dn', (neighborData.serialNumber === null || neighbor.gatewayType));
-            $('.js-node-sn').text(neighborData.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || neighbor.gatewayType));
-            $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || !neighbor.gatewayType));
-            $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress === null);
-            $('.js-ip-address').text(neighbor.ipAddress);
-            $('.js-address-display').toggleClass('dn', neighborData.neighborMacAddress === null);
-            $('.js-address').text(neighborData.neighborMacAddress);
+            var neighborData = neighbor.neighborData;
             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags === null);
             $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
             $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost === null);
@@ -347,12 +337,8 @@ yukon.mapping = (function () {
             $('.js-num-samples').text(neighborData.numSamples);
             $('.js-etx-band-display').toggleClass('dn', neighborData.etxBand === null);
             $('.js-etx-band').text(neighborData.etxBand);
-            $('.js-distance-display').toggleClass('dn', neighbor.distanceDisplay === null);
-            $('.js-distance').text(neighbor.distanceDisplay);
-            $('#parent-info').hide();
-            $('#device-info').hide();
-            $('#neighbor-info').show();
-            $('#marker-info').show();
+            $('.js-distance-display').toggleClass('dn', neighbor.distance === null);
+            $('.js-distance').text(neighbor.distance);
         },
         
         displayParentNodePopupProperties: function(parent) {
@@ -460,18 +446,18 @@ yukon.mapping = (function () {
                 mod.displayCommonPopupProperties(parent);
                 mod.displayParentNodePopupProperties(parent);
                 overlay.setPosition(coord);
-            } else if (neighbor != null) {
-                mod.displayCommonPopupProperties(neighbor);
-                mod.displayNeighborPopupProperties(neighbor);
-                overlay.setPosition(coord);
             } else {
                 $('#parent-info').hide();
                 $('#neighbor-info').hide();
-                var url = yukon.url('/tools/map/device/' + paoId + '/info');
+                var includePrimaryRoute = neighbor != null ? 'false' : 'true',
+                    url = yukon.url('/tools/map/device/' + paoId + '/info?includePrimaryRoute=' + includePrimaryRoute);
                 $('#device-info').load(url, function() {
                     if (nearby != null) {
                         $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
                         $('.js-distance-display').show();
+                    }
+                    if (neighbor != null) {
+                        mod.displayNeighborPopupProperties(neighbor);
                     }
                     $('#device-info').show();
                     $('#marker-info').show();
@@ -672,7 +658,7 @@ yukon.mapping = (function () {
             }
         },
         
-        getFeatureFromRouteData: function(routeData) {
+        getFeatureFromRouteOrNeighborData: function(routeData) {
             if (routeData != null) {
                 var features = Object.keys(routeData).map(function (key) {
                     var device = routeData[key];
@@ -683,6 +669,72 @@ yukon.mapping = (function () {
                 if (features != null) {
                     return features[0];
                 }
+            }
+        },
+        
+        createNeighborDevice: function(device, iconArray, lineArray, devicePoints, alwaysAddIcon) {
+            var feature = yukon.mapping.getFeatureFromRouteOrNeighborData(device),
+                source = yukon.mapping.getIconLayerSource();
+            if (feature != null) {
+                var pao = feature.properties.paoIdentifier,
+                    style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                    properties = Object.keys(device).map(function (key) {
+                        var neighborInfo = device[key];
+                        if (neighborInfo != null && neighborInfo.properties != null) {
+                            return neighborInfo.properties;
+                        }
+                    });
+                if (properties != null) {
+                    var neighbor = properties[0].neighborData;
+                    neighbor.distance = properties[0].distance;
+                    neighbor.commaDelimitedNeighborFlags = properties[0].commaDelimitedNeighborFlags;
+                }
+                
+                var icon = new ol.Feature({ neighbor: neighbor, pao: pao });
+                icon.setId(feature.id);
+                
+                //check if neighbor already exists on map
+                var neighborFound = yukon.mapping.findFocusDevice(pao.paoId, false);
+                if (neighborFound) {
+                    icon = neighborFound;
+                    icon.set("neighbor", neighbor);
+                } else {
+                    icon.setStyle(style);
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
+                    if (!alwaysAddIcon) {
+                        iconArray.push(icon);
+                    }
+                    source.addFeature(icon);
+                }
+                
+                if (alwaysAddIcon) {
+                    iconArray.push(icon);
+                }
+                
+                //draw line
+                var points = [];
+                points.push(icon.getGeometry().getCoordinates());
+                points.push(devicePoints);
+
+                var lineColor = yukon.mapping.getNeighborLineColor(neighbor.neighborData.etxBand),
+                    lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.neighborData.numSamples);
+                
+                var layerLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        })]
+                    }),
+
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
+                    })
+                });
+                
+                lineArray.push(layerLines);
+                _map.addLayer(layerLines);
             }
         },
                 

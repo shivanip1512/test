@@ -18,9 +18,6 @@
         <div id="parent-info" class="dn">
             <%@ include file="/WEB-INF/pages/stars/mapNetwork/parentInfo.jsp" %>
         </div>
-        <div id="neighbor-info" class="dn">
-            <%@ include file="/WEB-INF/pages/stars/mapNetwork/neighborInfo.jsp" %>
-        </div>
         <tags:hideReveal2 styleClass="mw300 dn js-nm-error" titleClass="error" titleKey="yukon.web.modules.tools.map.network.error" showInitially="false">
             <span class="js-nm-error-text"></span>
         </tags:hideReveal2>

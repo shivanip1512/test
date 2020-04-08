@@ -187,66 +187,14 @@ yukon.map.network = (function () {
                 _deviceFocusIcons.push(focusDevice);
             }
         }
-        
+
         for (x in neighbors) {
-            var neighbor = neighbors[x],
-            feature = neighbor.location.features[0],
-            pao = feature.properties.paoIdentifier,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ neighbor: neighbor, pao: pao });
-            
-            icon.setId(feature.id);
-            
-            //check if neighbor already exists on map
-            var neighborFound = yukon.mapping.findFocusDevice(pao.paoId, false);
-            if (neighborFound) {
-                icon = neighborFound;
-                icon.set("neighbor", neighbor);
-            } else {
-                icon.setStyle(style);
-                var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                icon.setGeometry(new ol.geom.Point(coord));
-                source.addFeature(icon);
-            }
-            
+            var device = neighbors[x];
             if (isFocusDevice) {
-                _deviceFocusIcons.push(icon);
+                yukon.mapping.createNeighborDevice(device, _deviceFocusIcons, _deviceFocusLines, focusPoints, true);
             } else {
-                _neighborIcons.push(icon);
+                yukon.mapping.createNeighborDevice(device, _neighborIcons, _neighborLines, _devicePoints, true);
             }
-
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            if (isFocusDevice) {
-                points.push(focusPoints);
-            } else {
-                points.push(_devicePoints);
-            }
-
-            var lineColor = yukon.mapping.getNeighborLineColor(neighbor.data.etxBand),
-                lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.data.numSamples);
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
-                })
-            });
-            
-            layerLines.setZIndex(_neighborsLayerIndex);
-            if (isFocusDevice) {
-                _deviceFocusLines.push(layerLines);
-            } else {
-                _neighborLines.push(layerLines);
-            }
-            _map.addLayer(layerLines);
         }
         
         yukon.mapping.updateZoom(_map);
@@ -283,12 +231,13 @@ yukon.map.network = (function () {
                 source.addFeature(focusDevice);
                 _deviceFocusIcons.push(focusDevice);
             }
+            focusDevice.unset("neighbor");
         }
         _primaryRoutePreviousPoints = null;
 
         for (x in routeInfo) {
             var route = routeInfo[x];
-                feature = yukon.mapping.getFeatureFromRouteData(route);
+                feature = yukon.mapping.getFeatureFromRouteOrNeighborData(route);
                 
             if (feature == null) {
                 dashedLine = true;

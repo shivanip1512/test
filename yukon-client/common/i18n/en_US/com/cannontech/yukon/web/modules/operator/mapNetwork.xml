@@ -80,6 +80,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.exception.noParentLocation">No location was found for the parent of this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.primaryRoute.missingLocationData">Device: {0} within the primary route does not have location data to display.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.primaryRoute.noDevicesReturned">No devices were returned for the primary route.</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.neighbors.noDevicesReturned">No neighbor devices were returned for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.neighbors.missingLocationData">The following neighbor device(s) do not have location data to display: {0}</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.NO_NEARBY_DEVICES">No nearby devices were found for this device.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.TOO_MANY_NEARBY_DEVICES">{0} nearby devices were found for this device.  The map is displaying the closest {1} devices.</entry>

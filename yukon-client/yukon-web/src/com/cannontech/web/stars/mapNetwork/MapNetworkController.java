@@ -41,7 +41,6 @@ import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
-import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.JsonUtils;
@@ -56,10 +55,8 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.LocationValidator;
 import com.cannontech.web.tools.mapping.model.NearbyDevice;
-import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
-import com.google.common.collect.Lists;
 
 @RequestMapping("/mapNetwork/*")
 @Controller
@@ -199,19 +196,17 @@ public class MapNetworkController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            Map<RfnDevice, Pair<FeatureCollection, Neighbor>> neighbors = nmNetworkService.getNeighbors(deviceId, accessor);
+            List<Pair<RfnDevice, FeatureCollection>> neighbors = nmNetworkService.getNeighbors(deviceId, accessor);
             if (neighbors.isEmpty()) {
                 // no neighbors
-                json.put("errorMsg", "");
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.neighbors.noDevicesReturned"));
             }
             json.put("neighbors", neighbors);
             // check for any neighbors that have missing location data
-            List<String> missingNeighborNames = new ArrayList<>();
-            neighbors.forEach((device, info) -> {
-                if (info == null) {
-                    missingNeighborNames.add(device.getName());
-                }
-            });
+            List<String> missingNeighborNames = neighbors.stream()
+                    .filter(value -> value != null && value.getRight() == null)
+                    .map(value -> value.getKey().getName())
+                    .collect(Collectors.toList());
             if (!missingNeighborNames.isEmpty()) {
                 json.put("errorMsg", accessor.getMessage(nameKey + "exception.neighbors.missingLocationData",
                         String.join(", ", missingNeighborNames)));
@@ -238,7 +233,7 @@ public class MapNetworkController {
                     .map(value -> value.getKey().getName())
                     .collect(Collectors.toList());
             if (!missingRoute.isEmpty()) {
-                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(",", missingRoute)));
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(", ", missingRoute)));
             }
         } catch (NmCommunicationException e) {
             json.put("errorMsg",  e.getMessage());
