@@ -18,7 +18,7 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
-        <tags:sectionContainer2 nameKey="interfaceAuthPopupTitle.outcomingAuth">
+        <tags:sectionContainer2 nameKey="interfaceAuthPopupTitle.outgoingAuth">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".userName">
                     <tags:input path="outUserName" maxlength="64" />
