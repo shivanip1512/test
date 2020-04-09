@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -42,14 +44,26 @@ public class NetworkManagerDataProcessor extends SystemDataProcessor {
 
     @Override
     public SystemData buildSystemData(DictionariesField dictionariesField) {
-        List<Map<String, Object>> queryResult = null;
         SystemData nmSystemData = null;
-        try {
-            queryResult = systemDataPublisherDao.getNMSystemData(dictionariesField);
-            nmSystemData = SystemDataProcessorHelper.processQueryResult(dictionariesField, queryResult);
+        if (StringUtils.isNotEmpty(dictionariesField.getSource())) {
+            List<Map<String, Object>> queryResult = null;
+            try {
+                queryResult = systemDataPublisherDao.getNMSystemData(dictionariesField);
+                nmSystemData = SystemDataProcessorHelper.processQueryResult(dictionariesField, queryResult);
 
-        } catch (Exception e) {
-            log.debug("Error while executing query." + e);
+            } catch (Exception e) {
+                log.debug("Error while executing query." + e);
+            }
+        } else {
+            /* TODO : This class will be removed from Yukon code base once NM starts publishing its own data.
+             *  As of now if a user remove source field of NM fields it will set value as "" and then publish. 
+             * */
+
+            nmSystemData = new SystemData();
+            nmSystemData.setFieldName(dictionariesField.getField());
+            nmSystemData.setFieldValue("");
+            nmSystemData.setIotDataType(dictionariesField.getIotType());
+            nmSystemData.setTimestamp(new DateTime());
         }
         return nmSystemData;
     }

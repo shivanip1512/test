@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -35,14 +37,22 @@ public class YukonDataProcessor extends SystemDataProcessor {
 
     @Override
     public SystemData buildSystemData(DictionariesField dictionariesField) {
-        List<Map<String, Object>> queryResult = null;
         SystemData systemData = null;
-        try {
-            queryResult = systemDataPublisherDao.getSystemData(dictionariesField);
-            systemData = SystemDataProcessorHelper.processQueryResult(dictionariesField, queryResult);
-
-        } catch (Exception e) {
-            log.debug("Error while executing query." + e);
+        if (StringUtils.isNotEmpty(dictionariesField.getSource())) {
+            List<Map<String, Object>> queryResult = null;
+            try {
+                queryResult = systemDataPublisherDao.getSystemData(dictionariesField);
+                systemData = SystemDataProcessorHelper.processQueryResult(dictionariesField, queryResult);
+            } catch (Exception e) {
+                log.debug("Error while executing query." + e);
+            }
+        } else {
+            // TODO : Here we need to call corresponding DAO for Yukon field against YUK-21731
+            systemData = new SystemData();
+            systemData.setFieldName(dictionariesField.getField());
+            systemData.setFieldValue("");
+            systemData.setIotDataType(dictionariesField.getIotType());
+            systemData.setTimestamp(new DateTime());
         }
         return systemData;
     }
