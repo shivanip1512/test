@@ -1,5 +1,6 @@
 package com.cannontech.web.api.commChannel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.PortDetailBase;
 import com.cannontech.common.device.port.service.PortService;
 
 @RestController
@@ -26,25 +26,23 @@ import com.cannontech.common.device.port.service.PortService;
 public class CommChannelApiController {
 
     @Autowired private PortService portService;
-    @Autowired private List<PortValidator<? extends PortBase>> portValidators;
-    @Autowired private List<PortDetailValidator<? extends PortDetailBase>> portDetailValidators;
+    private List<PortValidator<? extends PortBase<?>>> validators;
 
     @PostMapping("/create")
-    public ResponseEntity<Object> create(@Valid @RequestBody PortBase portInfo) {
-        Integer portId = portService.create(portInfo);
-        return new ResponseEntity<>(portId, HttpStatus.OK);
+    public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
+        HashMap<String, Integer> portIdMap = new HashMap<>();
+        portIdMap.put("portId", portService.create(port));
+        return new ResponseEntity<>(portIdMap, HttpStatus.OK);
     }
 
     @GetMapping("/{portId}")
     public ResponseEntity<Object> retrieve(@PathVariable int portId) {
-        PortDetailBase portBase = portService.retrieve(portId);
-        return new ResponseEntity<>(portBase, HttpStatus.OK);
+        return new ResponseEntity<>(portService.retrieve(portId), HttpStatus.OK);
     }
 
     @PostMapping("/update/{portId}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PortDetailBase tcpPort, @PathVariable int portId) {
-        // TODO : This will he completed in update Jira.
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable int portId) {
+        return new ResponseEntity<>(portService.update(portId, port), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{portId}")
@@ -55,7 +53,7 @@ public class CommChannelApiController {
 
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
-        portValidators.stream().forEach(e -> {
+        validators.stream().forEach(e -> {
             if (e.supports(binder.getTarget().getClass())) {
                 binder.addValidators(e);
             }
@@ -63,21 +61,7 @@ public class CommChannelApiController {
     }
 
     @Autowired
-    void setPortValidators(List<PortValidator<? extends PortBase>> portValidators) {
-        this.portValidators = portValidators;
-    }
-
-    @InitBinder("portDetailBase")
-    public void setupDetailBinder(WebDataBinder binder) {
-        portDetailValidators.stream().forEach(e -> {
-            if (e.supports(binder.getTarget().getClass())) {
-                binder.addValidators(e);
-            }
-        });
-    }
-
-    @Autowired
-    void setPortDetailValidators(List<PortDetailValidator<? extends PortDetailBase>> portDetailValidators) {
-        this.portDetailValidators = portDetailValidators;
+    void setValidators(List<PortValidator<? extends PortBase<?>>> validators) {
+        this.validators = validators;
     }
 }

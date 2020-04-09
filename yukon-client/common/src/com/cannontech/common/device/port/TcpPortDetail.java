@@ -1,20 +1,31 @@
 package com.cannontech.common.device.port;
 
-import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.TcpPort;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 
-@JsonTypeName("TCPPORT")
-public class TcpPortDetail extends PortDetailBase {
+public class TcpPortDetail extends PortBase<TcpPort> {
+
+    private PortTiming timing;
+
+    public PortTiming getTiming() {
+        if (timing == null) {
+            timing = new PortTiming();
+        }
+        return timing;
+    }
+
+    public void setTiming(PortTiming timing) {
+        this.timing = timing;
+    }
 
     @Override
-    public void buildModel(DirectPort port) {
-        TcpPort tctPort = (TcpPort) port;
-        // build info
-        getInfo().buildModel(tctPort);
-        setInfo(getInfo());
-        // build timing
-        getTiming().buildModel(tctPort.getPortTiming());
-        setTiming(getTiming());
+    public void buildModel(TcpPort port) {
+        super.buildModel(port);
+        getTiming().buildModel(port.getPortTiming());
+    }
+
+    @Override
+    public void buildDBPersistent(TcpPort port) {
+        super.buildDBPersistent(port);
+        getTiming().buildDBPersistent(port.getPortTiming());
     }
 }
