@@ -50,7 +50,7 @@ public class YukonDataProcessor extends SystemDataProcessor {
             // TODO : Here we need to call corresponding DAO for Yukon field against YUK-21731
             systemData = new SystemData();
             systemData.setFieldName(dictionariesField.getField());
-            systemData.setFieldValue("");
+            systemData.setFieldValue(dictionariesField.getSource());
             systemData.setIotDataType(dictionariesField.getIotType());
             systemData.setTimestamp(new DateTime());
         }

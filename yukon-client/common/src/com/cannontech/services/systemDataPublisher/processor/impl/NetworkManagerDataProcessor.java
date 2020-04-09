@@ -61,7 +61,7 @@ public class NetworkManagerDataProcessor extends SystemDataProcessor {
 
             nmSystemData = new SystemData();
             nmSystemData.setFieldName(dictionariesField.getField());
-            nmSystemData.setFieldValue("");
+            nmSystemData.setFieldValue(dictionariesField.getSource());
             nmSystemData.setIotDataType(dictionariesField.getIotType());
             nmSystemData.setTimestamp(new DateTime());
         }
