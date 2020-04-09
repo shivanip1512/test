@@ -14,4 +14,5 @@ public interface EconomicEventNotifDao {
     public List<EconomicEventNotif> getForParticipant(EconomicEventParticipant participant);
     public void save(EconomicEventNotif object);
     public void delete(EconomicEventNotif object);
+    void deleteForEventAndReason(EconomicEvent event, NotificationReason reason);
 }
