@@ -1,5 +1,6 @@
 package com.cannontech.amr.demandreset.service.impl;
 
+import java.text.DateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.Logger;
@@ -75,6 +77,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
     private ScheduledExecutorService executor = null;
     private RequestReplyTemplateImpl<RfnMeterDemandResetReply> qrTemplate;
     private Duration verificationTimeout;
+    private static DateFormat timeFormatter = DateFormat.getTimeInstance(DateFormat.DEFAULT);
 
     private class DeviceVerificationInfo {
         DemandResetCallback callback;
@@ -191,8 +194,8 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                         Instant timeout = verificationInfo.whenRequested.plus(verificationTimeout);
                    
                         log.debug("[TimeoutChecker]Requested on:" + verificationInfo.whenRequested.toDate()
-                            + " Devices:" + verificationInfo.pointToDevice.values());
-                        log.debug("[TimeoutChecker]Timeout on:" + timeout.toDate() + " Now:" + now.toDate());
+                                + " Devices:" + verificationInfo.pointToDevice.values() + " Timeout on:" + timeFormatter.format(timeout.toDate())
+                                + " Now:" + timeFormatter.format(now.toDate()));
                         
                         if (timeout.isBefore(now)) {
                             Iterator<Entry<Integer, SimpleDevice>> deviceIterator =
@@ -202,7 +205,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                                 SimpleDevice device = entry.getValue();
                                 int pointId = entry.getKey();
                          
-                                log.debug(device + " Timed out waiting for point from Network Manager.");
+                                log.debug("[TimeoutChecker] " + device + " Timed out waiting for point from Network Manager.");
                                 
                                 callback.cannotVerify(device, getError(DeviceError.NM_TIMEOUT));
                                 deviceIterator.remove();
@@ -214,11 +217,10 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
 
                         }
                         if (verificationInfo.isAllVerified()) {
-                            log.debug("Requested on " + verificationInfo.whenRequested.toDate()
-                                + " TimeoutChecker: All devices verified");
                             infoIterator.remove();
-                            log.debug("RFN Completed");
                             callback.complete(StrategyType.NM);
+                            log.debug("Requested on " + verificationInfo.whenRequested.toDate()
+                            + " TimeoutChecker: All devices verified. NM strategy completed.");
                         }
                     }
                 } catch (Exception e) {
@@ -365,7 +367,6 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                                 if (verificationInfo.isAllVerified()) {
                                     log.debug("TimeoutChecker: All devices verified.");
                                     infoIterator.remove();
-                                    log.debug("RFN Completed");
                                     callback.complete(StrategyType.NM);
                                 }
                             }
@@ -376,6 +377,12 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                     
         // The set returned by keySet isn't serializable, so we have to make a copy.
         Set<RfnIdentifier> meterIds = Sets.newHashSet(devicesByRfnMeterIdentifier.keySet());
+        
+        commandRequestExecutionResultDao.saveExecutionRequest(sendExecution.getId(), 
+                devicesByRfnMeterIdentifier.values().stream()
+                    .map(device -> device.getDeviceId())
+                    .collect(Collectors.toSet()));
+        
         qrTemplate.send(new RfnMeterDemandResetRequest(meterIds), handler);
     }
     
@@ -393,6 +400,11 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
             attributeService.getPoints(paos, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
         
         final Set<SimpleDevice> verifiableDevices = Sets.newHashSet(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet()));
+        
+        commandRequestExecutionResultDao.saveExecutionRequest(verificationExecution.getId(),
+                verifiableDevices.stream()
+                        .map(device -> device.getDeviceId())
+                        .collect(Collectors.toSet()));
         
         if (!verifiableDevices.isEmpty()) {
             log.debug("Devices awaiting verification:" + verifiableDevices);
@@ -430,20 +442,21 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                 if (device != null) {
                     log.debug("pointDataReceived: " + device);
                     if (pointData.getPointDataTimeStamp() == null) {
-                        log.debug("Failed (no point data received): " + device);
+                        log.debug("Verification failed for device {} data {} PointDataTimeStamp is NULL", device, pointData);
                         callback.failed(device, getError(DeviceError.NO_TIMESTAMP));
                     } else {
                         Instant resetTime = new Instant(pointData.getPointDataTimeStamp());
                         RfnDemandResetState resetState = RfnDemandResetState.values()[(int) pointData.getValue()];
-                        log.debug("lastResetInstant: " + resetTime.toDate());
-                        log.debug("whenRequested: " + verificationInfo.whenRequested.toDate());
-                        log.debug("resetState: " + resetState);
                         if (resetTime.isAfter(verificationInfo.whenRequested)
-                            && resetState == RfnDemandResetState.SUCCESS) {
+                                && resetState == RfnDemandResetState.SUCCESS) {
                             callback.verified(device, pointData);
-                            log.debug("Verified: " + device);
+                            log.debug("Verified {} reset time {} requested {} state {}", device,
+                                    timeFormatter.format(resetTime.toDate()),
+                                    timeFormatter.format(verificationInfo.whenRequested.toDate()), resetState);
                         } else {
-                            log.debug("Failed: " + device);
+                            log.debug("Verification failed {} reset time {} requested {} state {}", device,
+                                    timeFormatter.format(resetTime.toDate()),
+                                    timeFormatter.format(verificationInfo.whenRequested.toDate()), resetState);
                             callback.failed(device, getError(DeviceError.TIMESTAMP_OUT_OF_RANGE));
                         }
                     }
@@ -453,8 +466,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                         verificationInfo.verificationExecution, device.getDeviceId(), 0);
                     if (verificationInfo.isAllVerified()) {
                         infoIterator.remove();
-                        log.debug("pointDataReceived: All devices verified");
-                        log.debug("RFN Completed");
+                        log.debug("All devices verified");
                         callback.complete(StrategyType.NM);
                     }
                 }
