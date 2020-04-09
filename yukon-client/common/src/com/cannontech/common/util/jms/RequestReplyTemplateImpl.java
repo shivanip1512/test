@@ -30,7 +30,7 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
 
     @Override
     protected <Q extends Serializable> void doJmsWork(Session session,
-        final Q requestPayload, JmsReplyHandler<R> callback) throws JMSException {
+            final Q requestPayload, JmsReplyHandler<R> callback) throws JMSException {
         final Duration replyTimeout =
                 configurationSource.getDuration(configurationName + "_REPLY_TIMEOUT", Duration.standardMinutes(1));
 
@@ -44,9 +44,12 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
         ObjectMessage requestMessage = session.createObjectMessage(requestPayload);
         
         requestMessage.setJMSReplyTo(replyQueue);
-        producer.send(requestMessage);
+        log.trace("Sending requestMessage to producer {}", requestMessage.toString());
+        logRequest(requestPayload.toString());
         
-        handleReplyOrTimeout(callback, replyTimeout, replyConsumer);
+        producer.send(requestMessage);
+        handleReplyOrTimeout(callback, replyTimeout, replyConsumer, requestPayload.toString());
+        log.trace("Request replied or timed out {}", requestMessage.toString());
         
         replyConsumer.close();
         replyQueue.delete();
@@ -65,16 +68,18 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
     }
 
     private void handleReplyOrTimeout(JmsReplyHandler<R> callback, final Duration replyTimeout,
-                                      MessageConsumer replyConsumer) throws JMSException {
+            MessageConsumer replyConsumer, String requestPayload) throws JMSException {
         // Block for status response or until timeout.
         Message reply = replyConsumer.receive(replyTimeout.getMillis());
-        
+
         if (reply == null) {
+            logReply(requestPayload, "NULL");
             callback.handleTimeout();
             return;
         }
 
         R reply1Payload = JmsHelper.extractObject(reply, callback.getExpectedType());
+        logReply(requestPayload, reply1Payload.toString());
         callback.handleReply(reply1Payload);
     }
 }
