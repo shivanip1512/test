@@ -44,12 +44,12 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
         ObjectMessage requestMessage = session.createObjectMessage(requestPayload);
         
         requestMessage.setJMSReplyTo(replyQueue);
-        log.trace("Sending requestMessage to producer {}", requestMessage.toString());
+        log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
         logRequest(requestPayload.toString());
         
         producer.send(requestMessage);
         handleReplyOrTimeout(callback, replyTimeout, replyConsumer, requestPayload.toString());
-        log.trace("Request replied or timed out {}", requestMessage.toString());
+        log.trace("Request replied or timed out: {}", requestMessage.toString());
         
         replyConsumer.close();
         replyQueue.delete();

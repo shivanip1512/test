@@ -48,13 +48,13 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         
         requestMessage.setJMSReplyTo(replyQueue);
 
-        log.trace("Sending requestMessage to producer {}", requestMessage.toString());
+        log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
         
         logRequest(requestPayload.toString());
         producer.send(requestMessage);
         
         handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer, requestPayload.toString());
-        log.trace("Request replied or timed out {}", requestMessage.toString());
+        log.trace("Request replied or timed out: {}", requestMessage.toString());
         
         replyConsumer.close();
         replyQueue.delete();

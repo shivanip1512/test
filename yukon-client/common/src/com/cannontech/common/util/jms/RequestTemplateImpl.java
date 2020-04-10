@@ -56,13 +56,13 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
             requestMessage.setJMSReplyTo(replyQueue);
             requestMessage.setJMSCorrelationID(correlationId);
             producer = session.createProducer(requestQueue);
-            log.trace("Sending requestMessage to producer {}", requestMessage.toString());
+            log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
             
             logRequest(requestPayload.toString());
             producer.send(requestQueue, requestMessage);
 
             handleReplyOrTimeout(callback, replyTimeout, consumer, requestPayload.toString());
-            log.trace("Request replied or timed out {}", requestMessage.toString());
+            log.trace("Request replied or timed out: {}", requestMessage.toString());
         } finally {
             JmsUtils.closeMessageConsumer(consumer);
             JmsUtils.closeMessageProducer(producer);
