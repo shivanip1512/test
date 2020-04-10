@@ -77,6 +77,7 @@ public class PortServiceImpl implements PortService {
         if (CollectionUtils.isNotEmpty(listOfPorts)) {
             listOfPorts.forEach(liteYukonPaoObject -> {
                 PortBase portBase = new PortBase();
+                portBase.setId(liteYukonPaoObject.getLiteID());
                 portBase.setType(liteYukonPaoObject.getPaoType());
                 portBase.setName(liteYukonPaoObject.getPaoName());
                 portBase.setDisable(liteYukonPaoObject.getDisableFlag().equals("Y") ? true : false);
