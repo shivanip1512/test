@@ -456,7 +456,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
                                     timeFormatter.format(verificationInfo.whenRequested.toDate()),
                                     resetState);
                         } else {
-                            log.debug("Point data recieved device:{} point data: {}. ResetTime: {} Requested: {} State: {}",
+                            log.debug("Verification failed. Point data recieved device:{} point data: {}. ResetTime: {} Requested: {} State: {}",
                                     device, pointData,
                                     timeFormatter.format(resetTime.toDate()),
                                     timeFormatter.format(verificationInfo.whenRequested.toDate()), resetState);
