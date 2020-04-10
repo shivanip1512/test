@@ -25,7 +25,6 @@ public class PortValidatorHelper {
     }
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
-        checkIfFieldRequired("name", errors, paoName, fieldName);
 
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
