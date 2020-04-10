@@ -477,15 +477,17 @@ begin
     while(nGrepResult >= 0)
         nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, RESTART);
         if(nGrepResult >= 0) then
-            commentLocation = StrFind(sGrepReturnLine, "#", 0);
-            keyLocation = StrFind(sGrepReturnLine, sKey, 0);
+            commentLocation = StrFindEx(sGrepReturnLine, "#", 0);
+            keyLocation = StrFindEx(sGrepReturnLine, sKey, 0);
             if(keyLocation < commentLocation || commentLocation < 0) then
-                colonLocation = StrFind(sGrepReturnLine, ":", keyLocation);
+                colonLocation = StrFindEx(sGrepReturnLine, ":", keyLocation);
                 if(colonLocation > keyLocation) then
-                    valueLocation = StrFind(sGrepReturnLine, sValue, colonLocation);
-                    if(valueLocation > colonLocation && (valueLocation < commentLocation || commentLocation < 0) then
-                        StrReplace(sGrepReturnLine, sValue, sReplace, 0);
-                        FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
+                    valueLocation = StrFindEx(sGrepReturnLine, sValue, colonLocation);
+                    if(valueLocation > colonLocation) then
+                        if(valueLocation < commentLocation || commentLocation < 0) then
+                            StrReplace(sGrepReturnLine, sValue, sReplace, 0);
+                            FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
+                        endif;
                     endif;
                 endif;
             endif;
