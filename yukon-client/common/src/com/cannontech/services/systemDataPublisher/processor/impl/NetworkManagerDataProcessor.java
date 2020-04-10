@@ -54,16 +54,6 @@ public class NetworkManagerDataProcessor extends SystemDataProcessor {
             } catch (Exception e) {
                 log.debug("Error while executing query." + e);
             }
-        } else {
-            /* TODO : This class will be removed from Yukon code base once NM starts publishing its own data.
-             *  As of now if a user remove source field of NM fields it will set value as "" and then publish. 
-             * */
-
-            nmSystemData = new SystemData();
-            nmSystemData.setFieldName(dictionariesField.getField());
-            nmSystemData.setFieldValue(dictionariesField.getSource());
-            nmSystemData.setIotDataType(dictionariesField.getIotType());
-            nmSystemData.setTimestamp(new DateTime());
         }
         return nmSystemData;
     }
