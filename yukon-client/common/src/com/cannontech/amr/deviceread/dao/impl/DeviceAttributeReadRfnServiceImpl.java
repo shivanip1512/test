@@ -384,7 +384,7 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
             completionCounter ++;
         }
 
-        log.debug("NM strategy meters {} devices {} disconnect meters {} completion counter {}", rfnMeters.size(),
+        log.debug("RF strategy meters: {} RF Devices: {} RF Disconnect Meters: {} CompletionCounter: {}", rfnMeters.size(),
                 rfnDevices.size(), rfnDisconnectMeters.size(), completionCounter);
                 
         strategyCallback.setCompletionCounter(completionCounter);
