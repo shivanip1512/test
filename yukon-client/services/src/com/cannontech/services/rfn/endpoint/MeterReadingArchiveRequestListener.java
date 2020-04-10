@@ -22,6 +22,8 @@ import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.services.calculated.CalculatedPointDataProducer;
 import com.google.common.collect.ImmutableList;
@@ -35,8 +37,6 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     @Autowired private CalculatedPointDataProducer calculatedProducer;
     @Autowired private NmSyncService nmSyncService;
 
-    private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveResponse";
-    
     private List<Converter> converters; // Threads to convert channel data to point data
     private List<Calculator> calculators; // Threads to calculate point data based on converted channel data
     private AtomicInteger archivedReadings = new AtomicInteger();
@@ -174,8 +174,8 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     }
 
     @Override
-    protected String getRfnArchiveResponseQueueName() {
-        return archiveResponseQueueName;
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
+        return JmsApiDirectory.RFN_METER_READ_ARCHIVE;
     }
 
     @ManagedAttribute

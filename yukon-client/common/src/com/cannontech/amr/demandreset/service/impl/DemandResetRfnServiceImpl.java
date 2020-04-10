@@ -13,8 +13,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -49,6 +47,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -65,13 +64,13 @@ import com.google.common.collect.Sets;
 public class DemandResetRfnServiceImpl implements DemandResetStrategyService, PointDataListener {
     private static final Logger log = YukonLogManager.getLogger(DemandResetRfnServiceImpl.class);
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
+    @Autowired private YukonJmsTemplate jmsTemplate;
 
     private ScheduledExecutorService executor = null;
     private RequestReplyTemplateImpl<RfnMeterDemandResetReply> qrTemplate;
@@ -237,8 +236,8 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
     @PostConstruct
     public void initialize() {
         String configurationName = "RFN_METER_DEMAND_RESET";
-        qrTemplate = new RequestReplyTemplateImpl<>(
-                configurationName, configurationSource, connectionFactory, JmsApiDirectory.RFN_METER_DEMAND_RESET.getQueue().getName(), false);
+        qrTemplate = new RequestReplyTemplateImpl<>(configurationName, configurationSource, jmsTemplate,
+                JmsApiDirectory.RFN_METER_DEMAND_RESET);
         verificationTimeout = configurationSource.getDuration(configurationName
             + "_VALIDATION_TIMEOUT", Duration.standardHours(26));
     }

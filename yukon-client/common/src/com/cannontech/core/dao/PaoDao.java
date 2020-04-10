@@ -178,6 +178,11 @@ public interface PaoDao {
      * Returns count of Pao's of particular paoTypes
      */
     int getPaoCount(Set<PaoType> paoTypes);
+    
+    /**
+     * Returns count of enabled and non template Pao's of particular paoTypes
+     */
+    int getEnabledPaoCount(Set<PaoType> paoTypes);
 
     /**
      * Checks for existence of a port with the given name .

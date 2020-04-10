@@ -11,8 +11,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +47,10 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
@@ -57,25 +59,26 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     private static final Logger log = YukonLogManager.getLogger(DataStreamingCommunicationServiceImpl.class);
     private static final String configRequestCparm = "DATA_STREAMING_CONFIG_REQUEST";
     private static final String gatewayInfoRequestCparm = "DATA_STREAMING_GATEWAY_INFO_REQUEST";
-    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.dataStreaming.request";
-    
+
     @Autowired private ConfigurationSource configSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnDeviceAttributeDao rfnDeviceAttributeDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private RequestReplyTemplate<DeviceDataStreamingConfigResponse> configRequestTemplate;
     private RequestReplyTemplate<GatewayDataStreamingInfoResponse> gatewayInfoRequestTemplate;
     private boolean isDataStreamingEnabled;
     
     @PostConstruct
     public void init() {
-        configRequestTemplate =
-            new RequestReplyTemplateImpl<>(configRequestCparm, configSource, connectionFactory, requestQueue, false);
-        gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource,
-            connectionFactory, requestQueue, false);
+        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(JmsApiDirectory.DATA_STREAMING_CONFIG,
+                JmsApiDirectory.GATEWAY_DATA_STREAMING_INFO);
+        configRequestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, configSource, jmsTemplate, requestQueue);
+        gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource, jmsTemplate,
+                requestQueue);
         isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
     }
    

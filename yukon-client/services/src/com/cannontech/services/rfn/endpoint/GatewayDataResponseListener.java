@@ -9,15 +9,11 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
-import javax.jms.ConnectionFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Hours;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
@@ -30,6 +26,9 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableList;
 
@@ -43,9 +42,8 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private UpdateServerConfigHelper updateServerConfigHelper;
     @Autowired private NmSyncServiceImpl nmSyncService;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
-    private JmsTemplate outgoingJmsTemplate;
-    private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
     
     private List<Worker> workers;
     
@@ -112,7 +110,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
             try {
                 //This publishes the data to a topic, where the web server will receive and cache it
                 log.debug("Publishing gateway data on internal topic: " + message);
-                outgoingJmsTemplate.convertAndSend(outgoingTopicName, message);
+                jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_DATA_INTERNAL, message);
                 
                 //Update service manager cache
                 log.debug("Updating gateway data in service manager cache.");
@@ -181,15 +179,8 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     
     //Not needed, no response is sent for this message
     @Override
-    protected String getRfnArchiveResponseQueueName() {
+    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
         return null;
     }
-    
-    @Override
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        super.setConnectionFactory(connectionFactory);
-        outgoingJmsTemplate = new JmsTemplate(connectionFactory);
-        outgoingJmsTemplate.setPubSubDomain(true);
-    }
+
 }

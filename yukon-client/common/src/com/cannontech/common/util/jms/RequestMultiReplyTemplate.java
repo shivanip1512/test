@@ -6,7 +6,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -17,7 +16,6 @@ import javax.jms.Session;
 
 import org.apache.logging.log4j.core.Logger;
 import org.joda.time.Duration;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -34,9 +32,9 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
     private static final Logger log = YukonLogManager.getLogger(RequestMultiReplyTemplate.class);
     private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     private static final Duration defaultTimeout = Duration.standardSeconds(30);
-    private static final boolean pubSubDomain = false; 
+    private static final boolean pubSubDomain = false;
     
-    private final ConnectionFactory connection;
+    private final YukonJmsTemplate jmsTemplate;
     private final JmsApi<R,?,Q> api;
     private final Duration timeout;
     private final boolean isInternal;
@@ -45,31 +43,31 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
     /**
      * Create a new template, automatically using the default timeout and assuming external messaging 
      * (logged to rfn comms logs).
-     * @param connection The ConnectionFactory to use for messaging.
+     * @param jmsTemplate The JmsTemplate to use for messaging.
      * @param api The JmsApi that describes the communications via this template.
      */
-    public RequestMultiReplyTemplate(ConnectionFactory connection, JmsApi<R,?,Q> api) {
-        this(connection, null, api, defaultTimeout, false);
+    public RequestMultiReplyTemplate(YukonJmsTemplate jmsTemplate, JmsApi<R, ?, Q> api) {
+        this(jmsTemplate, null, api, defaultTimeout, false);
     }
     
     /**
      * Create a new template.
-     * @param connection The ConnectionFactory to use for messaging.
+     * @param jmsTemplate The JmsTemplate to use for messaging.
      * @param workerQueueSize Size of the worker queue. If null, the default will be used.
      * @param api The JmsApi that describes the communications via this template.
      * @param timeout The maximum length of time to wait for responses after the request is sent.
      * @param isInternal Whether the communications are internal to Yukon or external between Yukon and NM. External
      * comms are logged to the RFN Comms logs.
      */
-    public RequestMultiReplyTemplate(ConnectionFactory connection, Integer workerQueueSize, 
-                                     JmsApi<R,?,Q> api, Duration timeout, boolean isInternal) {
+    public RequestMultiReplyTemplate(YukonJmsTemplate jmsTemplate, Integer workerQueueSize, JmsApi<R, ?, Q> api, Duration timeout,
+            boolean isInternal) {
         
         if (api.getPattern() != JmsCommunicationPattern.REQUEST_MULTI_RESPONSE) {
             throw new IllegalArgumentException("Specified API: " + api.getName() + 
                                                " does not support Request-Multi-Response communication");
         }
         
-        this.connection = connection;
+        this.jmsTemplate = jmsTemplate;
         this.api = api;
         this.timeout = timeout;
         this.isInternal = isInternal;
@@ -117,8 +115,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      */
     private void jmsExecute(R request, JmsMultiResponseHandler<Q> replyHandler) throws JMSException {
         logBeforeSend(request);
-        
-        JmsTemplate jmsTemplate = new JmsTemplate(connection);
+
         jmsTemplate.execute(session -> {
             sendAndReceive(session, request, replyHandler);
             return null;

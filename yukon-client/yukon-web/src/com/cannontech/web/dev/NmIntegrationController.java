@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import javax.jms.ConnectionFactory;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +25,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -82,6 +80,7 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
@@ -150,8 +149,8 @@ public class NmIntegrationController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private NmSyncService nmSyncService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-    protected JmsTemplate jmsTemplate;
-    
+    @Autowired protected YukonJmsTemplate jmsTemplate;
+
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
 
     @RequestMapping("viewBase")
@@ -1046,7 +1045,7 @@ public class NmIntegrationController {
         response.setNoForceRefreshBeforeTimeMillis(time);
         response.setTreeGenerationEndTimeMillis(time);
         response.setTreeGenerationStartTimeMillis(time);
-        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE.getQueue().getName(), response);
+        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE, response);
         return "redirect:viewMappingSimulator";
     }
     
@@ -1225,11 +1224,5 @@ public class NmIntegrationController {
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }
