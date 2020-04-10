@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 
-public class DictionariesField implements Serializable{
+public class CloudDataConfiguration implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private String field;
@@ -15,7 +15,7 @@ public class DictionariesField implements Serializable{
     private SystemDataPublisherFrequency frequency;
     private SystemDataPublisher dataPublisher;
 
-    public DictionariesField(String field, String description, String details, String source, IOTDataType iotType,
+    public CloudDataConfiguration(String field, String description, String details, String source, IOTDataType iotType,
             SystemDataPublisherFrequency frequency, SystemDataPublisher dataPublisher) {
         this.field = field;
         this.description = description;
@@ -26,7 +26,7 @@ public class DictionariesField implements Serializable{
         this.dataPublisher = dataPublisher;
     }
 
-    public DictionariesField() {
+    public CloudDataConfiguration() {
     }
 
     public String getField() {
@@ -87,8 +87,8 @@ public class DictionariesField implements Serializable{
 
     @Override
     public String toString() {
-        return String
-                .format("DictionariesField [field=%s, description=%s, details=%s, source=%s, iotType=%s, frequency=%s, dataPublisher=%s]",
-                        field, description, details, source, iotType, frequency, dataPublisher);
+        return String.format(
+                "CloudDataConfiguration [field=%s, description=%s, details=%s, source=%s, iotType=%s, frequency=%s, dataPublisher=%s]",
+                field, description, details, source, iotType, frequency, dataPublisher);
     }
 }

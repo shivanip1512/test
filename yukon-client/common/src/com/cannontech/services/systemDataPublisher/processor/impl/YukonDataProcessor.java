@@ -16,7 +16,7 @@ import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublisherFrequency;
 
 @Service
@@ -27,19 +27,19 @@ public class YukonDataProcessor extends SystemDataProcessor {
     private static final Logger log = YukonLogManager.getLogger(YukonDataProcessor.class);
 
     @Override
-    public void runScheduler(Entry<SystemDataPublisherFrequency, List<DictionariesField>> entry) {
+    public void runScheduler(Entry<SystemDataPublisherFrequency, List<CloudDataConfiguration>> entry) {
         executor.scheduleAtFixedRate(() -> {
             buildAndPublishSystemData(entry.getValue());
         }, 0, entry.getKey().getHours(), TimeUnit.HOURS);
     }
 
     @Override
-    public SystemData buildSystemData(DictionariesField dictionariesField) {
+    public SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration) {
         List<Map<String, Object>> queryResult = null;
         SystemData systemData = null;
         try {
-            queryResult = systemDataPublisherDao.getSystemData(dictionariesField);
-            systemData = SystemDataProcessorHelper.processQueryResult(dictionariesField, queryResult);
+            queryResult = systemDataPublisherDao.getSystemData(cloudDataConfiguration);
+            systemData = SystemDataProcessorHelper.processQueryResult(cloudDataConfiguration, queryResult);
 
         } catch (Exception e) {
             log.debug("Error while executing query." + e);

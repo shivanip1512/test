@@ -20,7 +20,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.services.systemDataPublisher.yaml.model.ScalarField;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -32,7 +32,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     private final String SYSTEM_PUBLISHER_METADATA = "encryptedSystemPublisherMetadata.yaml";
     private final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
-    private final List<DictionariesField> dictionariesFields = new CopyOnWriteArrayList <>();
+    private final List<CloudDataConfiguration> cloudDataConfigurations = new CopyOnWriteArrayList <>();
 
     @PostConstruct
     private void init() {
@@ -61,15 +61,17 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
             byte[] jsonBytes = objectMapper.writeValueAsBytes(yamlObject);
             log.debug("YAML configuration " + yamlObject);
             scalars = objectMapper.readValue(jsonBytes, ScalarField.class);
-            if (scalars.getYukonDictionaries() != null) {
-                dictionariesFields.addAll(getDecryptedDictionaries(scalars.getYukonDictionaries(), SystemDataPublisher.YUKON));
+            if (scalars.getYukonConfigurations() != null) {
+                cloudDataConfigurations.addAll(getDecryptedConfigurations(scalars.getYukonConfigurations(),
+                        SystemDataPublisher.YUKON));
             }
-            if (scalars.getNmDictionaries() != null) {
-                dictionariesFields.addAll(getDecryptedDictionaries(scalars.getNmDictionaries(),
+            if (scalars.getNmConfigurations() != null) {
+                cloudDataConfigurations.addAll(getDecryptedConfigurations(scalars.getNmConfigurations(),
                         SystemDataPublisher.NETWORK_MANAGER));
             }
-            if (scalars.getOtherDictionaries() != null) {
-                dictionariesFields.addAll(getDecryptedDictionaries(scalars.getOtherDictionaries(), SystemDataPublisher.OTHER));
+            if (scalars.getOtherConfigurations() != null) {
+                cloudDataConfigurations.addAll(getDecryptedConfigurations(scalars.getOtherConfigurations(),
+                        SystemDataPublisher.OTHER));
             }
         } catch (JsonParseException | JsonMappingException e) {
             log.error("Error while parsing the YAML file fields.", e);
@@ -80,16 +82,16 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     }
 
     /**
-     * Create and return List of DictionariesField object after decrypting source field.
-     * @param fields : List of DictionariesField with encrypted source field.
+     * Create and return List of CloudDataConfiguration object after decrypting source field.
+     * @param fields : List of CloudDataConfiguration with encrypted source field.
      * 
      */
-    private List<DictionariesField> getDecryptedDictionaries(List<DictionariesField> fields, SystemDataPublisher dataPublisher) {
+    private List<CloudDataConfiguration> getDecryptedConfigurations(List<CloudDataConfiguration> fields, SystemDataPublisher dataPublisher) {
         return fields.stream()
-                     .map(dictionariesField -> {
-                         return new DictionariesField(dictionariesField.getField(), dictionariesField.getDescription(),
-                                    dictionariesField.getDetails(), getDecryptedSource(dictionariesField.getSource()),
-                                    dictionariesField.getIotType(), dictionariesField.getFrequency(), dataPublisher);})
+                .map(configuration -> {
+                    return new CloudDataConfiguration(configuration.getField(), configuration.getDescription(),
+                            configuration.getDetails(), getDecryptedSource(configuration.getSource()),
+                            configuration.getIotType(), configuration.getFrequency(), dataPublisher);})
                      .collect(Collectors.toList());
     }
 
@@ -107,8 +109,8 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     }
 
     @Override
-    public List<DictionariesField> getDictionariesFields() {
-        return dictionariesFields;
+    public List<CloudDataConfiguration> getCloudDataConfigurations() {
+        return cloudDataConfigurations;
     }
 
 }
