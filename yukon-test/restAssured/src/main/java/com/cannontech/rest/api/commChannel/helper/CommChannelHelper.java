@@ -1,7 +1,11 @@
 package com.cannontech.rest.api.commChannel.helper;
 
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import com.cannontech.rest.api.commChannel.request.MockBaudRate;
 import com.cannontech.rest.api.commChannel.request.MockPaoType;
 import com.cannontech.rest.api.commChannel.request.MockPortBase;
@@ -41,6 +45,16 @@ public class CommChannelHelper {
         }
 
         return tcpPort;
+    }
+
+    public static FieldDescriptor[] buildGetAllPortsDescriptor() {
+        return new FieldDescriptor[] {
+                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("Port Id"),
+                fieldWithPath("[].name").type(JsonFieldType.STRING).description("Port Name"),
+                fieldWithPath("[].disable").type(JsonFieldType.BOOLEAN).description("Status"),
+                fieldWithPath("[].baudRate").type(JsonFieldType.OBJECT).ignored().description("BaudRate"),
+                fieldWithPath("[].type").type(JsonFieldType.STRING).description("Type"),
+        };
     }
 
     public static String getTcpPortName(MockPaoType paoType) {

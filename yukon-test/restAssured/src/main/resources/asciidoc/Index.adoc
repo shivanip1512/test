@@ -193,6 +193,7 @@ include::TcpPortUpdate.adoc[]
 
 === Get
 include::TcpPortGet.adoc[]
+include::AllPortsGet.adoc[]
 
 === Delete
 include::TcpPortDelete.adoc[]

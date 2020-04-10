@@ -155,4 +155,22 @@ public class TcpPortSetupApiControllerTest {
                 .response();
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
+
+    @Test
+    public void Test_AllPorts_05_Get() {
+
+        List<FieldDescriptor> getAllPortDescriptor = Arrays.asList(CommChannelHelper.buildGetAllPortsDescriptor());
+        List<FieldDescriptor> list = new ArrayList<>(getAllPortDescriptor);
+        Response response = given(documentationSpec)
+                .filter(document("{ClassName}/{methodName}", responseFields(list)))
+                .accept("application/json")
+                .contentType("application/json")
+                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
+                .when()
+                .get(ApiCallHelper.getProperty("getAllPorts"))
+                .then()
+                .extract()
+                .response();
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+    }
 }
