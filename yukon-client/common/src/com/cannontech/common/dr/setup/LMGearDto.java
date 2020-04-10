@@ -9,8 +9,8 @@ public class LMGearDto {
 
     }
 
-    public LMGearDto(Integer geraNumber, String gearName) {
-        this.gearNumber = geraNumber;
+    public LMGearDto(Integer gearNumber, String gearName) {
+        this.gearNumber = gearNumber;
         this.gearName = gearName;
     }
 
