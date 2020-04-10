@@ -651,7 +651,18 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         }
     }
 
-    if ( ! isBusInDisabledIvvcState(state, subbus) )
+    if ( isBusInDisabledIvvcState(state, subbus) )
+    {
+        // we are disabled somewhere in the hierarchy - bail out UNLESS we have a bank in pending control,
+        //  we need to be able to verify that control - the state was set to IVVC_VERIFY_CONTROL_LOOP above.
+
+        if ( ! subbus->getRecentlyControlledFlag() )
+        {
+            state->setState(IVVCState::IVVC_WAIT);
+            return;
+        }
+    }
+    else
     {
         if (!state->isShowBusDisableMsg())
         {
@@ -664,17 +675,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         if ( state->isIvvcOnline() )
         {
             sendKeepAlive( state, subbus );
-        }
-    }
-    else
-    {
-        // we are disabled somewhere in the hierarchy - bail out UNLESS we have a bank in pending control,
-        //  we need to be able to verify that control - the state was set to IVVC_VERIFY_CONTROL_LOOP above.
-
-        if ( ! subbus->getRecentlyControlledFlag() )
-        {
-            state->setState(IVVCState::IVVC_WAIT);
-            return;
         }
     }
 
