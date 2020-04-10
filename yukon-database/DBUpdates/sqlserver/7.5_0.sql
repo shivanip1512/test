@@ -183,7 +183,7 @@ DELETE FROM Point WHERE POINTID IN (
     WHERE POINTTYPE = 'Status' AND PointOffset = 2
     AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
 
-INSERT INTO DBUpdates VALUES ('YUK-21777', '7.4.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-21777', '7.5.0', GETDATE());
 /* @end YUK-21777 */
 
 /**************************************************************/
