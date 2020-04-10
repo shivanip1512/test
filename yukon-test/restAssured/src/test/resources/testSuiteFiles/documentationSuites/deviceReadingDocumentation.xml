@@ -1,8 +1,8 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 
-<suite name="Demand Response Setup Documentation Suite" preserve-order="true">
-    <test name="DR Setup Documentation Test" >
+<suite name="Devicen Readings Documentation Suite" preserve-order="true">
+    <test name="Device Readings Documentation Test" >
         <classes>
            <class name = "com.cannontech.rest.api.documentation.devicereading.DeviceReadingsApiControllerTest" />
         </classes>

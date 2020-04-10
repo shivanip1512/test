@@ -1,4 +1,4 @@
-= Demand Response API
+= API Documentation
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
@@ -183,3 +183,16 @@ include::PickerSearchByQuery.adoc[]
 === Retrieve Device Reading
 include::DeviceReading.adoc[]
 
+== Comm Channel 
+
+=== Create
+include::TcpPortCreate.adoc[]
+
+=== Update
+include::TcpPortUpdate.adoc[]
+
+=== Get
+include::TcpPortGet.adoc[]
+
+=== Delete
+include::TcpPortDelete.adoc[]

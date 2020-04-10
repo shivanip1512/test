@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.PortDelete;
+import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.service.PortService;
 
 @RestController
@@ -41,16 +43,20 @@ public class CommChannelApiController {
     }
 
     @PostMapping("/update/{portId}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable int portId) {
-        return new ResponseEntity<>(portService.update(portId, port), HttpStatus.OK);
+    public ResponseEntity<Object> update(@Valid  @PathVariable int portId, @RequestBody PortBase<?> port) {
+        HashMap<String, Integer> portIdMap = new HashMap<>();
+        portIdMap.put("portId", portService.update(portId, port));
+        return new ResponseEntity<>(portIdMap, HttpStatus.OK);
+        
     }
 
     @DeleteMapping("/delete/{portId}")
-    public ResponseEntity<Object> delete(@PathVariable int portId) {
-        // TODO : This will he completed in delete Jira.
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+   public ResponseEntity<Object> delete(@Valid @RequestBody PortDelete portDelete, @PathVariable int portId) {
+        //Integer paoId = portService.delete(portId, portDelete.getName());
+        HashMap<String, Integer> paoIdMap = new HashMap<>();
+        paoIdMap.put("portId", portService.delete(portId, portDelete.getName()));
+        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
-
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
         validators.stream().forEach(e -> {
