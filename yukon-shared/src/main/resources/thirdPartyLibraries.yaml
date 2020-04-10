@@ -5603,7 +5603,7 @@ JavaScript :
     sha1 : b473731c1ddb874c9750c91ff4ed6183bcf05046
     jira : YUK-21529
     updated : 2020-04-09
-    notes : "This library is used to display dates on UI in user's timezone.'"
+    notes : "This library is used to display dates on UI in user's timezone."
 
   - project : mousewheel
     version : 3.1.9
