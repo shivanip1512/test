@@ -21,17 +21,9 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
     @Override
     protected void doValidation(T port, Errors errors) {
-
-        // Validate Type
-        portValidatorHelper.checkIfFieldRequired("type", errors, port.getType(), "Type");
-
-        // Validate Name
-        portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
-
-        // Validate Disable
-        portValidatorHelper.checkIfFieldRequired("disable", errors, port.getDisable(), "Disable");
-
-        // Validate BaudRate
-        portValidatorHelper.checkIfFieldRequired("baudRate", errors, port.getBaudRate(), "Baud Rate");
+        // Validate Name if present.
+        if (port.getName() != null) {
+            portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
+        }
     }
 }
