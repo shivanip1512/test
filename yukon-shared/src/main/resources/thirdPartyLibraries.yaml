@@ -5594,16 +5594,16 @@ JavaScript :
     notes : "Generated via http://modernizr.com/download/#-fontface-backgroundsize-borderimage-borderradius-boxshadow-flexbox-flexboxlegacy-hsla-multiplebgs-opacity-rgba-textshadow-cssanimations-csscolumns-generatedcontent-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-applicationcache-canvas-canvastext-draganddrop-hashchange-history-audio-video-indexeddb-input-inputtypes-localstorage-postmessage-sessionstorage-websockets-websqldatabase-webworkers-geolocation-inlinesvg-smil-svg-svgclippaths-touch-webgl-printshiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-prefixes-domprefixes-load"
 
   - project : moment
-    version : 2.8.3
+    version : 2.24.0
     project URL : "https://momentjs.com/"
     license : MIT
     license URLs : "https://github.com/moment/moment/blob/develop/LICENSE"
-    npm URL : "https://www.npmjs.com/package/moment/v/2.8.3"
-    md5 : 067aa38e6be00d8c0b485fd6c997c677
-    sha1 : 23ed6fc4d75ee6f399950d9b5ee7af5a9ad2de67
-    jira : YUK-12661
-    updated : 2014-09-16
-    notes : 
+    npm URL : "https://www.npmjs.com/package/moment/v/2.24.0"
+    md5 : af098b0bed8f8373664ae981deb8d73e
+    sha1 : b473731c1ddb874c9750c91ff4ed6183bcf05046
+    jira : YUK-21529
+    updated : 2020-04-09
+    notes : "This library is used to display dates on UI in user's timezone."
 
   - project : mousewheel
     version : 3.1.9
