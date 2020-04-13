@@ -60,14 +60,12 @@ public abstract class SystemDataProcessor {
      */
     public void buildAndPublishSystemData(List<DictionariesField> dictionariesByFrequency) {
         for (DictionariesField dict : dictionariesByFrequency) {
-            if (dict.getSource() != null) {
-                SystemData systemData = buildSystemData(dict);
-                if (systemData != null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Publishing system data to topic " + systemData);
-                    }
-                    publishSystemData(systemData);
+            SystemData systemData = buildSystemData(dict);
+            if (systemData != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Publishing system data to topic " + systemData);
                 }
+                publishSystemData(systemData);
             }
         }
     }
