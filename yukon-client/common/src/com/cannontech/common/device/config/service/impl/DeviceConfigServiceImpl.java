@@ -90,7 +90,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                         new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
                     detail.setLastValue(value);
                     result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
-                    verifyConfig(command.getDevice(), context.getYukonUser());
+                    if (requestType == DeviceRequestType.GROUP_DEVICE_CONFIG_READ) {
+                        verifyConfig(command.getDevice(), context.getYukonUser());
+                    }
                 }
 
                 @Override
