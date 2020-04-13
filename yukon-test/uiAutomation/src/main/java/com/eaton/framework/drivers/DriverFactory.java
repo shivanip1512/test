@@ -5,19 +5,19 @@ import org.openqa.selenium.WebDriver;
 public class DriverFactory implements IDriverFactory {
 
     @Override
-    public WebDriver getWebDriver(String browser, Boolean useRemoteDriver, String location, Boolean headless) {
+    public WebDriver getWebDriver(String browser, Boolean useRemoteDriver, Boolean headless) {
 
         switch (browser.toUpperCase()) {
         case "CHROME":
-            return MyChromeDriver.getNewChromeDriver(useRemoteDriver, location, headless);
+            return MyChromeDriver.getNewChromeDriver(useRemoteDriver, headless);
         case "FIREFOX":
-            return MyFirefoxDriver.getNewFirefoxDriver(useRemoteDriver, location, headless);
+            return MyFirefoxDriver.getNewFirefoxDriver(useRemoteDriver, headless);
         case "EDGE":
-            return MyEdgeDriver.getNewEdgeDriver(useRemoteDriver, location);
+            return MyEdgeDriver.getNewEdgeDriver(useRemoteDriver);
         case "IE":
-            return MyInternetExplorerDriver.getNewInternetExplorerDriver(useRemoteDriver, location);
+            return MyInternetExplorerDriver.getNewInternetExplorerDriver(useRemoteDriver);
         default:
-            return MyFirefoxDriver.getNewFirefoxDriver(useRemoteDriver, location, headless);
+            return MyFirefoxDriver.getNewFirefoxDriver(useRemoteDriver, headless);
         }
     }
 }

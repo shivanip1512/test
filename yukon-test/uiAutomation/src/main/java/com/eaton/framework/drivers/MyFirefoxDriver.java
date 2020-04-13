@@ -8,16 +8,18 @@ import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+
 public final class MyFirefoxDriver {
 
     private MyFirefoxDriver() {
     }
 
-    static WebDriver getNewFirefoxDriver(boolean useRemoteDriver, String driverLocation, boolean isHeadless) {
+    static WebDriver getNewFirefoxDriver(boolean useRemoteDriver, boolean isHeadless) {
 
         WebDriver driver;
 
-        System.setProperty("webdriver.gecko.driver", driverLocation + "geckodriver.exe");
+        WebDriverManager.firefoxdriver().setup();
 
         FirefoxOptions options = new FirefoxOptions();
 

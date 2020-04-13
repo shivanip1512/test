@@ -16,9 +16,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterSuite;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeSuite;
 import org.testng.asserts.SoftAssert;
 
@@ -69,7 +67,7 @@ public class SeleniumTestSetup {
             setBaseUrl(configFileReader.getApplicationUrl());
 
             setDriver(new DriverFactory().getWebDriver(configFileReader.getBrowser(),
-                    Boolean.parseBoolean(configFileReader.getUseRemoteDriver()), configFileReader.getDriverPath(),
+                    Boolean.parseBoolean(configFileReader.getUseRemoteDriver()),
                     Boolean.parseBoolean(configFileReader.getRunHeadless())));
             setDriverExt();
             setScreenShotPath(configFileReader.getScreenShotPath());

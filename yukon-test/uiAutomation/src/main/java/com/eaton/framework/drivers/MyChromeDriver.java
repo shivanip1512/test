@@ -8,16 +8,18 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+
 public final class MyChromeDriver {
 
     private MyChromeDriver() {
     }
 
-    static WebDriver getNewChromeDriver(boolean useRemoteDriver, String driverLocation, boolean isHeadless) {
+    static WebDriver getNewChromeDriver(boolean useRemoteDriver, boolean isHeadless) {
 
         WebDriver driver;
-
-        System.setProperty("webdriver.chrome.driver", driverLocation + "chromedriver.exe");
+        
+        WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--disable-infobars");

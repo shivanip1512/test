@@ -8,16 +8,18 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+
 public final class MyEdgeDriver {
 
     private MyEdgeDriver() {
     }
 
-    public static WebDriver getNewEdgeDriver(boolean useRemoteDriver, String driverLocation) {
+    public static WebDriver getNewEdgeDriver(boolean useRemoteDriver) {
 
         WebDriver driver;
-
-        System.setProperty("webdriver.edge.driver", driverLocation + "msedgedriver.exe");
+        
+        WebDriverManager.edgedriver().setup();
 
         EdgeOptions options = new EdgeOptions();
 

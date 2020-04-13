@@ -10,16 +10,18 @@ import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
+
 public final class MyInternetExplorerDriver {
 
     private MyInternetExplorerDriver() {
 
     }
 
-    public static WebDriver getNewInternetExplorerDriver(boolean useRemoteDriver, String driverLocation) {
+    public static WebDriver getNewInternetExplorerDriver(boolean useRemoteDriver) {
         WebDriver driver;
 
-        System.setProperty("webdriver.ie.driver", driverLocation + "IEDriverServer.exe");
+        WebDriverManager.iedriver().setup();
 
         InternetExplorerOptions options = new InternetExplorerOptions();
 
