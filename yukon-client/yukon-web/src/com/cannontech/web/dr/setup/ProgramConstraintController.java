@@ -149,7 +149,7 @@ public class ProgramConstraintController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating program constraint {}. Error: {}", programConstraint.getName(), ex.getMessage());
+            log.error("Error creating program constraint: {}. Error: {}", programConstraint.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", programConstraint.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }

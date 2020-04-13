@@ -156,7 +156,7 @@ public class ControlScenarioSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting Scenario: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            log.error("Error deleting scenario: {}. Error: {}", lmDelete.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
@@ -200,7 +200,7 @@ public class ControlScenarioSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating Scenario {}. Error: {}", controlScenario.getName(), ex.getMessage());
+            log.error("Error creating scenario: {}. Error: {}", controlScenario.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlScenario.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }

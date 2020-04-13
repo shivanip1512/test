@@ -172,7 +172,7 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             json.put("redirectUrl", setupRedirectLink);
         } catch (RestClientException ex) {
-            log.error("Error copying load group: {}. Error: {}", lmCopy.getName(), ex.getMessage());
+            log.error("Error copying macro load group: {}. Error: {}", lmCopy.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", setupRedirectLink);
         }
@@ -239,7 +239,7 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating load group {}. Error: {}", macroLoadGroup.getName(), ex.getMessage());
+            log.error("Error creating macro load group: {}. Error: {}", macroLoadGroup.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", macroLoadGroup.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }

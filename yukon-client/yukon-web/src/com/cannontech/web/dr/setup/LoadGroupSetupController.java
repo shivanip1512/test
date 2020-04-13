@@ -204,7 +204,7 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating load group {}. Error: {}", loadGroup.getName(), ex.getMessage());
+            log.error("Error creating load group: {}. Error: {}", loadGroup.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadGroup.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
