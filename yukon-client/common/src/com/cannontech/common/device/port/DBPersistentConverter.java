@@ -1,5 +1,6 @@
 package com.cannontech.common.device.port;
 
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 
 public interface DBPersistentConverter<T extends DBPersistent> {
@@ -12,6 +13,10 @@ public interface DBPersistentConverter<T extends DBPersistent> {
      * Builds db persistent object for a port.
      */
     public void buildDBPersistent(T port);
+
+    /**
+     * Build model from liteYukonPAObject.
+     */
+    public default void buildModel(LiteYukonPAObject liteYukonPAObject) {
+    }
 }
-
-

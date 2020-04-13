@@ -3,6 +3,7 @@ package com.cannontech.common.device.port;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.port.DirectPort;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -86,5 +87,13 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
         if (getDisable() != null) {
             port.setDisableFlag(BooleanUtils.isTrue(getDisable()) ? 'Y' : 'N');
         }
+    }
+
+    @Override
+    public void buildModel(LiteYukonPAObject liteYukonPAObject) {
+        setId(liteYukonPAObject.getLiteID());
+        setName(liteYukonPAObject.getPaoName());
+        setDisable(liteYukonPAObject.getDisableFlag().equals("Y") ? true : false);
+        setType(liteYukonPAObject.getPaoType());
     }
 }

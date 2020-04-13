@@ -51,7 +51,7 @@ public class CommChannelApiController {
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
-    @GetMapping("/getAllPorts")
+    @GetMapping("/list")
     public ResponseEntity<Object> retrieveAllPorts() {
         List<PortBase> listOfPorts = portService.getAllPorts();
         return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
