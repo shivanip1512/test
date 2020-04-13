@@ -3,10 +3,10 @@ package com.cannontech.web.tools.mapping.service.impl;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
 import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +28,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
@@ -76,6 +77,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     @Override
     public Pair<RfnDevice, FeatureCollection> getParent(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        PaoLocation deviceLocation = paoLocationDao.getLocation(deviceId);
 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
                 .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
@@ -98,6 +100,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             }
             FeatureCollection feature = paoLocationService
                     .getFeatureCollection(Lists.newArrayList(parentLocation));
+            if (deviceLocation != null && parentLocation != null) {
+                double distanceTo = deviceLocation.distanceTo(parentLocation, DistanceUnit.MILES);
+                DecimalFormat df = new DecimalFormat("#.####");
+                feature.setProperty("distance", df.format(distanceTo));
+            }
             return Pair.of(parent, feature);
 
         } else {
@@ -166,10 +173,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
 
     @Override
-    public Map<RfnDevice, Pair<FeatureCollection, Neighbor>> getNeighbors(int deviceId, MessageSourceAccessor accessor)
+    public List<Pair<RfnDevice, FeatureCollection>> getNeighbors(int deviceId, MessageSourceAccessor accessor)
             throws NmCommunicationException {
 
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        PaoLocation deviceLocation = paoLocationDao.getLocation(deviceId);
 
         Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
                 .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
@@ -182,7 +190,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
             if (neighbors.isEmpty()) {
                 log.warn("No neighbors found for device {}", deviceId);
-                return new HashMap<>();
+                return new ArrayList<>();
             }
 
             Map<RfnIdentifier, RfnDevice> devices = neighbors.stream()
@@ -201,23 +209,34 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
             Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
 
-            Map<RfnDevice, Pair<FeatureCollection, Neighbor>> result = new HashMap<>();
+            List<Pair<RfnDevice, FeatureCollection>> result = new ArrayList<>();
 
             devices.forEach((identifier, rfnDevice) -> {
                 PaoLocation location = locations.get(rfnDevice.getPaoIdentifier());
                 if (location == null) {
-                    result.put(rfnDevice, null);
+                    result.add(Pair.of(rfnDevice, null));
                 } else {
                     FeatureCollection feature = paoLocationService
                             .getFeatureCollection(Lists.newArrayList(location));
                     Neighbor neighbor = deviceToNeighbor.get(identifier);
-                    result.put(rfnDevice, Pair.of(feature, neighbor));
+                    feature.setProperty("neighborData", neighbor);
+                    if (deviceLocation != null && location != null) {
+                        double distanceTo = deviceLocation.distanceTo(location, DistanceUnit.MILES);
+                        DecimalFormat df = new DecimalFormat("#.####");
+                        feature.setProperty("distance", df.format(distanceTo));
+                    }
+                    List<String> flags = new ArrayList<>();
+                    neighbor.getNeighborData().getNeighborFlags().forEach(flag -> {
+                        flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.neighborFlag." + flag.name()));
+                    });
+                    feature.setProperty("commaDelimitedNeighborFlags", String.join(", ", flags));
+                    result.add(Pair.of(rfnDevice, feature));
                 }
             });
             return result;
         } else {
             log.warn("NEIGHBORS for device {} is not valid", device);
-            return new HashMap<>();
+            return new ArrayList<>();
         }
     }
 

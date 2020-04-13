@@ -1,14 +1,12 @@
 package com.cannontech.web.tools.mapping.service;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
-import com.cannontech.common.rfn.message.neighbor.Neighbor;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -43,10 +41,9 @@ public interface NmNetworkService {
      * If all the neighbor devices received from NM have no location information in Yukon, empty list is returned.
      * 
      * @return Neighbors - neighbor list and list of neighbor devices without location
-     * @throws NmNetworkException if the there is a communication error or if NM returned an error
      * @throws NmCommunicationException 
      */
-    Map<RfnDevice, Pair<FeatureCollection, Neighbor>> getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
+    List<Pair<RfnDevice, FeatureCollection>> getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmCommunicationException;
 
     /**
      * Asks NM for the parent information.
