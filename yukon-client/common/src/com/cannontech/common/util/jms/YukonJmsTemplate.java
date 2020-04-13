@@ -1,38 +1,32 @@
 package com.cannontech.common.util.jms;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessagePostProcessor;
+import org.springframework.jms.core.SessionCallback;
 import org.springframework.jms.support.converter.MessageConverter;
+
 import com.cannontech.common.util.jms.api.JmsApi;
 
 /**
- * YukonJmsTemplate is a class that simplifies receiving and sending of messages through JMS. Default settings for
- * YukonJmsTemplate Sessions is "DeliveryMode.NON_PERSISTENT".
+ * YukonJmsTemplate is a class that simplifies receiving and sending of messages through JMS.
+ * 
  */
 
-public class YukonJmsTemplate extends JmsTemplate {
+public class YukonJmsTemplate {
 
-    @Autowired
-    public YukonJmsTemplate(ConnectionFactory connectionFactory) {
-        super(connectionFactory);
-        setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-        setExplicitQosEnabled(true);
-    }
+    @Autowired JmsTemplateFactory jmsTemplateFactory;
 
     /**
-     * This method set topic/queue flag, time-to-live and queueName from JmsApi and then send the message to the given destination.
+     * This method send the message to the destination provided in JmsApi.
      * 
      */
     public void convertAndSend(JmsApi<?, ?, ?> jmsApi, Object message) throws JmsException {
-        setPubSubDomain(jmsApi.isTopic());
-        setTimeToLive(jmsApi.getTimeToLive().getMillis());
-        convertAndSend(jmsApi.getQueue().getName(), message);
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate(jmsApi);
+        jmsTemplate.convertAndSend(jmsApi.getQueue().getName(), message);
     }
 
     /**
@@ -41,19 +35,17 @@ public class YukonJmsTemplate extends JmsTemplate {
      * 
      */
     public void convertAndSend(JmsApi<?, ?, ?> jmsApi, Object message, MessageConverter messageConverter) throws JmsException {
-        setMessageConverter(messageConverter);
-        convertAndSend(jmsApi, message);
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate(jmsApi, messageConverter);
+        jmsTemplate.convertAndSend(jmsApi.getQueue().getName(), message);
     }
 
     /**
-     * This method set topic/queue flag, time-to-live and queueName from JmsApi, apply the given MessagePostProcessor to the message, and send
-     * the resulting message to the destination.
+     * This method apply the given MessagePostProcessor to the message, and send the resulting message to the destination.
      * 
      */
     public void convertAndSend(JmsApi<?, ?, ?> jmsApi, Object message, MessagePostProcessor postProcessor) throws JmsException {
-        setPubSubDomain(jmsApi.isTopic());
-        setTimeToLive(jmsApi.getTimeToLive().getMillis());
-        convertAndSend(jmsApi.getQueue().getName(), message, postProcessor);
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate(jmsApi);
+        jmsTemplate.convertAndSend(jmsApi.getQueue().getName(), message, postProcessor);
     }
 
     /**
@@ -61,18 +53,17 @@ public class YukonJmsTemplate extends JmsTemplate {
      * 
      */
     public void convertAndSend(Destination destination, Object message) throws JmsException {
-        super.convertAndSend(destination, message);
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate();
+        jmsTemplate.convertAndSend(destination, message);
     }
 
     /**
-     * This method set topic/queue flag, time-to-live and queueName from JmsApi, and send the acknowledgement message to the
-     * destination defined in responseQueue.
+     * This method send the acknowledgement message to the destination defined in responseQueue.
      * 
      */
     public void convertAndSendToResponseQueue(JmsApi<?, ?, ?> jmsApi, Object message) throws JmsException {
-        setPubSubDomain(jmsApi.isTopic());
-        setTimeToLive(jmsApi.getTimeToLive().getMillis());
-        convertAndSend(jmsApi.getResponseQueueName(), message);
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate(jmsApi);
+        jmsTemplate.convertAndSend(jmsApi.getResponseQueueName(), message);
     }
 
     /**
@@ -81,8 +72,25 @@ public class YukonJmsTemplate extends JmsTemplate {
      * 
      */
     public Object receive(JmsApi<?, ?, ?> jmsApi) throws JmsException {
-        setReceiveTimeout(1000);
-        return receive(jmsApi.getQueue().getName());
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate(jmsApi);
+        jmsTemplate.setReceiveTimeout(1000);
+        return jmsTemplate.receive(jmsApi.getQueue().getName());
     }
 
+    /**
+     * This method apply the given MessagePostProcessor to the message, and send the resulting message to the destination.
+     * 
+     */
+    public void convertAndSend(Destination destination, Object message, MessagePostProcessor postProcessor) {
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate();
+        jmsTemplate.convertAndSend(destination, message, postProcessor);
+    }
+
+    /**
+     * This method execute the action specified by the given action object within a JMS Session.
+     */
+    public void execute(SessionCallback<?> action, boolean startConnection) {
+        JmsTemplate jmsTemplate = jmsTemplateFactory.createJmsTemplate();
+        jmsTemplate.execute(action, startConnection);
+    }
 }
