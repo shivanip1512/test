@@ -90,6 +90,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                         new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
                     detail.setLastValue(value);
                     result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
+                    verifyConfig(command.getDevice(), context.getYukonUser());
                 }
 
                 @Override
@@ -107,16 +108,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                     collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
                 }
                 
-                @Override
                 public void complete() {
-                    collectionActionService.updateResult(result, !result
-                            .isCanceled() ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
-                    if (result.getAction() == CollectionAction.READ_CONFIG) {
-                        CollectionActionDetailGroup successGroup = result.getDetails().get(CollectionActionDetail.SUCCESS);
-                        if (successGroup != null) {
-                            verifyConfigs(successGroup.getDevices(), context);
-                        }
-                    }
+                    collectionActionService.updateResult(result, !result.isCanceled()
+                        ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
                     try {
                         callback.handle(result);
                     } catch (Exception e) {
