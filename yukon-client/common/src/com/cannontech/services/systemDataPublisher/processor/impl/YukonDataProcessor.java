@@ -18,7 +18,7 @@ import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublisherFrequency;
 
 @Service
@@ -29,29 +29,29 @@ public class YukonDataProcessor extends SystemDataProcessor {
     private static final Logger log = YukonLogManager.getLogger(YukonDataProcessor.class);
 
     @Override
-    public void runScheduler(Entry<SystemDataPublisherFrequency, List<DictionariesField>> entry) {
+    public void runScheduler(Entry<SystemDataPublisherFrequency, List<CloudDataConfiguration>> entry) {
         executor.scheduleAtFixedRate(() -> {
             buildAndPublishSystemData(entry.getValue());
         }, 0, entry.getKey().getHours(), TimeUnit.HOURS);
     }
 
     @Override
-    public SystemData buildSystemData(DictionariesField dictionariesField) {
+    public SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration) {
         SystemData systemData = null;
-        if (StringUtils.isNotEmpty(dictionariesField.getSource())) {
+        if (StringUtils.isNotEmpty(cloudDataConfiguration.getSource())) {
             List<Map<String, Object>> queryResult = null;
             try {
-                queryResult = systemDataPublisherDao.getSystemData(dictionariesField);
-                systemData = SystemDataProcessorHelper.processQueryResult(dictionariesField, queryResult);
+                queryResult = systemDataPublisherDao.getSystemData(cloudDataConfiguration);
+                systemData = SystemDataProcessorHelper.processQueryResult(cloudDataConfiguration, queryResult);
             } catch (Exception e) {
                 log.debug("Error while executing query." + e);
             }
         } else {
             // TODO : Here we need to call corresponding DAO for Yukon field against YUK-21731
             systemData = new SystemData();
-            systemData.setFieldName(dictionariesField.getField());
-            systemData.setFieldValue(dictionariesField.getSource());
-            systemData.setIotDataType(dictionariesField.getIotType());
+            systemData.setFieldName(cloudDataConfiguration.getField());
+            systemData.setFieldValue(cloudDataConfiguration.getSource());
+            systemData.setIotDataType(cloudDataConfiguration.getIotType());
             systemData.setTimestamp(new DateTime());
         }
         return systemData;
