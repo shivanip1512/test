@@ -20,8 +20,8 @@ public interface PortService {
      */
     PortBase<? extends DirectPort> update(int portId, PortBase<? extends DirectPort> port);
 
-    /*
+    /**
      * Delete the Port.
      */
-    Integer delete(String portName, int id);
+    Integer delete(String portName, int portId);
 }

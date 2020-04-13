@@ -70,20 +70,18 @@ public class PortServiceImpl implements PortService {
    
     @Override
     @Transactional
-    public Integer delete(String portName, int id) {
+    public Integer delete(String portName, int portId) {
         Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
-                .stream()
-                .filter(group -> group.getLiteID() == id)
-                .findFirst();
+                                                      .stream()
+                                                      .filter(group -> group.getLiteID() == portId)
+                                                      .findFirst();
         if (litePort.isEmpty()) {
             throw new NotFoundException("Port Id not found");
         }
         if (!(litePort.get().getPaoName().equalsIgnoreCase(portName))) {
             throw new NotFoundException("Port Id and Name combination not found");
         }
-
-        // TODO : Can change message for exception. Right now used message from DBEditor
-        if (com.cannontech.database.data.port.DirectPort.hasDevice(id)) {
+        if (com.cannontech.database.data.port.DirectPort.hasDevice(portId)) {
             throw new NotFoundException(
                     "You cannot delete the comm port '" + litePort.get().getPaoName() + "' because it is used by a device");
         }
