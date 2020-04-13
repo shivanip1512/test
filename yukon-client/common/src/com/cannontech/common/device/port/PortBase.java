@@ -9,7 +9,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
-@JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortDetail.class, name = "TCPPORT") })
+@JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortDetail.class, name = "TCPPORT"), 
+                @JsonSubTypes.Type(value = TcpSharedPortDetail.class, name = "TSERVER_SHARED"),
+                @JsonSubTypes.Type(value = UdpPortDetail.class, name = "UDPPORT") 
+              })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> {
 
