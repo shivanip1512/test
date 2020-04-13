@@ -25,8 +25,8 @@ yukon.admin.multispeak = (function() {
             if ($('#getMethods' + mspInterface) != null) {
                 $('#getMethods' + mspInterface).prop('disabled', !selected);
             }
-            if($('#interfaceAuth'+mspInterface) != null){
-                $('#interfaceAuth'+mspInterface).prop('disabled', !selected);
+            if($('#interfaceAuth'+ mspInterface) != null){
+                $('#interfaceAuth'+ mspInterface).prop('disabled', !selected);
             }
         },
 
@@ -91,29 +91,62 @@ yukon.admin.multispeak = (function() {
             $(document).on('yukon:multispeak:vendor:delete', function() {
                 $('#delete-vendor').submit();
             });
-            $(document).on("click", ".js-endpoint-auth-btn", function() {
-                var dialogDivJson = {
-                    "data-url": $(this).data("url"),
-                    "data-width": "500",
-                    "data-height": "350",
-                    "data-title": $(this).data("title"),
-                    "data-destroy-dialog-on-close": "",
-                };
-                if ($(".js-create-or-edit-mode").exists()) {
-                    dialogDivJson['data-dialog'] = '';
-                    dialogDivJson['data-event'] = "yukon:multispeak:saveVendorEndPointAuth";
-                    dialogDivJson['data-ok-text'] = yg.text.save;
-                }
-                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
+            
+            $(document).on("click", ".js-endpoint-auth-btn", function(ev) {
+                var indexValue = $(this).closest('tr').attr('data-id'),
+                    mode = $('#js-page-mode').val(),
+                    popuptitle = $(this).data("title"),
+                    inUserName = $('#js-msp-inusername-' + indexValue).val(),
+                    inPassword = $('#js-msp-inpassword-' + indexValue).val(),
+                    outUserName = $('#js-msp-outusername-' + indexValue).val(),
+                    outPassword = $('#js-msp-outpassword-' + indexValue).val(),
+                    useVendorAuth = $('#js-msp-uservendorauth-' + indexValue).val(),
+                    validateCertificate = $('#js-msp-validatecertificate-' + indexValue).val();
+
+                $.ajax({
+                    type: 'POST',
+                    data: {
+                        'indexValue': indexValue,
+                        'inUserName': inUserName,
+                        'inPassword': inPassword,
+                        'outUserName': outUserName,
+                        'outPassword': outPassword,
+                        'useVendorAuth': useVendorAuth,
+                        'validateCertificate': validateCertificate,
+                        'mode': mode
+                    },
+                    url: yukon.url('/multispeak/setup/renderEndpointAuthPopup')
+                }).done(function(view, status, xhr) {
+                    var dialogDivJson = {
+                            "data-width": "500",
+                            "data-height": "350",
+                            "data-title": popuptitle,
+                            "data-destroy-dialog-on-close": "",
+                        };
+                        if ($(".js-create-or-edit-mode").exists()) {
+                            dialogDivJson['data-dialog'] = '';
+                            dialogDivJson['data-event'] = "yukon:multispeak:saveVendorEndPointAuth";
+                        }
+                        yukon.ui.dialog($("<div/>").attr(dialogDivJson).html(view));
+                });
             });
 
             $(document).on("yukon:multispeak:saveVendorEndPointAuth", function(event) {
                 var dialog = $(event.target),
-                       form = dialog.find('#js-vendor-endpointauth-form');
+                    indexRow = $('#js-interface-index-value').val(),
+                    form = dialog.find('#js-vendor-endpointauth-form');
                 $.ajax({
                     type: "POST",
-                    url: yukon.url("/multispeak/setup/endpointAuth/save"),
-                    data: form.serialize()
+                    url: yukon.url("/multispeak/setup/endpointAuthPopup/save"),
+                    data: form.serialize() + "&indexValue=" + indexRow
+                }).done(function(data) {
+                    var indexValue = data.indexValue;
+                    $('#js-msp-uservendorauth-' + indexValue).val(data.useVendorAuth);
+                    $('#js-msp-inusername-' + indexValue).val(data.inUserName);
+                    $('#js-msp-inpassword-' + indexValue).val(data.inPassword);
+                    $('#js-msp-outusername-' + indexValue).val(data.outUserName);
+                    $('#js-msp-outpassword-' + indexValue).val(data.outPassword);
+                    $('#js-msp-validatecertificate-' + indexValue).val(data.validateCertificate);
                 });
                 dialog.dialog('close');
                 dialog.empty();

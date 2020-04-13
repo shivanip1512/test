@@ -49,6 +49,7 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
+        <input type="hidden" class="js-vendor-id" value="${mspVendor.vendorID}"/>
         <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
                 <div class="column-12-12 clearfix">
@@ -147,7 +148,7 @@
                     <div class="column-16-8 clearfix">
                         <div class="column one">
                             <!-- Interfaces -->
-                            <table class="compact-results-table row-highlighting full-width">
+                            <table class="compact-results-table row-highlighting full-width js-msp-interface-table">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".interface" /></th>
@@ -182,7 +183,7 @@
                                                     </c:if>
                                                 </c:otherwise>
                                             </c:choose>
-                                            <tr>
+                                            <tr data-id="${indexValue}">
                                                 <td class="wsnw">
                                                     <tags:checkbox
                                                         path="mspInterfaceList[${indexValue}].interfaceEnabled"
@@ -226,16 +227,18 @@
                                                             title="${getMethods}"
                                                             disabled="${!currentInterface.interfaceEnabled}"
                                                             onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
-                                                            
-                                                        <cti:url var="endpointAuthUrl" value="/multispeak/setup/renderEndpointAuthPopup/${currentInterface.mspInterface}">
-                                                            <cti:param name="mode" value="${mode}"/>
-                                                        </cti:url>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].useVendorAuth" id="js-msp-uservendorauth-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].inUserName" id="js-msp-inusername-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].inPassword" id="js-msp-inpassword-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].outUserName" id="js-msp-outusername-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].outPassword" id="js-msp-outpassword-${indexValue}"/>
+                                                        <tags:hidden path="mspInterfaceList[${indexValue}].validateCertificate" id="js-msp-validatecertificate-${indexValue}"/>
+                                                        <input type="hidden" id="js-page-mode" value="${mode}"/>
                                                         <cti:msg2 var="interfaceAuthTitle" key=".interfaceAuthPopupTitle" />
                                                         <cti:button icon="icon-lock" 
                                                                     renderMode="buttonImage" 
                                                                     classes="js-endpoint-auth-btn"
                                                                     name="interfaceAuth" 
-                                                                    data-url="${endpointAuthUrl}"
                                                                     data-title="${interfaceAuthTitle}"
                                                                     disabled="${!currentInterface.interfaceEnabled}"
                                                                     id="interfaceAuth${currentInterface.mspInterface}"/>
