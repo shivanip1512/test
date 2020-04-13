@@ -1,20 +1,31 @@
 package com.cannontech.common.device.port;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.port.DirectPort;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
-@JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortInfo.class, name = "TCPPORT") })
-public class PortBase implements Port {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
+@JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortDetail.class, name = "TCPPORT") })
+@JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
+public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> {
 
+    private Integer id;
     private String name;
-    private boolean enable;
+    private Boolean enable;
     private BaudRate baudRate;
-    @JsonTypeId
     private PaoType type;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -24,11 +35,11 @@ public class PortBase implements Port {
         this.name = name;
     }
 
-    public boolean isEnable() {
+    public Boolean getEnable() {
         return enable;
     }
 
-    public void setEnable(boolean enable) {
+    public void setEnable(Boolean enable) {
         this.enable = enable;
     }
 
@@ -49,17 +60,28 @@ public class PortBase implements Port {
     }
 
     @Override
-    public void buildModel(DirectPort port) {
-        setName(port.getPAOName());
+    public void buildModel(T port) {
+        setId(port.getPAObjectID());
+        setName(port.getPortName());
         setEnable(port.getPAODisableFlag() == 'N' ? true : false );
         setBaudRate(BaudRate.getForRate(port.getPortSettings().getBaudRate()));
         setType(port.getPaoType());
     }
 
     @Override
-    public void buildDBPersistent(DirectPort port) {
-        port.getPortSettings().setBaudRate(getBaudRate().getBaudRateValue());
-        port.setPAOName(getName());
-        port.setDisableFlag(isEnable() == true ? 'N' : 'Y');
+    public void buildDBPersistent(T port) {
+        // will be null during creation
+        if (getId() != null) {
+            port.setPortID(getId());
+        }
+        if (getBaudRate() != null) {
+            port.getPortSettings().setBaudRate(getBaudRate().getBaudRateValue());
+        }
+        if (getName() != null) {
+            port.setPAOName(getName());
+        }
+        if (getEnable() != null) {
+        port.setDisableFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
+        }
     }
 }
