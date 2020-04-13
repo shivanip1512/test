@@ -99,7 +99,7 @@
                                 </td>
                                 <td><dt:timeOffset value="${fn:escapeXml(program.startOffsetInMinutes)}"/></td>
                                 <td><dt:timeOffset value="${fn:escapeXml(program.stopOffsetInMinutes)}"/></td>
-                                <td>${fn:escapeXml(program.gears[0].name)}</td>
+                                <td>${fn:escapeXml(program.gears[0].gearName)}</td>
                             </tr>
                         </c:forEach>
                     </tbody>

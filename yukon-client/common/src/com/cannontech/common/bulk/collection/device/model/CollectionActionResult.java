@@ -357,7 +357,6 @@ public class CollectionActionResult {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
-        df.withZone(DateTimeZone.getDefault());
         sb.append(getCacheKey());
         sb.append(" [");
         sb.append(getStatus());

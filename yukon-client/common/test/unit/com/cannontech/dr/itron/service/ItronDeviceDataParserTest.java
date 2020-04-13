@@ -87,7 +87,7 @@ public class ItronDeviceDataParserTest {
     
     @Test
     public void validateRowParsingForIncrementalEvent() {
-        String[] rowData = rowData("type: 0, log event ID: 32768 (0x8000) - Vendor-specific or Unknown, payload:  data(0000000000)");
+        String[] rowData = rowData("type: 1, log event ID: 0 (0x00) - Power Loss, payload:  data(0000000000)");
         Collection<PointData> data = parseRow(BuiltInAttribute.BLINK_COUNT, rowData);
         assertOnlyEntryEquals(data, 1);
     }

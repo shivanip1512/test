@@ -100,10 +100,14 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
      * @param encryptedSource : Encrypted source field
      */
     private String getDecryptedSource(String encryptedSource) {
-        try {
-            return SystemPublisherMetadataCryptoUtils.decrypt(encryptedSource.substring(AUTO_ENCRYPTED_TEXT.length()).trim());
-        } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
-            log.error("Error while decrypting source field.", e);
+        if (encryptedSource != null) {
+            try {
+                return SystemPublisherMetadataCryptoUtils.decrypt(encryptedSource.substring(AUTO_ENCRYPTED_TEXT.length()).trim());
+            } catch (IllegalBlockSizeException | BadPaddingException | UnsupportedEncodingException e) {
+                log.error("Error while decrypting source field.", e);
+                return StringUtils.EMPTY;
+            }
+        } else {
             return StringUtils.EMPTY;
         }
     }
