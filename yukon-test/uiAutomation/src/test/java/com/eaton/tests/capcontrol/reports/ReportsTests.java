@@ -1,0 +1,25 @@
+package com.eaton.tests.capcontrol.reports;
+
+import org.openqa.selenium.WebDriver;
+import org.testng.annotations.BeforeClass;
+
+import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.Urls;
+import com.eaton.pages.capcontrol.reports.CapControlReportsPage;
+
+public class ReportsTests extends SeleniumTestSetup {
+
+    private CapControlReportsPage reportPage;
+
+    @BeforeClass(alwaysRun=true)
+    public void beforeClass() {
+
+        WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
+
+        driver.get(getBaseUrl() + Urls.CapControl.REPORTS);
+
+        reportPage = new CapControlReportsPage(driverExt);
+    }
+}

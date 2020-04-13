@@ -1,0 +1,87 @@
+package com.eaton.tests.ami;
+
+import org.openqa.selenium.WebDriver;
+import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+import com.eaton.framework.DriverExtensions;
+import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
+import com.eaton.framework.Urls;
+import com.eaton.pages.HomePage;
+
+@Test(groups = TestConstants.AMI)
+public class AmiMenuTests extends SeleniumTestSetup {
+    
+    private static final String EXPECTED = "Expected Url: ";
+    private static final String ACTUAL = " Actual Url: ";
+    private HomePage page;
+    private static final int AMI_INDEX =  0;
+
+    @BeforeClass(alwaysRun=true)
+    public void beforeClass() {
+
+        WebDriver driver = getDriver();
+        DriverExtensions driverExt = getDriverExt();
+
+        driver.get(getBaseUrl() + Urls.HOME);
+
+        page = new HomePage(driverExt);
+    }
+    
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_02_NavigateToLinks" })
+    public void dashboardUrlCorrect() {        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 0);
+
+        Assert.assertTrue(url.contains(Urls.Ami.DASHBOARD), EXPECTED + Urls.Assets.DASHBOARD + ACTUAL + url);
+    }
+    
+    @Test
+    public void billingUrlCorrect() {
+        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 1);
+
+        Assert.assertTrue(url.contains(Urls.Ami.BILLING), EXPECTED + Urls.Ami.BILLING + ACTUAL + url);
+    }
+    
+    @Test
+    public void bulkImportUrlCorrect() {
+        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 2);
+
+        Assert.assertTrue(url.contains(Urls.Ami.BULK_IMPORT), EXPECTED + Urls.Ami.BULK_IMPORT + ACTUAL + url);
+    }
+    
+    @Test
+    public void bulkUpdateUrlCorrect() {
+        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 3);
+
+        Assert.assertTrue(url.contains(Urls.Ami.BULK_UPDATE), EXPECTED + Urls.Ami.BULK_UPDATE + ACTUAL + url);
+    }
+    
+    @Test
+    public void legacyImporterUrlCorrect() {
+        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 4);
+
+        Assert.assertTrue(url.contains(Urls.Ami.LEGACY_IMPORTER), EXPECTED + Urls.Ami.LEGACY_IMPORTER + ACTUAL + url);
+    }
+    
+    @Test
+    public void pointImportUrlCorrect() {
+        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 5);
+
+        Assert.assertTrue(url.contains(Urls.Ami.POINT_IMPORT), EXPECTED + Urls.Ami.POINT_IMPORT + ACTUAL + url);
+    }
+    
+    @Test
+    public void reportsUrlCorrect() {
+        
+        String url = page.getMenu().getMenuOptionUrl(AMI_INDEX, 6);
+
+        Assert.assertTrue(url.contains(Urls.Ami.REPORTS), EXPECTED + Urls.Ami.REPORTS + ACTUAL + url);
+    }
+}

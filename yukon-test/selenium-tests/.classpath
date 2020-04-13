@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="RegressionTests/src"/>
+	<classpathentry excluding="com/eaton/screenshots/" kind="src" path="RegressionTests/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -25,5 +25,6 @@
 	<classpathentry kind="lib" path="selenium-third-party/selenium-api-3.141.59.jar"/>
 	<classpathentry kind="lib" path="selenium-third-party/selenium-remote-driver-3.141.59.jar"/>
 	<classpathentry kind="lib" path="selenium-third-party/selenium-support-3.141.59.jar"/>
+	<classpathentry kind="lib" path="C:/code/yukon/yukon-test/seleniumTests/ThirdPartyReferences/commons-io-2.6.jar"/>
 	<classpathentry kind="output" path="RegressionTests/bin"/>
 </classpath>
