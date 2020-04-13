@@ -56,9 +56,13 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
             requestMessage.setJMSReplyTo(replyQueue);
             requestMessage.setJMSCorrelationID(correlationId);
             producer = session.createProducer(requestQueue);
+            log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
+            
+            logRequest(requestPayload.toString());
             producer.send(requestQueue, requestMessage);
 
-            handleReplyOrTimeout(callback, replyTimeout, consumer);
+            handleReplyOrTimeout(callback, replyTimeout, consumer, requestPayload.toString());
+            log.trace("Request replied or timed out: {}", requestMessage.toString());
         } finally {
             JmsUtils.closeMessageConsumer(consumer);
             JmsUtils.closeMessageProducer(producer);
@@ -66,16 +70,18 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
     }
 
     private void handleReplyOrTimeout(JmsReplyHandler<R> callback, final Duration replyTimeout,
-            MessageConsumer replyConsumer) throws JMSException {
+            MessageConsumer replyConsumer, String requestPayload) throws JMSException {
         // Block for status response or until timeout.
         Message reply = replyConsumer.receive(replyTimeout.getMillis());
-
+        
         if (reply == null) {
+            logReply(requestPayload, "NULL");
             callback.handleTimeout();
             return;
         }
-
+        
         R reply1Payload = JmsHelper.extractObject(reply, callback.getExpectedType());
+        logReply(requestPayload, reply1Payload.toString());
         callback.handleReply(reply1Payload);
     }
 }
