@@ -18,10 +18,10 @@ public final class MyEdgeDriver {
         WebDriver driver;  
                 
         //Hard coding edge driver for now since WebDriverManager is not working correctly
+        //Get the msedgedriver.exe from \\PSPL-QA235\d$\EAS SQA Toolsj\SeleniumDrivers\msedgedriver.exe and copy to your local directory
+        //The version of the Edge driver is for Edge Browser Version 80.0.361.111
         //Change the location to point to where your local version of the edge driver is located
         System.setProperty("webdriver.edge.driver", "C:\\dev\\workspaces\\yukon\\yukon\\yukon-test\\uiAutomation\\SeleniumDrivers\\" + "msedgedriver.exe");
-        
-        //WebDriverManager.edgedriver().version("80.0.361.111").setup();
         
         EdgeOptions options = new EdgeOptions();                   
 
