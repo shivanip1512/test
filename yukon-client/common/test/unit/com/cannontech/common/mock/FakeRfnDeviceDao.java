@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.util.MethodNotImplementedException;
@@ -100,7 +100,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public Integer findDeviceBySensorSerialNumber(String sensorSerialNumber) {
+    public RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber) {
         throw new MethodNotImplementedException();
     }
 
@@ -115,17 +115,47 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
     }
 
     @Override
-    public void saveDynamicRfnDeviceData(List<NodeComm> nodes) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes) {
+    public List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIdsList, Iterable<PaoType> paoTypes) {
         throw new MethodNotImplementedException();
     }
 
     @Override
     public Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public void saveDynamicRfnDeviceData(Set<DynamicRfnDeviceData> datas) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public DynamicRfnDeviceData findDynamicRfnDeviceData(Integer deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<DynamicRfnDeviceData> getAllDynamicRfnDeviceData() {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds) {
         throw new MethodNotImplementedException();
     }
 }

@@ -20,30 +20,50 @@
                 <li><b>Below Average</b> - Indicates a less than average rate of communications between the node and its primary forward neighbor (Link cost >= 4).</li>
                 <li><b>Evaluating</b> - Indicates a valid link quality cannot be calculated due to the limited number of attempts by the node to communicate with its primary forward neighbor.  Once a minimum of 50 attempts have been completed, a link quality will be calculated.</li>
             </ul>
-            <li><b>Color Code By</b> - Select whether to color code the pins by primary gateway or by link quality category.</li>
+            <li><b>Descendant Count</b> - Choose the descendant count range(s) you would like to see on the map. 
+            <li><b>Hop Count</b> - Choose the hop count range(s) you would like to see on the map. 
+            <li><b>Color Code By</b> - Select whether to color code the pins by primary forward gateway, link quality, descendant count or hop count.</li>
     ]]></entry>
     
     <entry key="yukon.web.modules.operator.comprehensiveMap.selectGateways">Select Gateways</entry>
-    <entry key="yukon.web.modules.operator.comprehensiveMap.selectLinkQuality">All Link Qualities</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.tooManyGateways">A maximum of 5 gateways may be selected.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy">Color Code By:</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.GATEWAY">Gateway</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.LINK_QUALITY">Link Quality</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.DESCENDANT_COUNT">Descendant Count</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.colorCodeBy.HOP_COUNT">Hop Count</entry>
+    
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.EXCELLENT">Excellent</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.AVERAGE">Average</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.BELOW_AVERAGE">Below Average</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.linkQuality.EVALUATING">Evaluating</entry>
     
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.EXCELLENT">&lt;= 40</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.GOOD">41 - 80</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.AVERAGE">81 - 120</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.descendantCount.BELOW_AVERAGE">&gt; 120</entry>
+    
+    <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.REALLY_LOW">1 - 8</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.LOW">9 - 12</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.AVERAGE">13 - 16</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.HIGH">17 - 20</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.hopCount.REALLY_HIGH">&gt; 20</entry>
+    
+    <entry key="yukon.web.modules.operator.comprehensiveMap.unknown">Unknown</entry>
+        
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure">Infrastructure</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allGateways">All Gateways</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allRelays">All Relays</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.infrastructure.allPrimaryRoutes">All Primary Routes</entry>
-    
-    
+    <entry key="yukon.web.modules.operator.comprehensiveMap.routeLastUpdated">Routes last updated:</entry>
+
     <entry key="yukon.web.modules.operator.comprehensiveMap.findDevice">Find device:</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.meterNumberOrName">Meter Number or Name</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.searchNoResultsFound">No devices were found on the map with the provided Meter Number or Device Name.</entry>
     <entry key="yukon.web.modules.operator.comprehensiveMap.nmError">There was a problem getting the devices for the gateway(s) selected. Please see the logs for more details.</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.missingLocations">There are devices on the primary route that do not have location coordinates. A dashed line represents a device without location data exists in the route path but is not displayed.</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.successMsg">Request to update the primary route sent. It may take several minutes for the routes on the map to be updated.</entry>
+    <entry key="yukon.web.modules.operator.comprehensiveMap.routeUpdateRequestSent.errorMsg">Request to update the primary route could not be sent. Please try again later.</entry>
     
 
 </properties>

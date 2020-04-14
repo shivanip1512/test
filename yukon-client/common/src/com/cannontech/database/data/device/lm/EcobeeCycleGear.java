@@ -42,7 +42,6 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
         }
     }
     
-    
     public Integer getCriticality() {
         return getMethodPeriod();
     }
@@ -63,4 +62,8 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
         return OPTION_MANDATORY.equalsIgnoreCase(methodOptionType);
     }
 
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return false;
+    }
 }

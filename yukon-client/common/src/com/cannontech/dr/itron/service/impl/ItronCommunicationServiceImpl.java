@@ -114,12 +114,14 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     @Autowired private InventoryDao inventoryDao;
     @Autowired private List<SoapFaultParser> soapFaultParsers;
     
-    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists", "macID.exists");
+    private static final Set<String> faultCodesToIgnore = Sets.newHashSet("UtilServicePointID.Exists", 
+                                                                          "macID.exists", 
+                                                                          "Done.programEventID");
     
     private static final Logger log = YukonLogManager.getLogger(ItronCommunicationServiceImpl.class);
     private static final String READ_GROUP = "ITRON_READ_GROUP";
     public static final String FILE_PATH = CtiUtilities.getItronDirPath();
-    private static DateTime lastItronFileDeletionDate = DateTime.now().minus(Duration.standardDays(1));
+    private DateTime lastItronFileDeletionDate = DateTime.now().minus(Duration.standardDays(1));
     
     private Cache<Integer, Enrollment> enrollmentCache =
             CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build();
@@ -133,13 +135,13 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
     @Transactional
     @Override
-    public void addDevice(Hardware hardware, AccountDto account) {
+    public void addDevice(Hardware hardware, AccountDto account, Integer accountId) {
         String url = ItronEndpointManager.DEVICE.getUrl(settingDao);
         AddHANDeviceRequest request = null;
         if (account != null) {
             log.debug("ITRON-addDevice url:{} account:{} mac address:{}.", url, account.getAccountNumber(),
                 hardware.getMacAddress());
-            addServicePoint(account);
+            addServicePoint(account, accountId);
             request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware.getMacAddress(), account);
         } else {
             log.debug("ITRON-addDevice url:{} mac address:{}.", url, hardware.getMacAddress());
@@ -212,36 +214,42 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     
     @Transactional
     @Override
-    public void addServicePoint(AccountDto account, String macAddress) {
-        addServicePoint(account);
+    public void addServicePoint(AccountDto account, Integer accountId, String macAddress) {
+        addServicePoint(account, accountId);
         addDeviceToServicePoint(macAddress, account);
     }
     
     @Transactional
     @Override
-    public void enroll(int accountId, int groupId) {
+    public void enroll(int accountId, Collection<Integer> groupIds) {
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         CustomerAccount account = customerAccountDao.getById(accountId);
-        if (!isEnrollmentSentToItron(account, groupId, enrollments, enrollmentCache)) {
+        
+        if (!isEnrollmentSentToItron(account, groupIds, enrollments, enrollmentCache)) {
             log.debug("ITRON-enroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, true);           
-            Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
-            long itronGroupId = addMacAddressesToGroup(account, getGroup(groupId), inventoryIds);
-            itronDao.updateGroupMapping(groupId, itronGroupId);
+            for (int groupId : groupIds) {
+                Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
+                long itronGroupId = updateMacAddressesInGroup(account, getGroup(groupId), inventoryIds);
+                itronDao.updateGroupMapping(groupId, itronGroupId);
+            }
             unenrollmentCache.invalidate(accountId);
         }
     }
     
     @Transactional
     @Override
-    public void unenroll(int accountId, int groupId) {
+    public void unenroll(int accountId, Collection<Integer> groupIds) {
         List<ProgramEnrollment> enrollments = getItronProgramEnrollments(accountId);
         CustomerAccount account = customerAccountDao.getById(accountId);
-        if (!isEnrollmentSentToItron(account, groupId, enrollments, unenrollmentCache)) {
+        
+        if (!isEnrollmentSentToItron(account, groupIds, enrollments, unenrollmentCache)) {
             log.debug("ITRON-unenroll account number {}", account.getAccountNumber());
             sendEnrollmentRequest(account, enrollments, false);
-            Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
-            addMacAddressesToGroup(account, getGroup(groupId), inventoryIds);
+            for (int groupId : groupIds) {
+                Set<Integer> inventoryIds = getInventoryIdsForGroup(groupId);
+                updateMacAddressesInGroup(account, getGroup(groupId), inventoryIds);
+            }
             enrollmentCache.invalidate(accountId);
         }
     }
@@ -255,7 +263,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         for(int yukonGroupId : yukonGroupIds) {
             Set<Integer> inventoryIds = getInventoryIdsForGroup(yukonGroupId);
             inventoryIds.add(inventoryId);
-            addMacAddressesToGroup(account, getGroup(yukonGroupId), inventoryIds);
+            updateMacAddressesInGroup(account, getGroup(yukonGroupId), inventoryIds);
         }
     }
     
@@ -277,7 +285,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             itronEventLogService.optOut(account.getAccountNumber(), yukonGroupId, macAddress);
             Set<Integer> inventoryIds = getInventoryIdsForGroup(yukonGroupId);
             inventoryIds.remove(inventoryId);
-            addMacAddressesToGroup(account, getGroup(yukonGroupId), inventoryIds);
+            updateMacAddressesInGroup(account, getGroup(yukonGroupId), inventoryIds);
         }
     }
     
@@ -382,8 +390,8 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             UpdateDeviceEventLogsResponse response =
                 (UpdateDeviceEventLogsResponse) ItronEndpointManager.DEVICE.getTemplate(
                     settingDao).marshalSendAndReceive(url, request);
-            log.debug("ITRON-updateDeviceLogs url:{} groups:{} result:{}.", url, response.isUpdateRequested(),
-                request.getGroupIDs(), "success");
+            log.debug("ITRON-updateDeviceLogs url:{} updateRequested:{} groups:{} result:{}.", url, 
+                      response.isUpdateRequested(), request.getGroupIDs(), "success");
             log.debug(XmlUtils.getPrettyXml(response));
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.DEVICE);
@@ -429,7 +437,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
      * 4. For each group sends all mac addresses to itron
      * @return itron group id
      */
-    private long addMacAddressesToGroup(CustomerAccount account, LiteYukonPAObject group, Set<Integer> inventoryIds) {
+    private long updateMacAddressesInGroup(CustomerAccount account, LiteYukonPAObject group, Set<Integer> inventoryIds) {
         log.debug("ITRON-group {} is associated with account number {}", group.getPaoName(),
             account.getAccountNumber());        
         if (!inventoryIds.isEmpty()) {
@@ -600,6 +608,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
         
         // Check and possibly clean up old files
         if (lastItronFileDeletionDate.isBefore(DateTime.now().withTimeAtStartOfDay())) {
+            lastItronFileDeletionDate = DateTime.now();
             deleteOldItronFiles();
         }
         
@@ -685,7 +694,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             return;
         }
         DateTime retentionDate = DateTime.now().minusDays(daysToKeep);
-        log.info("Itron archive file cleanup started. Deleting files last used before " + retentionDate.toDate().toString() + ".");
+        log.info("Itron archive file cleanup started. Deleting files last used before {}.", retentionDate.toDate().toString());
         
         // Get the files to check
         File dir = new File(CtiUtilities.getItronDirPath());
@@ -697,7 +706,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             for (File itronZip : directoryListing) {
                 filesDeleted += deleteIfOldFile(itronZip, retentionDate);
             }
-            log.info("Itron archive file cleanup is complete. " + filesDeleted + " log files were deleted.");
+            log.info("Itron archive file cleanup is complete. {} log files were deleted.", filesDeleted);
         } catch (Exception e) {
             log.error("Unable to delete old file archives", e);
         }
@@ -874,7 +883,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Sends request to itron to add service point
      */
-    private void addServicePoint(AccountDto account) {
+    private void addServicePoint(AccountDto account, int accountId) {
         
         /*
          * Note: The newly created Service Point is not available in the user interface until an ESI is
@@ -882,7 +891,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
          */
         String url = ItronEndpointManager.SERVICE_POINT.getUrl(settingDao);
 
-        AddServicePointRequest request = ServicePointManagerHelper.buildAddRequest(account);
+        AddServicePointRequest request = ServicePointManagerHelper.buildAddRequest(account, accountId);
         log.debug("ITRON-addServicePoint url:{} account number:{}.", url, account.getAccountNumber());
         log.debug(XmlUtils.getPrettyXml(request));
         try {
@@ -891,7 +900,7 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
 
             itronEventLogService.addServicePoint(account.getAccountNumber(), account.getUserName());
             log.debug(XmlUtils.getPrettyXml(response));
-            log.debug("ITRON-addServicePoint url:{} account number:{} result:{}.", url, account.getAccountNumber());
+            log.debug("ITRON-addServicePoint url:{} account number:{} service point ID:{}.", url, account.getAccountNumber(), response.getUtilServicePointID());
         } catch (Exception e) {
             handleException(e, ItronEndpointManager.SERVICE_POINT);
         }
@@ -954,37 +963,71 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
     /**
      * Returns true if enrollment was already sent to Itron. Caches enrollment information.
      */
-    private boolean isEnrollmentSentToItron(CustomerAccount account, int groupId, List<ProgramEnrollment> enrollments,
-            Cache<Integer, Enrollment> cacheToCheck) {
-        Enrollment newValueToCache = new Enrollment(groupId, enrollments);
-        Enrollment valueInCache = cacheToCheck.getIfPresent(account.getAccountId());
-        if (valueInCache != null 
-                && CollectionUtils.isEqualCollection(newValueToCache.inventoryIds, valueInCache.inventoryIds)
-                    && newValueToCache.groupId == valueInCache.groupId) {
-            
+    private boolean isEnrollmentSentToItron(CustomerAccount account, Collection<Integer> groupIds, List<ProgramEnrollment> enrollments,
+            Cache<Integer, Enrollment> cache) {
+        Enrollment newValue = new Enrollment(groupIds, enrollments);
+        Enrollment cachedValue = cache.getIfPresent(account.getAccountId());
+        if (cachedValue != null && cachedValue.equals(newValue)) {
             log.debug("ITRON-skipping sending enroll/unroll messages for account number {}, as the messages were already sent. ",
                 account.getAccountNumber());
             return true;
         }
-        cacheToCheck.put(account.getAccountId(), newValueToCache);
+        cache.put(account.getAccountId(), newValue);
         return false;
     }
         
     private static class Enrollment {
-        private int groupId;
+        private Collection<Integer> groupIds;
         private List<Integer> inventoryIds;
         
-        public Enrollment(int groupId, List<ProgramEnrollment> enrollments){
+        public Enrollment(Collection<Integer> groupIds, List<ProgramEnrollment> enrollments) {
             inventoryIds = enrollments.stream()
-                    .map(ProgramEnrollment::getInventoryId)
-                    .collect(Collectors.toList());
-            this.groupId = groupId;
+                                      .map(ProgramEnrollment::getInventoryId)
+                                      .collect(Collectors.toList());
+            this.groupIds = groupIds;
+        }
+        
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((groupIds == null) ? 0 : groupIds.hashCode());
+            result = prime * result + ((inventoryIds == null) ? 0 : inventoryIds.hashCode());
+            return result;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            Enrollment other = (Enrollment) obj;
+            if (groupIds == null) {
+                if (other.groupIds != null) {
+                    return false;
+                }
+            } else if (!CollectionUtils.isEqualCollection(groupIds, other.groupIds)) {
+                return false;
+            }
+            if (inventoryIds == null) {
+                if (other.inventoryIds != null) {
+                    return false;
+                }
+            } else if (!CollectionUtils.isEqualCollection(inventoryIds, other.inventoryIds)) {
+                return false;
+            }
+            return true;
         }
         
         @Override
         public String toString() {
-            return ToStringBuilder.reflectionToString(this,
-                ToStringStyle.MULTI_LINE_STYLE);
+            return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
         }
     }
 }

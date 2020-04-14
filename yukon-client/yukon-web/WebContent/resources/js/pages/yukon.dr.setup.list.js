@@ -23,9 +23,12 @@ yukon.dr.setup.list = (function() {
             }
             if (!$("#js-load-program-types").is(":visible")) {
                 $("#js-load-program-types").val("").trigger("chosen:updated");
+                $("#js-operational-states").val("").trigger("chosen:updated");
             }
             if (!$("#js-gear-types").is(":visible")) {
                 $("#js-gear-types").val("").trigger("chosen:updated");
+                var picker = yukon.pickers['programPicker'];
+                picker.clearSelected();
             }
         }
         $('#setupFilter').submit();
@@ -43,7 +46,8 @@ yukon.dr.setup.list = (function() {
             }
             
             if ($("#js-load-program-types").is(":visible")) {
-                $("#js-load-program-types").chosen({width: "305px"});
+                $("#js-load-program-types").chosen({width: "290px"});
+                $("#js-operational-states").chosen({width: "200px"});
             }
             
             if ($("#js-gear-types").is(":visible")) {
@@ -58,12 +62,23 @@ yukon.dr.setup.list = (function() {
             $(document).on("yukon:gear:filter:programSelected", function (event) {
                 _filterResults(false);
             });
-            
+
+            $('.js-program-container').find('span.b-label').css("maxWidth", "180px");
+            $('.js-program-container').find('span.b-label').addClass("wrbw");
+
             $(document).on("click", ".js-gear-link", function (event) {
-               var dialogDiv = $("<div/>").attr({
-                  'data-title': "Gear Dialog"
-               }).text("This is a div. This is a div. This is a div.");
-                yukon.ui.dialog(dialogDiv[0].outerHTML);
+                 event.preventDefault();
+                 var dialogDivJson = {
+                     "data-url" : $(this).attr('href'),
+                     "data-load-event" : "yukon:dr:setup:gear:viewMode",
+                     "data-width" : "900",
+                     "data-height" : "525",
+                     "data-title" : $(this).text(),
+                     "data-destroy-dialog-on-close" : "",
+                 };
+               
+                dialogDivJson['id'] = $(this).data("gear-id");
+                yukon.ui.dialog($("<div/>").attr(dialogDivJson));
             });
             
             _initialized = true;

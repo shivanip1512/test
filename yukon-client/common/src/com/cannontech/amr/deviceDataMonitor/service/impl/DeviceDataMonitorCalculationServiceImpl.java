@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -25,7 +24,6 @@ import javax.jms.ObjectMessage;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessagePostProcessor;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
@@ -50,6 +48,7 @@ import com.cannontech.common.smartNotification.model.DeviceDataMonitorEventAssem
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -83,8 +82,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private PointDao pointDao;
-
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     private DispatchClientConnection dispatchConnection;
 
     // monitors recalculating
@@ -384,15 +382,23 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         //found violation and device is not in violation group
         if(addToGroup) {
             //add device to group
-            deviceGroupMemberEditorDao.addDevices(monitor.getViolationGroup(), device);
-            sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
-            log.debug("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
+            int rowsAdded = deviceGroupMemberEditorDao.addDevice(monitor.getViolationGroup(), device);
+            if (rowsAdded > 0) {
+                sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
+                log.debug("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
+            } else {
+                log.debug("{} adding {} to violation group {}. Device already in group, no notification.", monitor, device, monitor.getViolationGroup());
+            }
         }
         else {
             // remove device from group
-            deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
-            sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
-            log.debug("{} removing {} form violation group {}", monitor, device, monitor.getViolationGroup());
+            int rowsDeleted = deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
+            if (rowsDeleted > 0) {
+                sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
+                log.debug("{} removing {} from violation group {}", monitor, device, monitor.getViolationGroup());
+            } else {
+                log.debug("{} removing {} from violation group {}. Device already removed from group, no notification.", monitor, device, monitor.getViolationGroup());
+            }
         }
     }
 
@@ -479,11 +485,5 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         log.debug("Sending event=" + events);
         smartNotificationEventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

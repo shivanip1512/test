@@ -7,7 +7,8 @@
 
 <c:if test="${!empty mappingColorCollection}">
     <c:set var="collection" value="${mappingColorCollection.deviceCollection}" /> 
-    <tags:selectedDevices deviceCollection="${collection}" labelKey="${mappingColorCollection.labelKey}" badgeColor="${mappingColorCollection.color}" /> 
+    <tags:selectedDevices deviceCollection="${collection}" labelKey="${mappingColorCollection.labelKey}" 
+        labelString="${mappingColorCollection.labelText}" badgeColor="${mappingColorCollection.color}" /> 
     <c:if test="${collection.deviceCount > 0}">
         <cti:url var="downloadUrl" value="/tools/map/locations/download">
             <cti:mapParam value="${collection.collectionParameters}" />

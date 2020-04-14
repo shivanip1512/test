@@ -62,7 +62,9 @@ public enum UnitOfMeasure {
     KV(53, "KV", "KVolts"),
     UNDEF(54, "UNDEF", "Undefined"),
     CUBIC_METERS(55, "m^3", "Cubic Meters"),
-    MEGABYTES(56, "MB", "Megabytes");
+    MEGABYTES(56, "MB", "Megabytes"),
+    DBM(57, "dBm", "Decibel-Milliwatts");
+    
     
     private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_VAR_UOM = ImmutableSet.of(KVAR, VARS, MVAR, KQ);
     private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_WATTS_UOM = ImmutableSet.of(KW, MW, WATTS);

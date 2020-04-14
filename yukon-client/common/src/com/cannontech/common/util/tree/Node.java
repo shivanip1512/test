@@ -10,6 +10,20 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 public class Node<T> {
 
+    public static class TreeDebugStatistics {
+        public AtomicInteger TOTAL = new AtomicInteger();
+        public AtomicInteger _EMPTY_ = new AtomicInteger();
+        public AtomicInteger NULL = new AtomicInteger();
+        public AtomicInteger NO_LOCATION = new AtomicInteger();
+        public AtomicInteger FAILED_TO_CREATE = new AtomicInteger();
+        @Override
+        public String toString() {
+            return String.format("TOTAL:%s _EMPTY_: %s NULL:%s NO_LOCATION:%s FAILED_TO_CREATE:%s", TOTAL.get(), _EMPTY_.get(),
+                    NULL.get(), NO_LOCATION.get(), FAILED_TO_CREATE.get());
+        }
+    }
+
+    
     private T data = null;
 
     @JsonManagedReference
@@ -58,34 +72,6 @@ public class Node<T> {
         print(buffer, "", "");
         return buffer.toString();
     }
-    
-    /**
-     * If onlyCountNullNodes is true, returns count of only null nodes, otherwise return all node count
-     */
-    public int count(boolean onlyCountNullNodes) {
-        AtomicInteger atomicInt = new AtomicInteger(0);
-        incrementNodeCount(atomicInt, onlyCountNullNodes, this);
-        count(this, atomicInt, onlyCountNullNodes);
-        return atomicInt.get();
-
-    }
-
-    private void count(Node<T> node, AtomicInteger atomicInt, boolean onlyCountNullNodes) {
-        for (Iterator<Node<T>> it = node.getChildren().iterator(); it.hasNext();) {
-            Node<T> nextNode = it.next();
-            incrementNodeCount(atomicInt, onlyCountNullNodes, nextNode);
-            count(nextNode, atomicInt, onlyCountNullNodes);
-        }
-    }
-
-    private void incrementNodeCount(AtomicInteger atomicInt, boolean onlyCountNullNodes, Node<T> node) {
-        if (!onlyCountNullNodes) {
-            atomicInt.incrementAndGet();
-        } else if (onlyCountNullNodes && node.getData() == null) {
-            atomicInt.incrementAndGet();
-        }
-    }
-
     private String print(StringBuilder buffer, String prefix, String childrenPrefix) {
         buffer.append(prefix);
         buffer.append(data);

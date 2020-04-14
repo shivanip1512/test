@@ -10,15 +10,15 @@ public enum JsLibrary {
     
     DEBUGGER("/resources/js/lib/debugger.js"), // http://benalman.com/projects/javascript-debug-console-log/
     
-    JQUERY("/resources/js/lib/jquery/jquery-3.3.1.min.js",
-           "/resources/js/lib/jquery/jquery-3.3.1.js"), // http://www.jquery.com
+    JQUERY("/resources/js/lib/jquery/jquery-3.4.1.min.js",
+           "/resources/js/lib/jquery/jquery-3.4.1.js"), // http://www.jquery.com
     
     JQUERY_CHECK_ALL("/resources/js/lib/checkall/jquery.checkall.js"), // https://github.com/mjball/jQuery-CheckAll
     JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
     JQUERY_DATE_TIME_ENTRY("/resources/js/lib/datetimeentry/jquery.datetimeentry.min.js",
                            "/resources/js/lib/datetimeentry/jquery.datetimeentry.js"), // http://keith-wood.name/datetimeEntry.html
     JQUERY_FILE_UPLOAD("/resources/js/lib/fileupload/jquery.fileupload.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js
-    JQUERY_FORM("/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
+    JQUERY_FORM("/resources/js/lib/form/jquery.form.min.js", "/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
     JQUERY_GRID("/resources/js/lib/jqgrid/js/jquery.jqGrid.min.js",
                 "/resources/js/lib/jqgrid/js/jquery.jqGrid.src.js"), // http://www.trirand.com/jqgridwiki/doku.php?id=wiki:jqgriddocs
     JQUERY_GRID_HELPER("/resources/js/lib/jqgrid/jqGridHelper.js"), //in-house
@@ -34,7 +34,7 @@ public enum JsLibrary {
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
     JQUERY_TREE_HELPERS("/resources/js/tags/yukon.dynatree.js"), //in-house
     JQUERY_CHOSEN("/resources/js/lib/chosen/chosen.jquery.min.js",
-                  "/resources/js/lib/chosen/chosen.jquery.src.js"), // https://github.com/harvesthq/chosen/releases
+                  "/resources/js/lib/chosen/chosen.jquery.js"), // https://github.com/harvesthq/chosen/releases
     JQUERY_ACTUAL("/resources/js/lib/actual/jquery.actual.min.js",
                   "/resources/js/lib/actual/jquery.actual.js"), // https://github.com/dreamerslab/jquery.actual
     

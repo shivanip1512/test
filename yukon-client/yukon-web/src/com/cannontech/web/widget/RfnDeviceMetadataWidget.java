@@ -1,127 +1,215 @@
 package com.cannontech.web.widget;
 
-import java.text.Collator;
-import java.util.Collections;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.NEIGHBOR_COUNT;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.NODE_DATA;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.NODE_NETWORK_INFO;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_NEIGHBOR_DATA;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.READY_BATTERY_NODE_COUNT;
+import static com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM;
+
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.rfn.message.metadata.RfnMetadata;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
+import com.cannontech.common.rfn.message.neighbor.NeighborData;
+import com.cannontech.common.rfn.message.node.NodeComm;
+import com.cannontech.common.rfn.message.node.NodeData;
+import com.cannontech.common.rfn.message.node.NodeNetworkInfo;
+import com.cannontech.common.rfn.message.route.RouteData;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
-import com.cannontech.common.rfn.service.WaitableDataCallback;
-import com.cannontech.common.util.Pair;
+import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/rfnDeviceMetadataWidget/*")
 public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
-    
+
+    private static final Logger log = YukonLogManager.getLogger(RfnDeviceMetadataWidget.class);
+
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private RfnDeviceMetadataService metadataService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    
+    @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
+    @Autowired private NmNetworkService nmNetworkService;
+    @Autowired private DateFormattingService dateFormattingService;
+
     private String keyPrefix = "yukon.web.widgets.RfnDeviceMetadataWidget.";
-    private static final ImmutableSet<RfnMetadata> csrSubset = ImmutableSet.of(
-                                                                               RfnMetadata.COMM_STATUS,
-                                                                               RfnMetadata.COMM_STATUS_TIMESTAMP,
-                                                                               RfnMetadata.GROUPS,
-                                                                               RfnMetadata.NEIGHBOR_COUNT,
-                                                                               RfnMetadata.NODE_SERIAL_NUMBER,
-                                                                               RfnMetadata.PRIMARY_GATEWAY,
-                                                                               RfnMetadata.PRIMARY_GATEWAY_HOP_COUNT);
-    
+
     @Autowired
-    public RfnDeviceMetadataWidget(@Qualifier("widgetInput.deviceId")
-                SimpleWidgetInput simpleWidgetInput) {
-        
+    public RfnDeviceMetadataWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
+
         addInput(simpleWidgetInput);
         setLazyLoad(true);
     }
 
     @RequestMapping("render")
     public String render(final ModelMap model, int deviceId, final YukonUserContext context) {
-        
+        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
+
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         model.addAttribute("device", device);
-        
-        WaitableDataCallback<Map<RfnMetadata, Object>> waitableCallback = new WaitableDataCallback<Map<RfnMetadata, Object>>() {
-            
-            @Override
-            public void processingExceptionOccurred(MessageSourceResolvable message) {
-                model.addAttribute("error", message);
-            }
-            
-            @Override
-            public void receivedData(Map<RfnMetadata, Object> metadata) {
-                addMetadata(metadata, model, context);
-            }
-            
-            @Override
-            public void receivedDataError(MessageSourceResolvable message) {
-                model.addAttribute("error", message);
-            }
-        };
-        
-        metadataService.send(device, waitableCallback, keyPrefix);
-        
+        List<Pair<String, Object>> metadataPairs = new ArrayList<>();
+        List<Pair<String, Object>> csrMetadataPairs = new ArrayList<>();
         try {
-            waitableCallback.waitForCompletion();
-        } catch (InterruptedException e) { /* Ignore */ }
-        
+            Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaDataMultiResult = metadataMultiService
+                    .getMetadataForDeviceRfnIdentifier(device.getRfnIdentifier(),
+                            Set.of(REVERSE_LOOKUP_NODE_COMM, NODE_DATA, NODE_NETWORK_INFO, READY_BATTERY_NODE_COUNT,
+                                    PRIMARY_FORWARD_NEIGHBOR_DATA, PRIMARY_FORWARD_ROUTE_DATA, NEIGHBOR_COUNT));
+
+            RfnMetadataMultiQueryResult metadataMulti = metaDataMultiResult.get(device.getRfnIdentifier());
+
+            DynamicRfnDeviceData deviceData = rfnDeviceDao
+                    .findDynamicRfnDeviceData(device.getPaoIdentifier().getPaoId());
+            if (deviceData != null) {
+                Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_GATEWAY"),
+                        deviceData.getGateway().getName());
+                metadataPairs.add(pair);
+                csrMetadataPairs.add(pair);
+            }
+
+            if (metadataMulti.isValidResultForMulti(REVERSE_LOOKUP_NODE_COMM)) {
+                NodeComm comm = (NodeComm) metadataMulti.getMetadatas().get(REVERSE_LOOKUP_NODE_COMM);
+                Pair<String, Object> pair;
+                try {
+                    RfnDevice reverseGateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getGatewayRfnIdentifier());
+                    pair = Pair.of(accessor.getMessage(keyPrefix + "REVERSE_LOOKUP"), reverseGateway.getName());
+                    metadataPairs.add(pair);
+                    csrMetadataPairs.add(pair);
+
+                } catch (Exception e) {
+                    // we can't create a gateway from RfnIdentifier
+                }
+
+                NodeComm commStatus = nmNetworkService.getNodeCommStatusFromMultiQueryResult(device, metadataMulti);
+                if (commStatus == null || commStatus.getNodeCommStatus() == null) {
+                    // primary forward and reverse lookup are not the same, set comm status to
+                    // unknown
+                    pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), "UNKNOWN");
+                    metadataPairs.add(pair);
+                    csrMetadataPairs.add(pair);
+                } else {
+                    pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS"), commStatus.getNodeCommStatus().name());
+                    metadataPairs.add(pair);
+                    csrMetadataPairs.add(pair);
+                    String dateTime = dateFormattingService.format(commStatus.getNodeCommStatusTimestamp(), DateFormatEnum.DATEHM,
+                            context);
+                    pair = Pair.of(accessor.getMessage(keyPrefix + "COMM_STATUS_TIMESTAMP"), dateTime);
+                    metadataPairs.add(pair);
+                    csrMetadataPairs.add(pair);
+                }
+            } else {
+                log.info("REVERSE_LOOKUP_NODE_COMM not found for {}", device);
+            }
+            if (metadataMulti.isValidResultForMulti(NODE_DATA)) {
+                NodeData data = (NodeData) metadataMulti.getMetadatas().get(NODE_DATA);
+                Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "NODE_SERIAL_NUMBER"),
+                        data.getNodeSerialNumber());
+                metadataPairs.add(pair);
+                csrMetadataPairs.add(pair);
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HARDWARE_VERSION"), data.getHardwareVersion()));
+                String dateTime = dateFormattingService.format(data.getInNetworkTimestamp(), DateFormatEnum.DATEHM, context);
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IN_NETWORK_TIMESTAMP"), dateTime));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_ADDRESS"), data.getFirmwareVersion()));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_FIRMWARE_VERSION"), data.getFirmwareVersion()));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_TYPE"),
+                        accessor.getMessage(keyPrefix + "NODE_TYPE." + data.getNodeType())));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRODUCT_NUMBER"), data.getProductNumber()));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "SUB_MODULE_FIRMWARE_VERSION"),
+                        data.getSecondaryModuleFirmwareVersion()));
+                if (data.getWifiSuperMeterData() != null) {
+                    model.addAttribute("wifiSuperMeterData", data.getWifiSuperMeterData());
+                }
+            } else {
+                log.info("NODE_DATA not found for {}", device);
+            }
+            if (metadataMulti.isValidResultForMulti(NODE_NETWORK_INFO)) {
+                NodeNetworkInfo info = (NodeNetworkInfo) metadataMulti.getMetadatas().get(NODE_NETWORK_INFO);
+                if (!info.getNodeGroupNames().isEmpty()) {
+                    Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "GROUPS"),
+                            String.join(", ", info.getNodeGroupNames()));
+                    metadataPairs.add(pair);
+                    csrMetadataPairs.add(pair);
+                }
+                if (!info.getNodeNames().isEmpty()) {
+                    metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_NAMES"),
+                            String.join(", ", info.getNodeNames())));
+                }
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IPV6_ADDRESS"), info.getIpv6Address()));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HOSTNAME"), info.getHostname()));
+            } else {
+                log.info("NODE_NETWORK_INFO not found for {}", device);
+            }
+            if (metadataMulti.isValidResultForMulti(READY_BATTERY_NODE_COUNT)) {
+                Integer count = (Integer) metadataMulti.getMetadatas().get(READY_BATTERY_NODE_COUNT);
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NUM_ASSOCIATIONS"), count));
+            } else {
+                log.info("READY_BATTERY_NODE_COUNT not found for {}", device);
+            }
+            if (metadataMulti.isValidResultForMulti(NEIGHBOR_COUNT)) {
+                Integer count = (Integer) metadataMulti.getMetadatas().get(NEIGHBOR_COUNT);
+                Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "NEIGHBOR_COUNT"), count);
+                metadataPairs.add(pair);
+                csrMetadataPairs.add(pair);
+            } else {
+                log.info("NEIGHBOR_COUNT not found for {}", device);
+            }
+            if (metadataMulti.isValidResultForMulti(PRIMARY_FORWARD_NEIGHBOR_DATA)) {
+                NeighborData data = (NeighborData) metadataMulti.getMetadatas().get(PRIMARY_FORWARD_NEIGHBOR_DATA);
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_NEIGHBOR"), data.getNeighborMacAddress()));
+                String dateTime = dateFormattingService.format(data.getNeighborDataTimestamp(), DateFormatEnum.DATEHM, context);
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_NEIGHBOR_DATA_TIMESTAMP"), dateTime));
+                metadataPairs
+                        .add(Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_NEIGHBOR_LINK_COST"), data.getNeighborLinkCost()));
+            } else {
+                log.info("PRIMARY_FORWARD_NEIGHBOR_DATA not found for {}", device);
+            }
+            if (metadataMulti.isValidResultForMulti(PRIMARY_FORWARD_ROUTE_DATA)) {
+                RouteData data = (RouteData) metadataMulti.getMetadatas().get(PRIMARY_FORWARD_ROUTE_DATA);
+                Pair<String, Object> pair = Pair.of(accessor.getMessage(keyPrefix + "PRIMARY_GATEWAY_HOP_COUNT"),
+                        data.getHopCount());
+                metadataPairs.add(pair);
+                csrMetadataPairs.add(pair);
+            } else {
+                log.info("PRIMARY_FORWARD_ROUTE_DATA not found for {}", device);
+            }
+
+            metadataPairs.sort(Comparator.comparing(pair -> pair.getKey()));
+            csrMetadataPairs.sort(Comparator.comparing(pair -> pair.getKey()));
+            model.addAttribute("metadata", metadataPairs);
+            model.addAttribute("csrMetadata", csrMetadataPairs);
+            log.debug("metadata {}", metadataPairs);
+            log.debug("csrMetadata {}", csrMetadataPairs);
+        } catch (NmCommunicationException e) {
+            String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.commsError");
+            model.addAttribute("error", nmError);
+            log.error("Failed to get metadata for " + device.getPaoIdentifier().getPaoId(), e);
+        }
         if (model.get("error") == null) {
             model.addAttribute("showAll", true);
         }
-        
         return "rfnDeviceMetadataWidget/render.jsp";
     }
-    
-    private void addMetadata(Map<RfnMetadata, Object> metadata, ModelMap model, final YukonUserContext context) {
-        final MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-        List<Pair<RfnMetadata, Object>> metadataPairs = Lists.newArrayList();
-        List<Pair<RfnMetadata, Object>> csrMetadataPairs = Lists.newArrayList();
-        
-        Object objWifiMetaData = metadata.get(RfnMetadata.WIFI_SUPER_METER_DATA);
-        if(objWifiMetaData != null) {
-            metadata.remove(RfnMetadata.WIFI_SUPER_METER_DATA);
-            model.addAttribute("wifiSuperMeterData", objWifiMetaData);
-        }
-        
-        List<RfnMetadata> metadataTypes = Lists.newArrayList(metadata.keySet());
-        final Collator collator = Collator.getInstance(context.getLocale());
-        Collections.sort(metadataTypes, new Comparator<RfnMetadata>() {
-            @Override
-            public int compare(RfnMetadata o1, RfnMetadata o2) {
-                String name1 = accessor.getMessage(o1.getFormatKey());
-                String name2 = accessor.getMessage(o2.getFormatKey());
-                return collator.compare(name1, name2);
-            }
-        });
-        
-        for (RfnMetadata data : metadataTypes) {
-            Pair<RfnMetadata, Object> pair = new Pair<RfnMetadata, Object>(data, metadata.get(data));
-            metadataPairs.add(pair);
-            if (csrSubset.contains(data)) {
-                csrMetadataPairs.add(pair);
-            }
-        }
-        
-        model.addAttribute("metadata", metadataPairs);
-        model.addAttribute("csrMetadata", csrMetadataPairs);
-    }
-    
 }

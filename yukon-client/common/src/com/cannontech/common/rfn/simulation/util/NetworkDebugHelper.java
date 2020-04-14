@@ -1,29 +1,39 @@
 package com.cannontech.common.rfn.simulation.util;
 
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.cannontech.common.rfn.message.tree.RfnVertex;
+import com.cannontech.common.util.tree.Node.TreeDebugStatistics;
 
-public class NetworkDebugHelper {
-
+public class NetworkDebugHelper {    
     /**
-     * Returns node count
+     * Returns node count statistics
      */
-    public static int count(RfnVertex vertex) {
-        AtomicInteger atomicInt = new AtomicInteger(1);
-        count(vertex, atomicInt);
-        return atomicInt.get();
+    public static TreeDebugStatistics count(RfnVertex vertex) {
+        TreeDebugStatistics statistics = new TreeDebugStatistics();
+        //gateway
+        statistics.TOTAL.incrementAndGet();
+        count(vertex, statistics);
+        return statistics;
         
     }
     
-    private static void count(RfnVertex vertex, AtomicInteger atomicInt) {
-        if(vertex.getChildren() == null) {
+    /**
+     * Creates statistics for the node
+     */
+    private static void count(RfnVertex vertex, TreeDebugStatistics statistics) {
+        if(vertex.getChildren().isEmpty()) {
             return;
         }
         for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
-            atomicInt.incrementAndGet();
-            count(it.next(), atomicInt);
+            RfnVertex node = it.next();
+            statistics.TOTAL.incrementAndGet();
+            if (node.getRfnIdentifier() == null) {
+                statistics.NULL.incrementAndGet();
+            } else if (node.getRfnIdentifier().is_Empty_()) {
+                statistics._EMPTY_.incrementAndGet();
+            }
+            count(node, statistics);
         }
     }
     
@@ -40,10 +50,8 @@ public class NetworkDebugHelper {
         buffer.append(prefix);
         buffer.append(vertex.getRfnIdentifier());
         buffer.append('\n');
-        if (vertex.getChildren() != null) {
-            for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
-                print(buffer, childrenPrefix + "*", childrenPrefix + "I   ", it.next());
-            }
+        for (Iterator<RfnVertex> it = vertex.getChildren().iterator(); it.hasNext();) {
+            print(buffer, childrenPrefix + "*", childrenPrefix + "I   ", it.next());
         }
         return buffer.toString();
     }

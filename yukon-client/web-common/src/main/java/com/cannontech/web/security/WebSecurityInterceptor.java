@@ -47,6 +47,7 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
                 csrfTokenService.validateToken(request);
             } catch (SecurityException se) {
                 if (!request.getRequestURI().contains("/updater/update")) {
+                    request.getSession().removeAttribute(CsrfTokenService.SESSION_CSRF_TOKEN);
                     log.error("Invalid CSRF token :", se);
                     String redirect =
                         ServletUtil.createSafeRedirectUrl(request, "/login.jsp?" + INVALID_CSRF_TOKEN + "=true");

@@ -164,11 +164,13 @@ INSERT INTO DBUpdates VALUES ('YUK-20689', '7.4.0', GETDATE());
 /* @end YUK-20689 */
 
 /* @start YUK-20819 */
+/* @error ignore-begin */
 ALTER TABLE DeviceMacAddress
 ADD SecondaryMacAddress varchar(255) null;
 GO
 
-INSERT INTO DBUpdates VALUES ('YUK-20819', '7.3.2', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-20819', '7.4.0', GETDATE());
+/* @error ignore-end */
 /* @end YUK-20819 */
 
 /* @start YUK-20788 */
@@ -265,9 +267,231 @@ AND Value = 'UNNECESSARY';
 INSERT INTO DBUpdates VALUES('YUK-21132', '7.4.0', GETDATE());
 /* @end YUK-21132 */
 
+/* @start YUK-20859 */
+UPDATE YukonPaobject SET Type = 'WRL-420cL' WHERE Type = 'RFN-420cLW';
+UPDATE YukonPaobject SET Type = 'WRL-420cD' WHERE Type = 'RFN-420cDW';
+INSERT INTO DBUpdates VALUES('YUK-20859', '7.4.0', GETDATE());
+/* @end YUK-20859 */
+
+/* @start YUK-21216 */
+INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
+
+UPDATE PointUnit
+SET UomId = 57
+WHERE UomId = 54
+AND PointId IN
+    (SELECT PointId FROM Point p
+     JOIN YukonPaobject pao ON p.PaobjectId = pao.PaobjectId
+     WHERE PointType = 'Analog' 
+     AND PointOffset = 394
+     AND Type in ('WRL-420cD', 'WRL-420cL'));
+
+INSERT INTO DBUpdates VALUES('YUK-21216', '7.4.0', GETDATE());
+/* @end YUK-21216 */
+
+/* @start YUK-21149 */
+DELETE FROM PointControl WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointAnalog WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointUnit WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointLimits WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM GraphDataSeries WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM CalcComponent WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Display2WayData WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Point WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset IN (12,13,15,16,17,50,51,52,53,54,55,57,58,59,60,61,62,64)
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointStatusControl WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointControl WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointStatus WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM GraphDataSeries WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM CalcComponent WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Display2WayData WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointUnit WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+DELETE FROM Point WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Status' AND PointOffset = 1000
+    AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
+
+INSERT INTO DBUpdates VALUES ('YUK-21149', '7.4.0', GETDATE());
+/* @end YUK-21149 */
+
+/* @start YUK-21060 */
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND (PointOffset = 226 OR PointOffset = 227 OR PointOffset = 228)
+    AND YP.Type IN ('RFN-530FAX', 'RFN-530FRX'));
+
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'Analog' AND PointOffset = 349
+    AND YP.Type IN ('RFN-520FAX', 'RFN-520FRX', 'RFN-520FAXD', 'RFN-520FRXD'));
+
+INSERT INTO DBUpdates VALUES ('YUK-21060', '7.4.0', GETDATE());
+/* @end YUK-21060 */
+
+/* @start YUK-21475 */
+ALTER TABLE MeterProgramStatus
+ALTER COLUMN Status VARCHAR(100) NOT NULL;
+
+INSERT INTO DBUpdates VALUES ('YUK-21475', '7.4.0', GETDATE());
+/* @end YUK-21475 */
+
+/* @start YUK-21642 */
+DROP INDEX INDX_DynRfnDevData_GatewayId ON DynamicRfnDeviceData;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ALTER COLUMN GatewayId NUMERIC NOT NULL;
+GO
+
+CREATE INDEX INDX_DynRfnDevData_GatewayId ON DynamicRfnDeviceData (
+GatewayId ASC
+)
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ADD DescendantCount NUMERIC NULL;
+GO
+
+UPDATE DynamicRfnDeviceData
+SET DescendantCount = -1;
+
+ALTER TABLE DynamicRfnDeviceData
+ALTER COLUMN DescendantCount NUMERIC NOT NULL;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ADD LastTransferTimeNew datetime NULL;
+GO
+
+UPDATE DynamicRfnDeviceData
+SET LastTransferTimeNew = LastTransferTime;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+ALTER COLUMN LastTransferTimeNew datetime NOT NULL;
+GO
+
+ALTER TABLE DynamicRfnDeviceData
+DROP COLUMN LastTransferTime;
+GO
+
+EXEC sp_rename 'DynamicRfnDeviceData.LastTransferTimeNew', 'LastTransferTime', 'COLUMN';
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-21642', '7.4.0', GETDATE());
+/* @end YUK-21642 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('7.4', '13-AUG-2019', 'Latest Update', 0, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('7.4', '10-FEB-2020', 'Latest Update', 0, GETDATE());

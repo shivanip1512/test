@@ -3,6 +3,8 @@ package com.cannontech.common.device.programming.dao;
 import java.util.List;
 import java.util.UUID;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
@@ -77,7 +79,7 @@ public interface MeterProgrammingDao {
     /**
      * Updates status and date in  in MeterProgramStatus table.
      */
-    void updateMeterProgramStatusToInitiating(int deviceId, long lastUpdate);
+    void updateMeterProgramStatusToInitiating(int deviceId, Instant lastUpdate);
 
     /**
      * Returns true if meter program with guid exists

@@ -5,13 +5,9 @@ import java.util.Random;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -21,6 +17,10 @@ import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.dr.rfn.message.broadcast.RfnExpressComBroadcastRequest;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastDataReply;
@@ -42,12 +42,11 @@ import com.google.common.collect.Sets;
 public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageService {
     
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RawExpressComCommandBuilder commandBuilder;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     private final static Logger log = YukonLogManager.getLogger(RfnExpressComMessageServiceImpl.class);
     
-    private JmsTemplate jmsTemplate;
     private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastWithDataTemplate;
     private RequestReplyTemplateImpl<RfnExpressComUnicastReply> unicastTemplate;
     private Random random = new Random(System.currentTimeMillis());
@@ -172,7 +171,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
             // We will probably need to keep track of the responses at some point.
             String messageId = nextMessageId();
             request.setMessageId(messageId);
-            jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.ExpressComBulkUnicastRequest", request);
+            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_BULK, request);
             messageIds.add(messageId);
         }
         
@@ -181,13 +180,11 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     
     @PostConstruct
     public void initialize() {
-        unicastWithDataTemplate = new RequestReplyReplyTemplate<>(
-                "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
-                "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
-        
-        unicastTemplate = new RequestReplyTemplateImpl<>(
-                "RFN_XCOMM_REQUEST", configurationSource, connectionFactory, 
-                "yukon.qr.obj.dr.rfn.ExpressComUnicastRequest", false);
+        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_WITH_DATA, JmsApiDirectory.RFN_EXPRESSCOM_UNICAST);
+        unicastWithDataTemplate = new RequestReplyReplyTemplate<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate,
+                requestQueue);
+        unicastTemplate = new RequestReplyTemplateImpl<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate, requestQueue);
     }
     
     /**
@@ -258,16 +255,10 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
         });
     }
     
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
 
     @Override
     public void sendBroadcastRequest(RfnExpressComBroadcastRequest request) {
-        jmsTemplate.convertAndSend("yukon.qr.obj.dr.rfn.ExpressComBroadcastRequest", request);
+        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_EXPRESSCOM_BROADCAST, request);
     }
     
 }

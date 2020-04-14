@@ -91,13 +91,20 @@ public void setStartingPeriodCnt(Integer periodCnt )
 	setMethodRateCount( periodCnt );
 }
 
+@Override
 public String getFrontRampOption()
 {
     return super.getFrontRampOption();
 }
 
+@Override
 public void setFrontRampOption(String newOption)
 {
     super.setFrontRampOption(newOption);
+}
+
+@Override
+public boolean useCustomDbRetrieve() {
+    return false;
 }
 }

@@ -64,11 +64,11 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponseType;
-import com.cannontech.common.rfn.message.network.NeighborFlagType;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
-import com.cannontech.common.rfn.message.network.RouteFlagType;
+import com.cannontech.common.rfn.message.neighbor.LinkPower;
+import com.cannontech.common.rfn.message.neighbor.LinkRate;
+import com.cannontech.common.rfn.message.neighbor.NeighborFlag;
+import com.cannontech.common.rfn.message.route.RouteFlag;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -80,11 +80,13 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
-import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.model.RfnTestMeterInfoStatusReport;
+import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
@@ -97,6 +99,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusRequest;
+import com.cannontech.simulators.message.request.DemandResetStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.DeviceArchiveSimulatorRequest;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.MeterInfoStatusArchiveSimulatorRequest;
@@ -115,7 +118,6 @@ import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStatusRequ
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopRequest;
 import com.cannontech.simulators.message.request.RfnMeterReadAndControlSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.SimulatorRequest;
-import com.cannontech.simulators.message.request.DemandResetStatusArchiveSimulatorRequest;
 import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
@@ -147,7 +149,8 @@ public class NmIntegrationController {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
     @Autowired private NmSyncService nmSyncService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-    
+    @Autowired protected YukonJmsTemplate jmsTemplate;
+
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
 
     @RequestMapping("viewBase")
@@ -942,13 +945,12 @@ public class NmIntegrationController {
     
     @RequestMapping("viewMappingSimulator")
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
-        model.addAttribute("routeFlags", RouteFlagType.values());
-        model.addAttribute("neighborFlags", NeighborFlagType.values());
-        model.addAttribute("parentReplys", RfnParentReplyType.values());
-        model.addAttribute("neighborReplys", RfnNeighborDataReplyType.values());
-        model.addAttribute("routeReplys", RfnPrimaryRouteDataReplyType.values());
+        model.addAttribute("routeFlags", RouteFlag.values());
+        model.addAttribute("neighborFlags", NeighborFlag.values());
         model.addAttribute("metadataResponseTypes", RfnMetadataMultiResponseType.values());
         model.addAttribute("metadataQueryResponseTypes", RfnMetadataMultiQueryResultType.values());
+        model.addAttribute("currentLinkRate", LinkRate.values());
+        model.addAttribute("currentLinkPower", LinkPower.values());
         
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
         SimulatorResponseBase response = sendRequest(simRequest, null, flash); 
@@ -972,7 +974,7 @@ public class NmIntegrationController {
             currentSettings.getNeighborData().setNeighborDataTimestamp(dateTime);
             currentSettings.getNeighborData().setNextCommTime(dateTime);
             currentSettings.getNeighborData().setNeighborFlags(new HashSet<>());
-            for (NeighborFlagType flag : NeighborFlagType.values()) {
+            for (NeighborFlag flag : NeighborFlag.values()) {
                 boolean flagSet= ServletRequestUtils.getBooleanParameter(request, "neighborFlag_" + flag, false);
                 if (flagSet) {
                     currentSettings.getNeighborData().getNeighborFlags().add(flag);
@@ -983,7 +985,7 @@ public class NmIntegrationController {
             currentSettings.getRouteData().setRouteDataTimestamp(dateTime);
             currentSettings.getRouteData().setRouteTimeout(dateTime);
             currentSettings.getRouteData().setRouteFlags(new HashSet<>());
-            for (RouteFlagType flag : RouteFlagType.values()) {
+            for (RouteFlag flag : RouteFlag.values()) {
                 boolean flagSet= ServletRequestUtils.getBooleanParameter(request, "routeFlag_" + flag, false);
                 if (flagSet) {
                     currentSettings.getRouteData().getRouteFlags().add(flag);
@@ -995,6 +997,7 @@ public class NmIntegrationController {
     @RequestMapping(value="populateMappingDatabase", method = RequestMethod.POST)
     public String populateMappingDatabase(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
         retrieveFlagSettings(currentSettings, request);
+        updateSettings(flash, currentSettings);
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.SETUP);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated"), flash);
         return "redirect:viewMappingSimulator";
@@ -1003,14 +1006,20 @@ public class NmIntegrationController {
     @RequestMapping(value="updateMappingSettings", method = RequestMethod.POST)
     public String updateMappingSettings(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
         retrieveFlagSettings(currentSettings, request);
+        updateSettings(flash, currentSettings);
+        model.addAttribute("simulatorRunning", true);
+        return "redirect:viewMappingSimulator";
+    }
+
+    private void updateSettings(FlashScope flash, SimulatedNmMappingSettings currentSettings) {
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_PERCENT_NULL, currentSettings.getEmptyNullPercent());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MIN_HOP, currentSettings.getMinHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_MAX_HOP, currentSettings.getMaxHop());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_TREE_NODES_ONE_HOP, currentSettings.getNodesOneHop());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_NUM_DEVICES_PER_GW, currentSettings.getNumberOfDevicesPerGateway());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIM_CREATE_GW, currentSettings.getCreateGateways());
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.UPDATE_SETTINGS);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated"), flash);
-        model.addAttribute("simulatorRunning", true);
-        return "redirect:viewMappingSimulator";
     }
         
     @RequestMapping(value="startMappingSimulator", method = RequestMethod.POST)
@@ -1030,7 +1039,13 @@ public class NmIntegrationController {
     
     @RequestMapping("refreshNetworkTree")
     public String refreshNetworkTree(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
-        //TODO: Refresh Network Tree
+        NetworkTreeUpdateTimeResponse response = new NetworkTreeUpdateTimeResponse();
+        long time = System.currentTimeMillis();
+        response.setNextScheduledRefreshTimeMillis(time);
+        response.setNoForceRefreshBeforeTimeMillis(time);
+        response.setTreeGenerationEndTimeMillis(time);
+        response.setTreeGenerationStartTimeMillis(time);
+        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE, response);
         return "redirect:viewMappingSimulator";
     }
     
@@ -1209,4 +1224,5 @@ public class NmIntegrationController {
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
     }
+
 }

@@ -18,6 +18,7 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class MockHoneywellCycleGearFields implements MockProgramGearFields {
 
+    private Boolean mandatory;
     private Boolean rampInOut;
     private Integer controlPercent;
     private Integer cyclePeriodInMinutes;

@@ -452,6 +452,7 @@ INIT_ATTRIBUTE( LowLossPotential,                                   "LOW_LOSS_PO
 INIT_ATTRIBUTE( MassMemoryError,                                    "MASS_MEMORY_ERROR" );
 INIT_ATTRIBUTE( MeasurementError,                                   "MEASUREMENT_ERROR" );
 INIT_ATTRIBUTE( MeterFunctioningCorrectly,                          "METER_FUNCTIONING_CORRECTLY" );
+INIT_ATTRIBUTE( MeterProgrammingAttempted,                          "METER_PROGRAMMING_ATTEMPTED" );
 INIT_ATTRIBUTE( MeterReconfigure,                                   "METER_RECONFIGURE" );
 INIT_ATTRIBUTE( MetrologyCommunicationFailure,                      "METROLOGY_COMM_FAILURE" );
 INIT_ATTRIBUTE( NonVolatileMemFailure,                              "NON_VOLATILE_MEM_FAILURE" );
@@ -466,7 +467,6 @@ INIT_ATTRIBUTE( PqmTestFailureWarning,                              "PQM_TEST_FA
 INIT_ATTRIBUTE( RamError,                                           "RAM_ERROR" );
 INIT_ATTRIBUTE( RegisterFullScaleExceeded,                          "REGISTER_FULL_SCALE_EXCEEDED" );
 INIT_ATTRIBUTE( ReverseFlow,                                        "REVERSE_FLOW" );
-INIT_ATTRIBUTE( RemoteMeterConfigurationFailure,                    "REMOTE_METER_CONFIGURATION_FAILURE" );
 INIT_ATTRIBUTE( ReversedAggregate,                                  "REVERSED_AGGREGATE" );
 INIT_ATTRIBUTE( ReversedPhaseA,                                     "REVERSED_PHASE_A" );
 INIT_ATTRIBUTE( ReversedPhaseC,                                     "REVERSED_PHASE_C" );
@@ -655,27 +655,9 @@ INIT_ATTRIBUTE( ReverseFlowIndicator,                               "REVERSE_FLO
 
 INIT_ATTRIBUTE( EventSuperseded,                                    "EVENT_SUPERSEDED" );
 INIT_ATTRIBUTE( MemoryMapLost,                                      "MEMORY_MAP_LOST" );
-INIT_ATTRIBUTE( TimeSync,                                           "TIME_SYNC" );
-INIT_ATTRIBUTE( ColdStart,                                          "COLD_START" );
-INIT_ATTRIBUTE( MaxControlExceeded,                                 "MAX_CONTROL_EXCEEDED" );
-INIT_ATTRIBUTE( NetworkTimeoutCancel,                               "NETWORK_TIMEOUT_CANCEL" );
 INIT_ATTRIBUTE( ConfigurationUpdatedHash,                           "CONFIGURATION_UPDATED_HASH" );
-INIT_ATTRIBUTE( ConfigurationProcessed,                             "CONFIGURATION_PROCESSED" );
-INIT_ATTRIBUTE( TimeLost,                                           "TIME_LOST" );
-INIT_ATTRIBUTE( SelfCheckFail,                                      "SELF_CHECK_FAIL" );
-INIT_ATTRIBUTE( InactiveAppliance,                                  "INACTIVE_APPLIANCE" );
 INIT_ATTRIBUTE( RadioLinkQuality,                                   "RADIO_LINK_QUALITY" );
-INIT_ATTRIBUTE( IncorrectTLSIdentity,                               "INCORRECT_TLS_IDENTITY" );
-INIT_ATTRIBUTE( KeyUpdate,                                          "KEY_UPDATE" );
-INIT_ATTRIBUTE( KeyUpdateFail,                                      "KEY_UPDATE_FAIL" );
-INIT_ATTRIBUTE( TLSFail,                                            "TLS_FAIL" );
-INIT_ATTRIBUTE( BadHDLC,                                            "BAD_HDLC" );
-INIT_ATTRIBUTE( TLSAlert,                                           "TLS_ALERT" );
-INIT_ATTRIBUTE( OptimizeIntelligentControl,                         "OPTIMIZE_INTELLIGENT_CONTROL" );
-INIT_ATTRIBUTE( FlushLog,                                           "FLUSH_LOG" );
-INIT_ATTRIBUTE( SnapToGold,                                         "SNAP_TO_GOLD" );
 INIT_ATTRIBUTE( EventReceived,                                      "EVENT_RECEIVED" );
-INIT_ATTRIBUTE( LoadStatus,                                         "LOAD_STATUS" );
 
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {

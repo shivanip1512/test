@@ -26,25 +26,11 @@
                 </tags:nameValue>
             </tags:nameValueContainer>
         </tags:sectionContainer>
-
-    <tags:sectionContainer title="Parent Node Settings">
-        <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Node SN">
-                <tags:input path="parentData.nodeSN"/>
-            </tags:nameValue>
-            <tags:nameValue name="Node Mac Address">
-                <tags:input path="parentData.nodeMacAddress"/>
-            </tags:nameValue>
-            <tags:nameValue name="Reply Type">
-                <tags:selectWithItems items="${parentReplys}" path="parentReplyType" />
-            </tags:nameValue>
-        </tags:nameValueContainer>
-    </tags:sectionContainer>
     
     <tags:sectionContainer title="Neighbor Data Settings">
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Address">
-                <tags:input path="neighborData.neighborAddress"/>
+                <tags:input path="neighborData.neighborMacAddress"/>
             </tags:nameValue>
             <tags:nameValue name="Flags">
                 <c:forEach var="flag" items="${neighborFlags}">
@@ -52,26 +38,14 @@
                     <c:if test="${fn:contains(currentSettings.neighborData.neighborFlags, flag)}">
                         <c:set var="checked" value="checked"/>
                     </c:if>
-                    <input type="checkbox" name="neighborFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.neighborFlagType.${flag}"/><br>
+                    <input type="checkbox" name="neighborFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.neighborFlag.${flag}"/><br>
                 </c:forEach>
             </tags:nameValue>
-            <tags:nameValue name="Link Cost">
-                <tags:input path="neighborData.neighborLinkCost"/>
-            </tags:nameValue>
-            <tags:nameValue name="Number of Samples">
-                <tags:input path="neighborData.numSamples"/>
-            </tags:nameValue>
-            <tags:nameValue name="ETX Band">
-                <tags:input path="neighborData.etxBand"/>
-            </tags:nameValue>
-            <tags:nameValue name="Link Rate">
-                <tags:input path="neighborData.linkRate"/>
+           <tags:nameValue name="Link Rate">
+               <tags:selectWithItems items="${currentLinkRate}" path="neighborData.currentLinkRate" />
             </tags:nameValue>
             <tags:nameValue name="Link Power">
-                <tags:input path="neighborData.linkPower"/>
-            </tags:nameValue>
-            <tags:nameValue name="Reply Type">
-                <tags:selectWithItems items="${neighborReplys}" path="neighborReplyType" />
+               <tags:selectWithItems items="${currentLinkPower}" path="neighborData.currentLinkPower" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
@@ -82,13 +56,7 @@
     
     <tags:sectionContainer title="Primary Route Settings">
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Destination Address">
-                <tags:input path="routeData.destinationAddress"/>
-            </tags:nameValue>
-            <tags:nameValue name="Next Hop Address">
-                <tags:input path="routeData.nextHopAddress"/>
-            </tags:nameValue>
-            <tags:nameValue name="Total Cost">
+            <tags:nameValue name="Path Cost">
                 <tags:input path="routeData.totalCost"/>
             </tags:nameValue>
             <tags:nameValue name="Hop Count">
@@ -100,14 +68,11 @@
                     <c:if test="${fn:contains(currentSettings.routeData.routeFlags, flag)}">
                         <c:set var="checked" value="checked"/>
                     </c:if>
-                    <input type="checkbox" name="routeFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.routeFlagType.${flag}"/><br>
+                    <input type="checkbox" name="routeFlag_${flag}" ${checked}/><i:inline key="yukon.web.modules.operator.mapNetwork.routeFlag.${flag}"/><br>
                 </c:forEach>
             </tags:nameValue>
             <tags:nameValue name="Route Color">
                 <tags:input path="routeData.routeColor"/>
-            </tags:nameValue>
-            <tags:nameValue name="Reply Type">
-                <tags:selectWithItems items="${routeReplys}" path="routeReplyType" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
@@ -119,7 +84,7 @@
             </tags:nameValue>
         </tags:nameValueContainer>
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Hops around the gateway">
+            <tags:nameValue name="# of Nodes at First Hop">
                 <tags:input path="nodesOneHop" size="5"/>
             </tags:nameValue>
         </tags:nameValueContainer>
@@ -131,6 +96,18 @@
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Max Hop Count">
                 <tags:input path="maxHop" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+      </tags:sectionContainer>
+      <tags:sectionContainer title="Populate Database Settings">
+        <tags:nameValueContainer tableClass="natural-width">
+            <tags:nameValue name="# of Devices per Gateway">
+                <tags:input path="numberOfDevicesPerGateway" size="5"/>
+            </tags:nameValue>
+        </tags:nameValueContainer>
+        <tags:nameValueContainer tableClass="natural-width">
+         	<tags:nameValue name="Create Gateways">
+            	<tags:checkbox path="createGateways"/>
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>

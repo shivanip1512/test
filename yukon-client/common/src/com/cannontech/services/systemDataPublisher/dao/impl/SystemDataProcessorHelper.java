@@ -7,7 +7,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 public class SystemDataProcessorHelper {
 
@@ -18,7 +18,7 @@ public class SystemDataProcessorHelper {
      * Process query result , currently the query in YAML will return either single value or List of values.
      * 
      */
-    public static SystemData processQueryResult(DictionariesField dictionariesField, List<Map<String, Object>> queryResult) {
+    public static SystemData processQueryResult(CloudDataConfiguration cloudDataConfiguration, List<Map<String, Object>> queryResult) {
         SystemData systemData = null;
         String fieldValue = null;
         if (!queryResult.isEmpty()) {
@@ -37,11 +37,24 @@ public class SystemDataProcessorHelper {
                 Double finalValue = (actual / expected) * 100 ;
                 fieldValue = decimalFormat.format(finalValue);
             }
-            systemData.setFieldName(dictionariesField.getField());
+            systemData.setFieldName(cloudDataConfiguration.getField());
             systemData.setFieldValue(fieldValue);
-            systemData.setIotDataType(dictionariesField.getIotType());
+            systemData.setIotDataType(cloudDataConfiguration.getIotType());
             systemData.setTimestamp(new DateTime());
         }
+        return systemData;
+    }
+    
+    /**
+     * Process data for "Other" field types available in YAML.
+     * 
+     */
+    public static SystemData processOtherData(CloudDataConfiguration cloudDataConfiguration) {
+        SystemData systemData = new SystemData();
+        systemData.setFieldName(cloudDataConfiguration.getField());
+        systemData.setFieldValue(cloudDataConfiguration.getSource());
+        systemData.setIotDataType(cloudDataConfiguration.getIotType());
+        systemData.setTimestamp(new DateTime());
         return systemData;
     }
 }

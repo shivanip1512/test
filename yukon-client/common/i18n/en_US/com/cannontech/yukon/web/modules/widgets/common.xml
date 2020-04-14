@@ -73,6 +73,12 @@ There is also an option to Assign a different configuration to the device.
 <entry key="yukon.web.widgets.rfnMeterDisconnectWidget">Disconnect</entry>
 <entry key="yukon.web.widgets.rfnOutagesWidget">Outages</entry>
 <entry key="yukon.web.widgets.rfnDeviceMetadataWidget">Network Information</entry>
+<entry key="yukon.web.widgets.rfnDeviceMetadataWidget.helpText">
+    <![CDATA[The Network Information widget provides networking information for a device including the following:
+    <br><br><b>Primary Forward</b> – Primary Forward is determined by the node and is the gateway the node has chosen to provide its data every reporting interval.  This and the Reverse Lookup are generally the same for a node. In instances where they are different, it is likely a node has switched gateways or is in the process of settling on a primary forward and the new routing data has not been received or processed by the Yukon software. 
+    <br><br><b>Reverse Lookup</b> –Reverse Lookup is determined by the software as the most likely gateway to successfully process an on demand function to the selected device.  This and the Primary Forward are generally the same for a node.  In instances where they are different, it is likely a node has switched gateways and the new routing data has not been received or processed by the Yukon software.
+    ]]>
+</entry>
 <entry key="yukon.web.widgets.meterOutagesWidget">Outages</entry>
 <entry key="yukon.web.widgets.meterEventsWidget">Meter Events</entry>
 <entry key="yukon.web.widgets.meterInformationWidget">Meter Information</entry>
@@ -313,4 +319,8 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
         
         Click on the "View Details" link to view all scheduled, current day and previous 7 days program events.
 ]]></entry>
+
+    <!-- Wifi Connection Widget -->
+    <entry key="yukon.web.widgets.wifiConnectionWidget">Wi-Fi Connection</entry>
+
 </properties>

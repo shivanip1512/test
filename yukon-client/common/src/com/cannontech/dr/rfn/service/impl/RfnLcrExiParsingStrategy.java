@@ -5,17 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
+import com.cannontech.amr.rfn.service.RfnDataValidator;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
@@ -30,11 +28,12 @@ import com.google.common.collect.Lists;
 
 public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
 
+    @Autowired private RfnDataValidator rfnDataValidator;
     @Autowired private ParsingService<SimpleXPathTemplate> parsingService;
     @Autowired private RfnLcrDataMappingService<SimpleXPathTemplate> rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
-    protected JmsTemplate jmsTemplate;
+    @Autowired protected YukonJmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrExiParsingStrategy.class);
 
@@ -61,8 +60,11 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
             rfnPerformanceVerificationService.processVerificationMessages(rfnDevice, verificationMsgs, range);
         }
 
-        // Discard all the data before 1/1/2001
-        if (rfnLcrDataMappingService.isValidTimeOfReading(decodedPayload)) {
+        Instant payloadTime = new Instant(decodedPayload.evaluateAsLong("/DRReport/@utc") * 1000);
+        Instant currentInstant = new Instant();
+
+        // Discard all the data that is older than the global timestamp limit
+        if (rfnDataValidator.isTimestampRecent(payloadTime, currentInstant)) {
             // Handle point data
             List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(16);
             messagesToSend = rfnLcrDataMappingService.mapPointData(reading, decodedPayload);
@@ -74,15 +76,10 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
 
             // Handle addressing data
             rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+        } else {
+            log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " with timestamp " + payloadTime);
         }
 
-    }
-
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
     }
 
     @Override

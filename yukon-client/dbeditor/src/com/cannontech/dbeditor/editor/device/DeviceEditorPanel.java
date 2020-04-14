@@ -39,7 +39,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.MCT410FL, PaoType.MCT410GL, PaoType.MCT470, PaoType.MCT430A, PaoType.MCT430S4, PaoType.MCT430SL, PaoType.MCT430A3, 
             PaoType.SENTINEL, PaoType.FOCUS, PaoType.ALPHA_A3, PaoType.FAULT_CI, PaoType.NEUTRAL_MONITOR, PaoType.LCR3102, PaoType.LCR6200_RFN, PaoType.LCR6600_RFN, PaoType.LCR6700_RFN,
             PaoType.RFN410FL, PaoType.RFN410FX, PaoType.RFN410FD, PaoType.RFN420FL, PaoType.RFN420FX, PaoType.RFN420FD, PaoType.RFN420FRX, PaoType.RFN420FRD,
-            PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420CD, PaoType.RFN420CLW,PaoType.RFN420CDW,
+            PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420CD, PaoType.WRL420CL,PaoType.WRL420CD,
             PaoType.RFN430KV, PaoType.RFN430A3D, PaoType.RFN430A3T, PaoType.RFN430A3K, PaoType.RFN430A3R, PaoType.RDS_TERMINAL,
 //            PaoType.RFN440_2131T, PaoType.RFN440_2132T, PaoType.RFN440_2133T,
             PaoType.RFN440_2131TD, PaoType.RFN440_2132TD, PaoType.RFN440_2133TD,

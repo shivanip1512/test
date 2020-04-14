@@ -25,6 +25,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Controller
@@ -34,6 +35,7 @@ public class TrendsHomeController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private GraphDao graphDao;
+    @Autowired private UserPreferenceService userPreferenceService;
     
     @RequestMapping({"/trends", "/trends/"})
     public String trends(ModelMap model, YukonUserContext userContext) throws JsonProcessingException {
@@ -49,6 +51,8 @@ public class TrendsHomeController {
             model.addAttribute("pageName", "trends");
         }
         model.addAttribute("labels", TrendUtils.getLabels(userContext, messageResolver));
+        
+        model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
         
         return "trends/trends.jsp";
     }
@@ -68,6 +72,8 @@ public class TrendsHomeController {
             model.addAttribute("trendName", trend.getName());
             model.addAttribute("pageName", "trend");
             model.addAttribute("labels", TrendUtils.getLabels(userContext, messageResolver));
+            
+            model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
 
             return "trends/trends.jsp";
         }

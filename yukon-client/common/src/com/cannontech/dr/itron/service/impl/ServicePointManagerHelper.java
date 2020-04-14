@@ -82,7 +82,7 @@ public class ServicePointManagerHelper implements SoapFaultParser {
      *     </urn:ServicePoint>
      * </urn:AddServicePointRequest>
      */
-   public static AddServicePointRequest buildAddRequest(AccountDto accountDto) {
+    public static AddServicePointRequest buildAddRequest(AccountDto accountDto, Integer accountId) {
         AddServicePointType servicePoint = new AddServicePointType();
         
         servicePoint.setUtilServicePointID(accountDto.getAccountNumber());
@@ -98,9 +98,19 @@ public class ServicePointManagerHelper implements SoapFaultParser {
         }
         servicePoint.setAccount(account);
         
+        LocationType location = buildLocation(accountDto, accountId);
+        servicePoint.setLocation(location);
+        
+        AddServicePointRequest request = new AddServicePointRequest();
+        request.setServicePoint(servicePoint);
+        return request;
+    }
+    
+    private static LocationType buildLocation(AccountDto accountDto, Integer accountId) {
         LocationType location = new LocationType();
-        location.setPremiseUtilId(accountDto.getAltTrackingNumber());
+        location.setPremiseUtilId(accountId.toString());
         location.setLocationType(LocationTypeEnumeration.LOCATION_TYPE_PREMISE);
+        
         if(accountDto.getStreetAddress() != null) {
             if(!StringUtils.isEmpty(accountDto.getStreetAddress().getLocationAddress1())) {
                 location.setAddress1(accountDto.getStreetAddress().getLocationAddress1());
@@ -121,27 +131,24 @@ public class ServicePointManagerHelper implements SoapFaultParser {
                 location.setCountry(accountDto.getStreetAddress().getCounty());
             }
         }
-        servicePoint.setLocation(location);
-        AddServicePointRequest request = new AddServicePointRequest();
-        request.setServicePoint(servicePoint);
-        return request;
+        return location;
     }
-   
-   @Override
-   public void handleSoapFault(SoapFaultClientException e, Set<String> faultCodesToIgnore, Logger log) {
-       SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
-       soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
-           SoapFaultDetailElement detailElementChild = soapFaultDetail.getDetailEntries().next();
-           Source detailSource = detailElementChild.getSource();
-           ErrorFault fault = (ErrorFault) ItronEndpointManager.SERVICE_POINT.getMarshaller().unmarshal(detailSource);
-           log.debug(XmlUtils.getPrettyXml(fault));
-           fault.getErrors().forEach(error -> checkIfErrorShouldBeIgnored(error.getErrorCode(),
-               error.getErrorMessage(), faultCodesToIgnore, log));
-       });
-   }
-
-   @Override
-   public boolean isSupported(ItronEndpointManager manager) {
-       return ItronEndpointManager.SERVICE_POINT == manager;
-   }
+    
+    @Override
+    public void handleSoapFault(SoapFaultClientException e, Set<String> faultCodesToIgnore, Logger log) {
+        SoapFaultDetail soapFaultDetail = e.getSoapFault().getFaultDetail();
+        soapFaultDetail.getDetailEntries().forEachRemaining(detail -> {
+            SoapFaultDetailElement detailElementChild = soapFaultDetail.getDetailEntries().next();
+            Source detailSource = detailElementChild.getSource();
+            ErrorFault fault = (ErrorFault) ItronEndpointManager.SERVICE_POINT.getMarshaller().unmarshal(detailSource);
+            log.debug(XmlUtils.getPrettyXml(fault));
+            fault.getErrors().forEach(error -> checkIfErrorShouldBeIgnored(error.getErrorCode(),
+                error.getErrorMessage(), faultCodesToIgnore, log));
+        });
+    }
+    
+    @Override
+    public boolean isSupported(ItronEndpointManager manager) {
+        return ItronEndpointManager.SERVICE_POINT == manager;
+    }
 }

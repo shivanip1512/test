@@ -7,8 +7,14 @@
 
 <cti:standardPage module="operator" page="meterConfig">
     <tags:setFormEditMode mode="${mode}"/>
-    
-    <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updateMeterConfig"/>
+
+    <c:if test="${meter.paoType.isPlc()}">
+         <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updatePlcMeterConfig"/>
+    </c:if>
+    <c:if test="${meter.paoType.isRfn()}">
+        <cti:url var="updateMeterConfigUrl" value="/stars/operator/hardware/config/updateRfnMeterConfig"/>
+    </c:if>
+
     <form:form modelAttribute="meter" action="${updateMeterConfigUrl}">
         <cti:csrfToken/>
         <input type="hidden" name="accountId" value="${accountId}"/>
@@ -41,15 +47,17 @@
             </c:if>
    
         </tags:nameValueContainer2>
-        
 
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <cti:button nameKey="save" type="submit" classes="primary action"/>
-                    <cti:button nameKey="cancel" name="cancel" type="submit"/>
+                    <cti:url var="viewUrl" value="/stars/operator/hardware/list">
+                        <cti:param name="accountId" value="${accountId}"/>
+                    </cti:url>
+                    <cti:button nameKey="cancel" name="cancel" href="${viewUrl}"/>
                 </cti:checkRolesAndProperties>
-            </cti:displayForPageEditModes>    
-        </div>        
+            </cti:displayForPageEditModes>
+        </div>
     </form:form>
 </cti:standardPage>

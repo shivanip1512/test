@@ -128,7 +128,7 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
                         <ul>
                             <li><a href="https://tomcat.apache.org/bugreport.html">Tomcat 9.0 Bug Database</a></li>
                             <li><a href="${tomcatDocUrl}api/index.html">Tomcat 9.0 JavaDocs</a></li>
-                            <li><a href="https://svn.apache.org/repos/asf/tomcat/tc9.0.x/">Tomcat 9.0 SVN Repository</a></li>
+                            <li><a href="https://github.com/apache/tomcat/tree/master">Tomcat 9.0 Git Repository at GitHub</a></li>
                         </ul>
                     </div>
                 </div>
@@ -183,7 +183,7 @@ request.setAttribute("tomcatExamplesUrl", "/examples/");
                         <h4>Get Involved</h4>
                         <ul>
                             <li><a href="${tomcatUrl}getinvolved.html">Overview</a></li>
-                            <li><a href="${tomcatUrl}svn.html">SVN Repositories</a></li>
+                            <li><a href="${tomcatUrl}source.html">Source Repositories</a></li>
                             <li><a href="${tomcatUrl}lists.html">Mailing Lists</a></li>
                             <li><a href="https://wiki.apache.org/tomcat/FrontPage">Wiki</a></li>
                         </ul>

@@ -53,15 +53,17 @@ public class EcobeeProgramSetupApiControllerTest {
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
         ecobeeGearFieldDescriptor = new FieldDescriptor[] { fieldWithPath("gears[].fields.mandatory").type(JsonFieldType.BOOLEAN).description("Mandatory"),
-                fieldWithPath("gears[].fields.rampIn").type(JsonFieldType.BOOLEAN).description("Ramp In"),
-                fieldWithPath("gears[].fields.rampOut").type(JsonFieldType.BOOLEAN).description("Ramp Out"),
-                fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100"),
+                fieldWithPath("gears[].fields.rampIn").type(JsonFieldType.BOOLEAN).description("Ramp In").optional(),
+                fieldWithPath("gears[].fields.rampOut").type(JsonFieldType.BOOLEAN).description("Ramp Out").optional(),
+                fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100").optional(),
                 fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER)
                                                                  .description("Group Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
-                                                                               .description("When to change field. Expected : None, Duration, Priority, TriggerOffset") };
+                                                                               .description("When to change field. Expected : None, Duration, Priority, TriggerOffset"),
+                fieldWithPath("gears[].fields.setpointOffset").type(JsonFieldType.NUMBER).description("Setpoint Offset. Min Value: -10 F, Max Value: 10 F").optional(),
+                fieldWithPath("gears[].fields.mode").type(JsonFieldType.STRING).description("Mode. COOL, HEAT").optional() };
         ecobeeProgramFieldDescriptor = LoadProgramSetupHelper.mergeProgramFieldDescriptors(ecobeeGearFieldDescriptor);
     }
 
@@ -109,6 +111,7 @@ public class EcobeeProgramSetupApiControllerTest {
     public void Test_EcobeeProgram_Create(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.EcobeeCycle);
+        gearTypes.add(MockGearControlMethod.EcobeeSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_ECOBEE_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,

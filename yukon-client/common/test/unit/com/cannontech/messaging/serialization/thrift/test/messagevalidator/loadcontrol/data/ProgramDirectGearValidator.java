@@ -17,7 +17,7 @@ public class ProgramDirectGearValidator extends AutoInitializedClassValidator<LM
     @Override
     public void populateExpectedValue(LMProgramDirectGear ctrlObj, RandomGenerator generator) {
 
-        ctrlObj.setYukonID(generator.generateInt());
+        ctrlObj.setGearId(generator.generateInt());
         ctrlObj.setGearName(generator.generateString());
         ctrlObj.setGearNumber(generator.generateInt());
         ctrlObj.setControlMethod(generator.generateChoice(controlMethods));

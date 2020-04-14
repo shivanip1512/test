@@ -2,7 +2,22 @@
 <project name="yukon commons" default="all">
 
 	<property file="../build/build.properties"/>
+    <property file="../../yukon-build/build_version.properties"/>
 
+    <macrodef name="gitlogcount">
+        <attribute name="result"/>
+        <sequential>
+            <exec executable="git" outputproperty="git-commit-current-count">
+                <arg value="rev-list"/>
+                <arg value="HEAD"/>
+                <arg value="--count"/>
+            </exec>
+            <property name="git-commit-init-count" value="${git.commit.init.count}"></property>
+            <script language="javascript">
+                project.setProperty("@{result}", parseInt(project.getProperty("git-commit-current-count")) - parseInt(project.getProperty("git-commit-init-count")));
+            </script>
+        </sequential>
+    </macrodef>
 	<target name="all" depends="clean,build">
 	</target>
 
@@ -12,10 +27,11 @@
 		<javac srcdir="src"
               destdir="build"
               target="${yukon.javac.target}" 
-              source="${yukon.javac.source}"
+              source="${yukon.javac.source}" 
               debug="${yukon.javac.debug}">
-			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
+            <compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.windows=ALL-UNNAMED"/>
 			<compilerarg line="--add-exports java.desktop/com.sun.java.swing.plaf.motif=ALL-UNNAMED"/>
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar"/>
@@ -32,38 +48,46 @@
         </path>
         <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
 
-		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
-			<manifest>
-				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
-				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
-				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Hudson-Build-Details" value="${build.info}"/>
-			</manifest>
-			<fileset dir="resource">
-				<include name="**/*.gif"/>
-				<include name="**/*.png"/>
-				<include name="**/*.au"/>
-				<include name="**/*.yaml"/>
-			</fileset>
-			<fileset dir="src">
-				<exclude name="**/*.java"/>
-			</fileset>
-		</jar>
+        <gitlogcount result="yukon-build-number"/>
 
-		<jar destfile="${yukon.lib}/i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
-			<manifest>
-				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
-				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
-				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Hudson-Build-Details" value="${build.info}"/>
-			</manifest>
-		</jar>
+        <parallel>
+            <jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
+                <manifest>
+                    <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                    <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+                    <attribute name="Permissions" value="all-permissions"/>
+                    <attribute name="Hudson-Build-Details" value="YUKON_BUILD_NUMBER=${yukon-build-number},${build.info}"/>
+                </manifest>
+                <fileset dir="resource">
+                    <include name="**/*.gif"/>
+                    <include name="**/*.png"/>
+                    <include name="**/*.au"/>
+                    <include name="**/*.yaml"/>
+                </fileset>
+                <fileset dir="src">
+                    <exclude name="**/*.java"/>
+                </fileset>
+            </jar>
+            <jar destfile="${yukon.lib}/i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
+                <manifest>
+                    <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                    <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+                    <attribute name="Permissions" value="all-permissions"/>
+                    <attribute name="Hudson-Build-Details" value="${build.info}"/>
+                </manifest>
+            </jar>
+        </parallel>
 
 	</target>
 
-	<target name="clean">
-		<delete dir="build"/>
-	</target>
+   <target name="clean">
+       <move file="build" tofile="build-delete" failonerror="false"/>
+       <parallel>
+           <daemons>
+               <delete dir="build-delete"/>  
+           </daemons>
+       </parallel>
+   </target>
 
 	<!-- Target to generate the jaxb classes for the paoDefinition schema -->
 	<target name="generateJaxbClasses">
@@ -160,6 +184,7 @@
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar" />
@@ -234,7 +259,8 @@
 		<jar destfile="${third-party}/itronDeviceManagerTypes_v1_8_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/deviceManagerTypes_v1_8" destdir="build">
-			<classpath refid="jaxb-impl"/>
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
+            <classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronDeviceManagerTypes_v1_8.jar" basedir="build" />
 		<delete dir="build"/>
@@ -251,7 +277,8 @@
 		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/servicePointManagerTypes_v1_3" destdir="build">
-			<classpath refid="jaxb-impl"/>
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
+            <classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronServicePointManagerTypes_v1_3.jar" basedir="build" />
 		<delete dir="build"/>
@@ -268,6 +295,7 @@
 		<jar destfile="${third-party}/itronProgramEventManagerTypes_v1_6_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/programEventManagerTypes_v1_6/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/programEventManagerTypes_v1_6" destdir="build">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronProgramEventManagerTypes_v1_6.jar" basedir="build" />
@@ -285,6 +313,7 @@
 		<jar destfile="${third-party}/itronProgramManagerTypes_v1_1_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/programManagerTypes_v1_1/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/programManagerTypes_v1_1" destdir="build">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronProgramManagerTypes_v1_1.jar" basedir="build" />
@@ -301,6 +330,7 @@
 		<jar destfile="${third-party}/itronReportManagerTypes_v1_2_sources.jar" basedir="src" includes="com/cannontech/dr/itron/model/jaxb/reportManagerTypes_v1_2/**" />
 		<mkdir dir="build" />
 		<javac srcdir="src/com/cannontech/dr/itron/model/jaxb/reportManagerTypes_v1_2" destdir="build">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath refid="jaxb-impl"/>
 		</javac>
 		<jar destfile="${third-party}/itronReportManagerTypes_v1_2.jar" basedir="build" />

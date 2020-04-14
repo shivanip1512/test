@@ -13,6 +13,7 @@ import com.cannontech.msp.beans.v3.InitiateOutageDetectionEventRequestResponse;
 import com.cannontech.msp.beans.v3.PingURL;
 import com.cannontech.msp.beans.v3.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
@@ -37,7 +38,7 @@ public class ODClient implements IODClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OD_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -50,7 +51,7 @@ public class ODClient implements IODClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OD_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -64,7 +65,7 @@ public class ODClient implements IODClient {
             multispeakFuncs.setMsgSender(webServiceTemplate, mspVendor);
 
             return (InitiateOutageDetectionEventRequestResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateOutageDetectionEventRequest, customWebServiceMsgCallback.addRequestHeader(mspVendor));
+                initiateOutageDetectionEventRequest, customWebServiceMsgCallback.addRequestHeader(mspVendor, MultispeakDefines.OD_Server_STR));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

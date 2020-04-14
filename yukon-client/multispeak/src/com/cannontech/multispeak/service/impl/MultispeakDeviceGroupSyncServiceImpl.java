@@ -23,9 +23,9 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.MultispeakGetAllServiceLocationsCallback;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessor;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
+import com.cannontech.multispeak.service.MultispeakSyncType;
+import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.multispeak.service.v3.MultispeakMeterService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -47,7 +47,7 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
 
 	// START
 	@Override
-	public void startSyncForType(final MultispeakDeviceGroupSyncType type, final YukonUserContext userContext) {
+	public void startSyncForType(final MultispeakSyncType type, final YukonUserContext userContext) {
 		
 		log.debug("Multispeak device group sync started. type =  " + type);
 		final MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
@@ -61,8 +61,8 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
     		public void finish() {
     			
     			// set last completed persisted system value
-    			Set<MultispeakDeviceGroupSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
-    			for (MultispeakDeviceGroupSyncTypeProcessorType processorType : processorsTypes) {
+    			Set<MultispeakSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
+    			for (MultispeakSyncTypeProcessorType processorType : processorsTypes) {
     				
     				MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
     				persistedSystemValueDao.setValue(processor.getPersistedSystemValueKey(), new Instant());
@@ -133,16 +133,16 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
     	    			YukonMeter yukonMeter = yukonMeterMap.get(meterNumber);
     	    			
     	    			// process
-    	    			Set<MultispeakDeviceGroupSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
-    	    			for (MultispeakDeviceGroupSyncTypeProcessorType processorType : processorsTypes) {
+    	    			Set<MultispeakSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
+    	    			for (MultispeakSyncTypeProcessorType processorType : processorsTypes) {
     	    				
                             MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
                             String deviceGroupSyncValue = null;
-                            if (processorType.equals(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+                            if (processorType.equals(MultispeakSyncTypeProcessorType.SUBSTATION)) {
                                 if (mspMeter.getUtilityInfo() != null) {
                                     deviceGroupSyncValue = mspMeter.getUtilityInfo().getSubstationName();
                                 }
-                            } else if (processorType.equals(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+                            } else if (processorType.equals(MultispeakSyncTypeProcessorType.BILLING_CYCLE)) {
                                 deviceGroupSyncValue = mspServiceLocation.getBillingCycle();
                             }
     	    				boolean added = processor.processMeterSync(mspVendor, deviceGroupSyncValue, yukonMeter);

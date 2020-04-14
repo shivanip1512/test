@@ -74,6 +74,7 @@ const MetricInfo metricInfos[] = {
         {  51,  TouRates,  "VA delivered, peak demand"             },
         {  52,  TouRates,  "VA received, peak demand"              },
         {  53,  TouRates,  "VA delivered, peak demand (Frozen)"    },
+        {  54,  TouRates,  "VA received, peak demand (Frozen)"     },
 
         {  61,  TouRates,  "Q hour delivered"                      },
         {  62,  TouRates,  "Q hour received"                       },
@@ -543,7 +544,7 @@ RfnCommandResult RfnChannelSelectionCommand::decodeCommand( const CtiTime now,
     return description + "\n" + decodeTlvs( getTlvsFromBytes( Bytes( response.begin() + 3, response.end()), longTlvs ), getExpectedTlvType() );
 }
 
-std::string RfnChannelSelectionCommand::getCommandName()
+std::string RfnChannelSelectionCommand::getCommandName() const
 {
     return "Channel Selection Request";
 }
@@ -670,7 +671,7 @@ RfnCommandResult RfnChannelIntervalRecordingCommand::decodeCommand( const CtiTim
     return description + "\n" + decodeTlv( tlvs[0] );
 }
 
-std::string RfnChannelIntervalRecordingCommand::getCommandName()
+std::string RfnChannelIntervalRecordingCommand::getCommandName() const
 {
     return "Channel Interval Recording Request";
 }

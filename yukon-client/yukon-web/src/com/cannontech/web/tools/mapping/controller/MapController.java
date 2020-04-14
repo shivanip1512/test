@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
@@ -36,6 +38,7 @@ import com.cannontech.amr.outageProcessing.OutageMonitor;
 import com.cannontech.amr.outageProcessing.dao.OutageMonitorDao;
 import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -52,10 +55,12 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.DistanceUnit;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.model.PaoLocationDetails;
 import com.cannontech.common.pao.notes.service.PaoNotesService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -64,10 +69,12 @@ import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResu
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
+import com.cannontech.common.rfn.message.route.RouteData;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -90,11 +97,11 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Filter;
 import com.cannontech.web.tools.mapping.model.Group;
+import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebFileUtils;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -116,6 +123,7 @@ public class MapController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
+    @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoNotesService paoNotesService;
@@ -125,15 +133,9 @@ public class MapController {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private NmNetworkService nmNetworkService;
     @Autowired private RfnGatewayService rfnGatewayService;
-    
-    List<BuiltInAttribute> attributes = ImmutableList.of(
-        BuiltInAttribute.VOLTAGE,
-        BuiltInAttribute.VOLTAGE_PHASE_A,
-        BuiltInAttribute.VOLTAGE_PHASE_B,
-        BuiltInAttribute.VOLTAGE_PHASE_C,
-        BuiltInAttribute.USAGE,
-        BuiltInAttribute.SERVICE_STATUS);
 
     /**
      * Meant for device collections that are not static. Like collections based on 
@@ -172,6 +174,10 @@ public class MapController {
 
         }
         
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        
         return "map/map.jsp";
     }
 
@@ -195,11 +201,16 @@ public class MapController {
         filter.setTempDeviceGroupName(groupName);
         model.addAttribute("filter", filter);
         
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        
         return "map/map.jsp";
     }
     
     @GetMapping("/map/device/{id}/info")
-    public String info(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+    public String info(ModelMap model, @PathVariable int id, @RequestParam(value = "includePrimaryRoute", required = false) Boolean includePrimaryRoute,
+                       YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
         PaoType type = pao.getPaoIdentifier().getPaoType();
@@ -227,7 +238,6 @@ public class MapController {
                 try {
                     RfnGatewayData gateway = gatewayDataCache.get(pao.getPaoIdentifier());
                     model.addAttribute("gatewayIPAddress", gateway.getIpAddress());
-                    model.addAttribute("macAddress", gateway.getMacAddress());
                     String statusString = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + gateway.getConnectionStatus().toString());
                     model.addAttribute("deviceStatus", statusString);
                 } catch (NmCommunicationException e) {
@@ -236,31 +246,35 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA);
+                if (includePrimaryRoute) {
+                    requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                }
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
-                        metadataMultiService.getMetadataForDeviceRfnIdentifier(rfnDevice.getRfnIdentifier(),
-                            Set.of(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM, RfnMetadataMulti.NODE_DATA));
+                        metadataMultiService.getMetadataForDeviceRfnIdentifier(rfnDevice.getRfnIdentifier(), requestData);
                     RfnMetadataMultiQueryResult metadata = metaData.get(rfnDevice.getRfnIdentifier());
                     if (metadata.getResultType() != RfnMetadataMultiQueryResultType.OK) {
                         log.error("NM returned query result:" + metadata.getResultType() + " message:" + metadata.getResultMessage()
                             + " for device:" + rfnDevice);
                         model.addAttribute("errorMsg", nmError);
                     } else {
-                        if(metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM)) {
-                            NodeComm comm = (NodeComm) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_GATEWAY_NODE_COMM);
-                            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(comm.getGatewayRfnIdentifier());
-                            RfnGateway rfnGateway = rfnGatewayService.getGatewayByPaoId(gateway.getPaoIdentifier().getPaoId());
-                            String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
-                            model.addAttribute("deviceStatus", statusString);
-                            model.addAttribute("primaryGatewayName", rfnGateway.getNameWithIPAddress());
+                        
+                        String statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status.UNKNOWN");
+                        NodeComm comm = nmNetworkService.getNodeCommStatusFromMultiQueryResult(rfnDevice, metadata);
+                        if (comm != null && comm.getNodeCommStatus() != null) {
+                            statusString = accessor.getMessage("yukon.web.modules.operator.mapNetwork.status." + comm.getNodeCommStatus());
+                        }
+                        model.addAttribute("deviceStatus", statusString);
+                        DynamicRfnDeviceData deviceData = rfnDeviceDao.findDynamicRfnDeviceData(rfnDevice.getPaoIdentifier().getPaoId());
+                        if (deviceData != null) {
+                            model.addAttribute("descendantCount", deviceData.getDescendantCount());
+                            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(deviceData.getGateway().getPaoIdentifier().getPaoId());
+                            model.addAttribute("primaryGatewayName", gateway.getNameWithIPAddress());
                             model.addAttribute("primaryGateway", gateway);
-                        } else {
-                            // ignore, status will be set to "UNKNOWN"
-                            log.error("NM didn't return communication status for " + rfnDevice);
                         }
                         if(metadata.isValidResultForMulti(RfnMetadataMulti.NODE_DATA)) {
                             NodeData nodeData = (NodeData) metadata.getMetadatas().get(RfnMetadataMulti.NODE_DATA);
-                            model.addAttribute("macAddress", nodeData.getMacAddress());
                             model.addAttribute("nodeSN", nodeData.getNodeSerialNumber());
                             if (nodeData.getWifiSuperMeterData() != null) {
                                 model.addAttribute("configuredApBssid", nodeData.getWifiSuperMeterData().getConfiguredApBssid());
@@ -273,7 +287,31 @@ public class MapController {
                             }
                         } else {
                             log.error("NM didn't return node data for " + rfnDevice);
-                        }  
+                        }
+                        if (metadata.isValidResultForMulti(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA)) {
+                            RouteData routeData = (RouteData) metadata.getMetadatas().get(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                            model.addAttribute("routeData", routeData);
+                            List<String> flags = new ArrayList<>();
+                            if (routeData.getRouteFlags() != null && !routeData.getRouteFlags().isEmpty()) {
+                                routeData.getRouteFlags().forEach(flag -> {
+                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlag." + flag.name()));
+                                });
+                                model.addAttribute("routeFlags", String.join(", ", flags));
+                                //get distance to next hop
+                                RfnIdentifier nextHop = routeData.getNextHopRfnIdentifier();
+                                if (nextHop != null) {
+                                    RfnDevice nextHopDevice = rfnDeviceCreationService.createIfNotFound(nextHop);
+                                    if(nextHopDevice != null) {
+                                        PaoLocation deviceLocation = paoLocationDao.getLocation(rfnDevice.getPaoIdentifier().getPaoId());
+                                        PaoLocation nextHopLocation = paoLocationDao.getLocation(nextHopDevice.getPaoIdentifier().getPaoId());
+                                        if (deviceLocation != null && nextHopLocation != null) {
+                                            double distanceTo = deviceLocation.distanceTo(nextHopLocation, DistanceUnit.MILES);
+                                            model.addAttribute("nextHopDistance", distanceTo);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                     
                 } catch (NmCommunicationException e) {
@@ -286,15 +324,6 @@ public class MapController {
         }
 
         model.addAttribute("pao", displayable);
-        
-        List<Attribute> supported = new ArrayList<>();
-
-        for(Attribute attribute : attributes) {
-            if (attributeService.isAttributeSupported(pao, attribute)) {
-                supported.add(attribute);
-            }
-        }
-        model.addAttribute("attributes", supported);
         
         model.addAttribute("hasNotes", paoNotesService.hasNotes(id));
         
@@ -365,6 +394,13 @@ public class MapController {
         FeatureCollection locations = paoLocationService.getLocationsAsGeoJson(deviceCollection.getDeviceList());
         
         return locations;
+    }
+    
+    @GetMapping("/map/selectedGateways")
+    public @ResponseBody Set<Integer> selectedGateways(DeviceCollection deviceCollection) {
+        Set<Integer> deviceIds = new HashSet<>();
+        deviceCollection.getDeviceList().forEach(device -> deviceIds.add(device.getDeviceId()));
+       return rfnDeviceDao.getGatewayIdsForDevices(deviceIds);
     }
     
     @GetMapping("/map/filter/state-groups")

@@ -5,7 +5,6 @@ import static com.cannontech.common.device.commands.CommandRequestExecutionStatu
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.FAILED;
 import static com.cannontech.common.device.commands.CommandRequestExecutionStatus.STARTED;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -295,7 +294,7 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
             boolean nothingWritten = true;
             String commandToSend = null;
             // ids of devices that were send to porter
-            List<Integer> deviceIdsProcessed = new ArrayList<>();
+            Set<Integer> deviceIdsProcessed = new HashSet<>();
             try {
                 for (RequestHolder requestHolder : commandRequests) {
                     if (listener.isCanceled()) {

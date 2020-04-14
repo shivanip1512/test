@@ -268,8 +268,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN420CLW"/>
-        <paoType value="RFN420CDW"/>
+        <paoType value="WRL420CL"/>
+        <paoType value="WRL420CD"/>
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
         <paoType value="RFN410FL"/>
@@ -398,8 +398,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN420CLW"/>
-        <paoType value="RFN420CDW"/>
+        <paoType value="WRL420CL"/>
+        <paoType value="WRL420CD"/>
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
         <paoType value="RFN410FL"/>
@@ -575,8 +575,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN420CLW"/>
-        <paoType value="RFN420CDW"/>
+        <paoType value="WRL420CL"/>
+        <paoType value="WRL420CD"/>
         <paoType value="RFN510FL"/>
         <paoType value="RFN520FAX"/>
         <paoType value="RFN520FRX"/>
@@ -2449,8 +2449,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN420CLW"/>
-        <paoType value="RFN420CDW"/>
+        <paoType value="WRL420CL"/>
+        <paoType value="WRL420CD"/>
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
@@ -2498,8 +2498,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN420CLW"/>
-        <paoType value="RFN420CDW"/>
+        <paoType value="WRL420CL"/>
+        <paoType value="WRL420CD"/>
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
@@ -2821,6 +2821,17 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
+        <point name="Received Peak kW (Rate A kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate A</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
         <point name="Rate B kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -2887,6 +2898,17 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Received Peak kW (Rate B kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate B</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
         <point name="Rate C kWh">
@@ -2957,6 +2979,17 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
+        <point name="Received Peak kW (Rate C kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate C</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
         <point name="Rate D kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -3023,6 +3056,17 @@
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+        <point name="Received Peak kW (Rate D kW)">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>TOU Rate D</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
 
@@ -3942,8 +3986,8 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <paoType value="RFN420CLW"/>
-        <paoType value="RFN420CDW"/>
+        <paoType value="WRL420CL"/>
+        <paoType value="WRL420CD"/>
         <!-- FOCUS AX -->
         <paoType value="RFN410FX"/>
         <paoType value="RFN410FD"/>
@@ -4032,8 +4076,8 @@
         <!-- CENTRON -->
         <paoType value="RFN420CL" />
         <paoType value="RFN420CD" />
-        <paoType value="RFN420CLW"/>
-        <paoType value="RFN420CDW"/>
+        <paoType value="WRL420CL"/>
+        <paoType value="WRL420CD"/>
 
         <point name="Delivered kVAh">
             <uom>VAh</uom>

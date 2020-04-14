@@ -16,6 +16,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.dr.itron.service.ItronCommunicationException;
 import com.cannontech.dr.itron.service.ItronCommunicationService;
@@ -61,7 +62,7 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
                 hardwareTypeToPaoType.get(hardware.getHardwareType()), hardware.getSerialNumber());
             inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), pao.getDeviceId());
             deviceDao.updateDeviceMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
-            itronCommunicationService.addDevice(hardware, account);
+            itronCommunicationService.addDevice(hardware, account, hardware.getAccountId());
             hardware.setDeviceId(pao.getDeviceId());
             itronCommunicationService.saveSecondaryMacAddress(pao.getDeviceType(), pao.getDeviceId(), hardware.getMacAddress());
         } catch (ItronCommunicationException e) {
@@ -102,7 +103,12 @@ public class ItronBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void retrieveDevice(Hardware hardware) {
-        hardware.setSecondaryMacAddress(deviceDao.getSecondaryMacAddressForDevice(hardware.getDeviceId()));
+        try {
+            hardware.setSecondaryMacAddress(deviceDao.getSecondaryMacAddressForDevice(hardware.getDeviceId()));
+        } catch (NotFoundException nfe) {
+            log.debug("No secondary mac found for device id " + hardware.getDeviceId(), nfe);
+            hardware.setSecondaryMacAddress("");
+        }
     }
 
     @Override

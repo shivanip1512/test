@@ -54,6 +54,7 @@ import com.cannontech.cc.model.AccountingEventParticipant;
 import com.cannontech.cc.model.AvailableProgramGroup;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.cc.model.CiEventType;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventNotif;
 import com.cannontech.cc.model.EconomicEvent;
@@ -88,7 +89,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotificationGroupDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -105,7 +105,6 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.cc.model.CiEventStatus;
-import com.cannontech.web.dr.cc.model.CiEventType;
 import com.cannontech.web.dr.cc.model.CiInitEventModel;
 import com.cannontech.web.dr.cc.model.CustomerModel;
 import com.cannontech.web.dr.cc.model.Exclusion;
@@ -147,7 +146,6 @@ public class CcHomeController {
     @Autowired private GroupDao groupDao;
     @Autowired private GroupService groupService;
     @Autowired private NotificationGroupDao notificationGroupDao;
-    @Autowired private PaoDao paoDao;
     @Autowired private ProgramParameterDao programParameterDao;
     @Autowired private ProgramService programService;
     @Autowired private StrategyFactory strategyFactory;
@@ -1145,16 +1143,16 @@ public class CcHomeController {
             @PathVariable int programId,
             @PathVariable int eventId) {
         
+        String programTypeStrategy  = programService.getProgramById(programId).getProgramType().getStrategy();
+        CiEventType ciEventType = CiEventType.of(programTypeStrategy);
         Integer programTypeId = programService.getProgramById(programId).getProgramType().getId();
-        switch(programTypeId) {
-        case 1:
-        case 2:
+        if (ciEventType.isNotification() || ciEventType.isDirect()) {
             return capacityDetail(model, userContext, programTypeId, eventId);
-        case 3:
+        } else if (ciEventType.isAccounting()) {
             return accountingDetail(model, userContext, programTypeId, eventId);
-        case 4:
+        } else if (ciEventType.isEconomic()) {
             return economicDetail(model, userContext, programId, eventId, -1, request);
-        default:
+        } else {
             throw new IllegalArgumentException("Invalid program type id: " + programTypeId);
         }
     }
@@ -1406,25 +1404,28 @@ public class CcHomeController {
     public String customerSave(@PathVariable int customerId,
                                @ModelAttribute CustomerModel customerModel,
                                FlashScope flash) {
+        CICustomerStub customer = customerPointService.getCustomer(customerId);
         try {
-            CICustomerStub customer = customerPointService.getCustomer(customerId);
-            customerPointService.savePointValues(customer, customerModel.getPointValues());
-            // Java8
-            
-            List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms().stream()
-                    .mapToInt(model -> model.getPaoId())
-                    .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId)).collect(Collectors.toList());
+            if (customerModel.getPointValues() != null) {
+                customerPointService.savePointValues(customer, customerModel.getPointValues());
+            }
 
+            List<LiteYukonPAObject> activeProgramPaos = new ArrayList<>();      //empty list will remove all
+            if (customerModel.getActivePrograms() != null) {
+                activeProgramPaos = customerModel.getActivePrograms().stream()
+                        .mapToInt(model -> model.getPaoId())
+                        .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId)).collect(Collectors.toList());
+            }
             customerLMProgramService.saveProgramList(customer, activeProgramPaos);
 
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.success",
                     customer.getCompanyName()));
             return "redirect:/dr/cc/customerList";
 
-        } catch (NullPointerException npe) {
-            flash.setError(
-                    new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.missingPointsOrGroups",
-                            ""));
+        } catch (Exception e) {
+            log.error("Error saving customer {}", customer.getCompanyName(), e);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.failure",
+                    customer.getCompanyName()));
             return "redirect:/dr/cc/customerDetail/" + customerId;
         }
     }

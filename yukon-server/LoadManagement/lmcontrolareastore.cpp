@@ -34,6 +34,7 @@
 #include "ecobeeCycleGear.h"
 #include "ecobeeSetpointGear.h"
 #include "honeywellCycleGear.h"
+#include "honeywellSetpointGear.h"
 #include "NestCriticalCycleGear.h"
 #include "NestStandardCycleGear.h"
 #include "ItronCycleGear.h"
@@ -179,7 +180,7 @@ vector<CtiLMControlArea*> CtiLMControlAreaStore::findControlAreasByPointID(long 
 {
     vector<CtiLMControlArea*> retVal;
 
-    std::multimap< long, long >::_Pairii range = _point_control_area_map.equal_range(point_id);
+    auto range = _point_control_area_map.equal_range(point_id);
     for( ; range.first != range.second; ++range.first )
     {
         CtiLMControlArea* area = getLMControlArea(range.first->second);
@@ -967,6 +968,17 @@ void CtiLMControlAreaStore::reset()
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::HoneywellCycleMethod) )
                     {
                         newDirectGear = CTIDBG_new HoneywellCycleGear(rdr);
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::HoneywellSetpointMethod) )
+                    {
+                        if ( ! rdr["settings"].isNull() )
+                        {
+                            newDirectGear = CTIDBG_new HoneywellSetpointGear(rdr);
+                        }
+                        else
+                        {
+                            CTILOG_ERROR( dout, "Honeywell Setpoint Gear missing required temperature settings" );
+                        }
                     }
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::NestCriticalCycleMethod) )
                     {

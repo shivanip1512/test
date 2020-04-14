@@ -4,6 +4,7 @@ import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
@@ -94,6 +95,9 @@ public class LMModelFactory {
             break;
         case HoneywellCycle:
             gearFields = new HoneywellCycleGearFields();
+            break;
+        case HoneywellSetpoint:
+            gearFields = new HoneywellSetpointGearFields();
             break;
         case NestCriticalCycle:
             gearFields = new NestCriticalCycleGearFields();

@@ -14,7 +14,7 @@ public:
     virtual RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload &response) = 0;
     virtual RfnCommandResult error(const CtiTime now, const YukonError_t errorCode);
     
-    virtual std::string getCommandName() = 0;
+    std::string getCommandName() const override = 0;
 
 protected:
     enum UnitOfMeasure

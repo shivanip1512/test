@@ -23,33 +23,33 @@
     <ProjectGuid>{910E97EA-FECA-1BAD-C121-0BD981BAC123}</ProjectGuid>
     <RootNamespace>loadmanagement</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>NotSet</CharacterSet>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -211,7 +211,7 @@
       <LargeAddressAware>true</LargeAddressAware>
       <ProgramDatabaseFile>$(SolutionDir)pdb\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib\$(TargetName).lib</ImportLibrary>
-      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -342,127 +342,24 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\loadmanagement\loadmanagement-common.vcxproj">
+      <Project>{7b2d9318-7354-4a53-880d-7992d8bad9a4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\COMMON\boost_assert.cpp" />
     <ClCompile Include="..\precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="clistener.cpp">
-    </ClCompile>
-    <ClCompile Include="ConstraintViolation.cpp">
-    </ClCompile>
-    <ClCompile Include="ecobeeCycleGear.cpp">
-    </ClCompile>
-    <ClCompile Include="ecobeeSetpointGear.cpp" />
-    <ClCompile Include="executor.cpp">
-    </ClCompile>
-    <ClCompile Include="honeywellCycleGear.cpp" />
-    <ClCompile Include="ItronCycleGear.cpp" />
-    <ClCompile Include="lmgrouphoneywell.cpp" />
-    <ClCompile Include="lmgroupitron.cpp" />
-    <ClCompile Include="lmgroupmeterdisconnect.cpp" />
-    <ClCompile Include="lmgroupnest.cpp" />
-    <ClCompile Include="LMScheduledMessageHolder.cpp" />
-    <ClCompile Include="lm_group_serialization.cpp">
-    </ClCompile>
-    <ClCompile Include="lm_message_serialization.cpp">
-    </ClCompile>
-    <ClCompile Include="lm_program_serialization.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcicustomerbase.cpp">
-    </ClCompile>
-    <ClCompile Include="lmconstraint.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcontrolarea.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcontrolareastore.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcontrolareatrigger.cpp">
-    </ClCompile>
-    <ClCompile Include="lmcurtailcustomer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangecustomer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangecustomerreply.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangehourlycustomer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangehourlyoffer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangeoffer.cpp">
-    </ClCompile>
-    <ClCompile Include="lmenergyexchangeofferrevision.cpp">
-    </ClCompile>
-    <ClCompile Include="lmfactory.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupbase.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupdigisep.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupecobee.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupemetcon.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupexpresscom.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupgolay.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupmacro.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupmct.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgrouppoint.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupripple.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsa105.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsa205.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsa305.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupsadigital.cpp">
-    </ClCompile>
-    <ClCompile Include="lmgroupversacom.cpp">
-    </ClCompile>
-    <ClCompile Include="lmmessage.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogrambase.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogrambeatthepeakgear.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramcontrolwindow.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramcurtailment.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramdirect.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramdirectgear.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramenergyexchange.cpp">
-    </ClCompile>
-    <ClCompile Include="lmprogramthermostatgear.cpp">
-    </ClCompile>
     <ClCompile Include="lmservice.cpp">
     </ClCompile>
-    <ClCompile Include="lmutility.cpp">
-    </ClCompile>
-    <ClCompile Include="loadmanager.cpp">
-    </ClCompile>
+    <ClCompile Include="lm_group_serialization.cpp" />
+    <ClCompile Include="lm_message_serialization.cpp" />
+    <ClCompile Include="lm_program_serialization.cpp" />
     <ClCompile Include="main.cpp">
     </ClCompile>
-    <ClCompile Include="MeterDisconnectGear.cpp" />
-    <ClCompile Include="NestCriticalCycleGear.cpp" />
-    <ClCompile Include="NestStandardCycleGear.cpp" />
-    <ClCompile Include="sepcyclegear.cpp">
-    </ClCompile>
-    <ClCompile Include="septempoffsetgear.cpp">
-    </ClCompile>
-    <ClCompile Include="SmartGroupBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h" />
@@ -475,6 +372,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\GroupControlInterface.h" />
     <ClInclude Include="include\honeywellControlInterface.h" />
     <ClInclude Include="include\honeywellCycleGear.h" />
+    <ClInclude Include="include\honeywellSetPointGear.h" />
     <ClInclude Include="include\id_loadmanagement.h" />
     <ClInclude Include="include\ItronControlInterface.h" />
     <ClInclude Include="include\ItronCycleGear.h" />

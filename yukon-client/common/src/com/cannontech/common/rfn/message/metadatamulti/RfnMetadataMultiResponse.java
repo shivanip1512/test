@@ -35,7 +35,16 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     // Note: some result may be an error type.
     private Map<RfnIdentifier, RfnMetadataMultiQueryResult> queryResults;
     
-    private long lastNetworkTreeUpdateTime;
+    /**
+     * Currently this time-stamp field is used for debugging only.
+     * When Yukon logs the response object when received from NM, this field is also logged.
+     * Thus we can tell the latest time of the route data used for the tree-related query results.
+     * For example, the descendant count is valid until this time-stamp.
+     * 
+     * You may also refer to NetworkTreeUpdateTimeResponse which has the same field.
+     * {@link com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse#getTreeGenerationStartTimeMillis()}
+     */
+    private long treeGenerationStartTimeMillis;
 
     public RfnMetadataMultiResponse(String requestID, int totalSegments, int segmentNumber) {
         super();
@@ -83,12 +92,12 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
         this.queryResults = queryResults;
     }
 
-    public long getLastNetworkTreeUpdateTime() {
-        return lastNetworkTreeUpdateTime;
+    public long getTreeGenerationStartTimeMillis() {
+        return treeGenerationStartTimeMillis;
     }
 
-    public void setLastNetworkTreeUpdateTime(long lastNetworkTreeUpdateTime) {
-        this.lastNetworkTreeUpdateTime = lastNetworkTreeUpdateTime;
+    public void setTreeGenerationStartTimeMillis(long treeGenerationStartTimeMillis) {
+        this.treeGenerationStartTimeMillis = treeGenerationStartTimeMillis;
     }
 
     public String getRequestID() {
@@ -99,14 +108,13 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result + (int) (lastNetworkTreeUpdateTime ^ (lastNetworkTreeUpdateTime >>> 32));
         result = prime * result + ((queryResults == null) ? 0 : queryResults.hashCode());
         result = prime * result + ((requestID == null) ? 0 : requestID.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
         result = prime * result + segmentNumber;
         result = prime * result + totalSegments;
+        result = prime * result + (int) (treeGenerationStartTimeMillis ^ (treeGenerationStartTimeMillis >>> 32));
         return result;
     }
 
@@ -119,8 +127,6 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
         if (getClass() != obj.getClass())
             return false;
         RfnMetadataMultiResponse other = (RfnMetadataMultiResponse) obj;
-        if (lastNetworkTreeUpdateTime != other.lastNetworkTreeUpdateTime)
-            return false;
         if (queryResults == null) {
             if (other.queryResults != null)
                 return false;
@@ -142,19 +148,23 @@ public class RfnMetadataMultiResponse implements JmsMultiResponse {
             return false;
         if (totalSegments != other.totalSegments)
             return false;
+        if (treeGenerationStartTimeMillis != other.treeGenerationStartTimeMillis)
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return String
-            .format("RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, lastNetworkTreeUpdateTime=%s]",
-                    requestID,
-                    totalSegments,
-                    segmentNumber,
-                    responseType,
-                    responseMessage,
-                    queryResults,
-                    lastNetworkTreeUpdateTime);
+        return String.format(
+                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, queryResults=%s, treeGenerationStartTimeMillis=%s]",
+                requestID, totalSegments, segmentNumber, responseType, responseMessage, queryResults,
+                treeGenerationStartTimeMillis);
+    }
+    
+    public String toInfoString() { // use for log info level
+        return String.format(
+                "RfnMetadataMultiResponse [requestID=%s, totalSegments=%s, segmentNumber=%s, responseType=%s, responseMessage=%s, treeGenerationStartTimeMillis=%s]",
+                requestID, totalSegments, segmentNumber, responseType, responseMessage,
+                treeGenerationStartTimeMillis);
     }
 }

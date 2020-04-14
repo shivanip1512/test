@@ -100,8 +100,9 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
     {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE GearID=" + gearID;
 
-        if (conn == null)
+        if (conn == null) {
             throw new IllegalArgumentException("Received a (null) database connection");
+        }
 
         java.sql.PreparedStatement pstmt = null;
 
@@ -118,8 +119,9 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
         {
             try
             {
-                if (pstmt != null)
+                if (pstmt != null) {
                     pstmt.close();
+                }
             }
             catch (SQLException e2)
             {
@@ -166,8 +168,9 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
      * @return java.lang.String
      */
     public java.lang.StringBuffer getSettings() {
-        if(settings == null)
+        if(settings == null) {
             settings = new StringBuffer("----");
+        }
         return settings;
     }
 
@@ -261,6 +264,10 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
         return valueTf;
     }
 
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return true;
+    }
 
     /**
      * retrieve method comment.
@@ -289,9 +296,9 @@ public abstract class LMThermostatGear extends com.cannontech.database.db.device
             setValueTe( (Integer) results[11] );
             setValueTf( (Integer) results[12] );
             setRampRate(((Double) results[13]).floatValue());
-        }
-        else
+        } else {
             throw new Error(getClass() + " - Incorrect Number of results retrieved");
+        }
 
     }
 

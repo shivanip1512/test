@@ -115,7 +115,8 @@ yukon.widget.dataCollection = (function () {
     
     /** Update the existing pie chart. */
     _updateChart = function (chart, data) {
-        chart.highcharts().series[0].setData(data);
+        chart.find('.highcharts-legend-item').remove();
+        chart.highcharts().series[0].setData(data, true, false, false);
     },
     
     /** Update the page every so many seconds */
@@ -138,12 +139,12 @@ yukon.widget.dataCollection = (function () {
                     var refreshButton = $(item).find('.js-update-data-collection');
                     refreshButton.attr('disabled', !data.isRefreshPossible);
                     if (!data.isRefreshPossible) {
-                        var nextRefreshDateTime = moment(data.nextRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                        var nextRefreshDateTime = moment(data.nextRefresh).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                         refreshButton.prop('title', yg.text.nextRefresh + nextRefreshDateTime);
                     } else {
                         refreshButton.prop('title', data.refreshTooltip);
                     }
-                    var dateTime = moment(data.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
+                    var dateTime = moment(data.lastAttemptedRefresh).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                     $(item).find('.js-last-updated').text(dateTime);
                     if (data.summary != null) {
                         if (chart.is('.js-initialize')) {

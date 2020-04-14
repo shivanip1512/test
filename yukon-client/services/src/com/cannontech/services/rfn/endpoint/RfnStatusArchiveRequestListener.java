@@ -4,13 +4,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
-
+import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.errors.dao.DeviceError;
@@ -33,6 +32,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.ThriftRequestTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
@@ -48,7 +48,8 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     /**
@@ -75,6 +76,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     {
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.TERMINATE, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ARM, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
+        disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.RESUME, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.RESUME, RfnMeterDisconnectStateType.RESUMED), RfnMeterDisconnectState.CONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.TERMINATED), RfnMeterDisconnectState.DISCONNECTED);
         disconnectStates.put(Pair.of(RfnMeterDisconnectMeterMode.ON_DEMAND_CONFIGURATION, RfnMeterDisconnectStateType.ARMED), RfnMeterDisconnectState.ARMED);
@@ -164,7 +166,7 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
 			request.setRfnIdentifier(status.getRfnIdentifier());
 			request.setConfigurationId(status.getData().getMeterConfigurationID());
 			request.setStatus(ProgrammingStatus.IDLE);
-			request.setTimeStamp(status.getTimeStamp());
+			request.setTimestamp(new Instant(status.getTimeStamp()));
 			log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
 			thriftMessenger.send(request);
 		} else {
@@ -213,16 +215,12 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         } else {
             log.debug("{} acknowledged statusPointId={}", processor, request.getStatusPointId());
         }
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getResponseQueue().get().getName(), response);
+        jmsTemplate.convertAndSendToResponseQueue(JmsApiDirectory.RFN_STATUS_ARCHIVE, response);
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, 
-                                                      JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
-                                                      new MeterProgramStatusArchiveRequestSerializer());
+    @PostConstruct
+    public void initialize() {
+        thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+                new MeterProgramStatusArchiveRequestSerializer());
     }
 }

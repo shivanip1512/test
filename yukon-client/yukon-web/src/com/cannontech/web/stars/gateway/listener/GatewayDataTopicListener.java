@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.impl.NmSyncServiceImpl;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -59,7 +59,7 @@ public class GatewayDataTopicListener implements MessageListener {
     
     @PostConstruct
     public void init() {
-        isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+        isDataStreamingEnabled = configSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
     }
     
     @Override
@@ -107,7 +107,7 @@ public class GatewayDataTopicListener implements MessageListener {
             if (message.getConnectionStatus() != null) {
                 // Always archive comm status
                 int commStatus = message.getConnectionStatus() == ConnectionStatus.CONNECTED ? 0 : 1;
-                rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.COMM_STATUS, commStatus, true, message.getConnectionStatusTimestamp());
+                rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.COMM_STATUS, commStatus, false, message.getConnectionStatusTimestamp());
             }
         } catch (NotFoundException e) {
             log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);

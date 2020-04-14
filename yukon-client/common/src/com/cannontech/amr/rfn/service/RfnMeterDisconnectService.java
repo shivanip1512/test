@@ -3,8 +3,6 @@ package com.cannontech.amr.rfn.service;
 import java.util.Date;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -23,6 +21,8 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -34,7 +34,6 @@ public class RfnMeterDisconnectService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDisconnectService.class);
     
-    private static final String queue = "yukon.qr.obj.amr.rfn.MeterDisconnectRequest";
     private static final String cparm = "RFN_METER_DISCONNECT";
     
     private static final String firstReplyTimeout = "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.firstReplyTimeout";
@@ -44,10 +43,10 @@ public class RfnMeterDisconnectService {
 
     private RequestReplyReplyTemplate<RfnMeterDisconnectInitialReply, RfnMeterDisconnectConfirmationReply> rrrTemplate;
     
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     
     /**
      * Attempts to send a disconnect request for a RFN meter.  Will use a separate thread to make the request.
@@ -174,8 +173,8 @@ public class RfnMeterDisconnectService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<>(
-                cparm, configurationSource, connectionFactory, queue, false);
+        rrrTemplate = new RequestReplyReplyTemplate<>(cparm, configurationSource, jmsTemplate,
+                JmsApiDirectory.RFN_METER_DISCONNECT);
     }
     
 }

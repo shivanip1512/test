@@ -1927,7 +1927,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     <point offset="394" type="Analog">
         <name>RSSI</name>
         <multiplier value="1"/>
-        <unitofmeasure value="UNDEF"/>
+        <unitofmeasure value="DBM"/>
         <decimalplaces value="0"/>
     </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -2421,9 +2421,9 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <stategroup value="Event Status"/>
     </point>
     <point offset="101" type="Status">
-        <name>Remote Meter Configuration Failure</name>
+        <name>Meter Programming Attempted</name>
         <archive interval="ZERO" type="ON_CHANGE"/>
-        <stategroup value="Event Status"/>
+        <stategroup value="Meter Programming"/>
     </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>

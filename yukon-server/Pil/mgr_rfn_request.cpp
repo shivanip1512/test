@@ -132,13 +132,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
             {
                 const auto message = handleE2eDtIndication(indication.payload, indication.rfnIdentifier);
 
-                if( message.nodeOriginated )
-                {
-                    CTILOG_INFO(dout, "Node-originated indication received for device " << indication.rfnIdentifier);
-
-                    handleNodeOriginated(Now, indication.rfnIdentifier, message, indication.asid);
-                }
-                else if( auto response = handleResponse(Now, indication.rfnIdentifier, message) )
+                if( auto response = handleResponse(Now, indication.rfnIdentifier, message) )
                 {
                     CTILOG_INFO(dout, "Results for device " << indication.rfnIdentifier << std::endl
                          << boost::join(response->commandResults
@@ -149,6 +143,12 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                     _resultsPerTick.emplace_back(std::move(*response));
 
                     completedDevices.insert(indication.rfnIdentifier);
+                }
+                else if( message.nodeOriginated )
+                {
+                    CTILOG_INFO(dout, "Node-originated indication received for device " << indication.rfnIdentifier);
+
+                    handleNodeOriginated(Now, indication.rfnIdentifier, message, indication.asid);
                 }
             }
             catch( const Protocols::E2e::E2eException &ex )
@@ -283,7 +283,9 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 sendMeterProgramStatusUpdate( {
                         rfnIdentifier,
                         command->getMeterConfigurationID(),
-                        ProgrammingStatus::Idle,
+                        command->getStatusCode()
+                            ? ProgrammingStatus::Failed
+                            : ProgrammingStatus::Idle,
                         command->getStatusCode(),
                         std::chrono::system_clock::now() } );
             }
@@ -708,13 +710,14 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
             FormattedList logItems;
             logItems.add("commandString")    << newRequest.request.parameters.commandString;
-            //logItems.add("command")          << newRequest.request.parameters.command;
+            logItems.add("command name")     << newRequest.request.command->getCommandName();
             logItems.add("connectionHandle") << newRequest.request.parameters.connectionHandle;
             logItems.add("deviceId")         << newRequest.request.parameters.deviceId;
             logItems.add("groupMessageId")   << newRequest.request.parameters.groupMessageId;
             logItems.add("priority")         << newRequest.request.parameters.priority;
             logItems.add("rfnIdentifier")    << newRequest.request.parameters.rfnIdentifier;
             logItems.add("rfnRequestId")     << CtiNumStr(newRequest.request.rfnRequestId).xhex().zpad(8);
+            logItems.add("ASID")             << static_cast<uint8_t>(newRequest.request.command->getApplicationServiceId());
             logItems.add("userMessageId")    << newRequest.request.parameters.userMessageId;
             logItems.add("current message")          << newRequest.currentPacket.payloadSent;
             logItems.add("retransmission delay")     << newRequest.currentPacket.retransmissionDelay;

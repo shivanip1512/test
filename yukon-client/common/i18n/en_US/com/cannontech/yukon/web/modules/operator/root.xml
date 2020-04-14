@@ -80,6 +80,8 @@
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithInfo">Nodes with Info: {0}; Nodes Without Info: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithSNs">Nodes with Serial Numbers: {0}; Total Nodes: {1}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.infraStructureWarnings.title">Infrastructure Warnings</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.wifiCapableCount">Wi-Fi Capable Count</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.viewWiFiMeters">View Wi-Fi Meters</entry>
 
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
@@ -116,6 +118,7 @@
     <entry key="yukon.web.modules.operator.gateways.collect.data.title">Collect Data: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.error.comm">Network Manager connection failed.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_UNKNOWN_GATEWAY">Gateway does not exist in Network Manager.</entry>
+    <entry key="yukon.web.modules.operator.gateways.error.FAILED_DUPLICATE_GATEWAY">Gateway already exists in Network Manager.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_INCORRECT_AUTH">Unable to connect to gateway with specified credentials.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED_BAD_IP">Unable to connect to gateway at specified IP.</entry>
     <entry key="yukon.web.modules.operator.gateways.error.FAILED">An internal error occurred in Network Manager.</entry>
@@ -131,6 +134,7 @@
     <entry key="yukon.web.modules.operator.gateways.updateserver.url.required">Server URL is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.username.required">Username is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.port.required">Port is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.invalid">Not a valid IP Address.</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude.invalid">Latitude must be between -90 and 90.</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude.required">Latitude cannot be empty.</entry>
@@ -163,8 +167,7 @@
     <entry key="yukon.web.modules.operator.gateways.appMode.failsafe">Fail-Safe</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType">Connection Type</entry>
     <entry key="yukon.web.modules.operator.gateways.ipaddress">IP Address</entry>
-    <entry key="yukon.web.modules.operator.gateways.virtual">Virtual</entry>
-    <entry key="yukon.web.modules.operator.gateways.virtual.port">Port</entry>
+    <entry key="yukon.web.modules.operator.gateways.useDefaultPort">Use Default Port</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionStatus">Connection Status</entry>
     <entry key="yukon.web.modules.operator.gateways.firmwareVersion">Firmware Version</entry>
     <entry key="yukon.web.modules.operator.gateways.firmwareUpdateAvailable">Firmware Update Available</entry>
@@ -197,6 +200,9 @@
     <entry key="yukon.web.modules.operator.gateways.connectionType.MODEM_PLUS_PPP">Modem Plus PPP</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType.MODEM_DIRECT">Modem Direct</entry>
     <entry key="yukon.web.modules.operator.gateways.port">Port: {0}</entry>
+    <entry key="yukon.web.modules.operator.gateways.default.port">Port</entry>
+    <entry key="yukon.web.modules.operator.gateways.default.port.title">Port Selection</entry>
+    <entry key="yukon.web.modules.operator.gateways.default.port.helpText"><![CDATA[Default port for a physical gateway is <b>32030</b>.<BR/>For virtual gateway, enter the port (commonly <b>32035</b>) at which you deployed the virtual gateway.]]></entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.RADIO">Radio</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.APPLICATION">Application</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.UPPER_STACK">Upper Stack</entry>
@@ -242,5 +248,13 @@
     <entry key="yukon.web.modules.operator.gateways.streamingDetail">View Data Streaming Summary</entry>
     <entry key="yukon.web.modules.operator.gateways.streamingCapacityHistory">View History</entry>
     
+    <!-- WiFi Connection Status page -->
+    <entry key="yukon.web.modules.operator.wifiConnection.refreshMsg">A refresh of the Wi-Fi Connection data has been requested. It may take a few minutes for the data to update.</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.pageName">Connected Devices</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.statusLastUpdated">Status Last Updated</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.rssiLastUpdated">RSSI Last Updated</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.refreshStatus">Refresh Communication Status</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.allStatuses">All Communication Statuses</entry>
+    <entry key="yukon.web.modules.operator.wifiConnection.refreshAll">Refresh Status</entry>
     
 </properties>

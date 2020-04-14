@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
+import com.cannontech.dr.itron.service.impl.ItronLoadControlEventStatus;
 import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationDetail;
@@ -25,16 +26,28 @@ public class RecentEventParticipationServiceImpl implements RecentEventParticipa
     public void updateDeviceControlEvent(int eventId, int deviceId, EventPhase eventPhase,
             Instant deviceReceivedTime) {
         ControlEventDeviceStatus receivedDeviceStatus = ControlEventDeviceStatus.getDeviceStatus(eventPhase);
-        List<ControlEventDeviceStatus> skipUpdateForStatus =
-            ImmutableList.copyOf(ControlEventDeviceStatus.values())
-                         .stream()
-                         .filter(messageStatus -> messageStatus.getMessageOrder() <= receivedDeviceStatus.getMessageOrder())
-                         .collect(Collectors.toList());
-
-        recentEventParticipationDao.updateDeviceControlEvent(eventId, deviceId, skipUpdateForStatus, receivedDeviceStatus,
-            deviceReceivedTime);
+        updateDeviceControlEventIfRelevant(eventId, deviceId, receivedDeviceStatus, deviceReceivedTime);
     }
 
+    @Override
+    public void updateDeviceControlEvent(int eventId, int deviceId, ItronLoadControlEventStatus eventStatus, Instant deviceReceivedTime) {
+        ControlEventDeviceStatus receivedDeviceStatus = ControlEventDeviceStatus.getDeviceStatus(eventStatus);
+        updateDeviceControlEventIfRelevant(eventId, deviceId, receivedDeviceStatus, deviceReceivedTime);
+    }
+    
+    private void updateDeviceControlEventIfRelevant(int eventId, int deviceId, ControlEventDeviceStatus receivedDeviceStatus, 
+                                                    Instant deviceReceivedTime) {
+        
+        List<ControlEventDeviceStatus> skipUpdateForStatus =
+                ImmutableList.copyOf(ControlEventDeviceStatus.values())
+                             .stream()
+                             .filter(messageStatus -> messageStatus.getMessageOrder() <= receivedDeviceStatus.getMessageOrder())
+                             .collect(Collectors.toList());
+
+            recentEventParticipationDao.updateDeviceControlEvent(eventId, deviceId, skipUpdateForStatus, receivedDeviceStatus,
+                deviceReceivedTime);
+    }
+    
     @Override
     @Transactional
     public void createDeviceControlEvent(int programId, long eventId, int groupId, Instant startTime, Instant stopTime) {

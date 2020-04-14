@@ -24,6 +24,15 @@
         
     <bean class="com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl"/>
     
+    <bean id="networkTreeUpdateTimeResponseListener" class="com.cannontech.web.tools.mapping.service.impl.NetworkTreeServiceImpl"/>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeResponse"/>
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="networkTreeUpdateTimeResponseListener"/>
+    </bean>
+    
     <bean class="com.cannontech.web.common.resources.service.impl.CSSCompressionFilterServiceImpl">
         <qualifier value="cssCompressionFilterService"/>
     </bean>
@@ -271,7 +280,10 @@
                 </entry>
                 <entry key="MSP_DEVICE_GROUP_SYNC">
                     <ref bean="multispeakDeviceGroupSyncBackingService"/>
-                </entry> 
+                </entry>
+                <entry key="MSP_ENROLLMENT_SYNC">
+                    <ref bean="multispeakEnrollmentSyncBackingService"/>
+                </entry>
                 <entry key="ACCOUNT_IMPORT">
                     <ref bean="accountImportBackingService"/>
                 </entry>
@@ -979,6 +991,7 @@
     <bean id="cisSearchMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProviderV5"/>
     
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
+    <bean id="multispeakEnrollmentSyncBackingService" class="com.cannontech.web.updater.multispeak.enrollment.MultispeakEnrollmentSyncBackingService"/>
 
     <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>
 
@@ -1392,13 +1405,14 @@
     <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
 
     <bean class="com.cannontech.dr.loadprogram.service.impl.LoadProgramSetupServiceImpl"/>
-
     <bean class="com.cannontech.dr.macro.service.impl.MacroLoadGroupSetupServiceImpl">
         <qualifier value="macroLoadGroup" />
     </bean>
 
     <bean class="com.cannontech.dr.area.service.impl.ControlAreaSetupServiceImpl"/>
 
+    <bean class="com.cannontech.deviceReadings.service.impl.DeviceReadingsServiceImpl"/>
+    <bean id="deviceReadingRequestValidator" class="com.cannontech.web.api.deviceReadings.DeviceReadingRequestValidator" />
     <bean id="loadGroupSetupValidator" class="com.cannontech.web.api.dr.setup.LoadGroupSetupValidator" />
     <bean id="macroLoadGroupValidator" class="com.cannontech.web.api.dr.macro.MacroLoadGroupValidator" />
     <bean id="lmDeleteValidator" class="com.cannontech.web.api.dr.setup.LMDeleteValidator" />
@@ -1418,14 +1432,30 @@
     <bean class="com.cannontech.web.api.dr.constraint.ProgramConstraintValidator"/>
     <bean class="com.cannontech.dr.constraint.service.impl.ProgramConstraintServiceImpl"/>
     <bean class="com.cannontech.web.dr.setup.ProgramConstraintControllerHelper"/>
-    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMSetupFilterServiceImpl"/>
-    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMSetupDaoImpl"/>
+
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMControlAreaSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMControlScenarioSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMGearSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMLoadGroupSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMLoadProgramSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMMacroLoadGroupSetupFilterServiceImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.service.impl.LMProgramConstraintSetupFilterServiceImpl"/>
+
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMControlAreaSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMControlScenarioSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMGearSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMLoadGroupSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMLoadProgramSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMMacroLoadGroupSetupDaoImpl"/>
+    <bean class="com.cannontech.web.api.dr.setup.dao.impl.LMProgramConstraintSetupDaoImpl"/>
+    <bean class="com.cannontech.common.dr.gear.setup.fields.ProgramGearFieldsBuilder"/>
     
     <bean class="com.cannontech.web.dr.setup.LoadProgramSetupControllerHelper"/>
 
     <bean class="com.cannontech.web.api.dr.gear.setup.fields.validator.GearValidatorHelper"/>
     <bean id="MeterDisconnectGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.MeterDisconnectGearFieldsValidator"/>
     <bean id="honeywellCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellCycleGearFieldsValidator"/>
+    <bean id="honeywellSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.HoneywellSetpointGearFieldsValidator"/>
     <bean id="ecobeeCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeCycleGearFieldsValidator"/>
     <bean id="ecobeeSetpointGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.EcobeeSetpointGearFieldsValidator"/>
     <bean id="smartCycleGearFieldsValidator" class="com.cannontech.web.api.dr.gear.setup.fields.validator.SmartCycleGearFieldsValidator"/>
@@ -1450,14 +1480,10 @@
 
     <bean class="com.cannontech.web.tools.commander.CustomCommandBeanValidator"/>
 
-    <bean id="drAttributeDataJmsListener" class="com.cannontech.stars.dr.jms.data.listener.DrAttributeDataJmsListener"/>
-
-    <jms:listener-container 
-        connection-factory="connectionFactory" 
-        task-executor="globalTaskExecutor" 
-        destination-type="topic"
-        concurrency="1"
-        container-type="simple">
-        <jms:listener destination="yukon.topic.RichPointUpdateObj" ref="drAttributeDataJmsListener" method="pointDataReceived"/>
-    </jms:listener-container>
+    <bean id="drProgramStatusService" class="com.cannontech.stars.dr.jms.service.impl.DrJmsProgramStatusServiceImpl"/>
+    
+    <bean class="com.cannontech.web.stars.service.impl.RfnWiFiCommDataServiceImpl"/>
+    <bean class="com.cannontech.common.device.port.service.impl.PortServiceImpl"/>
+    <bean class="com.cannontech.web.api.commChannel.PortValidator"/>
+    <bean class="com.cannontech.web.api.commChannel.PortValidatorHelper"/>
 </beans>

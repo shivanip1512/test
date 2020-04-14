@@ -111,9 +111,9 @@ public class AssetAvailabilityController {
             json.put("summary",  summary);
         }
 
-        json.put("lastAttemptedRefresh", lastUpdateTime);
+        json.put("lastAttemptedRefresh", lastUpdateTime.getMillis());
         Instant nextRun = assetAvailabilityWidgetService.getNextRefreshTime(lastUpdateTime);
-        json.put("nextRefreshTime", nextRun);
+        json.put("nextRefreshTime", nextRun.getMillis());
         json.put("refreshMillis", assetAvailabilityWidgetService.getRefreshMilliseconds());
         json.put("updateTooltip", accessor.getMessage(widgetKey + "forceUpdate"));
 

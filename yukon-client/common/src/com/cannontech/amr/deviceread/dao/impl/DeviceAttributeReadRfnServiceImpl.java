@@ -1,6 +1,8 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -99,12 +101,12 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         initiateRead(points, new RfnStrategyCallback(callback, execution));
     }
 
-    private class RfnStrategyCallback implements DeviceAttributeReadCallback{
+    private class RfnStrategyCallback implements DeviceAttributeReadCallback {
        
-        Set<PaoIdentifier> errors = Sets.newConcurrentHashSet();
-        AtomicInteger completionCounter = new AtomicInteger(1);
-        DeviceAttributeReadCallback callback;
-        CommandRequestExecution execution;
+        private Set<PaoIdentifier> errors = Sets.newConcurrentHashSet();
+        private AtomicInteger completionCounter = new AtomicInteger(1);
+        private DeviceAttributeReadCallback callback;
+        private CommandRequestExecution execution;
         public RfnStrategyCallback(DeviceAttributeReadCallback callback, CommandRequestExecution execution) {
             this.callback = callback;
             this.execution = execution;
@@ -147,6 +149,10 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         
         public void setCompletionCounter(int completionCounter) {
             this.completionCounter = new AtomicInteger(completionCounter);
+        }
+
+        public CommandRequestExecution getExecution() {
+            return execution;
         }
     }
     
@@ -342,12 +348,14 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         }
     }
     
-    private void initiateRead(Iterable<PaoMultiPointIdentifier> points,  RfnStrategyCallback strategyCallback){
-        List<RfnMeter> rfnMeters = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
-        List<RfnMeter> rfnDisconnectMeters = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
-        List<RfnDevice> rfnDevices = Lists.newArrayListWithCapacity(IterableUtils.guessSize(points));
+    private void initiateRead(Iterable<PaoMultiPointIdentifier> points, RfnStrategyCallback strategyCallback) {
+        List<RfnMeter> rfnMeters = new ArrayList<>();
+        List<RfnMeter> rfnDisconnectMeters = Lists.newArrayList();
+        List<RfnDevice> rfnDevices = Lists.newArrayList();
+        Set<Integer> allDeviceIds = new HashSet<>();
         
         for (PaoMultiPointIdentifier pointIdentifier: points) {
+            allDeviceIds.add(pointIdentifier.getPao().getPaoId());
             if (pointIdentifier.getPao().getPaoType().isMeter()) {
                 RfnMeter rfnMeter = meterDao.getRfnMeterForId(pointIdentifier.getPao().getPaoId());
                 if (containsOnlyDisconnectStatus(pointIdentifier)) {
@@ -372,15 +380,17 @@ public class DeviceAttributeReadRfnServiceImpl implements DeviceAttributeReadStr
         if(!rfnDevices.isEmpty()){
             completionCounter ++;
         }
-        
-        if (log.isDebugEnabled()) {
-            log.debug(getStrategy() + " Strategy initiateRead");
-            log.debug("rfnMeter:" + rfnMeters);
-            log.debug("rfnDevices:" + rfnDevices);
-            log.debug("completionCounter:" + completionCounter);
+        if(!rfnDisconnectMeters.isEmpty()){
+            completionCounter ++;
         }
+
+        log.debug("RF strategy meters: {} RF Devices: {} RF Disconnect Meters: {} CompletionCounter: {}", rfnMeters.size(),
+                rfnDevices.size(), rfnDisconnectMeters.size(), completionCounter);
                 
         strategyCallback.setCompletionCounter(completionCounter);
+       
+        commandRequestExecutionResultDao.saveExecutionRequest(strategyCallback.getExecution().getId(), allDeviceIds);
+        
         sendMeterRequests(rfnMeters, strategyCallback);        
         sendMeterDisconnectQueries(rfnDisconnectMeters, strategyCallback);
         sendDeviceRequests(rfnDevices, devicePointIds, strategyCallback);

@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlArea;
 import com.cannontech.common.dr.setup.ControlAreaProgramAssignment;
@@ -20,8 +23,12 @@ import com.cannontech.common.dr.setup.ControlAreaTriggerType;
 import com.cannontech.common.dr.setup.DailyDefaultState;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LMServiceHelper;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.util.TimeIntervals;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -40,6 +47,7 @@ import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMControlAreaTrigger;
 import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.dr.area.service.ControlAreaSetupService;
+import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
@@ -48,10 +56,13 @@ import com.cannontech.yukon.IDatabaseCache;
 public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DemandResponseEventLogService logService;
+    @Autowired private LMServiceHelper lmServiceHelper;
     @Autowired private PointDao pointdao;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private ControlAreaDao controlAreaDao;
 
     /**
      * Retrieve control area based on control area Id.
@@ -88,6 +99,15 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
 
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
 
+        String startTime = controlArea.getDailyStartTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStartTimeInMinutes()) : null;
+        String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
+
+        logService.controlAreaCreated(controlArea.getName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
+                getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
+                ApiRequestContext.getContext().getLiteYukonUser());
+
         return lmControlArea.getPAObjectID();
     }
 
@@ -99,11 +119,52 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                                       .findFirst().orElseThrow(() -> new NotFoundException(" Control Area Id not found  " + controlAreaId ));
 
         LMControlArea lmControlArea = getDBPersistent(controlAreaId);
+
+        // Checks if any assigned load program(s) which is removed while updating control area is associated with any control
+        // scenario(s) or not.
+        validateUpdate(controlArea.getProgramAssignment(), lmControlArea.getLmControlAreaProgramVector());
+
         buildLMControlAreaDBPersistent(lmControlArea, controlArea);
         lmControlArea.setPAObjectID(controlAreaId);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.UPDATE);
 
+        String startTime = controlArea.getDailyStartTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStartTimeInMinutes()) : null;
+        String stopTime = controlArea.getDailyStopTimeInMinutes() != null ? TimeUtil
+                .fromMinutesToHHmm(controlArea.getDailyStopTimeInMinutes()) : null;
+
+          logService.controlAreaUpdated(lmControlArea.getPAOName(), getTriggerNamesString(lmControlArea.getLmControlAreaTriggerVector()),
+          getProgramNamesString(lmControlArea.getLmControlAreaProgramVector()), startTime, stopTime,
+          ApiRequestContext.getContext().getLiteYukonUser());
+
         return lmControlArea.getPAObjectID();
+    }
+
+    /**
+     * Return a string with comma separated trigger names for the provided LMControlAreaTrigger List.
+     */
+    private String getTriggerNamesString(Vector<LMControlAreaTrigger> triggerList) {
+        if (CollectionUtils.isNotEmpty(triggerList)) {
+            List<String> triggerNames = new ArrayList<String>();
+            triggerList.forEach(trigger -> {
+                triggerNames.add(trigger.toString());
+            });
+            return String.join(", ", triggerNames);
+        }
+        return null;
+    }
+
+    /**
+     * Return a string with comma separated program names for the provided LMControlAreaProgram List
+     */
+    private String getProgramNamesString(Vector<LMControlAreaProgram> programList) {
+        if (CollectionUtils.isNotEmpty(programList)) {
+            List<Integer> programIds = programList.stream()
+                                                  .map(program -> program.getLmProgramDeviceID())
+                                                  .collect(Collectors.toList());
+            return lmServiceHelper.getAbbreviatedPaoNames(programIds);
+        }
+        return null;
     }
 
     @Override
@@ -115,9 +176,14 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                                                          .equalsIgnoreCase(areaName))
                                                          .findFirst()
                                                          .orElseThrow(() -> new NotFoundException("Control Area Id and Name combination not found"));
+
+        // Checks if any assigned load program(s) is associated with any control scenario(s) 
+        validateDelete(areaId);
+
         YukonPAObject lmControlArea = (YukonPAObject) LiteFactory.createDBPersistent(controlArea);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.DELETE);
 
+        logService.controlAreaDeleted(lmControlArea.getPAOName(), ApiRequestContext.getContext().getLiteYukonUser());
         return lmControlArea.getPAObjectID();
     }
 
@@ -378,4 +444,45 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
         throw new UnsupportedOperationException("Not supported copy operation");
     }
 
+    /**
+     * Validate deletion for Control Area.
+     */
+    private void validateDelete(int controlAreaId) {
+        Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(controlAreaId);
+        checkProgramAssignment(programIds);
+    }
+
+    /**
+     * Validate Control Area update.
+     */
+    private void validateUpdate(List<ControlAreaProgramAssignment> newPrograms, Vector<LMControlAreaProgram> oldPrograms) {
+        List<Integer> oldProgramIds = oldPrograms.stream()
+                                                 .map(lp -> lp.getLmProgramDeviceID())
+                                                 .sorted()
+                                                 .collect(Collectors.toList());
+
+        List<Integer> newProgramIds = newPrograms.stream()
+                                                 .map(lp -> lp.getProgramId())
+                                                 .sorted()
+                                                 .collect(Collectors.toList());
+
+        oldProgramIds.removeAll(newProgramIds);
+        checkProgramAssignment(oldProgramIds.stream().collect(Collectors.toSet()));
+    }
+
+    /**
+     * Checks that in control area is there any assigned load program(s) is associated with any control scenario(s).
+     * @throws LMObjectDeletionFailureException if any assigned program is associated to any scenario.
+     */
+    private void checkProgramAssignment(Set<Integer> programIds) {
+        for (Integer programId : programIds) {
+            boolean isAssignedProgramsAssociatedWithScenario = dbCache.getAllLMScenarioProgs().stream()
+                                                                                              .anyMatch(scenarioProg -> scenarioProg.getProgramID() == programId);
+
+            if (isAssignedProgramsAssociatedWithScenario) {
+                throw new LMObjectDeletionFailureException(
+                        "A program on this control area is assigned to a scenario. Program must be removed from scenario before it can be removed from a control area.");
+            }
+        }
+    }
 }

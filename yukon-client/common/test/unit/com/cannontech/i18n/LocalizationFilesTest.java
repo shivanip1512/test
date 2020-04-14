@@ -126,8 +126,6 @@ public class LocalizationFilesTest {
                         "yukon.dr.config.utility"))
                 .put("web/modules/dr/setup.xml", Set.of(
                         "yukon.web.modules.dr.setup.gear.rampIn.title",
-                        "yukon.web.modules.dr.setup.gear.whenToChange",
-                        "yukon.web.modules.dr.setup.gear.cyclePeriod",
                         "yukon.web.modules.dr.setup.gear.howToStopControl",
                         "yukon.web.modules.dr.setup.gear.triggerNumber",
                         "yukon.web.modules.dr.setup.gear.cycleCountSendType",
@@ -137,7 +135,6 @@ public class LocalizationFilesTest {
                         "yukon.web.modules.dr.setup.gear.title",
                         "yukon.web.modules.dr.setup.gear.controlParameters.title",
                         "yukon.web.modules.dr.setup.gear.maxCycleCount",
-                        "yukon.web.modules.dr.setup.gear.changePrority",
                         "yukon.web.modules.dr.setup.gear.groupSelectionMethod",
                         "yukon.web.modules.dr.setup.gear.noRamp",
                         "yukon.web.modules.dr.setup.gear.gearName",

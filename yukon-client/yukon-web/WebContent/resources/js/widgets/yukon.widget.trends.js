@@ -81,8 +81,8 @@ yukon.widget.trends = (function () {
                     chartContainer.find(".highcharts-input-group").attr('cursor','default');
                 }
                 var refreshButton = widgetContainer.find('.js-trends-update'),
-                    dateTime = moment(trend.lastAttemptedRefresh.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
-                    nextRunDateTime = moment(trend.nextRun.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+                    dateTime = moment(trend.lastAttemptedRefresh).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
+                    nextRunDateTime = moment(trend.nextRun).tz(yg.timezone).format(yg.formats.date.both_with_ampm),
                     tooltipTemplate = widgetContainer.find('.js-tooltip-template').val();
                 refreshButton.prop('title', tooltipTemplate + nextRunDateTime);
                 refreshButton.attr('disabled', true);

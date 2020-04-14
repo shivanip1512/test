@@ -74,6 +74,16 @@ public class ApiCallHelper {
 
     
     /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP GET method for specified URI,
+     * JSON Object payload and request parameter.
+     * 
+     */
+    public static ExtractableResponse<?> get(String key, String param, Object body) {
+        String uri = getProperty(key);
+        return getHeader().body(body).get(uri + param).then().log().all().extract();
+    }
+    
+    /**
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP POST method for specified URI
      * and JSON Object payload
      * 

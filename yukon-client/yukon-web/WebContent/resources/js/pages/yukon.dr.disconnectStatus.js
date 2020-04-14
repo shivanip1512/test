@@ -47,7 +47,7 @@ yukon.dr.disconnectStatus = (function () {
                     type: 'POST'
                 }).done(function(data) {
                     if (data.success && data.status) {
-                        var timeText = moment(data.time.millis).tz(yg.timezone).format(yg.formats.date.both);
+                        var timeText = moment(data.time).tz(yg.timezone).format(yg.formats.date.both);
                         $('.js-status-' + deviceId).html(data.status).flash();
                         $('.js-time-' + deviceId).html(timeText).flash();
                     } else if (data.errors){

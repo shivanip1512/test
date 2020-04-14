@@ -15,7 +15,7 @@ static void RemoveQueueEntry(HCTIQUEUE QueueHandle, PQUEUEENT Entry, PQUEUEENT P
 
 static void DefibBlockSem(HCTIQUEUE QueueHandle)
 {
-    CTILOG_INFO(dout, "RESTART THE BLOCK SEMAPHORE");
+    CTILOG_INFO(dout, "RESTART THE BLOCK SEMAPHORE - " << QueueHandle->BlockSem);
 
     /* Close the semaphore */
     CTICloseMutexSem (&QueueHandle->BlockSem);

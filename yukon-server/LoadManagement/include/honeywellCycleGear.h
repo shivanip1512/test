@@ -1,14 +1,12 @@
 #pragma once
 
-#include "lmprogramdirect.h"
+#include "lmprogramdirectgear.h"
 #include "smartgearbase.h"
 
 
-class HoneywellCycleGear : public SmartGearBase,
-                           public CtiLMProgramDirectGear
+struct HoneywellCycleGear : SmartGearBase,
+                            CtiLMProgramDirectGear
 {
-public:
-
     HoneywellCycleGear(Cti::RowReader & rdr);
 
     CtiLMProgramDirectGear * replicate() const override;
@@ -21,4 +19,12 @@ public:
     bool stopControl(CtiLMGroupPtr currentLMGroup) override;
 
     unsigned long estimateOffTime(long controlSeconds) override;
+
+    double calculateLoadReduction( double groupCapacity ) const;
+
+    // Custom Gear settings
+
+    bool isRampInOut() const;
+    bool isMandatory() const;
+    int  getDutyCycle() const;
 };

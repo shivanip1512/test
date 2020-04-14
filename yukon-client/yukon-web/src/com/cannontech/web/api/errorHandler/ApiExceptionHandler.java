@@ -15,6 +15,8 @@ import javax.validation.ConstraintViolationException;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -40,11 +42,13 @@ import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.HoneywellProcessingException;
 import com.cannontech.core.dao.MacroLoadGroupProcessingException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -283,6 +287,25 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             String.format("Could not find the %s method for URL %s", request.getMethod(), url), uniqueKey);
         parseToJson(response, apiError, HttpStatus.NOT_FOUND);
 
+    }
+
+    @ExceptionHandler({ DynamicDataAccessException.class })
+    public ResponseEntity<Object> dynamicDataAccessException(final Exception ex, final WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({ IllegalUseOfAttribute.class })
+    public ResponseEntity<Object> handleIllegalUseOfAttributeException(final Exception ex, final WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     /**

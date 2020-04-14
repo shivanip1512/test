@@ -12,8 +12,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +65,10 @@ import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -91,12 +92,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private static final String gatewayUpdateRequestCparm = "RFN_GATEWAY_UPDATE_REQUEST";
     private static final String gatewayActionRequestCparm = "RFN_GATEWAY_ACTION_REQUEST";
 
-    private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
-    private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
-    
     // Autowired in constructor
     private ConfigurationSource configSource;
-    private ConnectionFactory connectionFactory;
     private DeviceDao deviceDao;
     private EndpointEventLogService endpointEventLogService;
     private GlobalSettingDao globalSettingDao;
@@ -108,7 +105,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
     @Autowired private AsyncDynamicDataSource dataSource;
     @Autowired private AttributeService attributeService;
-       
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     // Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
     private RequestReplyTemplate<GatewayActionResponse> actionRequestTemplate;
@@ -120,7 +118,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     @Autowired
     public RfnGatewayServiceImpl(
             ConfigurationSource configSource,
-            ConnectionFactory connectionFactory,
             DeviceDao deviceDao,
             EndpointEventLogService endpointEventLogService,
             GlobalSettingDao globalSettingDao,
@@ -130,7 +127,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             RfnGatewayDataCache dataCache) {
 
         this.configSource = configSource;
-        this.connectionFactory = connectionFactory;
         this.deviceDao = deviceDao;
         this.endpointEventLogService = endpointEventLogService;
         this.globalSettingDao = globalSettingDao;
@@ -142,15 +138,22 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @PostConstruct
     public void init() {
-        updateRequestTemplate = new RequestReplyTemplateImpl<>(gatewayUpdateRequestCparm, 
-                configSource, connectionFactory, gatewayUpdateRequestQueue, false);
-        actionRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm,
-                configSource, connectionFactory, gatewayActionRequestQueue, false);
-        connectionTestRequestTemplate = 
-                new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, 
-                configSource, connectionFactory, gatewayActionRequestQueue, false);
+        JmsApi<?, ?, ?> gatewayUpdateRequestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                JmsApiDirectory.RF_GATEWAY_CREATE, JmsApiDirectory.RF_GATEWAY_EDIT, JmsApiDirectory.RF_GATEWAY_DELETE);
+        updateRequestTemplate = new RequestReplyTemplateImpl<>(gatewayUpdateRequestCparm, configSource, jmsTemplate,
+                gatewayUpdateRequestQueue);
+
+        JmsApi<?, ?, ?> gatewayActionRequestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                JmsApiDirectory.RF_GATEWAY_SCHEDULE_DELETE, JmsApiDirectory.RF_GATEWAY_COLLECTION,
+                JmsApiDirectory.RF_GATEWAY_CONNECT, JmsApiDirectory.RF_GATEWAY_SCHEDULE_REQUEST,
+                JmsApiDirectory.RF_GATEWAY_CONNECTION_TEST);
+
+        actionRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource, jmsTemplate,
+                gatewayActionRequestQueue);
+        connectionTestRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource, jmsTemplate,
+                gatewayActionRequestQueue);
         configRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.RF_GATEWAY_SET_CONFIG.getName(),
-                configSource, connectionFactory, JmsApiDirectory.RF_GATEWAY_SET_CONFIG.getQueue().getName(), false);
+                configSource, jmsTemplate, JmsApiDirectory.RF_GATEWAY_SET_CONFIG);
     }
     
     @Override
@@ -240,6 +243,13 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         // Get RfnGatewayData from cache
         RfnGatewayData data = dataCache.getIfPresent(device.getPaoIdentifier());
         
+        return buildRfnGateway(device, device.getName(), data);
+    }
+    
+    @Override
+    public RfnGateway getGatewayByRfnIdentifier(RfnIdentifier rfnIdentifier) {
+        RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(rfnIdentifier);
+        RfnGatewayData data = dataCache.getIfPresent(device.getPaoIdentifier());
         return buildRfnGateway(device, device.getName(), data);
     }
     
@@ -385,7 +395,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewayCreateRequest request = new GatewayCreateRequest();
         GatewaySaveData data = new GatewaySaveData();
         data.setIpAddress(settings.getIpAddress());
-        if(settings.getPort() != null) {
+        if (!settings.isUseDefaultPort()) {
             data.setPort(settings.getPort());
         }
         data.setName(settings.getName());
@@ -393,7 +403,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         data.setAdmin(settings.getAdmin());
         data.setSuperAdmin(settings.getSuperAdmin());
         
-        if (settings.isUseDefault()) {
+        if (settings.isUseDefaultUpdateServer()) {
             String updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
             Authentication updateServerAuth = new Authentication();
             updateServerAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
@@ -684,7 +694,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             settings.setLongitude(gateway.getLocation().getLongitude());
         }
 
-
         String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
 
         String updateServerUrl = gateway.getData().getUpdateServerUrl();
@@ -692,9 +701,13 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
         
         if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
-            settings.setUseDefault(true);
+            settings.setUseDefaultUpdateServer(true);
         }
-
+        
+        Integer port = Integer.valueOf(gateway.getData().getPort());
+        settings.setPort(port);
+        settings.setUseDefaultPort(port == RfnGatewayService.GATEWAY_DEFAULT_PORT);
+        
         return settings;
     }
     

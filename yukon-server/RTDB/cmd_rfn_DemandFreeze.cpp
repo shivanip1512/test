@@ -141,7 +141,7 @@ RfnCommandResult RfnDemandFreezeConfigurationCommand::decodeCommand( const CtiTi
     return result;
 }
 
-std::string RfnDemandFreezeConfigurationCommand::getCommandName()
+std::string RfnDemandFreezeConfigurationCommand::getCommandName() const
 {
     return "Demand Freeze Configuration Request";
 }
@@ -178,7 +178,7 @@ RfnCommandResult RfnImmediateDemandFreezeCommand::decodeCommand( const CtiTime n
     return result;
 }
 
-std::string RfnImmediateDemandFreezeCommand::getCommandName()
+std::string RfnImmediateDemandFreezeCommand::getCommandName() const
 {
     return "Immediate Demand Freeze Request";
 }
@@ -404,7 +404,7 @@ RfnCommandResult RfnGetDemandFreezeInfoCommand::decodeCommand( const CtiTime now
     return result;
 }
 
-std::string RfnGetDemandFreezeInfoCommand::getCommandName()
+std::string RfnGetDemandFreezeInfoCommand::getCommandName() const
 {
     return "Get Demand Freeze Info Request";
 }

@@ -944,6 +944,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.gearControlMethod.EcobeeCycle">ecobee Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.EcobeeSetpoint">ecobee Setpoint</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.HoneywellCycle">Honeywell Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.HoneywellSetpoint">Honeywell Setpoint</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.ItronCycle">Itron Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestStandardCycle">Nest Standard Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.NestCriticalCycle">Nest Critical Cycle</entry>

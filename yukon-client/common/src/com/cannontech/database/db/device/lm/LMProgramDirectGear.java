@@ -3,16 +3,12 @@ package com.cannontech.database.db.device.lm;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.device.lm.BeatThePeakGear;
-import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
-import com.cannontech.database.data.device.lm.ItronCycleGear;
 import com.cannontech.database.db.NestedDBPersistent;
 
 /**
@@ -216,9 +212,8 @@ public abstract class LMProgramDirectGear
 				gear.setGearID(gID);
 				gear.setDbConnection(conn);
 				
-				//need to make sure we get the Thermostat/Beat the Peak/Itron specific information from its separate table
-				if (gear instanceof LMThermostatGear || gear instanceof BeatThePeakGear || gear instanceof LMNestGear || 
-				        gear instanceof ItronCycleGear|| gear instanceof EcobeeSetpointGear) {
+				// Get device-specific information from separate table
+				if (gear.useCustomDbRetrieve()) {
 					gear.retrieve();
                 } else {
 					gear.setGearName(name);
@@ -537,6 +532,12 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
     public Integer getStopCommandRepeat() {
         return stopCommandRepeat;
     }
+    
+    /**
+     * If true, the gear will be loaded from DB via its retrieve() method, rather than using the standard
+     * LMProgramDirectGear loading.
+     */
+    public abstract boolean useCustomDbRetrieve();
     
 	/**
 	 * retrieve method comment.

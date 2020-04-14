@@ -52,14 +52,17 @@ public class HoneywellProgramSetupApiControllerTest {
         baseURI = ApiCallHelper.getProperty("baseURI");
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-        honeywellGearFieldDescriptor = new FieldDescriptor[] { fieldWithPath("gears[].fields.rampInOut").type(JsonFieldType.BOOLEAN).description("RampInOut"),
-                fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100"),
-                fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER).description("Cycle Period"),
+        honeywellGearFieldDescriptor = new FieldDescriptor[] { fieldWithPath("gears[].fields.mandatory").type(JsonFieldType.BOOLEAN).description("Mandatory"),
+                fieldWithPath("gears[].fields.rampInOut").type(JsonFieldType.BOOLEAN).description("RampInOut").optional(),
+                fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100").optional(),
+                fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER).description("Cycle Period").optional(),
                 fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
                 fieldWithPath("gears[].fields.whenToChangeFields.whenToChange").type(JsonFieldType.STRING)
-                                                                               .description("When to change field Expected : None, Duration, Priority, TriggerOffset") };
+                                                                               .description("When to change field Expected : None, Duration, Priority, TriggerOffset"),
+                fieldWithPath("gears[].fields.setpointOffset").type(JsonFieldType.NUMBER).description("Setpoint Offset. Min Value: -10 F, Max Value: 10 F").optional(),
+                fieldWithPath("gears[].fields.mode").type(JsonFieldType.STRING).description("Mode. COOL, HEAT").optional() };
         honeywellProgramFieldDescriptor = LoadProgramSetupHelper.mergeProgramFieldDescriptors(honeywellGearFieldDescriptor);
     }
 
@@ -107,6 +110,7 @@ public class HoneywellProgramSetupApiControllerTest {
     public void Test_HoneywellProgram_Create(ITestContext context) {
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellCycle);
+        gearTypes.add(MockGearControlMethod.HoneywellSetpoint);
         MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  (List<MockLoadGroupBase>) context.getAttribute("loadGroups"),
                                                                                  gearTypes,

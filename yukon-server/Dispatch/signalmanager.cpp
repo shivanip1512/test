@@ -713,6 +713,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
             Cti::Database::DatabaseBulkUpdater<11> bu { 
                 conn.getClientType(),
                 CtiTableDynamicPointAlarming::getTempTableSchema(),
+                2,
                 "DPA",
                 "DynamicPointAlarming",
                 "Point"

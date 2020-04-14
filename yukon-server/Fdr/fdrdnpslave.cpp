@@ -485,13 +485,13 @@ int DnpSlave::doComms(ConnectionProtocol cp, const std::string& messageType)
                 }
                 cp.connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
             }
-
-            cp.dnpSlave.decode(xfer);
         }
         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() <<" was not able to generate " << messageType << " response.");
         }
+
+        cp.dnpSlave.decode(xfer);
     }
 
     return 0;
@@ -800,197 +800,246 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         return ControlStatus::NotSupported;
     }
 
-    //  Confirm SBO vs direct
-    switch( control.action )
-    {
-        case Protocols::DnpSlave::ControlAction::Select:
-        case Protocols::DnpSlave::ControlAction::Operate:
-        {
-            switch( point.getControlType() )
-            {
-                case ControlType_SBOPulse:
-                case ControlType_SBOLatch:
-                    break;
-
-                default:
-                {
-                    CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
-                    return ControlStatus::NotSupported;
-                }
-            }
-            break;
-        }
-        case Protocols::DnpSlave::ControlAction::Direct:
-        {
-            switch( point.getControlType() )
-            {
-                case ControlType_Normal:
-                case ControlType_Latch:
-                    break;
-
-                default:
-                {
-                    CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
-                    return ControlStatus::NotSupported;
-                }
-            }
-            break;
-        }
-        default:
-        {
-            CTILOG_WARN(dout, logNow() <<" unsupported action" << logPoints(control, point));
-            return ControlStatus::NotSupported;
-        }
-    }
-
-    //  Confirm queue, clear, count all match the hardcoded values in dev_dnp
-    if( control.queue || control.clear || control.count != 1 )
-    {
-        CTILOG_WARN(dout, logNow() <<" unsupported queue/clear/count parameters" << logPoints(control, point));
-        return ControlStatus::NotSupported;
-    }
-
     std::string commandString;
 
-    switch( point.getControlType() )
-    {
-        case ControlType_Normal:
-        case ControlType_SBOPulse:
-        {
-            if( control.control != BinaryOutputControl::PulseOn )
-            {
-                CTILOG_WARN(dout, logNow() <<" Incorrect control type" << logPoints(control, point));
-                return ControlStatus::FormatError;
-            }
+    bool isPassthroughControl = true;
 
-            switch( control.trip_close )
+    {   // find out if it is a binary pass-through control....
+        switch ( point.getControlType() )
+        {
+            case ControlType_Normal:
+            case ControlType_SBOPulse:
             {
-                case BinaryOutputControl::Trip:
+                if( control.control == BinaryOutputControl::PulseOn )
+                {
+                    commandString =
+                        ( control.trip_close == BinaryOutputControl::Trip )
+                            ? point.getStateZeroControl()
+                            : point.getStateOneControl();
+                }
+                break;
+            }
+            case ControlType_Latch:
+            case ControlType_SBOLatch:
+            {
+                if ( control.control == BinaryOutputControl::LatchOff )
                 {
                     commandString = point.getStateZeroControl();
-
-                    if( ! icontainsString(commandString, " open") )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    if( point.getCloseTime1() != control.on_time )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    if( control.off_time )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    break;
                 }
-                case BinaryOutputControl::Close:
+                else if ( control.control == BinaryOutputControl::LatchOn )
                 {
                     commandString = point.getStateOneControl();
-
-                    if( ! icontainsString(commandString, " close") )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    if( point.getCloseTime2() != control.on_time )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    if( control.off_time )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    break;
-                }
-                case BinaryOutputControl::NUL:
-                {
-                    commandString = point.getStateOneControl();  //  always send state one control
-
-                    if( ! icontainsString(commandString, " close") )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    if( ! icontainsString(commandString, " direct") )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" State one control string does not contain DIRECT" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    if( point.getCloseTime2() != control.on_time )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    if( control.off_time )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    break;
                 }
             }
-            break;
         }
-        case ControlType_Latch:
-        case ControlType_SBOLatch:
-        {
-            switch( control.control )
-            {
-                case BinaryOutputControl::LatchOff:
-                {
-                    commandString = point.getStateZeroControl();
 
-                    if( ! icontainsString(commandString, " open") )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    break;
-                }
-                case BinaryOutputControl::LatchOn:
-                {
-                    commandString = point.getStateOneControl();
-
-                    if( ! icontainsString(commandString, " close") )
-                    {
-                        CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
-                        return ControlStatus::FormatError;
-                    }
-                    break;
-                }
-                default:
-                {
-                    CTILOG_WARN(dout, logNow() <<" incorrect control type" << logPoints(control, point));
-                    return ControlStatus::FormatError;
-                }
-            }
-            break;
-        }
-        default:
+        if ( ! commandString.empty() )
         {
-            CTILOG_WARN(dout, logNow() <<" unknown control type " << logPoints(control, point));
-            return ControlStatus::FormatError;
+            static const std::regex regularControlCommand
+            { 
+                "^control *(?:open|close)",
+                std::regex_constants::ECMAScript
+                    | std::regex_constants::icase
+            };
+
+            std::smatch results;
+
+            isPassthroughControl = std::regex_search( commandString, results, regularControlCommand );
         }
     }
 
-    commandString += " offset " + std::to_string(point.getControlOffset());
-
-    switch( control.action )
+    if ( isPassthroughControl )   // a normal control operation
     {
-        case Protocols::DnpSlave::ControlAction::Select:
+        //  Confirm SBO vs direct
+        switch( control.action )
         {
-            commandString += " sbo_selectonly";
-            break;
+            case Protocols::DnpSlave::ControlAction::Select:
+            case Protocols::DnpSlave::ControlAction::Operate:
+            {
+                switch( point.getControlType() )
+                {
+                    case ControlType_SBOPulse:
+                    case ControlType_SBOLatch:
+                        break;
+
+                    default:
+                    {
+                        CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                }
+                break;
+            }
+            case Protocols::DnpSlave::ControlAction::Direct:
+            {
+                switch( point.getControlType() )
+                {
+                    case ControlType_Normal:
+                    case ControlType_Latch:
+                        break;
+
+                    default:
+                    {
+                        CTILOG_WARN(dout, logNow() <<" control type/action mismatch" << logPoints(control, point));
+                        return ControlStatus::NotSupported;
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                CTILOG_WARN(dout, logNow() <<" unsupported action" << logPoints(control, point));
+                return ControlStatus::NotSupported;
+            }
         }
-        case Protocols::DnpSlave::ControlAction::Operate:
+
+        //  Confirm queue, clear, count all match the hardcoded values in dev_dnp
+        if( control.queue || control.clear || control.count != 1 )
         {
-            commandString += " sbo_operate";
-            break;
+            CTILOG_WARN(dout, logNow() <<" unsupported queue/clear/count parameters" << logPoints(control, point));
+            return ControlStatus::NotSupported;
+        }
+
+        switch( point.getControlType() )
+        {
+            case ControlType_Normal:
+            case ControlType_SBOPulse:
+            {
+                if( control.control != BinaryOutputControl::PulseOn )
+                {
+                    CTILOG_WARN(dout, logNow() <<" Incorrect control type" << logPoints(control, point));
+                    return ControlStatus::FormatError;
+                }
+
+                switch( control.trip_close )
+                {
+                    case BinaryOutputControl::Trip:
+                    {
+                        commandString = point.getStateZeroControl();
+
+                        if( ! icontainsString(commandString, " open") )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        if( point.getCloseTime1() != control.on_time )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        if( control.off_time )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        break;
+                    }
+                    case BinaryOutputControl::Close:
+                    {
+                        commandString = point.getStateOneControl();
+
+                        if( ! icontainsString(commandString, " close") )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        if( point.getCloseTime2() != control.on_time )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        if( control.off_time )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        break;
+                    }
+                    case BinaryOutputControl::NUL:
+                    {
+                        commandString = point.getStateOneControl();  //  always send state one control
+
+                        if( ! icontainsString(commandString, " close") )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        if( ! icontainsString(commandString, " direct") )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" State one control string does not contain DIRECT" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        if( point.getCloseTime2() != control.on_time )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" On time mismatch" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        if( control.off_time )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" Off time not supported, must be zero" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+            case ControlType_Latch:
+            case ControlType_SBOLatch:
+            {
+                switch( control.control )
+                {
+                    case BinaryOutputControl::LatchOff:
+                    {
+                        commandString = point.getStateZeroControl();
+
+                        if( ! icontainsString(commandString, " open") )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" State zero control string is not an OPEN" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        break;
+                    }
+                    case BinaryOutputControl::LatchOn:
+                    {
+                        commandString = point.getStateOneControl();
+
+                        if( ! icontainsString(commandString, " close") )
+                        {
+                            CTILOG_WARN(dout, logNow() <<" State one control string is not a CLOSE" << logPoints(control, point));
+                            return ControlStatus::FormatError;
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        CTILOG_WARN(dout, logNow() <<" incorrect control type" << logPoints(control, point));
+                        return ControlStatus::FormatError;
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                CTILOG_WARN(dout, logNow() <<" unknown control type " << logPoints(control, point));
+                return ControlStatus::FormatError;
+            }
+        }
+
+        commandString += " offset " + std::to_string(point.getControlOffset());
+
+        switch( control.action )
+        {
+            case Protocols::DnpSlave::ControlAction::Select:
+            {
+                commandString += " sbo_selectonly";
+                break;
+            }
+            case Protocols::DnpSlave::ControlAction::Operate:
+            {
+                commandString += " sbo_operate";
+                break;
+            }
         }
     }
 
@@ -1011,7 +1060,7 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         return ControlStatus::Undefined;
     }
 
-    return waitForResponse(userMessageId);
+    return waitForResponse(userMessageId, isPassthroughControl);
 }
 
 
@@ -1264,7 +1313,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         return ControlStatus::Undefined;
     }
 
-    return waitForResponse(userMessageId);
+    return waitForResponse(userMessageId, true);
 }
 
 
@@ -1301,7 +1350,7 @@ bool DnpSlave::shouldIgnoreOldData() const
 }
 
 
-ControlStatus DnpSlave::waitForResponse(const long userMessageId)
+ControlStatus DnpSlave::waitForResponse(const long userMessageId, const bool isPassthroughControl)
 {
     static const std::map<unsigned char, ControlStatus> controlStatuses {
         { static_cast<unsigned char>(ControlStatus::Success),           ControlStatus::Success           },
@@ -1330,27 +1379,37 @@ ControlStatus DnpSlave::waitForResponse(const long userMessageId)
         {
             if( msg->UserMessageId() == userMessageId && ! msg->ExpectMore() )
             {
-                std::regex re { "Control result \\(([0-9]+)\\)" };
-
-                std::smatch results;
-
-                if( std::regex_search(msg->ResultString(), results, re) )
+                if ( isPassthroughControl )
                 {
-                    try
-                    {
-                        int error = std::stoi(results[1].str());
+                    std::regex re { "Control result \\(([0-9]+)\\)" };
 
-                        return mapFindOrDefault(controlStatuses, error, ControlStatus::Undefined);
-                    }
-                    catch( std::invalid_argument & )
+                    std::smatch results;
+
+                    if( std::regex_search(msg->ResultString(), results, re) )
                     {
+                        try
+                        {
+                            int error = std::stoi(results[1].str());
+
+                            return mapFindOrDefault(controlStatuses, error, ControlStatus::Undefined);
+                        }
+                        catch( std::invalid_argument & )
+                        {
+                        }
+                        catch( std::out_of_range & )
+                        {
+                        }
                     }
-                    catch( std::out_of_range & )
+                }
+                else
+                {
+                    if ( ! msg->Status() )
                     {
+                        return ControlStatus::Success;
                     }
                 }
 
-                return Protocols::DNP::ControlStatus::Undefined;
+                return ControlStatus::Undefined;
             }
         }
 

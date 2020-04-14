@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWiFiSetpointDrParameters;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.dr.service.ControlHistoryService;
@@ -49,7 +50,7 @@ public class HoneywellWifiMessageListener {
             }
 
             // Send DR message to HoneywellWifi server
-            honeywellCommunicationService.sendDREventForGroup(parameters);
+            honeywellCommunicationService.sendDRDutyCycleEventForGroup(parameters);
             recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getEndTime());
             // Store the most recent dr handle for each group, so we can cancel
@@ -65,6 +66,37 @@ public class HoneywellWifiMessageListener {
 
         }
 
+    }
+
+    /**
+     * Processes LMHoneywellWifi Setpoint DR messages.
+     */
+    public void handleLMHoneywellSetpointControlMessage(Message message) {
+        log.debug("Received message on yukon.notif.stream.dr.HoneywellSetpointControlMessage queue.");
+
+        HoneywellWiFiSetpointDrParameters parameters;
+        if (message instanceof StreamMessage) {
+            try {
+                parameters = buildSetpointDrParameters((StreamMessage) message);
+            } catch (JMSException e) {
+                log.error("Exception parsing StreamMessage for duty cycle DR event.", e);
+                return;
+            }
+            log.debug("Parameters built {} Ready to send Honeywell Message", parameters);
+            
+            // Send DR message to HoneywellWifi server
+            honeywellCommunicationService.sendDRSetpointEventForGroup(parameters);
+            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
+                parameters.getStartTime(), parameters.getStopTime());
+            // Store the most recent dr handle for each group, so we can cancel
+            groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
+            controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(),
+                                                                parameters.getStartTime(),
+                                                                ControlType.HONEYWELLWIFI,
+                                                                null,
+                                                                parameters.getDurationSeconds(),
+                                                                100);
+        }
     }
 
     /**
@@ -111,12 +143,13 @@ public class HoneywellWifiMessageListener {
      * HoneywellWifiDutyCycleDrParameters object.
      *
      * Load Management sends
-     * 1. Program ID : signed int (32 bits) [0 if no program]
-     * 2. Group ID : signed int (32 bits)
-     * 3. Duty Cycle : signed char (8 bits)
-     * 4. Ramping option : signed char (8 bits) bitmask:[ 0x01 == ramp out, 0x02 == ramp in ]
-     * 5. Start time : signed int (32 bits) [seconds from 1970.01.01:UTC]
-     * 6. End time : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 1. Program ID       : signed int (32 bits) [0 if no program]
+     * 2. Group ID         : signed int (32 bits)
+     * 3. Duty Cycle       : signed char (8 bits)
+     * 4. Ramping option   : signed char (8 bits) bitmask:[ 0x01 == ramp out, 0x02 == ramp in ]
+     * 5. Mandatory        : signed char (8 bits)  [0 == optional, 1 == mandatory]
+     * 6. Start time       : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 7. End time         : signed int (32 bits) [seconds from 1970.01.01:UTC]
      */
     private HoneywellWifiDutyCycleDrParameters buildDutyCycleDrParameters(StreamMessage message)
             throws JMSException {
@@ -125,6 +158,7 @@ public class HoneywellWifiMessageListener {
         int groupId = message.readInt();
         int controlCyclePercent = message.readByte();
         byte rampingOptions = message.readByte();
+        byte mandatoryByte = message.readByte();
         long utcStartTimeSeconds = message.readInt();
         long utcEndTimeSeconds = message.readInt();
 
@@ -133,6 +167,7 @@ public class HoneywellWifiMessageListener {
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampInOut = (rampingOptions & 2) == 2;
+        boolean optional = (mandatoryByte == 0);
         // If rampInOut is set then randomizationInterval is 30 else 0
         int randomizationInterval = (rampInOut ? 30 : 0);
         int eventId = nextValueHelper.getNextValue("HoneywellDREvent");
@@ -140,17 +175,59 @@ public class HoneywellWifiMessageListener {
         Duration controlDuration = new Duration(startTime, endTime);
         int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
         
-        log.trace("Parsed duty cycle dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds + ")"
-                + " End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in-out: " + rampInOut);
+        log.trace("Parsed duty cycle dr parameters. Start time: {} ({}) End time: {} ({}) Ramp in-out: {} Optional: {}",
+                startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, rampInOut, optional);
 
         return new HoneywellWifiDutyCycleDrParameters(programId,
                                                       eventId,
                                                       startTime,
                                                       endTime,
+                                                      optional,
                                                       dutyCyclePercent,
                                                       randomizationInterval,
                                                       groupId,
                                                       controlDurationSeconds);
+    }
+
+    /**
+     * Takes the StreamMessage from Load Management and parses out the values into an HoneywellWiFiSetpointDrParameters object.
+     *
+     * Load Management sends
+     * 1.  Program ID      : signed int  (32 bits)
+     * 2.  Group ID        : signed int  (32 bits)
+     * 3.  Temp Option     : signed char (8 bits)  [0 == cool, 1 == heat]
+     * 4.  Mandatory       : signed char (8 bits)  [0 == optional, 1 == mandatory]
+     * 5.  Temp Offset     : signed int  (32 bits) [-10,10] F
+     * 7.  Start time      : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     * 8.  End time        : signed long (64 bits) [seconds from 1970.01.01:UTC]
+     */
+    private HoneywellWiFiSetpointDrParameters buildSetpointDrParameters(StreamMessage message)
+            throws JMSException {
+        // Get the raw values
+        int programId = message.readInt();
+        int groupId = message.readInt();
+        byte tempOptionByte = message.readByte();
+        byte mandatoryByte = message.readByte();
+        // Temp comes in as F, convert and store as C for message sending
+        Double tempOffsetC = ((message.readInt() * 5) / 9.0);
+        long utcStartTimeSeconds = message.readLong();
+        long utcEndTimeSeconds = message.readLong();
+
+        // Massage the data into the form we want
+        boolean tempOptionHeat = (tempOptionByte == 1);
+        Instant startTime = new Instant(utcStartTimeSeconds * 1000);
+        Instant endTime = new Instant(utcEndTimeSeconds * 1000);
+        Duration controlDuration = new Duration(startTime, endTime);
+        int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
+        boolean optional = (mandatoryByte == 0);
+        int eventId = nextValueHelper.getNextValue("HoneywellDREvent");
+        log.trace(
+                "Parsed setpoint dr parameters. ProgramId: {} EventId: {} GroupId: {} Start time: {} ({}) End time: {} ({}) Duration: {}S Optional: {}({}) Heat: {}({}) Offset C: {}",
+                programId, eventId, groupId, startTime, utcStartTimeSeconds, endTime, utcEndTimeSeconds, controlDurationSeconds,
+                optional, mandatoryByte, tempOptionHeat, tempOptionByte, tempOffsetC);
+
+        return new HoneywellWiFiSetpointDrParameters(programId, eventId, groupId, tempOptionHeat, optional, tempOffsetC,
+                startTime, endTime, controlDurationSeconds);
     }
 
 }

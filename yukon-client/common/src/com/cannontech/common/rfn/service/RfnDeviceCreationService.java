@@ -14,7 +14,7 @@ public interface RfnDeviceCreationService {
     
     public static final String GATEWAY_1_MODEL_STRING = "RFGateway";
     public static final String GATEWAY_2_MODEL_STRING = "RFGateway2";
-    public static final String GATEWAY_3_MODEL_STRING = "RFVirtualGateway";
+    public static final String GATEWAY_3_MODEL_STRING = "VGW";
     
     public static final Set<String> ALL_GATEWAY_MODELS = Set.of(GATEWAY_1_MODEL_STRING,
                                                                 GATEWAY_2_MODEL_STRING,
@@ -48,5 +48,10 @@ public interface RfnDeviceCreationService {
     
     @ManagedAttribute
     public int getNewDeviceCreated();
+
+    /**
+     * If device is not found creates device. Returns null if unable to create device
+     */
+    RfnDevice createIfNotFound(RfnIdentifier identifier);
     
 }

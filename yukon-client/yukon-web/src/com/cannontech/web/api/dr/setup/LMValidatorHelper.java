@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.dr.setup.LMCopy;
+import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -80,13 +82,12 @@ public class LMValidatorHelper {
             errors.rejectValue("name", key + "unique", new Object[] {fieldName}, "");
         }
     }
-    
-    public void validateRoute(Errors errors, Integer routeId) {
 
+    public void validateRoute(Errors errors, Integer routeId) {
         checkIfFieldRequired("routeId", errors, routeId, "Route Id");
         if (!errors.hasFieldErrors("routeId")) {
-            Set<Integer> routeIds = serverDatabaseCache.getAllRoutesMap().keySet();
-            if (!routeIds.contains(routeId)) {
+            LiteYukonPAObject liteRoute = serverDatabaseCache.getAllRoutesMap().get(routeId);
+            if (liteRoute == null) {
                 errors.rejectValue("routeId", key + "routeId.doesNotExist");
             }
         }
@@ -106,4 +107,21 @@ public class LMValidatorHelper {
     public Set<Integer> findDuplicates(List<Integer> list) {
         return list.stream().filter(e -> Collections.frequency(list, e) >1).collect(Collectors.toSet());
     }
+
+    /**
+     * Validates route id if load group supports route id
+     */
+    public void validateRouteId(LMCopy lmCopy, Errors errors, String field) {
+        Integer paoId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+        if (paoId != null) {
+            PaoType type = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoType();
+            if (lmCopy instanceof LoadGroupCopy && type.isLoadGroupSupportRoute()) {
+                Integer routeId = ((LoadGroupCopy) lmCopy).getRouteId();
+                if (routeId != null) {
+                    validateRoute(errors, routeId);
+                }
+            }
+        }
+    }
+
 }

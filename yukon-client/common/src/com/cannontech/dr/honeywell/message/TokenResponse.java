@@ -83,4 +83,10 @@ public class TokenResponse {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return "TokenResponse [accessToken=" + accessToken + ", tokenType=" + tokenType + ", expiresIn=" + expiresIn + ", scope="
+                + scope + "]";
+    }
+
 }

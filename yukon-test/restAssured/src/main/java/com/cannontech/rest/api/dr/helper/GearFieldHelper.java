@@ -1,6 +1,6 @@
 package com.cannontech.rest.api.dr.helper;
 
-import com.cannontech.rest.api.gear.fields.MockAbsoluteOrDelta;
+import com.cannontech.rest.api.gear.fields.MockSetpoint;
 import com.cannontech.rest.api.gear.fields.MockBeatThePeakGearFields;
 import com.cannontech.rest.api.gear.fields.MockBtpLedIndicator;
 import com.cannontech.rest.api.gear.fields.MockControlStartState;
@@ -10,6 +10,7 @@ import com.cannontech.rest.api.gear.fields.MockEcobeeSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
 import com.cannontech.rest.api.gear.fields.MockGroupSelectionMethod;
 import com.cannontech.rest.api.gear.fields.MockHoneywellCycleGearFields;
+import com.cannontech.rest.api.gear.fields.MockHoneywellSetpointGearFields;
 import com.cannontech.rest.api.gear.fields.MockHowToStopControl;
 import com.cannontech.rest.api.gear.fields.MockItronCycleGearFields;
 import com.cannontech.rest.api.gear.fields.MockItronCycleType;
@@ -94,6 +95,7 @@ public class GearFieldHelper {
             break;
         case HoneywellCycle:
                 gearFields = MockHoneywellCycleGearFields.builder()
+                                                     .mandatory(true)
                                                      .rampInOut(true)
                                                      .controlPercent(3)
                                                      .cyclePeriodInMinutes(30)
@@ -102,9 +104,18 @@ public class GearFieldHelper {
                                                      .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                                      .build();
             break;
+        case HoneywellSetpoint:
+                gearFields = MockHoneywellSetpointGearFields.builder()
+                                     .mandatory(true)
+                                     .setpointOffset(7)
+                                     .mode(MockMode.COOL)
+                                     .howToStopControl(MockHowToStopControl.Restore)
+                                     .capacityReduction(50)
+                                     .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
+                                     .build();
         case ItronCycle:
                 gearFields = MockItronCycleGearFields.builder()
-                                                 .cycleType(MockItronCycleType.STANDARD)
+                                                 .dutyCycleType(MockItronCycleType.STANDARD)
                                                  .rampIn(true)
                                                  .rampOut(true)
                                                  .dutyCyclePercent(95)
@@ -139,7 +150,7 @@ public class GearFieldHelper {
             break;
         case TimeRefresh:
                 gearFields = MockTimeRefreshGearFields.builder()
-                                                  .refreshShedTime(MockCycleCountSendType.FixedShedTime)
+                                                  .refreshShedType(MockCycleCountSendType.FixedShedTime)
                                                   .shedTime(3600)
                                                   .numberOfGroups(0)
                                                   .sendRate(1800)
@@ -167,10 +178,11 @@ public class GearFieldHelper {
                                            .capacityReduction(100)
                                            .build();
             break;
+  
         case ThermostatRamping:
                 gearFields = MockThermostatSetbackGearFields.builder()
-                                                        .absoluteOrDelta(MockAbsoluteOrDelta.DELTA)
-                                                        .measureUnit(MockTemperatureMeasureUnit.FAHRENHEIT)
+                                                        .setpoint(MockSetpoint.DELTA)
+                                                        .tempMeasureUnit(MockTemperatureMeasureUnit.FAHRENHEIT)
                                                         .isHeatMode(false)
                                                         .isCoolMode(true)
                                                         .minValue(1)
@@ -209,7 +221,7 @@ public class GearFieldHelper {
                 gearFields = MockSepTemperatureOffsetGearFields.builder()
                                                            .rampIn(true)
                                                            .rampOut(false)
-                                                           .celsiusOrFahrenheit(MockTemperatureMeasureUnit.CELSIUS)
+                                                           .tempMeasureUnit(MockTemperatureMeasureUnit.CELSIUS)
                                                            .mode(MockMode.HEAT)
                                                            .offset(1.0)
                                                            .criticality(5)

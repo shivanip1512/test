@@ -17,6 +17,9 @@ public enum PersistedSystemValueKey {
     NEST_SYNC_TIME(null, new InstantType()), 
     ITRON_DATA_LAST_RECORD_ID(-1L, InputTypeFactory.longType()),
     ITRON_READ_GROUP_ID(-1L, InputTypeFactory.longType()),
+    MSP_ENROLLMENT_SYNC_LAST_COMPLETED(null, new InstantType()),
+    //Last Network Tree time regeneration (by NM)
+    DYNAMIC_RFN_DEVICE_DATA_LAST_UPDATE_TIME(null, new InstantType()),
     ;
     
     private final Object defaultValue;

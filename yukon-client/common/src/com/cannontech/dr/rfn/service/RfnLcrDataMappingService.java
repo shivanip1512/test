@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Instant;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.dr.dao.ExpressComReportedAddress;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
 import com.cannontech.message.dispatch.message.PointData;
@@ -30,7 +29,7 @@ public interface RfnLcrDataMappingService <T> {
      * @param jmsTemplate 
      * @see {@link ExpressComReportedAddress#isEquivalent}
      */
-    public void storeAddressingData(JmsTemplate jmsTemplate, T data, RfnDevice device);
+    public void storeAddressingData(YukonJmsTemplate jmsTemplate, T data, RfnDevice device);
 
     /**
      * This method extracts message id and the time the message was received by LCR.
@@ -42,10 +41,5 @@ public interface RfnLcrDataMappingService <T> {
      * @return This method will return null if a valid range is not determined.
      */
     public Range<Instant> mapBroadcastVerificationUnsuccessRange(T data, RfnDevice device);
-    
-    /**
-     * This method returns true if the time of reading is before 1/1/2001
-     */
-    public boolean isValidTimeOfReading(T data);
 
 }

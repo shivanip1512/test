@@ -504,7 +504,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                 enrollmentDao.getEnrolledProgramIdsByInventory(lmHardware.getInventoryID(), startDate, stopDate);
             Map<String, Integer> enrolledPrograms = new HashMap<>();
             for (Program program : programs) {
-                enrolledPrograms.put(program.getProgramName(), program.getRelay());
+                enrolledPrograms.put(program.getProgramPaoName(), program.getRelay());
             }
 
             if (enrolledPrograms.keySet().size() > 0) {

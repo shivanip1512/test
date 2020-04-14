@@ -123,7 +123,7 @@ public class SepTemperatureOffsetGearValidationAPITest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
-        mockSepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(MockTemperatureMeasureUnit.FAHRENHEIT);
+        mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.FAHRENHEIT);
         mockSepTemperatureOffsetGearFields.setOffset(0.0);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
@@ -143,7 +143,7 @@ public class SepTemperatureOffsetGearValidationAPITest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
-        mockSepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(MockTemperatureMeasureUnit.FAHRENHEIT);
+        mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.FAHRENHEIT);
         mockSepTemperatureOffsetGearFields.setOffset(77.8);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
@@ -164,7 +164,7 @@ public class SepTemperatureOffsetGearValidationAPITest {
                                                                                                                                     .get(0)
                                                                                                                                     .getFields();
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
-        mockSepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(MockTemperatureMeasureUnit.CELSIUS);
+        mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.CELSIUS);
         mockSepTemperatureOffsetGearFields.setOffset(0.0);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
@@ -185,7 +185,7 @@ public class SepTemperatureOffsetGearValidationAPITest {
                                                                                                                                     .getFields();
 
         mockSepTemperatureOffsetGearFields.setMode(MockMode.HEAT);
-        mockSepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(MockTemperatureMeasureUnit.CELSIUS);
+        mockSepTemperatureOffsetGearFields.setTempMeasureUnit(MockTemperatureMeasureUnit.CELSIUS);
         mockSepTemperatureOffsetGearFields.setOffset(25.5);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveLoadProgram", mockLoadProgram);
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");

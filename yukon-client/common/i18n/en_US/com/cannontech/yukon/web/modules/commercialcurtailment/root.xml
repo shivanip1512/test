@@ -88,12 +88,12 @@
     <entry key="yukon.web.modules.dr.cc.customerDetail.attachedPoints">Attached Points</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.assignedPrograms">Assigned Programs</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint.label">Create Point</entry>
-    <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint.success">{0} point successfully created.</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint.success">Point {0} created successfully.</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.createPoint.failure">Unable to create point {0}.</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.availablePrograms">Available Programs</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.noSatisfiedPointGroups">No satisfied point groups</entry>
-    <entry key="yukon.web.modules.dr.cc.customerDetail.update.success">"{0}" updated successfully.</entry>
-    <entry key="yukon.web.modules.dr.cc.customerDetail.missingPointsOrGroups">Points and Groups need to be added to this Customer to save it.</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.update.success">Customer {0} updated successfully.</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.update.failure">Unable to save customer {0}.</entry>
     
     <!-- economicDetail.jspf -->
     <entry key="yukon.web.modules.dr.cc.eventPricing.customer">Customer</entry>

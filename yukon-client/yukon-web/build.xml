@@ -28,11 +28,35 @@
         
 		<delete dir="${yukon.lib}/WebContent" />
 		<delete file="${yukon.lib}/yukon-web.jar" />
-		<delete dir="build" />
-		<delete dir="${yukon.web.src_build}"/>
 
-        <delete dir="${yukon-web}/build_jsp" />
-        <delete dir="${yukon-web}/WebContent_temp" />
+        <move file="build" tofile="build-delete" failonerror="false"/>
+        <parallel>
+            <daemons>
+                <delete dir="build-delete"/>  
+            </daemons>
+        </parallel>
+
+        <move file="${yukon.web.src_build}" tofile="${yukon.web.src_build}-delete" failonerror="false"/>
+        <parallel>
+            <daemons>
+                <delete dir="${yukon.web.src_build}-delete"/>  
+            </daemons>
+        </parallel>
+
+        <move file="${yukon-web}/build_jsp" tofile="${yukon-web}/build_jsp-delete" failonerror="false"/>
+        <parallel>
+            <daemons>
+                <delete dir="${yukon-web}/build_jsp-delete"/>  
+            </daemons>
+        </parallel>
+
+        <move file="${yukon-web}/WebContent_temp" tofile="${yukon-web}/WebContent_temp-delete" failonerror="false"/>
+        <parallel>
+            <daemons>
+                <delete dir="${yukon-web}/WebContent_temp-delete"/>  
+            </daemons>
+        </parallel>
+
         <delete dir="${yukon-web}/WebContent_merged" />
         <delete file="${yukon-web}/generated_web.xml" />
 		
@@ -50,6 +74,7 @@
 		       target="${yukon.javac.target}" 
 	 	       source="${yukon.javac.source}"
 		       debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
 			<classpath>
 		        <fileset dir="${yukon.build}/lib">
 		            <include name="*.jar"/>
@@ -121,6 +146,7 @@
                target="${yukon.javac.target}" 
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
             <classpath refid="jspc.class.path"/>
         </javac>
         <jar jarfile="${yukon.lib}/yukon-web-jsp.jar" basedir="${yukon-web}/build_jsp/" excludes="*.xml *.jar"/>
@@ -131,7 +157,8 @@
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
             <param name="halt" value="no" />
-            <param name="testDir" value="test/build" />
+            <param name="srcdir" value="test"/>
+            <param name="destdir" value="test/build" />
         </antcall>
     </target>
 
@@ -153,6 +180,7 @@
                target="${yukon.javac.target}"
                source="${yukon.javac.source}"
                debug="${yukon.javac.debug}">
+            <compilerarg compiler="org.eclipse.jdt.core.JDTCompilerAdapter" line="-11 -nowarn"/>
             <classpath>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
@@ -171,9 +199,10 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
+        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
             <classpath id="junit.class.path">
-                <dirset dir="test" />
+                <pathelement location="${srcdir}"/>
+                <pathelement location="${destdir}"/>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
                     <exclude name="**/WebContent/**" />
@@ -181,7 +210,7 @@
             </classpath>
             <formatter type="xml" />
             <batchtest todir="${test.results.dir}">
-                <fileset dir="${testDir}">
+                <fileset dir="${destdir}">
                     <include name="**/*Test.class" />
                 </fileset>
             </batchtest>

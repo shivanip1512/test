@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -66,19 +67,21 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
      * Returns true if warning should be generated.
      */
     protected boolean isWarnable(PointValueQualityHolder point, Duration warnableDuration) {
-        if (new Instant(point.getPointDataTimeStamp()).plus(warnableDuration).isAfterNow()) {
-            return false;
-        } else {
-            AdjacentPointValues values = rphDao.getAdjacentPointValues(point);
-            if (values.getSucceeding() != null) {
-                PointValueHolder valueHolder = values.getSucceeding();
-                Instant dTimestamp = new Instant(valueHolder.getPointDataTimeStamp());
-                if (dTimestamp.plus(warnableDuration).isBeforeNow()) {
-                    return true;
+        if (Objects.nonNull(point)) {
+            if (new Instant(point.getPointDataTimeStamp()).plus(warnableDuration).isAfterNow()) {
+                return false;
+            } else {
+                AdjacentPointValues values = rphDao.getAdjacentPointValues(point);
+                if (values.getSucceeding() != null) {
+                    PointValueHolder valueHolder = values.getSucceeding();
+                    Instant dTimestamp = new Instant(valueHolder.getPointDataTimeStamp());
+                    if (dTimestamp.plus(warnableDuration).isBeforeNow()) {
+                        return true;
+                    }
                 }
             }
-            return false;
         }
+        return false;
     }
     
     /**

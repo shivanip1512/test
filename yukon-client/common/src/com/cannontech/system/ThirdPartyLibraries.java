@@ -19,9 +19,11 @@ public class ThirdPartyLibraries {
     public List<ThirdPartyJavaScriptLibrary> jsLibraries;
     @JsonProperty("Icons")
     public List<ThirdPartyIconLibrary> iconLibraries;
+    @JsonProperty("Css")
+    public List<ThirdPartyLibrary> cssLibraries;
     
     public List<ThirdPartyProject> getAllProjects() {
-        return Stream.of(cppLibraries, javaLibraries, networkManagerLibraries, jsLibraries, iconLibraries)
+        return Stream.of(cppLibraries, javaLibraries, networkManagerLibraries, jsLibraries, iconLibraries, cssLibraries)
                      .map(List::stream)
                      .flatMap(Function.identity())
                      .distinct()
@@ -30,5 +32,3 @@ public class ThirdPartyLibraries {
                      .collect(Collectors.toList());
     }
 }
-
-

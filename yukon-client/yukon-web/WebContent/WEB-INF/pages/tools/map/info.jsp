@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -46,9 +47,6 @@
     <c:if test="${!empty gatewayIPAddress}">
         <tags:nameValue2 nameKey=".ipAddress">${fn:escapeXml(gatewayIPAddress)}</tags:nameValue2>
     </c:if>
-    <c:if test="${!empty macAddress}">
-        <tags:nameValue2 nameKey=".macAddress">${fn:escapeXml(macAddress)}</tags:nameValue2>
-    </c:if>
     <c:if test="${!empty nodeSN}">
         <tags:nameValue2 nameKey=".nodeSN">${fn:escapeXml(nodeSN)}</tags:nameValue2>
     </c:if>
@@ -75,19 +73,31 @@
     <c:if test="${showRoute}">
         <tags:nameValue2 nameKey=".route">${fn:escapeXml(pao.meter.route)}</tags:nameValue2>
     </c:if>
-    <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span><i:inline key=".distance.miles"/></tags:nameValue2>
+    <c:if test="${!empty routeData}">
+        <tags:nameValue2 nameKey=".totalCost">${fn:escapeXml(routeData.totalCost)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".hopCount">${fn:escapeXml(routeData.hopCount)}</tags:nameValue2>
+        <c:if test="${!empty descendantCount}">
+            <tags:nameValue2 nameKey=".descendantCount">${fn:escapeXml(descendantCount)}</tags:nameValue2>
+        </c:if>
+        <tags:nameValue2 nameKey=".flags">${fn:escapeXml(routeFlags)}</tags:nameValue2>
+        <c:if test="${!empty nextHopDistance}">
+            <tags:nameValue2 nameKey=".distanceToNextHop">
+                <fmt:formatNumber value="${nextHopDistance}" maxFractionDigits="4"/>&nbsp;<i:inline key=".distance.miles"/>
+            </tags:nameValue2>
+        </c:if>
+    </c:if>
+    <!-- Neighbor Data -->
+    <tags:nameValue2 nameKey=".etxBand" nameClass="dn js-etx-band-display" valueClass="dn js-etx-band js-etx-band-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".linkCost" nameClass="dn js-link-cost-display" valueClass="dn js-link-cost js-link-cost-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".numSamples" nameClass="dn js-num-samples-display" valueClass="dn js-num-samples js-num-samples-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".flags" nameClass="dn js-flags-display" valueClass="dn js-flags js-flags-display"></tags:nameValue2>
+    
+    <tags:nameValue2 nameKey=".distance" nameClass="dn js-distance-display" valueClass="dn js-distance-display"><span class="js-distance"></span>&nbsp;<i:inline key=".distance.miles"/></tags:nameValue2>
 </tags:nameValueContainer2>
 
 <c:if test="${not empty errorMsg}">
     <tags:hideReveal2 styleClass="mw300" titleClass="error" titleKey="yukon.web.modules.tools.map.network.error" showInitially="false">${errorMsg}</tags:hideReveal2>
 </c:if>
-
-<c:forEach items="${attributes}" var="attr">
-    <div>
-        <h4><i:inline key="${attr}"/></h4>
-        <div style="padding: 2px 10px;"><tags:attributeValue attribute="${attr}" pao="${pao}"/></div>
-    </div>
-</c:forEach>
 
 <div class="dn" 
     data-dialog 

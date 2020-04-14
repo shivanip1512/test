@@ -18,7 +18,6 @@ import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.amr.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -112,7 +111,7 @@ public class ConfigWidget extends WidgetControllerBase {
 
         boolean configurableDevice = !existingConfigs.isEmpty();
         boolean dataStreamingEnabled =
-            configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+            configurationSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
         boolean streamableDevice =
             dataStreamingEnabled
                 && !dataStreamingAttributeHelper.getSupportedAttributes(device.getPaoIdentifier().getPaoType()).isEmpty();

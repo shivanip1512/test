@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="All EIM Tests.launch" kind="src" path="test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
-	<classpathentry kind="lib" path="/third-party/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-io-2.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/xmlschema-core-2.1.0.jar" sourcepath="/third-party/linked-sources/xmlschema-core-2.1.0-sources.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

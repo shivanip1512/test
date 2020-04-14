@@ -17,7 +17,7 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class MockTimeRefreshGearFields implements MockProgramGearFields {
 
-    private MockCycleCountSendType refreshShedTime;
+    private MockCycleCountSendType refreshShedType;
     private Integer shedTime;
     private Integer numberOfGroups;
     private Integer sendRate;

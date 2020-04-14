@@ -117,14 +117,18 @@ public abstract class ServiceStatusWatchdogImpl extends WatchdogBase implements 
     private boolean shouldSendWarning(YukonServices service, ServiceStatus connectionStatus) {
 
         if (connectionStatus == ServiceStatus.STOPPED) {
-            if (stoppingServicesCount.count(service) < 2) {
+            if (stoppingServicesCount.count(service) < service.getFailedPollThreshold()) {
                 stoppingServicesCount.add(service);
             }
-            if (stoppingServicesCount.count(service) == 1) {
-                log.info("Retrying to get " + service + " service status , not sending notification at this time");
+
+            if (stoppingServicesCount.count(service) < service.getFailedPollThreshold()) {
+                log.info("Retrying to get {} service status , not sending notification at this time. Number of failed polls: {}", 
+                         service,
+                         stoppingServicesCount.count(service));
                 return false;
             }
-        } else if (stoppingServicesCount.count(service) >= 1) {
+
+        } else if (stoppingServicesCount.count(service) > 0) {
             stoppingServicesCount.setCount(service, 0);
         }
 

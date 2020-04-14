@@ -2,7 +2,6 @@ package com.cannontech.web.api.dr.setup;
 
 import java.util.HashMap;
 import java.util.List;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/dr/setup/loadGroup")
 public class LoadGroupSetupApiController {
-
+    
     @Autowired LoadGroupSetupService loadGroupService;
     @Autowired LMDeleteValidator lmDeleteValidator;
     @Autowired LMCopyValidator lmCopyValidator;
@@ -74,6 +73,7 @@ public class LoadGroupSetupApiController {
     @DeleteMapping("/delete/{id}")
     @CheckPermissionLevel(property = YukonRoleProperty.DR_SETUP_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@Valid @RequestBody LMDelete lmDelete, @PathVariable int id) {
+
         int paoId = loadGroupService.delete(id, lmDelete.getName());
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("groupId", paoId);

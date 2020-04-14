@@ -7,26 +7,26 @@
                     <cti:msg2 key="yukon.web.components.button.select.label" var="selectLbl"/>
                     <tags:nameValue2 nameKey=".preparationLoadShaping">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectWithItems items="${preparationLoadShaping}" path="fields.prep" />
+                            <tags:selectWithItems items="${preparationLoadShaping}" path="fields.preparationLoadShaping" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key="${programGear.fields.prep}"/>
+                            <i:inline key="${programGear.fields.preparationLoadShaping}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2> 
                      <tags:nameValue2 nameKey=".peakLoadShaping">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectWithItems items="${peakLoadShaping}" path="fields.peak" />
+                            <tags:selectWithItems items="${peakLoadShaping}" path="fields.peakLoadShaping" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key="${programGear.fields.peak}"/>
+                            <i:inline key="${programGear.fields.peakLoadShaping}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2> 
                     <tags:nameValue2 nameKey=".postPeakLoadShaping">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectWithItems items="${postPeakLoadShaping}" path="fields.post" />
+                            <tags:selectWithItems items="${postPeakLoadShaping}" path="fields.postPeakLoadShaping" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
-                            <i:inline key="${programGear.fields.post}"/>
+                            <i:inline key="${programGear.fields.postPeakLoadShaping}"/>
                         </cti:displayForPageEditModes>
                     </tags:nameValue2>  
                 </tags:nameValueContainer2>

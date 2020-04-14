@@ -3,15 +3,19 @@ package com.cannontech.common.rfn.message.route;
 import java.io.Serializable;
 import java.util.Set;
 
+import com.cannontech.common.rfn.message.RfnIdentifier;
+
 public class RouteData implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
-    private long routeDataTimeStamp;
+    private long routeDataTimestamp; // Retrieved from ROUTE_DATA_POINT.routeDataTimeStamp
 
     private String destinationAddress;
     
     private String nextHopAddress;
+    
+    private RfnIdentifier nextHopRfnIdentifier;
     
     private Short totalCost;
     
@@ -23,12 +27,12 @@ public class RouteData implements Serializable {
     
     private Short routeColor;
 
-    public long getRouteDataTimeStamp() {
-        return routeDataTimeStamp;
+    public long getRouteDataTimestamp() {
+        return routeDataTimestamp;
     }
 
-    public void setRouteDataTimeStamp(long routeDataTimeStamp) {
-        this.routeDataTimeStamp = routeDataTimeStamp;
+    public void setRouteDataTimestamp(long routeDataTimestamp) {
+        this.routeDataTimestamp = routeDataTimestamp;
     }
 
     public String getDestinationAddress() {
@@ -45,6 +49,14 @@ public class RouteData implements Serializable {
 
     public void setNextHopAddress(String nextHopAddress) {
         this.nextHopAddress = nextHopAddress;
+    }
+
+    public RfnIdentifier getNextHopRfnIdentifier() {
+        return nextHopRfnIdentifier;
+    }
+
+    public void setNextHopRfnIdentifier(RfnIdentifier nextHopRfnIdentifier) {
+        this.nextHopRfnIdentifier = nextHopRfnIdentifier;
     }
 
     public Short getTotalCost() {
@@ -91,12 +103,12 @@ public class RouteData implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result + ((destinationAddress == null) ? 0 : destinationAddress.hashCode());
+        result = prime * result + ((destinationAddress == null) ? 0 : destinationAddress.hashCode());
         result = prime * result + ((hopCount == null) ? 0 : hopCount.hashCode());
         result = prime * result + ((nextHopAddress == null) ? 0 : nextHopAddress.hashCode());
+        result = prime * result + ((nextHopRfnIdentifier == null) ? 0 : nextHopRfnIdentifier.hashCode());
         result = prime * result + ((routeColor == null) ? 0 : routeColor.hashCode());
-        result = prime * result + (int) (routeDataTimeStamp ^ (routeDataTimeStamp >>> 32));
+        result = prime * result + (int) (routeDataTimestamp ^ (routeDataTimestamp >>> 32));
         result = prime * result + ((routeFlags == null) ? 0 : routeFlags.hashCode());
         result = prime * result + ((routeTimeout == null) ? 0 : routeTimeout.hashCode());
         result = prime * result + ((totalCost == null) ? 0 : totalCost.hashCode());
@@ -127,12 +139,17 @@ public class RouteData implements Serializable {
                 return false;
         } else if (!nextHopAddress.equals(other.nextHopAddress))
             return false;
+        if (nextHopRfnIdentifier == null) {
+            if (other.nextHopRfnIdentifier != null)
+                return false;
+        } else if (!nextHopRfnIdentifier.equals(other.nextHopRfnIdentifier))
+            return false;
         if (routeColor == null) {
             if (other.routeColor != null)
                 return false;
         } else if (!routeColor.equals(other.routeColor))
             return false;
-        if (routeDataTimeStamp != other.routeDataTimeStamp)
+        if (routeDataTimestamp != other.routeDataTimestamp)
             return false;
         if (routeFlags == null) {
             if (other.routeFlags != null)
@@ -154,15 +171,9 @@ public class RouteData implements Serializable {
 
     @Override
     public String toString() {
-        return String
-            .format("RouteData [routeDataTimeStamp=%s, destinationAddress=%s, nextHopAddress=%s, totalCost=%s, hopCount=%s, routeTimeout=%s, routeFlags=%s, routeColor=%s]",
-                    routeDataTimeStamp,
-                    destinationAddress,
-                    nextHopAddress,
-                    totalCost,
-                    hopCount,
-                    routeTimeout,
-                    routeFlags,
-                    routeColor);
+        return String.format(
+                "RouteData [routeDataTimestamp=%s, destinationAddress=%s, nextHopAddress=%s, nextHopRfnIdentifier=%s, totalCost=%s, hopCount=%s, routeTimeout=%s, routeFlags=%s, routeColor=%s]",
+                routeDataTimestamp, destinationAddress, nextHopAddress, nextHopRfnIdentifier, totalCost, hopCount, routeTimeout,
+                routeFlags, routeColor);
     }
 }

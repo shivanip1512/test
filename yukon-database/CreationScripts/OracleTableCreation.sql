@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/29/2019 10:43:04 PM                       */
+/* Created on:     4/3/2020 9:59:17 AM                          */
 /*==============================================================*/
 
 
@@ -5077,7 +5077,8 @@ create table DynamicPointAlarming  (
 /*==============================================================*/
 create table DynamicRfnDeviceData  (
    DeviceId             NUMBER                          not null,
-   GatewayId            NUMBER,
+   GatewayId            NUMBER                          not null,
+   DescendantCount      NUMBER                          not null,
    LastTransferTime     DATE                            not null,
    constraint PK_NmToRfnDeviceData primary key (DeviceId)
 );
@@ -7178,17 +7179,23 @@ create table MSPInterface  (
    Interface            VARCHAR2(20)                    not null,
    Endpoint             VARCHAR2(255)                   not null,
    Version              VARCHAR2(12)                    not null,
+   UseVendorAuth        CHAR(1)                         not null,
+   InUserName           VARCHAR2(64),
+   InPassword           VARCHAR2(64),
+   OutUserName          VARCHAR2(64),
+   OutPassword          VARCHAR2(64),
+   ValidateCertificate  CHAR(1),
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)
 );
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0', '1', NULL, NULL, NULL, NULL, NULL);
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0');
-INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0', '1', NULL, NULL, NULL, NULL, NULL);
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */
@@ -7269,7 +7276,7 @@ create table MeterProgramStatus  (
    DeviceId             NUMBER                          not null,
    ReportedGuid         VARCHAR2(40)                    not null,
    Source               VARCHAR2(1)                     not null,
-   Status               VARCHAR2(20)                    not null,
+   Status               VARCHAR2(100)                   not null,
    LastUpdate           DATE                            not null,
    constraint PK_MeterProgramStatus primary key (DeviceId)
 );
@@ -8628,6 +8635,8 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
+INSERT INTO State VALUES(-29, 0, 'Success', 0, 6, 0);
+INSERT INTO State VALUES(-29, 1, 'Failure', 1, 6, 0);
 INSERT INTO State VALUES(-28, 0, 'Heat', 1, 6, 0);
 INSERT INTO State VALUES(-28, 1, 'Cool', 4, 6, 0);
 INSERT INTO State VALUES(-28, 2, 'Off', 9, 6, 0);
@@ -8808,6 +8817,7 @@ create table StateGroup  (
    constraint PK_StateGroup primary key (StateGroupId)
 );
 
+INSERT INTO StateGroup VALUES(-29, 'Meter Programming', 'Status');
 INSERT INTO StateGroup VALUES(-28, 'RelayState', 'Status');
 INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
 INSERT INTO StateGroup VALUES(-26, 'SCADA Override Type', 'Status');
@@ -9300,6 +9310,7 @@ INSERT INTO UnitMeasure VALUES ( 53,'KV', 0,'KVolts','(none)' );
 INSERT INTO UnitMeasure VALUES ( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
+INSERT INTO UnitMeasure VALUES ( 57,'dBm', 0, 'Decibel-Milliwatts', '(none)');
 
 /*==============================================================*/
 /* Table: UsageThresholdReport                                  */
@@ -10486,10 +10497,7 @@ INSERT INTO YukonRoleProperty VALUES (-21315,-213,'Demand Reset','true','Control
 INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
 
 /* Device Management Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Infrastructure Create/Edit', 'false', 'Controls the ability to create and edit infrastructure devices. i.e. RF Gateways.');
-INSERT INTO YukonRoleProperty VALUES(-21401, -214, 'Infrastructure Delete', 'false', 'Controls the ability to delete infrastructure devices. i.e. RF Gateways.');
-INSERT INTO YukonRoleProperty VALUES(-21402, -214, 'Infrastructure Administration', 'false', 'Controls the ability to send configuration commands to infrastructure devices. i.e. RF Gateways.');
-INSERT INTO YukonRoleProperty VALUES(-21403, -214, 'Infrastructure View', 'false', 'Controls the ability to view infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Manage Infrastructure', 'NO_ACCESS', 'Controls access to manage infrastructure devices. i.e. RF Gateways.');
 INSERT INTO YukonRoleProperty VALUES(-21404, -214, 'Endpoint Permission', 'UPDATE', 'Controls the ability to create, edit, or delete endpoint devices. i.e Meters. Metering Role controls view access.');
 INSERT INTO YukonRoleProperty VALUES(-21405, -214, 'Manage Point Data', 'UPDATE', 'Controls the ability to edit, delete, or manually add point data values.');
 INSERT INTO YukonRoleProperty VALUES(-21406, -214, 'Manage Points', 'UPDATE', 'Controls the ability to view, create, edit, or delete points.');

@@ -1,13 +1,13 @@
 package com.cannontech.multispeak.service;
 
-import javax.jms.MessageListener;
+import java.util.List;
 
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
 import com.cannontech.stars.dr.jms.message.DrProgramStatusJmsMessage;
 import com.cannontech.stars.dr.jms.message.EnrollmentJmsMessage;
 import com.cannontech.stars.dr.jms.message.OptOutOptInJmsMessage;
 
-public interface DrJmsMessageService extends MessageListener {
+public interface DrJmsMessageService {
 
     /**
      * Sending enrollment notification messages to configured vendors.
@@ -35,12 +35,12 @@ public interface DrJmsMessageService extends MessageListener {
     /**
      * Sending interval Data notification messages to configured vendors.
      */
-    public void intervalDataNotification(DrAttributeDataJmsMessage drDataJmsMessage);
+    public void intervalDataNotification(List<DrAttributeDataJmsMessage> drDataJmsMessage);
 
     /**
      * Sending voltage notification messages to configured vendors.
      */
-    public void voltageMeterReadingsNotification(DrAttributeDataJmsMessage drDataJmsMessage);
+    public void voltageMeterReadingsNotification(List<DrAttributeDataJmsMessage> drDataJmsMessage);
     
     /**
      * Sending Program Status notification messages to configured vendors.
@@ -50,6 +50,11 @@ public interface DrJmsMessageService extends MessageListener {
     /**
      * Sending Alarm and Event notification messages to configured vendors.
      */
-    public void alarmAndEventNotification(DrAttributeDataJmsMessage drAttributeDataJmsMessage);
+    public void alarmAndEventNotification(List<DrAttributeDataJmsMessage> drAttributeDataJmsMessage);
+
+    /**
+     * Checks if any vendor configured for method supports.
+     */
+    public boolean isVendorMethodSupported();
 
 }

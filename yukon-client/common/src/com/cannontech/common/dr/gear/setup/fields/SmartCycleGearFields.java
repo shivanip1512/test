@@ -1,11 +1,8 @@
 package com.cannontech.common.dr.gear.setup.fields;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.database.data.device.lm.SmartCycleGear;
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
@@ -15,14 +12,13 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class SmartCycleGearFields implements ProgramGearFields {
 
-    private Boolean noRamp;
     private Integer controlPercent;
     private Integer cyclePeriodInMinutes;
     private CycleCountSendType cycleCountSendType;
     private Integer maxCycleCount;
     private Integer startingPeriodCount;
-
     private Integer sendRate;
+    private Boolean noRamp;
     private Integer stopCommandRepeat;
 
     private HowToStopControl howToStopControl;

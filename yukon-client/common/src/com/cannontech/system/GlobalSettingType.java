@@ -171,7 +171,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com", GlobalSettingTypeValidators.emailValidator),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
     SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),
-    PRODUCER_WINDOW_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1024),
+    PRODUCER_WINDOW_SIZE(GlobalSettingSubCategory.MISC, 8192, Range.inclusive(512, 32768)),
     MAX_INACTIVITY_DURATION(GlobalSettingSubCategory.MISC, integerType(), 30),
     ERROR_REPORTING(GlobalSettingSubCategory.MISC, booleanType(), false),
     MAX_LOG_FILE_SIZE(GlobalSettingSubCategory.MISC, integerType(), 1),
@@ -182,6 +182,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     NETWORK_MANAGER_DB_URL(GlobalSettingSubCategory.MISC, stringType(), null),
     CLOUD_DATA_SENDING_FREQUENCY(GlobalSettingSubCategory.MISC, 15, Range.inclusive(1, Integer.MAX_VALUE)),
     CLOUD_IOT_HUB_CONNECTION_STRING(GlobalSettingSubCategory.MISC, stringType(), null),
+    FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE(GlobalSettingSubCategory.MISC, 2048, Range.inclusive(249, 15932)),
 
     // Misc. > Web Graph
     HOME_DIRECTORY(GlobalSettingSubCategory.MISC, stringType(), "c:\\yukon\\client\\webgraphs\\"),
@@ -246,7 +247,8 @@ public enum GlobalSettingType implements DisplayableEnum {
             ITRON_SFTP_USERNAME,
             ITRON_SFTP_PASSWORD,
             ITRON_SFTP_PRIVATE_KEY_PASSWORD,
-            NETWORK_MANAGER_DB_PASSWORD);
+            NETWORK_MANAGER_DB_PASSWORD,
+            CLOUD_IOT_HUB_CONNECTION_STRING);
         }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {

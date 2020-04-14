@@ -5,7 +5,7 @@ Class-Path: ./
  cbc.jar 
  yukonappserver.jar 
  sqljdbc42.jar 
- ojdbc6.jar 
+ ojdbc10.jar 
  spring-aop-5.1.5.RELEASE 
  spring-aspects-5.1.5.RELEASE.jar 
  spring-beans-5.1.5.RELEASE 

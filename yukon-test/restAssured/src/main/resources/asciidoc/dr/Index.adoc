@@ -179,3 +179,7 @@ include::PickerSearchByType.adoc[]
 include::PickerSearchById.adoc[]
 include::PickerSearchByQuery.adoc[]
 
+== Device Readings
+=== Retrieve Device Reading
+include::DeviceReading.adoc[]
+

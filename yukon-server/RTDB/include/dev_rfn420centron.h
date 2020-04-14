@@ -35,10 +35,10 @@ protected:
 };
 
 
-using Rfn420clDevice  = Rfn420CentronDevice;
-using Rfn420clwDevice = Rfn420CentronDevice;
-using Rfn420cdDevice  = Rfn420CentronDevice;
-using Rfn420cdwDevice = Rfn420CentronDevice;
+using Rfn420clDevice = Rfn420CentronDevice;
+using Wrl420clDevice = Rfn420CentronDevice;
+using Rfn420cdDevice = Rfn420CentronDevice;
+using Wrl420cdDevice = Rfn420CentronDevice;
 
 }
 }

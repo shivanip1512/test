@@ -3,8 +3,11 @@ package com.cannontech.web.stars.mapNetwork;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.geojson.FeatureCollection;
 import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -36,6 +41,7 @@ import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -49,14 +55,8 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.LocationValidator;
 import com.cannontech.web.tools.mapping.model.NearbyDevice;
-import com.cannontech.web.tools.mapping.model.Neighbor;
-import com.cannontech.web.tools.mapping.model.NmNetworkException;
-import com.cannontech.web.tools.mapping.model.Parent;
-import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
-import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
-import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
 
 @RequestMapping("/mapNetwork/*")
 @Controller
@@ -72,6 +72,7 @@ public class MapNetworkController {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private LocationService locationService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     @RequestMapping(value = "home", method = RequestMethod.GET)
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId,
@@ -105,9 +106,16 @@ public class MapNetworkController {
         model.addAttribute("displayParentNodeLayer", displayParentNodeLayer);
         model.addAttribute("displayPrimaryRouteLayer", displayPrimaryRouteLayer);
         model.addAttribute("displayNearbyLayer", displayNearbyLayer);
+        model.addAttribute("displayInfrastructure", !isPlc);
         
         int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
         model.addAttribute("numLayers", numLayers);
+        
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        
+        model.addAttribute("mileValues", NearbyMiles.values());
 
         return "mapNetwork/home.jsp";
     }
@@ -164,38 +172,49 @@ public class MapNetworkController {
     }
 
     @RequestMapping("parentNode")
-    public @ResponseBody Map<String, Object> parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+    public @ResponseBody Map<String, Object> parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId,
+            YukonUserContext userContext) throws ServletException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            Parent parent = nmNetworkService.getParent(deviceId, accessor);
-            json.put("parent",  parent);
-        } catch (NmNetworkException e) {
-            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
+            Pair<RfnDevice, FeatureCollection> parent = nmNetworkService.getParent(deviceId, accessor);
+            if (parent == null) {
+                // no parent
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.noParent"));
+            } else if (parent.getValue() == null) {
+                // no location
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.noParentLocation", parent.getKey().getName()));
+            }
+            json.put("parent", parent);
+        } catch (NmCommunicationException e) {
+            json.put("errorMsg", e.getMessage());
         }
         return json;
     }
     
     @RequestMapping("neighbors")
-    public @ResponseBody Map<String, Object> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+    public @ResponseBody Map<String, Object> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId,
+            YukonUserContext userContext) throws ServletException {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            Neighbors allNeighbors = nmNetworkService.getNeighbors(deviceId, accessor);
-            if (allNeighbors.getErrorMsg() != null) {
-                json.put("errorMsg",  allNeighbors.getErrorMsg());
+            List<Pair<RfnDevice, FeatureCollection>> neighbors = nmNetworkService.getNeighbors(deviceId, accessor);
+            if (neighbors.isEmpty()) {
+                // no neighbors
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.neighbors.noDevicesReturned"));
             }
-            List<Neighbor> neighbors =  allNeighbors.getNeighbors();
-            json.put("neighbors",  neighbors);
-            //check for any neighbors that have missing location data
-            List<RfnDevice> missingNeighbors = allNeighbors.getNeighborsWithoutLocation();
-            if (missingNeighbors.size() > 0) {
-                List<String> missingNeighborNames = new ArrayList<>();
-                missingNeighbors.forEach(neighbor -> missingNeighborNames.add(neighbor.getName()));
-                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.neighbors.missingLocationData", String.join(", ",  missingNeighborNames)));
+            json.put("neighbors", neighbors);
+            // check for any neighbors that have missing location data
+            List<String> missingNeighborNames = neighbors.stream()
+                    .filter(value -> value != null && value.getRight() == null)
+                    .map(value -> value.getKey().getName())
+                    .collect(Collectors.toList());
+            if (!missingNeighborNames.isEmpty()) {
+                json.put("errorMsg", accessor.getMessage(nameKey + "exception.neighbors.missingLocationData",
+                        String.join(", ", missingNeighborNames)));
             }
-        } catch (NmNetworkException e) {
-            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
+        } catch (NmCommunicationException e) {
+            json.put("errorMsg", e.getMessage());
         }
         return json;
     }
@@ -205,19 +224,21 @@ public class MapNetworkController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            Route entireRoute = nmNetworkService.getRoute(deviceId, accessor);
-            if (entireRoute.getErrorMsg() != null) {
-                json.put("errorMsg", entireRoute.getErrorMsg());
+            List<Pair<RfnDevice, FeatureCollection>> entireRoute = nmNetworkService.getRoute(deviceId, accessor);
+            json.put("entireRoute", entireRoute);
+            if (entireRoute.isEmpty()) {
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.noDevicesReturned"));
             }
-            List<RouteInfo> route = entireRoute.getRoute();
-            json.put("routeInfo",  route);
-            //check if any devices in the route have missing location data
-            RfnDevice missingRoute = entireRoute.getDeviceWithoutLocation();
-            if (missingRoute != null) {
-                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", missingRoute.getName()));
+            // devices in the route that have missing location data
+            List<String> missingRoute = entireRoute.stream()
+                    .filter(value -> value != null && value.getRight() == null)
+                    .map(value -> value.getKey().getName())
+                    .collect(Collectors.toList());
+            if (!missingRoute.isEmpty()) {
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", String.join(", ", missingRoute)));
             }
-        } catch (NmNetworkException e) {
-            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
+        } catch (NmCommunicationException e) {
+            json.put("errorMsg",  e.getMessage());
         }
         return json;
     }
@@ -251,6 +272,12 @@ public class MapNetworkController {
         }
 
         return json;
+    }
+    
+    //This request needs to be a post because there can be many devices that we pass in
+    @PostMapping("selectedGateways")
+    public @ResponseBody Set<Integer> selectedGateways(@RequestParam(value="deviceIds[]", required=true, defaultValue="") Integer[] deviceIds) {
+       return rfnDeviceDao.getGatewayIdsForDevices(new HashSet<>(Arrays.asList(deviceIds)));
     }
     
 }

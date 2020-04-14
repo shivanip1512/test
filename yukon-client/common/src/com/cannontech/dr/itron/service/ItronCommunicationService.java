@@ -1,5 +1,6 @@
 package com.cannontech.dr.itron.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.zip.ZipFile;
 
@@ -18,7 +19,7 @@ public interface ItronCommunicationService {
      * customers to add a ZigBee, Direct-to-Grid, or ESI devices
      * from the utility's web portal,
      */
-    void addDevice(Hardware hardware, AccountDto account);
+    void addDevice(Hardware hardware, AccountDto account, Integer accountId);
 
     /**
      * Request the secondary (LCR) mac address for a device, given the primary (ESI) mac address.
@@ -30,7 +31,7 @@ public interface ItronCommunicationService {
      * Use to create and add a service point, which can include customer's
      * Account and Location information.
      */
-    void addServicePoint(AccountDto account, String macAddress);
+    void addServicePoint(AccountDto account, Integer accountId, String macAddress);
 
     /**
      * Removes existing Device from Service Point
@@ -47,7 +48,7 @@ public interface ItronCommunicationService {
      * 6. Finds mac address for each device
      * 7. For each group sends all mac addresses to itron
      */
-    void enroll(int accountId, int groupId);
+    void enroll(int accountId, Collection<Integer> groupIds);
 
     /**
      * Attempts to sync Yukon account with Itron
@@ -58,7 +59,7 @@ public interface ItronCommunicationService {
      * 5. Finds mac address for each device
      * 6. For each group sends all mac addresses to itron
      */
-    void unenroll(int accountId, int groupId);
+    void unenroll(int accountId, Collection<Integer> groupIds);
 
     /**
      * Attempts to sync Yukon account with Itron

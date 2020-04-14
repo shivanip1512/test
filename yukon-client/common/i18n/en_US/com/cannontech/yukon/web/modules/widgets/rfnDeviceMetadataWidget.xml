@@ -23,8 +23,9 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_NAMES">Node Names</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_SERIAL_NUMBER">Node Serial Number</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE">Node Type</entry>
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_GATEWAY">Primary Gateway</entry>
-<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_GATEWAY_HOP_COUNT">Primary Gateway Hop Count</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_GATEWAY">Primary Forward</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.REVERSE_LOOKUP">Reverse Lookup</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_GATEWAY_HOP_COUNT">Hop Count</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_NEIGHBOR">Primary Neighbor</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_NEIGHBOR_DATA_TIMESTAMP">Primary Neighbor Data Timestamp</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_NEIGHBOR_LINK_COST">Primary Neighbor Link Cost</entry>
@@ -34,6 +35,15 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.IPV6_ADDRESS">IPv6 Address</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.HOSTNAME">Hostname</entry>
 
+<!-- Node Types -->
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.GATEWAY">Gateway</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.ELECTRIC_NODE">Electric node</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.GAS_NODE">Gas node</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.WATER_NODE">Water node</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.LCR_NODE">LCR node</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.DA_NODE">DA node</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NODE_TYPE.EKANET_RELAY">EkaNet relay</entry>
+    
 <!-- Metadata type values -->
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS.value.UNKNOWN">Unknown</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS.value.READY">Ready</entry>

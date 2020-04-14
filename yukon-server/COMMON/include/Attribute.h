@@ -444,6 +444,7 @@ public:
     static const Attribute  MeasurementError;
     static const Attribute  MeterFunctioningCorrectly;
     static const Attribute  MeterReconfigure;
+    static const Attribute  MeterProgrammingAttempted;
     static const Attribute  MetrologyCommunicationFailure;
     static const Attribute  NonVolatileMemFailure;
     static const Attribute  OutstationDNP3SerCommLocked;
@@ -457,7 +458,6 @@ public:
     static const Attribute  RamError;
     static const Attribute  RegisterFullScaleExceeded;
     static const Attribute  ReverseFlow;
-    static const Attribute  RemoteMeterConfigurationFailure;
     static const Attribute  ReversedAggregate;
     static const Attribute  ReversedPhaseA;
     static const Attribute  ReversedPhaseC;
@@ -646,27 +646,9 @@ public:
 
     static const Attribute  EventSuperseded;
     static const Attribute  MemoryMapLost;
-    static const Attribute  TimeSync;
-    static const Attribute  ColdStart;
-    static const Attribute  MaxControlExceeded;
-    static const Attribute  NetworkTimeoutCancel;
     static const Attribute  ConfigurationUpdatedHash;
-    static const Attribute  ConfigurationProcessed;
-    static const Attribute  TimeLost;
-    static const Attribute  SelfCheckFail;
-    static const Attribute  InactiveAppliance;
     static const Attribute  RadioLinkQuality;
-    static const Attribute  IncorrectTLSIdentity;
-    static const Attribute  KeyUpdate;
-    static const Attribute  KeyUpdateFail;
-    static const Attribute  TLSFail;
-    static const Attribute  BadHDLC;
-    static const Attribute  TLSAlert;
-    static const Attribute  OptimizeIntelligentControl;
-    static const Attribute  FlushLog;
-    static const Attribute  SnapToGold;
     static const Attribute  EventReceived;
-    static const Attribute  LoadStatus;
 };
 
 

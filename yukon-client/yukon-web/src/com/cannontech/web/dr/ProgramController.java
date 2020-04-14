@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,6 +59,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
@@ -76,6 +77,8 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteHardwarePAObject;
+import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
@@ -137,6 +140,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private DrMeterDisconnectStatusService meterDisconnectService;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private AttributeService attributeService;
 
     @RequestMapping(value = "/program/list", method = RequestMethod.GET)
     public String list(ModelMap model, YukonUserContext userContext,
@@ -290,13 +294,13 @@ public class ProgramController extends ProgramControllerBase {
         }
         
         model.addAttribute("disconnectStatusList", searchResult);
+        
+        //get disconnect status filter list
+        List<LiteStateGroup> stateGroups = attributeService.findStateGroups(deviceCollection.getDeviceList(), BuiltInAttribute.DISCONNECT_STATUS);
+        List<LiteState> states = new ArrayList<>();
+        stateGroups.forEach(group -> states.addAll(group.getStatesList()));
+        model.addAttribute("disconnectStatuses", states);
 
-        List<String> stateValues = list.stream()
-                .map(p -> pointFormattingService.getValueString(p.getValue(), Format.VALUE, userContext))
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
-        model.addAttribute("disconnectStatuses", stateValues);
     }
     
     @GetMapping("/program/disconnectStatus/download")
@@ -374,7 +378,7 @@ public class ProgramController extends ProgramControllerBase {
         
         json.put("success", result.isSuccess());
         json.put("status", accessor.getMessage(result.getState().getFormatKey()));
-        json.put("time", result.getDisconnectTime());
+        json.put("time", result.getDisconnectTime().getMillis());
     }
     
     public enum DisconnectSortBy implements DisplayableEnum {

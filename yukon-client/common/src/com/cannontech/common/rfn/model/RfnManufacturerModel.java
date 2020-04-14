@@ -63,8 +63,8 @@ public enum RfnManufacturerModel {
     RFN_410CL(PaoType.RFN410CL, "ITRN", "C1SX"),
     RFN_420CL(PaoType.RFN420CL, "ITRN", "C2SX"),
     RFN_420CD(PaoType.RFN420CD, "ITRN", "C2SX-SD"),
-    RFN_420CLW(PaoType.RFN420CLW, "ITRN", "C2SX-W"),
-    RFN_420CDW(PaoType.RFN420CDW, "ITRN", "C2SX-SD-W"),
+    WRL_420CL(PaoType.WRL420CL, "ITRN", "C2SX-W"),
+    WRL_420CD(PaoType.WRL420CD, "ITRN", "C2SX-SD-W"),
     
     RFN_410FL(PaoType.RFN410FL, "LGYR", "FocuskWh"),
     RFN_410FX_D(PaoType.RFN410FX, "LGYR", "FocusAXD"),

@@ -63,6 +63,7 @@ import com.cannontech.stars.database.data.event.EventAccount;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
+import com.cannontech.stars.dr.account.exception.IllegalAccountNumberModificationException;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
@@ -790,7 +791,7 @@ public class OperatorAccountController {
             
             if (!bindingResult.hasErrors()) {
                 
-                transactionTemplate.execute(new TransactionCallback<Object>() {
+                transactionTemplate.execute(new TransactionCallback<>() {
                     
                     @Override
                     public Object doInTransaction(TransactionStatus status) {
@@ -824,6 +825,9 @@ public class OperatorAccountController {
         } catch (AccountNumberUnavailableException e) {
             bindingResult.rejectValue("accountDto.accountNumber", 
                     baseKey + "accountGeneral.accountDto.accountNumber.accountNumberUnavailable");
+        } catch (IllegalAccountNumberModificationException e) {
+            bindingResult.rejectValue("accountDto.accountNumber", 
+                                      baseKey + "accountGeneral.accountDto.accountNumber.illegalModification");
         } finally {
             setupAccountModel(accountInfoFragment, modelMap, userContext, ecResidentialUserGroups, residentialUser);
 

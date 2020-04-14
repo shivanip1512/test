@@ -250,7 +250,10 @@ public final class RfnGatewayData {
     }
 
     public double getPercentForNodesWithSN() {
-        return  (gwTotalNodesWithSN * 100) / gwTotalNodes;
+        if (gwTotalNodes > 0) {
+            return  (gwTotalNodesWithSN * 100) / gwTotalNodes;
+        }
+        return 0;
     }
 
     public int getGwTotalNodes() {

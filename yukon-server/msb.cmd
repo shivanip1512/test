@@ -3,17 +3,18 @@
 
 PATH ..\yukon-build\server-build;%PATH%
 
-set vs2017Edition=Enterprise
-if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\" (
-  set vs2017Edition=Enterprise
-) else if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\" (
-  set vs2017Edition=Professional
-) else if exist "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\" (
-  set vs2017Edition=Community
+set vsVersion=2019
+set vsEdition=Enterprise
+if exist "C:\Program Files (x86)\Microsoft Visual Studio\%vsVersion%\Enterprise\" (
+  set vsEdition=Enterprise
+) else if exist "C:\Program Files (x86)\Microsoft Visual Studio\%vsVersion%\Professional\" (
+  set vsEdition=Professional
+) else if exist "C:\Program Files (x86)\Microsoft Visual Studio\%vsVersion%\Community\" (
+  set vsEdition=Community
 ) else (
-  exit Unable to identify Microsoft Visual Studio 2017 edition information.
+  exit Unable to identify Microsoft Visual Studio %vsVersion% edition information.
 )
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\%vs2017Edition%\VC\Auxiliary\Build\vcvars32.bat"
+call "C:\Program Files (x86)\Microsoft Visual Studio\%vsVersion%\%vsEdition%\VC\Auxiliary\Build\vcvars32.bat"
 
 :: defaults
 set conf=/p:Configuration=Release

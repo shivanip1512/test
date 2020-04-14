@@ -13,7 +13,7 @@ public:
     unsigned char getOperation()   const override;
     unsigned char getCommandCode() const override;
 
-    std::string getCommandName() override;
+    std::string getCommandName() const override;
     ASID getApplicationServiceId() const override;
 
 private:

@@ -349,4 +349,22 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         mspCisVendorList.add(0, MultispeakVendor.noneVendor);
         return mspCisVendorList;
     }
+
+    /**
+     * return Outgoing Credentials from multispeak vendor based on interface name and Use Vendor Authentication Settings.
+     */
+    public Credentials getOutgoingCredentials(MultispeakVendor mspVendor, String interfaceName) {
+        MultispeakInterface mspInterface = mspVendor.getMspInterfaces()
+                                                    .stream()
+                                                    .filter(m -> m.getMspInterface().equals(interfaceName) && !m.isUseVendorAuth())
+                                                    .findFirst()
+                                                    .orElse(null);
+
+        if (mspInterface != null) {
+            return new Credentials(mspInterface.getOutUserName(), mspInterface.getOutPassword());
+        } else {
+            return new Credentials(mspVendor.getOutUserName(), mspVendor.getOutPassword());
+        }
+
+    }
 }

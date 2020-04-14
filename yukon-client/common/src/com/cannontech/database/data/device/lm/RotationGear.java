@@ -24,6 +24,7 @@ public RotationGear()
  * Insert the method's description here.
  * Creation date: (2/11/2002 10:40:08 AM)
  */
+@Override
 public String getGroupSelectionMethod()
 {
 	return super.getGroupSelectionMethod();
@@ -60,6 +61,7 @@ public Integer getShedTime()
  * Creation date: (2/11/2002 10:40:08 AM)
  * @param seconds java.lang.Integer
  */
+@Override
 public void setGroupSelectionMethod(String method) 
 {
 	super.setGroupSelectionMethod( method );
@@ -72,10 +74,11 @@ public void setGroupSelectionMethod(String method)
 public void setNumberOfGroups(Object value) 
 {
 	//value should either be String or Integer
-	if( value instanceof Integer )
-		setMethodRateCount( (Integer)value );
-	else
-		setMethodRateCount( new Integer(0) );
+	if( value instanceof Integer ) {
+        setMethodRateCount( (Integer)value );
+    } else {
+        setMethodRateCount( new Integer(0) );
+    }
 }
 /**
  * Insert the method's description here.
@@ -94,5 +97,10 @@ public void setSendRate(Integer seconds)
 public void setShedTime(Integer seconds) 
 {
 	setMethodPeriod( seconds );
+}
+
+@Override
+public boolean useCustomDbRetrieve() {
+    return false;
 }
 }

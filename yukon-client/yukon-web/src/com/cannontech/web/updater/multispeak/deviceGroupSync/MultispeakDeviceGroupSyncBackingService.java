@@ -5,51 +5,28 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
+import com.cannontech.multispeak.service.MultispeakSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.updater.UpdateBackingService;
+import com.cannontech.web.updater.multispeak.MultispeakSyncBackingServiceBase;
 import com.cannontech.web.updater.multispeak.deviceGroupSync.handler.MultispeakDeviceGroupSyncUpdaterHandler;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
-public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingService {
+public class MultispeakDeviceGroupSyncBackingService extends MultispeakSyncBackingServiceBase implements UpdateBackingService {
     
     private Map<MultispeakDeviceGroupSyncUpdaterTypeEnum, MultispeakDeviceGroupSyncUpdaterHandler> handlersMap;
     private ObjectFormattingService objectFormattingService;
     private MeterDao meterDao;
-    private DateFormattingService dateFormattingService;
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
-    private ImmutableMap<MultispeakDeviceGroupSyncProgressStatus, String> statusStyleClassNameMap;
+
     @Autowired private MspHandler mspHandler;
-    @Autowired MultispeakDao multispeakDao;
-    @Autowired MultispeakFuncs multispeakFuncs;
-    
-    @PostConstruct
-    public void init() {
-    	
-    	Builder<MultispeakDeviceGroupSyncProgressStatus, String> builder = ImmutableMap.builder();
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.RUNNING, "");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FAILED, "error");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.CANCELED, "error");
-    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FINISHED, "success");
-    	statusStyleClassNameMap = builder.build();
-    }
-    
+    @Autowired private MultispeakFuncs multispeakFuncs;
+
     @Override
     public String getLatestValue(String updaterTypeStr, long afterDate, YukonUserContext userContext) {
         int vendorId = multispeakFuncs.getPrimaryCIS();
@@ -112,7 +89,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.SUBSTATION_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION) : 0;
+        		return progress != null ? progress.getChangeCount(MultispeakSyncTypeProcessorType.SUBSTATION) : 0;
         	}
         });
         
@@ -120,7 +97,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.SUBSTATION_NO_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION) : 0;
+        		return progress != null ? progress.getNoChangeCount(MultispeakSyncTypeProcessorType.SUBSTATION) : 0;
         	}
         });
         
@@ -128,7 +105,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.BILLING_CYCLE_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE) : 0;
+        		return progress != null ? progress.getChangeCount(MultispeakSyncTypeProcessorType.BILLING_CYCLE) : 0;
         	}
         });
         
@@ -136,7 +113,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.BILLING_CYCLE_NO_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress != null ? progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE) : 0;
+        		return progress != null ? progress.getNoChangeCount(MultispeakSyncTypeProcessorType.BILLING_CYCLE) : 0;
         	}
         });
         
@@ -176,7 +153,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT_OR_LAST_SYNC_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getStatusTextObj(progress, MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, userContext);
+        		return getStatusTextObj(progress, MultispeakSyncTypeProcessorType.SUBSTATION, userContext);
         	}
         });
 
@@ -184,7 +161,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT_OR_LAST_SYNC_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getStatusTextObj(progress, MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, userContext);
+        		return getStatusTextObj(progress, MultispeakSyncTypeProcessorType.BILLING_CYCLE, userContext);
         	}
         });
         
@@ -201,7 +178,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.SUBSTATION)) {
         			return true;
         		}
         		return false;
@@ -213,7 +190,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.SUBSTATION)) {
         			return true;
         		}
         		return false;
@@ -225,7 +202,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.BILLING_CYCLE)) {
         			return true;
         		}
         		return false;
@@ -237,7 +214,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
         		
-        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakSyncTypeProcessorType.BILLING_CYCLE)) {
         			return true;
         		}
         		return false;
@@ -248,7 +225,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, userContext);
+        		return getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType.SUBSTATION, userContext);
         	}
         });
 
@@ -256,43 +233,9 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, userContext);
+        		return getLastCompletedSyncDateStr(MultispeakSyncTypeProcessorType.BILLING_CYCLE, userContext);
         	}
         });
-    }
-    
-    private Object getStatusTextObj(MultispeakDeviceGroupSyncProgress progress, MultispeakDeviceGroupSyncTypeProcessorType type, YukonUserContext userContext) {
-    	
-    	if (progress == null) {
-			return null;
-		}
-		
-		MultispeakDeviceGroupSyncProgressStatus status = progress.getStatus();
-		if (status != MultispeakDeviceGroupSyncProgressStatus.FINISHED) {
-			return status;
-		}
-		
-		return getLastCompletedSyncDateStr(type, userContext);
-    }
-    
-    private String getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType type,
-            YukonUserContext userContext) {
-        
-        int vendorId = multispeakFuncs.getPrimaryCIS();
-        Instant instant = null;
-        if (vendorId > 0) {
-            Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants =
-                mspHandler.getDeviceGroupSyncService().getLastSyncInstants();
-            instant = lastSyncInstants.get(type);
-        }
-
-        if (vendorId <= 0 || instant == null) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            return messageSourceAccessor.getMessage("yukon.common.na");
-        }
-
-        String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
-        return dateStr;
     }
     
     @Autowired
@@ -303,15 +246,5 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
 		this.meterDao = meterDao;
-	}
-    
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-		this.dateFormattingService = dateFormattingService;
-	}
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
 	}
 }

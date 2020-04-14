@@ -4,11 +4,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -449,6 +451,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     MASS_MEMORY_ERROR("Mass Memory Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     MEASUREMENT_ERROR("Measurement Error", AttributeGroup.RFN_METERING_EVENT, false),
     METER_FUNCTIONING_CORRECTLY("Meter Functioning Correctly", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    METER_PROGRAMMING_ATTEMPTED("Meter Programming Attempted", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     METER_RECONFIGURE("Meter Reconfigure", AttributeGroup.RFN_HARDWARE_EVENT, false),
     METROLOGY_COMM_FAILURE("Metrology Communication Failure", AttributeGroup.RFN_OTHER_EVENT, false),
     NON_VOLATILE_MEM_FAILURE("Non Volatile Mem Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
@@ -463,7 +466,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RAM_ERROR("Ram Error", AttributeGroup.RFN_HARDWARE_EVENT, false),
     REGISTER_FULL_SCALE_EXCEEDED("Register Full-scale Exceeded", AttributeGroup.RFN_OTHER_EVENT, false),
     REVERSE_FLOW("Reverse Flow", AttributeGroup.RFN_OTHER_EVENT, false),
-    REMOTE_METER_CONFIGURATION_FAILURE("Remote Meter Configuration Failure", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     REVERSED_AGGREGATE("Reversed Aggregate", AttributeGroup.RFN_METERING_EVENT, false),
     REVERSED_PHASE_A("Reversed Phase A", AttributeGroup.RFN_METERING_EVENT, false),
     REVERSED_PHASE_C("Reversed Phase C", AttributeGroup.RFN_METERING_EVENT, false),
@@ -657,27 +659,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     EVENT_SUPERSEDED("Event Superseded", AttributeGroup.ITRON, false),
     MEMORY_MAP_LOST("Memory Map Lost", AttributeGroup.ITRON, false),
-    TIME_SYNC("Time Sync", AttributeGroup.ITRON, false),
-    COLD_START("Cold Start", AttributeGroup.ITRON, false),
-    MAX_CONTROL_EXCEEDED("Max Control Exceeded", AttributeGroup.ITRON, false),
-    NETWORK_TIMEOUT_CANCEL("Network Timeout Cancel", AttributeGroup.ITRON, false),
     CONFIGURATION_UPDATED_HASH("Configuration Updated Hash", AttributeGroup.ITRON, false),
-    CONFIGURATION_PROCESSED("Configuration Processed", AttributeGroup.ITRON, false),
-    TIME_LOST("Time Lost", AttributeGroup.ITRON, false),
-    SELF_CHECK_FAIL("Self Check Fail", AttributeGroup.ITRON, false),
-    INACTIVE_APPLIANCE("Inactive Appliance", AttributeGroup.ITRON, false),
     RADIO_LINK_QUALITY("Radio Link Quality", AttributeGroup.ITRON, false),
-    INCORRECT_TLS_IDENTITY("Incorrect TLS Identity", AttributeGroup.ITRON, false),
-    KEY_UPDATE("Key Update", AttributeGroup.ITRON, false),
-    KEY_UPDATE_FAIL("Key Update Fail", AttributeGroup.ITRON, false),
-    TLS_FAIL("TLS Fail", AttributeGroup.ITRON, false),
-    BAD_HDLC("Bad HDLC", AttributeGroup.ITRON, false),
-    TLS_ALERT("TLS Alert", AttributeGroup.ITRON, false),
-    OPTIMIZE_INTELLIGENT_CONTROL("Optimize Intelligent Control", AttributeGroup.ITRON, false),
-    FLUSH_LOG("Flush Log", AttributeGroup.ITRON, false),
-    SNAP_TO_GOLD("Snap To Gold", AttributeGroup.ITRON, false),
     EVENT_RECEIVED("Event Received", AttributeGroup.ITRON, false),
-    LOAD_STATUS("Load Status", AttributeGroup.ITRON, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
@@ -792,7 +776,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         nonIntervalAttributes = ImmutableSet.of(
                 MAXIMUM_VOLTAGE,
+                MAXIMUM_VOLTAGE_DAILY,
                 MINIMUM_VOLTAGE,
+                MINIMUM_VOLTAGE_DAILY,
                 PEAK_DEMAND,
                 PEAK_DEMAND_DAILY,
                 PEAK_DEMAND_FROZEN,
@@ -828,6 +814,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 RECEIVED_PEAK_DEMAND_RATE_C,
                 RECEIVED_PEAK_DEMAND_RATE_D,
                 RECEIVED_PEAK_KVA,
+                RECEIVED_PEAK_KVA_FROZEN,
+                RECEIVED_PEAK_KVA_FROZEN_RATE_A,
+                RECEIVED_PEAK_KVA_FROZEN_RATE_B,
+                RECEIVED_PEAK_KVA_FROZEN_RATE_C,
+                RECEIVED_PEAK_KVA_FROZEN_RATE_D,
                 RECEIVED_PEAK_KVA_RATE_A,
                 RECEIVED_PEAK_KVA_RATE_B,
                 RECEIVED_PEAK_KVA_RATE_C,
@@ -933,22 +924,19 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
      * 
      */
     private static void buildAllStatusTypeAttributeGroups() {
-        ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> allGroupedStatusTypeBuilder =
-            ImmutableMap.builder();
-
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_CURRENT_EVENT, lookupByGroup.get(AttributeGroup.RFN_CURRENT_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_VOLTAGE_EVENT, lookupByGroup.get(AttributeGroup.RFN_VOLTAGE_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_DEMAND_EVENT, lookupByGroup.get(AttributeGroup.RFN_DEMAND_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_OTHER_EVENT, lookupByGroup.get(AttributeGroup.RFN_OTHER_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_METERING_EVENT, lookupByGroup.get(AttributeGroup.RFN_METERING_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.STATUS, lookupByGroup.get(AttributeGroup.STATUS));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
-        allGroupedStatusTypeBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
-
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
-        allGroupedStatusTypeAttributes = allGroupedStatusTypeBuilder.build();
-
+        allGroupedStatusTypeAttributes = Collections.unmodifiableMap(
+                Stream.of(
+                        AttributeGroup.RFN_CURRENT_EVENT,
+                        AttributeGroup.RFN_VOLTAGE_EVENT,
+                        AttributeGroup.RFN_DEMAND_EVENT,
+                        AttributeGroup.RFN_OTHER_EVENT,
+                        AttributeGroup.RFN_METERING_EVENT,
+                        AttributeGroup.STATUS,
+                        AttributeGroup.RFN_HARDWARE_EVENT,
+                        AttributeGroup.RFN_SOFTWARE_EVENT)
+                        .collect(StreamUtils.mapSelfTo(lookupByGroup::get)));
     }
 
     /**
@@ -1001,7 +989,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static void buildVoltageAttributes() {
 
         voltageAttributes = ImmutableSet.of(MINIMUM_VOLTAGE, 
+                                            MINIMUM_VOLTAGE_DAILY, 
                                             MAXIMUM_VOLTAGE, 
+                                            MAXIMUM_VOLTAGE_DAILY, 
                                             AVERAGE_VOLTAGE);
     }
     

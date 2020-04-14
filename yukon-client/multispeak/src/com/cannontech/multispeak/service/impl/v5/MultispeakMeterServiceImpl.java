@@ -1664,7 +1664,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             log.info("Sending EndDeviceStatesNotification (" + responseUrl + "): Meter Number " + meter.toString()
                 + " EndDeviceStateType: " + endDeviceState.getDeviceState().getValue());
 
-            notClient.endDeviceStatesNotification(mspVendor, responseUrl, endDeviceStatesNotification);
+            notClient.endDeviceStatesNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, endDeviceStatesNotification);
 
             List<ErrorObject> errObjects = new ArrayList<>();
             errObjects = multispeakFuncs.getErrorObjectsFromResponse();
@@ -2065,7 +2065,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             cdStateChange.add(stateChange);
             cdStatesChangedNotification.setArrayOfCDStateChange(arrayOfCDStateChange);
             cdStatesChangedNotification.setTransactionID(transactionId);
-            notClient.cdStatesChangedNotification(mspVendor, responseUrl, cdStatesChangedNotification);
+            notClient.cdStatesChangedNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, cdStatesChangedNotification);
             multispeakEventLogService.notificationResponse("CDStatesChangedNotification", transactionId,
                 yukonMeter.getMeterNumber(), loadActionCodeKind.value(), -1, responseUrl);
 
@@ -2202,7 +2202,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         meterReadingsNotification.setTransactionID(transactionID);
                         log.info("Sending MeterReadingsNotification (" + responseUrl + "): Meter Number "
                             + meterRead.getReferableID());
-                        notClient.meterReadingsNotification(mspVendor, responseUrl, meterReadingsNotification);
+                        notClient.meterReadingsNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, meterReadingsNotification);
 
                         List<ErrorObject> errObjects = new ArrayList<>();
                         errObjects = multispeakFuncs.getErrorObjectsFromResponse();
@@ -2314,7 +2314,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     arrayOfFormattedBlock.getFormattedBlock().add(formattedBlock);
                     formattedBlockNotification.setArrayOfFormattedBlock(arrayOfFormattedBlock);
                     try {
-                        notClient.formattedBlockNotification(mspVendor, responseUrl, formattedBlockNotification);
+                        notClient.formattedBlockNotification(mspVendor, responseUrl, MultispeakDefines.NOT_Server_STR, formattedBlockNotification);
 
                         List<ErrorObject> errObjects = new ArrayList<>();
                         errObjects = multispeakFuncs.getErrorObjectsFromResponse();

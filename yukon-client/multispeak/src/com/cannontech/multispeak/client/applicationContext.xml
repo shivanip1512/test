@@ -4,11 +4,13 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:oxm="http://www.springframework.org/schema/oxm"
+       xmlns:jms="http://www.springframework.org/schema/jms"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
   <context:annotation-config/>
   <bean class="com.cannontech.multispeak.deploy.service.impl.v3.MR_ServerImpl">
     <property name="porterConnection" ref="porterConnection" />
@@ -43,7 +45,7 @@
   </bean>
   
   <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakMeterServiceImpl">
-	<property name="porterConnection" ref="porterConnection" />
+    <property name="porterConnection" ref="porterConnection" />
   </bean>
   <bean id="outageJmsMessageListener" class="com.cannontech.multispeak.service.v3.OutageJmsMessageListener" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
@@ -67,7 +69,7 @@
         <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
 
-    <bean id="drMessageService" class="com.cannontech.multispeak.service.impl.v5.DrJmsMessageListener" />
+    <bean id="drMessageService" class="com.cannontech.multispeak.service.impl.v5.DrJmsMessageServiceImpl" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="destinationName" value="yukon.notif.obj.dr.DRNotificationMessage" />
         <property name="concurrentConsumers" value="1"/>
@@ -77,6 +79,8 @@
         <property name="messageListener" ref="drMessageService"/>
         <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
+    
+    <bean id="drAttributeDataJmsService" class="com.cannontech.multispeak.service.impl.v5.DrAttributeDataJmsService" />
 
   <bean id="yukonJmsErrorHandler" class="com.cannontech.multispeak.util.YukonJmsErrorHandler"/>
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl">
@@ -85,6 +89,8 @@
   <bean id="multispeakDeviceGroupSyncService_v5" class="com.cannontech.multispeak.service.impl.v5.MultispeakDeviceGroupSyncServiceImpl">
       <qualifier value="v5"/>
   </bean>
+  <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncService"/>
+  <bean class="com.cannontech.multispeak.service.impl.v5.MultispeakEnrollmentSyncHelper"/>
 
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
     <property name="strategiesToExcludeInReport">
@@ -234,6 +240,8 @@
     </bean>
 
     <bean id="clientInterceptor" class="com.cannontech.multispeak.client.ClientMessageContextHolderInterceptor" />
+    
+    <bean  class="com.cannontech.multispeak.client.MultispeakLoggingHelper" />
 
     <bean id="payloadTransform" class="com.cannontech.multispeak.client.PayloadTransformingInterceptor" >
        <property name="requestXslt" value="classpath:com/cannontech/multispeak/client/oldRequest.xsl" />

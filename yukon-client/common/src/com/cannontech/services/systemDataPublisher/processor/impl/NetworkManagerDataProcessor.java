@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +18,7 @@ import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublisherFrequency;
 
 @Service
@@ -29,7 +30,7 @@ public class NetworkManagerDataProcessor extends SystemDataProcessor {
     private static final Logger log = YukonLogManager.getLogger(NetworkManagerDataProcessor.class);
 
     @Override
-    public void runScheduler(Entry<SystemDataPublisherFrequency, List<DictionariesField>> entry) {
+    public void runScheduler(Entry<SystemDataPublisherFrequency, List<CloudDataConfiguration>> entry) {
 
         if (networkManagerDBConfig.isNetworkManagerDBConnectionConfigured()) {
             executor.scheduleAtFixedRate(() -> {
@@ -41,15 +42,17 @@ public class NetworkManagerDataProcessor extends SystemDataProcessor {
     }
 
     @Override
-    public SystemData buildSystemData(DictionariesField dictionariesField) {
-        List<Map<String, Object>> queryResult = null;
+    public SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration) {
         SystemData nmSystemData = null;
-        try {
-            queryResult = systemDataPublisherDao.getNMSystemData(dictionariesField);
-            nmSystemData = SystemDataProcessorHelper.processQueryResult(dictionariesField, queryResult);
+        if (StringUtils.isNotEmpty(cloudDataConfiguration.getSource())) {
+            List<Map<String, Object>> queryResult = null;
+            try {
+                queryResult = systemDataPublisherDao.getNMSystemData(cloudDataConfiguration);
+                nmSystemData = SystemDataProcessorHelper.processQueryResult(cloudDataConfiguration, queryResult);
 
-        } catch (Exception e) {
-            log.debug("Error while executing query." + e);
+            } catch (Exception e) {
+                log.debug("Error while executing query." + e);
+            }
         }
         return nmSystemData;
     }

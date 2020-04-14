@@ -3,6 +3,7 @@ package com.cannontech.common.dr.gear.setup.fields;
 import com.cannontech.common.dr.gear.setup.HowToStopControl;
 import com.cannontech.common.dr.gear.setup.Mode;
 import com.cannontech.database.data.device.lm.EcobeeSetpointGear;
+import com.cannontech.database.data.device.lm.HeatCool;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -12,10 +13,9 @@ public class EcobeeSetpointGearFields implements ProgramGearFields {
     private Boolean mandatory;
     private Integer setpointOffset;
     private Mode mode;
-    
     private HowToStopControl howToStopControl;
-    private Integer capacityReduction;
     
+    private Integer capacityReduction;
     private WhenToChangeFields whenToChangeFields;
     
     public Integer getSetpointOffset() {
@@ -89,7 +89,7 @@ public class EcobeeSetpointGearFields implements ProgramGearFields {
         ecobeeSetpointGear.setPercentReduction(getCapacityReduction());
         ecobeeSetpointGear.setMethodOptionType(getMandatory());
         ecobeeSetpointGear.setSetpointOffset(getSetpointOffset());
-        ecobeeSetpointGear.setHeatCool(EcobeeSetpointGear.HeatCool.fromMode(getMode()));
+        ecobeeSetpointGear.setHeatCool(HeatCool.fromMode(getMode()));
         
         whenToChangeFields.buildDBPersistent(ecobeeSetpointGear);
     }

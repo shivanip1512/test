@@ -8,8 +8,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -26,6 +24,7 @@ import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
@@ -38,8 +37,8 @@ public class EcobeeRestProxyFactory {
     private static final Logger log = YukonLogManager.getLogger(EcobeeRestProxyFactory.class);
 
     @Autowired private ConfigurationSource configSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private GlobalSettingDao settingDao;
+    @Autowired private YukonJmsTemplate jmsTemplate;
 
     private final RestTemplate proxiedTemplate;
     private RequestReplyTemplate<EcobeeAuthTokenResponse> ecobeeAuthTokenRequestTemplate;
@@ -47,7 +46,7 @@ public class EcobeeRestProxyFactory {
     @PostConstruct
     public void init() {
         ecobeeAuthTokenRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.ECOBEE_AUTH_TOKEN.getName(),
-                configSource, connectionFactory, JmsApiDirectory.ECOBEE_AUTH_TOKEN.getQueue().getName(), false);
+                configSource, jmsTemplate, JmsApiDirectory.ECOBEE_AUTH_TOKEN);
     }
     
     public EcobeeRestProxyFactory(RestTemplate proxiedTemplate) {

@@ -25,6 +25,7 @@ import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.cc.model.CiEventType;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventParticipant;
@@ -45,7 +46,6 @@ import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.support.CustomerPointTypeHelper;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.dr.cc.model.CiEventType;
 import com.cannontech.web.dr.cc.model.CiInitEventModel;
 import com.cannontech.web.dr.cc.model.Exclusion;
 import com.cannontech.web.dr.cc.service.CiCustomerVerificationService;
@@ -139,7 +139,7 @@ public class CiCustomerVerificationServiceImpl implements CiCustomerVerification
             doCommonVerifications(customer, event, exclusions);
         } else if (eventType == CiEventType.ISOC_NOTIFICATION) {
             doCommonVerifications(customer, event, exclusions);
-        } else if (eventType == CiEventType.ISOC_SUPERCEDE_DIRECT || eventType == CiEventType.ISOC_SUPERCEDE_NOTIFICATION) {
+        } else if (eventType == CiEventType.ISOC_SUPERSEDE_DIRECT || eventType == CiEventType.ISOC_SUPERSEDE_NOTIFICATION) {
             verifyNoticeTime(customer, event, exclusions);
         } else if (eventType == CiEventType.ISOC_SAME_DAY) {
             verifyEconEventOverlap(customer, event, exclusions);

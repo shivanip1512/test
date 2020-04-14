@@ -50,6 +50,7 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 public class MeterProgrammingController {
     private final static Logger log = YukonLogManager.getLogger(MeterProgrammingController.class);
     private final static String baseKey = "yukon.web.modules.tools.bulk.meterProgramming.";
+    private final static Integer maxFileSizeInBytes = 1048576;
 
     @Autowired protected CollectionActionService collectionActionService;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
@@ -103,6 +104,10 @@ public class MeterProgrammingController {
             if (isMultipart) {
                 MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
                 dataFile = mRequest.getFile("dataFile");
+                if (dataFile.isEmpty() || dataFile.getSize() > maxFileSizeInBytes) {
+                    model.addAttribute("errorMsg", accessor.getMessage(baseKey + "invalidFileSize"));
+                    return errorView(response, model, deviceCollection);
+                }
                 try {
                     program.setProgram(dataFile.getBytes());
                 } catch (IOException e) {

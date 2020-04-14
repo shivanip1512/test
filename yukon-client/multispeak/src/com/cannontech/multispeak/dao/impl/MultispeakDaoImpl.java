@@ -132,7 +132,8 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     public List<MultispeakInterface> getMultispeakInterfaces(int vendorID) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT VENDORID, INTERFACE, ENDPOINT, VERSION");
+            sql.append("SELECT VENDORID, INTERFACE, ENDPOINT, VERSION,");
+            sql.append("USEVENDORAUTH, INUSERNAME, INPASSWORD, OUTUSERNAME, OUTPASSWORD, VALIDATECERTIFICATE");
             sql.append("FROM " + MSPINTERFACE_TABLENAME);
             sql.append("WHERE VENDORID").eq(vendorID);
 
@@ -167,8 +168,8 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT DISTINCT V.VENDORID, COMPANYNAME, USERNAME, PASSWORD,");
-            sql.append("APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,");
-            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT, ValidateCertificate");
+            sql.append("APPNAME, V.OUTUSERNAME, V.OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,");
+            sql.append("MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT, V.ValidateCertificate");
             sql.append("FROM MSPVENDOR V JOIN MSPINTERFACE I on V.VENDORID = I.VENDORID");
             sql.append("WHERE INTERFACE").eq(MultispeakDefines.CB_Server_STR);
 
@@ -205,6 +206,12 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             sink.addValue("Interface", mspInterface.getMspInterface().trim());
             sink.addValue("Endpoint", mspInterface.getMspEndpoint().trim());
             sink.addValue("Version", mspInterface.getVersion());
+            sink.addValue("InUserName", mspInterface.getInUserName());
+            sink.addValue("InPassword", mspInterface.getInPassword());
+            sink.addValue("OutUserName", mspInterface.getOutUserName());
+            sink.addValue("OutPassword", mspInterface.getOutPassword());
+            sink.addValue("UseVendorAuth", mspInterface.isUseVendorAuth());
+            sink.addValue("ValidateCertificate", mspInterface.getValidateCertificate());
             
             int numAdded = jdbcTemplate.update(sql);
             clearMultispeakVendorCache();
@@ -361,7 +368,14 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         String interfaceStr = rset.getString("Interface");
         String endpoint = rset.getString("Endpoint");
         MultiSpeakVersion version = rset.getEnum("Version", MultiSpeakVersion.class);
-        MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint, version);
+        String inUserName = rset.getString("InUserName");
+        String inPassword = rset.getString("InPassword");
+        String outUserName = rset.getString("OutUserName");
+        String outPassword = rset.getString("OutPassword");
+        boolean useVendorAuth = rset.getBoolean("UseVendorAuth");
+        boolean validateCertificate = rset.getBoolean("ValidateCertificate");
+        MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint, version,
+                         inUserName, inPassword, outUserName, outPassword, validateCertificate, useVendorAuth);
         return mspInterface;
     }
 

@@ -10,9 +10,11 @@ import java.util.Vector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.dr.setup.LMCopy;
 import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.MacroLoadGroup;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.MacroLoadGroupProcessingException;
@@ -32,6 +34,7 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private DemandResponseEventLogService logService;
     private static final String macroType = "GROUP";
 
     @Override
@@ -56,6 +59,8 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, macroLoadGroup.getId());
         buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
+        logService.loadGroupCreated(macroLoadGroup.getName(), macroLoadGroup.getType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
 
         return lmGroup.getPAObjectID();
     }
@@ -71,6 +76,8 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         LMGroup lmGroup = getMacroLoadGroupDBPersistent(macroLoadGroup, loadGroupId);
         buildMacroLoadGroupDBPersistent(macroLoadGroup, lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
+        logService.loadGroupUpdated(macroLoadGroup.getName(), macroLoadGroup.getType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return lmGroup.getPAObjectID();
     }
 
@@ -89,6 +96,8 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
         loadGroup.setPAObjectID(null);
 
         dbPersistentDao.performDBChange(loadGroup, TransactionType.INSERT);
+        logService.loadGroupCreated(loadGroup.getPAOName(), loadGroup.getPaoType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return loadGroup.getPAObjectID();
     }
 
@@ -109,6 +118,8 @@ public class MacroLoadGroupSetupServiceImpl implements LMSetupService <MacroLoad
 
         YukonPAObject lmGroup = (YukonPAObject) LiteFactory.createDBPersistent(liteLoadGroup.get());
         dbPersistentDao.performDBChange(lmGroup, TransactionType.DELETE);
+        logService.loadGroupDeleted(liteLoadGroup.get().getPaoName(), liteLoadGroup.get().getPaoType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return lmGroup.getPAObjectID();
     }
 

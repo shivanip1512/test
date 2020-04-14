@@ -283,7 +283,6 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
             subbus->setDmvTestRunning( false );
         }
 
-        state->setState(IVVCState::IVVC_WAIT);
         return true;
     }
 
@@ -645,26 +644,38 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         if (CtiCCCapBankPtr pendingBank = subbus->getPendingCapBank())
         {
+            state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+
             state->setControlledBankId(pendingBank->getPaoId());
             state->setTimeStamp(subbus->getLastOperationTime());
         }
     }
-    else if ( isBusInDisabledIvvcState(state, subbus) )
-    {
-        return;
-    }
 
-    if (!state->isShowBusDisableMsg())
+    if ( isBusInDisabledIvvcState(state, subbus) )
     {
-        sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusEnabledMessage(subbus->getPaoId(), timeNow));
-    }
-    state->setShowBusDisableMsg(true);
+        // we are disabled somewhere in the hierarchy - bail out UNLESS we have a bank in pending control,
+        //  we need to be able to verify that control - the state was set to IVVC_VERIFY_CONTROL_LOOP above.
 
-    // subbus is enabled
-    // send regulator heartbeat messages as long as we are communicating and have good power flow
-    if ( state->isIvvcOnline() )
+        if ( ! subbus->getRecentlyControlledFlag() )
+        {
+            state->setState(IVVCState::IVVC_WAIT);
+            return;
+        }
+    }
+    else
     {
-        sendKeepAlive( state, subbus );
+        if (!state->isShowBusDisableMsg())
+        {
+            sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusEnabledMessage(subbus->getPaoId(), timeNow));
+        }
+        state->setShowBusDisableMsg(true);
+
+        // subbus is enabled
+        // send regulator heartbeat messages as long as we are communicating and have good power flow
+        if ( state->isIvvcOnline() )
+        {
+            sendKeepAlive( state, subbus );
+        }
     }
 
     stopDisabledDeviceHeartbeats( subbus );

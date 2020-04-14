@@ -27,13 +27,13 @@ public class NestStandardCycleGearFieldsValidator extends ProgramGearFieldsValid
     @Override
     protected void doValidation(NestStandardCycleGearFields nestStandardCycleGear, Errors errors) {
         // Check for Prep Load Shape
-        lmValidatorHelper.checkIfFieldRequired("prep", errors, nestStandardCycleGear.getPrep(), "Prep Load Shape");
+        lmValidatorHelper.checkIfFieldRequired("preparationLoadShaping", errors, nestStandardCycleGear.getPreparationLoadShaping(), "Prep Load Shape");
 
         // Check for Peak Load Shape
-        lmValidatorHelper.checkIfFieldRequired("peak", errors, nestStandardCycleGear.getPeak(), "Peak Load Shape");
+        lmValidatorHelper.checkIfFieldRequired("peakLoadShaping", errors, nestStandardCycleGear.getPeakLoadShaping(), "Peak Load Shape");
 
         // Check for Post Load Shape
-        lmValidatorHelper.checkIfFieldRequired("post", errors, nestStandardCycleGear.getPost(), "Post Load Shape");
+        lmValidatorHelper.checkIfFieldRequired("postPeakLoadShaping", errors, nestStandardCycleGear.getPostPeakLoadShaping(), "Post Load Shape");
     }
 
 }

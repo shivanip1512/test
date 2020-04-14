@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.dr.gear.setup.AbsoluteOrDelta;
+import com.cannontech.common.dr.gear.setup.Setpoint;
 import com.cannontech.common.dr.gear.setup.BtpLedIndicator;
 import com.cannontech.common.dr.gear.setup.ControlStartState;
 import com.cannontech.common.dr.gear.setup.CycleCountSendType;
@@ -28,6 +28,7 @@ import com.cannontech.common.dr.gear.setup.fields.BeatThePeakGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.EcobeeSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.HoneywellCycleGearFields;
+import com.cannontech.common.dr.gear.setup.fields.HoneywellSetpointGearFields;
 import com.cannontech.common.dr.gear.setup.fields.ItronCycleGearFields;
 import com.cannontech.common.dr.gear.setup.fields.LatchingGearFields;
 import com.cannontech.common.dr.gear.setup.fields.MasterCycleGearFields;
@@ -111,7 +112,6 @@ public class LoadProgramSetupControllerHelper {
 
     }
 
-
     /**
      * Retrieve ProgramConstraints
      */
@@ -155,8 +155,11 @@ public class LoadProgramSetupControllerHelper {
                         ProgramDirectMemberControl directMemberControl = new ProgramDirectMemberControl();
                         directMemberControl.setSubordinateProgId(subordinateProgId);
 
-                        LiteYukonPAObject excludedPao = cache.getAllLMPrograms().stream().filter(
-                            program -> program.getLiteID() == subordinateProgId).findFirst().get();
+                        LiteYukonPAObject excludedPao = cache.getAllLMPrograms()
+                                .stream()
+                                .filter(program -> program.getLiteID() == subordinateProgId)
+                                .findFirst()
+                                .get();
                         directMemberControl.setSubordinateProgName(excludedPao.getPaoName());
                         return directMemberControl;
                     }
@@ -246,6 +249,10 @@ public class LoadProgramSetupControllerHelper {
         case HoneywellCycle:
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             setHoneywellCycleGearFieldsDefaultValues(honeywellCycleGearFields);
+            break;
+        case HoneywellSetpoint:
+            HoneywellSetpointGearFields honeywellSetpointGearFields = (HoneywellSetpointGearFields) programGear.getFields();
+            setHoneywellSetpointGearFieldsDefaultValues(honeywellSetpointGearFields);
             break;
         case ItronCycle:
             ItronCycleGearFields itronCycleGearFields = (ItronCycleGearFields) programGear.getFields();
@@ -351,9 +358,17 @@ public class LoadProgramSetupControllerHelper {
     }
 
     private void setHoneywellCycleGearFieldsDefaultValues(HoneywellCycleGearFields honeywellCycleGearFields) {
+        honeywellCycleGearFields.setMandatory(false);
         honeywellCycleGearFields.setRampInOut(true);
         honeywellCycleGearFields.setControlPercent(50);
         honeywellCycleGearFields.setCapacityReduction(100);
+    }
+
+    private void setHoneywellSetpointGearFieldsDefaultValues(HoneywellSetpointGearFields honeywellSetpointGearFields) {
+        honeywellSetpointGearFields.setMandatory(false);
+        honeywellSetpointGearFields.setSetpointOffset(0);
+        honeywellSetpointGearFields.setMode(Mode.COOL);
+        honeywellSetpointGearFields.setCapacityReduction(100);
     }
 
     private void setItronCycleGearFieldsDefaultValues(ItronCycleGearFields itronCycleGearFields) {
@@ -386,11 +401,11 @@ public class LoadProgramSetupControllerHelper {
         if (thermostatCycleGearFields.getIsHeatMode() == null) {
             thermostatCycleGearFields.setIsHeatMode(false);
         }
-        if (thermostatCycleGearFields.getAbsoluteOrDelta() == null) {
-            thermostatCycleGearFields.setAbsoluteOrDelta(AbsoluteOrDelta.DELTA);
+        if (thermostatCycleGearFields.getSetpoint() == null) {
+            thermostatCycleGearFields.setSetpoint(Setpoint.DELTA);
         }
-        if (thermostatCycleGearFields.getMeasureUnit() == null) {
-            thermostatCycleGearFields.setMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
+        if (thermostatCycleGearFields.getTempMeasureUnit() == null) {
+            thermostatCycleGearFields.setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         }
     }
 
@@ -432,7 +447,7 @@ public class LoadProgramSetupControllerHelper {
         sepTemperatureOffsetGearFields.setRampIn(true);
         sepTemperatureOffsetGearFields.setRampOut(true);
         sepTemperatureOffsetGearFields.setMode(Mode.HEAT);
-        sepTemperatureOffsetGearFields.setCelsiusOrFahrenheit(TemperatureMeasureUnit.FAHRENHEIT);
+        sepTemperatureOffsetGearFields.setTempMeasureUnit(TemperatureMeasureUnit.FAHRENHEIT);
         sepTemperatureOffsetGearFields.setOffset(1.0);
         sepTemperatureOffsetGearFields.setCriticality(6);
         sepTemperatureOffsetGearFields.setHowToStopControl(HowToStopControl.TimeIn);
@@ -486,6 +501,11 @@ public class LoadProgramSetupControllerHelper {
             HoneywellCycleGearFields honeywellCycleGearFields = (HoneywellCycleGearFields) programGear.getFields();
             honeywellCycleGearFields.setWhenToChangeFields(
                 setWhenToChangeDefaultValues(honeywellCycleGearFields.getWhenToChangeFields()));
+            break;
+        case HoneywellSetpoint:
+            HoneywellSetpointGearFields honeywellSetpointGearFields = (HoneywellSetpointGearFields) programGear.getFields();
+            honeywellSetpointGearFields.setWhenToChangeFields(
+                setWhenToChangeDefaultValues(honeywellSetpointGearFields.getWhenToChangeFields()));
             break;
         case ItronCycle:
             ItronCycleGearFields itronCycleGearFields = (ItronCycleGearFields) programGear.getFields();
@@ -603,7 +623,7 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         case EcobeeSetpoint:
-            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
@@ -611,6 +631,11 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             model.addAttribute("cyclePeriod", List.of(30));
+            break;
+        case HoneywellSetpoint:
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
+            model.addAttribute("whenToChangeFields", WhenToChange.values());
+            model.addAttribute("howToStopControl", List.of(HowToStopControl.Restore));
             break;
         case ItronCycle:
             model.addAttribute("whenToChangeFields", WhenToChange.values());
@@ -624,19 +649,19 @@ public class LoadProgramSetupControllerHelper {
             model.addAttribute("postPeakLoadShaping", PostLoadShape.values());
             break;
         case ThermostatRamping:
-            model.addAttribute("units", TemperatureMeasureUnit.values());
-            model.addAttribute("setpoints", AbsoluteOrDelta.values());
+            model.addAttribute("units", Lists.newArrayList(TemperatureMeasureUnit.values()));
+            model.addAttribute("setpoints", Lists.newArrayList(Setpoint.values()));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SimpleThermostatRamping:
-            model.addAttribute("temperatureModes", Mode.values());
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             break;
         case SepTemperatureOffset:
-            model.addAttribute("temperatureModes", Mode.values());
-            model.addAttribute("units", TemperatureMeasureUnit.values());
+            model.addAttribute("temperatureModes", Lists.newArrayList(Mode.values()));
+            model.addAttribute("units", Lists.newArrayList(TemperatureMeasureUnit.values()));
             model.addAttribute("howtoStopControlFields", Lists.newArrayList(HowToStopControl.TimeIn, HowToStopControl.Restore));
             model.addAttribute("whenToChangeFields", WhenToChange.values());
             break;

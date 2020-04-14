@@ -212,9 +212,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-410cl"),   TYPE_RFN410CL);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420cl"),   TYPE_RFN420CL);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420clw"),  TYPE_RFN420CLW);
+    BOOST_CHECK_EQUAL(resolveDeviceType("wrl-420cl"),   TYPE_WRL420CL);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420cd"),   TYPE_RFN420CD);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-420cdw"),  TYPE_RFN420CDW);
+    BOOST_CHECK_EQUAL(resolveDeviceType("wrl-420cd"),   TYPE_WRL420CD);
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-430a3d"),  TYPE_RFN430A3D);
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-430a3t"),  TYPE_RFN430A3T);
@@ -339,6 +339,7 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
         
 BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
 {
+    BOOST_CHECK(isKnownUnsupportedDevice("virtual gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("digi gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("rf gateway"));
     BOOST_CHECK(isKnownUnsupportedDevice("gwy-800"));

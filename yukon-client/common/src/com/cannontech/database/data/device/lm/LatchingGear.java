@@ -47,4 +47,9 @@ public void setStartControlState(Integer state)
 {
 	setMethodRateCount( state );
 }
+
+@Override
+public boolean useCustomDbRetrieve() {
+    return false;
+}
 }

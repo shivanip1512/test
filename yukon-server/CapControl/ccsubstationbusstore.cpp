@@ -4743,11 +4743,6 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                                           &_pointid_capbank_map, &_capbank_subbus_map,
                                           &_capbank_feeder_map, &_feeder_subbus_map, &_cbc_capbank_map );
             }
-
-            if (CtiCCFeederPtr currentFeeder = findInMap(feederId, paobject_feeder_map))
-            {
-                reloadMonitorPointsFromDatabase(currentFeeder->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
-            }
         }
 
         {
@@ -5533,6 +5528,21 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
     {
         std::set< std::pair<long, int> >    requiredPointResponses;
 
+        if ( subBusId > 0 )
+        {
+            // this keeps the point registration in sync with respect to monitor points...
+
+            if ( CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( subBusId ) )
+            {
+                CtiCapController::getInstance()->unregisterPaoForPointUpdates( *bus );
+
+                for ( auto & bank : bus->getAllCapBanks() )
+                {
+                    CtiCapController::getInstance()->unregisterPaoForPointUpdates( *bank );
+                }
+            }
+        }
+
         {
             static const std::string sql =
                 "SELECT "
@@ -5692,6 +5702,19 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
 
                         bank->addPointResponse(defaultPointResponse);
                     }
+                }
+            }
+        }
+
+        if ( subBusId > 0 )
+        {
+            if ( CtiCCSubstationBusPtr bus = findSubBusByPAObjectID( subBusId ) )
+            {
+                CtiCapController::getInstance()->registerPaoForPointUpdates( *bus );
+
+                for ( auto & bank : bus->getAllCapBanks() )
+                {
+                    CtiCapController::getInstance()->registerPaoForPointUpdates( *bank );
                 }
             }
         }
@@ -6821,6 +6844,9 @@ void CtiCCSubstationBusStore::handleSubBusDBChange(long reloadId, BYTE reloadAct
                                  &_paobject_substation_map, &_pointid_subbus_map,
                                  &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
 
+        reloadMonitorPointsFromDatabase(reloadId, &_paobject_capbank_map, &_paobject_feeder_map,
+                                        &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
+
         modifiedBusIdsSet.insert(reloadId);
     }
 }
@@ -6841,6 +6867,12 @@ void CtiCCSubstationBusStore::handleFeederDBChange(long reloadId, BYTE reloadAct
         }
         reloadFeederFromDatabase(reloadId, &_paobject_feeder_map,
                                   &_paobject_subbus_map, &_pointid_feeder_map, &_feeder_subbus_map );
+
+        if (CtiCCFeederPtr tempFeed = findFeederByPAObjectID(reloadId))
+        {
+            reloadMonitorPointsFromDatabase(tempFeed->getParentId(), &_paobject_capbank_map, &_paobject_feeder_map,
+                                            &_paobject_subbus_map, &_pointid_capbank_map, &_pointid_subbus_map);
+        }
 
         if(isFeederOrphan(reloadId))
               removeFromOrphanList(reloadId);

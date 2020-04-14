@@ -21,4 +21,8 @@ public NoControlGear()
 
 }
 
+@Override
+public boolean useCustomDbRetrieve() {
+    return false;
+}
 }

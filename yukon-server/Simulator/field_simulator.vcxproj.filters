@@ -105,6 +105,9 @@
     <ClCompile Include="RfDa.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NodeInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BchBehavior.h">
@@ -204,6 +207,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\e2e_packet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\NodeInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

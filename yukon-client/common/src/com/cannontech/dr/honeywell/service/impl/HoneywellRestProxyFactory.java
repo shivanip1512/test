@@ -99,18 +99,17 @@ public class HoneywellRestProxyFactory {
         }
     }
 
-    private String getAuthenticationToken() {
+    private synchronized String getAuthenticationToken() {
         if (tokenCache == null || tokenCache.getIfPresent(authTokenKey) == null) {
-            synchronized (this) {
-                if (tokenCache == null || tokenCache.getIfPresent(authTokenKey) == null) {
-                    authTokenValue = generateAuthenticationToken();
-                }
-            }
+            authTokenValue = generateAuthenticationToken();
+        } else {
+            log.debug("Token Retrieved from Cache: {}", tokenCache.getIfPresent(authTokenKey));
         }
         return authTokenValue;
     }
     
     private String generateAuthenticationToken() {
+        log.debug("Generating new Authentication Token");
         MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
         // TODO: Code cleanup required here will be done when we can get fully connected
         body.add("grant_type", "client_credentials");
@@ -130,8 +129,9 @@ public class HoneywellRestProxyFactory {
         TokenResponse response;
         try {
             response = proxiedTemplate.postForObject(url, requestEntity, TokenResponse.class);
+            log.debug("Honeywell message response {}", response);
         } catch (RestClientException e) {
-            throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
+            throw new HoneywellCommunicationException("Unable to communicate with Honeywell API while generating authentication token.", e);
         }
 
         authTokenValue = response.getAccessToken();

@@ -195,6 +195,7 @@
             <xs:enumeration value="UNDEF" />
             <xs:enumeration value="CUBIC_METERS" />
             <xs:enumeration value="MEGABYTES" />
+            <xs:enumeration value="DBM" />
         </xs:restriction>
     </xs:simpleType>
 </xs:schema>

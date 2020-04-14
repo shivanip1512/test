@@ -54,8 +54,8 @@
     <bean id="databaseVendorResolver" class="com.cannontech.database.vendor.MetaDataDatabaseVendorResolver"/>
     <bean id="vendorSpecificSqlBuilderFactory" class="com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory"/>
 
-	<bean class="com.cannontech.message.util.ClientConnectionFactory"/>
-	
+    <bean class="com.cannontech.message.util.ClientConnectionFactory"/>
+
     <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool"/>
 
     <bean id="notificationProxy" factory-bean="connectionPool" factory-method="getDefNotificationConn" scope="prototype">
@@ -146,6 +146,8 @@
     <bean id="i18nBasenames" class="com.cannontech.common.i18n.I18nBasenamesFactory" factory-method="getBaseNames">
         <constructor-arg>
             <list>
+                <value>classpath:com/cannontech/yukon/api/deviceReading/deviceData</value>
+                <value>classpath:com/cannontech/yukon/api/error</value>
                 <value>classpath:com/cannontech/yukon/common/general</value>
                 <value>classpath:com/cannontech/yukon/common/reports</value>
                 <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
@@ -188,6 +190,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnMeterDisconnectWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/rfnOutagesWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/meterEventsWidget</value>
+                <value>classpath:com/cannontech/yukon/web/modules/widgets/wifiConnectionWidget</value>
                 <value>classpath:com/cannontech/yukon/common/deviceErrors</value>
                 <value>classpath:com/cannontech/yukon/common/device/attributeRead</value>
                 <value>classpath:com/cannontech/yukon/common/device/archiveAnalysis</value>
@@ -347,7 +350,7 @@
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
     <bean id="configurationPropertiesLoader" class="com.cannontech.common.config.ConfigurationLoader"/>
     <bean id="smtpHelper" class="com.cannontech.common.config.SmtpHelper"/>
-	
+
     <bean class="com.cannontech.common.config.dao.impl.RfnPointMappingDaoImpl"/>
     <bean class="com.cannontech.common.config.dao.impl.DeviceDefinitionDaoImpl"/>
 
@@ -366,6 +369,8 @@
         </bean>
       </property>
     </bean>
+    
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate" scope="prototype"/>
     
     <bean class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="targetSource">      
@@ -404,7 +409,6 @@
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayDataCacheImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayCertificateUpdateServiceImpl"/>
-    <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayFirmwareUpgradeServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnMetadataMultiServiceImpl"/>
     
@@ -471,4 +475,5 @@
     <bean class="com.cannontech.common.util.WebserverUrlResolver"/>
     <bean class="com.cannontech.infrastructure.simulation.service.impl.InfrastructureWarningsGeneratorServiceImpl"/>
     <bean class="com.cannontech.common.smartNotification.simulation.service.impl.SmartNotificationSimulatorServiceImpl"/>
+    <bean id="rfnDataValidator" class="com.cannontech.amr.rfn.service.RfnDataValidatorImpl"/>
 </beans>

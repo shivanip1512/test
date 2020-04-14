@@ -1,7 +1,8 @@
 package com.cannontech.common.rfn.message.tree;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -11,18 +12,16 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
  *                  Gateway2
  *                 /        \
  *                /          \
- *               N2          N3
+ *               N1          N2
  *              /  \ 
  *             /    \
- *            N1    N4
+ *            N3    N4
  *           /  \
  *          /    \
  *         N5    N6
  * </pre>
  * 
- * "We are trying to keep limit the scope of the RfnVertex API down to just what is needed for conveying the network tree.
- *  Attaching associated data to any of the nodes/vertices is outside that scope."
- *      -- Manny's email to Marina Mon 12/9/2019 7:43 PM
+ * @author lizhu2
  */
 public class RfnVertex implements Serializable  {
     
@@ -32,7 +31,7 @@ public class RfnVertex implements Serializable  {
     
     private RfnVertex parent;
     
-    private Set<RfnVertex> children;
+    private final Set<RfnVertex> children = new LinkedHashSet<>();
     
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
@@ -50,15 +49,30 @@ public class RfnVertex implements Serializable  {
         this.parent = parent;
     }
 
-
     public Set<RfnVertex> getChildren() {
         return children;
     }
 
-    public void setChildren(Set<RfnVertex> children) {
-        this.children = children;
+    public RfnVertex getRoot() {
+        RfnVertex root = this;
+        while (root.getParent() != null) {
+            root = root.getParent();
+        }
+        return root;
     }
     
+    public void addChild(RfnVertex child) {
+        children.add(child);
+    }
+    
+    public void addChildren(Collection<RfnVertex> children) {
+        children.addAll(children);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s%s", rfnIdentifier, children);
+    }
 
     public static void main(String[] args) {
 
@@ -94,7 +108,7 @@ public class RfnVertex implements Serializable  {
 
         RfnVertex n3Vertex = new RfnVertex();
         n3Vertex.setRfnIdentifier(new RfnIdentifier("N3", "ITRN", "C2SX"));
-
+        
         RfnVertex n4Vertex = new RfnVertex();
         n4Vertex.setRfnIdentifier(new RfnIdentifier("N4", "ITRN", "C2SX"));
 
@@ -104,51 +118,25 @@ public class RfnVertex implements Serializable  {
         RfnVertex n6Vertex = new RfnVertex();
         n6Vertex.setRfnIdentifier(new RfnIdentifier("N6", "ITRN", "C2SX"));
 
-        gateway2Vertex.setParent(null);
-        Set<RfnVertex> children = new HashSet<>();
-        children.add(n2Vertex);
-        children.add(n3Vertex);
-        gateway2Vertex.setChildren(children);
+        gateway2Vertex.addChild(n1Vertex);
+        gateway2Vertex.addChild(n2Vertex);
         
-        n1Vertex.setParent(n2Vertex);
-        children = new HashSet<>();
-        children.add(n5Vertex);
-        children.add(n6Vertex);
-        n1Vertex.setChildren(children);
-
+        n1Vertex.setParent(gateway2Vertex);
+        n1Vertex.addChild(n3Vertex);
+        n1Vertex.addChild(n4Vertex);
+        
         n2Vertex.setParent(gateway2Vertex);
-        children = new HashSet<>();
-        children.add(n1Vertex);
-        children.add(n4Vertex);
-        n2Vertex.setChildren(children);
-        
-        n3Vertex.setParent(gateway2Vertex);
-        n3Vertex.setChildren(null);
-        
-        n4Vertex.setParent(n2Vertex);
-        n4Vertex.setChildren(null);
 
-        n5Vertex.setParent(n1Vertex);
-        n5Vertex.setChildren(null);
-
-        n6Vertex.setParent(n1Vertex);
-        n6Vertex.setChildren(null);
+        n3Vertex.setParent(n1Vertex);
+        n3Vertex.addChild(n5Vertex);
+        n3Vertex.addChild(n6Vertex);
         
-        print(gateway2Vertex);
-    }
-    
-    // The following function is just help to display how to build the sample tree.
-    // To make this shared messaging class simple, we suggest to move any helper function like the following
-    //     which navigates the tree into an utility class outside.
-    public static void print(RfnVertex rfnVertex) {
-        System.out.println(rfnVertex.getRfnIdentifier());
-        Set<RfnVertex> children = rfnVertex.getChildren();
-        if (children != null) {
-            System.out.println("{");
-            for (RfnVertex child : children) {
-                print(child);
-            }
-            System.out.println("}");
-        }
+        n4Vertex.setParent(n1Vertex);
+        
+        n5Vertex.setParent(n3Vertex);
+        
+        n6Vertex.setParent(n3Vertex);
+        
+        System.out.println(gateway2Vertex);
     }
 }

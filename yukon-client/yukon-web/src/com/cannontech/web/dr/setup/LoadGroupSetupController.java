@@ -38,6 +38,7 @@ import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMModelFactory;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.LoadGroupBase;
+import com.cannontech.common.dr.setup.LoadGroupCopy;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.JsonUtils;
@@ -203,8 +204,8 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadGroup.getName()));
+            log.error("Error creating load group: {}. Error: {}", loadGroup.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadGroup.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -228,8 +229,8 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error.exception.message", ex.getMessage()));
+            log.error("Error deleting load group: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -269,8 +270,8 @@ public class LoadGroupSetupController {
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
             return null;
         } catch (RestClientException ex) {
-            log.error("Error while copying load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName()));
+            log.error("Error copying load group: {}. Error: {}", lmCopy.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", setupRedirectLink);
             servletResponse.setContentType("application/json");
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
@@ -295,12 +296,9 @@ public class LoadGroupSetupController {
         lmCopy.setName(messageSourceAccessor.getMessage("yukon.common.copyof", litePao.getPaoName()));
         model.addAttribute("lmCopy", lmCopy);
         if (loadGroupType.isLoadGroupSupportRoute()) {
-            model.addAttribute("routes", cache.getAllRoutes());
-            LiteYukonPAObject route = cache.getAllRoutes().stream()
-                                                          .filter(pao -> pao.getLiteID() == routeId)
-                                                          .findFirst()
-                                                          .get();
-            model.addAttribute("route", route);
+                LoadGroupCopy lgCopy = (LoadGroupCopy) lmCopy;
+                model.addAttribute("routes", cache.getAllRoutes());
+                lgCopy.setRouteId(routeId);
         }
 
         model.addAttribute("loadGroupId", id);

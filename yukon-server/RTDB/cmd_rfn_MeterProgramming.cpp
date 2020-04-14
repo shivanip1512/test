@@ -184,7 +184,7 @@ namespace Cti::Devices::Commands {
     unsigned char RfnMeterProgrammingSetConfigurationCommand::getOperation()   const { return {}; }
     unsigned char RfnMeterProgrammingSetConfigurationCommand::getCommandCode() const { return {}; }
 
-    std::string RfnMeterProgrammingSetConfigurationCommand::getCommandName()
+    std::string RfnMeterProgrammingSetConfigurationCommand::getCommandName() const
     {
         return "Set Meter Programming Request";
     }
@@ -198,7 +198,7 @@ namespace Cti::Devices::Commands {
     {
         validate( Condition( ! response.empty(), ClientErrors::DataMissing ) << "Empty response payload");
 
-        CTILOG_INFO(dout, "Handling a meter programming set configuration response: " << response);
+        CTILOG_INFO(dout, "Handling a meter programming configuration response: " << response);
 
         if( response[0] == RfnMeterProgrammingConfigurationCommand::Command::Response )
         {
@@ -206,8 +206,10 @@ namespace Cti::Devices::Commands {
 
             auto command = std::make_unique<RfnMeterProgrammingSetConfigurationCommand>("", 0);
 
-            //  ignore command results
-            command->processResponse(response);
+            //  ignore command results, but write them out to the porter log for posterity
+            auto decodedResponse = command->processResponse(response);
+
+            CTILOG_INFO(dout, "\n" << decodedResponse.description);
 
             return std::move(command);
         }
@@ -230,7 +232,7 @@ namespace Cti::Devices::Commands {
     unsigned char RfnMeterProgrammingGetConfigurationCommand::getOperation()   const { return {}; }
     unsigned char RfnMeterProgrammingGetConfigurationCommand::getCommandCode() const { return {}; }
 
-    std::string RfnMeterProgrammingGetConfigurationCommand::getCommandName()
+    std::string RfnMeterProgrammingGetConfigurationCommand::getCommandName() const
     {
         return "Get Meter Programming Request";
     }

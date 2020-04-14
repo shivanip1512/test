@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,8 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -36,11 +39,26 @@ import com.cannontech.web.api.ApiRequestHelper;
 public class ApiControllerHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     private String webServerUrl;
     private static final Logger log = YukonLogManager.getLogger(ApiControllerHelper.class);
-    
+
+    @PostConstruct
+    public void initialize() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING, (event) -> {
+            if (globalSettingDao.isDbChangeForSetting(event, GlobalSettingType.YUKON_INTERNAL_URL)) {
+                clearWebUrl();
+            }
+        });
+    }
+
+    private void clearWebUrl() {
+        setWebServerUrl(StringUtils.EMPTY);
+        log.info("Yukon Internal URL changed to {}, API connection URL will be reloaded.", getYukonInternalUrl());
+    }
+
     /**
-     * Populate and return binding error from the error object received from rest call. 
+     * Populate and return binding error from the error object received from rest call.
      */
     public BindingResult populateBindingError(BindingResult result, BindException error,
             ResponseEntity<? extends Object> errorResponse) {
@@ -95,19 +113,20 @@ public class ApiControllerHelper {
      * @throws ApiCommunicationException
      */
     private String buildWebServerUrl(HttpServletRequest request, YukonUserContext userContext) throws ApiCommunicationException {
-        HttpStatus responseCode = null;
-        if (StringUtils.isEmpty(webServerUrl)) {
-            responseCode = apiConnection(request, userContext);
-            if (responseCode != HttpStatus.OK) {
+
+        String webServerApiUrl = webServerUrl;
+        if (StringUtils.isEmpty(webServerApiUrl)) {
+            webServerApiUrl = apiConnection(request, userContext);
+            if (StringUtils.isEmpty(webServerApiUrl)) {
                 apiRequestHelper.setProxy();
-                responseCode = apiConnection(request, userContext);
+                webServerApiUrl = apiConnection(request, userContext);
             }
-            if (responseCode != HttpStatus.OK) {
+            if (StringUtils.isEmpty(webServerApiUrl)) {
                 throw new ApiCommunicationException("Error while communicating with Api.");
             }
-            log.info("Connection with Api successful with URL: " + webServerUrl);
+            log.info("Connection with Api successful with URL: " + webServerApiUrl);
         }
-        return webServerUrl;
+        return webServerApiUrl;
     }
 
     /**
@@ -126,7 +145,7 @@ public class ApiControllerHelper {
         return HttpStatus.NOT_FOUND;
     }
     
-    private HttpStatus apiConnection(HttpServletRequest request, YukonUserContext userContext) {
+    private String apiConnection(HttpServletRequest request, YukonUserContext userContext) {
         HttpStatus responseCode = null;
         String webUrl = null;
         try {
@@ -188,7 +207,7 @@ public class ApiControllerHelper {
         if (responseCode == HttpStatus.OK) {
             setWebServerUrl(webUrl);
         }
-        return responseCode;
+        return webUrl;
     }
 
     /**

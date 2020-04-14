@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMCopy;
@@ -19,6 +20,7 @@ import com.cannontech.common.dr.setup.LMPaoDto;
 import com.cannontech.common.dr.setup.LoadGroupBase;
 import com.cannontech.common.dr.setup.LoadGroupPoint;
 import com.cannontech.common.dr.setup.LoadGroupRoute;
+import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -45,6 +47,7 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
+    @Autowired private DemandResponseEventLogService logService;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private PointDao pointDao;
     @Autowired private StateGroupDao stateGroupDao;
@@ -79,7 +82,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         dbPersistentDao.performDBChange(lmGroup, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(lmGroup.getPAObjectID(), lmGroup.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
-
+        logService.loadGroupCreated(loadGroup.getName(), loadGroup.getType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return lmGroup.getPAObjectID();
     }
 
@@ -96,6 +100,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         LMGroup lmGroup = getDBPersistent(loadGroup);
         loadGroup.buildDBPersistent(lmGroup);
         dbPersistentDao.performDBChange(lmGroup, TransactionType.UPDATE);
+        logService.loadGroupUpdated(loadGroup.getName(), loadGroup.getType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return lmGroup.getPAObjectID();
     }
 
@@ -142,6 +148,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         checkIfGroupIsUsed(liteLoadGroup.get().getPaoName(), paoId);
         YukonPAObject lmGroup = (YukonPAObject) LiteFactory.createDBPersistent(liteLoadGroup.get());
         dbPersistentDao.performDBChange(lmGroup, TransactionType.DELETE);
+        logService.loadGroupDeleted(liteLoadGroup.get().getPaoName(), liteLoadGroup.get().getPaoType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return lmGroup.getPAObjectID();
     }
 
@@ -167,7 +175,8 @@ public class LoadGroupSetupServiceImpl implements LoadGroupSetupService {
         SimpleDevice device = SimpleDevice.of(loadGroup.getPAObjectID(), loadGroup.getPaoType());
         paoCreationHelper.applyPoints(device, points);
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
-
+        logService.loadGroupCreated(loadGroup.getPAOName(), loadGroup.getPaoType(),
+                ApiRequestContext.getContext().getLiteYukonUser());
         return loadGroup.getPAObjectID();
     }
 

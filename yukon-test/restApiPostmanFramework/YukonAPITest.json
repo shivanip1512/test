@@ -1,6 +1,6 @@
 {
     "info": {
-        "_postman_id": "7a049fa2-3451-4656-b166-8437275d1b84",
+        "_postman_id": "b5780930-df83-4794-b091-e23872120203",
         "name": "YukonAPITest",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
@@ -469,7 +469,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\r\n   \"name\":\"s17\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":143,\r\n         \"stopOffsetInMinutes\":14,\r\n         \"gears\":[\r\n            {\r\n               \"id\":1\r\n            }\r\n         ]\r\n      },\r\n      {\r\n         \"programId\":11583,\r\n         \"startOffsetInMinutes\":12,\r\n         \"stopOffsetInMinutes\":1,\r\n         \"gears\":[\r\n            {\r\n               \"id\":7\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
+                                    "raw": "{\r\n   \"name\":\"s17\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":143,\r\n         \"stopOffsetInMinutes\":14,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      },\r\n      {\r\n         \"programId\":11583,\r\n         \"startOffsetInMinutes\":12,\r\n         \"stopOffsetInMinutes\":1,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":7\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
                                 },
                                 "url": {
                                     "raw": "{{api-url}}/api/dr/setup/controlScenario/update/{id}",
@@ -502,7 +502,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\r\n   \"name\":\"s26\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":36,\r\n         \"stopOffsetInMinutes\":2,\r\n         \"gears\":[\r\n            {\r\n               \"id\":1\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
+                                    "raw": "{\r\n   \"name\":\"s26\",\r\n   \"allPrograms\":[\r\n      {\r\n         \"programId\":56,\r\n         \"startOffsetInMinutes\":36,\r\n         \"stopOffsetInMinutes\":2,\r\n         \"gears\":[\r\n            {\r\n               \"gearNumber\":1\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}"
                                 },
                                 "url": {
                                     "raw": "{{api-url}}/api/dr/setup/controlScenario/create",
@@ -2002,7 +2002,7 @@
                                         ],
                                         "body": {
                                             "mode": "raw",
-                                            "raw": "{\r\n    \"name\": \"Honeywell Program001\",\r\n    \"type\": \"LM_HONEYWELL_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"HW Cycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"HoneywellCycle\",\r\n            \"fields\": {\r\n                \"rampInOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 540,\r\n            \"availableStopTimeInMinutes\": 360\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 660,\r\n            \"availableStopTimeInMinutes\": 22\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15851,\r\n            \"groupName\": \"LM_GROUP_HONEYWELL_Name\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_HONEYWELL\"\r\n        }\r\n    ]\r\n}"
+                                            "raw": "{\r\n    \"name\": \"Honeywell Program001\",\r\n    \"type\": \"LM_HONEYWELL_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearName\": \"HW Cycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"HoneywellCycle\",\r\n            \"fields\": {\r\n                \"rampInOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearName\": \"HW Setpoint\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"HoneywellSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 3,\r\n                \"mode\": \"COOL\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 540,\r\n            \"availableStopTimeInMinutes\": 360\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 660,\r\n            \"availableStopTimeInMinutes\": 22\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15851,\r\n            \"groupName\": \"LM_GROUP_HONEYWELL_Name\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_HONEYWELL\"\r\n        }\r\n    ]\r\n}"
                                         },
                                         "url": {
                                             "raw": "{{api-url}}/api/dr/setup/loadProgram/create",
@@ -2166,6 +2166,39 @@
                                         "body": {
                                             "mode": "raw",
                                             "raw": "{\r\n    \"programId\": 16611,\r\n    \"name\": \"Ecobeeprogram0002\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 71,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 5,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"TriggerOffset\",\r\n                    \"triggerNumber\": 1,\r\n                    \"triggerOffset\": 0.0\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 72,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 5,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 73,\r\n            \"gearName\": \"ecobeegear\",\r\n            \"gearNumber\": 3,\r\n            \"controlMethod\": \"EcobeeCycle\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"rampIn\": true,\r\n                \"rampOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 1,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 16\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 0,\r\n            \"availableStopTimeInMinutes\": 420\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15549,\r\n            \"groupName\": \"dd\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 16359,\r\n            \"groupName\": \"dddd\",\r\n            \"groupOrder\": 2,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15764,\r\n            \"groupName\": \"ds\",\r\n            \"groupOrder\": 3,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15876,\r\n            \"groupName\": \"LM_GROUP_ECOBEE_Name\",\r\n            \"groupOrder\": 4,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15852,\r\n            \"groupName\": \"LM_GROUP_ECOBEE_Name_Update\",\r\n            \"groupOrder\": 5,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 12996,\r\n            \"groupName\": \"test ecobee group\",\r\n            \"groupOrder\": 6,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        },\r\n        {\r\n            \"groupId\": 15284,\r\n            \"groupName\": \"Test_Ecobee234\",\r\n            \"groupOrder\": 7,\r\n            \"type\": \"LM_GROUP_ECOBEE\"\r\n        }\r\n    ]\r\n}"
+                                        },
+                                        "url": {
+                                            "raw": "{{api-url}}/api/dr/setup/loadProgram/update/16611",
+                                            "host": [
+                                                "{{api-url}}"
+                                            ],
+                                            "path": [
+                                                "api",
+                                                "dr",
+                                                "setup",
+                                                "loadProgram",
+                                                "update",
+                                                "16611"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Honeywell",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Content-Type",
+                                                "name": "Content-Type",
+                                                "type": "text",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"programId\": 1234,\r\n    \"name\": \"Honeywell Program001\",\r\n    \"type\": \"LM_ECOBEE_PROGRAM\",\r\n    \"operationalState\": \"Timed\",\r\n    \"constraint\": {\r\n        \"constraintId\": 0,\r\n        \"constraintName\": \"Default Constraint\"\r\n    },\r\n    \"triggerOffset\": 0.0,\r\n    \"restoreOffset\": 0.0,\r\n    \"gears\": [\r\n        {\r\n            \"gearId\": 11,\r\n            \"gearName\": \"HW Cycle\",\r\n            \"gearNumber\": 1,\r\n            \"controlMethod\": \"HoneywellCycle\",\r\n            \"fields\": {\r\n                \"rampInOut\": true,\r\n                \"controlPercent\": 50,\r\n                \"cyclePeriodInMinutes\": 30,\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        },\r\n        {\r\n            \"gearId\": 22,\r\n            \"gearName\": \"HW Setpoint\",\r\n            \"gearNumber\": 2,\r\n            \"controlMethod\": \"HoneywellSetpoint\",\r\n            \"fields\": {\r\n                \"mandatory\": true,\r\n                \"setpointOffset\": 3,\r\n                \"mode\": \"COOL\",\r\n                \"howToStopControl\": \"Restore\",\r\n                \"capacityReduction\": 100,\r\n                \"whenToChangeFields\": {\r\n                    \"whenToChange\": \"None\"\r\n                }\r\n            }\r\n        }\r\n    ],\r\n    \"controlWindow\": {\r\n        \"controlWindowOne\": {\r\n            \"availableStartTimeInMinutes\": 540,\r\n            \"availableStopTimeInMinutes\": 360\r\n        },\r\n        \"controlWindowTwo\": {\r\n            \"availableStartTimeInMinutes\": 660,\r\n            \"availableStopTimeInMinutes\": 22\r\n        }\r\n    },\r\n    \"assignedGroups\": [\r\n        {\r\n            \"groupId\": 15851,\r\n            \"groupName\": \"LM_GROUP_HONEYWELL_Name\",\r\n            \"groupOrder\": 1,\r\n            \"type\": \"LM_GROUP_HONEYWELL\"\r\n        }\r\n    ]\r\n}"
                                         },
                                         "url": {
                                             "raw": "{{api-url}}/api/dr/setup/loadProgram/update/16611",
@@ -2375,6 +2408,49 @@
                     ],
                     "description": "Perform craete, retreive , update and delete operation for load program.",
                     "_postman_isSubFolder": true
+                }
+            ]
+        },
+        {
+            "name": "PointDataAPI",
+            "item": [
+                {
+                    "name": "GetDeviceReadings",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "name": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n   \"deviceReadingsSelectors\":[\r\n      {\r\n         \"identifier\":{\r\n            \"value\":\"43995\",\r\n            \"identifierType\":\"PAOID\"\r\n         },\r\n         \"attributes\":[\r\n             \"CONTROL_STATUS\",\"BLINK_COUNT\"\r\n         ]\r\n      }\r\n   ]\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{api-url}}/api/device/getLatestReading",
+                            "host": [
+                                "{{api-url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "device",
+                                "getLatestReading"
+                            ]
+                        }
+                    },
+                    "response": []
                 }
             ]
         }

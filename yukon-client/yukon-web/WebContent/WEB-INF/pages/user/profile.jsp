@@ -48,8 +48,13 @@ $(document).ready(function(){
                             <cti:formatDate value="${passwordLastChangeTimestamp}" type="DATE"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".userGroup">
-                            <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
-                            <a href="${url}">${fn:escapeXml(userGroupName)}</a>
+                            <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
+                                <cti:url var="url" value="/admin/user-groups/${userGroupId}"/>
+                                <a href="${url}">${fn:escapeXml(userGroupName)}</a>
+                            </cti:checkRolesAndProperties>
+                            <cti:checkRolesAndProperties value="!OPERATOR_ADMINISTRATOR, !ADMIN_SUPER_USER">
+                                ${fn:escapeXml(userGroupName)}
+                            </cti:checkRolesAndProperties>
                         </tags:nameValue2>
                     </cti:displayForPageEditModes>
                 </tags:nameValueContainer2>
@@ -200,6 +205,13 @@ $(document).ready(function(){
     </div>
 </div>
 
+<!-- Additional Contacts Table -->
+<cti:displayForPageEditModes modes="VIEW">
+    <c:if test="${displayAdditionalContacts}">
+        <%@ include file="additionalContactsTable.jsp" %>
+    </c:if>
+</cti:displayForPageEditModes>
+
 
 <cti:displayForPageEditModes modes="EDIT">
 <table class="dn">
@@ -224,59 +236,62 @@ $(document).ready(function(){
 
 <!--NOTIFICATIONS SECTION-->
 <cti:displayForPageEditModes modes="VIEW">
+    <cti:checkRolesAndProperties value="!RESIDENTIAL_CUSTOMER">
+        <cti:checkRolesAndProperties value="CURTAILMENT_IS_OPERATOR, !CI_CURTAILMENT">
+    
+            <cti:msgScope paths="modules.smartNotifications">
 
-    <cti:msgScope paths="modules.smartNotifications">
-    
-        <tags:setFormEditMode mode="EDIT"/>
-    
-        <div id="notifications-section" style="margin-top:50px;">
-            <cti:button icon="icon-email-add" nameKey="subscribe" data-popup="#create-popup" classes="fr"/>
-            <tags:sectionContainer2 nameKey="notifications">
+                <tags:setFormEditMode mode="EDIT"/>
+
+                <div id="notifications-section" style="margin-top:50px;">
+                    <cti:button icon="icon-email-add" nameKey="subscribe" data-popup="#create-popup" classes="fr"/>
+                    <tags:sectionContainer2 nameKey="notifications">
+
+                        <div>
+                            <cti:url var="singleNotificationUrl" value="/notifications/singleNotification"/>
+                            <form action="${singleNotificationUrl}" method="POST">
+                                <cti:csrfToken/>
+                                <span><span class="fl" style="padding-right:10px;"><i:inline key=".singleNotification"/>: </span>
+                                    <tags:switchButton name="singleNotification" classes="fn vam" onNameKey=".yes.label" offNameKey=".no.label" 
+                                        checked="${!empty sendTime}" toggleGroup="singleNotificationToggle" toggleAction="hide"/>
+                                     <tags:timeSlider startName="sendTime" startValue="${fn:escapeXml(sendTime)}" dataToggleGroup="singleNotificationToggle" stepValue="60" 
+                                        displayTimeToLeft="true" timeFormat="HHMM" maxValue="1380"/>
+                                    <cti:button nameKey="save" type="submit" classes="fn" style="margin-left:20px;"/>
+                                </span>
+                            </form>
+                        </div>
+                        <hr/>
+
+                       <cti:url var="action" value="/notifications/subscriptions"/>
+                        <form:form id="filter-form" action="${action}" modelAttribute="filter" method="get">
+                            <i:inline key="yukon.common.filterBy"/>
+                            <cti:msg2 var="allTypes" key=".allTypes"/>
+                            <tags:selectWithItems path="eventType" items="${eventTypes}" defaultItemLabel="${allTypes}" />
+                            <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
+                        </form:form>
                 
-                <div>
-                    <cti:url var="singleNotificationUrl" value="/notifications/singleNotification"/>
-                    <form action="${singleNotificationUrl}" method="POST">
-                        <cti:csrfToken/>
-                        <span><span class="fl" style="padding-right:10px;"><i:inline key=".singleNotification"/>: </span>
-                            <tags:switchButton name="singleNotification" classes="fn vam" onNameKey=".yes.label" offNameKey=".no.label" 
-                                checked="${!empty sendTime}" toggleGroup="singleNotificationToggle" toggleAction="hide"/>
-                             <tags:timeSlider startName="sendTime" startValue="${fn:escapeXml(sendTime)}" dataToggleGroup="singleNotificationToggle" stepValue="60" 
-                                displayTimeToLeft="true" timeFormat="HHMM" maxValue="1380"/>
-                            <cti:button nameKey="save" type="submit" classes="fn" style="margin-left:20px;"/>
-                        </span>
-                    </form>
-                </div>
-                <hr/>
-                
-               <cti:url var="action" value="/notifications/subscriptions"/>
-                <form:form id="filter-form" action="${action}" modelAttribute="filter" method="get">
-                    <i:inline key="yukon.common.filterBy"/>
-                    <cti:msg2 var="allTypes" key=".allTypes"/>
-                    <tags:selectWithItems path="eventType" items="${eventTypes}" defaultItemLabel="${allTypes}" />
-                    <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
-                </form:form>
-        
-                <hr/>
-    
-                <!--NOTIFICATIONS TABLE-->
-                <cti:url var="dataUrl" value="/notifications/subscriptions"/>
-                <div id="smart-notifications-container" data-url="${dataUrl}">
-                    <%@ include file="../smartNotifications/subscriptions.jsp" %>
-                </div>
-                
-            </tags:sectionContainer2>
-        </div>
-    
-        <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>
-        <div id="create-popup" data-dialog
-                class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
-                data-title="<cti:msg2 key=".createPopup.title"/>"
-                data-url="${smartNotificationsUrl}" 
-                data-load-event="yukon:notifications:load"
-                data-width="600"></div>
+                        <hr/>
+
+                        <!--NOTIFICATIONS TABLE-->
+                        <cti:url var="dataUrl" value="/notifications/subscriptions"/>
+                        <div id="smart-notifications-container" data-url="${dataUrl}">
+                            <%@ include file="../smartNotifications/subscriptions.jsp" %>
+                        </div>
                         
-    </cti:msgScope>
-    
+                    </tags:sectionContainer2>
+                </div>
+
+                <cti:url var="smartNotificationsUrl" value="/notifications/subscription/create"/>
+                <div id="create-popup" data-dialog
+                        class="dn js-smart-notifications-popup" data-event="yukon:notifications:save"
+                        data-title="<cti:msg2 key=".createPopup.title"/>"
+                        data-url="${smartNotificationsUrl}" 
+                        data-load-event="yukon:notifications:load"
+                        data-width="600"></div>
+
+            </cti:msgScope>
+        </cti:checkRolesAndProperties>
+    </cti:checkRolesAndProperties>
 </cti:displayForPageEditModes>
          
 <cti:includeScript link="/resources/js/pages/yukon.user.profile.js"/>

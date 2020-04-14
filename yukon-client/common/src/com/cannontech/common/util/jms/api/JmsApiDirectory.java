@@ -1,8 +1,29 @@
 package com.cannontech.common.util.jms.api;
 
-import static com.cannontech.common.util.jms.api.JmsApiCategory.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicatingService.*;
-import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.*;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DATA_STREAMING;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DIGI_ZIGBEE;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.DR_NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.MONITOR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.OTHER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_LCR;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RFN_METER;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_GATEWAY;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_MISC;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.RF_NETWORK;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.SMART_NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WEBSERVER_DEV_PAGES;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.NOTIFICATION;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_ACK_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_MULTI_RESPONSE;
+import static com.cannontech.common.util.jms.api.JmsCommunicationPattern.REQUEST_RESPONSE;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,6 +41,8 @@ import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveRequest;
 import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveResponse;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveResponse;
+import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataRequest;
+import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataResponse;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReply;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
@@ -72,20 +95,12 @@ import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersion
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.LocationResponseAck;
-import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
-import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiRequest;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiResponse;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
-import com.cannontech.common.rfn.message.network.RfnParentReply;
-import com.cannontech.common.rfn.message.network.RfnParentRequest;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
-import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveRequest;
-import com.cannontech.common.rfn.message.node.RfnNodeCommArchiveResponse;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveRequest;
 import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeRequest;
+import com.cannontech.common.rfn.message.tree.NetworkTreeUpdateTimeResponse;
 import com.cannontech.common.smartNotification.model.DailyDigestTestParams;
 import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti;
@@ -106,6 +121,7 @@ import com.cannontech.services.configurationSettingMessage.model.ConfigurationSe
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
@@ -120,12 +136,16 @@ import com.cannontech.thirdparty.messaging.SmartUpdateRequestMessage;
  * To add messaging for a new feature, create a new public static final JmsApi object here, and add it to the 
  * {@code jmsApis} map with a category.<br><br>
  * 
- * {@code JmsApi.builder} requires that all APIs have a name, description, communicationPattern, sender, receiver, queue 
- * and requestMessage specified. Additionally, you will need to specify ackQueue, responseQueue, ackMessage and
+ * {@code JmsApi.builder} requires that all APIs have a name, description, communicationPattern, sender, receiver, queue, 
+ * timeToLive and requestMessage specified. Additionally, you will need to specify ackQueue, responseQueue, ackMessage and
  * responseMessage if the communicationPattern involves ack or response. Multiple senders and receivers may also be
- * specified. (For example, if NM or a Yukon simulator can both receive a particular message.)
+ * specified. (For example, if NM or a Yukon simulator can both receive a particular message.)<br><br>
+ * 
+ * Default time-to-live is set to 1 Day. You can also specify your own time-to live as per 
+ * your requirements (For example 12 Hours: Duration.standardHours(12)).<br><br>
  * 
  * To define any messaging that is sent over a temp queue, use JmsQueue.TEMP_QUEUE.
+ * To define any messaging that is sent over a topic, set topic as true.
  */
 public final class JmsApiDirectory {
     private static final Comparator<JmsApi<?,?,?>> API_COMPARATOR = (api1, api2) -> api1.getName().compareTo(api2.getName());
@@ -190,6 +210,7 @@ public final class JmsApiDirectory {
                   .name("Status Point Monitor Outage")
                   .description("Outage notification sent from the Status Point Monitor to Multispeak code, which will "
                           + "send an outage event to any connected Multispeak vendors that support it.")
+                  .topic(true)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.notif.obj.amr.OutageJmsMessage"))
                   .requestMessage(OutageJmsMessage.class)
@@ -334,51 +355,32 @@ public final class JmsApiDirectory {
                   .receiver(NETWORK_MANAGER)
                   .receiver(YUKON_SIMULATORS)
                   .build();
+        
+    public static final JmsApi<NetworkTreeUpdateTimeRequest,?,?> NETWORK_TREE_UPDATE_REQUEST =
+            JmsApi.builder(NetworkTreeUpdateTimeRequest.class)
+                  .name("Network Tree Update Request")
+                  .description("Sent by Yukon to ask Network Manager when the network tree was last updated or to ask Network Manager for a tree update. Upon receipt, "
+                          + "Network Manager will either initate the network tree update and will notify Yukon when done or "
+                          + "send a message to Yukon with last network tree update time.")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeRequest"))
+                  .requestMessage(NetworkTreeUpdateTimeRequest.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(NETWORK_MANAGER)
+                  .receiver(YUKON_SIMULATORS)
+                  .build();
     
-    public static final JmsApi<RfnPrimaryRouteDataRequest,?,RfnPrimaryRouteDataReply> NETWORK_PRIMARY_ROUTE =
-        JmsApi.builder(RfnPrimaryRouteDataRequest.class, RfnPrimaryRouteDataReply.class)
-              .name("Network Primary Route")
-              .description("Asks NM for the device's route. NM can return NO_PARENT if primary route information is"
-                           + " requested for battery node (water meter). NM searches for the battery node's parent "
-                           + "first, then finds the parent's primary route and returns that as the battery node's "
-                           + "primary route.")
-              .communicationPattern(REQUEST_RESPONSE)
-              .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.network.data.request"))
-              .responseQueue(JmsQueue.TEMP_QUEUE)
-              .requestMessage(RfnPrimaryRouteDataRequest.class)
-              .responseMessage(RfnPrimaryRouteDataReply.class)
-              .sender(YUKON_WEBSERVER)
-              .receiver(NETWORK_MANAGER)
-              .receiver(YUKON_SIMULATORS)
-              .build();
-    
-    public static final JmsApi<RfnNeighborDataRequest,?,RfnNeighborDataReply> NETWORK_NEIGHBOR =
-        JmsApi.builder(RfnNeighborDataRequest.class, RfnNeighborDataReply.class)
-              .name("Network Neighbor")
-              .description("Asks NM for the device's neighbors.")
-              .communicationPattern(REQUEST_RESPONSE)
-              .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.network.data.request"))
-              .responseQueue(JmsQueue.TEMP_QUEUE)
-              .requestMessage(RfnNeighborDataRequest.class)
-              .responseMessage(RfnNeighborDataReply.class)
-              .sender(YUKON_WEBSERVER)
-              .receiver(NETWORK_MANAGER)
-              .receiver(YUKON_SIMULATORS)
-              .build();
-    
-    public static final JmsApi<RfnParentRequest,?,RfnParentReply> NETWORK_PARENT =
-        JmsApi.builder(RfnParentRequest.class, RfnParentReply.class)
-              .name("Network Parent")
-              .description("Asks NM for the device's parent information.")
-              .communicationPattern(REQUEST_RESPONSE)
-              .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.network.data.request"))
-              .responseQueue(JmsQueue.TEMP_QUEUE)
-              .requestMessage(RfnParentRequest.class)
-              .responseMessage(RfnParentReply.class)
-              .sender(YUKON_WEBSERVER)
-              .receiver(NETWORK_MANAGER)
-              .receiver(YUKON_SIMULATORS)
-              .build();
+    public static final JmsApi<NetworkTreeUpdateTimeResponse,?,?> NETWORK_TREE_UPDATE_RESPONSE =
+            JmsApi.builder(NetworkTreeUpdateTimeResponse.class)
+                  .name("Network Tree Update Response")
+                  .description("Sent by Network Manager to notify the Web Server of the network tree update")
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.NetworkTreeUpdateTimeResponse"))
+                  .requestMessage(NetworkTreeUpdateTimeResponse.class)
+                  .sender(NETWORK_MANAGER)
+                  .sender(YUKON_SIMULATORS)
+                  .receiver(YUKON_WEBSERVER)
+                  .build();
     
     public static final JmsApi<GatewayCreateRequest,?,GatewayUpdateResponse> RF_GATEWAY_CREATE =
         JmsApi.builder(GatewayCreateRequest.class, GatewayUpdateResponse.class)
@@ -573,6 +575,7 @@ public final class JmsApiDirectory {
                   .name("RF Gateway Data (Internal)")
                   .description("Yukon Service Manager takes gateway data (which receives it first, from Network "
                           + "Manager) and passes it to Yukon webserver on a topic.")
+                  .topic(true)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("yukon.qr.obj.common.rfn.GatewayDataTopic"))
                   .requestMessage(Serializable.class)
@@ -618,20 +621,6 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .sender(YUKON_EIM)
                   .receiver(NETWORK_MANAGER)
-                  .build();
-    
-    public static final JmsApi<RfnMetadataRequest,?,RfnMetadataResponse> RFN_METADATA =
-            JmsApi.builder(RfnMetadataRequest.class, RfnMetadataResponse.class)
-                  .name("RFN Metadata")
-                  .description("Sends a request for an RFN device's metadata from Yukon to Network Manager.")
-                  .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("yukon.qr.obj.common.rfn.MetadataRequest"))
-                  .responseQueue(JmsQueue.TEMP_QUEUE)
-                  .requestMessage(RfnMetadataRequest.class)
-                  .responseMessage(RfnMetadataResponse.class)
-                  .sender(YUKON_WEBSERVER)
-                  .receiver(NETWORK_MANAGER)
-                  .receiver(YUKON_SIMULATORS)
                   .build();
     
     public static final JmsApi<RfnMeterDisconnectRequest,RfnMeterDisconnectInitialReply,RfnMeterDisconnectConfirmationReply> RFN_METER_DISCONNECT =
@@ -989,6 +978,19 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SIMULATORS)
                   .build();
     
+    public static final JmsApi<RfnDeviceDataRequest,?,RfnDeviceDataResponse> DYNAMIC_RFN_DEVICE_DATA_COLLECTION =
+            JmsApi.builder(RfnDeviceDataRequest.class, RfnDeviceDataResponse.class)
+                  .name("Dynamic rfn device data collection")
+                  .description("Sends message to SM to initiate dynamic rfn device data collection")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.DynamicRfnDeviceDataRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(RfnDeviceDataRequest.class)
+                  .responseMessage(RfnDeviceDataResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+    
     public static final JmsApi<EcobeeAuthTokenRequest,?,EcobeeAuthTokenResponse> ECOBEE_AUTH_TOKEN =
             JmsApi.builder(EcobeeAuthTokenRequest.class, EcobeeAuthTokenResponse.class)
             .name("Ecobee Auth Token")
@@ -1078,20 +1080,6 @@ public final class JmsApiDirectory {
                   .sender(YUKON_WEBSERVER)
                   .receiver(YUKON_WEBSERVER)
                   .build();
-
-    public static JmsApi<RfnNodeCommArchiveRequest,?,RfnNodeCommArchiveResponse> RFN_NODE_COMM_ARCHIVE =
-            JmsApi.builder(RfnNodeCommArchiveRequest.class, RfnNodeCommArchiveResponse.class)
-                  .name("RFN Node Comm Archive")
-                  .description("A notification from Network Manager to Yukon to archive gateway to node mapping.")
-                  .communicationPattern(REQUEST_RESPONSE)
-                  .queue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnNodeCommArchiveRequest"))
-                  .responseQueue(new JmsQueue("com.eaton.eas.yukon.networkmanager.RfnNodeCommArchiveResponse"))
-                  .requestMessage(RfnNodeCommArchiveRequest.class)
-                  .responseMessage(RfnNodeCommArchiveResponse.class)
-                  .sender(NETWORK_MANAGER)
-                  .sender(YUKON_WEBSERVER_DEV_PAGES)
-                  .receiver(YUKON_SERVICE_MANAGER)
-                  .build();
     
     public static JmsApi<RfnNodeWiFiCommArchiveRequest,?,RfnNodeWiFiCommArchiveResponse> RFN_NODE_WIFI_COMM_ARCHIVE =
             JmsApi.builder(RfnNodeWiFiCommArchiveRequest.class, RfnNodeWiFiCommArchiveResponse.class)
@@ -1121,6 +1109,7 @@ public final class JmsApiDirectory {
             JmsApi.builder(SystemData.class)
                   .name("Yukon System Data")
                   .description("Yukon Service Manager takes Yukon System Data and passes it to Yukon Message Broker on a topic.")
+                  .topic(true)
                   .communicationPattern(NOTIFICATION)
                   .queue(new JmsQueue("com.eaton.eas.SystemData"))
                   .requestMessage(SystemData.class)
@@ -1137,6 +1126,20 @@ public final class JmsApiDirectory {
                   .requestMessage(ConfigurationSettings.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
+                  .build();
+
+    public static final JmsApi<CloudDataConfiguration,?,?> CLOUD_DATA_CONFIGURATION =
+            JmsApi.builder(CloudDataConfiguration.class)
+                  .name("Yukon Cloud Data")
+                  .description("Yukon Service Manager processes the data definition for cloud integrations and publishes"
+                          + " it on a topic for other services to use")
+                  .topic(true)
+                  .communicationPattern(NOTIFICATION)
+                  .queue(new JmsQueue("com.eaton.eas.cloud.CloudDataConfiguration"))
+                  .requestMessage(CloudDataConfiguration.class)
+                  .sender(YUKON_SERVICE_MANAGER)
+                  .receiver(YUKON_SERVICE_MANAGER)
+                  .receiver(NETWORK_MANAGER)
                   .build();
 
     /*
@@ -1166,6 +1169,7 @@ public final class JmsApiDirectory {
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
+                CLOUD_DATA_CONFIGURATION,
                 ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
@@ -1209,19 +1213,17 @@ public final class JmsApiDirectory {
                 NM_ALARM);
         
         addApis(jmsApis, RF_NETWORK, 
-                NETWORK_NEIGHBOR, 
-                NETWORK_PARENT,
-                NETWORK_PRIMARY_ROUTE);
+                NETWORK_TREE_UPDATE_REQUEST,
+                NETWORK_TREE_UPDATE_RESPONSE);
         
         addApis(jmsApis, RF_MISC, 
-                RFN_METADATA, 
                 RF_METADATA_MULTI,
                 RF_ALARM_ARCHIVE,
                 RF_EVENT_ARCHIVE,
                 RFN_DEVICE_ARCHIVE,
                 RFN_STATUS_ARCHIVE,
-                RFN_NODE_COMM_ARCHIVE,
-                RFN_NODE_WIFI_COMM_ARCHIVE);
+                RFN_NODE_WIFI_COMM_ARCHIVE,
+                DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         
         addApis(jmsApis, SMART_NOTIFICATION,
                 SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,

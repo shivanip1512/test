@@ -19,21 +19,34 @@
 #include <string>
 #include <sstream>
 
-namespace Cti {
-namespace Devices {
+namespace Cti::Devices {
 
 using Config::RfnStrings;
 
 namespace { // anonymous namespace
 
-const std::set<DeviceTypes> disconnectConfigTypes
+const std::map<DeviceTypes, bool> typeIsDisconnect
 {
-    TYPE_RFN410FD,
-    TYPE_RFN420CD,
-    TYPE_RFN420FD,
-    TYPE_RFN420FRD,
-    TYPE_RFN520FAXD,
-    TYPE_RFN520FRXD
+    { TYPE_RFN410FX,   false },
+    { TYPE_RFN410FD,   true },
+    { TYPE_RFN420FL,   false },
+    { TYPE_RFN420FX,   false },
+    { TYPE_RFN420FD,   true },
+    { TYPE_RFN420FRX,  false },
+    { TYPE_RFN420FRD,  true },
+    { TYPE_RFN510FL,   false },
+    { TYPE_RFN520FAX,  false },
+    { TYPE_RFN520FRX,  false },
+    { TYPE_RFN520FAXD, true },
+    { TYPE_RFN520FRXD, true },
+    { TYPE_RFN530FAX,  false },
+    { TYPE_RFN530FRX,  false },
+    //  RFN Centron
+    { TYPE_RFN410CL, false },
+    { TYPE_RFN420CL, false },
+    { TYPE_WRL420CL, false },
+    { TYPE_RFN420CD, true },
+    { TYPE_WRL420CD, true },
 };
 
 typedef Commands::RfnRemoteDisconnectConfigurationCommand DisconnectCmd;
@@ -931,9 +944,21 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
 }
 
 
+std::optional<bool> RfnResidentialDevice::isDisconnectType(DeviceTypes t)
+{
+    if( const auto isDisconnect = mapFind(typeIsDisconnect, t) )
+    {
+        return *isDisconnect;
+    }
+    return std::nullopt;
+}
+
 bool RfnResidentialDevice::isDisconnectConfigSupported(DeviceTypes t)
 {
-    return disconnectConfigTypes.count(t);
+    const auto isDisconnect = isDisconnectType(t);
+
+    //  Smoosh the nullopt case to false - only RfnResidentialDevice types are required to have an entry in isDisconnectType
+    return isDisconnect && *isDisconnect;
 }
 
 bool RfnResidentialDevice::isDisconnectConfigSupported() const
@@ -1255,5 +1280,3 @@ void RfnResidentialDevice::storeTouHolidays(const Commands::RfnTouHolidayConfigu
 }
 
 }
-}
-

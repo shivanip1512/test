@@ -45,6 +45,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
@@ -87,6 +88,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER)
@@ -94,6 +96,7 @@ public class CommanderController {
     
     @Autowired private ServerDatabaseCache cache;
     @Autowired private PaoDao paoDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private LocationService locationService;
     @Autowired private CommandDao commandDao;
@@ -472,13 +475,18 @@ public class CommanderController {
         Set<CommandCategory> categories = CommandCategoryUtil.getAllCategories();
         List<CommandCategory> categoryList = new ArrayList<CommandCategory>();
         categoryList.addAll(categories);
-        categoryList.add(CommandCategory.DEVICE_GROUP);
         categoryList.add(CommandCategory.EXPRESSCOM_SERIAL);
-        categoryList.add(CommandCategory.SERIALNUMBER);
         categoryList.add(CommandCategory.VERSACOM_SERIAL);
         model.addAttribute("categories", categoryList);
-        List<PaoType> existingPaoTypes = paoDao.getExistingPaoTypes();
-        model.addAttribute("paoTypes", existingPaoTypes);
+
+        // All devices supporting COMMANDER_REQUESTS + all Load Groups having route(assumed command requestable)
+        Set<PaoType> commandablePaoTypes = Sets.union(
+                paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.COMMANDER_REQUESTS),
+                PaoType.getLoadGroupSupportingRouteTypes());
+        // Limit to only those paoTypes that actually exist in the database
+        Set<PaoType> availablePaoTypes =  Sets.intersection(commandablePaoTypes, cache.getAllPaoTypes());
+        Comparator<PaoType> byDbString = (PaoType o1, PaoType o2) -> o1.getDbString().compareTo(o2.getDbString());
+        model.addAttribute("paoTypes", availablePaoTypes.stream().sorted(byDbString).collect(Collectors.toList()));
         
         List<DeviceCommandDetail> typeCommands = new ArrayList<>();
         CustomCommandBean formBean = new CustomCommandBean();
@@ -557,7 +565,7 @@ public class CommanderController {
                         }
                     } catch (Exception e) {
                         //category or pao type not found so just display db string
-                        log.info("Command not found for " + category, e);
+                        log.info("Command not found for category or paotype {}.", category);
                     }
                 }
                 DeviceCommandDetail detail = new DeviceCommandDetail(typeCommand.getDeviceCommandId(), cmd.getCommandId(), dbCategory, displayableCategory,

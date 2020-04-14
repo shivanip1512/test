@@ -59,14 +59,14 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //C2SX-W
-        RFN_420CLW(PaoType.RFN420CLW, 
+        WRL_420CL(PaoType.WRL420CL, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //C2SX-W
-        RFN_420CDW(PaoType.RFN420CDW, 
+        WRL_420CD(PaoType.WRL420CD, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DELIVERED_DEMAND,//metric 5

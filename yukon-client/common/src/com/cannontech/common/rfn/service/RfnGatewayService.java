@@ -7,6 +7,7 @@ import java.util.Set;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayConfigResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
@@ -32,6 +33,8 @@ import com.google.common.collect.Multimap;
  * @see {@link RfnDeviceCreationService#createGateway(RfnIdentifier)} Used to create new gateways.
  */
 public interface RfnGatewayService {
+    
+    int GATEWAY_DEFAULT_PORT = 32030;
     
     /**
      * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not
@@ -268,5 +271,13 @@ public interface RfnGatewayService {
 
     /** Converts an {@link RfnGateway} to a {@link GatewayConfiguration} */
     GatewayConfiguration gatewayAsConfiguration(RfnGateway gateway);
+
+    /**
+     * Retrieves the specified gateway. If the gateway data is not cached, the returned
+     * gateways data field will be null. Use {@link #getGatewayByPaoIdWithData(int)} if you require data.
+     * 
+     * @throws IllegalArgumentException if a gateway with the specified identifier does not exist.
+     */
+    RfnGateway getGatewayByRfnIdentifier(RfnIdentifier rfnIdentifier);
 
 }

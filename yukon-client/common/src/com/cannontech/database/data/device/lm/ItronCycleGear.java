@@ -1,6 +1,7 @@
 package com.cannontech.database.data.device.lm;
 
 import java.sql.SQLException;
+
 import com.cannontech.database.db.device.lm.GearControlMethod;
 import com.cannontech.dr.itron.model.ItronCycleType;
 
@@ -17,7 +18,6 @@ public class ItronCycleGear extends com.cannontech.database.db.device.lm.LMProgr
     public ItronCycleGear() {
         setControlMethod(GearControlMethod.ItronCycle);
     }
-    
     
     @Override
     public void add() throws SQLException {
@@ -39,6 +39,11 @@ public class ItronCycleGear extends com.cannontech.database.db.device.lm.LMProgr
         super.delete();
     }
 
+    @Override
+    public boolean useCustomDbRetrieve() {
+        return true;
+    }
+    
     @Override
     public void retrieve() throws SQLException {
         super.retrieve();
@@ -98,7 +103,7 @@ public class ItronCycleGear extends com.cannontech.database.db.device.lm.LMProgr
     }
 
     public void setCriticality(Integer criticality) {
-        this.setMethodOptionType(criticality.toString());
+        setMethodOptionType(criticality.toString());
     }
 
     public Integer getControlPercent() {

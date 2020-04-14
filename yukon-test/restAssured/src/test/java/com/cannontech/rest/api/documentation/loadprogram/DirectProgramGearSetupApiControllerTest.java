@@ -87,8 +87,8 @@ public class DirectProgramGearSetupApiControllerTest {
 
         FieldDescriptor[] timeRefreshDescriptor = new FieldDescriptor[] {
 
-                fieldWithPath("gears[].fields.refreshShedTime").type(JsonFieldType.STRING)
-                                                               .description("Refresh shed time. Expected: 'FixedCount', 'DynamicShedTime'"),
+                fieldWithPath("gears[].fields.refreshShedType").type(JsonFieldType.STRING)
+                                                               .description("Refresh shed time. Expected: 'FixedCount', 'DynamicShedTime', 'CountDown', 'LimitedCountDown','FixedShedTime"),
                 fieldWithPath("gears[].fields.shedTime").type(JsonFieldType.NUMBER).description("Shed Time in seconds"),
                 fieldWithPath("gears[].fields.numberOfGroups").type(JsonFieldType.NUMBER).description("Number of Groups. Min Value: 0, Max Value: 25"),
                 fieldWithPath("gears[].fields.sendRate").type(JsonFieldType.NUMBER).description("Send Rate in seconds"),
@@ -335,8 +335,8 @@ public class DirectProgramGearSetupApiControllerTest {
         /*---------Thermostat Gear Field Descriptor--------- */
 
         FieldDescriptor[] thermostatGearDescriptor = new FieldDescriptor[] {
-                fieldWithPath("gears[].fields.absoluteOrDelta").type(JsonFieldType.STRING).description("Absolute or Delta."),
-                fieldWithPath("gears[].fields.measureUnit").type(JsonFieldType.STRING).description("Measurement Unit."),
+                fieldWithPath("gears[].fields.setpoint").type(JsonFieldType.STRING).description("Absolute or Delta."),
+                fieldWithPath("gears[].fields.tempMeasureUnit").type(JsonFieldType.STRING).description("Measurement Unit."),
                 fieldWithPath("gears[].fields.isHeatMode").type(JsonFieldType.BOOLEAN).description("Heat Mode."),
                 fieldWithPath("gears[].fields.isCoolMode").type(JsonFieldType.BOOLEAN).description("Cool Mode."),
                 fieldWithPath("gears[].fields.minValue").type(JsonFieldType.NUMBER).description("Min Value."),

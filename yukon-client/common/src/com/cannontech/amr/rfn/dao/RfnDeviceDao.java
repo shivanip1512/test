@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.core.dao.NotFoundException;
@@ -91,22 +91,25 @@ public interface RfnDeviceDao {
      * @return The updated gateway.
      */
     RfnDevice updateGatewayType(RfnDevice device);
+    
+    /**
+     * Creates mappings for gateway/device/descendant count.
+     */
+    void saveDynamicRfnDeviceData(Set<DynamicRfnDeviceData> datas);
 
     /**
-     * Creates mappings for gateway to device
-     */
-    void saveDynamicRfnDeviceData(List<NodeComm> nodes);
-    
-    /**
-     * Creates mappings for gateway to device. Returns reference ids to be send to NM for acknowledgement
-     */
-    Set<Long> saveDynamicRfnDeviceData(Map<Long, NodeComm> nodes);
-    
-    /**
-     * Returns list of devices for gateway
+     * Returns list of devices for gateway.
      */
     List<RfnDevice> getDevicesForGateway(int gatewayId);
     
+    /**
+     * Returns list of devices for gateways
+     * A list of PaoTypes can be specified for filtering or set to null to return all devices
+     * @param gatewayIdsList - an integer list of gatewayIds
+     * @param paoTypes - a iterable object containing PaoTypes
+     */
+    List<RfnDevice> getDevicesForGateways(List<Integer> gatewayIdsList, Iterable<PaoType> paoTypes);
+
     /**
      * Returns limited list of RfnIdentifier for gateway. Used by simulator.
      */
@@ -122,7 +125,7 @@ public interface RfnDeviceDao {
      */
     Set<Integer> getDeviceIdsForRfnIdentifiers(Iterable<RfnIdentifier> rfnIdentifiers);
 
-    Integer findDeviceBySensorSerialNumber(String sensorSerialNumber);
+    RfnDevice findDeviceBySensorSerialNumber(String sensorSerialNumber);
 
     /**
      * Returns device id for rfn identifier. Cache lookup.
@@ -130,7 +133,40 @@ public interface RfnDeviceDao {
     Integer getDeviceIdForRfnIdentifier(RfnIdentifier rfnIdentifier);
 
     /**
+     * Returns device to gateway identifier/descendant count
+     */
+
+
+    /**
      * Returns gateway ids for the set of devices
      */
     Set<Integer> getGatewayIdsForDevices(Set<Integer> deviceIds);
+
+    /**
+     * Returns  DynamicRfnDeviceData for device or null if the device is not associated with gateway
+     */
+    DynamicRfnDeviceData findDynamicRfnDeviceData(Integer deviceId);   
+    /**
+     * Returns gateway to collection of DynamicRfnDeviceData
+     */
+    Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByGateways(Iterable<Integer> gatewayIds);
+    
+    /**
+     * Returns gateway to collection of DynamicRfnDeviceData
+     */
+    Map<Integer, List<DynamicRfnDeviceData>> getDynamicRfnDeviceDataByDevices(Iterable<Integer> deviceIds);
+
+    /**
+     * Returns list of DynamicRfnDeviceDatas
+     */
+    List<DynamicRfnDeviceData> getDynamicRfnDeviceData(Iterable<Integer> deviceIds);
+
+    /**
+     * Returns all data in the table, used by simulator
+     */
+    List<DynamicRfnDeviceData> getAllDynamicRfnDeviceData();
+    /**
+     * Returns device RfnIdentifiers by gateway ids
+     */
+    Set<RfnIdentifier> getDeviceRfnIdentifiersByGatewayIds(Iterable<Integer> gatewayIds);
 }

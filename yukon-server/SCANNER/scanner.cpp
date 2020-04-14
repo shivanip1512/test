@@ -1227,7 +1227,7 @@ void DispatchMsgHandlerThread(void *Arg)
                     // In the event that a GlobalSetting has been updated, reload GlobalSettings.
                     if (resolveDBCategory(dbChange->getCategory()) == CtiDBChangeCategory::GlobalSetting)
                     {
-                        GlobalSettings::reload();
+                        Cti::GlobalSettings::reload();
 
                         doutManager.reloadSettings();
                     }

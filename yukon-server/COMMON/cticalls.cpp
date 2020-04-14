@@ -45,6 +45,8 @@ YukonError_t CTICloseMutexSem(PHMTX phmtx)
        return ClientErrors::Abnormal;
    }
 
+   CTILOG_DEBUG(dout, "CLOSED THE BLOCK SEMAPHORE - " << phmtx);
+
    return ClientErrors::None;
 }
 
@@ -58,6 +60,8 @@ YukonError_t CTICreateMutexSem(PSZ pszName, PHMTX phmtx, ULONG Flags, BOOL bStat
 
        return ClientErrors::Abnormal;
    }
+
+   CTILOG_DEBUG(dout, "CREATED THE BLOCK SEMAPHORE - " << phmtx);
 
    return ClientErrors::None;
 }

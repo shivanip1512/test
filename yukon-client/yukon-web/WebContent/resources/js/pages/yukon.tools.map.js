@@ -15,18 +15,18 @@ yukon.tools.map = (function() {
     var
     _initialized = false,
     
-    _primaryRoutePreviousPoints,
     _deviceFocusCurrentIcon,
     _deviceFocusIcons = [],
     _deviceFocusLines = [],
-    _deviceFocusIconLayer,
-    _largerScale = 1.3,
     _violationColor = '#ec971f',
+    
+    //grey
+    _focusRouteColor = yukon.mapping.getFocusRouteColor(),
     
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,
     _primaryRouteLayerIndex = 1,
-    _iconLayerIndex = 3,
+    _iconLayerIndex = yukon.mapping.getIconLayerZIndex(),
     
     /** @type {number} - The setTimeout reference for periodic updating of device collection. */
     _updater = -1, 
@@ -60,16 +60,6 @@ yukon.tools.map = (function() {
     
     /** Hashmap of colors and paoIds for tinting the icons */
     _mappingColors,
-        
-    /** 
-     * Returns the first layer with name provided.
-     * @param {string} name - Name of layer.
-     */
-    _getLayer = function(name) {
-        return _map.getLayers().getArray().filter(function(layer) {
-            return layer.get('name') === name;
-        })[0];
-    },
     
     /** 
      * Creates an {ol.Feature} icon from the geojson feature object.
@@ -82,14 +72,11 @@ yukon.tools.map = (function() {
             icon = new ol.Feature({pao: pao}),
             style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
         
+        icon.setId(feature.id);
         icon.setStyle(style);
-        if (src_projection === _destProjection) {
-            icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-        } else {
-            var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-            icon.setGeometry(new ol.geom.Point(coord));
-        }
-        
+        var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+        icon.setGeometry(new ol.geom.Point(coord));
+                
         _icons[pao.paoId] = icon;
         _visibility[pao.paoId] = true;
         
@@ -118,11 +105,11 @@ yukon.tools.map = (function() {
                 return device.deviceId === pao.paoId;
             });
             if (inViolation.length > 0) {
-                currentStyle.setImage(new ol.style.Icon({ src: src, color: _violationColor, scale: scale, anchor:  [0.5, 1.0] }));
+                currentStyle.setImage(new ol.style.Icon({ src: src, color: _violationColor, scale: scale, anchor: yukon.mapping.getAnchor() }));
                 icon.setStyle(currentStyle);
             } else {
                 //return back to original color
-                currentStyle.setImage(new ol.style.Icon({ src: src, scale: scale, anchor:  [0.5, 1.0] }));
+                currentStyle.setImage(new ol.style.Icon({ src: src, scale: scale, anchor: yukon.mapping.getAnchor() }));
                 icon.setStyle(currentStyle);
             }
         }
@@ -140,8 +127,9 @@ yukon.tools.map = (function() {
             if (color) {
                 var currentStyle = icon.getStyle().clone(),
                     image = currentStyle.getImage(),
-                    src = image.getSrc();
-                currentStyle.setImage(new ol.style.Icon({ src: src, color: color, anchor:  [0.5, 1.0] }));
+                    src = image.getSrc(),
+                    scale = image.getScale();
+                currentStyle.setImage(new ol.style.Icon({ src: src, color: color, scale: scale, anchor: yukon.mapping.getAnchor() }));
                 icon.setStyle(currentStyle);
             }
         }
@@ -156,11 +144,11 @@ yukon.tools.map = (function() {
         var monitorId = $('#monitorId').val();
         $.getJSON(decodeURI(_getLocationUrl())).done(function(data) {
             
-            var 
-            icon, icons = [],
-            source = _getLayer('icons').getSource(),
-            fc = monitorId ? data.locations : data,
-            mappingData = $('#mappingColorJson');
+            var icon, 
+                icons = [],
+                source = yukon.mapping.getIconLayerSource(),
+                fc = monitorId ? data.locations : data,
+                mappingData = $('#mappingColorJson');
                         
             if (mappingData.exists()) {
                 _mappingColors = yukon.fromJson(mappingData);
@@ -194,11 +182,11 @@ yukon.tools.map = (function() {
         var monitorId = $('#monitorId').val();
         $.getJSON(decodeURI(_getLocationUrl())).done(function(data) {
             
-            var toAdd = [], toRemove = [], icons = {},
+            var toAdd = [], toRemove = [], icons = {}, 
                 i, pao, feature, diff,
-                source = _getLayer('icons').getSource(),
+                source = yukon.mapping.getIconLayerSource(),
                 fc = monitorId ? data.locations : data;
-            
+                        
             // add any features we don't have
             for (i = 0; i < fc.features.length; i++) {
                 feature = fc.features[i],
@@ -250,6 +238,11 @@ yukon.tools.map = (function() {
                 $('#device-collection .js-count').addClass('animated flash');
             }
             
+            //update primary routes if changed
+            if (toAdd.length > 0 || toRemove.length > 0 || once) {
+                _addAllPrimaryRoutes();  
+            }
+            
         }).fail(function(xhr, status, error) {
             debug.log('update failed:' + status + ': ' + error);
         }).always(function() {
@@ -260,22 +253,18 @@ yukon.tools.map = (function() {
     },
     
     _removeDeviceFocusLayers = function() {
-        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+        var source = yukon.mapping.getIconLayerSource();
         _deviceFocusIcons.forEach(function (icon) {
             source.removeFeature(icon);
         });
         _deviceFocusLines.forEach(function (line) {
             _map.removeLayer(line);
         });
-        _map.removeLayer(_deviceFocusIconLayer);
         _deviceFocusIcons = [];
         _deviceFocusLines = [];
-        _deviceFocusIconLayer = null;
         //set focus device back to normal style
         if (_deviceFocusCurrentIcon != null) {
-            var normalStyle = _deviceFocusCurrentIcon.getStyle();
-            normalStyle.getImage().setScale(1);
-            _deviceFocusCurrentIcon.setStyle(normalStyle);
+            yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
         }
         yukon.mapping.hideNeighborsLegend();
     },
@@ -285,201 +274,130 @@ yukon.tools.map = (function() {
         for (var i in _icons) {
             var icon = _icons[i];
             icon.unset("neighbor");
-            icon.unset("routeInfo");
-            var normalStyle = icon.getStyle();
-            normalStyle.getImage().setScale(1);
-            icon.setStyle(normalStyle);
         }
-    },
-    
-    _findFocusDevice = function(deviceId, makeLarger) {
-        //check icons first
-        var exists = [];
-        for (var i in _icons) {
-            if (_icons[i].get('pao').paoId === deviceId) {
-                exists.push(_icons[i]);
-                break;
-            }
+        if (_deviceFocusCurrentIcon != null) {
+            yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
         }
-        //check focus devices next
-        if (exists.length === 0) {
-            exists = _deviceFocusIcons.filter(function (device) {
-                if (device.getProperties().routeInfo != null) {
-                    return device.getProperties().routeInfo.device.paoIdentifier.paoId === deviceId;
-                } else if (device.getProperties().neighbor != null) {
-                    return device.getProperties().neighbor.device.paoIdentifier.paoId === deviceId;
-                }
-            });
-        }
-        if (exists.length > 0) {
-            var focusDevice = exists[0];
-            if (makeLarger) {
-                _makeDeviceIconLarger(focusDevice);
-            }
-            return focusDevice;
-        }
-    },
-    
-    _makeDeviceIconLarger = function(icon) {
-        var largerStyle = icon.getStyle().clone();
-        largerStyle.getImage().setScale(_largerScale);
-        icon.setStyle(largerStyle);
     },
     
     _addPrimaryRouteToMap = function(deviceId, routeInfo) {
-        var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-            focusDevice = _findFocusDevice(deviceId, true),
+        var source = yukon.mapping.getIconLayerSource(),
+            focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
-            routeColor = '#808080',
+            dashedLine = false,
+            routeColor = _focusRouteColor,
             routeLineWidth = 2.5;
 
-        _primaryRoutePreviousPoints = null;
+        var primaryRoutePreviousPoints = null;
         _removeDeviceFocusLayers();
         _setIconsBack();
         _deviceFocusCurrentIcon = focusDevice;
+        
+        //if focus device was removed, add it back
+        var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
+        if (deviceFound == null) {
+            source.addFeature(focusDevice);
+            _deviceFocusIcons.push(focusDevice);
+        }
 
         for (var x in routeInfo) {
             var route = routeInfo[x],
-                feature = route.location.features[0],
-                pao = feature.properties.paoIdentifier,
-                style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-                icon = new ol.Feature({ routeInfo: route, pao: pao });
+                feature = yukon.mapping.getFeatureFromRouteOrNeighborData(route);
             
-            icon.setStyle(style);
-            
-            //check if device already exists on map...the first device will always be the original device so make the icon larger
-            var deviceFound = _findFocusDevice(pao.paoId, x == 0);
-            if (deviceFound) {
-            	icon = deviceFound;
-            	icon.set("routeInfo", route);
-            	icon.unset("neighbor");
+            if (feature == null) {
+                dashedLine = true;
+                $('.js-no-location-message').removeClass('dn');
             } else {
-                if (x == 0) {
-                    _makeDeviceIconLarger(icon);
-                }
-                if (_srcProjection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                var pao = feature.properties.paoIdentifier,
+                    style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                    icon = new ol.Feature({ pao: pao });
+            
+                icon.setId(feature.id);
+                icon.setStyle(style);
+                
+                //check if device already exists on map
+                var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, false);
+                if (deviceFound) {
+                    icon = deviceFound;
+                    icon.unset("neighbor");
                 } else {
                     var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
                     icon.setGeometry(new ol.geom.Point(coord));
+                    _deviceFocusIcons.push(icon);
+                    source.addFeature(icon);
                 }
                 
-                _deviceFocusIcons.push(icon);
-                source.addFeature(icon);
+                //draw line
+                var points = [];
+                points.push(icon.getGeometry().getCoordinates());
+                if (primaryRoutePreviousPoints != null) {
+                    points.push(primaryRoutePreviousPoints);
+                } else {
+                    points.push(focusPoints);
+                }
+                primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                
+                var layerLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        })]
+                    }),
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ 
+                            color: routeColor, 
+                            width: routeLineWidth,
+                            lineDash: dashedLine ? [10,10] : null
+                        })
+                    })
+                });
+                
+                layerLines.setZIndex(_primaryRouteLayerIndex);
+                _deviceFocusLines.push(layerLines);
+                _map.addLayer(layerLines);
+                dashedLine = false;
             }
-            
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            if (_primaryRoutePreviousPoints != null) {
-                points.push(_primaryRoutePreviousPoints);
-            } else {
-                points.push(focusPoints);
-            }
-            _primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: routeColor, width: routeLineWidth })
-                })
-            });
-            
-            layerLines.setZIndex(_primaryRouteLayerIndex);
-            _deviceFocusLines.push(layerLines);
-            _map.addLayer(layerLines);
+
         }
-        
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _deviceFocusIcons})});
-        iconsLayer.setZIndex(_iconLayerIndex);
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
-        
-        yukon.mapping.updateZoom(_map);
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
-        var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-            focusDevice = _findFocusDevice(deviceId, true),
+        var source = yukon.mapping.getIconLayerSource(),
+            focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
             clonedFocusDevice = focusDevice.clone();
             
         clonedFocusDevice.setStyle(focusDevice.getStyle().clone());
-        clonedFocusDevice.unset("routeInfo");
         clonedFocusDevice.unset("neighbor");
             
         _removeDeviceFocusLayers();
         _setIconsBack();
-        _deviceFocusCurrentIcon = clonedFocusDevice;
-        _deviceFocusIcons.push(clonedFocusDevice);
-        source.addFeature(clonedFocusDevice);
+        var focusDeviceStillOnMap = yukon.mapping.findFocusDevice(deviceId, true);
+        if (!focusDeviceStillOnMap) {
+            _deviceFocusIcons.push(clonedFocusDevice);
+            source.addFeature(clonedFocusDevice);
+        }
+
+        _deviceFocusCurrentIcon = focusDevice;
 
         for (var x in neighbors) {
-            var neighbor = neighbors[x],
-            feature = neighbor.location.features[0],
-            pao = feature.properties.paoIdentifier,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ neighbor: neighbor, pao: pao });
-            
-            //check if neighbor already exists on map
-            var neighborFound = _findFocusDevice(pao.paoId, false);
-            if (neighborFound) {
-            	icon = neighborFound;
-            	icon.set("neighbor", neighbor);
-            	icon.unset("routeInfo");
-            } else {
-                icon.setStyle(style);
-
-                if (_srcProjection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                } else {
-                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                    icon.setGeometry(new ol.geom.Point(coord));
-                }
-                
-                _deviceFocusIcons.push(icon);
-                source.addFeature(icon);
-            }
-            
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            points.push(focusPoints);
-
-            var lineColor = yukon.mapping.getNeighborLineColor(neighbor.data.etxBand),
-                lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.data.numSamples);
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
-                })
-            });
-            
-            layerLines.setZIndex(_neighborsLayerIndex);
-            _deviceFocusLines.push(layerLines);
-            _map.addLayer(layerLines);
+            var device = neighbors[x];
+            yukon.mapping.createNeighborDevice(device, _deviceFocusIcons, _deviceFocusLines, focusPoints, false);
         }
-        
-        var allIcons = [];
-        allIcons.push.apply(allIcons, _deviceFocusIcons);
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
-        iconsLayer.setZIndex(_iconLayerIndex);
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
-        
-        yukon.mapping.updateZoom(_map);
+    },
+    
+    _addAllPrimaryRoutes = function() {
+        var checked = $('.js-all-routes-collection').find(':checkbox').prop('checked');
+        if (checked) {
+            var getGatewaysUrl = $('#getGatewaysUrl').val();
+            $.getJSON(getGatewaysUrl)
+            .done(function (gatewayIds) {
+                yukon.mapping.showHideAllRoutes(gatewayIds);
+            });
+        } else {
+            yukon.mapping.showHideAllRoutes();
+        }  
     },
     
     _mod = {
@@ -509,7 +427,7 @@ yukon.tools.map = (function() {
             });
             yukon.mapping.initializeMap(_map);
             _destProjection = _map.getView().getProjection().getCode();
-            _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
+            _map.addLayer(new ol.layer.Vector({ name: 'icons', zIndex: _iconLayerIndex, source: new ol.source.Vector({ projection: _destProjection }) }));
             _loadIcons();
             /** Hide any cog dropdowns on zoom or map move **/
             _map.getView().on('change:resolution', function(ev) {
@@ -543,6 +461,7 @@ yukon.tools.map = (function() {
             });
             
             $('#violationsSelect').on('change', function(ev) {
+                yukon.mapping.removeAllRoutesLayers();
                 _update(true);
             });
             
@@ -599,16 +518,17 @@ yukon.tools.map = (function() {
                             filteredCount = json.filteredDeviceCount,
                             filteredDevicesOnly = $('#devicesFilter').val();
                         
+                        yukon.mapping.removeAllRoutesLayers();
+                        
                         $('.js-status-retrieving').hide();
                         $('.js-status-filtering').show();
                         
                         debug.log('point data request: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         start = new Date().getTime();
                         
-                        var 
-                        source = _getLayer('icons').getSource(),
-                        toAdd = [], toRemove = [],
-                        visible, show, paoId, icon;
+                        var source = yukon.mapping.getIconLayerSource(),
+                            toAdd = [], toRemove = [],
+                            visible, show, paoId, icon;
                         
                         for (paoId in results) {
                             icon = _icons[paoId];
@@ -617,12 +537,13 @@ yukon.tools.map = (function() {
                                 visible = _visibility[paoId];
                                 var currentStyle = icon.getStyle().clone(),
                                     image = currentStyle.getImage(),
-                                    src = image.getSrc();  
+                                    src = image.getSrc(),
+                                    scale = image.getScale();
                                 if (show) {
-                                    currentStyle.setImage(new ol.style.Icon({ src: src, color: _violationColor, anchor:  [0.5, 1.0] }));
+                                    currentStyle.setImage(new ol.style.Icon({ src: src, color: _violationColor, scale: scale, anchor: yukon.mapping.getAnchor() }));
                                     icon.setStyle(currentStyle);
                                 } else {
-                                    currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
+                                    currentStyle.setImage(new ol.style.Icon({ src: src, scale: scale, anchor: yukon.mapping.getAnchor() }));
                                     icon.setStyle(currentStyle);
                                     _updateStyleIfFoundInMappingColors(paoId, icon);
                                 }
@@ -664,6 +585,9 @@ yukon.tools.map = (function() {
                         
                         debug.log('removing icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                         $('.js-status-filtering').hide();
+                        
+                        //update primary routes if changed
+                        _addAllPrimaryRoutes();
                     }, 
                     error: function(xhr, status, error, $form) {
                         debug.log('error with ajax filter form submission: ' + error);
@@ -679,13 +603,19 @@ yukon.tools.map = (function() {
                 $('#filter-btn').removeClass('left');
                 $('#filter-btn .b-label').text($('#unfiltered-msg').val());
                 
-                var toAdd = [], start = new Date().getTime();
+                yukon.mapping.removeAllRoutesLayers();
+                
+                var toAdd = [], 
+                    start = new Date().getTime(),
+                    source = yukon.mapping.getIconLayerSource();
+
                 for (var paoId in _visibility) {
                     var icon = _icons[paoId],
                         currentStyle = icon.getStyle().clone(),
                         image = currentStyle.getImage(),
-                        src = image.getSrc();
-                    currentStyle.setImage(new ol.style.Icon({ src: src, anchor:  [0.5, 1.0] }));
+                        src = image.getSrc(),
+                        scale = image.getScale();
+                    currentStyle.setImage(new ol.style.Icon({ src: src, scale: scale, anchor: yukon.mapping.getAnchor() }));
                     icon.setStyle(currentStyle);
                     _updateStyleIfFoundInMappingColors(paoId, icon);
                     if (!_visibility[paoId]) {
@@ -693,7 +623,7 @@ yukon.tools.map = (function() {
                         _visibility[paoId] = true;
                     }
                 }
-                _getLayer('icons').getSource().addFeatures(toAdd);
+                source.addFeatures(toAdd);
                 
                 //update filtered count
                 var filteredBadge = $('#filtered-collection .js-filtered');
@@ -704,6 +634,9 @@ yukon.tools.map = (function() {
 
                 debug.log('removing icons: '+ ((new Date().getTime() - start) * .001) + ' seconds');
                 start = new Date().getTime();
+                
+                //update primary routes if changed
+                _addAllPrimaryRoutes();  
             });
             
             /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */
@@ -760,6 +693,7 @@ yukon.tools.map = (function() {
                     }
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
+                    _addAllPrimaryRoutes();
                 });
             });
             
@@ -770,8 +704,9 @@ yukon.tools.map = (function() {
                 yukon.ui.block(mapContainer);
                 $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute') + '?' + $.param({ deviceId: deviceId }))
                 .done(function (json) {
-                    if (json.routeInfo) {
-                        _addPrimaryRouteToMap(deviceId, json.routeInfo);
+                    _addAllPrimaryRoutes();
+                    if (json.entireRoute) {
+                        _addPrimaryRouteToMap(deviceId, json.entireRoute);
                     }
                     if (json.errorMsg) {
                         yukon.ui.alertError(json.errorMsg);
@@ -779,6 +714,12 @@ yukon.tools.map = (function() {
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
                 });
+            });
+            
+            
+            /** Add all primary routes to the map **/
+            $(document).on('change', '.js-all-routes-collection', function() {
+                _addAllPrimaryRoutes();
             });
 
             /** Add an elevation layer to the map **/
@@ -807,26 +748,8 @@ yukon.tools.map = (function() {
                 $('#map-updater .button').toggleClass('on');
             });
             
-            $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {                
-                // we if are doing an exit from the full screen, close any open pop-ups
-                if (!(document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen || document.msFullscreenElement)) {
-                    $(".ui-dialog-content").dialog("close");
-                    if($("div.ol-viewport").find("ul.dropdown-menu:visible")) {
-                        $("div.ol-viewport").find("ul.dropdown-menu:visible").hide();
-                    }
-                    //adjust height back
-                    $('#map-container').css('padding-bottom', '0px');
-                    $('#map-container').css('padding-top', '0px');
-                } else {
-                    //adjust height for mapping buttons
-                    $('#map-container').css('padding-bottom', '120px');
-                    $('#map-container').css('padding-top', '10px');
-                }
-                
-                //close any popups
-                $('#marker-info').hide();
-                yukon.mapping.updateZoom(_map);
-                _map.updateSize();
+            $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', function() {
+                yukon.mapping.adjustMapForFullScreenModeChange($('#map-container'), "10px");
             });
             
             $("body").on("dialogopen", function (event, ui) {
@@ -873,54 +796,6 @@ yukon.tools.map = (function() {
             
             _initialized = true;
         },
-
-        getMap: function() { return _map; },
-        getFeatures: function() { return _icons; },
-        
-        getFeatureByPaoId: function(paoId) {
-            return _getLayer('icons').getSource().getFeatures().filter(function(feature) {
-                return feature.get('pao').paoId === paoId;
-            })[0];
-        },
-        
-        /** Test method to change an icon style */
-        changeIconTest: function() {
-            _getLayer('icons').getSource().getFeatures()[0].setStyle(_styles['gas']);
-        },
-        
-        /** Test method to hide icons */
-        hideIconsTest: function() {
-            
-            var 
-            featureArray = _getLayer('icons').getSource().getFeatures().slice(0),
-            hide = [],
-            start = new Date();
-            for (var i = 0; i < featureArray.length; i++) {
-                hide.push(featureArray[i]);
-                _getLayer('icons').getSource().removeFeature(featureArray[i]);
-            }
-            debug.log('removing ' + featureArray.length + ' features from "icons" layer took '+ ((new Date().getTime() - start.getTime()) * .001) + ' seconds');
-            start = new Date();
-            _getLayer('filter').getSource().addFeatures(hide);
-            debug.log('adding ' + featureArray.length + ' features to "filter" layer took '+ ((new Date().getTime() - start.getTime()) * .001) + ' seconds');
-        },
-        
-        /** Test method to show icons */
-        showIconsTest: function() {
-            
-            var 
-            featureArray = _getLayer('filter').getSource().getFeatures().slice(0),
-            add = [],
-            start = new Date();
-            for (var i = 0; i < featureArray.length; i++) {
-                add.push(featureArray[i]);
-                _getLayer('filter').getSource().removeFeature(featureArray[i]);
-            }
-            debug.log('removing ' + featureArray.length + ' features from "filter" layer took '+ ((new Date().getTime() - start.getTime()) * .001) + ' seconds');
-            start = new Date();
-            _getLayer('icons').getSource().addFeatures(add);
-            debug.log('adding ' + featureArray.length + ' features to "icons" layer took '+ ((new Date().getTime() - start.getTime()) * .001) + ' seconds');
-        }
         
     };
     
