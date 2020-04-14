@@ -69,9 +69,9 @@ public class ControlScenarioSetupApiControllerTest {
                         .description("Start offset of Scenario in minutes"),
                 fieldWithPath("allPrograms[].stopOffsetInMinutes").type(JsonFieldType.NUMBER)
                         .description("Stop offset of scenario in minutes"),
-                fieldWithPath("allPrograms[].gears[].id").type(JsonFieldType.NUMBER)
-                        .description("selected Gear id from the list of gear available in the program"),
-                fieldWithPath("allPrograms[].gears[].name").type(JsonFieldType.STRING).optional()
+                fieldWithPath("allPrograms[].gears[].gearNumber").type(JsonFieldType.NUMBER)
+                        .description("selected Gear Number from the list of gear available in the program"),
+                fieldWithPath("allPrograms[].gears[].gearName").type(JsonFieldType.STRING).optional()
                         .description("selected Gear name from the list of gear available in the program. This field is optional"),
         };
 

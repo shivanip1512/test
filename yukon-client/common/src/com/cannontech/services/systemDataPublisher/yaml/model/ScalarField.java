@@ -9,23 +9,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ScalarField {
 
     @JsonProperty("Yukon")
-    public List<DictionariesField> yukonDictionaries;
+    public List<CloudDataConfiguration> yukonConfigurations;
     
     @JsonProperty("Network Manager")
-    public List<DictionariesField> nmDictionaries;
+    public List<CloudDataConfiguration> nmConfigurations;
 
     @JsonProperty("Other")
-    public List<DictionariesField> otherDictionaries;
+    public List<CloudDataConfiguration> otherConfigurations;
     
-    public List<DictionariesField> getYukonDictionaries() {
-        return yukonDictionaries;
+    public List<CloudDataConfiguration> getYukonConfigurations() {
+        return yukonConfigurations;
     }
 
-    public List<DictionariesField> getNmDictionaries() {
-        return nmDictionaries;
+    public List<CloudDataConfiguration> getNmConfigurations() {
+        return nmConfigurations;
     }
 
-    public List<DictionariesField> getOtherDictionaries() {
-        return otherDictionaries;
+    public List<CloudDataConfiguration> getOtherConfigurations() {
+        return otherConfigurations;
     }
 }

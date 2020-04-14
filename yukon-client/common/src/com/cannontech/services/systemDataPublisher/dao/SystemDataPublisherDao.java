@@ -3,7 +3,7 @@ package com.cannontech.services.systemDataPublisher.dao;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 public interface SystemDataPublisherDao {
 
@@ -12,12 +12,12 @@ public interface SystemDataPublisherDao {
      * List<Map<String, Object>> which will help in if the query will return different data type of object.
      * 
      */
-    List<Map<String, Object>> getSystemData(DictionariesField dictionariesField);
+    List<Map<String, Object>> getSystemData(CloudDataConfiguration cloudDataConfiguration);
     
     /**
      * This method is to execute query to get System Data from Network Manager. Using Network Manager DB
      * connection we will get the result and form the system data to be pushed to topic.
      * 
      */
-    List<Map<String, Object>> getNMSystemData(DictionariesField dictionariesField);
+    List<Map<String, Object>> getNMSystemData(CloudDataConfiguration cloudDataConfiguration);
 }

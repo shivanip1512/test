@@ -13,7 +13,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.NetworkManagerJdbcTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 @Repository
 public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
@@ -25,23 +25,23 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
     private static final Logger log = YukonLogManager.getLogger(SystemDataPublisherDaoImpl.class);
 
     @Override
-    public List<Map<String, Object>> getSystemData(DictionariesField dictionariesField) {
+    public List<Map<String, Object>> getSystemData(CloudDataConfiguration cloudDataConfiguration) {
         List<Map<String, Object>> systemData = null;
         try {
-            systemData = jdbcTemplate.query(dictionariesField.getSource(), columnMapRowMapper);
+            systemData = jdbcTemplate.query(cloudDataConfiguration.getSource(), columnMapRowMapper);
         } catch (EmptyResultDataAccessException e) {
-            log.debug("No result found for field = " + dictionariesField.getField());
+            log.debug("No result found for field = " + cloudDataConfiguration.getField());
         }
         return systemData;
     }
 
     @Override
-    public List<Map<String, Object>> getNMSystemData(DictionariesField dictionariesField) {
+    public List<Map<String, Object>> getNMSystemData(CloudDataConfiguration cloudDataConfiguration) {
         List<Map<String, Object>> nmSystemData = null;
         try {
-            nmSystemData = networkManagerJdbcTemplate.query(dictionariesField.getSource(), columnMapRowMapper);
+            nmSystemData = networkManagerJdbcTemplate.query(cloudDataConfiguration.getSource(), columnMapRowMapper);
         } catch(EmptyResultDataAccessException e) {
-            log.debug("No result found for NM field = " + dictionariesField.getField());
+            log.debug("No result found for NM field = " + cloudDataConfiguration.getField());
         }
         return nmSystemData;
     }
