@@ -9,7 +9,7 @@ import com.cannontech.rest.api.commChannel.request.MockPortTiming;
 import com.cannontech.rest.api.commChannel.request.MockTcpPortDetail;
 
 public class CommChannelHelper {
-    public final static String CONTEXT_PORT_ID = "portId";
+    public final static String CONTEXT_PORT_ID = "id";
 
     public final static MockPortBase buildCommChannel(MockPaoType paoType) {
         MockPortBase tcpPort = null;
@@ -26,7 +26,7 @@ public class CommChannelHelper {
             tcpPort = MockTcpPortDetail.builder()
                     .type(paoType)
                     .name(getTcpPortName(paoType))
-                    .disable(true)
+                    .enable(true)
                     .baudRate(MockBaudRate.BAUD_2400)
                     .timing(tcpTiming)
                     .build();

@@ -70,7 +70,7 @@ public class TcpPortAPITest {
         String portId = context.getAttribute(CommChannelHelper.CONTEXT_PORT_ID).toString();
         tcpPort.setName(name);
         tcpPort.setBaudRate(MockBaudRate.BAUD_115200);
-        tcpPort.setDisable(true);
+        tcpPort.setEnable(true);
 
         ExtractableResponse<?> getResponse = ApiCallHelper.post("updatePort", tcpPort, portId);
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
@@ -80,16 +80,13 @@ public class TcpPortAPITest {
     @Test(dependsOnMethods = { "tcpPortCommChannel_02_Get" })
     public void tcpPortCommChannel_04_Delete(ITestContext context) {
         Log.startTestCase("tcpPortCommChannel_04_Delete");
+        MockPortDelete lmDeleteObject = MockPortDelete.builder().name(context.getAttribute("TCPPortName_Update").toString())
+                                       .build();
 
-        String grpToDelete = "TCPPortName_Update";
-        MockPortDelete lmDeleteObject = MockPortDelete.builder().name(context.getAttribute(grpToDelete).toString()).build();
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deletePort",
-                lmDeleteObject,
+        ExtractableResponse<?> response = ApiCallHelper.delete("deletePort", lmDeleteObject,
                 context.getAttribute(CommChannelHelper.CONTEXT_PORT_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
         Log.startTestCase("tcpPortCommChannel_04_Delete");
     }
-
 }
