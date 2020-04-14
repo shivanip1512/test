@@ -3321,8 +3321,9 @@ bool CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxC
         feederRetries = getStrategy()->getControlSendRetries();
     }
 
-    if( ((getLastOperationTime().seconds() + ((maxConfirmTime/_SEND_TRIES) * (_retryIndex + 1))) <= currentDateTime.seconds()) ||
-        ((getLastOperationTime().seconds() + ((maxConfirmTime/(feederRetries+1)) * (_retryIndex + 1))) <= currentDateTime.seconds()) )
+    long controlDuration = ( ( _retryIndex + 1 ) * maxConfirmTime ) / std::max( static_cast<long>(_SEND_TRIES), feederRetries + 1 );
+
+    if ( ( getLastOperationTime() + controlDuration ) <= currentDateTime )
     {
         returnBoolean = true;
     }

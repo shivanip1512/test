@@ -5839,16 +5839,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus(const CtiTime& currentDateTime, Cti
                 {
                     if (!areAllMonitorPointsInVoltageRange(outOfRangeMonitorPoint))
                     {
-                        if (voltControlBankSelectProcess(*outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
-                        {
-                            setOperationSentWaitFlag(true);
-                            setLastOperationTime(currentDateTime);
-                            setRecentlyControlledFlag(true);
-                            //setCurrentDailyOperations(getCurrentDailyOperations() + 1);
-                            //setRecentlyControlledFlag(true);
-                            setBusUpdatedFlag(true);
-                        }
-                        else
+                        if ( ! voltControlBankSelectProcess(*outOfRangeMonitorPoint, pointChanges, ccEvents, pilMessages))
                         {
                             CTILOG_INFO(dout, "No Bank Available for Control");
 
@@ -6759,20 +6750,27 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
        if ( request && bestBank && parentFeeder )
        {
             pilMessages.push_back(request);
-           //setLastOperationTime(currentDateTime);
-            setOperationSentWaitFlag(true);
-            setLastFeederControlled( parentFeeder->getPaoId());
-            parentFeeder->setLastCapBankControlledDeviceId( bestBank->getPaoId());
-            parentFeeder->setRecentlyControlledFlag(true);
-            parentFeeder->setVarValueBeforeControl(parentFeeder->getCurrentVarLoadPointValue());
-            setVarValueBeforeControl(getCurrentVarLoadPointValue() );
+
+            parentFeeder->setLastCapBankControlledDeviceId( bestBank->getPaoId() );
+            parentFeeder->setRecentlyControlledFlag( true );
+            parentFeeder->setVarValueBeforeControl( parentFeeder->getCurrentVarLoadPointValue() );
+
+            parentFeeder->setLastOperationTime( Now );
+            setLastFeederControlled( parentFeeder->getPaoId() );
+            setRecentlyControlledFlag( true );
+            setVarValueBeforeControl( getCurrentVarLoadPointValue() );
+            setLastOperationTime( Now );
+            setOperationSentWaitFlag( true );
+
             setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
+
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
                 pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
             }
-            setOperationSentWaitFlag(true);
+
+            setBusUpdatedFlag(true);
 
             retVal = true;
        }
