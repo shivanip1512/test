@@ -16,7 +16,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
-import com.cannontech.common.bulk.collection.device.model.CollectionActionDetailGroup;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionLogDetail;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -90,9 +89,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                         new CollectionActionLogDetail(command.getDevice(), CollectionActionDetail.SUCCESS);
                     detail.setLastValue(value);
                     result.addDeviceToGroup(CollectionActionDetail.SUCCESS, command.getDevice(), detail);
-                    if (requestType == DeviceRequestType.GROUP_DEVICE_CONFIG_READ) {
-                        verifyConfig(command.getDevice(), context.getYukonUser());
-                    }
                 }
 
                 @Override
@@ -110,6 +106,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                     collectionActionService.updateResult(result, CommandRequestExecutionStatus.FAILED);
                 }
                 
+                @Override
                 public void complete() {
                     collectionActionService.updateResult(result, !result.isCanceled()
                         ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
@@ -375,9 +372,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         CommandRequestDevice request = new CommandRequestDevice(commandString, new SimpleDevice(device.getPaoIdentifier()));
         CommandResultHolder resultHolder = commandRequestService.execute(request,
             DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
-        if(!resultHolder.isErrorsExist()) {
-            verifyConfig(device, user);
-        }
+        
         int status = BooleanUtils.toInteger(!resultHolder.isErrorsExist());
         eventLogService.readConfigFromDeviceCompleted(deviceName, status);
         return resultHolder;
