@@ -613,7 +613,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         economicEventDao.save(event);
         getNotificationProxy().sendEconomicNotification(event.getId(), event.getLatestRevision().getRevision(), EconomicEventAction.CANCELING);
         sendProgramNotifications(event, economicEventParticipantDao.getForEvent(event), "cancelled");
-        economicEventNotifDao.deleteForEventAndReason(event, NotificationReason.STOPPING);
     }
     
     @Transactional
