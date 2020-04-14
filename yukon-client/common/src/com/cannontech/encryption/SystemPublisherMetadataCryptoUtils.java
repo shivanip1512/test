@@ -102,7 +102,7 @@ public class SystemPublisherMetadataCryptoUtils {
     /**
      * Reads every lines of the YAML file and then encrypt the source field(Both multiline and single line).
      */
-    private static void processFile() throws IOException, IllegalBlockSizeException, BadPaddingException {
+    public static void processFile() throws IOException, IllegalBlockSizeException, BadPaddingException {
 
         // Get the actual directory of the file as we need to encrypt the actual file.
         File encryptedYamlFile = new File(System.getProperty("user.dir") + ENCRYPTED_FILE_PATH);
@@ -128,7 +128,7 @@ public class SystemPublisherMetadataCryptoUtils {
             List<String> lines = systemPublisherMetadataReader.lines().collect(Collectors.toList());
             for (String line : lines) {
                 String[] values = line.split(SEPARATOR, 2);
-                if (line.startsWith(DICTIONARY_FIELDS_SPACE + SOURCE_FIELD)) {
+                if (line.startsWith(DICTIONARY_FIELDS_SPACE + SOURCE_FIELD) && !values[1].contains(AUTO_ENCRYPTED_TEXT)) {
                     if (values[1].contains(YAML_MULTILINE_IDENTIFIER)) {
                         multiLineSource = true;
                     }

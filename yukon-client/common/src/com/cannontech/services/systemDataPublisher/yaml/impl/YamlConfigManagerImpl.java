@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
@@ -32,12 +31,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     private final String SYSTEM_PUBLISHER_METADATA = "encryptedSystemPublisherMetadata.yaml";
     private final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
-    private final List<CloudDataConfiguration> cloudDataConfigurations = new CopyOnWriteArrayList <>();
-
-    @PostConstruct
-    private void init() {
-        loadConfig();
-    }
+    private List<CloudDataConfiguration> cloudDataConfigurations = null;
 
     /**
      * Load YAML config from classpath.
@@ -51,6 +45,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
         // when file is changed. For reload we can write a watcher which will watch for any change and when something
         // gets changed reload the configuration.
         ScalarField scalars = null;
+        cloudDataConfigurations = new CopyOnWriteArrayList <>();
         try {
             ClassPathResource systemPublisherYamlMetadata = new ClassPathResource(SYSTEM_PUBLISHER_METADATA);
             Yaml yaml = new Yaml();
@@ -114,6 +109,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
 
     @Override
     public List<CloudDataConfiguration> getCloudDataConfigurations() {
+        loadConfig();
         return cloudDataConfigurations;
     }
 

@@ -15,6 +15,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
 import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationPublisherService;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
+import com.cannontech.services.systemDataPublisher.watcher.SystemPublisherMetadataWatcher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
@@ -24,6 +25,7 @@ public class SystemDataServiceInitializer {
     @Autowired private YamlConfigManager yamlConfigManager;
     @Autowired private SystemDataProcessorFactory systemDataProcessorFactory;
     @Autowired private CloudDataConfigurationPublisherService cloudDataConfigurationPublisherService;
+    @Autowired private SystemPublisherMetadataWatcher systemPublisherMetadataWatcher;
     private static final Logger log = YukonLogManager.getLogger(SystemDataServiceInitializer.class);
 
     /**
@@ -35,6 +37,7 @@ public class SystemDataServiceInitializer {
     private void init() {
         List<CloudDataConfiguration> cloudDataConfigurations = readYamlConfiguration();
         publishCloudDataConfigurations(cloudDataConfigurations);
+        new Thread(systemPublisherMetadataWatcher.watch()).start();
         Map<SystemDataPublisher, List<CloudDataConfiguration>> mapOfPublisherToConfig = filterRelevantConfigurations(cloudDataConfigurations);
         createAndExecuteProcessor(mapOfPublisherToConfig);
     }
@@ -88,7 +91,7 @@ public class SystemDataServiceInitializer {
     /**
      * This method will read the yaml configuration file.
      */
-    private List<CloudDataConfiguration> readYamlConfiguration() {
+    public List<CloudDataConfiguration> readYamlConfiguration() {
         List<CloudDataConfiguration> cloudDataConfigurations = yamlConfigManager.getCloudDataConfigurations();
         if (log.isDebugEnabled()) {
             cloudDataConfigurations.stream()
