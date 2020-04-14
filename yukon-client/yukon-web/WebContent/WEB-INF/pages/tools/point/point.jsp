@@ -119,7 +119,7 @@
                         </tags:nameValue2>
             
                         <tags:nameValue2 nameKey=".stateGroup">
-                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
+                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="$fn:escapeXml({stateGroups})" 
                                 itemValue="liteID" itemLabel="stateGroupName" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
 
                         </tags:nameValue2>
@@ -144,7 +144,7 @@
                         </c:if>
 
                         <tags:nameValue2 nameKey=".stateGroup">
-                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
+                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="$fn:escapeXml({stateGroups})" 
                                 itemValue="liteID" itemLabel="stateGroupName" 
                                 inputClass="${viewMode ? '' : 'js-init-chosen'} js-state-group"/>
                         </tags:nameValue2>
