@@ -167,7 +167,7 @@ public class TcpPortSetupApiControllerTest {
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
                 .when()
-                .get(ApiCallHelper.getProperty("getAllPorts"))
+                .get(ApiCallHelper.getProperty("getAllCommChannels"))
                 .then()
                 .extract()
                 .response();
