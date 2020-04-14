@@ -77,7 +77,7 @@ public class EconomicEventScheduler extends EventScheduler {
         }
         boolean success = startCancelled && stopCancelled;
         if (!success) {
-            CTILogger.error("Potential error while deleting eonomic notifications (startCancelled="
+            CTILogger.error("Potential error while deleting economic notifications (startCancelled="
                             + startCancelled + ", stopCancelled=" + stopCancelled + ")");
         }
         return success;
