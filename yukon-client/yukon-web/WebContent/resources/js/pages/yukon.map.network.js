@@ -104,50 +104,62 @@ yukon.map.network = (function () {
     
     _loadParentData = function(parent) {
         var source = yukon.mapping.getIconLayerSource(),
-            feature = parent.location.features[0],
-            pao = feature.properties.paoIdentifier,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ parent: parent, pao: pao });
+            feature = yukon.mapping.getFeatureFromRouteOrNeighborData(parent);
         
-        icon.setStyle(style);
-        icon.setId(feature.id);
-        
-        //check if parent already exists on map
-        var parentFound = yukon.mapping.findFocusDevice(pao.paoId, false);
-        if (parentFound) {
-            icon = parentFound;
-            icon.set("parent", parent);
-        } else {
-            var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-            icon.setGeometry(new ol.geom.Point(coord));
-            source.addFeature(icon);
+        if (feature != null) {
+            var pao = feature.properties.paoIdentifier,
+                style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                properties = Object.keys(parent).map(function (key) {
+                    var parentInfo = parent[key];
+                    if (parentInfo != null && parentInfo.properties != null) {
+                        return parentInfo.properties;
+                    }
+                });
+            if (properties != null) {
+                parent.distance = properties[0].distance;
+            }
+            
+            var icon = new ol.Feature({ parent: parent, pao: pao });
+            icon.setStyle(style);
+            icon.setId(feature.id);
+            
+            //check if parent already exists on map
+            var parentFound = yukon.mapping.findFocusDevice(pao.paoId, false);
+            if (parentFound) {
+                icon = parentFound;
+                icon.set("parent", parent);
+            } else {
+                var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                icon.setGeometry(new ol.geom.Point(coord));
+                source.addFeature(icon);
+            }
+            _parentIcon = icon;
+            
+            //draw line
+            var points = [];
+            points.push(icon.getGeometry().getCoordinates());
+            points.push(_devicePoints);
+            
+            var layerLines = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [new ol.Feature({
+                        geometry: new ol.geom.LineString(points),
+                        name: 'Line'
+                    })]
+                }),
+                style: new ol.style.Style({
+                    stroke: new ol.style.Stroke({ color: _parentColor, width: 2, lineDash: [10,10] })
+                })
+            });
+            
+            layerLines.setZIndex(_parentLayerIndex);
+            _parentLine = layerLines;
+            _map.addLayer(layerLines);
+            
+            yukon.mapping.updateZoom(_map);
+            
+            _makeCurrentDeviceStandOut();
         }
-        _parentIcon = icon;
-        
-        //draw line
-        var points = [];
-        points.push(icon.getGeometry().getCoordinates());
-        points.push(_devicePoints);
-        
-        var layerLines = new ol.layer.Vector({
-            source: new ol.source.Vector({
-                features: [new ol.Feature({
-                    geometry: new ol.geom.LineString(points),
-                    name: 'Line'
-                })]
-            }),
-            style: new ol.style.Style({
-                stroke: new ol.style.Stroke({ color: _parentColor, width: 2, lineDash: [10,10] })
-            })
-        });
-        
-        layerLines.setZIndex(_parentLayerIndex);
-        _parentLine = layerLines;
-        _map.addLayer(layerLines);
-        
-        yukon.mapping.updateZoom(_map);
-        
-        _makeCurrentDeviceStandOut();
     },
     
     _removeDeviceFocusLayers = function() {
@@ -187,66 +199,14 @@ yukon.map.network = (function () {
                 _deviceFocusIcons.push(focusDevice);
             }
         }
-        
+
         for (x in neighbors) {
-            var neighbor = neighbors[x],
-            feature = neighbor.location.features[0],
-            pao = feature.properties.paoIdentifier,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ neighbor: neighbor, pao: pao });
-            
-            icon.setId(feature.id);
-            
-            //check if neighbor already exists on map
-            var neighborFound = yukon.mapping.findFocusDevice(pao.paoId, false);
-            if (neighborFound) {
-                icon = neighborFound;
-                icon.set("neighbor", neighbor);
-            } else {
-                icon.setStyle(style);
-                var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                icon.setGeometry(new ol.geom.Point(coord));
-                source.addFeature(icon);
-            }
-            
+            var device = neighbors[x];
             if (isFocusDevice) {
-                _deviceFocusIcons.push(icon);
+                yukon.mapping.createNeighborDevice(device, _deviceFocusIcons, _deviceFocusLines, focusPoints, true);
             } else {
-                _neighborIcons.push(icon);
+                yukon.mapping.createNeighborDevice(device, _neighborIcons, _neighborLines, _devicePoints, true);
             }
-
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            if (isFocusDevice) {
-                points.push(focusPoints);
-            } else {
-                points.push(_devicePoints);
-            }
-
-            var lineColor = yukon.mapping.getNeighborLineColor(neighbor.data.etxBand),
-                lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.data.numSamples);
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
-                })
-            });
-            
-            layerLines.setZIndex(_neighborsLayerIndex);
-            if (isFocusDevice) {
-                _deviceFocusLines.push(layerLines);
-            } else {
-                _neighborLines.push(layerLines);
-            }
-            _map.addLayer(layerLines);
         }
         
         yukon.mapping.updateZoom(_map);
@@ -283,12 +243,13 @@ yukon.map.network = (function () {
                 source.addFeature(focusDevice);
                 _deviceFocusIcons.push(focusDevice);
             }
+            focusDevice.unset("neighbor");
         }
         _primaryRoutePreviousPoints = null;
 
         for (x in routeInfo) {
             var route = routeInfo[x];
-                feature = yukon.mapping.getFeatureFromRouteData(route);
+                feature = yukon.mapping.getFeatureFromRouteOrNeighborData(route);
                 
             if (feature == null) {
                 dashedLine = true;
@@ -630,6 +591,7 @@ yukon.map.network = (function () {
                             if (!isPrimaryRoute && !isNearby && !isParent && source.getFeatureById(id) != null) {
                                 source.removeFeature(icon);
                             }
+                            icon.unset("neighbor");
                         });
                         _neighborLines.forEach(function (line) {
                             _map.removeLayer(line);
@@ -747,13 +709,16 @@ yukon.map.network = (function () {
                         });
                     } else {
                         //Remove parent and line
-                        var source = yukon.mapping.getIconLayerSource(),
-                            id = _parentIcon.getId(),
-                            isNeighbor = _isDeviceInArray(_neighborIcons, id),
-                            isNearby = _isDeviceInArray(_nearbyIcons, id),
-                            isPrimaryRoute = _isDeviceInArray(_primaryRouteIcons, id);
-                        if (!isNeighbor && !isNearby && !isPrimaryRoute && source.getFeatureById(id) != null) {
-                            source.removeFeature(_parentIcon);
+                        if (_parentIcon != null) {
+                            var source = yukon.mapping.getIconLayerSource(),
+                                id = _parentIcon.getId(),
+                                isNeighbor = _isDeviceInArray(_neighborIcons, id),
+                                isNearby = _isDeviceInArray(_nearbyIcons, id),
+                                isPrimaryRoute = _isDeviceInArray(_primaryRouteIcons, id);
+                            _parentIcon.unset("parent");
+                            if (!isNeighbor && !isNearby && !isPrimaryRoute && source.getFeatureById(id) != null) {
+                                source.removeFeature(_parentIcon);
+                            }
                         }
                         _map.removeLayer(_parentLine);
                         _parentIcon = null;

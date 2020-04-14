@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
-import org.apache.logging.log4j.Level;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,6 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
 public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiService {
-    private static final Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private String commsError;
@@ -110,9 +109,6 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     }
 
     private void handleMetadataResponse(RfnMetadataMultiResponse response, String requestId) throws NmCommunicationException {
-        if(rfnCommsLog.isEnabled(Level.DEBUG)) {
-            rfnCommsLog.log(Level.DEBUG, "<<< " + response.toString());
-        }
         int devicesInResponse = response.getQueryResults() != null ? response.getQueryResults().size() : 0;
         log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {} devices in response {}", requestId,
             response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType(), devicesInResponse);

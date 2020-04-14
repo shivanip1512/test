@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.deviceDataMonitor.dao.DeviceDataMonitorDao;
@@ -208,7 +209,8 @@ public class MapController {
     }
     
     @GetMapping("/map/device/{id}/info")
-    public String info(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+    public String info(ModelMap model, @PathVariable int id, @RequestParam(value = "includePrimaryRoute", required = false) Boolean includePrimaryRoute,
+                       YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
         PaoType type = pao.getPaoIdentifier().getPaoType();
@@ -244,7 +246,10 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
-                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA);
+                if (includePrimaryRoute) {
+                    requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                }
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadataForDeviceRfnIdentifier(rfnDevice.getRfnIdentifier(), requestData);

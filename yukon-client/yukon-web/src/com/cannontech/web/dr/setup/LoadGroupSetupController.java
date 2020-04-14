@@ -204,8 +204,8 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadGroup.getName()));
+            log.error("Error creating load group: {}. Error: {}", loadGroup.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadGroup.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -229,8 +229,8 @@ public class LoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error.exception.message", ex.getMessage()));
+            log.error("Error deleting load group: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -270,8 +270,8 @@ public class LoadGroupSetupController {
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
             return null;
         } catch (RestClientException ex) {
-            log.error("Error while copying load group: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName()));
+            log.error("Error copying load group: {}. Error: {}", lmCopy.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", setupRedirectLink);
             servletResponse.setContentType("application/json");
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);

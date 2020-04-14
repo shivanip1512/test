@@ -58,7 +58,7 @@ public enum ItronDataEventType {
     EVENT_RECEIVED(0x8097, BuiltInAttribute.EVENT_RECEIVED, 0, 4, null),
 
     //Events where the values increment current count
-    POWER_FAIL(0x8000, BuiltInAttribute.BLINK_COUNT, 0, 1, null),
+    POWER_FAIL(0x0000, BuiltInAttribute.BLINK_COUNT, 0, 1, null),
     LINE_UNDER_FREQUENCY(0x8083, BuiltInAttribute.TOTAL_LUF_COUNT, 0, 1, null),
     LINE_UNDER_VOLTAGE(0x8084, BuiltInAttribute.TOTAL_LUV_COUNT, 0, 1, null),
     

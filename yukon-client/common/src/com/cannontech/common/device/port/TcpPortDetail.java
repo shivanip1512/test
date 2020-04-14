@@ -1,13 +1,15 @@
 package com.cannontech.common.device.port;
 
-import com.cannontech.database.data.port.DirectPort;
 import com.cannontech.database.data.port.TcpPort;
 
-public class TcpPortDetail extends TcpPortInfo {
+public class TcpPortDetail extends PortBase<TcpPort> {
 
     private PortTiming timing;
-    
+
     public PortTiming getTiming() {
+        if (timing == null) {
+            timing = new PortTiming();
+        }
         return timing;
     }
 
@@ -16,11 +18,14 @@ public class TcpPortDetail extends TcpPortInfo {
     }
 
     @Override
-    public void buildModel(DirectPort port) {
+    public void buildModel(TcpPort port) {
         super.buildModel(port);
-        TcpPort tctPort = (TcpPort) port;
-        PortTiming timing = new PortTiming();
-        timing.buildModel(tctPort.getPortTiming());
-        this.setTiming(timing);
+        getTiming().buildModel(port.getPortTiming());
+    }
+
+    @Override
+    public void buildDBPersistent(TcpPort port) {
+        super.buildDBPersistent(port);
+        getTiming().buildDBPersistent(port.getPortTiming());
     }
 }

@@ -147,9 +147,9 @@
             <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
             <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section"/>
             <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
-            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+            <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                 <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
-            </cti:checkRolesAndProperties>
+            </cti:checkLicenseKey>
             <cti:msg2 var="widgetTitle" key=".metrics.title"/>
             <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" />
             <!-- Gateway node Information  -->
