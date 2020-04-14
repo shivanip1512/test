@@ -473,7 +473,7 @@ function UpdateCparmValueInFile(sFile, sKey, sValue, sReplace)
 number nGrepResult, nGrepLineNumber, commentLocation, keyLocation, colonLocation, valueLocation;
 string sGrepReturnLine;
 begin
-    nGrepResult = 1;
+    nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, RESTART);
     while (nGrepResult >= 0)
         nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, CONTINUE);
         if (nGrepResult >= 0) then
