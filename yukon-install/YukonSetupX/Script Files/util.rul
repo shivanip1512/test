@@ -483,9 +483,11 @@ begin
                 colonLocation = StrFindEx(sGrepReturnLine, ":", keyLocation);
                 if (colonLocation > keyLocation) then
                     valueLocation = StrFindEx(sGrepReturnLine, sValue, colonLocation);
-                    if (valueLocation > colonLocation) && (valueLocation < commentLocation || commentLocation < 0) then
-                        StrReplace(sGrepReturnLine, sValue, sReplace, 0);
-                        FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
+                    if (valueLocation > colonLocation) then
+                        if (valueLocation < commentLocation || commentLocation < 0) then
+                            StrReplace(sGrepReturnLine, sValue, sReplace, 0);
+                            FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
+                        endif;
                     endif;
                 endif;
             endif;
