@@ -370,7 +370,7 @@
       </property>
     </bean>
     
-    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate"/>
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate" scope="prototype"/>
     
     <bean class="org.springframework.aop.framework.ProxyFactoryBean">
       <property name="targetSource">      
@@ -409,7 +409,6 @@
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayDataCacheImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayCertificateUpdateServiceImpl"/>
-    <bean class="com.cannontech.common.rfn.service.impl.RfnDeviceMetadataServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayFirmwareUpgradeServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnMetadataMultiServiceImpl"/>
     

@@ -8,15 +8,14 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
@@ -27,19 +26,22 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.service.BlockingJmsMultiReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.util.jms.RequestMultiReplyTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
 public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiService {
-    private static final Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     private static final Logger log = YukonLogManager.getLogger(RfnMetadataMultiServiceImpl.class);
-    private static final String nmError = RfnDeviceMetadataServiceImpl.nmError;
-    private static final String commsError = RfnDeviceMetadataServiceImpl.commsError;
-        
-    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private String commsError;
+    private String nmError;
+  
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ConfigurationSource configSource;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     
     private RequestMultiReplyTemplate<RfnMetadataMultiRequest, RfnMetadataMultiResponse> multiReplyTemplate;
     
@@ -107,9 +109,6 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
     }
 
     private void handleMetadataResponse(RfnMetadataMultiResponse response, String requestId) throws NmCommunicationException {
-        if(rfnCommsLog.isEnabled(Level.DEBUG)) {
-            rfnCommsLog.log(Level.DEBUG, "<<< " + response.toString());
-        }
         int devicesInResponse = response.getQueryResults() != null ? response.getQueryResults().size() : 0;
         log.debug("RfnMetadataMultiResponse identifier {} [{} out of {}] response {} devices in response {}", requestId,
             response.getSegmentNumber(), response.getTotalSegments(), response.getResponseType(), devicesInResponse);
@@ -122,21 +121,23 @@ public class RfnMetadataMultiServiceImpl implements RfnDeviceMetadataMultiServic
             String error = nmError + " Reply type:" + response.getResponseType() + " Message:"
                 + response.getResponseMessage() + " request identifier " + requestIdentifier;
             log.error(error);
-            throw new NmCommunicationException(error);
+            throw new NmCommunicationException(nmError);
         }
         if (response.getQueryResults() == null) {
             String error = "No query results received reply type " + response.getResponseType() + " request identifier:"
                 + requestIdentifier;
             log.error(error);
-            throw new NmCommunicationException(error);
+            throw new NmCommunicationException(nmError);
         }
     }
 
     @PostConstruct
     public void initialize() {
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        commsError = messageSourceAccessor.getMessage("yukon.web.error.nm.commsError");
+        nmError = messageSourceAccessor.getMessage("yukon.web.error.nm.error");
         Duration timeout = configSource.getDuration("RFN_META_DATA_REPLY_TIMEOUT", Duration.standardMinutes(2));
-        multiReplyTemplate = new RequestMultiReplyTemplate<>(connectionFactory, null, JmsApiDirectory.RF_METADATA_MULTI,
+        multiReplyTemplate = new RequestMultiReplyTemplate<>(jmsTemplate, null, JmsApiDirectory.RF_METADATA_MULTI,
                 timeout, false);
     }
-
 }

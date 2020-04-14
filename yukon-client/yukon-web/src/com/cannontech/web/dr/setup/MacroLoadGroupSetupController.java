@@ -172,8 +172,8 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             json.put("redirectUrl", setupRedirectLink);
         } catch (RestClientException ex) {
-            log.error("Error while copying load group: ", ex);
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName()));
+            log.error("Error copying macro load group: {}. Error: {}", lmCopy.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", lmCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", setupRedirectLink);
         }
         response.setContentType("application/json");
@@ -239,8 +239,8 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating load group: ", ex);
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", macroLoadGroup.getName()));
+            log.error("Error creating macro load group: {}. Error: {}", macroLoadGroup.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", macroLoadGroup.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -265,8 +265,8 @@ public class MacroLoadGroupSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting macro load group: ", ex);
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
+            log.error("Error deleting macro load group: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;

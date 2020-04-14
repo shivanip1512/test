@@ -20,6 +20,9 @@ yukon.mapping = (function () {
     _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],  
     //dark blue
     _routeColor = "#0000CC",
+    //grey
+    _focusRouteColor = "#808080",
+    //yellow
     _highlightRouteColor = "#FFFF00",
     
     /** @type {string} - The default projection code of our map tiles. */
@@ -233,6 +236,10 @@ yukon.mapping = (function () {
             return _routeColor;
         },
         
+        getFocusRouteColor: function() {
+            return _focusRouteColor;
+        },
+        
         getLargerScale: function() {
             return _largerScale;
         },
@@ -286,52 +293,8 @@ yukon.mapping = (function () {
             feature.setStyle(currentStyle);
         },
         
-        displayCommonPopupProperties: function(pao) {
-            $('.js-device-display').toggleClass('dn', pao.device.name === null);
-            if (pao.deviceDetailUrl != null) {
-                var deviceLink = '<a href="' + yukon.url(pao.deviceDetailUrl) + '" target=_blank>' + yukon.escapeXml(pao.device.name) + '</a>',
-                    actionsDiv = $('#actionsDiv').clone().removeClass('dn');
-                actionsDiv.find('.js-device-neighbors, .js-device-route, .js-device-map').attr('data-device-id', pao.device.paoIdentifier.paoId);
-                actionsDiv.find('.js-view-all-notes').attr('data-pao-id', pao.device.paoIdentifier.paoId);
-                yukon.tools.paonotespopup.hideShowNotesIcons(pao.device.paoIdentifier.paoId);
-                var gatewayTypes = $('#gatewayTypes').val();
-                if (gatewayTypes.indexOf(pao.device.paoIdentifier.paoType) > -1) {
-                    actionsDiv.find('.js-device-route').addClass('dn');
-                }
-                $('.js-device').html(deviceLink + actionsDiv[0].outerHTML);
-            } else {
-                $('.js-device').text(pao.device.name);
-            }
-            $('.js-meter-number-display').toggleClass('dn', pao.meterNumber === null);
-            $('.js-meter-number').text(pao.meterNumber);
-            $('.js-type-display').toggleClass('dn', pao.device.paoIdentifier.paoType === null);
-            $('.js-type').text(pao.device.paoIdentifier.paoType);
-            $('.js-status-display').toggleClass('dn', pao.statusDisplay === null);
-            $('.js-status').text(pao.statusDisplay);
-            mod.updateDeviceStatusClass(pao.statusDisplay);
-            $('.js-primary-gateway-display').toggleClass('dn', pao.primaryGateway === null);
-            if (pao.primaryGatewayUrl != null) {
-                $('.js-primary-gateway').html('<a href="' + yukon.url(pao.primaryGatewayUrl) + '" target=_blank>' + yukon.escapeXml(pao.primaryGateway) + '</a>');
-            } else {
-                $('.js-primary-gateway').text(pao.primaryGateway);
-            }
-            //display NM error if applicable
-            $('.js-nm-error-text').text(pao.errorMsg);
-            $('.js-nm-error').toggleClass('dn', pao.errorMsg === null);
-        },
-        
         displayNeighborPopupProperties: function(neighbor) {
-            var neighborData = neighbor.data;
-            $('.js-node-sn-display').toggleClass('dn', (neighborData.serialNumber === null || neighbor.gatewayType));
-            $('.js-node-sn').text(neighborData.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || neighbor.gatewayType));
-            $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber === null || !neighbor.gatewayType));
-            $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', neighbor.ipAddress === null);
-            $('.js-ip-address').text(neighbor.ipAddress);
-            $('.js-address-display').toggleClass('dn', neighborData.neighborAddress === null);
-            $('.js-address').text(neighborData.neighborAddress);
+            var neighborData = neighbor.neighborData;
             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags === null);
             $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
             $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost === null);
@@ -340,62 +303,13 @@ yukon.mapping = (function () {
             $('.js-num-samples').text(neighborData.numSamples);
             $('.js-etx-band-display').toggleClass('dn', neighborData.etxBand === null);
             $('.js-etx-band').text(neighborData.etxBand);
-            $('.js-distance-display').toggleClass('dn', neighbor.distanceDisplay === null);
-            $('.js-distance').text(neighbor.distanceDisplay);
-            $('#parent-info').hide();
-            $('#device-info').hide();
-            $('#route-info').hide();
-            $('#neighbor-info').show();
-            $('#marker-info').show();
-        },
-        
-        displayPrimaryRoutePopupProperties: function(routeInfo) {
-            $('.js-node-sn-display').toggleClass('dn', (routeInfo.route.serialNumber === null || routeInfo.gatewayType));
-            $('.js-node-sn').text(routeInfo.route.serialNumber);
-            $('.js-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || routeInfo.gatewayType));
-            $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber === null || !routeInfo.gatewayType));
-            $('.js-gateway-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', routeInfo.ipAddress === null);
-            $('.js-ip-address').text(routeInfo.ipAddress);
-            $('.js-address-display').toggleClass('dn', routeInfo.macAddress === null);
-            $('.js-address').text(routeInfo.macAddress);
-            $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost === null);
-            $('.js-total-cost').text(routeInfo.route.totalCost);
-            $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount === null);
-            $('.js-descendant-count-display').toggleClass('dn', routeInfo.descendantCount === null);
-            $('.js-hop-count').text(routeInfo.route.hopCount);
-            $('.js-descendant-count').text(routeInfo.descendantCount);
-            $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags === null);
-            $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
-            $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles === 0);
-            $('.js-distance').text(routeInfo.distanceDisplay);
-            $('#parent-info').hide();
-            $('#neighbor-info').hide();
-            $('#device-info').hide();
-            $('#route-info').show();
-            $('#marker-info').show();
+            $('.js-distance-display').toggleClass('dn', neighbor.distance === null);
+            $('.js-distance').text(neighbor.distance);
         },
         
         displayParentNodePopupProperties: function(parent) {
-            var parentData = parent.data;
-            $('.js-node-sn-display').toggleClass('dn', (parentData.nodeSN === null || parent.gatewayType));
-            $('.js-node-sn').text(parentData.nodeSN);
-            $('.js-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || parent.gatewayType));
-            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-            $('.js-gateway-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber === null || !parent.gatewayType));
-            $('.js-gateway-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
-            $('.js-ip-address-display').toggleClass('dn', parent.ipAddress === null);
-            $('.js-ip-address').text(parent.ipAddress);
-            $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress === null);
-            $('.js-mac-address').text(parentData.nodeMacAddress);
-            $('.js-distance-display').toggleClass('dn', parent.distanceDisplay === null);
-            $('.js-distance').text(parent.distanceDisplay);
-            $('#neighbor-info').hide();
-            $('#device-info').hide();
-            $('#route-info').hide();
-            $('#parent-info').show();
-            $('#marker-info').show();
+            $('.js-distance-display').toggleClass('dn', parent.distance === null);
+            $('.js-distance').text(parent.distance);
         },
         
         getNeighborLineColor: function(etxBand) {
@@ -472,7 +386,6 @@ yukon.mapping = (function () {
                 properties = feature.getProperties(),
                 parent = properties.parent,
                 neighbor = properties.neighbor,
-                routeInfo = properties.routeInfo,
                 nearby = properties.nearby,
                 primaryRoutesExists = $('.js-all-routes').exists(),
                 allRoutesChecked = false,
@@ -480,40 +393,32 @@ yukon.mapping = (function () {
                 if (primaryRoutesExists) {
                     allRoutesChecked = $('.js-all-routes').find(':checkbox').prop('checked');
                 }
-            if (parent != null) {
-                mod.displayCommonPopupProperties(parent);
-                mod.displayParentNodePopupProperties(parent);
-                overlay.setPosition(coord);
-            } else if (routeInfo != null) {
-                mod.displayCommonPopupProperties(routeInfo);
-                mod.displayPrimaryRoutePopupProperties(routeInfo);
-                overlay.setPosition(coord);
-            } else if (neighbor != null) {
-                mod.displayCommonPopupProperties(neighbor);
-                mod.displayNeighborPopupProperties(neighbor);
-                overlay.setPosition(coord);
-            } else {
-                $('#parent-info').hide();
-                $('#neighbor-info').hide();
-                $('#route-info').hide();
-                var url = yukon.url('/tools/map/device/' + paoId + '/info');
-                $('#device-info').load(url, function() {
-                    if (nearby != null) {
-                        $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
-                        $('.js-distance-display').show();
-                    }
-                    $('#device-info').show();
-                    $('#marker-info').show();
-                    overlay.setPosition(coord);
-                    var deviceStatus = $('.js-status').text();
-                    mod.updateDeviceStatusClass(deviceStatus);
-                });
-                //close any lingering delete dialogs to simplify handling
-                var deleteDialog = $('#confirm-delete');
-                if (deleteDialog.hasClass('ui-dialog-content')) {
-                    deleteDialog.dialog('destroy');
+
+            var includePrimaryRoute = neighbor != null || parent != null ? 'false' : 'true',
+                url = yukon.url('/tools/map/device/' + paoId + '/info?includePrimaryRoute=' + includePrimaryRoute);
+            $('#device-info').load(url, function() {
+                if (nearby != null) {
+                    $('.js-distance').text(nearby.distance.distance.toFixed(4) + " ");
+                    $('.js-distance-display').show();
                 }
+                if (neighbor != null) {
+                    mod.displayNeighborPopupProperties(neighbor);
+                }
+                if (parent != null) {
+                    mod.displayParentNodePopupProperties(parent);
+                }
+                $('#device-info').show();
+                $('#marker-info').show();
+                overlay.setPosition(coord);
+                var deviceStatus = $('.js-status').text();
+                mod.updateDeviceStatusClass(deviceStatus);
+            });
+            //close any lingering delete dialogs to simplify handling
+            var deleteDialog = $('#confirm-delete');
+            if (deleteDialog.hasClass('ui-dialog-content')) {
+                deleteDialog.dialog('destroy');
             }
+
             //highlight specific device primary route if viewing all routes
             if (allRoutesChecked) {
                 yukon.mapping.addPrimaryRouteToMap(paoId);
@@ -698,6 +603,86 @@ yukon.mapping = (function () {
                 if (nodeData[0] != null) {
                     return nodeData[0].features[0];
                 }
+            }
+        },
+        
+        getFeatureFromRouteOrNeighborData: function(routeData) {
+            if (routeData != null) {
+                var features = Object.keys(routeData).map(function (key) {
+                    var device = routeData[key];
+                    if (device != null && device.features != null) {
+                        return device.features[0];
+                    }
+                });
+                if (features != null) {
+                    return features[0];
+                }
+            }
+        },
+        
+        createNeighborDevice: function(device, iconArray, lineArray, devicePoints, alwaysAddIcon) {
+            var feature = yukon.mapping.getFeatureFromRouteOrNeighborData(device),
+                source = yukon.mapping.getIconLayerSource();
+            if (feature != null) {
+                var pao = feature.properties.paoIdentifier,
+                    style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                    properties = Object.keys(device).map(function (key) {
+                        var neighborInfo = device[key];
+                        if (neighborInfo != null && neighborInfo.properties != null) {
+                            return neighborInfo.properties;
+                        }
+                    });
+                if (properties != null) {
+                    var neighbor = properties[0].neighborData;
+                    neighbor.distance = properties[0].distance;
+                    neighbor.commaDelimitedNeighborFlags = properties[0].commaDelimitedNeighborFlags;
+                }
+                
+                var icon = new ol.Feature({ neighbor: neighbor, pao: pao });
+                icon.setId(feature.id);
+                
+                //check if neighbor already exists on map
+                var neighborFound = yukon.mapping.findFocusDevice(pao.paoId, false);
+                if (neighborFound) {
+                    icon = neighborFound;
+                    icon.set("neighbor", neighbor);
+                } else {
+                    icon.setStyle(style);
+                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
+                    icon.setGeometry(new ol.geom.Point(coord));
+                    if (!alwaysAddIcon) {
+                        iconArray.push(icon);
+                    }
+                    source.addFeature(icon);
+                }
+                
+                if (alwaysAddIcon) {
+                    iconArray.push(icon);
+                }
+                
+                //draw line
+                var points = [];
+                points.push(icon.getGeometry().getCoordinates());
+                points.push(devicePoints);
+
+                var lineColor = yukon.mapping.getNeighborLineColor(neighbor.neighborData.etxBand),
+                    lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.neighborData.numSamples);
+                
+                var layerLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        })]
+                    }),
+
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
+                    })
+                });
+                
+                lineArray.push(layerLines);
+                _map.addLayer(layerLines);
             }
         },
                 

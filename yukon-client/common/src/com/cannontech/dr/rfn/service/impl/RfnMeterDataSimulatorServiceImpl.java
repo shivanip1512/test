@@ -37,6 +37,7 @@ import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
@@ -53,8 +54,6 @@ import com.google.common.collect.Sets.SetView;
 public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService implements RfnMeterDataSimulatorService {
 
     private final Logger log = YukonLogManager.getLogger(RfnMeterDataSimulatorServiceImpl.class);
-
-    private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
 
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
@@ -74,10 +73,8 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private final static long epoch =
         (DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC().parseMillis("1/1/2005")) / 1000;
 
-    @Override
     @PostConstruct
     public void initialize() {
-        super.initialize();
         pointMappers = unitOfMeasureToPointMapper.getPointMapper();
     }
 
@@ -168,7 +165,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     private void generateAndSendArchiveRequest(RfnDevice meter){
         List<RfnMeterReadingArchiveRequest> meterReadingData = generateMeterReadingData(meter);
         log.debug("Sending requests: " + meterReadingData.size() + " on queue "
-            + meterReadingArchiveRequestQueueName);
+                + JmsApiDirectory.RFN_METER_READ_ARCHIVE.getQueue().getName());
         for (RfnMeterReadingArchiveRequest meterArchiveRequest : meterReadingData) {
             sendArchiveRequest(meterArchiveRequest);
             if (needsDuplicate()) {
@@ -468,7 +465,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
      * Sends generated message on queue
      */
     private <R extends RfnIdentifyingMessage> void sendArchiveRequest(R archiveRequest) {
-        jmsTemplate.convertAndSend(meterReadingArchiveRequestQueueName , archiveRequest);
+        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_METER_READ_ARCHIVE , archiveRequest);
         status.getSuccess().incrementAndGet();
     }
 

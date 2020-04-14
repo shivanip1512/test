@@ -11,15 +11,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfigException;
 import com.cannontech.amr.rfn.dataStreaming.service.DataStreamingService;
-import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
-import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.security.annotation.CheckCparmLicense;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 
 @Controller
 @RequestMapping("/overloadedGatewaysWidget/*")
-@CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
+@CheckCparmLicense(license = MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED)
 public class OverloadedGatewaysWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private DataStreamingService dataStreamingService;
@@ -27,7 +27,7 @@ public class OverloadedGatewaysWidget extends AdvancedWidgetControllerBase {
     @Autowired
     public OverloadedGatewaysWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
         setLazyLoad(true);
-        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED.name()));
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED.name()));
     }
     
     @RequestMapping(value = "render", method = RequestMethod.GET)

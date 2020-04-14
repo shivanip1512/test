@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -20,7 +19,6 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -36,6 +34,8 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.system.GlobalSettingType;
@@ -52,8 +52,8 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     @Autowired private RecentPointValueDao rpvDao;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private JmsTemplate jmsTemplate;
-    private static final String collectionQueueName = "yukon.qr.obj.data.collection.CollectionRequest";
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
     private static final Logger log = YukonLogManager.getLogger(DataCollectionWidgetServiceImpl.class);
     private Map<DeviceGroup, DataCollectionSummary> enabledDeviceSummary = new ConcurrentHashMap<>();
     private Map<DeviceGroup, DataCollectionSummary> allDeviceSummary = new ConcurrentHashMap<>();
@@ -86,7 +86,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
 
     @Override
     public void collectData() {
-        jmsTemplate.convertAndSend(collectionQueueName, new CollectionRequest());
+        jmsTemplate.convertAndSend(JmsApiDirectory.DATA_COLLECTION, new CollectionRequest());
     }
 
     @Override
@@ -202,10 +202,4 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         return rpvDao.getDeviceCollectionResult(group, groups, includeDisabled, selectedGatewayIds, allRanges, paging, sortBy, direction);
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
 }

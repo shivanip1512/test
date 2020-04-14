@@ -9,7 +9,7 @@ public interface PortService {
     /**
      * Create the Port.
      */
-    Integer create(PortBase<? extends DirectPort> port);
+    PortBase<? extends DirectPort> create(PortBase<? extends DirectPort> port);
 
     /**
      * Retrieve Port for passed portId.

@@ -30,14 +30,15 @@ public class PortServiceImpl implements PortService {
 
     @Override
     @Transactional
-    public Integer create(PortBase port) {
+    public PortBase<? extends DirectPort> create(PortBase port) {
         DirectPort directPort = PortFactory.createPort(port.getType());
         port.buildDBPersistent(directPort);
         dbPersistentDao.performDBChange(directPort, TransactionType.INSERT);
         SimpleDevice device = SimpleDevice.of(directPort.getPAObjectID(), directPort.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
+        port.buildModel(directPort);
         // TODO : Add eventLog in new Jira
-        return directPort.getPAObjectID();
+        return port;
     }
 
     @Override

@@ -263,10 +263,6 @@
         <name>Control Status</name>
         <stategroup value="TrueFalse"/>
     </point>
-    <point offset="2" type="Status">
-        <name>Service Status</name>
-        <stategroup value="LCR Service Status"/>
-    </point>
     <point offset="3" type="Status">
         <name>Relay 1 Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>

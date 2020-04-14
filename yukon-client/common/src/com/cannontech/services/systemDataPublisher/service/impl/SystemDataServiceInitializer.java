@@ -1,7 +1,9 @@
 package com.cannontech.services.systemDataPublisher.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -11,15 +13,17 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
+import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationPublisherService;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 @Service
 public class SystemDataServiceInitializer {
 
     @Autowired private YamlConfigManager yamlConfigManager;
     @Autowired private SystemDataProcessorFactory systemDataProcessorFactory;
+    @Autowired private CloudDataConfigurationPublisherService cloudDataConfigurationPublisherService;
     private static final Logger log = YukonLogManager.getLogger(SystemDataServiceInitializer.class);
 
     /**
@@ -29,8 +33,40 @@ public class SystemDataServiceInitializer {
      */
     @PostConstruct
     private void init() {
-        Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict = readYamlConfiguration();
-        createAndExecuteProcessor(mapOfPublisherToDict);
+        List<CloudDataConfiguration> cloudDataConfigurations = readYamlConfiguration();
+        publishCloudDataConfigurations(cloudDataConfigurations);
+        Map<SystemDataPublisher, List<CloudDataConfiguration>> mapOfPublisherToConfig = filterRelevantConfigurations(cloudDataConfigurations);
+        createAndExecuteProcessor(mapOfPublisherToConfig);
+    }
+
+    /**
+     * Method to publish CloudDataConfiguration data to the topic on startup.
+     */
+    private void publishCloudDataConfigurations(List<CloudDataConfiguration> cloudDataConfigurations) {
+        cloudDataConfigurations.stream().forEach(
+                configuration -> {
+                    cloudDataConfigurationPublisherService.publish(configuration);
+                });
+    }
+
+    // TODO: Created the the Map for supporting the Existing framework.We will update this method on once all the NM publishes its
+    // own data.
+    private Map<SystemDataPublisher, List<CloudDataConfiguration>> filterRelevantConfigurations(
+            List<CloudDataConfiguration> cloudDataConfigurations) {
+        Map<SystemDataPublisher, List<CloudDataConfiguration>> mapOfPublisherToConfig = new HashMap<>();
+        mapOfPublisherToConfig.put(SystemDataPublisher.YUKON,
+                cloudDataConfigurations.stream()
+                                  .filter(configuration -> configuration.getDataPublisher() == SystemDataPublisher.YUKON)
+                                  .collect(Collectors.toList()));
+        mapOfPublisherToConfig.put(SystemDataPublisher.OTHER,
+                cloudDataConfigurations.stream()
+                                  .filter(configuration -> configuration.getDataPublisher() == SystemDataPublisher.OTHER)
+                                  .collect(Collectors.toList()));
+        mapOfPublisherToConfig.put(SystemDataPublisher.NETWORK_MANAGER,
+                cloudDataConfigurations.stream()
+                                  .filter(configuration -> configuration.getDataPublisher() == SystemDataPublisher.NETWORK_MANAGER)
+                                  .collect(Collectors.toList()));
+        return mapOfPublisherToConfig;
     }
 
     /**
@@ -40,9 +76,9 @@ public class SystemDataServiceInitializer {
      * 
      */
     
-    private void createAndExecuteProcessor(Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict) {
+    private void createAndExecuteProcessor(Map<SystemDataPublisher, List<CloudDataConfiguration>> mapOfPublisherToConfig) {
 
-         mapOfPublisherToDict.entrySet().stream()
+        mapOfPublisherToConfig.entrySet().stream()
                                         .forEach(publisher -> {
                                             SystemDataProcessor processor = systemDataProcessorFactory.createProcessor(publisher.getKey());
                                             processor.process(publisher.getValue());
@@ -52,14 +88,14 @@ public class SystemDataServiceInitializer {
     /**
      * This method will read the yaml configuration file.
      */
-    private Map<SystemDataPublisher, List<DictionariesField>> readYamlConfiguration() {
-        Map<SystemDataPublisher, List<DictionariesField>> mapOfPublisherToDict = yamlConfigManager.getMapOfPublisherToDictionaries();
+    private List<CloudDataConfiguration> readYamlConfiguration() {
+        List<CloudDataConfiguration> cloudDataConfigurations = yamlConfigManager.getCloudDataConfigurations();
         if (log.isDebugEnabled()) {
-            mapOfPublisherToDict.entrySet().stream()
-                                .forEach(entity -> {
-                                    log.debug("System Data Publisher = " + entity.getKey() + ", with dictionaries values = " + entity.getValue());
-                                });
+            cloudDataConfigurations.stream()
+                    .forEach(configuration -> {
+                        log.debug("Retrieved CloudDataConfiguration values = " + configuration.toString());
+                    });
         }
-        return mapOfPublisherToDict;
+        return cloudDataConfigurations;
     }
 }

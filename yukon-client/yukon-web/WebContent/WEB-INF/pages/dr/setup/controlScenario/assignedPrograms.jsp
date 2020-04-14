@@ -30,8 +30,8 @@
                             <td><dt:timeOffset path="allPrograms[${status.count-1}].startOffsetInMinutes"/></td>
                             <td><dt:timeOffset path="allPrograms[${status.count-1}].stopOffsetInMinutes"/></td>
                             <td class="wbba">
-                                <tags:selectWithItems items="${program.gears}" path="allPrograms[${status.count-1}].gears[0].id"
-                                                      itemLabel="name" itemValue="id"/>
+                                <tags:selectWithItems items="${program.gears}" path="allPrograms[${status.count-1}].gears[0].gearNumber"
+                                                      itemLabel="gearName" itemValue="gearNumber"/>
                             </td>
                         </tr>
                     </c:forEach>

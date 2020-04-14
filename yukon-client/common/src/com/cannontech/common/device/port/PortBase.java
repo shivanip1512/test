@@ -19,7 +19,7 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
 
     private Integer id;
     private String name;
-    private Boolean disable;
+    private Boolean enable;
     private BaudRate baudRate;
     private PaoType type;
 
@@ -39,12 +39,12 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
         this.name = name;
     }
 
-    public Boolean getDisable() {
-        return disable;
+    public Boolean getEnable() {
+        return enable;
     }
 
-    public void setDisable(Boolean disable) {
-        this.disable = disable;
+    public void setEnable(Boolean enable) {
+        this.enable = enable;
     }
 
     public BaudRate getBaudRate() {
@@ -67,7 +67,7 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
     public void buildModel(T port) {
         setId(port.getPAObjectID());
         setName(port.getPortName());
-        setDisable(port.getPAODisableFlag() == 'N' ? false : true );
+        setEnable(port.getPAODisableFlag() == 'N' ? true : false );
         setBaudRate(BaudRate.getForRate(port.getPortSettings().getBaudRate()));
         setType(port.getPaoType());
     }
@@ -84,8 +84,8 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
         if (getName() != null) {
             port.setPAOName(getName());
         }
-        if (getDisable() != null) {
-            port.setDisableFlag(BooleanUtils.isTrue(getDisable()) ? 'Y' : 'N');
+        if (getEnable() != null) {
+        port.setDisableFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
         }
     }
 

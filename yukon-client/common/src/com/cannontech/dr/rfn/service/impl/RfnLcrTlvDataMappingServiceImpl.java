@@ -16,8 +16,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -27,6 +25,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -277,7 +276,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     }
 
     @Override
-    public void storeAddressingData(JmsTemplate jmsTemplate, ListMultimap<FieldType, byte[]> data, RfnDevice device) {
+    public void storeAddressingData(YukonJmsTemplate jmsTemplate, ListMultimap<FieldType, byte[]> data, RfnDevice device) {
 
         ExpressComReportedAddress currentAddress = expressComReportedAddressDao.findCurrentAddress(device.getPaoIdentifier().getPaoId());
         ExpressComReportedAddress address = generateUpdatedAddressingFromMessage(data, device.getPaoIdentifier().getPaoId(), currentAddress);
@@ -298,7 +297,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             expressComReportedAddressDao.insertAddress(address);
         }
 
-        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION.getQueue().getName(), address);
+        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION, address);
 
     }
 
