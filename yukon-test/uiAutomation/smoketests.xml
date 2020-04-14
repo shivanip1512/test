@@ -1,5 +1,8 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="Selenium test Suite" verbose="1">
+	<listeners>
+        <listener class-name="com.eaton.screenshotutils.TestListener"></listener>
+    </listeners>
   <test name="Group Test">
     <groups>
       <run>
