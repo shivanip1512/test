@@ -47,7 +47,7 @@
 </c:if>
 
 <!-- Data Streaming Configuration -->
-<cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+<cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
     <c:if test="${streamableDevice}">
         <cti:msg var="dataStreamingTitle" key="yukon.web.widgets.configWidget.dataStreaming"/>
         <tags:sectionContainer title="${dataStreamingTitle}">
@@ -96,7 +96,7 @@
         <c:set var="config" value="${dataStreamingConfig}"/>
         <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
     </div>
-</cti:checkRolesAndProperties>
+</cti:checkLicenseKey>
 
 <!-- Meter Programming -->
 <c:if test="${showMeterProgramming}">

@@ -147,6 +147,7 @@
         <constructor-arg>
             <list>
                 <value>classpath:com/cannontech/yukon/api/deviceReading/deviceData</value>
+                <value>classpath:com/cannontech/yukon/api/error</value>
                 <value>classpath:com/cannontech/yukon/common/general</value>
                 <value>classpath:com/cannontech/yukon/common/reports</value>
                 <value>classpath:com/cannontech/yukon/common/dateFormatting</value>

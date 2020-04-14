@@ -119,6 +119,11 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
                                       .findFirst().orElseThrow(() -> new NotFoundException(" Control Area Id not found  " + controlAreaId ));
 
         LMControlArea lmControlArea = getDBPersistent(controlAreaId);
+
+        // Checks if any assigned load program(s) which is removed while updating control area is associated with any control
+        // scenario(s) or not.
+        validateUpdate(controlArea.getProgramAssignment(), lmControlArea.getLmControlAreaProgramVector());
+
         buildLMControlAreaDBPersistent(lmControlArea, controlArea);
         lmControlArea.setPAObjectID(controlAreaId);
         dbPersistentDao.performDBChange(lmControlArea, TransactionType.UPDATE);
@@ -440,11 +445,29 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
     }
 
     /**
-     * Validate deletion for Control Area
+     * Validate deletion for Control Area.
      */
     private void validateDelete(int controlAreaId) {
         Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(controlAreaId);
         checkProgramAssignment(programIds);
+    }
+
+    /**
+     * Validate Control Area update.
+     */
+    private void validateUpdate(List<ControlAreaProgramAssignment> newPrograms, Vector<LMControlAreaProgram> oldPrograms) {
+        List<Integer> oldProgramIds = oldPrograms.stream()
+                                                 .map(lp -> lp.getLmProgramDeviceID())
+                                                 .sorted()
+                                                 .collect(Collectors.toList());
+
+        List<Integer> newProgramIds = newPrograms.stream()
+                                                 .map(lp -> lp.getProgramId())
+                                                 .sorted()
+                                                 .collect(Collectors.toList());
+
+        oldProgramIds.removeAll(newProgramIds);
+        checkProgramAssignment(oldProgramIds.stream().collect(Collectors.toSet()));
     }
 
     /**

@@ -65,14 +65,7 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
             @Override
             public void run() {
                 try {
-                    if (!internalMessage && rfnLogger.isInfoEnabled()) {
-                        rfnLogger.info("<<< " + requestPayload.toString());
-                    } else if (internalMessage && rfnLogger.isDebugEnabled()) {
-                        rfnLogger.debug("<<< " + requestPayload.toString());
-                    }
-                    if (log.isTraceEnabled()) {
-                        log.trace("RequestReplyTemplateBase execute Start " + requestPayload.toString());
-                    }
+                    log.trace("RequestReplyTemplateBase execute Start {}", requestPayload.toString());
                     jmsTemplate.execute(new SessionCallback<Object>() {
 
                         @Override
@@ -86,7 +79,7 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
                         }
 
                     }, true);
-                    log.trace("RequestReplyTemplateBase execute End " + requestPayload.toString());
+                    log.trace("RequestReplyTemplateBase execute End {}", requestPayload.toString());
                 } catch (Exception e) {
                     callback.handleException(e);
                 } finally {
@@ -96,6 +89,25 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
         });
     }
 
+    /**
+     * Adds an entry in rfnLogger
+     */
+    private void log(String text) {
+        if (!internalMessage && rfnLogger.isInfoEnabled()) {
+            rfnLogger.info(text);
+        } else if (internalMessage && rfnLogger.isDebugEnabled()) {
+            rfnLogger.debug(text);
+        }
+    }
+    
+    protected void logRequest(String request){
+        log("<<< Sent " + request);
+    }
+    
+    protected void logReply(String request, String reply) {
+        log(">>> Received " + reply + " for " + request);
+    }
+    
     protected abstract <Q extends Serializable> void doJmsWork(Session session,
             Q requestPayload, T callback) throws JMSException;
 }
