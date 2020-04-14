@@ -81,7 +81,7 @@ public class PortServiceImpl implements PortService {
         if (!(litePort.get().getPaoName().equalsIgnoreCase(portName))) {
             throw new NotFoundException("Port Id and Name combination not found");
         }
-        if (com.cannontech.database.data.port.DirectPort.hasDevice(portId)) {
+        if (DirectPort.hasDevice(portId)) {
             throw new NotFoundException(
                     "You cannot delete the comm port '" + litePort.get().getPaoName() + "' because it is used by a device");
         }
