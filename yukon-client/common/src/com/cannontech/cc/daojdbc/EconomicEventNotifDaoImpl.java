@@ -45,7 +45,7 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao {
         sql.append("select *");
         sql.append("from CCurtEconomicEventNotif een");
         sql.append(  "join CCurtEEParticipant eep on eep.CCurtEEParticipantID = een.CCurtEconomicParticipantID");
-        sql.append("where eep.CustomerID").eq(event.getId());
+        sql.append("where eep.CCurtEconomicEventID").eq(event.getId());
         sql.append(  "and een.Reason").eq(reason);
         
         List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
@@ -107,20 +107,6 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao {
         sql.append(  "where CCurtEconomicEventID").eq(event.getId());
         sql.append(")");
         
-        yukonJdbcTemplate.update(sql);
-    }
-
-    @Override
-    public void deleteForEventAndReason(EconomicEvent event, NotificationReason reason) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete");
-        sql.append("from CCurtEconomicEventNotif");
-        sql.append("where CCurtEconomicParticipantID in (");
-        sql.append(  "select CCurtEEParticipantID from CCurtEEParticipant");
-        sql.append(  "where CCurtEconomicEventID").eq(event.getId());
-        sql.append(")");
-        sql.append("and Reason").eq(reason);
-
         yukonJdbcTemplate.update(sql);
     }
 
