@@ -54,14 +54,16 @@ public class PortValidatorHelper {
     }
     
     public void validatePortSharingFields(Errors errors, PortSharing sharing) {
-        if (sharing.getSharedPortType() != SharedPortType.NONE) {
-            YukonValidationUtils.checkRange(errors, "sharing.sharedSocketNumber", sharing.getSharedSocketNumber(), 1, 999999999,
-                    false);
+        if (sharing.getSharedPortType() != null && sharing.getSharedPortType() != SharedPortType.NONE) {
+            YukonValidationUtils.validatePort(errors, "sharing.sharedSocketNumber",
+                                    String.valueOf(sharing.getSharedSocketNumber()));
         }
 
-        if (sharing.getSharedPortType() == SharedPortType.NONE
-                && sharing.getSharedSocketNumber() != CommPort.DEFAULT_SHARED_SOCKET_NUMBER) {
-            errors.rejectValue("sharing.sharedSocketNumber", key + "udpPort.invalidSocketNumber");
+        if (sharing.getSharedSocketNumber() != null) {
+            if ((sharing.getSharedPortType() == null || sharing.getSharedPortType() == SharedPortType.NONE)
+                    && sharing.getSharedSocketNumber() != CommPort.DEFAULT_SHARED_SOCKET_NUMBER) {
+                errors.rejectValue("sharing.sharedSocketNumber", key + "udpPort.invalidSocketNumber");
+            }
         }
     }
 }

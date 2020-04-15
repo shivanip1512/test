@@ -55,10 +55,7 @@ public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
         if (BooleanUtils.isTrue(getEnableEncryption())) {
             portTerminalServer.setEncodingType(EncodingType.AES);
             portTerminalServer.setEncodingKey(getKeyInHex());
-        } else {
-            portTerminalServer.setEncodingType(EncodingType.NONE);
-            portTerminalServer.setEncodingKey("");
-        }
+        } 
     }
 
     @Override
