@@ -5582,7 +5582,7 @@ JavaScript :
     notes : 
 
   - project : modernizr
-    version : 2.8.3 (Custom)
+    version : 3.6.0 (Custom)
     project URL : "https://modernizr.com/"
     license : MIT,BSD
     license URLs : "https://github.com/Modernizr/Modernizr/blob/master/LICENSE"
