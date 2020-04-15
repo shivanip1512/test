@@ -1,5 +1,6 @@
 package com.cannontech.web.api.commChannel;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
@@ -7,6 +8,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.device.port.PortSharing;
 import com.cannontech.common.device.port.PortTiming;
 import com.cannontech.common.device.port.SharedPortType;
+import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -56,7 +58,7 @@ public class PortValidatorHelper {
     public void validatePortSharingFields(Errors errors, PortSharing sharing) {
         if (sharing.getSharedPortType() != null && sharing.getSharedPortType() != SharedPortType.NONE) {
             YukonValidationUtils.validatePort(errors, "sharing.sharedSocketNumber",
-                                    String.valueOf(sharing.getSharedSocketNumber()));
+                    String.valueOf(sharing.getSharedSocketNumber()));
         }
 
         if (sharing.getSharedSocketNumber() != null) {
