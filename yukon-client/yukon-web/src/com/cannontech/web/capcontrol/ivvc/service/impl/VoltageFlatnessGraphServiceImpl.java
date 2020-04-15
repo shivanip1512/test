@@ -647,11 +647,17 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
             String balloonDistanceText = settings.getBalloonDistanceText();
             distance = balloonDistanceText + distance;
         }
-        
+
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String balloonText = messageSourceAccessor.
-            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
-                       value, phase, pointName, paoName, timeStamp, zone, distance, ignore);
+        String balloonText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
+                                                               value,
+                                                               phase,
+                                                               com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(pointName),
+                                                               com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(paoName),
+                                                               timeStamp,
+                                                               com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(zone),
+                                                               distance,
+                                                               ignore);
         return balloonText;
     }
     
