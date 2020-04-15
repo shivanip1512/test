@@ -1,7 +1,10 @@
 package com.cannontech.common.device.port.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +69,22 @@ public class PortServiceImpl implements PortService {
         // TODO : Add eventLog in new Jira
         port.buildModel(directPort);
         return port;
+    }
+
+    @Override
+    public List<PortBase> getAllPorts() {
+        List<LiteYukonPAObject> listOfPorts = dbCache.getAllPorts();
+        List<PortBase> listOfPortBase = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(listOfPorts)) {
+            listOfPorts.forEach(liteYukonPaoObject -> {
+                PortBase portBase = new PortBase();
+                portBase.buildModel(liteYukonPaoObject);
+                listOfPortBase.add(portBase);
+            });
+        } else {
+            throw new NotFoundException("Ports not found");
+        }
+        return listOfPortBase;
     }
 
     private PortBase<? extends DirectPort> getModel(PaoType paoType) {
