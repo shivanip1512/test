@@ -2,6 +2,7 @@
 <project name="yukon commons" default="all">
 
 	<property file="../build/build.properties"/>
+	<property file="../../yukon-build/build_version.properties"/>
 
 	<target name="all" depends="clean,build">
 	</target>
@@ -23,12 +24,14 @@
 			</classpath>
 		</javac>
 
+        <gitlogcount result="yukon-build-number"/>
+
 		<jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
 			<manifest>
 				<attribute name="Yukon-Version" value="${yukon.build.version}"/>
 				<attribute name="Yukon-Details" value="${yukon.build.details}"/>
 				<attribute name="Permissions" value="all-permissions"/>
-				<attribute name="Hudson-Build-Details" value="${build.info}"/>
+				<attribute name="Hudson-Build-Details" value="YUKON_BUILD_NUMBER=${yukon-build-number},${build.info}"/>
 			</manifest>
 			<fileset dir="resource">
 				<include name="**/*.gif"/>
@@ -54,6 +57,21 @@
 	<target name="clean">
 		<delete dir="build"/>
 	</target>
+
+    <macrodef name="gitlogcount">
+        <attribute name="result"/>
+        <sequential>
+            <exec executable="git" outputproperty="git-commit-current-count">
+                <arg value="rev-list"/>
+                <arg value="HEAD"/>
+                <arg value="--count"/>
+            </exec>
+            <property name="git-commit-init-count" value="${git.commit.init.count}"></property>
+            <script language="javascript">
+                project.setProperty("@{result}", parseInt(project.getProperty("git-commit-current-count")) - parseInt(project.getProperty("git-commit-init-count")));
+            </script>
+        </sequential>
+    </macrodef>
 
 	<!-- Target to generate the jaxb classes for the paoDefinition schema -->
 	<target name="generateJaxbClasses">
