@@ -25,8 +25,8 @@ yukon.admin.multispeak = (function() {
             if ($('#getMethods' + mspInterface) != null) {
                 $('#getMethods' + mspInterface).prop('disabled', !selected);
             }
-            if($('#interfaceAuth'+ mspInterface) != null){
-                $('#interfaceAuth'+ mspInterface).prop('disabled', !selected);
+            if($('#interfaceAuth' + mspInterface) != null){
+                $('#interfaceAuth' + mspInterface).prop('disabled', !selected);
             }
         },
 
@@ -119,7 +119,7 @@ yukon.admin.multispeak = (function() {
                 }).done(function(view, status, xhr) {
                     var dialogDivJson = {
                             "data-width": "500",
-                            "data-height": "350",
+                            "data-height": "365",
                             "data-title": popuptitle,
                             "data-destroy-dialog-on-close": "",
                         };
@@ -135,19 +135,13 @@ yukon.admin.multispeak = (function() {
                 var dialog = $(event.target),
                     indexRow = $('#js-interface-index-value').val(),
                     form = dialog.find('#js-vendor-endpointauth-form');
-                $.ajax({
-                    type: "POST",
-                    url: yukon.url("/multispeak/setup/endpointAuthPopup/save"),
-                    data: form.serialize() + "&indexValue=" + indexRow
-                }).done(function(data) {
-                    var indexValue = data.indexValue;
-                    $('#js-msp-uservendorauth-' + indexValue).val(data.useVendorAuth);
-                    $('#js-msp-inusername-' + indexValue).val(data.inUserName);
-                    $('#js-msp-inpassword-' + indexValue).val(data.inPassword);
-                    $('#js-msp-outusername-' + indexValue).val(data.outUserName);
-                    $('#js-msp-outpassword-' + indexValue).val(data.outPassword);
-                    $('#js-msp-validatecertificate-' + indexValue).val(data.validateCertificate);
-                });
+
+                $('#js-msp-uservendorauth-' + indexRow).val(form.find('#js-dialog-usevendorauth').is(':checked'));
+                $('#js-msp-inusername-' + indexRow).val(form.find('#js-dialog-inusername').val());
+                $('#js-msp-inpassword-' + indexRow).val(form.find('.js-dialog-inpassword').val());
+                $('#js-msp-outusername-' + indexRow).val(form.find('#js-dialog-outusername').val());
+                $('#js-msp-outpassword-' + indexRow).val(form.find('.js-dialog-outpassword').val());
+                $('#js-msp-validatecertificate-' + indexRow).val(form.find('#js-dialog-validatecertificate').is(':checked'));
                 dialog.dialog('close');
                 dialog.empty();
             });

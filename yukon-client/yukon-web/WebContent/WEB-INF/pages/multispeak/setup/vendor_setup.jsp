@@ -148,7 +148,7 @@
                     <div class="column-16-8 clearfix">
                         <div class="column one">
                             <!-- Interfaces -->
-                            <table class="compact-results-table row-highlighting full-width js-msp-interface-table">
+                            <table class="compact-results-table row-highlighting full-width">
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".interface" /></th>

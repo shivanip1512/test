@@ -649,20 +649,6 @@ public class MultispeakController {
         return "setup/endpointAuthSettingsPopup.jsp";
     }
 
-    @PostMapping("endpointAuthPopup/save")
-    public @ResponseBody Map<String, String> save(ModelMap model,
-            @ModelAttribute("multispeakInterface") MultispeakInterface multispeakInterface, @RequestParam("indexValue") Integer indexValue) {
-        Map<String, String> mspInterfaceMap = new HashMap<>();
-        mspInterfaceMap.put("indexValue", indexValue.toString());
-        mspInterfaceMap.put("inUserName", multispeakInterface.getInUserName());
-        mspInterfaceMap.put("inPassword", multispeakInterface.getInPassword());
-        mspInterfaceMap.put("outUserName", multispeakInterface.getOutUserName());
-        mspInterfaceMap.put("outPassword", multispeakInterface.getOutPassword());
-        mspInterfaceMap.put("useVendorAuth", multispeakInterface.getUseVendorAuth().toString());
-        mspInterfaceMap.put("validateCertificate", multispeakInterface.getValidateCertificate().toString());
-        return mspInterfaceMap;
-    }
-
     @PostConstruct
     public void init() {
         defaultMspVendor = multispeakDao.getMultispeakVendor("Cannon", "");
