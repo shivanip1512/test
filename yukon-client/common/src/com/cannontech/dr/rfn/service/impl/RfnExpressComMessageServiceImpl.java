@@ -5,9 +5,11 @@ import java.util.Random;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -18,6 +20,7 @@ import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
@@ -44,9 +47,12 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RawExpressComCommandBuilder commandBuilder;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private YukonJmsTemplate jmsTemplate;
     private final static Logger log = YukonLogManager.getLogger(RfnExpressComMessageServiceImpl.class);
-    
+
+    private YukonJmsTemplate rfnExpresscomUnicastBulkTemplate;
+    private YukonJmsTemplate rfnExpresscomBroadcastTemplate;
     private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastWithDataTemplate;
     private RequestReplyTemplateImpl<RfnExpressComUnicastReply> unicastTemplate;
     private Random random = new Random(System.currentTimeMillis());
@@ -171,7 +177,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
             // We will probably need to keep track of the responses at some point.
             String messageId = nextMessageId();
             request.setMessageId(messageId);
-            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_BULK, request);
+            rfnExpresscomUnicastBulkTemplate.convertAndSend(request);
             messageIds.add(messageId);
         }
         
@@ -180,6 +186,8 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     
     @PostConstruct
     public void initialize() {
+        rfnExpresscomUnicastBulkTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_BULK);
+        rfnExpresscomBroadcastTemplate= jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_BROADCAST);
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
                 JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_WITH_DATA, JmsApiDirectory.RFN_EXPRESSCOM_UNICAST);
         unicastWithDataTemplate = new RequestReplyReplyTemplate<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate,
@@ -258,7 +266,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
     @Override
     public void sendBroadcastRequest(RfnExpressComBroadcastRequest request) {
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_EXPRESSCOM_BROADCAST, request);
+        rfnExpresscomBroadcastTemplate.convertAndSend(request);
     }
     
 }

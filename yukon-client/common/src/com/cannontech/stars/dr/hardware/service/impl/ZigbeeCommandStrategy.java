@@ -6,11 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.exception.SystemConfigurationException;
@@ -21,6 +24,7 @@ import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.common.model.ZigbeeTextMessageDto;
 import com.cannontech.common.temperature.FahrenheitTemperature;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.LMGroupDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -68,7 +72,10 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private ZigbeeWebService zigbeeWebService;
     @Autowired private CustomerEventDao customerEventDao;
     @Autowired private LMGroupDao lmGroupDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate zigbeeSepTextTemplate;
+    private YukonJmsTemplate zigbeeSepTextCancelTemplate;
 
     private final SetMultimap<TimeOfWeek, String> dayLetterLookup;
     {
@@ -85,7 +92,13 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
         builder.putAll(TimeOfWeek.EVERYDAY, "M", "T", "W", "R", "F", "S", "U");
         dayLetterLookup = builder.build();
     }
-    
+
+    @PostConstruct
+    public void init() {
+        zigbeeSepTextTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZIGBEE_SEP_TEXT);
+        zigbeeSepTextCancelTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZIGBEE_SEP_TEXT_CANCEL);
+    }
+
     @Override
     public void sendCommand(LmHardwareCommand parameters) throws CommandCompletionException {
         
@@ -349,12 +362,12 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
 
     @Override
     public void sendTextMessage(YukonTextMessage message) {
-        jmsTemplate.convertAndSend(JmsApiDirectory.ZIGBEE_SEP_TEXT, message);
+        zigbeeSepTextTemplate.convertAndSend( message);
     }
     
     @Override
     public void cancelTextMessage(YukonCancelTextMessage message) {
-        jmsTemplate.convertAndSend(JmsApiDirectory.ZIGBEE_SEP_TEXT_CANCEL, message);
+        zigbeeSepTextCancelTemplate.convertAndSend(message);
     }
 
     @Override

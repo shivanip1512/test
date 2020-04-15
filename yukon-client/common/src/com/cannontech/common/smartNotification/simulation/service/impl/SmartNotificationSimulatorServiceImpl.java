@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ import com.cannontech.common.smartNotification.service.SmartNotificationEventCre
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.common.smartNotification.simulation.service.SmartNotificationSimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
@@ -58,10 +61,17 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private SmartNotificationSubscriptionService subscriptionService;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private static final Random rand = new Random();
     
     private Executor executor = Executors.newCachedThreadPool();
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_DAILY_DIGEST_TEST);
+    }
 
     @Override
     public SimulatorResponseBase clearAllSubscriptions() {
@@ -175,8 +185,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Override 
     public SimulatorResponseBase startDailyDigest(int dailyDigestHour) {
         log.info("Initiating a test daily digest for " + dailyDigestHour + ":00");
-        jmsTemplate.convertAndSend(JmsApiDirectory.SMART_NOTIFICATION_DAILY_DIGEST_TEST,
-                new DailyDigestTestParams(dailyDigestHour));
+        jmsTemplate.convertAndSend(new DailyDigestTestParams(dailyDigestHour));
         return new SimulatorResponseBase(true);
     }
     

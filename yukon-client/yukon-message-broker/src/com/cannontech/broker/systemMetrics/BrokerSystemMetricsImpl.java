@@ -14,6 +14,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.systemMetrics.SystemMetricsBase;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 
 
@@ -30,16 +31,18 @@ public class BrokerSystemMetricsImpl extends SystemMetricsBase {
 
     private Logger log = YukonLogManager.getLogger(this.getClass());
 
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private YukonJmsTemplate jmsTemplate;
 
     public void init() {
         log.debug("BrokerSystemMetricsImpl.init()");
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.CLOUD_CONFIGURATION_SETTINGS);
     }
     
     @Override
     public void insertPointData(Attribute attribute, double value) {
         BrokerSystemMetricsAttribute metricsAttribute = new BrokerSystemMetricsAttribute(attribute,value);
         BrokerSystemMetricsRequest systemMetricRequest = new BrokerSystemMetricsRequest(metricsAttribute);
-        jmsTemplate.convertAndSend(JmsApiDirectory.BROKER_SYSTEM_METRICS, systemMetricRequest);
+        jmsTemplate.convertAndSend(systemMetricRequest);
     }
 }

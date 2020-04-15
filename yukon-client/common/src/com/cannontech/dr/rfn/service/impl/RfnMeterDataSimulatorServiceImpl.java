@@ -37,6 +37,8 @@ import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
@@ -60,7 +62,9 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Autowired private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
     @Autowired private AttributeService attributeService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     // minute of the day to send a request at/list of devices to send a read request to
     private final SetMultimap<Integer, RfnDevice> meters = HashMultimap.create();
     private RfnDataSimulatorStatus status = new RfnDataSimulatorStatus();
@@ -75,6 +79,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
     @PostConstruct
     public void initialize() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
         pointMappers = unitOfMeasureToPointMapper.getPointMapper();
     }
 
@@ -465,7 +470,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
      * Sends generated message on queue
      */
     private <R extends RfnIdentifyingMessage> void sendArchiveRequest(R archiveRequest) {
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_METER_READ_ARCHIVE , archiveRequest);
+        jmsTemplate.convertAndSend(archiveRequest);
         status.getSuccess().incrementAndGet();
     }
 

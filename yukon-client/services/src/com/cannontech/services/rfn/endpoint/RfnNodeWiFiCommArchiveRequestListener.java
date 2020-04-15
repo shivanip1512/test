@@ -8,6 +8,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,7 @@ import com.cannontech.common.rfn.message.node.RfnNodeWiFiCommArchiveResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
@@ -41,9 +44,15 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+    private YukonJmsTemplate jmsTemplate;
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_NODE_WIFI_COMM_ARCHIVE);
+    }
     
     // map of RF WiFi Comm Status to Yukon CommStatusState state group
     private static Map<NodeWiFiCommStatus, CommStatusState> commStatusMapping = 
@@ -142,7 +151,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
             RfnNodeWiFiCommArchiveResponse response = new RfnNodeWiFiCommArchiveResponse();
             response.setReferenceIDs(referenceIds);
             log.debug("{} acknowledged ids {}", processor, response.getReferenceIDs());
-            jmsTemplate.convertAndSendToResponseQueue(JmsApiDirectory.RFN_NODE_WIFI_COMM_ARCHIVE, response);
+            jmsTemplate.convertAndSend(response);
         }
     }
 

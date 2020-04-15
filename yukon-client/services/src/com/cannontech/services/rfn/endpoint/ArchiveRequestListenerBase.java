@@ -7,7 +7,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+
 import javax.annotation.PreDestroy;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -44,8 +47,9 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
-    @Autowired protected YukonJmsTemplate jmsTemplate;
-
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    
+    protected YukonJmsTemplate jmsTemplate;
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
     
     private static final String CREATION_FAILED_FOR = "Creation failed for ";
@@ -347,7 +351,8 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
         Object response = getRfnArchiveResponse(request);
         JmsApi<?, ?, ?> jmsApi = getRfnArchiveQueueApi();
         log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsApi.getResponseQueueName());
-        jmsTemplate.convertAndSendToResponseQueue(jmsApi, response);
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(jmsApi);
+        jmsTemplate.convertAndSend(response);
     }
 
 }

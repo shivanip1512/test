@@ -56,6 +56,7 @@ import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.development.model.RfnTestEvent;
@@ -78,8 +79,9 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
-    @Autowired private YukonJmsTemplate jmsTemplate;
-        
+    @Autowired YukonJmsTemplateFactory jmsTemplateFactory;
+    
+    private YukonJmsTemplate jmsTemplate;
     private static final String dataIndicationQueueName = "com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication";
     
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
@@ -484,7 +486,8 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     private <R extends RfnIdentifyingMessage> void sendArchiveRequest(JmsApi<?, ?, ?> jmsapi, R archiveRequest) {
         log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue "
                 + jmsapi.getQueueName());
-        jmsTemplate.convertAndSend(jmsapi, archiveRequest);
+        jmsTemplate = jmsTemplateFactory.createTemplate(jmsapi);
+        jmsTemplate.convertAndSend(archiveRequest);
     }
 
     @Override

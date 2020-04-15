@@ -8,8 +8,10 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -19,6 +21,8 @@ import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterReadAndControlSimulatorService;
@@ -54,8 +58,9 @@ public class SimulatorsService {
     @Autowired private IvvcSimulatorService ivvcSimulatorService;
     @Autowired private RfnMeterReadAndControlSimulatorService rfnMeterReadAndControlSimulatorService;
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private SimulatorMessageListener messageListener;
     private ImmutableMap<SimulatorType, AutoStartableSimulator> simulatorTypeToSimulator;
 
@@ -117,6 +122,7 @@ public class SimulatorsService {
             .put(SimulatorType.RFN_LCR, rfnLcrDataSimulatorService)
             .put(SimulatorType.RFN_METER_READ_CONTROL, rfnMeterReadAndControlSimulatorService)
             .build();
+        jmsTemplate = jmsTemplateFactory .createTemplate(JmsApiDirectory.SIMULATORS);
     }
 
     @PreDestroy

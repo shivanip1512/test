@@ -42,7 +42,7 @@ public class SimulatorMessageListener {
             public void run() {
                 while (isActive) {
                     try {
-                        Object message = jmsTemplate.receive(JmsApiDirectory.SIMULATORS);
+                        Object message = jmsTemplate.receive();
                         if (message != null && message instanceof ObjectMessage) {
                             log.debug("Processing simulator request message");
                             ObjectMessage request = (ObjectMessage) message;

@@ -19,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
@@ -29,6 +30,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -45,13 +47,16 @@ public class PointDataCollectionService implements MessageListener {
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private RecentPointValueDao recentPointValueDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final Logger log = YukonLogManager.getLogger(PointDataCollectionService.class);
     private boolean collectingData = false;
 
     @PostConstruct
     public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DATA_COLLECTION_RECALCULATION);
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             try {
                 collect(false);
@@ -124,14 +129,14 @@ public class PointDataCollectionService implements MessageListener {
                         } else {
                             log.debug("No new data to collect and 60 minutes have past, sending message to WS to start recalculation.");
                         }
-                        jmsTemplate.convertAndSend(JmsApiDirectory.DATA_COLLECTION_RECALCULATION, new RecalculationRequest());
+                        jmsTemplate.convertAndSend(new RecalculationRequest());
                     }
                 } else {
                     log.debug("Data collection started.");
                     recentPointValueDao.collectData(recentValues);
                     persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID,
                         changeIdRange.getMax());
-                    jmsTemplate.convertAndSend(JmsApiDirectory.DATA_COLLECTION_RECALCULATION, new RecalculationRequest());
+                    jmsTemplate.convertAndSend(new RecalculationRequest());
                 }
             }
         } finally {
