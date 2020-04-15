@@ -8,13 +8,16 @@ import org.springframework.stereotype.Service;
 import com.cannontech.common.util.jms.api.JmsApi;
 
 /**
- * This class is used to create JmsTemplate Object.
+ * This class is used to create YukonJmsTemplate Object.
  *
  */
 @Service
 public class YukonJmsTemplateFactory {
     @Autowired ConnectionFactory connectionFactory;
 
+    /**
+     * Create and return a YukonJmsTemplate object after setting defaultDestinationName, pubSubDomain and timeToLive.
+     */
     public YukonJmsTemplate createTemplate(JmsApi<?, ?, ?> jmsApi) {
         YukonJmsTemplate jmsTemplate = new YukonJmsTemplate(connectionFactory);
         jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
@@ -23,6 +26,10 @@ public class YukonJmsTemplateFactory {
         return jmsTemplate;
     }
 
+    /**
+     * Create and return a YukonJmsTemplate object after setting defaultDestinationName, pubSubDomain, timeToLive and
+     * messageConverter.
+     */
     public YukonJmsTemplate createTemplate(JmsApi<?, ?, ?> jmsApi, MessageConverter messageConverter) {
         YukonJmsTemplate jmsTemplate = new YukonJmsTemplate(connectionFactory);
         jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
@@ -32,6 +39,10 @@ public class YukonJmsTemplateFactory {
         return jmsTemplate;
     }
 
+    /**
+     * Create and return a YukonJmsTemplate object after setting responseQueueName in defaultDestinationName, pubSubDomain and
+     * timeToLive.
+     */
     public YukonJmsTemplate createResponseTemplate(JmsApi<?, ?, ?> jmsApi) {
         YukonJmsTemplate jmsTemplate = new YukonJmsTemplate(connectionFactory);
         jmsTemplate.setDefaultDestinationName(jmsApi.getResponseQueueName());
