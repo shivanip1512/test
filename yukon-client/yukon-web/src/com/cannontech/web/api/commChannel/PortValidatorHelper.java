@@ -56,7 +56,8 @@ public class PortValidatorHelper {
     }
     
     public void validatePortSharingFields(Errors errors, PortSharing sharing) {
-        if (sharing.getSharedPortType() != null && sharing.getSharedPortType() != SharedPortType.NONE) {
+        if ((sharing.getSharedPortType() != null && sharing.getSharedPortType() != SharedPortType.NONE)
+                && sharing.getSharedSocketNumber() != null) {
             YukonValidationUtils.validatePort(errors, "sharing.sharedSocketNumber",
                     String.valueOf(sharing.getSharedSocketNumber()));
         }
