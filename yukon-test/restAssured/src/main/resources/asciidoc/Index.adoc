@@ -183,3 +183,24 @@ include::PickerSearchByQuery.adoc[]
 === Retrieve Device Reading
 include::DeviceReading.adoc[]
 
+== Comm Channel 
+
+=== Create
+include::TcpTerminalServerCreate.adoc[]
+include::UDPTerminalServerCreate.adoc[]
+
+=== Update
+include::TcpTerminalServerUpdate.adoc[]
+include::UDPTerminalServerUpdate.adoc[]
+
+=== Retrieve
+include::TcpTerminalServerGet.adoc[]
+include::UDPTerminalServerGet.adoc[]
+
+=== Delete
+include::TcpTerminalServerDelete.adoc[]
+include::UDPTerminalServerDelete.adoc[]
+
+
+
+
