@@ -642,7 +642,11 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         zone = StringUtils.defaultIfEmpty(zone, "");
         distance = StringUtils.defaultIfEmpty(distance, "");
         ignore = StringUtils.defaultIfEmpty(ignore,  "");
-        
+
+        String escapedZone = com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(zone);
+        String escapedPaoName = com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(paoName);
+        String escapedPointName = com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(pointName);
+
         if (!distance.isEmpty()) {
             String balloonDistanceText = settings.getBalloonDistanceText();
             distance = balloonDistanceText + distance;
@@ -650,14 +654,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
 
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String balloonText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
-                                                               value,
-                                                               phase,
-                                                               com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(pointName),
-                                                               com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(paoName),
-                                                               timeStamp,
-                                                               com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(zone),
-                                                               distance,
-                                                               ignore);
+                value, phase, escapedPointName, escapedPaoName, timeStamp, escapedZone, distance, ignore);
         return balloonText;
     }
     
