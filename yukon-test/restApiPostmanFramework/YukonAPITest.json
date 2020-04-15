@@ -2458,7 +2458,7 @@
             "name": "Comm Channel",
             "item": [
                 {
-                    "name": "getAllCommChannels",
+                    "name": "GetAllCommChannels",
                     "protocolProfileBehavior": {
                         "disableBodyPruning": true
                     },
