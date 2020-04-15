@@ -50,7 +50,7 @@ public class TcpPortSetupApiControllerTest {
         return new FieldDescriptor[] {
                 fieldWithPath("type").type(JsonFieldType.STRING).description("Channel Type"),
                 fieldWithPath("name").type(JsonFieldType.STRING).description("Comm Channel Name"),
-                fieldWithPath("enable").type(JsonFieldType.BOOLEAN).description("Disable Channel"),
+                fieldWithPath("enable").type(JsonFieldType.BOOLEAN).description("Enable Channel"),
                 fieldWithPath("baudRate").type(JsonFieldType.STRING).description("Baud Rate " +
                                                                     "Possible values for Baud Rate are : "+
                                                                     " BAUD_300," +
@@ -143,7 +143,7 @@ public class TcpPortSetupApiControllerTest {
                 .name(CommChannelHelper.getTcpPortName(MockPaoType.TCPPORT))
                 .build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                requestFields(fieldWithPath("name").type(JsonFieldType.STRING).description("Name")),
+                requestFields(fieldWithPath("name").type(JsonFieldType.STRING).description("Comm Channel Name")),
                 responseFields(fieldWithPath("portId").type(JsonFieldType.NUMBER).description("Port Id"))))
                 .accept("application/json")
                 .contentType("application/json")
