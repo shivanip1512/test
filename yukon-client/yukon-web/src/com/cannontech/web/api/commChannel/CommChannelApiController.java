@@ -1,6 +1,5 @@
 package com.cannontech.web.api.commChannel;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -20,19 +19,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.service.PortService;
+import com.cannontech.stars.util.ServletUtils;
 
 @RestController
 @RequestMapping("/device/commChannel")
 public class CommChannelApiController {
 
     @Autowired private PortService portService;
+    @Autowired private PortCreationValidator<? extends PortBase<?>> portCreationValidator;
     private List<PortValidator<? extends PortBase<?>>> validators;
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
-        HashMap<String, Integer> portIdMap = new HashMap<>();
-        portIdMap.put("portId", portService.create(port));
-        return new ResponseEntity<>(portIdMap, HttpStatus.OK);
+        return new ResponseEntity<>(portService.create(port), HttpStatus.OK);
     }
 
     @GetMapping("/{portId}")
@@ -51,6 +50,12 @@ public class CommChannelApiController {
         return new ResponseEntity<>("Success", HttpStatus.OK);
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<Object> retrieveAllPorts() {
+        List<PortBase> listOfPorts = portService.getAllPorts();
+        return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
+    }
+
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
         validators.stream().forEach(e -> {
@@ -58,6 +63,10 @@ public class CommChannelApiController {
                 binder.addValidators(e);
             }
         });
+        String portId = ServletUtils.getPathVariable("portId");
+        if (portId == null) {
+            binder.addValidators(portCreationValidator);
+        }
     }
 
     @Autowired

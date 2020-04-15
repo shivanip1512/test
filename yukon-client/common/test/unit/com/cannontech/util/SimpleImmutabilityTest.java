@@ -34,10 +34,10 @@ import com.cannontech.amr.meter.search.model.MspSearchField;
 import com.cannontech.amr.phaseDetect.data.DetectedPhase;
 import com.cannontech.amr.porterResponseMonitor.model.PorterResponseMonitorMatchStyle;
 import com.cannontech.amr.rfn.message.demandReset.RfnMeterDemandResetReplyType;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.message.event.Direction;
 import com.cannontech.amr.rfn.message.event.RfnConditionDataType;
 import com.cannontech.amr.rfn.message.event.RfnConditionType;
@@ -144,9 +144,8 @@ import com.cannontech.common.point.AccumulatorType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnMessageClass;
-import com.cannontech.common.rfn.message.metadata.CommStatusType;
-import com.cannontech.common.rfn.message.metadata.RfnMetadata;
-import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
+import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
+import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.survey.model.QuestionType;
 import com.cannontech.common.temperature.CelsiusTemperature;
 import com.cannontech.common.temperature.FahrenheitTemperature;
@@ -316,7 +315,6 @@ public class SimpleImmutabilityTest {
             BulkImportType.class,
             CelsiusTemperature.class,
             ChartInterval.class,
-            CommStatusType.class,
             CommandRequestExecutionDefaults.class,
             CommandRequestExecutionStatus.class,
             CommandRequestType.class,
@@ -391,8 +389,8 @@ public class SimpleImmutabilityTest {
             RfnIdentifier.class,
             RfnLcrTlvPointDataType.class,
             RfnMessageClass.class,
-            RfnMetadata.class,
-            RfnMetadataReplyType.class,
+            RfnMetadataMulti.class,
+            RouteFlag.class,
             RphTag.class,
             SelectionListCategory.class,
             SimpleDevice.class,

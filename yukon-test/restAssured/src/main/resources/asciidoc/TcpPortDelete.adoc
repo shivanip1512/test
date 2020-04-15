@@ -6,7 +6,7 @@
 :sectlinks:
 
 
-==== TCP Port Delete
+==== TCP Port
 
 *Request Properties* :
 

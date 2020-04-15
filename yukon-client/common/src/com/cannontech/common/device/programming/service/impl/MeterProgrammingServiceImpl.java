@@ -10,8 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import javax.jms.ConnectionFactory;
-
+import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
@@ -46,7 +45,6 @@ import com.cannontech.common.device.programming.message.MeterProgramStatusArchiv
 import com.cannontech.common.device.programming.message.MeterProgramStatusArchiveRequest.Source;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
-import com.cannontech.common.device.programming.model.MeterProgramSource;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
@@ -263,7 +261,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
             request.setSource(Source.WS_COLLECTION_ACTION);
             request.setRfnIdentifier(meterIdentifiersByPao.get(device));
             request.setStatus(ProgrammingStatus.INITIATING);
-            request.setTimeStamp(System.currentTimeMillis());
+            request.setTimestamp(Instant.now());
             log.debug("Sending {} on queue {}", request, thriftMessenger.getRequestQueueName());
          
             thriftMessenger.send(request);
@@ -385,9 +383,9 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         }
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        thriftMessenger = new ThriftRequestTemplate<>(connectionFactory, JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+    @PostConstruct
+    public void initialize() {
+        thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
                 new MeterProgramStatusArchiveRequestSerializer());
     }
 }

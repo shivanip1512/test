@@ -6,7 +6,7 @@
 :sectlinks:
 
 
-==== TCP Port Get
+==== TCP Port
 
 
 *Request JSON* :

@@ -29,7 +29,7 @@
         </cti:url>
         <cm:dropdownOption key=".otherActions.label" href="${url}" icon="icon-cog-go" />
         
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
+        <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <li class="divider"/>
             <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" 
                                data-ok-event="yukon:relay:delete" />

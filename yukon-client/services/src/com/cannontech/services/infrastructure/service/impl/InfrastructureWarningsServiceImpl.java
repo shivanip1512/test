@@ -10,15 +10,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
@@ -30,6 +26,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEvent;
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -66,7 +63,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private ConfigurationSource configurationSource;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     
     /**
      * The thread where the calculation is done.
@@ -191,7 +188,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
         refreshRequest.setLastRunTime(lastRun);
         //nextRun - time the warning calculation ended + minimumTimeBetweenRuns
         refreshRequest.setNextRunTime(new DateTime().plusMinutes(minimumTimeBetweenRuns).toInstant());
-        jmsTemplate.convertAndSend(JmsApiDirectory.INFRASTRUCTURE_WARNINGS_CACHE_REFRESH.getQueue().getName(), refreshRequest);
+        jmsTemplate.convertAndSend(JmsApiDirectory.INFRASTRUCTURE_WARNINGS_CACHE_REFRESH, refreshRequest);
     }
     
     /**
@@ -245,12 +242,5 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                           })
                           .collect(Collectors.toList());
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(true);
-        jmsTemplate.setPubSubDomain(false);
-    }
+
 }

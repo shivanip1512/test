@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -18,8 +17,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.JmsException;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.amr.rfn.message.dataRequest.RfnDeviceDataRequest;
@@ -33,6 +30,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataMultiService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 
@@ -44,7 +42,7 @@ public class RfnDeviceDataCollectionService implements MessageListener {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private RfnDeviceMetadataMultiService metadataMultiService;
     
-    protected JmsTemplate jmsTemplate;
+    @Autowired protected YukonJmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceDataCollectionService.class);
     
     @Override
@@ -117,11 +115,5 @@ public class RfnDeviceDataCollectionService implements MessageListener {
             log.error("Error while trying to send request to NM for device to gateway mapping information.", e);
         }
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

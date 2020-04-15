@@ -25,13 +25,9 @@ public class PortValidatorHelper {
     }
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName) {
-        checkIfFieldRequired("name", errors, paoName, fieldName);
-
-        if (!errors.hasFieldErrors("name")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
-            if (!PaoUtils.isValidPaoName(paoName)) {
-                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
-            }
+        YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
+        if (!PaoUtils.isValidPaoName(paoName)) {
+            errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
         }
 
         if (!errors.hasFieldErrors("name")) {

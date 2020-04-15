@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 public class MockPortBase {
     private Integer id;
     private String name;
-    private Boolean disable;
+    private Boolean enable;
     private MockBaudRate baudRate;
     private MockPaoType type;
 }

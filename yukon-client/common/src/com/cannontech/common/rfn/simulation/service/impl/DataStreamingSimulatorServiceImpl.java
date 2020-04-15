@@ -10,14 +10,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
@@ -40,31 +36,25 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
+import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.Lists;
 
 public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulatorService {
     private static final Logger log = YukonLogManager.getLogger(DataStreamingSimulatorServiceImpl.class);
-    private static final int incomingMessageWaitMillis = 1000;
-    private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.dataStreaming.request";
-    
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private DataStreamingAttributeHelper attributeHelper;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService gatewayService;
     @Autowired private RfnGatewaySimulatorService gatewaySimulatorService;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     
     private volatile boolean isRunning;
     private volatile boolean isStopping;
     private volatile SimulatedDataStreamingSettings settings;
-    
-    @PostConstruct
-    public void init() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
-    }
-    
+
     @Override
     public void setSettings(SimulatedDataStreamingSettings settings) {
         this.settings = settings;
@@ -121,6 +111,8 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                 isRunning = true;
                 while (!isStopping) {
                     try {
+                        JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
+                                JmsApiDirectory.DATA_STREAMING_CONFIG, JmsApiDirectory.GATEWAY_DATA_STREAMING_INFO);
                         Object message = jmsTemplate.receive(requestQueue);
                         if (message != null && message instanceof ObjectMessage) {
                            // log.info("Processing data streaming request.");

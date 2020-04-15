@@ -39,7 +39,7 @@ public class RfnGatewayDataCacheTest {
     
     @Test
     public void test_get_withCachedValue() throws NmCommunicationException {
-        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null, null);
+        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null);
         
         //create data
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
@@ -59,7 +59,7 @@ public class RfnGatewayDataCacheTest {
     public void test_get_withUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
 
@@ -85,7 +85,7 @@ public class RfnGatewayDataCacheTest {
     public void test_get_jmsExceptionWithUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         
@@ -99,7 +99,7 @@ public class RfnGatewayDataCacheTest {
     public void test_get_timeoutWithUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         
@@ -113,7 +113,7 @@ public class RfnGatewayDataCacheTest {
     public void test_remove() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
-        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
+        RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, fakeRfnDeviceDao, null);
         FakeGatewayRequestReplyTemplate fakeTemplate = new FakeGatewayRequestReplyTemplate();
         ReflectionTestUtils.setField(cache, "requestTemplate", fakeTemplate);
         //create data
@@ -138,7 +138,7 @@ public class RfnGatewayDataCacheTest {
     
     @Test
     public void test_get_afterMultipleUpdates() {
-        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null, null);
+        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null);
         
         //create data
         PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);

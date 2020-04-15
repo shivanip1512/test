@@ -38,7 +38,6 @@
         <pointInfo name="Relay 2 Shed Time Data Log 15 Minutes" init="true" attributes="RELAY_2_SHED_TIME_DATA_LOG_15_MIN"/>
         <pointInfo name="Relay 2 Shed Time Data Log 30 Minutes" attributes="RELAY_2_SHED_TIME_DATA_LOG_30_MIN"/>
 
-        <pointInfo name="Service Status" init="true" attributes="SERVICE_STATUS"/>
         <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
         <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
         

@@ -18,7 +18,7 @@ import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisherService;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.services.systemDataPublisher.yaml.model.IOTDataType;
 import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublisherFrequency;
 import com.google.common.collect.Lists;
@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
 public class YukonDataProcessorTest {
 
     private YukonDataProcessor yukonDataProcessor = null;
-    private List<DictionariesField> dictionariesFields = Lists.newArrayList();
+    private List<CloudDataConfiguration> cloudDataConfigurations = Lists.newArrayList();
     private SystemDataPublisherDao systemDataPublisherDao = null;
     private ThreadCachingScheduledExecutorService executor = null;
     private SystemDataPublisherService systemDataPublisherService = null;
@@ -35,16 +35,16 @@ public class YukonDataProcessorTest {
     @Before
     public void setUp() throws Exception {
         yukonDataProcessor = new  YukonDataProcessor();
-        DictionariesField dictionariesFieldStartUp = new DictionariesField();
-        dictionariesFieldStartUp = new DictionariesField();
-        dictionariesFieldStartUp.setField("gmcount");
-        dictionariesFieldStartUp.setDescription("Gas Meter Count");
-        dictionariesFieldStartUp.setDetails("Contains the count of gas meter.");
-        dictionariesFieldStartUp.setSource("SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC");
-        dictionariesFieldStartUp.setIotType(IOTDataType.PROPERTY);
-        dictionariesFieldStartUp.setFrequency(SystemDataPublisherFrequency.ON_STARTUP_ONLY);
+        CloudDataConfiguration cloudDataConfigurationStartUp = new CloudDataConfiguration();
+        cloudDataConfigurationStartUp = new CloudDataConfiguration();
+        cloudDataConfigurationStartUp.setField("gmcount");
+        cloudDataConfigurationStartUp.setDescription("Gas Meter Count");
+        cloudDataConfigurationStartUp.setDetails("Contains the count of gas meter.");
+        cloudDataConfigurationStartUp.setSource("SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC");
+        cloudDataConfigurationStartUp.setIotType(IOTDataType.PROPERTY);
+        cloudDataConfigurationStartUp.setFrequency(SystemDataPublisherFrequency.ON_STARTUP_ONLY);
         
-        dictionariesFields.add(dictionariesFieldStartUp);
+        cloudDataConfigurations.add(cloudDataConfigurationStartUp);
         systemDataPublisherDao = createNiceMock(SystemDataPublisherDao.class);
         systemDataPublisherService = createNiceMock(SystemDataPublisherService.class);
         systemDataPublisherDao.getSystemData(anyObject());
@@ -71,22 +71,22 @@ public class YukonDataProcessorTest {
     }
 
     @Test
-    public void test_groupDictionariesByFrequency() {
-        Map<SystemDataPublisherFrequency, List<DictionariesField>> dictionariesByFrequency = ReflectionTestUtils.invokeMethod(yukonDataProcessor, "groupDictionariesByFrequency",
-                dictionariesFields);
-        assertEquals(dictionariesByFrequency.get(SystemDataPublisherFrequency.ON_STARTUP_ONLY).size(), 1);
+    public void test_groupConfigurationsByFrequency() {
+        Map<SystemDataPublisherFrequency, List<CloudDataConfiguration>> configurationsByFrequency = ReflectionTestUtils.invokeMethod(yukonDataProcessor, "groupConfigurationsByFrequency",
+                cloudDataConfigurations);
+        assertEquals(configurationsByFrequency.get(SystemDataPublisherFrequency.ON_STARTUP_ONLY).size(), 1);
     }
 
     @Test
     public void test_buildAndPublishSystemData() {
         ReflectionTestUtils.invokeMethod(yukonDataProcessor, "buildAndPublishSystemData",
-                dictionariesFields);
+                cloudDataConfigurations);
     }
 
     @Test
     public void test_buildSystemData() {
         SystemData systemData = ReflectionTestUtils.invokeMethod(yukonDataProcessor, "buildSystemData",
-                dictionariesFields.get(0));
+                cloudDataConfigurations.get(0));
         assertEquals(systemData.getFieldName(), "gmcount");
         assertEquals(systemData.getFieldValue(), "59.52");
         
