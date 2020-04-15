@@ -110,7 +110,7 @@ public class CommChannelHelper {
                         .description("Carrier Detect Wait In MiliSeconds").optional(),
                 fieldWithPath("protocolWrap").type(JsonFieldType.STRING)
                         .description("Protocol Wrap Possible values of Protocol Wrap are None,IDLC").optional(),
-                fieldWithPath("ipAddress").type(JsonFieldType.STRING).description("IP Address").optional(),
+                fieldWithPath("ipAddress").type(JsonFieldType.STRING).description("IP Address(In case Of UDP Port ipAddress value is UDP)").optional(),
         };
     }
 
