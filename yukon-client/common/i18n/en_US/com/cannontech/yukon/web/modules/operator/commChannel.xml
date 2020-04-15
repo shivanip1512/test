@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>   
-   
+<properties>
     <entry key="yukon.web.modules.operator.commChannel.pageName">Comm Channels</entry>
-    <entry key="yukon.web.modules.operator.commChannel.pageDescription">Comm Channels</entry>
 </properties>
