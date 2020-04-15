@@ -16,6 +16,9 @@ public interface DBPersistentConverter<T extends DBPersistent> {
 
     /**
      * Build model from liteYukonPAObject.
+     * Model object populated by this method is partially populated model object
+     * it contains id,Name,Type and Enable i.e Status.
+     * Populated model object is not fully populated object
      */
     public default void buildModel(LiteYukonPAObject liteYukonPAObject) {
     }
