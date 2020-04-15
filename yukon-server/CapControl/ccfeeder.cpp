@@ -32,7 +32,7 @@ using std::map;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern bool _USE_FLIP_FLAG;
 extern unsigned long _POINT_AGE;
 extern unsigned long _SCAN_WAIT_EXPIRE;
@@ -3314,21 +3314,14 @@ bool CtiCCFeeder::isAlreadyControlled(long minConfirmPercent, long currentVarPoi
 ---------------------------------------------------------------------------*/
 bool CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, long maxConfirmTime, long feederRetries)
 {
-    bool returnBoolean = false;
-
     if (getStrategy()->getUnitType() != ControlStrategy::None && getStrategy()->getControlSendRetries() > feederRetries)
     {
         feederRetries = getStrategy()->getControlSendRetries();
     }
 
-    long controlDuration = ( ( _retryIndex + 1 ) * maxConfirmTime ) / std::max( static_cast<long>(_SEND_TRIES), feederRetries + 1 );
+    long controlDuration = ( ( _retryIndex + 1 ) * maxConfirmTime ) / std::max( _SEND_TRIES, feederRetries + 1 );
 
-    if ( ( getLastOperationTime() + controlDuration ) <= currentDateTime )
-    {
-        returnBoolean = true;
-    }
-
-    return returnBoolean;
+    return currentDateTime >= ( getLastOperationTime() + controlDuration );
 }
 
 /*---------------------------------------------------------------------------

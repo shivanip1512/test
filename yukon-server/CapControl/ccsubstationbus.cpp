@@ -37,7 +37,7 @@ using std::map;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern bool _USE_FLIP_FLAG;
 extern unsigned long _POINT_AGE;
 extern unsigned long _SCAN_WAIT_EXPIRE;
