@@ -174,7 +174,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                     ObjectMessage requestMessage = (ObjectMessage) demandResetMessage;
                     if (requestMessage.getObject() instanceof RfnMeterDemandResetRequest) {
                         RfnMeterDemandResetRequest request = (RfnMeterDemandResetRequest) requestMessage.getObject();
-                        log.debug("RfnMeterDemandResetRequest meter identifiers {}", request.getRfnMeterIdentifiers().size());
+                        log.error("RfnMeterDemandResetRequest meter identifiers {}", request.getRfnMeterIdentifiers().size());
 
                         RfnMeterDemandResetReply reply = new RfnMeterDemandResetReply();
                         Map<RfnIdentifier, RfnMeterDemandResetReplyType> replies = request.getRfnMeterIdentifiers().stream()

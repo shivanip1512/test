@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/3/2020 9:52:44 AM                          */
+/* Created on:     4/13/2020 2:01:47 PM                         */
 /*==============================================================*/
 
 
@@ -6407,7 +6407,6 @@ create table JOB (
 )
 go
 
-INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
 
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-3, 'spSmartIndexMaintanenceJobDefinition', 'N', -3);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);

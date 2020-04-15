@@ -62,7 +62,7 @@
                 <c:if test="${not empty gateway.data}"><i:inline key=".appMode.${gateway.data.mode}"/></c:if>
             </span>
         </tags:nameValue2>
-        <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+        <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
             <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
 	            <c:choose>
 	                <c:when test="${gateway.dataStreamingSupported}">
@@ -84,7 +84,7 @@
 	                </c:otherwise>
 	            </c:choose>
 	        </tags:nameValue2>
-        </cti:checkRolesAndProperties>
+        </cti:checkLicenseKey>
         <c:if test="${not empty gateway.data.ipv6Prefix}">
             <tags:nameValue2 nameKey=".gateways.ipv6prefix" valueClass="js-gw-ipv6">${fn:escapeXml(gateway.data.ipv6Prefix)}</tags:nameValue2>
         </c:if>
