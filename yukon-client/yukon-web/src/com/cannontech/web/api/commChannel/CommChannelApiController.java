@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.PortDelete;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.stars.util.ServletUtils;
 
@@ -30,7 +29,6 @@ public class CommChannelApiController {
 
     @Autowired private PortService portService;
     @Autowired private PortCreationValidator<? extends PortBase<?>> portCreationValidator;
-    @Autowired private PortDeleteValidator portDeleteValidator;
     private List<PortValidator<? extends PortBase<?>>> validators;
 
     @PostMapping("/create")
@@ -49,9 +47,9 @@ public class CommChannelApiController {
     }
 
     @DeleteMapping("/delete/{portId}")
-    public ResponseEntity<Object> delete(@Valid @RequestBody PortDelete portDelete, @PathVariable int portId) {
+    public ResponseEntity<Object> delete(@PathVariable int portId) {
         HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("portId", portService.delete(portDelete.getName(), portId));
+        paoIdMap.put("portId", portService.delete(portId));
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
     }
 
@@ -68,11 +66,6 @@ public class CommChannelApiController {
         }
     }
     
-    @InitBinder("portDelete")
-    public void setupBinderDelete(WebDataBinder binder) {
-        binder.addValidators(portDeleteValidator);
-    }
-
     @Autowired
     void setValidators(List<PortValidator<? extends PortBase<?>>> validators) {
         this.validators = validators;
