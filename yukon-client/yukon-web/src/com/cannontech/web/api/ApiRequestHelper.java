@@ -17,6 +17,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
@@ -62,6 +63,8 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(ControlRawState.class, new ParameterizedTypeReference<List<ControlRawState>>() {
         });
+        paramTypeRefMap.put(PortBase.class, new ParameterizedTypeReference<List<PortBase>>() {
+        });
     }
     
     @SuppressWarnings("rawtypes")
@@ -85,7 +88,6 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
         });
-
     }
 
     /**
