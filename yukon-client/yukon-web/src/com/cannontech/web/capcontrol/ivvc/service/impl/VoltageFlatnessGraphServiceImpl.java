@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -643,9 +644,9 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         distance = StringUtils.defaultIfEmpty(distance, "");
         ignore = StringUtils.defaultIfEmpty(ignore,  "");
 
-        String escapedZone = com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(zone);
-        String escapedPaoName = com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(paoName);
-        String escapedPointName = com.cannontech.common.util.StringUtils.escapeXmlAndJavascript(pointName);
+        String escapedZone = StringEscapeUtils.escapeXml11(zone);
+        String escapedPaoName = StringEscapeUtils.escapeXml11(paoName);
+        String escapedPointName = StringEscapeUtils.escapeXml11(pointName);
 
         if (!distance.isEmpty()) {
             String balloonDistanceText = settings.getBalloonDistanceText();
