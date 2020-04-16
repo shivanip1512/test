@@ -67,11 +67,9 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMulti;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResult;
 import com.cannontech.common.rfn.message.metadatamulti.RfnMetadataMultiQueryResultType;
-import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.message.node.NodeComm;
 import com.cannontech.common.rfn.message.node.NodeData;
 import com.cannontech.common.rfn.message.route.RouteData;
-import com.cannontech.common.rfn.message.route.RouteFlag;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -211,7 +209,8 @@ public class MapController {
     }
     
     @GetMapping("/map/device/{id}/info")
-    public String info(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+    public String info(ModelMap model, @PathVariable int id, @RequestParam(value = "includePrimaryRoute", required = false) Boolean includePrimaryRoute,
+                       YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         YukonPao pao = databaseCache.getAllPaosMap().get(id);
         PaoType type = pao.getPaoIdentifier().getPaoType();
@@ -247,7 +246,10 @@ public class MapController {
                 }
             } else {
                 String nmError = accessor.getMessage("yukon.web.modules.operator.mapNetwork.exception.metadataError");
-                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA, RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                Set<RfnMetadataMulti> requestData = Sets.newHashSet(RfnMetadataMulti.REVERSE_LOOKUP_NODE_COMM, RfnMetadataMulti.NODE_DATA);
+                if (includePrimaryRoute) {
+                    requestData.add(RfnMetadataMulti.PRIMARY_FORWARD_ROUTE_DATA);
+                }
                 try {
                     Map<RfnIdentifier, RfnMetadataMultiQueryResult> metaData =
                         metadataMultiService.getMetadataForDeviceRfnIdentifier(rfnDevice.getRfnIdentifier(), requestData);
@@ -292,24 +294,7 @@ public class MapController {
                             List<String> flags = new ArrayList<>();
                             if (routeData.getRouteFlags() != null && !routeData.getRouteFlags().isEmpty()) {
                                 routeData.getRouteFlags().forEach(flag -> {
-                                    //convert to FlagType
-                                    RouteFlagType flagType = RouteFlagType.BR;
-                                    if (flag == RouteFlag.ROUTE_FLAG_IGNORED) {
-                                        flagType = RouteFlagType.IR;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_PRIMARY_FORWARD) {
-                                        flagType = RouteFlagType.PF;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_PRIMARY_REVERSE) {
-                                        flagType = RouteFlagType.PR;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_ROUTE_REMEDIAL_UPDATE) {
-                                        flagType = RouteFlagType.RU;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_ROUTE_START_GC) {
-                                        flagType = RouteFlagType.GC;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_TIMED_OUT) {
-                                        flagType = RouteFlagType.TO;
-                                    } else if (flag == RouteFlag.ROUTE_FLAG_VALID) {
-                                        flagType = RouteFlagType.VR;
-                                    }
-                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlagType." + flagType.name()));
+                                    flags.add(accessor.getMessage("yukon.web.modules.operator.mapNetwork.routeFlag." + flag.name()));
                                 });
                                 model.addAttribute("routeFlags", String.join(", ", flags));
                                 //get distance to next hop

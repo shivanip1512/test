@@ -16,7 +16,7 @@ using std::string;
 unsigned long   _CC_DEBUG;
 unsigned long   _DB_RELOAD_WAIT;
 bool    _IGNORE_NOT_NORMAL_FLAG;
-unsigned long   _SEND_TRIES;
+long    _SEND_TRIES;
 bool    _USE_FLIP_FLAG;
 unsigned long   _POST_CONTROL_WAIT;
 unsigned long   _POINT_AGE;
@@ -135,6 +135,12 @@ void refreshGlobalCParms()
     if ( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         _SEND_TRIES = atoi(str.c_str()) + 1;
+
+        if ( _SEND_TRIES < 1 )
+        {
+            CTILOG_WARN( dout, "Invalid value: CAP_CONTROL_SEND_RETRIES is less than 0. Defaulting to 0." );
+            _SEND_TRIES = 1;
+        }
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {

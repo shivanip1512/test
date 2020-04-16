@@ -24,7 +24,9 @@
     <input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
     <input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
     
-    <tags:alertBox classes="dn js-no-location-message" type="warning"><i:inline key=".missingLocations"/></tags:alertBox>
+    <tags:alertBox classes="dn js-no-location-message" type="warning" includeCloseButton="true">
+        <i:inline key=".missingLocations"/>
+    </tags:alertBox>
         
     <div style="height:800px;">
         <div id="comprehensive-map-container" style="height:100%;width:100%;background:white;">

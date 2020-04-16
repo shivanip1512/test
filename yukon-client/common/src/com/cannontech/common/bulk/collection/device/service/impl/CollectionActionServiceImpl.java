@@ -98,14 +98,14 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Transactional
     @Override
     public void cancel(CollectionActionResult result, LiteYukonUser user) {
-        boolean isCanceled = cancelAction(result, user);
-        if (!isCanceled) {
-            isCanceled = terminate(result);
+        if (cancelAction(result, user)) {
+            log.info("Cancelled collection action {}.", result.getCacheKey());
+            return;
         }
-        if (!isCanceled) {
-            log.debug("Attemting to cancel result for " + result.getCacheKey() + " failed. The result status: "
-                    + result.getStatus());
-            result.log();
+        if (terminate(result)) {
+            log.info("Terminated collection action {}", result.getCacheKey());
+        } else {
+            log.info("Attempt to cancel collection action {} failed.", result.getCacheKey());
         }
     }
 
@@ -114,8 +114,6 @@ public class CollectionActionServiceImpl implements CollectionActionService {
      */
     private boolean terminate(CollectionActionResult result) {
         if (result.isTerminatable()) {
-            log.debug("Result to be terminated:");
-            result.log();
             result.setCanceled(true);
             updateResult(result, CommandRequestExecutionStatus.CANCELLED);
             return true;
@@ -132,8 +130,6 @@ public class CollectionActionServiceImpl implements CollectionActionService {
                 .findFirst();
         if (service.isPresent() && result.isCancelable()) {
             log.debug("Using " + service.get().getClass() + " to cancel result for " + result.getCacheKey());
-            log.debug("Result to be canceled:");
-            result.log();
             service.get().cancel(result.getCacheKey(), user);
             return true;
         }
@@ -143,42 +139,44 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Transactional
     @Override
     public void updateResult(CollectionActionResult result, CommandRequestExecutionStatus status) {
-        
+        CommandRequestExecutionStatus statusBeforeChange = result.getStatus();
+        log.info("Updating collection action {} changing status from {} to {}.", result.getCacheKey(),
+                result.getStatus(), status);
         // If one execution failed and one succeeded (PLC or RFN), consider the execution failed.
-        log.debug("Cache key:" + result.getCacheKey() + " updating result status to " + status);
         CommandRequestExecution execution = result.getExecution();
         Date stopTime = status == CommandRequestExecutionStatus.CANCELING ? null : new Date();
         if (execution != null && execution.getCommandRequestExecutionStatus() != CommandRequestExecutionStatus.FAILED) {
             log.debug("Cache key:" + result.getCacheKey() + " Completing execution:" + execution.getId() + " status="
-                + status + " for " + execution.getCommandRequestExecutionType());
+                    + status + " for " + execution.getCommandRequestExecutionType());
             execution.setStopTime(stopTime);
             execution.setCommandRequestExecutionStatus(status);
             executionDao.saveOrUpdate(execution);
         }
         if (execution != null) {
             collectionActionDao.updateCollectionActionStatus(result.getCacheKey(),
-                execution.getCommandRequestExecutionStatus(), stopTime);
+                    execution.getCommandRequestExecutionStatus(), stopTime);
             result.setStatus(execution.getCommandRequestExecutionStatus());
         } else {
             collectionActionDao.updateCollectionActionStatus(result.getCacheKey(), status, stopTime);
             result.setStatus(status);
         }
-        
-        if(result.getStatus() == CommandRequestExecutionStatus.CANCELLED) {
+
+        if (result.getStatus() == CommandRequestExecutionStatus.CANCELLED) {
             addUnsupportedToResult(CANCELED, result, result.getCancelableDevices());
         }
         result.setStopTime(new Instant(stopTime));
-        log.debug("Cache key:" + result.getCacheKey() + " updated result status to " + result.getStatus());
+        log.info("Collection action {} status changed from {} to {}.", result.getCacheKey(),
+                statusBeforeChange, result.getStatus());
+        log.info(result);
         eventLogHelper.log(result);
-    } 
+    }
 
     @Override
     public CollectionActionResult getResult(int key) {
         if(cache.getIfPresent(key) == null) {
             CollectionActionResult result = collectionActionDao.loadResultFromDb(key);
-            result.setLogger(log);
             cache.put(key, result);
-            result.log();
+            log.info(result);
         }
         return cache.getIfPresent(key);
     }
@@ -218,11 +216,8 @@ public class CollectionActionServiceImpl implements CollectionActionService {
      */
     private void saveAndLogResult(CollectionActionResult result, LiteYukonUser user) {
         collectionActionDao.createCollectionAction(result, user);
-        log.debug("Created new collection action result:");
         eventLogHelper.log(result);
-        result.setLogger(log);
-        result.log();
+        log.info("Created new collection action {}", result);
         cache.put(result.getCacheKey(), result);
-        
     }
 }

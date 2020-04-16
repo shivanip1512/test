@@ -4,5 +4,6 @@
     <suite-files>
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/drDocumentationSuite.xml"/>
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/deviceReadingDocumentation.xml"/>
+        <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/commChannelDocumentation.xml"/>
     </suite-files>
 </suite>

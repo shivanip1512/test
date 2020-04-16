@@ -8,7 +8,7 @@
 
 <cti:standardPage module="operator" page="gateways.list">
 
-<cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+<cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
 
     <div id="gateway-create-popup" class="dn"
         data-dialog
@@ -47,19 +47,19 @@
 </cti:checkRolesAndProperties>
 
 <div id="page-actions" class="dn">
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
         <cm:dropdownOption data-popup="#gateway-create-popup" icon="icon-plus-green">
             <i:inline key=".create.gateway.label"/>
         </cm:dropdownOption>
     </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
         <cm:dropdownOption data-popup="#gateway-cert-popup" icon="icon-drive-go">
             <i:inline key=".cert.update.label"/>
         </cm:dropdownOption>
     </cti:checkRolesAndProperties>
     <cti:url var="comprehensiveMapUrl" value="/stars/comprehensiveMap/home"/>
     <cm:dropdownOption key="yukon.web.modules.operator.comprehensiveMap.pageName" href="${comprehensiveMapUrl}" icon="icon-map-pins"/>
-    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE">
         <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
             classes="update-servers disabled" disabled="true">
 
@@ -73,7 +73,7 @@
     </cti:checkRolesAndProperties>
 </div>
 
-<cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+<cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
     <div id="gateway-cert-popup" class="dn" data-dialog 
         data-title="<cti:msg2 key=".cert.update.label"/>"
         data-event="yukon:assets:gateway:cert:update"
@@ -94,9 +94,9 @@
             <th class="row-icon"/>
             <th class="row-icon"/>
             <th><i:inline key=".name"/></th>
-            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+            <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                 <th width="10%"><i:inline key=".streamingCapacity"/></th>
-            </cti:checkRolesAndProperties>
+            </cti:checkLicenseKey>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".ipaddress"/></th>
             <th width="10%"><i:inline key=".firmwareVersion"/></th>
@@ -126,7 +126,7 @@
                             <span class="state-box ${clazz}"></span>
                         </td>
                         <td class="js-gw-name"><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
-                        <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                        <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                             <td class="js-gw-capacity" width="10%">
                                 <c:choose>
                                     <c:when test="${gateway.dataStreamingSupported}">
@@ -144,7 +144,7 @@
                                     </c:otherwise>
                                 </c:choose>
                             </td>
-                        </cti:checkRolesAndProperties>
+                        </cti:checkLicenseKey>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
                         <td class="js-gw-rv" width="10%">
@@ -190,7 +190,7 @@
                         </td>
                         <td>
                             <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
-                                <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+                                <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER">
                                     <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
                                     <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
                                     <li class="divider"></li>
@@ -203,9 +203,9 @@
                     <c:otherwise>
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
-                        <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                        <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                             <td><cti:icon icon="icon-loading-bars"/></td>
-                        </cti:checkRolesAndProperties>
+                        </cti:checkLicenseKey>
                         <td>${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td><cti:icon icon="icon-loading-bars"/></td>
@@ -342,12 +342,12 @@
             </td>
             <td class="js-gw-conn-status"><span class="state-box"></span></td>
             <td class="js-gw-name"><a></a></td>
-            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+            <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                 <td class="js-gw-capacity">
                     <span class="badge cp js-streaming-capacity dn" title="<cti:msg2 key=".streamingDetail"/>"></span>
                     <div class="js-streaming-unsupported dn"><i:inline key="yukon.common.unsupported"/></div>
                 </td>
-            </cti:checkRolesAndProperties>
+            </cti:checkLicenseKey>
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>
             <td class="js-gw-rv">
@@ -375,11 +375,11 @@
             <td class="js-notes"></td>
             <td class="js-gw-conn-status"><cti:icon icon="icon-loading-bars"/></td>
             <td class="js-gw-name"></td>
-            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+            <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                 <td class="js-gw-capacity">
                    <cti:icon icon="icon-loading-bars"/>
                 </td>
-            </cti:checkRolesAndProperties>
+            </cti:checkLicenseKey>
             <td class="js-gw-sn"></td>
             <td><cti:icon icon="icon-loading-bars"/></td>
             <td><cti:icon icon="icon-loading-bars"/></td>

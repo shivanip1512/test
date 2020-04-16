@@ -31,16 +31,15 @@ import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.FileUploadUtils;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRole(YukonRole.DEVICE_MANAGEMENT)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayCertificateController {
     
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
@@ -52,7 +51,7 @@ public class GatewayCertificateController {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     
     /** Certificate update popup. */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping("/gateways/cert-update/options")
     public String certificate(ModelMap model) {
         
@@ -85,7 +84,7 @@ public class GatewayCertificateController {
         return "gateways/cert.update.details.jsp";
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/gateways/cert-update", method=RequestMethod.POST)
     public String certUpdate(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, 
             @RequestParam("file") MultipartFile file, Integer[] gateways) {

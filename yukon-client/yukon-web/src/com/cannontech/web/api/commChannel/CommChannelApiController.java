@@ -2,6 +2,8 @@
 package com.cannontech.web.api.commChannel;
 
 import java.util.HashMap;
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,12 @@ public class CommChannelApiController {
         HashMap<String, Integer> paoIdMap = new HashMap<>();
         paoIdMap.put("portId", portService.delete(portDelete.getName(), portId));
         return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<Object> retrieveAllPorts() {
+        List<PortBase> listOfPorts = portService.getAllPorts();
+        return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
     }
 
     @InitBinder("portBase")
