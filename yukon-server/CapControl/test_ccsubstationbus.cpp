@@ -19,7 +19,7 @@ using namespace std;
 using namespace Cti::Test::CapControl;
 
 extern unsigned long _MAX_KVAR;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
 
 Cti::Test::use_in_unit_tests_only limiter;

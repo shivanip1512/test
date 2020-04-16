@@ -39,7 +39,7 @@ using std::string;
 
 extern unsigned long _CC_DEBUG;
 extern bool _IGNORE_NOT_NORMAL_FLAG;
-extern unsigned long _SEND_TRIES;
+extern long _SEND_TRIES;
 extern bool _LIMIT_ONE_WAY_COMMANDS;
 
 void CtiCCCommandExecutor::setAttributeService(AttributeService* attributeService)
