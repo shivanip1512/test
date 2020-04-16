@@ -206,10 +206,10 @@ public final class MultispeakDaoImpl implements MultispeakDao {
             sink.addValue("Interface", mspInterface.getMspInterface().trim());
             sink.addValue("Endpoint", mspInterface.getMspEndpoint().trim());
             sink.addValue("Version", mspInterface.getVersion());
-            sink.addValueSafe("InUserName", mspInterface.getInUserName());
-            sink.addValueSafe("InPassword", mspInterface.getInPassword());
-            sink.addValueSafe("OutUserName", mspInterface.getOutUserName());
-            sink.addValueSafe("OutPassword", mspInterface.getOutPassword());
+            sink.addValueSafe("InUserName", mspInterface.getInUserName().trim());
+            sink.addValueSafe("InPassword", mspInterface.getInPassword().trim());
+            sink.addValueSafe("OutUserName", mspInterface.getOutUserName().trim());
+            sink.addValueSafe("OutPassword", mspInterface.getOutPassword().trim());
             sink.addValue("UseVendorAuth", mspInterface.getUseVendorAuth());
             sink.addValue("ValidateCertificate", mspInterface.getValidateCertificate());
             
