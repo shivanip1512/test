@@ -115,7 +115,7 @@ public class MultispeakInterface
         this.outPassword = outPassword;
     }
 
-    public Boolean isUseVendorAuth() {
+    public Boolean getUseVendorAuth() {
         return useVendorAuth;
     }
 
