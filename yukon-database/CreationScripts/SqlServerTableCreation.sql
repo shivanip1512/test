@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     4/13/2020 2:01:47 PM                         */
+/* Created on:     4/16/2020 2:52:45 PM                         */
 /*==============================================================*/
 
 
@@ -6448,7 +6448,6 @@ create table JOBSCHEDULEDREPEATING (
 )
 go
 
-INSERT INTO JobScheduledRepeating VALUES (-4, '0 01 0 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-3, '0 0 22 ? * 7');
 INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
