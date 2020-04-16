@@ -37,6 +37,15 @@ public class PortSharing implements DBPersistentConverter<CommPort> {
         if (getSharedSocketNumber() != null) {
             port.setSharedSocketNumber(getSharedSocketNumber());
         }
+        
+        if (getSharedPortType() == SharedPortType.NONE) {
+            // This case will be handled when we can change the Shared Port to None through Update
+            port.setSharedSocketNumber(CommPort.DEFAULT_SHARED_SOCKET_NUMBER);
+        } else {
+            if (getSharedSocketNumber() != null) {
+                port.setSharedSocketNumber(getSharedSocketNumber());
+            }
+        }
     }
 
 }
