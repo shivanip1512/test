@@ -119,7 +119,7 @@
                         </tags:nameValue2>
             
                         <tags:nameValue2 nameKey=".stateGroup">
-                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="$fn:escapeXml({stateGroups})" 
+                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
                                 itemValue="liteID" itemLabel="stateGroupName" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
 
                         </tags:nameValue2>
@@ -144,7 +144,7 @@
                         </c:if>
 
                         <tags:nameValue2 nameKey=".stateGroup">
-                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="$fn:escapeXml({stateGroups})" 
+                            <tags:selectWithItems path="pointBase.point.stateGroupID" items="${stateGroups}" 
                                 itemValue="liteID" itemLabel="stateGroupName" 
                                 inputClass="${viewMode ? '' : 'js-init-chosen'} js-state-group"/>
                         </tags:nameValue2>
@@ -498,8 +498,9 @@
                     <tbody>
                         <c:forEach var="alarmTableEntry" items="${pointModel.alarmTableEntries}" varStatus="status">
                         <tr>
-                            <td>${pointModel.alarmTableEntries[status.index].condition}
-                                <form:hidden path="alarmTableEntries[${status.index}].condition"/>
+                            <td>
+                                 ${fn:escapeXml(pointModel.alarmTableEntries[status.index].condition)}
+                                 <form:hidden path="alarmTableEntries[${status.index}].condition"/>
                             </td>
                             <td>
                                 <%-- TODO this should take the liteID for the value rather than converting --%>
