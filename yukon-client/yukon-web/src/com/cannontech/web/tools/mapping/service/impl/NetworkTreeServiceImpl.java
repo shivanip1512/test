@@ -103,7 +103,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private YukonJmsTemplate jmsTemplate;
 
-    private YukonJmsTemplate networkTreeUpdateRequestTemplate;
+    private YukonJmsTemplate networkTreeUpdateRequestJmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeServiceImpl.class);
     private final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -119,11 +119,11 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     
     @PostConstruct
     public void init() {
-        networkTreeUpdateRequestTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
+        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
         scheduledExecutorService.schedule(() -> {
             NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
             log.info("Sending NetworkTreeUpdateTimeRequest message to request network tree information.");
-            networkTreeUpdateRequestTemplate.convertAndSend(request);
+            networkTreeUpdateRequestJmsTemplate.convertAndSend(request);
         }, MINUTES_TO_WAIT_TO_ASK_FOR_TREE_TIME_UPDATE, TimeUnit.MINUTES);
     }
      
@@ -170,7 +170,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
         NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
         request.setForceRefresh(true);
         log.debug("Sending NetworkTreeUpdateTimeRequest message to request reload of network tree information.");
-        networkTreeUpdateRequestTemplate.convertAndSend(request);
+        networkTreeUpdateRequestJmsTemplate.convertAndSend(request);
         return true;
     }
   
@@ -205,7 +205,7 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
        
         if (treeUpdateResponse == null) {
             log.debug("Network tree generation time was not found, sending request to NM to get the time");
-            networkTreeUpdateRequestTemplate.convertAndSend(new NetworkTreeUpdateTimeRequest());
+            networkTreeUpdateRequestJmsTemplate.convertAndSend(new NetworkTreeUpdateTimeRequest());
         }
         List<Node<Pair<Integer, FeatureCollection>>> trees = new ArrayList<>();
       

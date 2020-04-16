@@ -30,20 +30,20 @@ public class NmSyncServiceImpl implements NmSyncService {
     @Autowired private ConnPool connPool;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private YukonJmsTemplate archiveStartupTemplate;
-    private YukonJmsTemplate rfGatewayEditTemplate;
+    private YukonJmsTemplate archiveStartupJmsTemplate;
+    private YukonJmsTemplate rfGatewayEditJmsTemplate;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     @PostConstruct
     public void init() {
-        archiveStartupTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ARCHIVE_STARTUP);
-        rfGatewayEditTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_EDIT);
+        archiveStartupJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ARCHIVE_STARTUP);
+        rfGatewayEditJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_EDIT);
     }
 
     @Override
     public void sendSyncRequest() {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
-        archiveStartupTemplate.convertAndSend(notif);
+        archiveStartupJmsTemplate.convertAndSend(notif);
         log.info("Startup notification request has been sent to Network manager");
     }
     
@@ -93,7 +93,7 @@ public class NmSyncServiceImpl implements NmSyncService {
         editData.setName(rfnDevice.getName());
         request.setRfnIdentifier(rfnDevice.getRfnIdentifier());
         request.setData(editData);
-        rfGatewayEditTemplate.convertAndSend(request);
+        rfGatewayEditJmsTemplate.convertAndSend(request);
     }
 
 }

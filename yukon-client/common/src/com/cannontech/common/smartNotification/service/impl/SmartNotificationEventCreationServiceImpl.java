@@ -23,7 +23,7 @@ import com.google.common.collect.Lists;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
-    @Autowired YukonJmsTemplateFactory jmsTemplateFactory;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private Map<SmartNotificationEventType, YukonJmsTemplate> queues;
 

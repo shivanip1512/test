@@ -36,7 +36,7 @@ public class BrokerSystemMetricsImpl extends SystemMetricsBase {
 
     public void init() {
         log.debug("BrokerSystemMetricsImpl.init()");
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.CLOUD_CONFIGURATION_SETTINGS);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.BROKER_SYSTEM_METRICS);
     }
     
     @Override

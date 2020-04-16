@@ -113,11 +113,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     @Autowired private YukonJmsTemplate jmsTemplate;
 
-    private YukonJmsTemplate networkTreeUpdateTemplate;
-    private YukonJmsTemplate networkTreeUpdateResponseTemplate;
-    private YukonJmsTemplate rfnMeterDemandResetTemplate;
-    private YukonJmsTemplate rfMetadataMultiTemplate;
-    private YukonJmsTemplate rfnStatusArchiveTemplate;
+    private YukonJmsTemplate networkTreeUpdateRequestJmsTemplate;
+    private YukonJmsTemplate networkTreeUpdateResponseJmsTemplate;
+    private YukonJmsTemplate rfnMeterDemandResetJmsTemplate;
+    private YukonJmsTemplate rfMetadataMultiJmsTemplate;
+    private YukonJmsTemplate rfnStatusArchiveJmsTemplate;
     private ScheduledFuture<?> task;
     private Set<PaoType> wiFiSuperMeters = Set.of(PaoType.WRL420CL, PaoType.WRL420CD);
     private NetworkTreeUpdateTimeResponse networkTreeUpdateTimeResponse;
@@ -127,11 +127,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
 
     @PostConstruct
     public void init() {
-        networkTreeUpdateTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
-        networkTreeUpdateResponseTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE);
-        rfnMeterDemandResetTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DEMAND_RESET);
-        rfMetadataMultiTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI);
-        rfnStatusArchiveTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
+        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
+        networkTreeUpdateResponseJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE);
+        rfnMeterDemandResetJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DEMAND_RESET);
+        rfMetadataMultiJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI);
+        rfnStatusArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
     }
 
     @Override
@@ -151,7 +151,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
 
             private void receiveNetworkTreeUpdateTimeMessage() throws JMSException {
-                Object message = networkTreeUpdateTemplate.receive();
+                Object message = networkTreeUpdateRequestJmsTemplate.receive();
                 if (message != null) {
                     ObjectMessage requestMessage = (ObjectMessage) message;
                     if (requestMessage.getObject() instanceof NetworkTreeUpdateTimeRequest) {
@@ -159,7 +159,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                         log.debug("NetworkTreeUpdateTimeRequest received {}", request);
 
                         if (!request.isForceRefresh() && networkTreeUpdateTimeResponse != null) {
-                            networkTreeUpdateResponseTemplate.convertAndSend(networkTreeUpdateTimeResponse);
+                            networkTreeUpdateResponseJmsTemplate.convertAndSend(networkTreeUpdateTimeResponse);
                             return;
                         }
 
@@ -178,13 +178,13 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                                 .setNextScheduledRefreshTimeMillis(new DateTime().plusMinutes(2).getMillis());
                         networkTreeUpdateTimeResponse
                                 .setNoForceRefreshBeforeTimeMillis(new DateTime().plusMinutes(3).getMillis());
-                        networkTreeUpdateResponseTemplate.convertAndSend(networkTreeUpdateTimeResponse);
+                        networkTreeUpdateResponseJmsTemplate.convertAndSend(networkTreeUpdateTimeResponse);
                     }
                 }
             }
 
             private void receiveDemandResetMessage() throws JMSException {
-                Object demandResetMessage = rfnMeterDemandResetTemplate.receive();
+                Object demandResetMessage = rfnMeterDemandResetJmsTemplate.receive();
                 if (demandResetMessage != null) {
                     ObjectMessage requestMessage = (ObjectMessage) demandResetMessage;
                     if (requestMessage.getObject() instanceof RfnMeterDemandResetRequest) {
@@ -207,7 +207,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
 
             private void receiveMetaDataMultiMessage() throws JMSException {
-                Object metaDataMultiMessage = rfMetadataMultiTemplate.receive();
+                Object metaDataMultiMessage = rfMetadataMultiJmsTemplate.receive();
                 if (metaDataMultiMessage != null) {
                     ObjectMessage requestMessage = (ObjectMessage) metaDataMultiMessage;
                     if (requestMessage.getObject() instanceof RfnMetadataMultiRequest) {
@@ -712,7 +712,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             status.setRfnIdentifier(devices.get(i).getRfnIdentifier());
             status.setTimeStamp(new Date().getTime());
             response.setStatus(status);
-            rfnStatusArchiveTemplate.convertAndSend(response);
+            rfnStatusArchiveJmsTemplate.convertAndSend(response);
         }
     }
 
@@ -727,7 +727,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             status.setRfnIdentifier(rfnId);
             response.setStatus(status);
             response.setStatusPointId(statusPointId.getAndIncrement());
-            rfnStatusArchiveTemplate.convertAndSend(response);
+            rfnStatusArchiveJmsTemplate.convertAndSend(response);
         });
     }
 

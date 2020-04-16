@@ -61,7 +61,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private SmartNotificationSubscriptionService subscriptionService;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired YukonJmsTemplateFactory jmsTemplateFactory;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private YukonJmsTemplate jmsTemplate;
     private static final Random rand = new Random();

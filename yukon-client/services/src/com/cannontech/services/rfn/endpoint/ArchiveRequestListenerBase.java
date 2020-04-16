@@ -30,8 +30,6 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataTracker;
@@ -47,9 +45,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
-    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    
-    protected YukonJmsTemplate jmsTemplate;
+
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
     
     private static final String CREATION_FAILED_FOR = "Creation failed for ";
@@ -320,7 +316,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     public abstract void init();
     protected abstract List<? extends ConverterBase> getConverters();
     protected abstract Object getRfnArchiveResponse(T archiveRequest);
-    protected abstract JmsApi<?, ?, ?> getRfnArchiveQueueApi();
+    protected abstract YukonJmsTemplate getJmsTemplate();
     
     @PreDestroy
     protected abstract void shutdown();
@@ -349,9 +345,8 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
-        JmsApi<?, ?, ?> jmsApi = getRfnArchiveQueueApi();
-        log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsApi.getResponseQueueName());
-        jmsTemplate = jmsTemplateFactory.createResponseTemplate(jmsApi);
+        YukonJmsTemplate jmsTemplate = getJmsTemplate();
+        log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsTemplate.getDefaultDestinationName());
         jmsTemplate.convertAndSend(response);
     }
 

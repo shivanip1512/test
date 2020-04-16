@@ -8,7 +8,6 @@ import org.apache.activemq.DestinationDoesNotExistException;
 import org.apache.logging.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.simulators.handler.SimulatorMessageHandler;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;

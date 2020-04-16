@@ -31,7 +31,6 @@ import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
-import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableList;
@@ -186,7 +185,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     
     //Not needed, no response is sent for this message
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
+    protected YukonJmsTemplate getJmsTemplate() {
         return null;
     }
 

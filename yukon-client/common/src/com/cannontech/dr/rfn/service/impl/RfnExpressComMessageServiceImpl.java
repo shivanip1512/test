@@ -51,8 +51,8 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     @Autowired private YukonJmsTemplate jmsTemplate;
     private final static Logger log = YukonLogManager.getLogger(RfnExpressComMessageServiceImpl.class);
 
-    private YukonJmsTemplate rfnExpresscomUnicastBulkTemplate;
-    private YukonJmsTemplate rfnExpresscomBroadcastTemplate;
+    private YukonJmsTemplate rfnExpresscomUnicastBulkJmsTemplate;
+    private YukonJmsTemplate rfnExpresscomBroadcastJmsTemplate;
     private RequestReplyReplyTemplate<RfnExpressComUnicastReply, RfnExpressComUnicastDataReply> unicastWithDataTemplate;
     private RequestReplyTemplateImpl<RfnExpressComUnicastReply> unicastTemplate;
     private Random random = new Random(System.currentTimeMillis());
@@ -177,7 +177,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
             // We will probably need to keep track of the responses at some point.
             String messageId = nextMessageId();
             request.setMessageId(messageId);
-            rfnExpresscomUnicastBulkTemplate.convertAndSend(request);
+            rfnExpresscomUnicastBulkJmsTemplate.convertAndSend(request);
             messageIds.add(messageId);
         }
         
@@ -186,8 +186,8 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     
     @PostConstruct
     public void initialize() {
-        rfnExpresscomUnicastBulkTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_BULK);
-        rfnExpresscomBroadcastTemplate= jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_BROADCAST);
+        rfnExpresscomUnicastBulkJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_BULK);
+        rfnExpresscomBroadcastJmsTemplate= jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_BROADCAST);
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
                 JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_WITH_DATA, JmsApiDirectory.RFN_EXPRESSCOM_UNICAST);
         unicastWithDataTemplate = new RequestReplyReplyTemplate<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate,
@@ -266,7 +266,7 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
 
     @Override
     public void sendBroadcastRequest(RfnExpressComBroadcastRequest request) {
-        rfnExpresscomBroadcastTemplate.convertAndSend(request);
+        rfnExpresscomBroadcastJmsTemplate.convertAndSend(request);
     }
     
 }

@@ -15,7 +15,7 @@ import com.cannontech.services.systemDataPublisher.service.model.SystemData;
 
 @Service
 public class SystemDataPublisherServiceImpl implements SystemDataPublisherService {
-    @Autowired YukonJmsTemplateFactory jmsTemplateFactory;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private YukonJmsTemplate jmsTemplate;
     private MappingJackson2MessageConverter converter;
@@ -29,6 +29,6 @@ public class SystemDataPublisherServiceImpl implements SystemDataPublisherServic
     public void initialize() {
         converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.CLOUD_CONFIGURATION_SETTINGS, converter);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SYSTEM_DATA, converter);
     }
 }

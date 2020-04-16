@@ -74,8 +74,8 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private LMGroupDao lmGroupDao;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private YukonJmsTemplate zigbeeSepTextTemplate;
-    private YukonJmsTemplate zigbeeSepTextCancelTemplate;
+    private YukonJmsTemplate zigbeeSepTextJmsTemplate;
+    private YukonJmsTemplate zigbeeSepTextCancelJmsTemplate;
 
     private final SetMultimap<TimeOfWeek, String> dayLetterLookup;
     {
@@ -95,8 +95,8 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
 
     @PostConstruct
     public void init() {
-        zigbeeSepTextTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZIGBEE_SEP_TEXT);
-        zigbeeSepTextCancelTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZIGBEE_SEP_TEXT_CANCEL);
+        zigbeeSepTextJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZIGBEE_SEP_TEXT);
+        zigbeeSepTextCancelJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ZIGBEE_SEP_TEXT_CANCEL);
     }
 
     @Override
@@ -362,12 +362,12 @@ public class ZigbeeCommandStrategy implements LmHardwareCommandStrategy {
 
     @Override
     public void sendTextMessage(YukonTextMessage message) {
-        zigbeeSepTextTemplate.convertAndSend( message);
+        zigbeeSepTextJmsTemplate.convertAndSend( message);
     }
     
     @Override
     public void cancelTextMessage(YukonCancelTextMessage message) {
-        zigbeeSepTextCancelTemplate.convertAndSend(message);
+        zigbeeSepTextCancelJmsTemplate.convertAndSend(message);
     }
 
     @Override

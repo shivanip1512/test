@@ -92,6 +92,7 @@ public class SimulatorsService {
     }
 
     private synchronized void start() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
         messageListener = new SimulatorMessageListener(jmsTemplate, messageHandlers);
         messageListener.start();
         autoStartSimulators();
@@ -122,7 +123,6 @@ public class SimulatorsService {
             .put(SimulatorType.RFN_LCR, rfnLcrDataSimulatorService)
             .put(SimulatorType.RFN_METER_READ_CONTROL, rfnMeterReadAndControlSimulatorService)
             .build();
-        jmsTemplate = jmsTemplateFactory .createTemplate(JmsApiDirectory.SIMULATORS);
     }
 
     @PreDestroy

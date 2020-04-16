@@ -44,17 +44,17 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
     
     private RequestTemplateImpl<DeviceDataMonitorStatusResponse> statusRequestTemplate;
-    private YukonJmsTemplate deviceDataMonitorRecalcTemplate;
+    private YukonJmsTemplate deviceDataMonitorRecalcJmsTemplate;
     
     @PostConstruct
     public void init() {
-        deviceDataMonitorRecalcTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DEVICE_DATA_MONITOR_RECALC);
+        deviceDataMonitorRecalcJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DEVICE_DATA_MONITOR_RECALC);
     }
 
     @Override
     public DeviceDataMonitor create(DeviceDataMonitor monitor) throws DuplicateException {
         deviceDataMonitorDao.save(monitor);
-        deviceDataMonitorRecalcTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, null, Action.CREATE));
+        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, null, Action.CREATE));
         return monitor;
     }
     
@@ -62,7 +62,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     public DeviceDataMonitor update(DeviceDataMonitor monitor) throws DuplicateException {
         DeviceDataMonitor existingMonitor = deviceDataMonitorDao.getMonitorById(monitor.getId());
         deviceDataMonitorDao.save(monitor);
-        deviceDataMonitorRecalcTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, existingMonitor, Action.UPDATE));
+        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, existingMonitor, Action.UPDATE));
         return monitor;
     }
     
@@ -78,7 +78,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     
     @Override
     public void recaclulate(DeviceDataMonitor monitor) {
-        deviceDataMonitorRecalcTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, null, Action.RECALCULATE));
+        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, null, Action.RECALCULATE));
     }
 
     @Override
@@ -88,7 +88,7 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
         monitor.setEnabled(newStatus);
         Action action = monitor.isEnabled()? Action.ENABLE : Action.DISABLE;
         deviceDataMonitorDao.save(monitor);
-        deviceDataMonitorRecalcTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, action));
+        deviceDataMonitorRecalcJmsTemplate.convertAndSend(new DeviceDataMonitorMessage(monitor, action));
         log.info("Updated deviceDataMonitor enabled status: status=" + newStatus + ", deviceDataMonitor=" + monitor);
         return newStatus;
     }
