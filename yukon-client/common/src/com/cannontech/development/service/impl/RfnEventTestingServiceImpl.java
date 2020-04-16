@@ -80,13 +80,13 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    
-    private YukonJmsTemplate rfAlarmArchiveJmsTemplate; //JmsApiDirectory.RF_ALARM_ARCHIVE
-    private YukonJmsTemplate rfEventArchiveJmsTemplate;//JmsApiDirectory.RF_EVENT_ARCHIVE
-    private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;//JmsApiDirectory.RFN_METER_READ_ARCHIVE,
-    private YukonJmsTemplate rfnLcrReadArchiveJmsTemplate;//JmsApiDirectory.RFN_LCR_READ_ARCHIVE
-    private YukonJmsTemplate locationJmsTemplate;//JmsApiDirectory.LOCATION,
-    
+
+    private YukonJmsTemplate rfAlarmArchiveJmsTemplate;
+    private YukonJmsTemplate rfEventArchiveJmsTemplate;
+    private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;
+    private YukonJmsTemplate rfnLcrReadArchiveJmsTemplate;
+    private YukonJmsTemplate locationJmsTemplate;
+
     private static final String dataIndicationQueueName = "com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication";
     
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
