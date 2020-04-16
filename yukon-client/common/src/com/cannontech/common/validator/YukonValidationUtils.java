@@ -3,8 +3,7 @@ package com.cannontech.common.validator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
@@ -73,7 +72,7 @@ public class YukonValidationUtils extends ValidationUtils {
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
         // Skips error message when the field allows null and the field value is null,
         // otherwise validates using isBlank.
-        if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
+        if (!(fieldAllowsNull && fieldValue == null) && org.apache.commons.lang3.StringUtils.isBlank(fieldValue)) {
             errors.rejectValue(field, "yukon.web.error.isBlank", "Cannot be blank.");
             return true;
         }
@@ -323,6 +322,14 @@ public class YukonValidationUtils extends ValidationUtils {
     /* Validate a required list is empty */
     public static void checkIfListRequired(String field, Errors errors, List<?> fieldValue, String fieldName) {
         if (fieldValue == null || fieldValue.isEmpty()) {
+            errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
+        }
+    }
+    
+
+    /* Validate field is required */
+    public static void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
+        if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
             errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
         }
     }
