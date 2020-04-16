@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
 
 @Service
 public class LCRDataProcessor extends PaoCountDataProcessor {
@@ -15,7 +16,7 @@ public class LCRDataProcessor extends PaoCountDataProcessor {
     }
 
     @Override
-    public boolean supportsField(String field) {
-        return "drcount".equals(field);
+    public boolean supportsField(FieldType field) {
+        return field == FieldType.RFN_LCR_COUNT;
     }
 }

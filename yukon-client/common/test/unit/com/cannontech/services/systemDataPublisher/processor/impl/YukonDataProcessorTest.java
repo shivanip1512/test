@@ -16,6 +16,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
+import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.services.systemDataPublisher.yaml.model.IOTDataType;
 import com.cannontech.services.systemDataPublisher.yaml.model.SystemDataPublisherFrequency;
@@ -33,7 +34,7 @@ public class YukonDataProcessorTest {
         yukonDataProcessor = new  YukonDataProcessor();
         CloudDataConfiguration cloudDataConfigurationStartUp = new CloudDataConfiguration();
         cloudDataConfigurationStartUp = new CloudDataConfiguration();
-        cloudDataConfigurationStartUp.setField("gmcount");
+        cloudDataConfigurationStartUp.setField(new SystemDataFieldType("gmcount"));
         cloudDataConfigurationStartUp.setDescription("Gas Meter Count");
         cloudDataConfigurationStartUp.setDetails("Contains the count of gas meter.");
         cloudDataConfigurationStartUp.setSource("SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC");
