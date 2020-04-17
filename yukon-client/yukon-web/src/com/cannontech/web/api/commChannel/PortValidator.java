@@ -1,6 +1,5 @@
 package com.cannontech.web.api.commChannel;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -34,7 +33,7 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
             if (!errors.hasFieldErrors("Name")) {
                 portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
             }
-       }
+        }
 
         if (port instanceof TcpPortDetail) {
             // Validate PortTiming if not null.
@@ -54,9 +53,8 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
                 portValidatorHelper.validatePortSharingFields(errors, detailBase.getSharing());
             }
 
-            if (BooleanUtils.isTrue(detailBase.getCarrierDetectWait())) {
-                YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds",
-                        detailBase.getCarrierDetectWaitInMilliseconds(), 0, 9999, false);
+            if (detailBase.getCarrierDetectWaitInMilliseconds() != null) {
+                YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", detailBase.getCarrierDetectWaitInMilliseconds(), 0, 9999, false);
             }
 
             if (detailBase.getPortNumber() != null) {
@@ -67,8 +65,8 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
         if (port instanceof UdpPortDetail) {
             UdpPortDetail udpPortDetail = (UdpPortDetail) port;
 
-            if (BooleanUtils.isTrue(udpPortDetail.getEnableEncryption())) {
-                if (udpPortDetail.getKeyInHex() == null || !Validator.isHex(udpPortDetail.getKeyInHex())) {
+            if (udpPortDetail.getKeyInHex() != null) {
+                if (!Validator.isHex(udpPortDetail.getKeyInHex())) {
                     errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexFormat");
                 }
                 if (!errors.hasFieldErrors("keyInHex")) {
@@ -77,6 +75,7 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
                     }
                 }
             }
+
         }
 
         if (port instanceof TcpSharedPortDetail) {

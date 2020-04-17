@@ -1,7 +1,5 @@
 package com.cannontech.common.device.port;
 
-import org.apache.commons.lang3.BooleanUtils;
-
 import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
@@ -14,7 +12,6 @@ public class TerminalServerPortDetailBase<T extends TerminalServerSharedPortBase
 
     private Integer portNumber;
 
-    private Boolean carrierDetectWait;
     private Integer carrierDetectWaitInMilliseconds;
     private ProtocolWrap protocolWrap;
 
@@ -67,14 +64,6 @@ public class TerminalServerPortDetailBase<T extends TerminalServerSharedPortBase
         this.protocolWrap = protocolWrap;
     }
 
-    public Boolean getCarrierDetectWait() {
-        return carrierDetectWait;
-    }
-
-    public void setCarrierDetectWait(Boolean carrierDetectWait) {
-        this.carrierDetectWait = carrierDetectWait;
-    }
-
     @Override
     public void buildDBPersistent(TerminalServerSharedPortBase port) {
         super.buildDBPersistent(port);
@@ -87,11 +76,10 @@ public class TerminalServerPortDetailBase<T extends TerminalServerSharedPortBase
 
         PortSettings portSettings = port.getPortSettings();
 
-        if (BooleanUtils.isTrue(getCarrierDetectWait()) && getCarrierDetectWaitInMilliseconds() != null && getCarrierDetectWaitInMilliseconds() > 0) {
+        if (getCarrierDetectWaitInMilliseconds() != null) {
             portSettings.setCdWait(getCarrierDetectWaitInMilliseconds());
-        } else {
-            portSettings.setCdWait(0);
         }
+
         CommPort commPort = port.getCommPort();
         if (getProtocolWrap() != null) {
             commPort.setCommonProtocol(getProtocolWrap().getProtocolWrapString());
@@ -115,12 +103,6 @@ public class TerminalServerPortDetailBase<T extends TerminalServerSharedPortBase
         PortSettings portSettings = port.getPortSettings();
 
         setCarrierDetectWaitInMilliseconds(portSettings.getCdWait());
-
-        if (portSettings.getCdWait() > 0) {
-            setCarrierDetectWait(true);
-        } else {
-            setCarrierDetectWait(false);
-        }
 
         getTiming().buildModel(port.getPortTiming());
         getSharing().buildModel(port.getCommPort());

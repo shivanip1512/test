@@ -1,8 +1,5 @@
 package com.cannontech.common.device.port;
 
-import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 import com.cannontech.database.data.port.UdpPort;
 import com.cannontech.database.db.port.PortTerminalServer;
@@ -10,22 +7,14 @@ import com.cannontech.database.db.port.PortTerminalServer.EncodingType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "id", "name", "type", "ipAddress", "portNumber", "baudRate", "enable", "enableEncryption", "keyInHex", "carrierDetectWait",
+@JsonPropertyOrder({ "id", "name", "type", "ipAddress", "portNumber", "baudRate", "enable", "keyInHex",
         "carrierDetectWaitInMilliseconds", "protocolWrap", "timing", "sharing" })
+
 @JsonIgnoreProperties(value={"ipAddress"}, allowGetters= true, ignoreUnknown = true)
 public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
 
-    Boolean enableEncryption;
     private String keyInHex;
     private String ipAddress = "UDP";
-
-    public Boolean getEnableEncryption() {
-        return enableEncryption;
-    }
-
-    public void setEnableEncryption(Boolean enableEncryption) {
-        this.enableEncryption = enableEncryption;
-    }
 
     public String getKeyInHex() {
         return keyInHex;
@@ -52,12 +41,9 @@ public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
             portTerminalServer.setIpAddress(ipAddress);
         }
 
-        if (BooleanUtils.isTrue(getEnableEncryption())) {
+        if (getKeyInHex() != null) {
             portTerminalServer.setEncodingType(EncodingType.AES);
             portTerminalServer.setEncodingKey(getKeyInHex());
-        } else {
-            portTerminalServer.setEncodingType(EncodingType.NONE);
-            portTerminalServer.setEncodingKey("");
         }
     }
 
@@ -65,11 +51,6 @@ public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
     public void buildModel(TerminalServerSharedPortBase port) {
         super.buildModel(port);
         PortTerminalServer portTerminalServer = port.getPortTerminalServer();
-        if (StringUtils.isNotBlank(portTerminalServer.getEncodingKey())) {
-            setEnableEncryption(true);
-        } else {
-            setEnableEncryption(false);
-        }
         setKeyInHex(portTerminalServer.getEncodingKey());
         setIpAddress(ipAddress);
     }

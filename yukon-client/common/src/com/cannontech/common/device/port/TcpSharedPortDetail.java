@@ -6,8 +6,8 @@ import com.cannontech.database.db.port.PortTerminalServer;
 import com.cannontech.database.db.port.PortTerminalServer.EncodingType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "id", "name", "type", "ipAddress", "portNumber", "baudRate", "enable", "carrierDetectWait", "carrierDetectWaitInMilliseconds",
-        "protocolWrap", "timing", "sharing" })
+@JsonPropertyOrder({ "id", "name", "type", "ipAddress", "portNumber", "baudRate", "enable", "carrierDetectWaitInMilliseconds",
+    "protocolWrap", "timing", "sharing" })
 public class TcpSharedPortDetail extends TerminalServerPortDetailBase<TerminalServerSharedPort> {
 
     private String ipAddress;
