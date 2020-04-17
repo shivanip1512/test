@@ -33,7 +33,7 @@ public class SystemDataProcessorFactory {
         // Find field specific processors.
         SystemDataProcessor selectedProcessor = null;
         for (SystemDataProcessor processor : processors) {
-            if (processor.supportsField(dictionary.getField())) {
+            if (processor.supportsField(dictionary.getField().getFieldType())) {
                 return processor;
             }
         }

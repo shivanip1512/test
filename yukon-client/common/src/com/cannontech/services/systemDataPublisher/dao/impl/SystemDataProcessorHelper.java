@@ -45,7 +45,7 @@ public class SystemDataProcessorHelper {
      */
     public static SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration, String fieldValue) {
         SystemData systemData = new SystemData();
-        systemData.setFieldName(cloudDataConfiguration.getField());
+        systemData.setFieldName(cloudDataConfiguration.getField().getStringValue());
         systemData.setFieldValue(fieldValue);
         systemData.setIotDataType(cloudDataConfiguration.getIotType());
         systemData.setTimestamp(new DateTime());
@@ -58,7 +58,7 @@ public class SystemDataProcessorHelper {
      */
     public static SystemData processOtherData(CloudDataConfiguration cloudDataConfiguration) {
         SystemData systemData = new SystemData();
-        systemData.setFieldName(cloudDataConfiguration.getField());
+        systemData.setFieldName(cloudDataConfiguration.getField().getStringValue());
         systemData.setFieldValue(cloudDataConfiguration.getSource());
         systemData.setIotDataType(cloudDataConfiguration.getIotType());
         systemData.setTimestamp(new DateTime());

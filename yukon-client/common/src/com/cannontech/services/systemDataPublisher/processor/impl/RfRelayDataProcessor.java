@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
 
 @Service
 public class RfRelayDataProcessor extends PaoCountDataProcessor {
@@ -15,7 +16,7 @@ public class RfRelayDataProcessor extends PaoCountDataProcessor {
     }
 
     @Override
-    public boolean supportsField(String field) {
-        return "rfrelays".equals(field);
+    public boolean supportsField(FieldType field) {
+        return field == FieldType.RFN_RELAYS;
     }
 }

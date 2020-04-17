@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,8 +63,8 @@ public class SystemDataServiceInitializer {
         List<CloudDataConfiguration> releventConfigurations = cloudDataConfigurations.stream()
                 .filter(e -> (e.getDataPublisher() == SystemDataPublisher.YUKON
                         || e.getDataPublisher() == SystemDataPublisher.OTHER
-                        // TODO: Remove this condition when NM starts publishing its data.
-                        || (networkManagerDBConfigured && e.getDataPublisher() == SystemDataPublisher.NETWORK_MANAGER)))
+                        || (networkManagerDBConfigured && e.getDataPublisher() == SystemDataPublisher.NETWORK_MANAGER
+                                && StringUtils.isNotEmpty(e.getSource()))))
                 .collect(Collectors.toList());
         return releventConfigurations;
     }
