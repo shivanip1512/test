@@ -115,8 +115,7 @@ public class TcpTerminalServerSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
     public void Test_TcpTerminalServer_04_Delete() {
-        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                responseFields(fieldWithPath("portId").type(JsonFieldType.NUMBER).description("Port Id"))))
+        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}"))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
