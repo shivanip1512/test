@@ -1,6 +1,7 @@
 package com.cannontech.common.device.port.service;
 
 import java.util.List;
+
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.database.data.port.DirectPort;
 

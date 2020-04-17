@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpPortDetail;
+import com.cannontech.common.device.port.TcpSharedPortDetail;
+import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -114,7 +116,12 @@ public class PortServiceImpl implements PortService {
         case TCPPORT :
             portBase = new TcpPortDetail();
             break;
-        // TODO : Add for other Ports here.
+        case UDPPORT : 
+            portBase = new UdpPortDetail();
+            break;
+        case TSERVER_SHARED : 
+            portBase = new TcpSharedPortDetail();
+            break;
         }
         
         return portBase;

@@ -301,7 +301,7 @@ public class YukonValidationUtils extends ValidationUtils {
    }
     
     public static void validatePort(Errors errors, String field, String fieldValue) {
-        rejectIfEmptyOrWhitespace(errors, "port", "yukon.web.error.invalidPort");
+        rejectIfEmptyOrWhitespace(errors, field, "yukon.web.error.invalidPort");
         if (!errors.hasFieldErrors(field)) {
             try {
                  Integer portID = Integer.valueOf(fieldValue);
