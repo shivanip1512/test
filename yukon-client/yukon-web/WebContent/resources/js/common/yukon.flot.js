@@ -96,7 +96,7 @@ yukon.flot = (function () {
                 // we just append it to the chartContainer which Flot already uses for positioning
                 chartElement.append('<div style="position:absolute;left:' + (o.left - 10) +
                                 'px;top:' + (o.top - 25 - topoffset) + 'px;color:#666;font-size:smaller">' +
-                                key + '</div>');
+                                yukon.escapeXml(key) + '</div>');
                 topoffset = topoffset+10;
             }
         },

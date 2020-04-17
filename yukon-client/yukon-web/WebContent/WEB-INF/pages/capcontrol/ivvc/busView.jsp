@@ -142,7 +142,7 @@
                 <c:set var="chartId" value="sub_${subBusId}_chart" />
                 <flot:ivvcChart chartId="${chartId}"
                     jsonDataAndOptions="${graphAsJSON}"
-                    title="${graphSettings.graphTitle}" />
+                    title="${fn:escapeXml(graphSettings.graphTitle)}" />
                 <cti:url var="url" value="/capcontrol/ivvc/bus/chart">
                     <cti:param name="subBusId" value="${subBusId}" />
                 </cti:url>
