@@ -2516,7 +2516,7 @@
                                 "header": [],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n\t\"name\"  : \"TCP Port Create1\"\n}",
+                                    "raw": "",
                                     "options": {
                                         "raw": {
                                             "language": "json"
@@ -2644,7 +2644,7 @@
                                 "header": [],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n\t\"name\"  : \"TCP Terminal Server\"\n}",
+                                    "raw": "",
                                     "options": {
                                         "raw": {
                                             "language": "json"
@@ -2781,7 +2781,7 @@
                                 "header": [],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n\t\"name\"  : \"UDP Terminal Server\"\n}",
+                                    "raw": "",
                                     "options": {
                                         "raw": {
                                             "language": "json"

@@ -119,7 +119,6 @@ public class CommChannelHelper {
                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("Port Id"),
                 fieldWithPath("[].name").type(JsonFieldType.STRING).description("Port Name"),
                 fieldWithPath("[].enable").type(JsonFieldType.BOOLEAN).description("Status"),
-                fieldWithPath("[].baudRate").type(JsonFieldType.OBJECT).ignored().description("BaudRate"),
                 fieldWithPath("[].type").type(JsonFieldType.STRING).description("Type"),
         };
     }
