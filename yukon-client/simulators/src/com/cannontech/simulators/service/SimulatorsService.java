@@ -20,7 +20,6 @@ import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.util.ApplicationId;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
@@ -60,7 +59,6 @@ public class SimulatorsService {
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private YukonJmsTemplate jmsTemplate;
     private SimulatorMessageListener messageListener;
     private ImmutableMap<SimulatorType, AutoStartableSimulator> simulatorTypeToSimulator;
 
@@ -92,7 +90,7 @@ public class SimulatorsService {
     }
 
     private synchronized void start() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
+        var jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
         messageListener = new SimulatorMessageListener(jmsTemplate, messageHandlers);
         messageListener.start();
         autoStartSimulators();
