@@ -24,7 +24,7 @@ public class PortValidatorHelper {
     private final static String key = "yukon.web.api.error.";
 
     public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
+        if (fieldValue == null) {
             errors.rejectValue(field, key + "required", new Object[] { fieldName }, "");
         }
     }
