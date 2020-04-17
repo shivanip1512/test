@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
@@ -14,31 +16,37 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventMulti
 import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 public class SmartNotificationEventCreationServiceImpl implements SmartNotificationEventCreationService {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationEventCreationServiceImpl.class);
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private static final Map<SmartNotificationEventType, JmsApi<?, ?, ?>> queues = ImmutableMap.of(
-            SmartNotificationEventType.INFRASTRUCTURE_WARNING,
-            JmsApiDirectory.SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT,
+    private Map<SmartNotificationEventType, YukonJmsTemplate> queues;
 
-            SmartNotificationEventType.DEVICE_DATA_MONITOR,
-            JmsApiDirectory.SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT,
+    @PostConstruct
+    public void init() {
+        queues = ImmutableMap.of(
+                SmartNotificationEventType.INFRASTRUCTURE_WARNING,
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_INFRASTRUCTURE_WARNINGS_EVENT),
 
-            SmartNotificationEventType.YUKON_WATCHDOG,
-            JmsApiDirectory.SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT,
+                SmartNotificationEventType.DEVICE_DATA_MONITOR,
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_DEVICE_DATA_MONITOR_EVENT),
 
-            SmartNotificationEventType.ASSET_IMPORT,
-            JmsApiDirectory.SMART_NOTIFICATION_DATA_IMPORT_EVENT,
+                SmartNotificationEventType.YUKON_WATCHDOG,
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_YUKON_WATCHDOG_EVENT),
 
-            SmartNotificationEventType.METER_DR,
-            JmsApiDirectory.SMART_NOTIFICATION_METER_DR_EVENT);
-    
+                SmartNotificationEventType.ASSET_IMPORT,
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_DATA_IMPORT_EVENT),
+
+                SmartNotificationEventType.METER_DR,
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_METER_DR_EVENT));
+
+    }
+
     private Executor executor = Executors.newCachedThreadPool();
     private SmartNotificationEventDao eventsDao;
     
@@ -75,7 +83,7 @@ public class SmartNotificationEventCreationServiceImpl implements SmartNotificat
                 }
             }
             log.debug(type + " Sending Smart Notification events " + events.size());
-            jmsTemplate.convertAndSend(queues.get(type), new SmartNotificationEventMulti(type, events));
+            queues.get(type).convertAndSend(new SmartNotificationEventMulti(type, events));
         }
     }
 }

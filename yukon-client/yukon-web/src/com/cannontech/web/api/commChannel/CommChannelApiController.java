@@ -1,7 +1,6 @@
 
 package com.cannontech.web.api.commChannel;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.PortDelete;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.stars.util.ServletUtils;
 
@@ -30,8 +28,7 @@ public class CommChannelApiController {
 
     @Autowired private PortService portService;
     @Autowired private PortCreationValidator<? extends PortBase<?>> portCreationValidator;
-    @Autowired private PortDeleteValidator portDeleteValidator;
-    private List<PortValidator<? extends PortBase<?>>> validators;
+    @Autowired private PortValidator<? extends PortBase<?>> portValidator;
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
@@ -49,10 +46,8 @@ public class CommChannelApiController {
     }
 
     @DeleteMapping("/delete/{portId}")
-    public ResponseEntity<Object> delete(@Valid @RequestBody PortDelete portDelete, @PathVariable int portId) {
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("portId", portService.delete(portDelete.getName(), portId));
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+    public ResponseEntity<Object> delete(@PathVariable int portId) {
+        return new ResponseEntity<>(portService.delete(portId), HttpStatus.OK);
     }
 
     @GetMapping("/list")
@@ -63,24 +58,12 @@ public class CommChannelApiController {
 
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
-        validators.stream().forEach(e -> {
-            if (e.supports(binder.getTarget().getClass())) {
-                binder.addValidators(e);
-            }
-        });
+        binder.addValidators(portValidator);
+
         String portId = ServletUtils.getPathVariable("portId");
         if (portId == null) {
             binder.addValidators(portCreationValidator);
         }
     }
-    
-    @InitBinder("portDelete")
-    public void setupBinderDelete(WebDataBinder binder) {
-        binder.addValidators(portDeleteValidator);
-    }
-
-    @Autowired
-    void setValidators(List<PortValidator<? extends PortBase<?>>> validators) {
-        this.validators = validators;
-    }
+   
 }

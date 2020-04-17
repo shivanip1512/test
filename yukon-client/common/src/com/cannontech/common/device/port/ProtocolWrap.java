@@ -7,18 +7,18 @@ public enum ProtocolWrap implements DatabaseRepresentationSource {
     None("None"), 
     IDLC("IDLC");
 
-    private String ProtocolWrapString;
+    private String protocolWrapString;
 
-    private ProtocolWrap(String ProtocolWrap) {
-        this.ProtocolWrapString = ProtocolWrap;
+    private ProtocolWrap(String protocolWrap) {
+        this.protocolWrapString = protocolWrap;
     }
 
     public String getProtocolWrapString() {
-        return ProtocolWrapString;
+        return protocolWrapString;
     }
 
     @Override
     public Object getDatabaseRepresentation() {
-        return ProtocolWrapString;
+        return protocolWrapString;
     }
 }

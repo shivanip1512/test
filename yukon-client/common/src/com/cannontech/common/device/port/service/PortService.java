@@ -20,11 +20,11 @@ public interface PortService {
      * Update the Port.
      */
     PortBase<? extends DirectPort> update(int portId, PortBase<? extends DirectPort> port);
-
+    
     /**
      * Delete the Port.
      */
-    Integer delete(String portName, int portId);
+    int delete(int portId);
 
     /**
      * Retrieve List of all Comm channels.

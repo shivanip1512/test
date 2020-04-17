@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 
 public abstract class RfnDataSimulatorService {
@@ -23,7 +22,6 @@ public abstract class RfnDataSimulatorService {
     private final Logger log = YukonLogManager.getLogger(RfnDataSimulatorService.class);
 
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
-    @Autowired protected YukonJmsTemplate jmsTemplate;
 
     protected boolean isScheduled = false;
     protected SimulatorSettings settings;

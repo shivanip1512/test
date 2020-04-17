@@ -89,12 +89,7 @@ public class TerminalServerPortDetailBase<T extends TerminalServerSharedPortBase
 
         if (BooleanUtils.isTrue(getCarrierDetectWait()) && getCarrierDetectWaitInMilliseconds() != null && getCarrierDetectWaitInMilliseconds() > 0) {
             portSettings.setCdWait(getCarrierDetectWaitInMilliseconds());
-        } else {
-            portSettings.setCdWait(0);
-        }
-        // TODO check do we need this setting ?
-        portSettings.setLineSettings("8N1");
-
+        } 
         CommPort commPort = port.getCommPort();
         if (getProtocolWrap() != null) {
             commPort.setCommonProtocol(getProtocolWrap().getProtocolWrapString());

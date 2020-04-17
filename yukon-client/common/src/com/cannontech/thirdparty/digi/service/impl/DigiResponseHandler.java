@@ -7,6 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.activation.UnsupportedDataTypeException;
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.Logger;
 import org.jdom2.Namespace;
@@ -26,6 +28,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
@@ -73,9 +76,9 @@ public class DigiResponseHandler {
     @Autowired private ZigbeeStateUpdaterService zigbeeStateUpdaterService;
     @Autowired private AttributeDynamicDataSource attributeDynamicDataSource;
     @Autowired private SepReportedAddressDao sepReportedAddressDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    
+    private YukonJmsTemplate jmsTemplate;
     private static String regexForMac = "([\\da-fA-F]{2}:){7}[\\da-fA-F]{2}";
     private static Pattern macPattern = Pattern.compile(regexForMac);
     private static String regexNodeId = "NWK: ([\\da-fA-F]{4})";
@@ -86,7 +89,12 @@ public class DigiResponseHandler {
     static {
         existProperties.put(existNamespace.getPrefix(), existNamespace.getURI());
     }
-    
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.LM_ADDRESS_NOTIFICATION);
+    }
+
     private static ObjectMapper<Node, FileData> digiFileListingNodeMapper = new ObjectMapper<Node,FileData>() {
 
         @Override
@@ -408,7 +416,7 @@ public class DigiResponseHandler {
         logHelper.debug("Received LM Address for %s - " + address, endPoint.getName());
         sepReportedAddressDao.save(address);
         
-        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION, address);
+        jmsTemplate.convertAndSend(address);
     }
     
     public Map<PaoIdentifier,ZigbeePingResponse> handleXbeeCoreResponse(String source, List<ZigbeeDevice> expected) {        
