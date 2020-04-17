@@ -347,6 +347,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
+        public int getEnabledPaoCount(Set<PaoType> paoTypes) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
         public YukonPao findPort(String paoName) {
             throw new UnsupportedOperationException("Method not implemented");
         }

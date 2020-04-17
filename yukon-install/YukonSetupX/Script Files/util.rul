@@ -463,6 +463,38 @@ begin
 	endwhile;
 end;
 
+//------------------------------------------------------------
+// Helper function that searches the specified file for a
+// cparm "sKey" string and updates the value "sValue" for all instances with the 
+// "sReplace" string.
+//------------------------------------------------------------
+export prototype UpdateCparmValueInFile(string, string, string, string);
+function UpdateCparmValueInFile(sFile, sKey, sValue, sReplace)
+number nGrepResult, nGrepLineNumber, commentLocation, keyLocation, colonLocation, valueLocation;
+string sGrepReturnLine;
+begin
+    nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, RESTART);
+    while (nGrepResult >= 0)
+        if (nGrepResult >= 0) then
+            commentLocation = StrFindEx(sGrepReturnLine, "#", 0);
+            keyLocation = StrFindEx(sGrepReturnLine, sKey, 0);
+            if (keyLocation < commentLocation || commentLocation < 0) then
+                colonLocation = StrFindEx(sGrepReturnLine, ":", keyLocation);
+                if (colonLocation > keyLocation) then
+                    valueLocation = StrFindEx(sGrepReturnLine, sValue, colonLocation);
+                    if (valueLocation > colonLocation) then
+                        if (valueLocation < commentLocation || commentLocation < 0) then
+                            StrReplace(sGrepReturnLine, sValue, sReplace, 0);
+                            FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
+                        endif;
+                    endif;
+                endif;
+            endif;
+        endif;
+        nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, CONTINUE);
+    endwhile;
+end;
+
 export prototype void SetBlankValueInJvmParams();
 function void SetBlankValueInJvmParams()
 begin

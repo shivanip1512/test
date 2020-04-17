@@ -5,9 +5,7 @@
 :toclevels: 4
 :sectlinks:
 
-
 ==== TCP Port
-
 
 *Request JSON* :
 

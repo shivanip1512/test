@@ -1,5 +1,6 @@
 package com.cannontech.common.device.port.service;
 
+import java.util.List;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.database.data.port.DirectPort;
 
@@ -24,4 +25,10 @@ public interface PortService {
      * Delete the Port.
      */
     Integer delete(String portName, int portId);
+
+    /**
+     * Retrieve List of all Comm channels.
+     */
+    List<PortBase> getAllPorts();
+
 }

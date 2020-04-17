@@ -3,11 +3,15 @@ package com.cannontech.common.device.port;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.port.DirectPort;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
 @JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortDetail.class, name = "TCPPORT"), 
                 @JsonSubTypes.Type(value = TcpSharedPortDetail.class, name = "TSERVER_SHARED"),
@@ -86,5 +90,13 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
         if (getEnable() != null) {
         port.setDisableFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
         }
+    }
+
+    @Override
+    public void buildModel(LiteYukonPAObject liteYukonPAObject) {
+        setId(liteYukonPAObject.getLiteID());
+        setName(liteYukonPAObject.getPaoName());
+        setEnable(liteYukonPAObject.getDisableFlag().equals("Y") ? true : false);
+        setType(liteYukonPAObject.getPaoType());
     }
 }

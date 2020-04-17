@@ -22,7 +22,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
@@ -35,6 +34,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
@@ -71,8 +71,8 @@ public class RfnStatusArchiveRequestListenerTest {
     public void init() {
         statusListener = new RfnStatusArchiveRequestListener();
         
-        var jmsTemplate = EasyMock.createNiceMock(JmsTemplate.class);
-        ReflectionTestUtils.setField(statusListener, "jmsTemplate", jmsTemplate, JmsTemplate.class);
+        var jmsTemplate = EasyMock.createNiceMock(YukonJmsTemplate.class);
+        ReflectionTestUtils.setField(statusListener, "jmsTemplate", jmsTemplate, YukonJmsTemplate.class);
 
         var rfnDeviceLookupService = EasyMock.createNiceMock(RfnDeviceLookupService.class);
         ReflectionTestUtils.setField(statusListener, "rfnDeviceLookupService", rfnDeviceLookupService, RfnDeviceLookupService.class);

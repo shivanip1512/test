@@ -6,7 +6,8 @@
 # description : Contains the name of the field displayed in IOT dashboard.
 # details : Contains the detail of that particular field.
 # source : Contains the SQL query to retrieve that field's data. To write any complex SQL query i.e. more than 1 line,
-#           the SQL will be followed by ">-" as given for some fields.
+#          the SQL will be followed by ">-" as given for some fields. This source field is optional for Yukon and Network Manager
+#          field i.e. if source is available in the yaml, the preference is given to source otherwise it will retrieve from code base.
 # iotType : IOT type of field. Valid value will be Telemetry , Property or Both.
 # Frequency: Contains the frequency at which field value should be retrieved. Valid value will be ApplicationControl, Onchange,
 #            OnStartupOnly, Daily, EverySixHours.
@@ -24,7 +25,6 @@ Yukon :
   - field: gmcount
     description: Gas Meter Count
     details: Contains the count of gas meter.
-    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'RFG%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Both
     frequency : EverySixHours
 
@@ -67,7 +67,6 @@ Yukon :
   - field: emcount
     description: Electric Meter Count
     details: Contains the number of enabled electric meter
-    source: SELECT COUNT(*) FROM YukonPaObject WHERE (Type LIKE 'RFN-4%' OR Type LIKE 'RFN-5%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Both
     frequency : EverySixHours
 
@@ -98,7 +97,6 @@ Yukon :
   - field: wmcount
     description: Water Meter Count
     details: Contains the number of enabled Water meter
-    source: SELECT COUNT(*) FROM YukonPaObject WHERE (Type LIKE 'RFW%') AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Both
     frequency : EverySixHours
 
@@ -129,21 +127,18 @@ Yukon :
   - field: yukversion
     description: Yukon Version
     details: Contains the latest version of Yukon
-    source: SELECT TOP 1 Version FROM CtiDatabase ORDER BY BuildDate DESC
     iotType: Property
     frequency : OnStartupOnly
 
   - field: rfrelays
     description: Relays
     details: Contains the number of RF relays
-    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'RFN R%' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Property
     frequency : EverySixHours
 
   - field: drcount
     description: RFN LCR
     details: Contains the number of RFN LCRs enabled
-    source: SELECT COUNT(*) FROM YukonPaObject WHERE Type LIKE 'LCR-6%RFN' AND DisableFlag = 'N' AND PaoName NOT LIKE '*%'
     iotType: Property
     frequency : EverySixHours
 

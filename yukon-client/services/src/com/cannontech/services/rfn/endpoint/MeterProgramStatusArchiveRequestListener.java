@@ -51,13 +51,13 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
         if (request.getStatus() == ProgrammingStatus.INITIATING) {
             MeterProgramStatus oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
-            if (oldStatus.getLastUpdate().isAfter(request.getTimeStamp())) {
-                log.info("(Request to initiate download recieved and is older then existing status. Discarding the record. Existing status {}",
+            if (!request.getTimestamp().isAfter(oldStatus.getLastUpdate())) {
+                log.info("(Request to initiate download is not newer then existing status. Discarding the record. Existing status {}",
                          oldStatus);
                 return;
             }
             log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
-            meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, new Instant(request.getTimeStamp()));
+            meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, new Instant(request.getTimestamp()));
             return;
         }
         
@@ -78,18 +78,32 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
         try {
             oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
         } catch (@SuppressWarnings("unused") NotFoundException e) {
-            log.info("Creating status. \nNew Status {}", newStatus);
-            meterProgrammingDao.createMeterProgramStatus(newStatus);
+            if (newStatus.getStatus() == ProgrammingStatus.IDLE || newStatus.getSource().isOldFirmware()) {
+                log.info("Creating status. \nNew Status {}", newStatus);
+                meterProgrammingDao.createMeterProgramStatus(newStatus);
+                return;
+            }
+            log.info("No existing status for device, discarding non-idle status report. \nNew Status {}", newStatus);
             return;
         }
 
-        if (oldStatus.getLastUpdate().isAfter(newStatus.getLastUpdate())) {
-            log.info("Status recieved is older then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
+        if (!newStatus.getLastUpdate().isAfter(oldStatus.getLastUpdate())) {
+            log.info("Status recieved is not newer then existing status. Discarding the record. \nNew Status {} \nExisting status {}",
                      newStatus,
                      oldStatus);
             return;
         }
-
+        
+        if (newStatus.getSource().isOldFirmware()) {
+            if (!oldStatus.getSource().isOldFirmware()) {
+                log.warn("Status received indicates old firmware, but existing status was not old firmware. \nNew Status {} \nExisting status {}",
+                    newStatus,
+                    oldStatus);
+            }
+            meterProgrammingDao.updateMeterProgramStatus(newStatus);
+            return;
+        }
+        
         // If a send is in progress, a failure event should not interrupt
         // the current upload. Only when the upload is complete (in Waiting
         // Verification) should failure events be recorded
@@ -99,16 +113,39 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                      oldStatus);
             return;
         }
-        MeterProgram program = meterProgrammingDao.getProgramByDeviceId(deviceId);
-        if (!program.getGuid().equals(newStatus.getReportedGuid())) {
-            if (newStatus.getStatus() == ProgrammingStatus.FAILED) {
-                log.info("Status recieved is failure and guids are mismatched. Discarding the record. \nNew Status {} \nExisting status {}",
-                         newStatus,
-                         oldStatus);
+        if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
+            if (oldStatus.getSource().isOldFirmware()) {
+                log.info("Status recieved is not idle, but existing status was old firmware. Discarding the record. \nNew Status {} \nExisting status {}",
+                        newStatus,
+                        oldStatus);
+               return;
+            }
+        }
+        try {
+            MeterProgram assignedProgram = meterProgrammingDao.getProgramByDeviceId(deviceId);
+            if (!assignedProgram.getGuid().equals(newStatus.getReportedGuid())) {
+                if (newStatus.getStatus() == ProgrammingStatus.FAILED) {
+                    log.info("Status recieved is failure, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
+                             newStatus,
+                             oldStatus);
+                    return;
+                }
+                if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
+                    log.info("Status recieved is not idle, but is for a GUID not currently assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
+                            newStatus,
+                            oldStatus);
+                    return;
+                }
+                log.info("Status recieved is idle and guids are mismatched. Updating status to mismatched");
+                newStatus.setStatus(ProgrammingStatus.MISMATCHED);
+            }
+        } catch (@SuppressWarnings("unused") NotFoundException ex) {
+            if (newStatus.getStatus() != ProgrammingStatus.IDLE) {
+                log.info("Status recieved is not idle, but no GUID is assigned to the device. Discarding the record. \nNew Status {} \nExisting status {}",
+                        newStatus,
+                        oldStatus);
                 return;
             }
-            log.info("Status recieved is failure and guids are mismatched. Updating status to mismatched");
-            newStatus.setStatus(ProgrammingStatus.MISMATCHED);
         }
         log.info("Updating meter program status.  \nNew Status {} \nExisting status {}", newStatus, oldStatus);
         meterProgrammingDao.updateMeterProgramStatus(newStatus);
@@ -117,7 +154,7 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
     private MeterProgramStatus getMeterProgramStatus(MeterProgramStatusArchiveRequest request, MeterProgramSource prefix) {
         MeterProgramStatus status = new MeterProgramStatus();
         status.setDeviceId(rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier()));
-        status.setLastUpdate(new Instant(request.getTimeStamp()));
+        status.setLastUpdate(new Instant(request.getTimestamp()));
         status.setReportedGuid(UUID.fromString(request.getConfigurationId()));
         status.setSource(prefix);
         status.setError(request.getError());

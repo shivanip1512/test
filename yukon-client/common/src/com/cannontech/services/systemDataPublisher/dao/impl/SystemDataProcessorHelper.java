@@ -7,7 +7,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.DictionariesField;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 public class SystemDataProcessorHelper {
 
@@ -18,11 +18,9 @@ public class SystemDataProcessorHelper {
      * Process query result , currently the query in YAML will return either single value or List of values.
      * 
      */
-    public static SystemData processQueryResult(DictionariesField dictionariesField, List<Map<String, Object>> queryResult) {
-        SystemData systemData = null;
+    public static SystemData processQueryResult(CloudDataConfiguration cloudDataConfiguration, List<Map<String, Object>> queryResult) {
         String fieldValue = null;
         if (!queryResult.isEmpty()) {
-            systemData = new SystemData();
             if (queryResult.size() == 1 ) {
                 fieldValue = queryResult.get(0).entrySet()
                                                .stream()
@@ -37,23 +35,32 @@ public class SystemDataProcessorHelper {
                 Double finalValue = (actual / expected) * 100 ;
                 fieldValue = decimalFormat.format(finalValue);
             }
-            systemData.setFieldName(dictionariesField.getField());
-            systemData.setFieldValue(fieldValue);
-            systemData.setIotDataType(dictionariesField.getIotType());
-            systemData.setTimestamp(new DateTime());
         }
+        SystemData systemData = buildSystemData(cloudDataConfiguration, fieldValue);
+        return systemData;
+    }
+    
+    /**
+     * Builds System Data object.
+     */
+    public static SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration, String fieldValue) {
+        SystemData systemData = new SystemData();
+        systemData.setFieldName(cloudDataConfiguration.getField());
+        systemData.setFieldValue(fieldValue);
+        systemData.setIotDataType(cloudDataConfiguration.getIotType());
+        systemData.setTimestamp(new DateTime());
+        
         return systemData;
     }
     
     /**
      * Process data for "Other" field types available in YAML.
-     * 
      */
-    public static SystemData processOtherData(DictionariesField dictionariesField) {
+    public static SystemData processOtherData(CloudDataConfiguration cloudDataConfiguration) {
         SystemData systemData = new SystemData();
-        systemData.setFieldName(dictionariesField.getField());
-        systemData.setFieldValue(dictionariesField.getSource());
-        systemData.setIotDataType(dictionariesField.getIotType());
+        systemData.setFieldName(cloudDataConfiguration.getField());
+        systemData.setFieldValue(cloudDataConfiguration.getSource());
+        systemData.setIotDataType(cloudDataConfiguration.getIotType());
         systemData.setTimestamp(new DateTime());
         return systemData;
     }

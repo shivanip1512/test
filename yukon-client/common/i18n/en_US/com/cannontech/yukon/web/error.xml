@@ -14,6 +14,7 @@
     <entry key="yukon.web.error.500Message">500 - internal server error</entry>
     <entry key="yukon.web.error.503Message">503 - service unavailable</entry>
     <entry key="yukon.web.error.genericSubMessageWithKey">Try to execute your request again ({0}).</entry>
+    <entry key="yukon.web.error.pageUpdateFailed">This page has stopped updating due to an error or the session has expired. Please refresh the page.</entry>
 
     <entry key="yukon.web.error.required">Field is required.</entry>
     <entry key="yukon.web.error.notOwner">You are not authorized for access. You are not the owner.</entry>
@@ -50,4 +51,7 @@
     <entry key="yukon.web.error.paoName.containsIllegalChars">Cannot be blank or include any of the following characters: / \ , ' " |</entry>
     <entry key="yukon.web.error.deviceGroupName.containsIllegalChars">Cannot be blank, longer than 60 characters, or include any of the following characters: / \</entry>
     <entry key="yukon.web.error.themes.isNotValidColor">Must be a valid color (HEX or RGB).</entry>
+    
+    <entry key="yukon.web.error.nm.commsError">Unable to send request due to a communication error between Yukon and Network Manager.</entry>
+    <entry key="yukon.web.error.nm.error">Received error from Network Manager.</entry>
 </properties>
