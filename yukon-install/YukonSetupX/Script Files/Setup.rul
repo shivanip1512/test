@@ -347,6 +347,11 @@ begin
 	ReplaceStringInFile(sMasterConfig, "msq15d.dll", "mssql");
 	ReplaceStringInFile(sMasterConfig, "ora15d.dll", "oracle");
 	
+	// Replace pre-7.5.0 RF_DATA_STREAMING cparm
+	if(IsInstalledVersionLesser("7.5.0")) then 
+        UpdateCparmValueInFile(sMasterConfig, "RF_DATA_STREAMING_ENABLED", "true", "E7A13FCA-C5E4-D7FD-6FF3-674CA0515A8C");
+    endif;
+	
 	//Save the configuration of all installed services.
 	//This will be read in on the other side of the file transfer
 	//to re-populate the settings lost in the upgrade

@@ -5450,16 +5450,16 @@ JavaScript :
     notes : "No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
 
   - project : datetimeentry
-    version : 1.1.1
+    version : 2.0.0
     project URL : "http://keith-wood.name/datetimeEntry.html"
     license : MIT
     license URLs : "http://keith-wood.name/licence.html"
     npm URL : "n/a"
-    md5 : d6b587f91184c6b3b8ef915d7ee94d1a
-    sha1 : 6effa521a52977fa70a5bae626ded7a2ff897826
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : "Modernized clone available at https://www.npmjs.com/package/datetime-entry"
+    md5 : 7a403c4c30627858bc95cb5fd44ab6a6
+    sha1 : 5618bbb5c934d2e7048cd0c5228ce915f37e39bc
+    jira : YUK-21523
+    updated : 2020-04-08
+    notes : "Modernized clone available at https://www.npmjs.com/package/datetime-entry.  This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : debugger.js
     version : 0.4
@@ -5582,40 +5582,41 @@ JavaScript :
     notes : 
 
   - project : modernizr
-    version : 2.8.3 (Custom)
+    version : 3.6.0 (Custom)
     project URL : "https://modernizr.com/"
     license : MIT,BSD
     license URLs : "https://github.com/Modernizr/Modernizr/blob/master/LICENSE"
     npm URL : "https://www.npmjs.com/package/modernizr"
-    md5 : 3a5383fb879c4baabc90ed58c704f4f4
-    sha1 : faa8195efc6a7fa12ab1cc0d16c1354775b578e2
-    jira : YUK-13373
-    updated : 2015-04-03
-    notes : "Generated via http://modernizr.com/download/#-fontface-backgroundsize-borderimage-borderradius-boxshadow-flexbox-flexboxlegacy-hsla-multiplebgs-opacity-rgba-textshadow-cssanimations-csscolumns-generatedcontent-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-applicationcache-canvas-canvastext-draganddrop-hashchange-history-audio-video-indexeddb-input-inputtypes-localstorage-postmessage-sessionstorage-websockets-websqldatabase-webworkers-geolocation-inlinesvg-smil-svg-svgclippaths-touch-webgl-printshiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-prefixes-domprefixes-load"
+    md5 : d09c7637c0c62b780b7dc094cf59edfb
+    sha1 : aced2470fbc5e8681e775160ef5d34c2b5a4953d
+    jira : YUK-21537
+    updated : 2020-04-13
+    notes : "This library is used to detect if certain features are supported by the browser on which the application is being rendered. 
+                  Generated via http://modernizr.com/download/#-fontface-backgroundsize-borderimage-borderradius-boxshadow-flexbox-flexboxlegacy-hsla-multiplebgs-opacity-rgba-textshadow-cssanimations-csscolumns-generatedcontent-cssgradients-cssreflections-csstransforms-csstransforms3d-csstransitions-applicationcache-canvas-canvastext-draganddrop-hashchange-history-audio-video-indexeddb-input-inputtypes-localstorage-postmessage-sessionstorage-websockets-websqldatabase-webworkers-geolocation-inlinesvg-smil-svg-svgclippaths-touch-webgl-printshiv-mq-cssclasses-teststyles-testprop-testallprops-hasevent-prefixes-domprefixes-load"
 
   - project : moment
-    version : 2.8.3
+    version : 2.24.0
     project URL : "https://momentjs.com/"
     license : MIT
     license URLs : "https://github.com/moment/moment/blob/develop/LICENSE"
-    npm URL : "https://www.npmjs.com/package/moment/v/2.8.3"
-    md5 : 067aa38e6be00d8c0b485fd6c997c677
-    sha1 : 23ed6fc4d75ee6f399950d9b5ee7af5a9ad2de67
-    jira : YUK-12661
-    updated : 2014-09-16
-    notes : 
+    npm URL : "https://www.npmjs.com/package/moment/v/2.24.0"
+    md5 : af098b0bed8f8373664ae981deb8d73e
+    sha1 : b473731c1ddb874c9750c91ff4ed6183bcf05046
+    jira : YUK-21529
+    updated : 2020-04-09
+    notes : "This library is used to display dates on UI in user's timezone."
 
   - project : mousewheel
-    version : 3.1.9
+    version : 3.1.13
     project URL : "https://github.com/jquery/jquery-mousewheel"
     license : MIT
     license URLs : "https://github.com/jquery/jquery-mousewheel/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.9"
-    md5 : f64a960563507f0f5f874c473f9dcb2a
-    sha1 : 0ceff045b5cb0c4e42e65af30e644dcd6e841ed7
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : 
+    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.13"
+    md5 : 1bfebd043755482879b80a5aa1421712
+    sha1 : b66abc517f48a02d986edec27b46765c7e7e118c
+    jira : YUK-21523
+    updated : 2020-04-08
+    notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : open-layers
     version : 6.2.1
@@ -5690,16 +5691,16 @@ JavaScript :
     notes : This library is used for selecting colors in Themes for Yukon.
 
   - project : time-picker
-    version : 1.5.0
+    version : 1.6.3
     project URL : "https://github.com/trentrichardson/jQuery-Timepicker-Addon"
     license : MIT
     license URLs : "https://github.com/trentrichardson/jQuery-Timepicker-Addon/blob/master/LICENSE-MIT"
     npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
-    md5 : b6e477c9f70f52e13a1b800328e04199
-    sha1 : ef21c2ea9e712d05bcf13ec0d4cb5383e9f0f958
-    jira : YUK-10381
-    updated : 2014-11-13
-    notes : 
+    md5 : 689199998a2607268b20f4be82e1a67d
+    sha1 : 619d93b35c0ab3511e43c310b5b2db2cc607d30c
+    jira : YUK-21523
+    updated : 2020-04-08
+    notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : tipsy
     version : 1.0.0a

@@ -35,7 +35,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -275,7 +275,7 @@ public class MeterController {
         
         /** Other Device Properties */
         boolean configurableDevice = !deviceConfigDao.getAllConfigurationsByType(type).isEmpty();
-        boolean dataStreamingEnabled = configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+        boolean dataStreamingEnabled = configurationSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
         boolean streamableDevice = dataStreamingEnabled && !dataStreamingAttributeHelper.getSupportedAttributes(type).isEmpty();
         boolean outageSupported = outageDevice && (outageLogAttribute || blinkCountAttribute);
         // Device has internal disconnect or a disconnect collar attached

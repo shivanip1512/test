@@ -2,7 +2,6 @@ package com.cannontech.common.util.jms;
 
 import java.io.Serializable;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -17,6 +16,7 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.util.jms.api.JmsApi;
 
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
@@ -24,13 +24,13 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
 	private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
     
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain, boolean isInternalMessage) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, isInternalMessage);
+            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi, boolean isInternalMessage) {
+        super(configurationName, configurationSource, jmsTemplate, jmsApi, isInternalMessage);
     }
-    
+
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            ConnectionFactory connectionFactory, String requestQueueName, boolean isPubSubDomain) {
-        super(configurationName, configurationSource, connectionFactory, requestQueueName, isPubSubDomain, false);
+            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi) {
+        super(configurationName, configurationSource, jmsTemplate, jmsApi, false);
     }
 
     @Override
@@ -47,16 +47,14 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         ObjectMessage requestMessage = session.createObjectMessage(requestPayload);
         
         requestMessage.setJMSReplyTo(replyQueue);
-        if (log.isTraceEnabled()) {
-            log.trace("Sending requestMessage to producer " + requestMessage.toString());
-        }
-        if (rfnLogger.isInfoEnabled()) {
-            rfnLogger.info("<<< " + requestPayload.toString());
-        }
+
+        log.trace("Sending requestMessage to producer: {}", requestMessage.toString());
+        
+        logRequest(requestPayload.toString());
         producer.send(requestMessage);
         
-        handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer);
-        log.trace("Request replied or timed out " + requestMessage.toString());
+        handleRepliesAndOrTimeouts(callback, reply1Timeout, reply2Timeout, replyConsumer, requestPayload.toString());
+        log.trace("Request replied or timed out: {}", requestMessage.toString());
         
         replyConsumer.close();
         replyQueue.delete();
@@ -75,13 +73,15 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
     }
 
     private void handleRepliesAndOrTimeouts(JmsReplyReplyHandler<R1, R2> callback,
-                                            final Duration reply1Timeout,
-                                            final Duration reply2Timeout, MessageConsumer replyConsumer)
+            final Duration reply1Timeout,
+            final Duration reply2Timeout, MessageConsumer replyConsumer,
+            final String requestPayload)
             throws JMSException {
-        /* Blocks for status response or until timeout*/
+        /* Blocks for status response or until timeout */
         Message reply1 = replyConsumer.receive(reply1Timeout.getMillis());
-        
+
         if (reply1 == null) {
+            logReply(requestPayload, "NULL");
             callback.handleTimeout1();
             return;
         }
@@ -91,13 +91,15 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         if (!keepGoing) {
             return;
         }
-        /* Blocks for reading point data or until timeout*/
+        /* Blocks for reading point data or until timeout */
         Message reply2 = replyConsumer.receive(reply2Timeout.getMillis());
         if (reply2 == null) {
+            logReply(requestPayload, reply1Payload.toString());
             callback.handleTimeout2();
             return;
         }
         R2 reply2Payload = JmsHelper.extractObject(reply2, callback.getExpectedType2());
+        logReply(requestPayload, reply2Payload.toString());
         callback.handleReply2(reply2Payload);
     }
 }

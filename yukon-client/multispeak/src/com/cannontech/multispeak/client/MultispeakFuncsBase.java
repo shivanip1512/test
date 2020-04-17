@@ -356,7 +356,7 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
     public Credentials getOutgoingCredentials(MultispeakVendor mspVendor, String interfaceName) {
         MultispeakInterface mspInterface = mspVendor.getMspInterfaces()
                                                     .stream()
-                                                    .filter(m -> m.getMspInterface().equals(interfaceName) && !m.isUseVendorAuth())
+                                                    .filter(m -> m.getMspInterface().equals(interfaceName) && !m.getUseVendorAuth())
                                                     .findFirst()
                                                     .orElse(null);
 

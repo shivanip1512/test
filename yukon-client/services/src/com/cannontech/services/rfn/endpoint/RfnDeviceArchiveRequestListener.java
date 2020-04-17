@@ -2,12 +2,11 @@ package com.cannontech.services.rfn.endpoint;
 
 import java.util.Map;
 
-import javax.jms.ConnectionFactory;
+import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -25,6 +24,8 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfDaCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.services.rfn.RfnArchiveProcessor;
@@ -39,8 +40,15 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private RfDaCreationService rfdaCreationService;
     @Autowired private RfnArchiveQueueHandler queueHandler;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_DEVICE_ARCHIVE);
+    }
 
     @Override
     public void process(Object obj, String processor) {
@@ -160,13 +168,7 @@ public class RfnDeviceArchiveRequestListener implements RfnArchiveProcessor {
         } else {
             log.debug("{} acknowledged referenceId={}", processor, entry.getKey());
         }
-        jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE.getResponseQueue().get().getName(), response);
+        jmsTemplate.convertAndSend(response);
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

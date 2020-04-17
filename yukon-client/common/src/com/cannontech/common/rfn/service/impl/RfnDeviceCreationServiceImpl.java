@@ -9,12 +9,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -42,6 +39,8 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
@@ -65,9 +64,6 @@ import com.google.common.collect.ImmutableSet;
 public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceCreationServiceImpl.class);
-    private static final String alertQueueName = JmsApiDirectory.RFN_DEVICE_CREATION_ALERT.getQueue().getName();
-    private static final int incomingMessageWaitMillis = 1000;
-
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private DeviceDao deviceDao;
@@ -79,14 +75,14 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareSevice;
     @Autowired private EnergyCompanyDao ecDao;
-
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private YukonJmsTemplate jmsTemplate;
     private String templatePrefix;
     private Cache<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
     private ConcurrentHashMultiset<RfnIdentifier> uncreatableDevices = ConcurrentHashMultiset.create();
     private Set<String> templatesToIgnore;
-    private JmsTemplate jmsTemplate;
-    
+
     private AtomicInteger deviceLookupAttempt = new AtomicInteger();
     private AtomicInteger newDeviceCreated = new AtomicInteger();
 
@@ -113,6 +109,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         });
         
         templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT);
     }
 
     @Override
@@ -215,7 +212,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                             resolvableTemplate.addData("rfnIdentifier", rfnIdentifier.toString());
                             resolvableTemplate.addData("errMessage", e.getMessage());
                             SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FAILED, new Date(), resolvableTemplate);
-                            jmsTemplate.convertAndSend(alertQueueName, simpleAlert);
+                            jmsTemplate.convertAndSend(simpleAlert);
                         }
                     }
                     throw e;
@@ -295,11 +292,5 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     public int getNewDeviceCreated() {
         return newDeviceCreated.get();
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
-    }
-    
+
 }

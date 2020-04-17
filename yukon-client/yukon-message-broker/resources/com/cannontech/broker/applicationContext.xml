@@ -32,6 +32,8 @@
     </bean>
     
     <bean class="com.cannontech.message.service.BrokerService"/>
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplateFactory"/>
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplate" scope="prototype"/>
     
     <bean id="brokerSystemMetrics" class="com.cannontech.broker.systemMetrics.BrokerSystemMetricsImpl"
            init-method="init"  destroy-method="destroy">

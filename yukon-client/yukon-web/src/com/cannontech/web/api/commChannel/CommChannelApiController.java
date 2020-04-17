@@ -51,6 +51,12 @@ public class CommChannelApiController {
         return new ResponseEntity<>(portService.delete(portId), HttpStatus.OK);
     }
 
+    @GetMapping("/list")
+    public ResponseEntity<Object> retrieveAllPorts() {
+        List<PortBase> listOfPorts = portService.getAllPorts();
+        return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
+    }
+
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
         validators.stream().forEach(e -> {

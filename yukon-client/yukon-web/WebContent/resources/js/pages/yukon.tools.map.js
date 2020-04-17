@@ -18,8 +18,10 @@ yukon.tools.map = (function() {
     _deviceFocusCurrentIcon,
     _deviceFocusIcons = [],
     _deviceFocusLines = [],
-    _deviceFocusIconLayer,
     _violationColor = '#ec971f',
+    
+    //grey
+    _focusRouteColor = yukon.mapping.getFocusRouteColor(),
     
     //order layers should display, Icons > Parent > Primary Route > Neighbors
     _neighborsLayerIndex = 0,
@@ -72,12 +74,8 @@ yukon.tools.map = (function() {
         
         icon.setId(feature.id);
         icon.setStyle(style);
-        if (src_projection === _destProjection) {
-            icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-        } else {
-            var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-            icon.setGeometry(new ol.geom.Point(coord));
-        }
+        var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+        icon.setGeometry(new ol.geom.Point(coord));
                 
         _icons[pao.paoId] = icon;
         _visibility[pao.paoId] = true;
@@ -262,10 +260,8 @@ yukon.tools.map = (function() {
         _deviceFocusLines.forEach(function (line) {
             _map.removeLayer(line);
         });
-        _map.removeLayer(_deviceFocusIconLayer);
         _deviceFocusIcons = [];
         _deviceFocusLines = [];
-        _deviceFocusIconLayer = null;
         //set focus device back to normal style
         if (_deviceFocusCurrentIcon != null) {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
@@ -278,7 +274,6 @@ yukon.tools.map = (function() {
         for (var i in _icons) {
             var icon = _icons[i];
             icon.unset("neighbor");
-            icon.unset("routeInfo");
         }
         if (_deviceFocusCurrentIcon != null) {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
@@ -289,76 +284,82 @@ yukon.tools.map = (function() {
         var source = yukon.mapping.getIconLayerSource(),
             focusDevice = yukon.mapping.findFocusDevice(deviceId, true),
             focusPoints = focusDevice.getGeometry().getCoordinates(),
-            routeColor = '#808080',
+            dashedLine = false,
+            routeColor = _focusRouteColor,
             routeLineWidth = 2.5;
 
         var primaryRoutePreviousPoints = null;
         _removeDeviceFocusLayers();
         _setIconsBack();
         _deviceFocusCurrentIcon = focusDevice;
+        
+        //if focus device was removed, add it back
+        var deviceFound = yukon.mapping.findFocusDevice(deviceId, false);
+        if (deviceFound == null) {
+            source.addFeature(focusDevice);
+            _deviceFocusIcons.push(focusDevice);
+        }
 
         for (var x in routeInfo) {
             var route = routeInfo[x],
-                feature = route.location.features[0],
-                pao = feature.properties.paoIdentifier,
-                style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-                icon = new ol.Feature({ routeInfo: route, pao: pao });
+                feature = yukon.mapping.getFeatureFromRouteOrNeighborData(route);
             
-            icon.setId(feature.id);
-            icon.setStyle(style);
-            
-            //check if device already exists on map...the first device will always be the original device so make the icon larger
-            var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, x == 0);
-            if (deviceFound) {
-            	icon = deviceFound;
-            	icon.set("routeInfo", route);
-            	icon.unset("neighbor");
+            if (feature == null) {
+                dashedLine = true;
+                $('.js-no-location-message').removeClass('dn');
             } else {
-                if (x == 0) {
-                    yukon.mapping.makeDeviceIconLarger(icon);
-                }
-                if (_srcProjection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                var pao = feature.properties.paoIdentifier,
+                    style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
+                    icon = new ol.Feature({ pao: pao });
+            
+                icon.setId(feature.id);
+                icon.setStyle(style);
+                
+                //check if device already exists on map
+                var deviceFound = yukon.mapping.findFocusDevice(pao.paoId, false);
+                if (deviceFound) {
+                    icon = deviceFound;
+                    icon.unset("neighbor");
                 } else {
                     var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
                     icon.setGeometry(new ol.geom.Point(coord));
+                    _deviceFocusIcons.push(icon);
+                    source.addFeature(icon);
                 }
                 
-                _deviceFocusIcons.push(icon);
-                source.addFeature(icon);
+                //draw line
+                var points = [];
+                points.push(icon.getGeometry().getCoordinates());
+                if (primaryRoutePreviousPoints != null) {
+                    points.push(primaryRoutePreviousPoints);
+                } else {
+                    points.push(focusPoints);
+                }
+                primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+                
+                var layerLines = new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        features: [new ol.Feature({
+                            geometry: new ol.geom.LineString(points),
+                            name: 'Line'
+                        })]
+                    }),
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({ 
+                            color: routeColor, 
+                            width: routeLineWidth,
+                            lineDash: dashedLine ? [10,10] : null
+                        })
+                    })
+                });
+                
+                layerLines.setZIndex(_primaryRouteLayerIndex);
+                _deviceFocusLines.push(layerLines);
+                _map.addLayer(layerLines);
+                dashedLine = false;
             }
-            
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            if (primaryRoutePreviousPoints != null) {
-                points.push(primaryRoutePreviousPoints);
-            } else {
-                points.push(focusPoints);
-            }
-            primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: routeColor, width: routeLineWidth })
-                })
-            });
-            
-            layerLines.setZIndex(_primaryRouteLayerIndex);
-            _deviceFocusLines.push(layerLines);
-            _map.addLayer(layerLines);
+
         }
-        
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _deviceFocusIcons})});
-        iconsLayer.setZIndex(_iconLayerIndex);
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
     },
     
     _addNeighborDataToMap = function(deviceId, neighbors) {
@@ -368,7 +369,6 @@ yukon.tools.map = (function() {
             clonedFocusDevice = focusDevice.clone();
             
         clonedFocusDevice.setStyle(focusDevice.getStyle().clone());
-        clonedFocusDevice.unset("routeInfo");
         clonedFocusDevice.unset("neighbor");
             
         _removeDeviceFocusLayers();
@@ -382,66 +382,9 @@ yukon.tools.map = (function() {
         _deviceFocusCurrentIcon = focusDevice;
 
         for (var x in neighbors) {
-            var neighbor = neighbors[x],
-            feature = neighbor.location.features[0],
-            pao = feature.properties.paoIdentifier,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'],
-            icon = new ol.Feature({ neighbor: neighbor, pao: pao });
-            
-            icon.setId(feature.id);
-
-            //check if neighbor already exists on map
-            var neighborFound = yukon.mapping.findFocusDevice(pao.paoId, false);
-            if (neighborFound) {
-            	icon = neighborFound;
-            	icon.set("neighbor", neighbor);
-            	icon.unset("routeInfo");
-            } else {
-                icon.setStyle(style);
-
-                if (_srcProjection === _destProjection) {
-                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                } else {
-                    var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
-                    icon.setGeometry(new ol.geom.Point(coord));
-                }
-                
-                _deviceFocusIcons.push(icon);
-                source.addFeature(icon);
-            }
-            
-            //draw line
-            var points = [];
-            points.push(icon.getGeometry().getCoordinates());
-            points.push(focusPoints);
-
-            var lineColor = yukon.mapping.getNeighborLineColor(neighbor.data.etxBand),
-                lineThickness = yukon.mapping.getNeighborLineThickness(neighbor.data.numSamples);
-            
-            var layerLines = new ol.layer.Vector({
-                source: new ol.source.Vector({
-                    features: [new ol.Feature({
-                        geometry: new ol.geom.LineString(points),
-                        name: 'Line'
-                    })]
-                }),
-
-                style: new ol.style.Style({
-                    stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
-                })
-            });
-            
-            layerLines.setZIndex(_neighborsLayerIndex);
-            _deviceFocusLines.push(layerLines);
-            _map.addLayer(layerLines);
+            var device = neighbors[x];
+            yukon.mapping.createNeighborDevice(device, _deviceFocusIcons, _deviceFocusLines, focusPoints, false);
         }
-        
-        var allIcons = [];
-        allIcons.push.apply(allIcons, _deviceFocusIcons);
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
-        iconsLayer.setZIndex(_iconLayerIndex);
-        _deviceFocusIconLayer = iconsLayer;
-        _map.addLayer(iconsLayer);
     },
     
     _addAllPrimaryRoutes = function() {
@@ -761,15 +704,15 @@ yukon.tools.map = (function() {
                 yukon.ui.block(mapContainer);
                 $.getJSON(yukon.url('/stars/mapNetwork/primaryRoute') + '?' + $.param({ deviceId: deviceId }))
                 .done(function (json) {
-                    if (json.routeInfo) {
-                        _addPrimaryRouteToMap(deviceId, json.routeInfo);
+                    _addAllPrimaryRoutes();
+                    if (json.entireRoute) {
+                        _addPrimaryRouteToMap(deviceId, json.entireRoute);
                     }
                     if (json.errorMsg) {
                         yukon.ui.alertError(json.errorMsg);
                     }
                     yukon.ui.unblock(mapContainer);
                     $('#marker-info').hide();
-                    _addAllPrimaryRoutes();
                 });
             });
             

@@ -32,6 +32,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.dr.setup.ControlScenario;
 import com.cannontech.common.dr.setup.LMDelete;
 import com.cannontech.common.dr.setup.LMDto;
+import com.cannontech.common.dr.setup.LMGearDto;
 import com.cannontech.common.dr.setup.LmSetupFilterType;
 import com.cannontech.common.dr.setup.ProgramDetails;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -156,8 +157,8 @@ public class ControlScenarioSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting Scenario : ", ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName()));
+            log.error("Error deleting scenario: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -200,8 +201,8 @@ public class ControlScenarioSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating Scenario: ", ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlScenario.getName()));
+            log.error("Error creating scenario: {}. Error: {}", controlScenario.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlScenario.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -264,8 +265,8 @@ public class ControlScenarioSetupController {
             List<LiteGear> allGears = retrieveGears(assignedProgram.getProgramId(), userContext, request);
             if (CollectionUtils.isNotEmpty(assignedProgram.getGears())) {
                 LiteGear selectGear = new LiteGear();
-                if (assignedProgram.getGears().get(0).getId() != null) {
-                    selectGear.setGearNumber(assignedProgram.getGears().get(0).getId());
+                if (assignedProgram.getGears().get(0).getGearNumber() != null) {
+                    selectGear.setGearNumber(assignedProgram.getGears().get(0).getGearNumber());
                     selectGear.setOwnerID(assignedProgram.getProgramId());
                     int index = allGears.indexOf(selectGear);
                     if (index != -1) {
@@ -295,7 +296,7 @@ public class ControlScenarioSetupController {
         }
         return liteGears;
     }
-    private LMDto buildGear(LiteGear liteGear) {
-        return new LMDto(liteGear.getGearNumber(), liteGear.getGearName());
+    private LMGearDto buildGear(LiteGear liteGear) {
+        return new LMGearDto(liteGear.getGearNumber(), liteGear.getGearName());
     }
 }

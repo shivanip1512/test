@@ -3,8 +3,6 @@ package com.cannontech.amr.rfn.service;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -23,6 +21,8 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Lists;
@@ -30,8 +30,8 @@ import com.google.common.collect.Lists;
 public class RfnMeterReadService {
     
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnChannelDataConverter rfnChannelDataConverter;
+    @Autowired private YukonJmsTemplate jmsTemplate;
     private final static Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
 
     private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> rrrTemplate;
@@ -143,8 +143,8 @@ public class RfnMeterReadService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, connectionFactory,
-            "yukon.qr.obj.amr.rfn.MeterReadRequest", false);
+        rrrTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, jmsTemplate,
+                JmsApiDirectory.RFN_METER_READ);
     }
     
 }

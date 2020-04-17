@@ -101,7 +101,7 @@
                 </cti:url>
                 <flot:ivvcChart chartId="${chartId}"
                     jsonDataAndOptions="${graphAsJSON}"
-                    title="${graphSettings.graphTitle}" />
+                    title="${fn:escapeXml(graphSettings.graphTitle)}" />
 
                 <cti:dataUpdaterCallback function="yukon.flot.reloadChartIfExpired({chartId:'${chartId}', dataUrl:'${chartJsonDataUrl}'})"
                     initialize="false" largestTime="CAPCONTROL/${zoneId}/IVVC_LARGEST_GRAPH_TIME_FOR_ZONE"/>

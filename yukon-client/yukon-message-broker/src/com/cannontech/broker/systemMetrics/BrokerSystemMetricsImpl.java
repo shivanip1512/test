@@ -4,11 +4,8 @@
 package com.cannontech.broker.systemMetrics;
 
 
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.broker.message.request.BrokerSystemMetricsRequest;
@@ -16,6 +13,9 @@ import com.cannontech.broker.model.BrokerSystemMetricsAttribute;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.systemMetrics.SystemMetricsBase;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 
 
 /**
@@ -30,20 +30,19 @@ import com.cannontech.common.systemMetrics.SystemMetricsBase;
 public class BrokerSystemMetricsImpl extends SystemMetricsBase {
 
     private Logger log = YukonLogManager.getLogger(this.getClass());
-    
-    @Autowired private ConnectionFactory connectionFactory;
-    private JmsTemplate jmsTemplate;
 
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private YukonJmsTemplate jmsTemplate;
 
     public void init() {
         log.debug("BrokerSystemMetricsImpl.init()");
-        jmsTemplate = new JmsTemplate(connectionFactory);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.BROKER_SYSTEM_METRICS);
     }
     
     @Override
     public void insertPointData(Attribute attribute, double value) {
         BrokerSystemMetricsAttribute metricsAttribute = new BrokerSystemMetricsAttribute(attribute,value);
         BrokerSystemMetricsRequest systemMetricRequest = new BrokerSystemMetricsRequest(metricsAttribute);
-        jmsTemplate.convertAndSend("yukon.service.obj.common.broker.ArchiveSystemPoint", systemMetricRequest);
+        jmsTemplate.convertAndSend(systemMetricRequest);
     }
 }

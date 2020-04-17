@@ -1279,6 +1279,9 @@
             <page name="comprehensiveMap" type="BASIC" hideSearch="true">
                 <link>/stars/comprehensiveMap/home</link>
             </page>
+            <page name="commChannel" type="BASIC" hideSearch="true">
+                <link>/stars/device/commChannel/list</link>
+            </page>
             <page name="gateways.list" type="BASIC" hideSearch="true">
                 <link>/stars/gateways</link>
                 <pages>

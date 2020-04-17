@@ -14,6 +14,8 @@
 <%@ attribute name="nameKey" required="true" description="The base i18n key.  This tag requires title and message keys."%>
 <%@ attribute name="argument" type="java.lang.Object"%>
 <%@ attribute name="disableGroup" description="Creates a 'data-disable-group' attribute on buttons at time of show to allow disabling all dialog buttons on click."%>
+<%@ attribute name="userMessage" required="false" description="User message to be displayed on the confirmation dialog."%>
+<%@ attribute name="userMessageClass" required="false" description="Class of the user message viz. error, success, info, warning. Default: info"%>
 <%@ attribute name="okClasses" %>
 
 <cti:msgScope paths=".${nameKey},components.ajaxConfirm.${nameKey}">
@@ -38,7 +40,9 @@ $(function() {
             'message': '${confirmationMsg}',
             'ok': '${okBtnMsg}',
             'cancel': '${cancelBtnMsg}',
-            'okClasses': '${okClasses}'
+            'okClasses': '${okClasses}',
+            'userMessage' : '${userMessage}',
+            'userMessageClass' : '${userMessageClass}'
         }
     });
 });

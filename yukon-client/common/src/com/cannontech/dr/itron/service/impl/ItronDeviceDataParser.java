@@ -203,8 +203,8 @@ public class ItronDeviceDataParser {
             }
             
             // Update Asset Availability, then add the point data to the list to return.
-            double currentValue = dataSource.getPointValue(litePoint.getPointID()).getValue();
             try {
+                double currentValue = dataSource.getPointValue(litePoint.getPointID()).getValue();
                 Optional<PointData> optionalPointData = event.getPointData(decodedData, currentValue, eventTime , litePoint);
                 
                 optionalPointData.ifPresent(pointData -> {

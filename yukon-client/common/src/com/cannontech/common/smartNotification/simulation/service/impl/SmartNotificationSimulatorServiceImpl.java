@@ -15,13 +15,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.amr.monitors.MonitorCacheService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
@@ -37,6 +34,8 @@ import com.cannontech.common.smartNotification.model.SmartNotificationSubscripti
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.smartNotification.service.SmartNotificationSubscriptionService;
 import com.cannontech.common.smartNotification.simulation.service.SmartNotificationSimulatorService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.dr.meterDisconnect.DrMeterControlStatus;
@@ -53,7 +52,6 @@ import com.google.common.collect.Lists;
 
 public class SmartNotificationSimulatorServiceImpl implements SmartNotificationSimulatorService {
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationSimulatorServiceImpl.class);
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired protected IDatabaseCache cache;
     @Autowired private SmartNotificationEventCreationService eventCreationService;
     @Autowired private SmartNotificationEventDao eventDao;
@@ -63,20 +61,18 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private SmartNotificationSubscriptionService subscriptionService;
     @Autowired private YukonUserDao yukonUserDao;
-    
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private static final Random rand = new Random();
     
     private Executor executor = Executors.newCachedThreadPool();
-    private JmsTemplate jmsTemplate;
-    
+
     @PostConstruct
     public void init() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(true);
-        jmsTemplate.setPubSubDomain(false);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_DAILY_DIGEST_TEST);
     }
-    
+
     @Override
     public SimulatorResponseBase clearAllSubscriptions() {
         subscriptionDao.deleteAllSubcriptions();
@@ -189,8 +185,7 @@ public class SmartNotificationSimulatorServiceImpl implements SmartNotificationS
     @Override 
     public SimulatorResponseBase startDailyDigest(int dailyDigestHour) {
         log.info("Initiating a test daily digest for " + dailyDigestHour + ":00");
-        jmsTemplate.convertAndSend(JmsApiDirectory.SMART_NOTIFICATION_DAILY_DIGEST_TEST.getQueue().getName(), 
-                                   new DailyDigestTestParams(dailyDigestHour));
+        jmsTemplate.convertAndSend(new DailyDigestTestParams(dailyDigestHour));
         return new SimulatorResponseBase(true);
     }
     

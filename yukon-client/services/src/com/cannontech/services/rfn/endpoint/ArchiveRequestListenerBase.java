@@ -7,13 +7,12 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+
 import javax.annotation.PreDestroy;
-import javax.jms.ConnectionFactory;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 import com.cannontech.amr.rfn.model.CalculationData;
@@ -30,6 +29,7 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataTracker;
@@ -46,7 +46,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
 
-    protected JmsTemplate jmsTemplate;
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
     
     private static final String CREATION_FAILED_FOR = "Creation failed for ";
@@ -317,7 +316,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     public abstract void init();
     protected abstract List<? extends ConverterBase> getConverters();
     protected abstract Object getRfnArchiveResponse(T archiveRequest);
-    protected abstract String getRfnArchiveResponseQueueName();
+    protected abstract YukonJmsTemplate getJmsTemplate();
     
     @PreDestroy
     protected abstract void shutdown();
@@ -346,15 +345,9 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
-        String queueName = getRfnArchiveResponseQueueName();
-        log.info("Sending Acknowledgement response=" + response + " queueName=" + queueName);
-        jmsTemplate.convertAndSend(queueName, response);
+        YukonJmsTemplate jmsTemplate = getJmsTemplate();
+        log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsTemplate.getDefaultDestinationName());
+        jmsTemplate.convertAndSend(response);
     }
 
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
 }

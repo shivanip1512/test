@@ -11,7 +11,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -20,7 +19,6 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
@@ -31,6 +29,9 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -42,18 +43,20 @@ public class PointDataCollectionService implements MessageListener {
 
     public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION = Duration.standardMinutes(15);
     public static final Duration MINUTES_TO_WAIT_BEFORE_NEXT_CALCULATION = Duration.standardMinutes(60);
-    private static final String recalculationQueueName = "yukon.qr.obj.data.collection.RecalculationRequest";
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private RecentPointValueDao recentPointValueDao;
-    private JmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final Logger log = YukonLogManager.getLogger(PointDataCollectionService.class);
     private boolean collectingData = false;
 
     @PostConstruct
     public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DATA_COLLECTION_RECALCULATION);
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             try {
                 collect(false);
@@ -126,14 +129,14 @@ public class PointDataCollectionService implements MessageListener {
                         } else {
                             log.debug("No new data to collect and 60 minutes have past, sending message to WS to start recalculation.");
                         }
-                        jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest());
+                        jmsTemplate.convertAndSend(new RecalculationRequest());
                     }
                 } else {
                     log.debug("Data collection started.");
                     recentPointValueDao.collectData(recentValues);
                     persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID,
                         changeIdRange.getMax());
-                    jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest());
+                    jmsTemplate.convertAndSend(new RecalculationRequest());
                 }
             }
         } finally {
@@ -150,11 +153,5 @@ public class PointDataCollectionService implements MessageListener {
             recentValues.putAll(rphDao.getSingleAttributeData(devices, attribute, false, null, changeIdRange));
         }
     }
-    
-    @Autowired
-    public void setConnectionFactory(ConnectionFactory connectionFactory) {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(false);
-    }
+
 }

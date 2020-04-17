@@ -3,15 +3,10 @@ package com.cannontech.dr.rfn.service.impl;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
@@ -25,22 +20,12 @@ public abstract class RfnDataSimulatorService {
     protected static final int RANDOM_MAX = 100;
     
     private final Logger log = YukonLogManager.getLogger(RfnDataSimulatorService.class);
-    
-    @Autowired private ConnectionFactory connectionFactory;
+
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
-    
-    protected JmsTemplate jmsTemplate;
+
     protected boolean isScheduled = false;
     protected SimulatorSettings settings;
-    
-    @PostConstruct
-    public void initialize() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(false);
-        jmsTemplate.setDeliveryPersistent(false);
-        jmsTemplate.setPubSubDomain(false);
-    }
-    
+
     /**
      * Setup a schedule to run every 1 minute.
      * In a new thread send read request for this minute.

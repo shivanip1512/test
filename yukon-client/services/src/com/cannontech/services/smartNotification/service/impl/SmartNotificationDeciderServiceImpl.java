@@ -8,15 +8,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
@@ -24,6 +20,8 @@ import com.cannontech.common.smartNotification.dao.SmartNotificationEventDao;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParameters;
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.services.smartNotification.service.SmartNotificationDecider;
 import com.cannontech.services.smartNotification.service.SmartNotificationDecider.ProcessorResult;
@@ -36,29 +34,24 @@ import com.cannontech.services.smartNotification.service.SmartNotificationDecide
 public class SmartNotificationDeciderServiceImpl implements SmartNotificationDeciderService {
         
     private static final Logger log = YukonLogManager.getLogger(SmartNotificationDeciderServiceImpl.class);
-    private static final String queue = JmsApiDirectory.SMART_NOTIFICATION_MESSAGE_PARAMETERS.getQueue().getName();
     private static final String DEFAULT_INTERVALS = "0,1,3,5,15,30";
     private static Intervals intervals;
     
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configSource;
     @Autowired private SmartNotificationEventDao eventsDao;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private final Executor executor = Executors.newCachedThreadPool();
-    private JmsTemplate jmsTemplate;
-    
-	@PostConstruct
+
+    @PostConstruct
     private void init(){
         String intervalStr = configSource.getString(MasterConfigString.SMART_NOTIFICATION_INTERVALS,
             DEFAULT_INTERVALS);
         intervals = new Intervals(intervalStr, DEFAULT_INTERVALS);
         WaitTime.setIntervals(intervals);
-        
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(true);
-        jmsTemplate.setDeliveryPersistent(true);
-        jmsTemplate.setPubSubDomain(false);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_MESSAGE_PARAMETERS);
     }
     
     private void logDebug(String text, SmartNotificationDecider decider) {
@@ -135,7 +128,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             messages.forEach(m -> {
                 log.debug(m.getType() + " Sending message=" + m);
             });
-            jmsTemplate.convertAndSend(queue, new SmartNotificationMessageParametersMulti(messages, interval, sendAllInOneEmail));
+            jmsTemplate.convertAndSend(new SmartNotificationMessageParametersMulti(messages, interval, sendAllInOneEmail));
         }
     }
     

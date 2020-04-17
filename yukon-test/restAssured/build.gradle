@@ -58,7 +58,7 @@ test {
 asciidoctor {
     dependsOn clean
     inputs.dir snippetsDir
-    sourceDir = file('src/main/resources/asciidoc/dr')
+    sourceDir = file('src/main/resources/asciidoc')
     
     dependsOn test
 }

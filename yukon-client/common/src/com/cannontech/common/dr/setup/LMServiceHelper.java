@@ -22,11 +22,11 @@ public class LMServiceHelper {
     @Autowired private LoadProgramSetupService loadProgramService;
     @Autowired private ProgramConstraintService programConstraintService;
 
-    public List<LMDto> getGearsforModel(Integer programId, List<LMDto> gears) {
+    public List<LMGearDto> getGearsforModel(Integer programId, List<LMGearDto> gears) {
         List<LiteGear> allGears = Lists.newArrayList();
         allGears.addAll(lmGearDao.getAllLiteGears(programId));
         
-        Integer gearNumber = (gears != null && gears.size() == 1) ? gears.get(0).getId() : null;
+        Integer gearNumber = (gears != null && gears.size() == 1) ? gears.get(0).getGearNumber() : null;
         if(gearNumber != null) {
             return allGears.stream()
                            .filter(liteGear -> liteGear.getGearNumber() == gearNumber.intValue())
@@ -40,8 +40,8 @@ public class LMServiceHelper {
         }
     }
 
-    private LMDto buildGear(LiteGear liteGear) {
-        return new LMDto(liteGear.getGearNumber(), liteGear.getGearName());
+    private LMGearDto buildGear(LiteGear liteGear) {
+        return new LMGearDto(liteGear.getGearNumber(), liteGear.getGearName());
     }
     
     public void validateProgramsAndGear(ControlScenario controlScenario) {
@@ -53,9 +53,9 @@ public class LMServiceHelper {
                                                          .orElseThrow(() -> new NotFoundException("Program Id not found"));
 
             programDetails.getGears().stream()
-                                     .filter(gr -> gr.getId().compareTo(program.getGears().get(0).getId()) == 0)
+                                     .filter(gear -> gear.getGearNumber().compareTo(program.getGears().get(0).getGearNumber()) == 0)
                                      .findFirst()
-                                     .orElseThrow(() -> new NotFoundException("Gear Id not found"));
+                                     .orElseThrow(() -> new NotFoundException("Gear Number not found"));
         });
     }
 

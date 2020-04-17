@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -22,6 +23,9 @@ import com.cannontech.amr.rfn.model.RfnMeterPlusReadingData;
 import com.cannontech.amr.rfn.service.NmSyncService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.services.calculated.CalculatedPointDataProducer;
 import com.google.common.collect.ImmutableList;
@@ -34,9 +38,9 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     
     @Autowired private CalculatedPointDataProducer calculatedProducer;
     @Autowired private NmSyncService nmSyncService;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
-    private static final String archiveResponseQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveResponse";
-    
+    private YukonJmsTemplate jmsTemplate;
     private List<Converter> converters; // Threads to convert channel data to point data
     private List<Calculator> calculators; // Threads to calculate point data based on converted channel data
     private AtomicInteger archivedReadings = new AtomicInteger();
@@ -146,6 +150,7 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
         converters = converterBuilder.build();
         calculators = calculatorBuilder.build();
         nmSyncService.scheduleSyncRequest();
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
     }
     
     @PreDestroy
@@ -174,8 +179,8 @@ public class MeterReadingArchiveRequestListener extends ArchiveRequestListenerBa
     }
 
     @Override
-    protected String getRfnArchiveResponseQueueName() {
-        return archiveResponseQueueName;
+    protected YukonJmsTemplate getJmsTemplate() {
+        return jmsTemplate;
     }
 
     @ManagedAttribute

@@ -1,5 +1,6 @@
 package com.cannontech.services.rfn.endpoint;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +25,9 @@ import com.cannontech.common.device.commands.exception.CommandCompletionExceptio
 import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -45,7 +49,6 @@ import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.collect.ImmutableList;
-import java.util.AbstractMap.SimpleEntry;
 
 @ManagedResource
 public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase<RfnLcrArchiveRequest> {
@@ -58,10 +61,11 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private LmHardwareCommandService commandService;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(LcrReadingArchiveRequestListener.class);
     private  Map<Schema, RfnLcrParsingStrategy> strategies;
-    private static final String archiveResponseQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveResponse";
     private List<Worker> workers;
     private final AtomicInteger archivedReadings = new AtomicInteger();
     private final AtomicInteger numPausedQueues = new AtomicInteger();
@@ -166,6 +170,7 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
             worker.start();
         }
         workers = workerBuilder.build();
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_LCR_ARCHIVE);
     }
     
     @PreDestroy
@@ -199,8 +204,8 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     }
     
     @Override
-    protected String getRfnArchiveResponseQueueName() {
-        return archiveResponseQueueName;
+    protected YukonJmsTemplate getJmsTemplate() {
+        return jmsTemplate;
     }
     
     @ManagedAttribute

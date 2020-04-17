@@ -14,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.annotation.PostConstruct;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -32,7 +33,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.amr.rfn.message.alarm.RfnAlarm;
@@ -56,6 +56,9 @@ import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -76,12 +79,14 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ResourceLoader loader;
-        
-    private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
-    private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
-    private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
-    private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";
-    private static final String locationResponseQueueName = "yukon.qr.obj.amr.rfn.LocationResponse";
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate rfAlarmArchiveJmsTemplate;
+    private YukonJmsTemplate rfEventArchiveJmsTemplate;
+    private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;
+    private YukonJmsTemplate rfnLcrReadArchiveJmsTemplate;
+    private YukonJmsTemplate locationJmsTemplate;
+
     private static final String dataIndicationQueueName = "com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication";
     
     private static final Logger log = YukonLogManager.getLogger(RfnEventTestingServiceImpl.class);
@@ -209,7 +214,16 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
         groupedMeterTypes = Collections.unmodifiableMap(groupedMeterTypesBuilder);
     }
-    
+
+    @PostConstruct
+    public void init() {
+        rfAlarmArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_ALARM_ARCHIVE);
+        rfEventArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_EVENT_ARCHIVE);
+        rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
+        rfnLcrReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_LCR_READ_ARCHIVE);
+        locationJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.LOCATION);
+    }
+
     @Override
     public Map<String, List<RfnManufacturerModel>> getGroupedRfnTypes() {
         return groupedMeterTypes;
@@ -276,7 +290,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         Collections.shuffle(messages);
         
         for (RfnMeterReadingArchiveRequest message : messages) {
-            sendArchiveRequest(meterReadingArchiveRequestQueueName, message);
+            sendArchiveRequest(rfnMeterReadArchiveJmsTemplate, message);
         }
     }
     
@@ -346,7 +360,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             }
             channelData.setUnitOfMeasureModifiers(modifiers);
             
-            sendArchiveRequest(meterReadingArchiveRequestQueueName, message);
+            sendArchiveRequest(rfnMeterReadArchiveJmsTemplate, message);
         }
         return serials.length;
     }
@@ -384,7 +398,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 readArchiveRequest.setType(RfnLcrReadingType.UNSOLICITED);
                 
                 // Put request on queue
-                sendArchiveRequest(lcrReadingArchiveRequestQueueName, readArchiveRequest);
+                sendArchiveRequest(rfnLcrReadArchiveJmsTemplate, readArchiveRequest);
                 numRequests++;
             }
         }
@@ -403,7 +417,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
             locationResponse.setLocationId(99L + i);
             locationResponse.setOrigin(Origin.RF_NODE);
             locationResponse.setLastChangedDate(new Instant().getMillis());
-            sendArchiveRequest(locationResponseQueueName, locationResponse);
+            sendArchiveRequest(locationJmsTemplate, locationResponse);
         }
     }
     
@@ -413,7 +427,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         RfnEventArchiveRequest archiveRequest = new RfnEventArchiveRequest();
         archiveRequest.setEvent(rfnEvent);
         archiveRequest.setDataPointId(1);
-        sendArchiveRequest(eventArchiveRequestQueueName, archiveRequest);
+        sendArchiveRequest(rfEventArchiveJmsTemplate, archiveRequest);
     }
     
     private void buildAndSendAlarm(RfnTestEvent event, int serialNum) {
@@ -423,7 +437,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         RfnAlarmArchiveRequest archiveRequest = new RfnAlarmArchiveRequest();
         archiveRequest.setAlarm(rfnAlarm);
         archiveRequest.setDataPointId(1);
-        sendArchiveRequest(alarmArchiveRequestQueueName, archiveRequest);
+        sendArchiveRequest(rfAlarmArchiveJmsTemplate, archiveRequest);
     }
 
     private <T extends RfnEvent> T buildEvent(RfnTestEvent testEvent, T rfnEvent, int serialNum) {
@@ -483,14 +497,10 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         }
     }
     
-    private <R extends RfnIdentifyingMessage> void sendArchiveRequest(String queueName, R archiveRequest) {
-        log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue " + queueName);
-        JmsTemplate jmsTemplate;
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(false);
-        jmsTemplate.setDeliveryPersistent(false);
-        jmsTemplate.setPubSubDomain(false);
-        jmsTemplate.convertAndSend(queueName, archiveRequest);
+    private <R extends RfnIdentifyingMessage> void sendArchiveRequest(YukonJmsTemplate jmsTemplate, R archiveRequest) {
+        log.debug("Sending archive request: " + archiveRequest.getRfnIdentifier().getCombinedIdentifier() + " on queue "
+                + jmsTemplate.getDefaultDestinationName());
+        jmsTemplate.convertAndSend(archiveRequest);
     }
 
     @Override

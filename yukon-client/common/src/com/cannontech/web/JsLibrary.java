@@ -17,6 +17,7 @@ public enum JsLibrary {
     JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
     JQUERY_DATE_TIME_ENTRY("/resources/js/lib/datetimeentry/jquery.datetimeentry.min.js",
                            "/resources/js/lib/datetimeentry/jquery.datetimeentry.js"), // http://keith-wood.name/datetimeEntry.html
+    JQUERY_PLUGIN("/resources/js/lib/datetimeentry/jquery.plugin.min.js", "/resources/js/lib/datetimeentry/jquery.plugin.js"), // http://keith-wood.name/datetimeEntry.html
     JQUERY_FILE_UPLOAD("/resources/js/lib/fileupload/jquery.fileupload.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js
     JQUERY_FORM("/resources/js/lib/form/jquery.form.min.js", "/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
     JQUERY_GRID("/resources/js/lib/jqgrid/js/jquery.jqGrid.min.js",
@@ -41,7 +42,7 @@ public enum JsLibrary {
     JQUERY_UI("/resources/js/lib/jquery-ui/jquery-ui.min.js",
               "/resources/js/lib/jquery-ui/jquery-ui.js"), // http://www.jqueryui.com
     
-    JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js"), // https://github.com/trentrichardson/jQuery-Timepicker-Addon
+    JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js", "/resources/js/lib/time-picker/jquery-ui-timepicker-addon.js"), // https://github.com/trentrichardson/jQuery-Timepicker-Addon
     JQUERY_UI_WIDGET("/resources/js/lib/fileupload/jquery.ui.widget.js"), // https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_FLOTCHARTS("/resources/js/common/yukon.flot.js"), //in-house
@@ -84,7 +85,7 @@ public enum JsLibrary {
     
     MOMENT("/resources/js/lib/moment/moment.min.js"),
     MOMENT_TZ("/resources/js/lib/moment/moment-timezone-with-data.min.js"),
-    MODERNIZR("/resources/js/lib/modernizr/custom.js");
+    MODERNIZR("/resources/js/lib/modernizr/modernizr-custom.js");
     
     private String path = "";
     private String devPath;

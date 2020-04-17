@@ -250,8 +250,8 @@ public class LoadProgramSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error creating load program: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadProgram.getName()));
+            log.error("Error creating load program: {}. Error: {}", loadProgram.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadProgram.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -275,8 +275,8 @@ public class LoadProgramSetupController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
-            log.error("Error deleting load program: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error.exception.message", ex.getMessage()));
+            log.error("Error deleting load program: {}. Error: {}", lmDelete.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -313,8 +313,8 @@ public class LoadProgramSetupController {
             JsonUtils.getWriter().writeValue(servletResponse.getOutputStream(), json);
             return null;
         } catch (RestClientException ex) {
-            log.error("Error while copying load program: " + ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", programCopy.getName()));
+            log.error("Error copying load program: {}. Error: {}", programCopy.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "copy.error", programCopy.getName(), ex.getMessage()));
             json.put("redirectUrl", setupRedirectLink);
         }
 

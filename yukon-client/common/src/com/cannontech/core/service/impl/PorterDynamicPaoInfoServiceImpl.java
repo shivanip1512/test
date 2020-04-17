@@ -4,8 +4,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import javax.jms.ConnectionFactory;
-
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -35,8 +33,8 @@ public class PorterDynamicPaoInfoServiceImpl implements PorterDynamicPaoInfoServ
     ThriftRequestReplyTemplate<DynamicPaoInfoRequest, DynamicPaoInfoResponse> thriftMessenger;
     
     @Autowired
-    PorterDynamicPaoInfoServiceImpl(String queueName, ConnectionFactory connectionFactory) {
-        thriftMessenger = new ThriftRequestReplyTemplate<>(connectionFactory, queueName, serializer, deserializer);
+    PorterDynamicPaoInfoServiceImpl(String queueName) {
+        thriftMessenger = new ThriftRequestReplyTemplate<>(queueName, serializer, deserializer);
     }
     
     private DynamicPaoInfoResponse requestInfoFromPorter(DynamicPaoInfoRequest requestMsg)

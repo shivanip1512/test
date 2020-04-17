@@ -10,14 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
-
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
@@ -27,6 +28,8 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.Range;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -52,10 +55,17 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(RfnLcrTlvDataMappingServiceImpl.class);
     private static final DateTime year2001 = new DateTime(2001, 1, 1, 0, 0);
     private static final int RECORDING_INTERVAL = 60;
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.LM_ADDRESS_NOTIFICATION);
+    }
 
     @Override
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, ListMultimap<FieldType, byte[]>  data) {
@@ -277,7 +287,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     }
 
     @Override
-    public void storeAddressingData(JmsTemplate jmsTemplate, ListMultimap<FieldType, byte[]> data, RfnDevice device) {
+    public void storeAddressingData(ListMultimap<FieldType, byte[]> data, RfnDevice device) {
 
         ExpressComReportedAddress currentAddress = expressComReportedAddressDao.findCurrentAddress(device.getPaoIdentifier().getPaoId());
         ExpressComReportedAddress address = generateUpdatedAddressingFromMessage(data, device.getPaoIdentifier().getPaoId(), currentAddress);
@@ -298,7 +308,7 @@ public class RfnLcrTlvDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             expressComReportedAddressDao.insertAddress(address);
         }
 
-        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION.getQueue().getName(), address);
+        jmsTemplate.convertAndSend(address);
 
     }
 

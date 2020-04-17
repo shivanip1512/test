@@ -4,13 +4,11 @@ import java.util.Date;
 import java.util.Random;
 
 import javax.annotation.PostConstruct;
-import javax.jms.ConnectionFactory;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.archive.RfnMeterReadingArchiveRequest;
@@ -20,7 +18,6 @@ import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectCmdType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadDataReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadReply;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadRequest;
@@ -28,8 +25,6 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingDataReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingReplyType;
 import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.amr.rfn.message.status.RfnStatusArchiveRequest;
-import com.cannontech.amr.rfn.message.status.type.DemandResetStatus;
-import com.cannontech.amr.rfn.message.status.type.DemandResetStatusCode;
 import com.cannontech.amr.rfn.message.status.type.MeterDisconnectStatus;
 import com.cannontech.amr.rfn.message.status.type.MeterInfo;
 import com.cannontech.amr.rfn.message.status.type.MeterInfoStatus;
@@ -38,6 +33,8 @@ import com.cannontech.amr.rfn.message.status.type.RfnMeterDisconnectStateType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlDisconnectSimulatorSettings;
 import com.cannontech.dr.rfn.model.RfnMeterReadAndControlReadSimulatorSettings;
@@ -49,13 +46,16 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadAndControlSimulatorService {
 
     private static final Logger log = YukonLogManager.getLogger(RfnMeterReadAndControlSimulatorServiceImpl.class);
-    private static final String meterReadingArchiveRequestQueue = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
-    private static final String meterReadRequestQueue = "yukon.qr.obj.amr.rfn.MeterReadRequest";
-    private static final String meterDisconnectRequestQueue = "yukon.qr.obj.amr.rfn.MeterDisconnectRequest";
-    @Autowired private ConnectionFactory connectionFactory;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private RfnDeviceDao dao;
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    @Autowired private YukonJmsTemplate jmsTemplate;
+
+    private YukonJmsTemplate rfnMeterReadJmsTemplate;
+    private YukonJmsTemplate rfnMeterReadArchiveJmsTemplate;
+    private YukonJmsTemplate rfnMeterDisconnectJmsTemplate;
+    private YukonJmsTemplate rfnStatusArchiveJmsTemplate;
     private RfnMeterReadAndControlDisconnectSimulatorSettings disconnectSettings;
     private RfnMeterReadAndControlReadSimulatorSettings readSettings;
     
@@ -64,19 +64,15 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     
     private volatile boolean meterDisconnectReplyActive;
     private volatile boolean meterDisconnectReplyStopping;
-    
-    private static final int incomingMessageWaitMillis = 1000;
-    private JmsTemplate jmsTemplate;
-    
+
     @PostConstruct
     public void init() {
-        jmsTemplate = new JmsTemplate(connectionFactory);
-        jmsTemplate.setExplicitQosEnabled(false);
-        jmsTemplate.setDeliveryPersistent(false);
-        jmsTemplate.setPubSubDomain(false);
-        jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis);
+        rfnMeterReadJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ);
+        rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
+        rfnMeterDisconnectJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT);
+        rfnStatusArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
     }
-    
+
     @Override
     public boolean startMeterReadReply(RfnMeterReadAndControlReadSimulatorSettings settings) {
         if (meterReadReplyActive) {
@@ -190,7 +186,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                 while (!meterReadReplyStopping) {
                     try {
                         
-                        Object message = jmsTemplate.receive(meterReadRequestQueue);
+                        Object message = rfnMeterReadJmsTemplate.receive();
                         if (message != null && message instanceof ObjectMessage) {
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             RfnMeterReadRequest request = (RfnMeterReadRequest) requestMessage.getObject();
@@ -207,7 +203,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             archiveRequest.setReadingType(RfnMeterReadingType.INTERVAL);
                             archiveRequest.setData(response2.getData());
                             archiveRequest.setDataPointId(1);
-                            jmsTemplate.convertAndSend(meterReadingArchiveRequestQueue, archiveRequest);
+                            rfnMeterReadArchiveJmsTemplate.convertAndSend(archiveRequest);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in meter read reply.", e);
@@ -273,7 +269,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
             public void run() {
                 while (!meterDisconnectReplyStopping) {
                     try {
-                        Object message = jmsTemplate.receive(meterDisconnectRequestQueue);
+                        Object message = rfnMeterDisconnectJmsTemplate.receive();
                         if (message != null && message instanceof ObjectMessage) {
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             RfnMeterDisconnectRequest request = (RfnMeterDisconnectRequest) requestMessage.getObject();
@@ -286,7 +282,7 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
                             
                             
                             RfnStatusArchiveRequest response = setupStatusArchiveRequest(response2.getState(), request.getRfnIdentifier());
-                            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_STATUS_ARCHIVE.getQueue().getName(), response);
+                            rfnStatusArchiveJmsTemplate.convertAndSend(response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in meter disconnect reply.", e);
