@@ -1,6 +1,6 @@
 package com.cannontech.services.infrastructure.service.impl;
 
-import static org.joda.time.Instant.*;
+import static org.joda.time.Instant.now;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +10,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
@@ -27,6 +29,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationEventType;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -63,7 +66,9 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private SmartNotificationEventCreationService smartNotificationEventCreationService;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     
     /**
      * The thread where the calculation is done.
@@ -84,6 +89,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             + " minute(s) after the server is started and run every " + runFrequencyMinutes
             + " minute(s) with force refresh possible every " + minimumTimeBetweenRuns + " minute(s).");
         executor.scheduleAtFixedRate(calculationThread, minimumTimeBetweenRuns, runFrequencyMinutes, TimeUnit.MINUTES);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.INFRASTRUCTURE_WARNINGS_CACHE_REFRESH);
     }
     
     /**
@@ -188,7 +194,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
         refreshRequest.setLastRunTime(lastRun);
         //nextRun - time the warning calculation ended + minimumTimeBetweenRuns
         refreshRequest.setNextRunTime(new DateTime().plusMinutes(minimumTimeBetweenRuns).toInstant());
-        jmsTemplate.convertAndSend(JmsApiDirectory.INFRASTRUCTURE_WARNINGS_CACHE_REFRESH, refreshRequest);
+        jmsTemplate.convertAndSend(refreshRequest);
     }
     
     /**

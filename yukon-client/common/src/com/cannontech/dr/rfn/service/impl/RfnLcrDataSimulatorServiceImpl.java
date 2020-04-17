@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -36,6 +37,8 @@ import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.dr.model.PerformanceVerificationEventMessage;
@@ -153,6 +156,9 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private PerformanceVerificationDao performanceVerificationDao;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private static final JAXBContext jaxbContext = initJaxbContext();
     
     //minute of the day to send a request at/list of devices to send a read request to
@@ -169,7 +175,12 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             throw new Error(e);
         }
     }
-    
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_LCR_READ_ARCHIVE);
+    }
+
     @Override
     public void execute(int minuteOfTheDay) {
         sendReadRequests(rangeDevices.get(minuteOfTheDay), rangeDevicesStatus);
@@ -359,7 +370,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     private void simulateLcrReadRequest(RfnLcrReadSimulatorDeviceParameters deviceParameters, RfnDataSimulatorStatus status) {
         try {
             RfnLcrReadingArchiveRequest readArchiveRequest = createReadArchiveRequest(deviceParameters);
-            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_LCR_READ_ARCHIVE, readArchiveRequest);
+            jmsTemplate.convertAndSend(readArchiveRequest);
             status.getSuccess().incrementAndGet();
             
         } catch (RfnLcrSimulatorException | IOException e) {

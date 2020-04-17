@@ -12,6 +12,7 @@ import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataProcessor;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
+import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 @Service
@@ -35,7 +36,7 @@ public class NetworkManagerDataProcessor implements SystemDataProcessor {
     }
 
     @Override
-    public boolean supportsField(String field) {
+    public boolean supportsField(FieldType field) {
         return false;
     }
 

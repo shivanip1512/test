@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.annotation.PostConstruct;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
@@ -35,6 +36,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -52,12 +54,18 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     @Autowired private RecentPointValueDao rpvDao;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(DataCollectionWidgetServiceImpl.class);
     private Map<DeviceGroup, DataCollectionSummary> enabledDeviceSummary = new ConcurrentHashMap<>();
     private Map<DeviceGroup, DataCollectionSummary> allDeviceSummary = new ConcurrentHashMap<>();
     private boolean calculating = false;
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DATA_COLLECTION);
+    }
 
     @Override
     public Instant getRunTime(boolean nextRunTime) {
@@ -86,7 +94,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
 
     @Override
     public void collectData() {
-        jmsTemplate.convertAndSend(JmsApiDirectory.DATA_COLLECTION, new CollectionRequest());
+        jmsTemplate.convertAndSend(new CollectionRequest());
     }
 
     @Override

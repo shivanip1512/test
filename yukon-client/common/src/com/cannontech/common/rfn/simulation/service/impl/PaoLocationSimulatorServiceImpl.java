@@ -11,9 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.dao.model.DynamicRfnDeviceData;
 import com.cannontech.clientutils.YukonLogManager;
@@ -32,6 +35,7 @@ import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.service.PaoLocationSimulatorService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
@@ -67,7 +71,14 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
+    }
 
     @Override
     public void setupLocations() {
@@ -154,7 +165,7 @@ public class PaoLocationSimulatorServiceImpl implements PaoLocationSimulatorServ
         NetworkTreeUpdateTimeRequest request = new NetworkTreeUpdateTimeRequest();
         request.setForceRefresh(true);
         log.debug("Sending NetworkTreeUpdateTimeRequest message to request reload of network tree information.");
-        jmsTemplate.convertAndSend(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST, request);
+        jmsTemplate.convertAndSend(request);
     }
 
     private Set<RfnGateway> createAdditionalGateways(Set<RfnGateway> gateways, List<List<LiteYukonPAObject>> rfnDevicesSplit) {

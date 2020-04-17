@@ -17,7 +17,6 @@ import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.ByteUtil;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.rfn.dao.PqrEventDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
@@ -44,7 +43,6 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PqrEventDao pqrEventDao;
     @Autowired private PqrEventParsingService pqrEventLogParsingService;
-    @Autowired protected YukonJmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrTlvParsingStrategy.class);
 
@@ -93,7 +91,7 @@ public class RfnLcrTlvParsingStrategy implements RfnLcrParsingStrategy {
                                                                            .collect(Collectors.toSet());
 
             if (CollectionUtils.isNotEmpty(commonAddressingFields)) {
-                rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+                rfnLcrDataMappingService.storeAddressingData(decodedPayload, rfnDevice);
             }
             
             if(schema.supportsPowerQualityResponse()) {
