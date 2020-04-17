@@ -8,22 +8,22 @@ import org.springframework.stereotype.Service;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
-import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationPublisherService;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
+import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationsPublisherService;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 
 @Service
-public class CloudDataConfigurationPublisherServiceImpl implements CloudDataConfigurationPublisherService {
+public class CloudDataConfigurationsPublisherServiceImpl implements CloudDataConfigurationsPublisherService {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
 
     @Override
-    public void publish(CloudDataConfiguration cloudDataConfiguration) {
+    public void publish(CloudDataConfigurations cloudDataConfiguration) {
         jmsTemplate.convertAndSend(cloudDataConfiguration);
     }
 
     @PostConstruct
     public void init() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.CLOUD_DATA_CONFIGURATION);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.CLOUD_DATA_CONFIGURATIONS);
     }
 
 }

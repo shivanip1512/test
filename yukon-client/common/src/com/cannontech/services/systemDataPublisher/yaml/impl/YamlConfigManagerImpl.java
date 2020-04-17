@@ -2,8 +2,8 @@ package com.cannontech.services.systemDataPublisher.yaml.impl;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -21,6 +21,7 @@ import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.services.systemDataPublisher.yaml.model.ScalarField;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -32,7 +33,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     private final String SYSTEM_PUBLISHER_METADATA = "encryptedSystemPublisherMetadata.yaml";
     private final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
-    private final List<CloudDataConfiguration> cloudDataConfigurations = new CopyOnWriteArrayList <>();
+    private CloudDataConfigurations cloudDataConfigurations;
 
     @PostConstruct
     private void init() {
@@ -51,6 +52,8 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
         // when file is changed. For reload we can write a watcher which will watch for any change and when something
         // gets changed reload the configuration.
         ScalarField scalars = null;
+        cloudDataConfigurations = new CloudDataConfigurations();
+        List<CloudDataConfiguration> configurations = new ArrayList<CloudDataConfiguration>();
         try {
             ClassPathResource systemPublisherYamlMetadata = new ClassPathResource(SYSTEM_PUBLISHER_METADATA);
             Yaml yaml = new Yaml();
@@ -62,17 +65,16 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
             log.debug("YAML configuration " + yamlObject);
             scalars = objectMapper.readValue(jsonBytes, ScalarField.class);
             if (scalars.getYukonConfigurations() != null) {
-                cloudDataConfigurations.addAll(getDecryptedConfigurations(scalars.getYukonConfigurations(),
-                        SystemDataPublisher.YUKON));
+                configurations.addAll(getDecryptedConfigurations(scalars.getYukonConfigurations(), SystemDataPublisher.YUKON));
             }
             if (scalars.getNmConfigurations() != null) {
-                cloudDataConfigurations.addAll(getDecryptedConfigurations(scalars.getNmConfigurations(),
+                configurations.addAll(getDecryptedConfigurations(scalars.getNmConfigurations(),
                         SystemDataPublisher.NETWORK_MANAGER));
             }
             if (scalars.getOtherConfigurations() != null) {
-                cloudDataConfigurations.addAll(getDecryptedConfigurations(scalars.getOtherConfigurations(),
-                        SystemDataPublisher.OTHER));
+                configurations.addAll(getDecryptedConfigurations(scalars.getOtherConfigurations(), SystemDataPublisher.OTHER));
             }
+            cloudDataConfigurations.setConfigurations(configurations);
         } catch (JsonParseException | JsonMappingException e) {
             log.error("Error while parsing the YAML file fields.", e);
         } catch (IOException e) {
@@ -113,7 +115,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     }
 
     @Override
-    public List<CloudDataConfiguration> getCloudDataConfigurations() {
+    public CloudDataConfigurations getCloudDataConfigurations() {
         return cloudDataConfigurations;
     }
 

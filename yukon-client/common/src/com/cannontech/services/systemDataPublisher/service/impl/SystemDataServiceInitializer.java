@@ -12,19 +12,22 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.services.systemDataPublisher.context.NetworkManagerDBConfig;
+import com.cannontech.services.systemDataPublisher.listener.CloudDataConfigurationsAdvisoryListener;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataHandler;
-import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationPublisherService;
+import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationsPublisherService;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 
 @Service
 public class SystemDataServiceInitializer {
 
     @Autowired private YamlConfigManager yamlConfigManager;
-    @Autowired private CloudDataConfigurationPublisherService cloudDataConfigurationPublisherService;
+    @Autowired private CloudDataConfigurationsPublisherService cloudDataConfigurationsPublisherService;
     @Autowired private SystemDataHandler systemDataHandler;
     @Autowired private NetworkManagerDBConfig networkManagerDBConfig;
+    @Autowired private CloudDataConfigurationsAdvisoryListener advisoryListener;
 
     private static final Logger log = YukonLogManager.getLogger(SystemDataServiceInitializer.class);
 
@@ -35,20 +38,15 @@ public class SystemDataServiceInitializer {
      */
     @PostConstruct
     private void init() {
-        List<CloudDataConfiguration> cloudDataConfigurations = readYamlConfiguration();
-        publishCloudDataConfigurations(cloudDataConfigurations);
-        List<CloudDataConfiguration> cloudConfigurationToProcess = filterRelevantConfigurations(cloudDataConfigurations);
+        publishCloudDataConfigurations();
+        new Thread(advisoryListener.listen()).start();
+        List<CloudDataConfiguration> cloudConfigurationToProcess = filterRelevantConfigurations(
+                readYamlConfiguration().getConfigurations());
         handleCloudConfiguration(cloudConfigurationToProcess);
     }
 
-    /**
-     * Method to publish CloudDataConfiguration data to the topic on startup.
-     */
-    private void publishCloudDataConfigurations(List<CloudDataConfiguration> cloudDataConfigurations) {
-        cloudDataConfigurations.stream().forEach(
-                configuration -> {
-                    cloudDataConfigurationPublisherService.publish(configuration);
-                });
+    public void publishCloudDataConfigurations() {
+        cloudDataConfigurationsPublisherService.publish(readYamlConfiguration());
     }
 
     /**
@@ -79,10 +77,11 @@ public class SystemDataServiceInitializer {
     /**
      * This method will read the yaml configuration file.
      */
-    private List<CloudDataConfiguration> readYamlConfiguration() {
-        List<CloudDataConfiguration> cloudDataConfigurations = yamlConfigManager.getCloudDataConfigurations();
+    private CloudDataConfigurations readYamlConfiguration() {
+        CloudDataConfigurations cloudDataConfigurations = yamlConfigManager.getCloudDataConfigurations();
         if (log.isDebugEnabled()) {
-            cloudDataConfigurations.stream()
+            cloudDataConfigurations.getConfigurations()
+                    .stream()
                     .forEach(configuration -> {
                         log.debug("Retrieved CloudDataConfiguration values = " + configuration.toString());
                     });
