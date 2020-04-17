@@ -35,9 +35,18 @@
                                 <cti:msg2 var="commChannelStatus" key="yukon.common.enabled"/>
                             </c:if>
                             <tr>
-                                <!-- TODO : Replace the view url with comm channel view url -->
-                                <cti:url var="viewUrl" value="/stars/device/commChannel/list"/>
-                                <td width="50%"><a href="${viewUrl}">${fn:escapeXml(commChannel.name)}</a></td>
+                                <td width="50%">
+                                    <c:choose>
+                                        <c:when test="${commChannel.webSupportedType}">
+                                            <!-- TODO : Replace the view url with comm channel view url -->
+                                            <cti:url var="viewUrl" value="/stars/device/commChannel/list"/>
+                                            <a href="${viewUrl}">${fn:escapeXml(commChannel.name)}</a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            ${fn:escapeXml(commChannel.name)}
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                                 <td><i:inline key="${commChannel.type}"/></td>
                                 <td class="${cssClass}">${commChannelStatus}</td>
                             </tr>

@@ -36,6 +36,7 @@ import com.cannontech.web.api.dr.setup.model.LoadGroupFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
 import com.cannontech.web.api.token.TokenHelper;
+import com.cannontech.web.stars.commChannel.CommChannelFilter;
 
 public class ApiRequestHelper {
 
@@ -63,7 +64,7 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(ControlRawState.class, new ParameterizedTypeReference<List<ControlRawState>>() {
         });
-        paramTypeRefMap.put(PortBase.class, new ParameterizedTypeReference<List<PortBase>>() {
+        paramTypeRefMap.put(CommChannelFilter.class, new ParameterizedTypeReference<List<CommChannelFilter>>() {
         });
     }
     
