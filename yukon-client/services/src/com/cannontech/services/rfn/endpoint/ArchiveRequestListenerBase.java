@@ -7,7 +7,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
+
 import javax.annotation.PreDestroy;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,6 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
-import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataTracker;
@@ -44,7 +45,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
-    @Autowired protected YukonJmsTemplate jmsTemplate;
 
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
     
@@ -316,7 +316,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     public abstract void init();
     protected abstract List<? extends ConverterBase> getConverters();
     protected abstract Object getRfnArchiveResponse(T archiveRequest);
-    protected abstract JmsApi<?, ?, ?> getRfnArchiveQueueApi();
+    protected abstract YukonJmsTemplate getJmsTemplate();
     
     @PreDestroy
     protected abstract void shutdown();
@@ -345,9 +345,9 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
-        JmsApi<?, ?, ?> jmsApi = getRfnArchiveQueueApi();
-        log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsApi.getResponseQueueName());
-        jmsTemplate.convertAndSendToResponseQueue(jmsApi, response);
+        YukonJmsTemplate jmsTemplate = getJmsTemplate();
+        log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsTemplate.getDefaultDestinationName());
+        jmsTemplate.convertAndSend(response);
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
 
 @Service
 public class GasMeterDataProcessor extends PaoCountDataProcessor {
@@ -15,7 +16,7 @@ public class GasMeterDataProcessor extends PaoCountDataProcessor {
     }
 
     @Override
-    public boolean supportsField(String field) {
-        return "gmcount".equals(field);
+    public boolean supportsField(FieldType field) {
+        return field == FieldType.GAS_METER_COUNT;
     }
 }

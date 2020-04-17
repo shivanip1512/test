@@ -6,9 +6,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.amr.monitors.message.OutageJmsMessage;
 import com.cannontech.amr.statusPointMonitoring.dao.StatusPointMonitorDao;
 import com.cannontech.amr.statusPointMonitoring.model.StatusPointMonitor;
@@ -23,6 +26,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -47,12 +51,19 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired private PointDao pointDao;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private PointDataTrackingLogger trackingLogger = new PointDataTrackingLogger(log);
     private Cache<Integer, PointValueHolder> recentStatusPoints = CacheBuilder.newBuilder()
                        .expireAfterWrite(30, TimeUnit.SECONDS)
                        .build();
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.STATUS_POINT_MONITOR_OUTAGE);
+    }
+
     @Override
     protected List<StatusPointMonitor> getAllMonitors() {
         return statusPointMonitorDao.getAllStatusPointMonitors();
@@ -143,7 +154,7 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
                     outageJmsMessage.setPointValueQualityHolder(richPointData.getPointValue());
                     
                     log.debug("Outage message pushed to jms queue: " + outageJmsMessage);
-                    jmsTemplate.convertAndSend(JmsApiDirectory.STATUS_POINT_MONITOR_OUTAGE, outageJmsMessage);
+                    jmsTemplate.convertAndSend(outageJmsMessage);
                     break; // once we've found a match, stop evaluating processors
                 }
             }

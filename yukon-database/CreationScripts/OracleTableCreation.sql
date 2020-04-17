@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/13/2020 1:59:59 PM                         */
+/* Created on:     4/16/2020 3:04:55 PM                         */
 /*==============================================================*/
 
 
@@ -6103,7 +6103,6 @@ create table JOBSCHEDULEDREPEATING  (
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
 
-INSERT INTO JobScheduledRepeating VALUES (-4, '0 01 0 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
 

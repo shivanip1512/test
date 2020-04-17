@@ -11,11 +11,13 @@ import javax.jms.ObjectMessage;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigInteger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -36,8 +38,9 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private InfrastructureWarningsDao infrastructureWarningsDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private static List<InfrastructureWarning> cachedWarnings;
     private static InfrastructureWarningSummary cachedSummary;
     private boolean refreshWarnings;
@@ -58,6 +61,7 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
         refreshWarnings = true;
         refreshSummary = true;
         asyncDynamicDataSource.addDBChangeListener(this);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.INFRASTRUCTURE_WARNINGS);
     }
     
     @Override
@@ -93,8 +97,7 @@ public class InfrastructureWarningsWidgetServiceImpl implements InfrastructureWa
     @Override
     public void initiateRecalculation() {
         log.info("Manually initiating a recalculation of infrastructure warnings.");
-        jmsTemplate.convertAndSend(JmsApiDirectory.INFRASTRUCTURE_WARNINGS,
-                new InfrastructureWarningsRequest());
+        jmsTemplate.convertAndSend(new InfrastructureWarningsRequest());
     }
 
     @Override

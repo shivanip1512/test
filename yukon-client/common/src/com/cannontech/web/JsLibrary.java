@@ -85,7 +85,7 @@ public enum JsLibrary {
     
     MOMENT("/resources/js/lib/moment/moment.min.js"),
     MOMENT_TZ("/resources/js/lib/moment/moment-timezone-with-data.min.js"),
-    MODERNIZR("/resources/js/lib/modernizr/custom.js");
+    MODERNIZR("/resources/js/lib/modernizr/modernizr-custom.js");
     
     private String path = "";
     private String devPath;
