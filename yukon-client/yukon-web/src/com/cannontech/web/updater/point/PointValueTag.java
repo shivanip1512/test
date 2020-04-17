@@ -5,10 +5,10 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.web.util.HtmlUtils;
 
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -70,7 +70,7 @@ public class PointValueTag extends YukonTagSupport {
         String updater = value.getIdentifier().getFullIdentifier();
         out.print("<span title=\"PointId : " + pointId + "\" data-updater=\"" + updater + "\" " 
                 + "class=\"" + cssClass +"\">");
-        out.print(HtmlUtils.htmlEscape(outputText));
+        out.print(StringEscapeUtils.escapeXml11(outputText));
         out.print("</span>");
         if (useColor) {
             out.print("</span>");
