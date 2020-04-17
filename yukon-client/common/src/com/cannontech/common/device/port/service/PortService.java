@@ -23,5 +23,5 @@ public interface PortService {
     /**
      * Delete the Port.
      */
-    Integer delete(int portId);
+    int delete(int portId);
 }

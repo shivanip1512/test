@@ -48,9 +48,7 @@ public class CommChannelApiController {
 
     @DeleteMapping("/delete/{portId}")
     public ResponseEntity<Object> delete(@PathVariable int portId) {
-        HashMap<String, Integer> paoIdMap = new HashMap<>();
-        paoIdMap.put("portId", portService.delete(portId));
-        return new ResponseEntity<>(paoIdMap, HttpStatus.OK);
+        return new ResponseEntity<>(portService.delete(portId), HttpStatus.OK);
     }
 
     @InitBinder("portBase")

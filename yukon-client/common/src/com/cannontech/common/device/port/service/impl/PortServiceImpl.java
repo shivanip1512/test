@@ -70,7 +70,7 @@ public class PortServiceImpl implements PortService {
    
     @Override
     @Transactional
-    public Integer delete(int portId) {
+    public int delete(int portId) {
         Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
                                                       .stream()
                                                       .filter(group -> group.getLiteID() == portId)
