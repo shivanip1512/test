@@ -20,7 +20,7 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.google.common.collect.ImmutableList;
 
 @ManagedResource
@@ -106,7 +106,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
     
     //Not needed, no response is sent for this message
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
+    protected YukonJmsTemplate getJmsTemplate() {
         return null;
     }
     

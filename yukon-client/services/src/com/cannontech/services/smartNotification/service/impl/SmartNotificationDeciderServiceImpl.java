@@ -21,6 +21,7 @@ import com.cannontech.common.smartNotification.model.SmartNotificationMessagePar
 import com.cannontech.common.smartNotification.model.SmartNotificationMessageParametersMulti;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.services.smartNotification.service.SmartNotificationDecider;
 import com.cannontech.services.smartNotification.service.SmartNotificationDecider.ProcessorResult;
@@ -39,8 +40,9 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
     @Autowired private ConfigurationSource configSource;
     @Autowired private SmartNotificationEventDao eventsDao;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private final Executor executor = Executors.newCachedThreadPool();
 
     @PostConstruct
@@ -49,6 +51,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             DEFAULT_INTERVALS);
         intervals = new Intervals(intervalStr, DEFAULT_INTERVALS);
         WaitTime.setIntervals(intervals);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SMART_NOTIFICATION_MESSAGE_PARAMETERS);
     }
     
     private void logDebug(String text, SmartNotificationDecider decider) {
@@ -125,8 +128,7 @@ public class SmartNotificationDeciderServiceImpl implements SmartNotificationDec
             messages.forEach(m -> {
                 log.debug(m.getType() + " Sending message=" + m);
             });
-            jmsTemplate.convertAndSend(JmsApiDirectory.SMART_NOTIFICATION_MESSAGE_PARAMETERS,
-                    new SmartNotificationMessageParametersMulti(messages, interval, sendAllInOneEmail));
+            jmsTemplate.convertAndSend(new SmartNotificationMessageParametersMulti(messages, interval, sendAllInOneEmail));
         }
     }
     

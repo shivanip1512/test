@@ -17,7 +17,8 @@ import com.cannontech.amr.rfn.message.alarm.RfnAlarmArchiveResponse;
 import com.cannontech.amr.rfn.service.RfnMeterEventService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.util.jms.api.JmsApi;
+import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.collect.ImmutableList;
@@ -28,7 +29,9 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
     private static final Logger log = YukonLogManager.getLogger(AlarmArchiveRequestListener.class);
 
     @Autowired private RfnMeterEventService rfnMeterEventService;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private List<Worker> workers;
     private AtomicInteger processedAlarmArchiveRequest = new AtomicInteger();
 
@@ -77,6 +80,7 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
             worker.start();
         }
         workers = workerBuilder.build();
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RF_ALARM_ARCHIVE);
     }
 
     @PreDestroy
@@ -96,8 +100,8 @@ public class AlarmArchiveRequestListener extends ArchiveRequestListenerBase<RfnA
     }
 
     @Override
-    protected JmsApi<?, ?, ?> getRfnArchiveQueueApi() {
-        return JmsApiDirectory.RF_ALARM_ARCHIVE;
+    protected YukonJmsTemplate getJmsTemplate() {
+        return jmsTemplate;
     }
 
     @Override

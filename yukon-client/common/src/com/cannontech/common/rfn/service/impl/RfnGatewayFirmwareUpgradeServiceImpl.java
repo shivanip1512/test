@@ -28,6 +28,7 @@ import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -42,8 +43,9 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
-    
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private Cache<String, String> firmwareUpdateVersionCache;
 
     @PostConstruct
@@ -52,6 +54,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
                                                  .expireAfterWrite(1, TimeUnit.MINUTES)
                                                  .initialCapacity(2) //We expect only 1 or 2 firmware update servers
                                                  .build();
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE);
     }
     
     @Override
@@ -74,7 +77,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
             request.setReleaseVersion(serverInfo.getAvailableVersion());
             
             log.debug("Sending firmware update request: " + request);
-            jmsTemplate.convertAndSend(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE, request);
+            jmsTemplate.convertAndSend(request);
         }
         
         return updateId;

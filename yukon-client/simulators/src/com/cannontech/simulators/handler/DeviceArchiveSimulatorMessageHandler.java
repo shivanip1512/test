@@ -4,13 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.archive.RfnDeviceArchiveRequest;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.message.request.DeviceArchiveSimulatorRequest;
@@ -22,9 +26,15 @@ public class DeviceArchiveSimulatorMessageHandler extends SimulatorMessageHandle
     private static final Logger log = YukonLogManager.getLogger(DeviceArchiveSimulatorMessageHandler.class);
 
     @Autowired @Qualifier("longRunning") private Executor executor;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private boolean isRunning = false;
+
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_ARCHIVE);
+    }
 
     public DeviceArchiveSimulatorMessageHandler() {
         super(SimulatorType.DEVICE_ARCHIVE);
@@ -49,7 +59,7 @@ public class DeviceArchiveSimulatorMessageHandler extends SimulatorMessageHandle
                                 }
                                 RfnDeviceArchiveRequest response = new RfnDeviceArchiveRequest();
                                 response.setRfnIdentifiers(rfnIdentifiers);
-                                jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_ARCHIVE, response);
+                                jmsTemplate.convertAndSend(response);
                             } catch (Exception e) {
                                 log.error("Asynchronous device creation failed", e);
                             } finally {
