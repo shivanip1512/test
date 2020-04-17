@@ -8,17 +8,9 @@
 
 ==== UDP Terminal Server
 
-*Request Properties* :
-
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_04_Delete/request-fields.adoc[]
-
 *Request JSON* :
 
 include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_04_Delete/http-request.adoc[]
-
-*Response Properties* :
-
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_04_Delete/response-fields.adoc[]
 
 *Response JSON* :
 

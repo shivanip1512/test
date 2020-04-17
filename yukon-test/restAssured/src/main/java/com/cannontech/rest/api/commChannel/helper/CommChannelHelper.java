@@ -113,6 +113,16 @@ public class CommChannelHelper {
                 fieldWithPath("ipAddress").type(JsonFieldType.STRING).description("IP Address(In case Of UDP Port ipAddress value is UDP)").optional(),
         };
     }
+    
+    public static FieldDescriptor[] buildGetAllPortsDescriptor() {
+        return new FieldDescriptor[] {
+                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("Port Id"),
+                fieldWithPath("[].name").type(JsonFieldType.STRING).description("Port Name"),
+                fieldWithPath("[].enable").type(JsonFieldType.BOOLEAN).description("Status"),
+                fieldWithPath("[].type").type(JsonFieldType.STRING).description("Type"),
+        };
+    }
+    
 
     public static List<FieldDescriptor> buildTCPTerminalServerPortDescriptor() {
         List<FieldDescriptor> tcpTerminalServerPortDescriptor = Arrays.asList(portBaseFields());

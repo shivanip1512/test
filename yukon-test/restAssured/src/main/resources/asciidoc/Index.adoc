@@ -196,6 +196,7 @@ include::TcpTerminalServerUpdate.adoc[]
 include::UDPTerminalServerUpdate.adoc[]
 
 === Retrieve
+include::AllPortsGet.adoc[]
 include::TcpPortGet.adoc[]
 include::TcpTerminalServerGet.adoc[]
 include::UDPTerminalServerGet.adoc[]
@@ -204,4 +205,3 @@ include::UDPTerminalServerGet.adoc[]
 include::TcpPortDelete.adoc[]
 include::TcpTerminalServerDelete.adoc[]
 include::UDPTerminalServerDelete.adoc[]
-

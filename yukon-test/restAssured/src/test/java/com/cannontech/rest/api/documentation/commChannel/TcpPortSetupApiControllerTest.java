@@ -114,18 +114,30 @@ public class TcpPortSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
     public void Test_TcpPort_04_Delete() {
-        MockPortDelete tcpPortDeleteObject = MockPortDelete.builder()
-                .name(CommChannelHelper.getTcpPortName(MockPaoType.TCPPORT))
-                .build();
-        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                requestFields(fieldWithPath("name").type(JsonFieldType.STRING).description("Comm Channel Name")),
-                responseFields(fieldWithPath("portId").type(JsonFieldType.NUMBER).description("Port Id"))))
+        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}"))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(tcpPortDeleteObject)
                 .when()
                 .delete(ApiCallHelper.getProperty("deletePort") + portId)
+                .then()
+                .extract()
+                .response();
+        assertTrue("Status code should be 200", response.statusCode() == 200);
+    }
+
+    @Test
+    public void Test_AllPorts_05_Get() {
+
+        List<FieldDescriptor> getAllPortDescriptor = Arrays.asList(CommChannelHelper.buildGetAllPortsDescriptor());
+        List<FieldDescriptor> list = new ArrayList<>(getAllPortDescriptor);
+        Response response = given(documentationSpec)
+                .filter(document("{ClassName}/{methodName}", responseFields(list)))
+                .accept("application/json")
+                .contentType("application/json")
+                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
+                .when()
+                .get(ApiCallHelper.getProperty("getAllCommChannels"))
                 .then()
                 .extract()
                 .response();
