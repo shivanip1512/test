@@ -39,12 +39,15 @@ public class SystemDataServiceInitializer {
     @PostConstruct
     private void init() {
         publishCloudDataConfigurations();
-        new Thread(advisoryListener.listen()).start();
+        new Thread(advisoryListener.advisoryListener()).start();
         List<CloudDataConfiguration> cloudConfigurationToProcess = filterRelevantConfigurations(
                 readYamlConfiguration().getConfigurations());
         handleCloudConfiguration(cloudConfigurationToProcess);
     }
 
+    /**
+     * Method to publish CloudDataConfigurations data to the topic.
+     */
     public void publishCloudDataConfigurations() {
         cloudDataConfigurationsPublisherService.publish(readYamlConfiguration());
     }

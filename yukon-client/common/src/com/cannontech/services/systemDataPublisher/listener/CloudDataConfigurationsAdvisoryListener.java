@@ -32,10 +32,9 @@ public class CloudDataConfigurationsAdvisoryListener {
     @Autowired ConnectionFactory connectionFactory;
     @Autowired SystemDataServiceInitializer serviceInitializer;
     private static String CLOUD_DATA_CONFIGURATIONS_TOPIC = "com.eaton.eas.cloud.CloudDataConfigurations";
-    // Service Manager also consumes message from the same topic. So setting previousConsumerCount to 1.
     private static int previousConsumerCount = 0;
 
-    public Runnable listen() {
+    public Runnable advisoryListener() {
         return new Runnable() {
             public void run() {
                 try {
