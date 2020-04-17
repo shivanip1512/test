@@ -8,8 +8,8 @@ import javax.servlet.jsp.JspWriter;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.util.HtmlUtils;
 
-import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.point.PointType;
@@ -70,7 +70,7 @@ public class PointValueTag extends YukonTagSupport {
         String updater = value.getIdentifier().getFullIdentifier();
         out.print("<span title=\"PointId : " + pointId + "\" data-updater=\"" + updater + "\" " 
                 + "class=\"" + cssClass +"\">");
-        out.print(StringUtils.escapeXmlAndJavascript(outputText));
+        out.print(HtmlUtils.htmlEscape(outputText));
         out.print("</span>");
         if (useColor) {
             out.print("</span>");
