@@ -115,16 +115,11 @@ public class TcpTerminalServerSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
     public void Test_TcpTerminalServer_04_Delete() {
-        MockPortDelete tcpPortDeleteObject = MockPortDelete.builder()
-                .name(CommChannelHelper.getTcpPortName(MockPaoType.TSERVER_SHARED))
-                .build();
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",
-                requestFields(fieldWithPath("name").type(JsonFieldType.STRING).description("Comm Channel Name")),
                 responseFields(fieldWithPath("portId").type(JsonFieldType.NUMBER).description("Port Id"))))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(tcpPortDeleteObject)
                 .when()
                 .delete(ApiCallHelper.getProperty("deletePort") + portId)
                 .then()
