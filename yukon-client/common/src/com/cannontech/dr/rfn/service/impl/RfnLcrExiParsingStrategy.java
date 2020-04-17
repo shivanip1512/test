@@ -13,7 +13,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.ParseException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
-import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
@@ -33,7 +32,6 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
     @Autowired private RfnLcrDataMappingService<SimpleXPathTemplate> rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     @Autowired protected AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired protected YukonJmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(RfnLcrExiParsingStrategy.class);
 
@@ -75,7 +73,7 @@ public class RfnLcrExiParsingStrategy implements RfnLcrParsingStrategy {
             }
 
             // Handle addressing data
-            rfnLcrDataMappingService.storeAddressingData(jmsTemplate, decodedPayload, rfnDevice);
+            rfnLcrDataMappingService.storeAddressingData(decodedPayload, rfnDevice);
         } else {
             log.warn("Discarding invalid or old pointdata for device " + rfnDevice + " with timestamp " + payloadTime);
         }

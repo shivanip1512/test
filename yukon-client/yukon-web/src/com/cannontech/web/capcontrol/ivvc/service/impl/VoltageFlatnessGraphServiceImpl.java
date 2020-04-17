@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -642,16 +643,19 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         zone = StringUtils.defaultIfEmpty(zone, "");
         distance = StringUtils.defaultIfEmpty(distance, "");
         ignore = StringUtils.defaultIfEmpty(ignore,  "");
-        
+
+        String escapedZone = StringEscapeUtils.escapeXml11(zone);
+        String escapedPaoName = StringEscapeUtils.escapeXml11(paoName);
+        String escapedPointName = StringEscapeUtils.escapeXml11(pointName);
+
         if (!distance.isEmpty()) {
             String balloonDistanceText = settings.getBalloonDistanceText();
             distance = balloonDistanceText + distance;
         }
-        
+
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String balloonText = messageSourceAccessor.
-            getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
-                       value, phase, pointName, paoName, timeStamp, zone, distance, ignore);
+        String balloonText = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.balloonText",
+                value, phase, escapedPointName, escapedPaoName, timeStamp, escapedZone, distance, ignore);
         return balloonText;
     }
     

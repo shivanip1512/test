@@ -19,8 +19,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -147,6 +149,7 @@ public class MultispeakController {
         if (result.hasErrors()) {
             return bindAndForward(multispeak, result, redirectAttributes, isCreateNew);
         }
+
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
 
         try {
@@ -622,6 +625,28 @@ public class MultispeakController {
             }
         }
         return mspInterfaceList;
+    }
+
+    @PostMapping("renderEndpointAuthPopup")
+    public String renderEndpointAuthPopup(ModelMap model, @RequestParam("indexValue") Integer indexValue,
+            @RequestParam("inUserName") String inUserName,
+            @RequestParam("inPassword") String inPassword,
+            @RequestParam("outUserName") String outUserName,
+            @RequestParam("outPassword") String outPassword,
+            @RequestParam("useVendorAuth") Boolean useVendorAuth,
+            @RequestParam("validateCertificate") Boolean validateCertificate,
+            @RequestParam("mode") PageEditMode mode) {
+        MultispeakInterface multispeakInterface = new MultispeakInterface();
+        multispeakInterface.setInPassword(inPassword);
+        multispeakInterface.setInUserName(inUserName);
+        multispeakInterface.setOutPassword(outPassword);
+        multispeakInterface.setOutUserName(outUserName);
+        multispeakInterface.setUseVendorAuth(useVendorAuth);
+        multispeakInterface.setValidateCertificate(validateCertificate);
+        model.addAttribute("multispeakInterface", multispeakInterface);
+        model.addAttribute("indexValue", indexValue);
+        model.addAttribute("mode", mode);
+        return "setup/endpointAuthSettingsPopup.jsp";
     }
 
     @PostConstruct

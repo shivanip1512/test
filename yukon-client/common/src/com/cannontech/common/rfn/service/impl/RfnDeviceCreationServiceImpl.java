@@ -40,6 +40,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.EnergyCompanyNotFoundException;
@@ -74,7 +75,8 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private HardwareUiService hardwareSevice;
     @Autowired private EnergyCompanyDao ecDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    private YukonJmsTemplate jmsTemplate;
     private String templatePrefix;
     private Cache<String, Boolean> recentlyUncreatableTemplates;
     private ConcurrentHashMultiset<String> unknownTemplatesEncountered = ConcurrentHashMultiset.create();
@@ -107,6 +109,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         });
         
         templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT);
     }
 
     @Override
@@ -209,7 +212,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                             resolvableTemplate.addData("rfnIdentifier", rfnIdentifier.toString());
                             resolvableTemplate.addData("errMessage", e.getMessage());
                             SimpleAlert simpleAlert = new SimpleAlert(AlertType.RFN_DEVICE_CREATION_FAILED, new Date(), resolvableTemplate);
-                            jmsTemplate.convertAndSend(JmsApiDirectory.RFN_DEVICE_CREATION_ALERT, simpleAlert);
+                            jmsTemplate.convertAndSend(simpleAlert);
                         }
                     }
                     throw e;

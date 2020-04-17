@@ -456,17 +456,22 @@ public class ControlAreaSetupServiceImpl implements ControlAreaSetupService {
      * Validate Control Area update.
      */
     private void validateUpdate(List<ControlAreaProgramAssignment> newPrograms, Vector<LMControlAreaProgram> oldPrograms) {
+        if (CollectionUtils.isEmpty(oldPrograms)) {
+            return;
+        }
         List<Integer> oldProgramIds = oldPrograms.stream()
                                                  .map(lp -> lp.getLmProgramDeviceID())
                                                  .sorted()
                                                  .collect(Collectors.toList());
 
-        List<Integer> newProgramIds = newPrograms.stream()
-                                                 .map(lp -> lp.getProgramId())
-                                                 .sorted()
-                                                 .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(newPrograms)) {
+            List<Integer> newProgramIds = newPrograms.stream()
+                                                     .map(lp -> lp.getProgramId())
+                                                     .sorted()
+                                                     .collect(Collectors.toList());
 
-        oldProgramIds.removeAll(newProgramIds);
+            oldProgramIds.removeAll(newProgramIds);
+        }
         checkProgramAssignment(oldProgramIds.stream().collect(Collectors.toSet()));
     }
 

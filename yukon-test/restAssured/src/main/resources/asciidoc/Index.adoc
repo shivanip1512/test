@@ -187,13 +187,21 @@ include::DeviceReading.adoc[]
 
 === Create
 include::TcpPortCreate.adoc[]
+include::TcpTerminalServerCreate.adoc[]
+include::UDPTerminalServerCreate.adoc[]
 
 === Update
 include::TcpPortUpdate.adoc[]
+include::TcpTerminalServerUpdate.adoc[]
+include::UDPTerminalServerUpdate.adoc[]
 
 === Retrieve
-include::TcpPortGet.adoc[]
 include::AllPortsGet.adoc[]
+include::TcpPortGet.adoc[]
+include::TcpTerminalServerGet.adoc[]
+include::UDPTerminalServerGet.adoc[]
 
 === Delete
 include::TcpPortDelete.adoc[]
+include::TcpTerminalServerDelete.adoc[]
+include::UDPTerminalServerDelete.adoc[]

@@ -1,3 +1,4 @@
+
 package com.cannontech.web.api.commChannel;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class CommChannelApiController {
 
     @Autowired private PortService portService;
     @Autowired private PortCreationValidator<? extends PortBase<?>> portCreationValidator;
-    private List<PortValidator<? extends PortBase<?>>> validators;
+    @Autowired private PortValidator<? extends PortBase<?>> portValidator;
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
@@ -46,8 +47,7 @@ public class CommChannelApiController {
 
     @DeleteMapping("/delete/{portId}")
     public ResponseEntity<Object> delete(@PathVariable int portId) {
-        // TODO : This will he completed in delete Jira.
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+        return new ResponseEntity<>(portService.delete(portId), HttpStatus.OK);
     }
 
     @GetMapping("/list")
@@ -58,19 +58,12 @@ public class CommChannelApiController {
 
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
-        validators.stream().forEach(e -> {
-            if (e.supports(binder.getTarget().getClass())) {
-                binder.addValidators(e);
-            }
-        });
+        binder.addValidators(portValidator);
+
         String portId = ServletUtils.getPathVariable("portId");
         if (portId == null) {
             binder.addValidators(portCreationValidator);
         }
     }
-
-    @Autowired
-    void setValidators(List<PortValidator<? extends PortBase<?>>> validators) {
-        this.validators = validators;
-    }
+   
 }
