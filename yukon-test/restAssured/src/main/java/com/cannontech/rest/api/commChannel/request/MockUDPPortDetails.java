@@ -13,8 +13,9 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @RequiredArgsConstructor
+public class MockUDPPortDetails extends MockTerminalServerPortDetailBase {
 
-public class MockTcpPortDetail extends MockPortBase {
-    private MockPortTiming timing;
+    Boolean enableEncryption;
+    private String keyInHex;
+    private String ipAddress = "UDP";
 }
-

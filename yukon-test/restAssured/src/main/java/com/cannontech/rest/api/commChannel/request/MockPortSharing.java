@@ -13,8 +13,10 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @RequiredArgsConstructor
-
-public class MockTcpPortDetail extends MockPortBase {
-    private MockPortTiming timing;
+public class MockPortSharing {
+    private MockSharedPortType sharedPortType;
+    private Integer sharedSocketNumber;
 }
+
+
 

@@ -2453,6 +2453,389 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Comm Channel",
+            "item": [
+                {
+                    "name": "TCP Port",
+                    "item": [
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"type\": \"TCPPORT\",\n    \"name\": \"TCP Port Create\",\n    \"enable\": true,\n    \"baudRate\": \"BAUD_300\",\n   \n    \"timing\": {\n        \"preTxWait\": 25,\n        \"rtsToTxWait\": 0,\n        \"postTxWait\": 0,\n        \"receiveDataWait\": 0,\n        \"extraTimeOut\": 0\n    }\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/create",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "create"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Retrieve",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n\t\"name\"  : \"TCP Port Create1\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "delete",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"type\": \"TCPPORT\",\n    \"name\": \"TCP Port Update\",\n    \"enable\": true,\n    \"baudRate\": \"BAUD_300\",\n   \n    \"timing\": {\n        \"preTxWait\": 25,\n        \"rtsToTxWait\": 0,\n        \"postTxWait\": 0,\n        \"receiveDataWait\": 0,\n        \"extraTimeOut\": 0\n    }\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "update",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ],
+                    "protocolProfileBehavior": {},
+                    "_postman_isSubFolder": true
+                },
+                {
+                    "name": "TCP Terminal Server",
+                    "item": [
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n  \"name\" : \"TCP Terminal Server\",\r\n  \"enable\" : true,\r\n  \"baudRate\" : \"BAUD_2400\",\r\n  \"type\" : \"TSERVER_SHARED\",\r\n  \"portNumber\" : 1234,\r\n  \"carrierDetectWait\" : true,\r\n  \"carrierDetectWaitInMilliseconds\" : 123,\r\n  \"protocolWrap\" : \"IDLC\",\r\n  \"timing\" : {\r\n    \"preTxWait\" : 87,\r\n    \"rtsToTxWait\" : 823,\r\n    \"postTxWait\" : 89,\r\n    \"receiveDataWait\" : 76,\r\n    \"extraTimeOut\" : 98\r\n  },\r\n  \"sharing\" : {\r\n    \"sharedPortType\" : \"ACS\",\r\n    \"sharedSocketNumber\" : 100\r\n  },\r\n  \"ipAddress\" : \"Localhost\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/create",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "create"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Retrieve",
+                            "protocolProfileBehavior": {
+                                "disableBodyPruning": true
+                            },
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n\t\"name\"  : \"TCP Terminal Server\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "delete",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n  \"name\" : \"TCP Terminal Server Update\",\r\n  \"enable\" : true,\r\n  \"baudRate\" : \"BAUD_2400\",\r\n  \"type\" : \"TSERVER_SHARED\",\r\n  \"portNumber\" : 1234,\r\n  \"carrierDetectWait\" : true,\r\n  \"carrierDetectWaitInMilliseconds\" : 123,\r\n  \"protocolWrap\" : \"IDLC\",\r\n  \"timing\" : {\r\n    \"preTxWait\" : 87,\r\n    \"rtsToTxWait\" : 823,\r\n    \"postTxWait\" : 89,\r\n    \"receiveDataWait\" : 76,\r\n    \"extraTimeOut\" : 98\r\n  },\r\n  \"sharing\" : {\r\n    \"sharedPortType\" : \"ACS\",\r\n    \"sharedSocketNumber\" : 100\r\n  },\r\n  \"ipAddress\" : \"Localhost\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "update",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ],
+                    "protocolProfileBehavior": {},
+                    "_postman_isSubFolder": true
+                },
+                {
+                    "name": "UDP Terminal Server",
+                    "item": [
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n  \"name\" : \"UDP Terminal Server\",\r\n  \"enable\" : true,\r\n  \"baudRate\" : \"BAUD_2400\",\r\n  \"type\" : \"UDPPORT\",\r\n  \"portNumber\" : 5534,\r\n  \"carrierDetectWait\" : true,\r\n  \"carrierDetectWaitInMilliseconds\" : 544,\r\n  \"protocolWrap\" : \"IDLC\",\r\n  \"timing\" : {\r\n    \"preTxWait\" : 87,\r\n    \"rtsToTxWait\" : 823,\r\n    \"postTxWait\" : 89,\r\n    \"receiveDataWait\" : 76,\r\n    \"extraTimeOut\" : 98\r\n  },\r\n  \"sharing\" : {\r\n    \"sharedPortType\" : \"ACS\",\r\n    \"sharedSocketNumber\" : 100\r\n  },\r\n  \"enableEncryption\" : true,\r\n  \"keyInHex\" : \"00112233445566778899aabbccddeeff\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/create",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "create"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n  \"name\" : \"UDP Terminal Server\",\r\n  \"enable\" : true,\r\n  \"baudRate\" : \"BAUD_2400\",\r\n  \"type\" : \"UDPPORT\",\r\n  \"portNumber\" : 5534,\r\n  \"carrierDetectWait\" : true,\r\n  \"carrierDetectWaitInMilliseconds\" : 544,\r\n  \"protocolWrap\" : \"IDLC\",\r\n  \"timing\" : {\r\n    \"preTxWait\" : 87,\r\n    \"rtsToTxWait\" : 823,\r\n    \"postTxWait\" : 89,\r\n    \"receiveDataWait\" : 76,\r\n    \"extraTimeOut\" : 98\r\n  },\r\n  \"sharing\" : {\r\n    \"sharedPortType\" : \"ACS\",\r\n    \"sharedSocketNumber\" : 100\r\n  },\r\n  \"enableEncryption\" : true,\r\n  \"keyInHex\" : \"00112233445566778899aabbccddeeff\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "update",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Retrieve",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": ""
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n\t\"name\"  : \"UDP Terminal Server\"\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "delete",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ],
+                    "protocolProfileBehavior": {},
+                    "_postman_isSubFolder": true
+                },
+                {
+                    "name": "GetAllCommChannels",
+                    "protocolProfileBehavior": {
+                        "disableBodyPruning": true
+                    },
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": ""
+                        },
+                        "url": {
+                            "raw": "{{api-url}}/api/device/commChannel/list",
+                            "host": [
+                                "{{api-url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "device",
+                                "commChannel",
+                                "list"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "auth": {
