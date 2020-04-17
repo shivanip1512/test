@@ -70,6 +70,27 @@ public class PortServiceImpl implements PortService {
         port.buildModel(directPort);
         return port;
     }
+   
+    @Override
+    @Transactional
+    public int delete(int portId) {
+        Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
+                                                      .stream()
+                                                      .filter(group -> group.getLiteID() == portId)
+                                                      .findFirst();
+        if (litePort.isEmpty()) {
+            throw new NotFoundException("Port Id not found");
+        }
+        
+        if (DirectPort.hasDevice(portId)) {
+            throw new NotFoundException(
+                    "You cannot delete the comm port '" + litePort.get().getPaoName() + "' because it is used by a device");
+        }
+
+        DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(litePort.get());
+        dbPersistentDao.performDBChange(directPort, TransactionType.DELETE);
+        return directPort.getPAObjectID();
+    }
 
     @Override
     public List<PortBase> getAllPorts() {

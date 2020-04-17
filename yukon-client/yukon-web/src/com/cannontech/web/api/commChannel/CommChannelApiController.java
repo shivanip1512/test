@@ -1,5 +1,7 @@
+
 package com.cannontech.web.api.commChannel;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -46,8 +48,7 @@ public class CommChannelApiController {
 
     @DeleteMapping("/delete/{portId}")
     public ResponseEntity<Object> delete(@PathVariable int portId) {
-        // TODO : This will he completed in delete Jira.
-        return new ResponseEntity<>("Success", HttpStatus.OK);
+        return new ResponseEntity<>(portService.delete(portId), HttpStatus.OK);
     }
 
     @GetMapping("/list")
@@ -68,7 +69,7 @@ public class CommChannelApiController {
             binder.addValidators(portCreationValidator);
         }
     }
-
+    
     @Autowired
     void setValidators(List<PortValidator<? extends PortBase<?>>> validators) {
         this.validators = validators;
