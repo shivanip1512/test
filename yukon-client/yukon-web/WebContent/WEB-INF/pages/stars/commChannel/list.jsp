@@ -36,16 +36,7 @@
                             </c:if>
                             <tr>
                                 <td width="50%">
-                                    <c:choose>
-                                        <c:when test="${commChannel.webSupportedType}">
-                                            <!-- TODO : Replace the view url with comm channel view url -->
-                                            <cti:url var="viewUrl" value="/stars/device/commChannel/list"/>
-                                            <a href="${viewUrl}">${fn:escapeXml(commChannel.name)}</a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            ${fn:escapeXml(commChannel.name)}
-                                        </c:otherwise>
-                                    </c:choose>
+                                    <cti:paoDetailUrl paoId="${commChannel.id}">${fn:escapeXml(commChannel.name)}</cti:paoDetailUrl>
                                 </td>
                                 <td><i:inline key="${commChannel.type}"/></td>
                                 <td class="${cssClass}">${commChannelStatus}</td>

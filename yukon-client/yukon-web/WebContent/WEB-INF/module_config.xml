@@ -1281,6 +1281,12 @@
             </page>
             <page name="commChannel" type="BASIC" hideSearch="true">
                 <link>/stars/device/commChannel/list</link>
+                <pages>
+                    <page name="commChannelDetail" type="DETAIL">
+                        <link>/stars/device/commChannel/${id}</link>
+                        <labelArgument>${name}</labelArgument>
+                    </page>
+                </pages>
             </page>
             <page name="gateways.list" type="BASIC" hideSearch="true">
                 <link>/stars/gateways</link>

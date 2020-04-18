@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.commChannel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -24,7 +24,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -42,7 +41,6 @@ public class CommChannelController {
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String baseKey = "yukon.web.modules.operator.commChannel.";
     private static final Logger log = YukonLogManager.getLogger(CommChannelController.class);
-    private static final List<PaoType> webSupportedPortTypes = new ArrayList<>(Arrays.asList(PaoType.TCPPORT, PaoType.UDPPORT, PaoType.TSERVER_SHARED, PaoType.LOCAL_SHARED));
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -59,20 +57,13 @@ public class CommChannelController {
                 commChannelList = (List<CommChannelFilter>) response.getBody();
             }
 
-            // Set the supported type to true if the comm channel create, view, edit functionality is supported on web
-            commChannelList.forEach(commChannel -> {
-                if (webSupportedPortTypes.contains(commChannel.getType())) {
-                    commChannel.setWebSupportedType(true);
-                }
-            });
-
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
             Comparator<CommChannelFilter> comparator = (o1, o2) -> {
                 return o1.getName().compareToIgnoreCase(o2.getName());
             };
             if (sortBy == CommChannelSortBy.type) {
-                comparator = (o1, o2) -> o1.getType().compareTo(o2.getType());
+                comparator = (o1, o2) -> o1.getType().getDbString().compareTo(o2.getType().getDbString());
             }
             if (sortBy == CommChannelSortBy.status) {
                 comparator = (o1, o2) -> o1.getEnable().compareTo(o2.getEnable());
@@ -96,6 +87,13 @@ public class CommChannelController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
         }
         return "/commChannel/list.jsp";
+    }
+
+    @GetMapping("/{id}")
+    public String view(@PathVariable int id, ModelMap model) {
+        model.addAttribute("id",id);
+        model.addAttribute("name","TCP Comm Channel");
+        return "/commChannel/view.jsp";
     }
 
     public enum CommChannelSortBy implements DisplayableEnum {

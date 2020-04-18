@@ -5,4 +5,7 @@
     <entry key="yukon.web.modules.operator.commChannel.name">Name</entry>
     <entry key="yukon.web.modules.operator.commChannel.type">Type</entry>
     <entry key="yukon.web.modules.operator.commChannel.status">Status</entry>
+    <entry key="yukon.web.modules.operator.commChannelDetail.pageName">Comm Channel Detail</entry>
+    <entry key="yukon.web.modules.operator.commChannelDetail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.commChannelDetail.pageTitle">{0}</entry>
 </properties>

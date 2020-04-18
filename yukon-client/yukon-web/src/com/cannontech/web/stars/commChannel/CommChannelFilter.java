@@ -9,8 +9,6 @@ public class CommChannelFilter {
     private String name;
     private Boolean enable;
     private PaoType type;
-    @JsonIgnore
-    private boolean isWebSupportedType;
 
     public Integer getId() {
         return id;
@@ -36,11 +34,4 @@ public class CommChannelFilter {
     public void setType(PaoType type) {
         this.type = type;
     }
-    public boolean isWebSupportedType() {
-        return isWebSupportedType;
-    }
-    public void setWebSupportedType(boolean isWebSupportedType) {
-        this.isWebSupportedType = isWebSupportedType;
-    }
-    
 }
