@@ -5,8 +5,7 @@
 :toclevels: 4
 :sectlinks:
 
-
-==== TCP Port 
+==== TCP Port
 
 *Request Properties* :
 
@@ -23,7 +22,5 @@ include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_01_Create/respons
 *Response JSON* :
 
 include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_01_Create/http-response.adoc[]
-
-
 
 

@@ -195,7 +195,7 @@ public enum ItronDataEventType {
         
         PointData pointData = new PointData();
         pointData.setValue(getPointDataValue(byteArray, currentValue));
-        pointData.setTimeStamp(new DateTime(eventTime).toDate());
+        pointData.setTime(new DateTime(eventTime).toDate());
         
         return Optional.of(pointData);
     }

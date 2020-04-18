@@ -19,3 +19,4 @@ public class MockPortTiming {
     private Integer receiveDataWait;
     private Integer extraTimeOut;
 }
+

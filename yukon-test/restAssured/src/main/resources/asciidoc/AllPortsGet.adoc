@@ -1,0 +1,23 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+
+==== All Ports
+
+*Request JSON* :
+
+include::{snippets}/TcpPortSetupApiControllerTest/Test_AllPorts_05_Get/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/TcpPortSetupApiControllerTest/Test_AllPorts_05_Get/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/TcpPortSetupApiControllerTest/Test_AllPorts_05_Get/http-response.adoc[]
+
+
