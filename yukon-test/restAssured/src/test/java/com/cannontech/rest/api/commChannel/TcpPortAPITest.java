@@ -9,7 +9,6 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
 import com.cannontech.rest.api.commChannel.request.MockBaudRate;
 import com.cannontech.rest.api.commChannel.request.MockPaoType;
-import com.cannontech.rest.api.commChannel.request.MockPortDelete;
 import com.cannontech.rest.api.commChannel.request.MockTcpPortDetail;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.utilities.Log;
@@ -80,10 +79,7 @@ public class TcpPortAPITest {
     @Test(dependsOnMethods = { "tcpPortCommChannel_02_Get" })
     public void tcpPortCommChannel_04_Delete(ITestContext context) {
         Log.startTestCase("tcpPortCommChannel_04_Delete");
-        MockPortDelete lmDeleteObject = MockPortDelete.builder().name(context.getAttribute("TCPPortName_Update").toString())
-                                       .build();
-
-        ExtractableResponse<?> response = ApiCallHelper.delete("deletePort", lmDeleteObject,
+        ExtractableResponse<?> response = ApiCallHelper.delete("deletePort",
                 context.getAttribute(CommChannelHelper.CONTEXT_PORT_ID).toString());
         assertTrue("Status code should be 200", response.statusCode() == 200);
 
