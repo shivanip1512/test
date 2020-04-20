@@ -15,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 @RequiredArgsConstructor
 public class MockUDPPortDetails extends MockTerminalServerPortDetailBase {
 
-    Boolean enableEncryption;
     private String keyInHex;
     private String ipAddress = "UDP";
 }
