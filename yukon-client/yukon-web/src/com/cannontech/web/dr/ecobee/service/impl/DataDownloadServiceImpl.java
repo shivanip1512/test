@@ -18,6 +18,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
@@ -61,7 +62,6 @@ public class DataDownloadServiceImpl implements DataDownloadService {
     
     private void runTask(List<String> serialNumbers, Range<LocalDate> dateRange, YukonUserContext userContext, File file, 
                          EcobeeReadResult result) {
-        
         try (FileWriter output = new FileWriter(file)) {
             
             String format = "%s,%s,%s,%s,%s,%s,%s,%s\n";
@@ -87,8 +87,14 @@ public class DataDownloadServiceImpl implements DataDownloadService {
             for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
 
                 for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                    String deviceReadingDate = dateFormattingService.format(deviceReading.getDate(),
-                                                                              DateFormattingService.DateFormatEnum.FULL, userContext);
+                    String deviceReadingDate;
+                    if (dateFormattingService != null) {
+                        deviceReadingDate = dateFormattingService.format(deviceReading.getDate(),
+                                DateFormatEnum.FULL, userContext);
+                    } else {
+                        deviceReadingDate = deviceReading.getDate().toString();
+                    }
+
                     Integer runtimeSeconds = deviceReading.getRuntimeSeconds();
                     if (runtimeSeconds != null && 0 > runtimeSeconds) {
                         log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");

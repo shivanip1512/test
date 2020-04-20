@@ -25,6 +25,7 @@ import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.user.YukonUserContext;
 
 public class DataDownloadServiceImplTest {
     private DataDownloadServiceImpl service;
@@ -54,8 +55,8 @@ public class DataDownloadServiceImplTest {
     }
     
     private void test_runTask(List<String> serialNumbers) throws Exception {
-        LocalDate start = new LocalDate(new Instant(1339529000), timeZone); // about 3/8/2015
-        LocalDate end = new LocalDate(new Instant(1425929000), timeZone);
+        LocalDate end = new LocalDate(timeZone); // Today
+        LocalDate start = end.minusDays(1); // 1 day prior
         Range<LocalDate> dateRange = new Range<>(start, true, end, true);
         
         File file = File.createTempFile("data_download_test" + Instant.now().getMillis(), ".csv");
@@ -63,7 +64,7 @@ public class DataDownloadServiceImplTest {
         EcobeeReadResult result = new EcobeeReadResult(serialNumbers.size(), file, dateRange);
         
         //call DataDownloadService.runTask(serialNumbers, dateRange, timeZone, file, result)
-        ReflectionTestUtils.invokeMethod(service, "runTask", serialNumbers, dateRange, timeZone, file, result);
+        ReflectionTestUtils.invokeMethod(service, "runTask", serialNumbers, dateRange, YukonUserContext.system, file, result);
         
         Assert.assertEquals("Incorrect device total.", serialNumbers.size(), result.getTotal());
         Assert.assertTrue("Incorrect success value.", result.isSuccessful());
