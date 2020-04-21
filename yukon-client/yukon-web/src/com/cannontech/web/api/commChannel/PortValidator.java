@@ -1,5 +1,6 @@
 package com.cannontech.web.api.commChannel;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -66,16 +67,17 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
             UdpPortDetail udpPortDetail = (UdpPortDetail) port;
 
             if (udpPortDetail.getKeyInHex() != null) {
-                if (!Validator.isHex(udpPortDetail.getKeyInHex())) {
-                    errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexFormat");
-                }
-                if (!errors.hasFieldErrors("keyInHex")) {
-                    if (udpPortDetail.getKeyInHex().length() != 32) {
-                        errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexLength");
+                if (StringUtils.isNotEmpty(udpPortDetail.getKeyInHex()) && !udpPortDetail.getKeyInHex().equals(" ")) {
+                    if (!Validator.isHex(udpPortDetail.getKeyInHex())) {
+                        errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexFormat");
+                    }
+                    if (!errors.hasFieldErrors("keyInHex")) {
+                        if (udpPortDetail.getKeyInHex().length() != 32) {
+                            errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexLength");
+                        }
                     }
                 }
             }
-
         }
 
         if (port instanceof TcpSharedPortDetail) {

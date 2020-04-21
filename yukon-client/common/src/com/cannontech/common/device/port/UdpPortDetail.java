@@ -1,5 +1,8 @@
 package com.cannontech.common.device.port;
 
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 import com.cannontech.database.data.port.UdpPort;
 import com.cannontech.database.db.port.PortTerminalServer;
@@ -10,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "id", "name", "type", "ipAddress", "portNumber", "baudRate", "enable", "keyInHex",
         "carrierDetectWaitInMilliseconds", "protocolWrap", "timing", "sharing" })
 
+ 
 @JsonIgnoreProperties(value={"ipAddress"}, allowGetters= true, ignoreUnknown = true)
 public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
 
@@ -36,14 +40,18 @@ public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
     public void buildDBPersistent(TerminalServerSharedPortBase port) {
         super.buildDBPersistent(port);
         PortTerminalServer portTerminalServer = port.getPortTerminalServer();
-
         if (ipAddress != null) {
             portTerminalServer.setIpAddress(ipAddress);
         }
-
+        
         if (getKeyInHex() != null) {
-            portTerminalServer.setEncodingType(EncodingType.AES);
-            portTerminalServer.setEncodingKey(getKeyInHex());
+            portTerminalServer.setEncodingKey((String) getKeyInHex().trim());
+            if (StringUtils.isNotBlank(getKeyInHex())) {
+                portTerminalServer.setEncodingType(EncodingType.AES);
+            } else {
+                portTerminalServer.setEncodingType(EncodingType.NONE);
+
+            }
         }
     }
 

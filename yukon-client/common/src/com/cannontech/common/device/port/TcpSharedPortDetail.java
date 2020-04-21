@@ -28,9 +28,6 @@ public class TcpSharedPortDetail extends TerminalServerPortDetailBase<TerminalSe
         if (getIpAddress() != null) {
             portTerminalServer.setIpAddress(getIpAddress());
         }
-
-        portTerminalServer.setEncodingType(EncodingType.NONE);
-        portTerminalServer.setEncodingKey("");
     }
 
     @Override
