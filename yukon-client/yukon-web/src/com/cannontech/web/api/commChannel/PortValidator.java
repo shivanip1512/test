@@ -67,7 +67,7 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
             UdpPortDetail udpPortDetail = (UdpPortDetail) port;
 
             if (udpPortDetail.getKeyInHex() != null) {
-                if (StringUtils.isNotEmpty(udpPortDetail.getKeyInHex()) && !udpPortDetail.getKeyInHex().equals(" ")) {
+                if (StringUtils.isNotEmpty(udpPortDetail.getKeyInHex())) {
                     if (!Validator.isHex(udpPortDetail.getKeyInHex())) {
                         errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexFormat");
                     }
