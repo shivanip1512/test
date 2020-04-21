@@ -1,7 +1,6 @@
 package com.cannontech.services.systemDataPublisher.service.impl;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -9,11 +8,9 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.ThreadCachingScheduledExecutorService;
 import com.cannontech.services.systemDataPublisher.context.NetworkManagerDBConfig;
 import com.cannontech.services.systemDataPublisher.listener.CloudDataConfigurationsAdvisoryListener;
 import com.cannontech.services.systemDataPublisher.processor.SystemDataHandler;
@@ -29,7 +26,6 @@ public class SystemDataServiceInitializer {
     @Autowired private YamlConfigManager yamlConfigManager;
     @Autowired private CloudDataConfigurationsPublisherService cloudDataConfigurationsPublisherService;
     @Autowired private SystemDataHandler systemDataHandler;
-    @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private NetworkManagerDBConfig networkManagerDBConfig;
     @Autowired private CloudDataConfigurationsAdvisoryListener advisoryListener;
 
@@ -50,9 +46,7 @@ public class SystemDataServiceInitializer {
      * Method to publish CloudDataConfigurations data to the topic.
      */
     public void publishCloudDataConfigurations() {
-        executor.schedule(() -> {
             cloudDataConfigurationsPublisherService.publish(readYamlConfiguration());
-        }, 30, TimeUnit.SECONDS);
     }
 
     /**

@@ -26,7 +26,7 @@ public class CloudDataConfigurationsListener implements MessageListener {
                 CloudDataConfigurations configurations = mapper.readValue(textMessage, CloudDataConfigurations.class);
                 systemDataServiceInitializer.handleCloudConfiguration(configurations.getConfigurations());
             } catch (Exception e) {
-                log.error("Error receiving cloud data configuration " + e);
+                log.error("Error receiving cloud data configuration ", e);
             }
         }
     }
