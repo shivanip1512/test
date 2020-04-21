@@ -45,12 +45,11 @@ public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
         }
         
         if (getKeyInHex() != null) {
-            portTerminalServer.setEncodingKey((String) getKeyInHex().trim());
+            portTerminalServer.setEncodingKey(getKeyInHex());
             if (StringUtils.isNotBlank(getKeyInHex())) {
                 portTerminalServer.setEncodingType(EncodingType.AES);
             } else {
                 portTerminalServer.setEncodingType(EncodingType.NONE);
-
             }
         }
     }
