@@ -30,8 +30,8 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
     protected void doValidation(T port, Errors errors) {
         // Validate Name if present.
         if (port.getName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "Name", port.getName(), false);
-            if (!errors.hasFieldErrors("Name")) {
+            YukonValidationUtils.checkIsBlank(errors, "name", port.getName(), false);
+            if (!errors.hasFieldErrors("name")) {
                 portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
             }
         }
@@ -83,7 +83,10 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
         if (port instanceof TcpSharedPortDetail) {
             TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
             if (tcpSharedPortDetail.getIpAddress() != null) {
-                YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", tcpSharedPortDetail.getIpAddress());
+                YukonValidationUtils.checkIsBlank(errors, "ipAddress", tcpSharedPortDetail.getIpAddress(), false);
+                if (!errors.hasFieldErrors("ipAddress")) {
+                    YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", tcpSharedPortDetail.getIpAddress());
+                }
             }
         }
     }
