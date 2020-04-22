@@ -17,7 +17,6 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.dr.gear.setup.model.ProgramGear;
 import com.cannontech.common.dr.setup.ControlRawState;
 import com.cannontech.common.dr.setup.LMDto;
@@ -36,7 +35,7 @@ import com.cannontech.web.api.dr.setup.model.LoadGroupFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
 import com.cannontech.web.api.token.TokenHelper;
-import com.cannontech.web.stars.commChannel.CommChannelFilter;
+import com.cannontech.web.stars.DeviceBaseModel;
 
 public class ApiRequestHelper {
 
@@ -64,7 +63,7 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(ControlRawState.class, new ParameterizedTypeReference<List<ControlRawState>>() {
         });
-        paramTypeRefMap.put(CommChannelFilter.class, new ParameterizedTypeReference<List<CommChannelFilter>>() {
+        paramTypeRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<List<DeviceBaseModel>>() {
         });
     }
     

@@ -33,6 +33,7 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.stars.DeviceBaseModel;
 
 @Controller
 @RequestMapping("/device/commChannel")
@@ -50,20 +51,22 @@ public class CommChannelController {
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelListUrl);
-            List<CommChannelFilter> commChannelList = new ArrayList<>();
+            List<DeviceBaseModel> commChannelList = new ArrayList<>();
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
-                    CommChannelFilter.class, HttpMethod.GET, CommChannelFilter.class);
+                    DeviceBaseModel.class, HttpMethod.GET, DeviceBaseModel.class);
             if (response.getStatusCode() == HttpStatus.OK) {
-                commChannelList = (List<CommChannelFilter>) response.getBody();
+                commChannelList = (List<DeviceBaseModel>) response.getBody();
             }
 
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
-            Comparator<CommChannelFilter> comparator = (o1, o2) -> {
+            Comparator<DeviceBaseModel> comparator = (o1, o2) -> {
                 return o1.getName().compareToIgnoreCase(o2.getName());
             };
             if (sortBy == CommChannelSortBy.type) {
-                comparator = (o1, o2) -> o1.getType().getDbString().compareTo(o2.getType().getDbString());
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                comparator = (o1, o2) -> accessor.getMessage(o1.getPaoIdentifier().getPaoType().getFormatKey())
+                                                 .compareToIgnoreCase(accessor.getMessage(o2.getPaoIdentifier().getPaoType().getFormatKey()));
             }
             if (sortBy == CommChannelSortBy.status) {
                 comparator = (o1, o2) -> o1.getEnable().compareTo(o2.getEnable());
