@@ -96,7 +96,7 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
     public void buildModel(LiteYukonPAObject liteYukonPAObject) {
         setId(liteYukonPAObject.getLiteID());
         setName(liteYukonPAObject.getPaoName());
-        setEnable(liteYukonPAObject.getDisableFlag().equals("Y") ? true : false);
+        setEnable(liteYukonPAObject.getDisableFlag().equals("N") ? true : false);
         setType(liteYukonPAObject.getPaoType());
     }
 }
