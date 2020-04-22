@@ -46,7 +46,6 @@ public class CommChannelHelper {
                     .timing(buildPortTiming())
                     .sharing(buildPortSharing())
                     .portNumber(1234)
-                    .carrierDetectWait(true)
                     .carrierDetectWaitInMilliseconds(123)
                     .protocolWrap(MockProtocolWrap.IDLC)
                     .ipAddress("127.0.0.1")
@@ -61,10 +60,8 @@ public class CommChannelHelper {
                     .timing(buildPortTiming())
                     .sharing(buildPortSharing())
                     .portNumber(5534)
-                    .carrierDetectWait(true)
                     .carrierDetectWaitInMilliseconds(544)
                     .protocolWrap(MockProtocolWrap.IDLC)
-                    .enableEncryption(true)
                     .keyInHex("00112233445566778899aabbccddeeff")
                     .build();
             break;
@@ -105,7 +102,6 @@ public class CommChannelHelper {
                 fieldWithPath("sharing.sharedSocketNumber").type(JsonFieldType.NUMBER).description("Shared Socket Number")
                         .optional(),
                 fieldWithPath("portNumber").type(JsonFieldType.NUMBER).description("Port Number").optional(),
-                fieldWithPath("carrierDetectWait").type(JsonFieldType.BOOLEAN).description("Carrier Detect Wait").optional(),
                 fieldWithPath("carrierDetectWaitInMilliseconds").type(JsonFieldType.NUMBER)
                         .description("Carrier Detect Wait In MiliSeconds").optional(),
                 fieldWithPath("protocolWrap").type(JsonFieldType.STRING)
@@ -117,7 +113,7 @@ public class CommChannelHelper {
     public static FieldDescriptor[] buildGetAllPortsDescriptor() {
         return new FieldDescriptor[] {
                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("Port Id"),
-                fieldWithPath("[].name").type(JsonFieldType.STRING).description("Port Name"),
+                fieldWithPath("[].name").type(JsonFieldType.STRING).description("Comm Channel Name"),
                 fieldWithPath("[].enable").type(JsonFieldType.BOOLEAN).description("Status"),
                 fieldWithPath("[].type").type(JsonFieldType.STRING).description("Type"),
         };
@@ -135,8 +131,7 @@ public class CommChannelHelper {
         List<FieldDescriptor> udpTerminalServerPortDescriptor = Arrays.asList(portBaseFields());
         List<FieldDescriptor> list = new ArrayList<>(udpTerminalServerPortDescriptor);
         list.addAll(Arrays.asList(buildTerminalServerPortDescriptor()));
-        list.add(16, fieldWithPath("enableEncryption").type(JsonFieldType.BOOLEAN).description("Enable Encryption"));
-        list.add(17, fieldWithPath("keyInHex").type(JsonFieldType.STRING).description("Key In Hex"));
+        list.add(15, fieldWithPath("keyInHex").type(JsonFieldType.STRING).description("Key In Hex"));
         return list;
     }
 

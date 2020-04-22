@@ -22,7 +22,6 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
 import com.cannontech.rest.api.commChannel.request.MockPaoType;
 import com.cannontech.rest.api.commChannel.request.MockPortBase;
-import com.cannontech.rest.api.commChannel.request.MockPortDelete;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 

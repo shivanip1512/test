@@ -1,6 +1,6 @@
 package com.cannontech.web.api.commChannel;
 
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -30,7 +30,10 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
     protected void doValidation(T port, Errors errors) {
         // Validate Name if present.
         if (port.getName() != null) {
-            portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
+            YukonValidationUtils.checkIsBlank(errors, "Name", port.getName(), false);
+            if (!errors.hasFieldErrors("Name")) {
+                portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
+            }
         }
 
         if (port instanceof TcpPortDetail) {
@@ -51,9 +54,8 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
                 portValidatorHelper.validatePortSharingFields(errors, detailBase.getSharing());
             }
 
-            if (BooleanUtils.isTrue(detailBase.getCarrierDetectWait())) {
-                YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds",
-                        detailBase.getCarrierDetectWaitInMilliseconds(), 0, 9999, false);
+            if (detailBase.getCarrierDetectWaitInMilliseconds() != null) {
+                YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", detailBase.getCarrierDetectWaitInMilliseconds(), 0, 9999, false);
             }
 
             if (detailBase.getPortNumber() != null) {
@@ -64,13 +66,15 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
         if (port instanceof UdpPortDetail) {
             UdpPortDetail udpPortDetail = (UdpPortDetail) port;
 
-            if (BooleanUtils.isTrue(udpPortDetail.getEnableEncryption())) {
-                if (udpPortDetail.getKeyInHex() == null || !Validator.isHex(udpPortDetail.getKeyInHex())) {
-                    errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexFormat");
-                }
-                if (!errors.hasFieldErrors("keyInHex")) {
-                    if (udpPortDetail.getKeyInHex().length() != 32) {
-                        errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexLength");
+            if (udpPortDetail.getKeyInHex() != null) {
+                if (StringUtils.isNotEmpty(udpPortDetail.getKeyInHex())) {
+                    if (!Validator.isHex(udpPortDetail.getKeyInHex())) {
+                        errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexFormat");
+                    }
+                    if (!errors.hasFieldErrors("keyInHex")) {
+                        if (udpPortDetail.getKeyInHex().length() != 32) {
+                            errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexLength");
+                        }
                     }
                 }
             }
@@ -78,7 +82,9 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
         if (port instanceof TcpSharedPortDetail) {
             TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
-            YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", tcpSharedPortDetail.getIpAddress());
+            if (tcpSharedPortDetail.getIpAddress() != null) {
+                YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", tcpSharedPortDetail.getIpAddress());
+            }
         }
     }
 }

@@ -15,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 @RequiredArgsConstructor
 public class MockTerminalServerPortDetailBase extends MockPortBase {
     private Integer portNumber;
-    private Boolean carrierDetectWait;
     private Integer carrierDetectWaitInMilliseconds;
     private MockProtocolWrap protocolWrap;
     private MockPortTiming timing;
