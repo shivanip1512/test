@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -12,9 +13,12 @@ import org.joda.time.LocalDateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.support.StaticMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.util.Range;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.impl.DateFormattingServiceImpl;
 import com.cannontech.dr.ecobee.EcobeeDeviceDoesNotExistException;
 import com.cannontech.dr.ecobee.EcobeeSetDoesNotExistException;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
@@ -25,6 +29,7 @@ import com.cannontech.dr.ecobee.model.EcobeeDutyCycleDrParameters;
 import com.cannontech.dr.ecobee.model.EcobeeReadResult;
 import com.cannontech.dr.ecobee.model.EcobeeSetpointDrParameters;
 import com.cannontech.dr.ecobee.service.EcobeeCommunicationService;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.YukonUserContext;
 
 public class DataDownloadServiceImplTest {
@@ -37,6 +42,20 @@ public class DataDownloadServiceImplTest {
         service = new DataDownloadServiceImpl();
         EcobeeCommunicationService ecobeeCommunicationService = new MockEcobeeCommunicationService(timeZone);
         ReflectionTestUtils.setField(service, "commService", ecobeeCommunicationService);
+        
+        DateFormattingService dateformatter = new DateFormattingServiceImpl();
+        ReflectionTestUtils.setField(service, "dateFormattingService", dateformatter);
+        
+        StaticMessageSource messageSource = new StaticMessageSource();
+        {
+            messageSource.addMessage("yukon.common.dateFormatting.FULL", Locale.US, "MM/dd/yyyy HH:mm:ss zz");
+        }
+        
+        YukonUserContextMessageSourceResolverMock messageSourceResolver = new YukonUserContextMessageSourceResolverMock();
+        {
+            messageSourceResolver.setMessageSource(messageSource);
+        }       
+        ReflectionTestUtils.setField(dateformatter, "messageSourceResolver", messageSourceResolver);
     }
     
     @Test
@@ -55,7 +74,7 @@ public class DataDownloadServiceImplTest {
     }
     
     private void test_runTask(List<String> serialNumbers) throws Exception {
-        LocalDate end = new LocalDate(timeZone); // Today
+        LocalDate end = new LocalDate(2020, 4, 22);
         LocalDate start = end.minusDays(1); // 1 day prior
         Range<LocalDate> dateRange = new Range<>(start, true, end, true);
         

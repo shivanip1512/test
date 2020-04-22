@@ -497,18 +497,18 @@ Java :
     jira : YUK-21375
     notes : 
     
-  - filename : catalina-ssi1.jar
+  - filename : catalina-ssi.jar
     yukon group : Tomcat
     project : Apache Tomcat
     version : 9.0.31
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.31"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/"
     md5 : 32e33e9fd27d722e77679312fdbdb5e0
     sha1 : 2ec2871a0435cc71c5a30f1df0a35dc5f03d3cc0
-    updated : 2020-03-11
-    jira : YUK-21375
+    updated : 2020-04-24
+    jira : YUK-21966
     notes : 
   
   - filename : catalina-storeconfig.jar
