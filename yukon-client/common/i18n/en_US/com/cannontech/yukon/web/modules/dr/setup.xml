@@ -474,7 +474,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.gear.fixedShedTime">Fixed Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.maxShedTime">Max Shed Time</entry>
 <entry key="yukon.web.modules.dr.setup.gear.numberOfGroups">Groups Per Send</entry>
-<entry key="yukon.web.modules.dr.setup.gear.NONE">None</entry>
+<entry key="yukon.web.modules.dr.setup.gear.NONE">(none)</entry>
 <entry key="yukon.web.modules.dr.setup.gear.range">({0} to {1})</entry>
 
 <entry key="yukon.web.modules.dr.setup.gear.mode">Mode</entry>
@@ -573,7 +573,7 @@ Are you sure you want do this?</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.projectionType">Projection Type</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.samples">Samples</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.ahead">Ahead</entry>
-<entry key="yukon.web.modules.dr.setup.controlArea.trigger.NONE">None</entry>
+<entry key="yukon.web.modules.dr.setup.controlArea.trigger.NONE">(none)</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.LSF">LSF</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.identification.required">Trigger Identification is required.</entry>
 <entry key="yukon.web.modules.dr.setup.controlArea.trigger.peakTracking.required">Peak Tracking is required.</entry>
