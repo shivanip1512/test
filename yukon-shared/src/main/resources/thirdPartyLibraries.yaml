@@ -5450,15 +5450,15 @@ JavaScript :
     notes : "No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
 
   - project : datetimeentry
-    version : 2.0.0
+    version : 1.1.1
     project URL : "http://keith-wood.name/datetimeEntry.html"
     license : MIT
     license URLs : "http://keith-wood.name/licence.html"
     npm URL : "n/a"
-    md5 : 7a403c4c30627858bc95cb5fd44ab6a6
-    sha1 : 5618bbb5c934d2e7048cd0c5228ce915f37e39bc
-    jira : YUK-21523
-    updated : 2020-04-08
+    md5 : d6b587f91184c6b3b8ef915d7ee94d1a
+    sha1 : 6effa521a52977fa70a5bae626ded7a2ff897826
+    jira : YUK-13033
+    updated : 2014-02-17
     notes : "Modernized clone available at https://www.npmjs.com/package/datetime-entry.  This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : debugger.js
@@ -5606,15 +5606,15 @@ JavaScript :
     notes : 
 
   - project : mousewheel
-    version : 3.1.13
+    version : 3.1.9
     project URL : "https://github.com/jquery/jquery-mousewheel"
     license : MIT
     license URLs : "https://github.com/jquery/jquery-mousewheel/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.13"
-    md5 : 1bfebd043755482879b80a5aa1421712
-    sha1 : b66abc517f48a02d986edec27b46765c7e7e118c
-    jira : YUK-21523
-    updated : 2020-04-08
+    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.9"
+    md5 : f64a960563507f0f5f874c473f9dcb2a
+    sha1 : 0ceff045b5cb0c4e42e65af30e644dcd6e841ed7
+    jira : YUK-13033
+    updated : 2014-02-17
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : open-layers
@@ -5690,15 +5690,15 @@ JavaScript :
     notes : This library is used for selecting colors in Themes for Yukon.
 
   - project : time-picker
-    version : 1.6.3
+    version : 1.5.0
     project URL : "https://github.com/trentrichardson/jQuery-Timepicker-Addon"
     license : MIT
     license URLs : "https://github.com/trentrichardson/jQuery-Timepicker-Addon/blob/master/LICENSE-MIT"
     npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
-    md5 : 689199998a2607268b20f4be82e1a67d
-    sha1 : 619d93b35c0ab3511e43c310b5b2db2cc607d30c
-    jira : YUK-21523
-    updated : 2020-04-08
+    md5 : b6e477c9f70f52e13a1b800328e04199
+    sha1 : ef21c2ea9e712d05bcf13ec0d4cb5383e9f0f958
+    jira : YUK-10381
+    updated : 2014-11-13
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : tipsy
