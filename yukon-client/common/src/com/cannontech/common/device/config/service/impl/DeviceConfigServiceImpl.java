@@ -135,9 +135,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                     newState = getState(IN_SYNC, VERIFY, SUCCESS, device);
                 } else if (requestType == DeviceRequestType.GROUP_DEVICE_CONFIG_SEND) {
                     if (device.getDeviceType().isRfn()) {
-                        newState = getState(IN_SYNC, VERIFY, SUCCESS, device);
+                        newState = getState(IN_SYNC, SEND, SUCCESS, device);
                     } else {
-                        newState = getState(UNCONFIRMED, VERIFY, SUCCESS, device);
+                        newState = getState(UNCONFIRMED, SEND, SUCCESS, device);
                     }
                 }
                 saveDeviceConfig(device, newState);
