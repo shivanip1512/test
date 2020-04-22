@@ -5411,7 +5411,7 @@ JavaScript :
     sha1 : eae43db5a1c972d0f74ea42ad48c1eb8aa74ee81
     jira : YUK-18302
     updated : 2018-05-29
-    notes : 
+    notes : "This library is used to return 0 (instead of actual height/width) for height and/or width of a DOM element if the element or its parent has css property 'display' set to 'none'."
 
   - project : checkall
     version : 1.4
@@ -5423,7 +5423,7 @@ JavaScript :
     sha1 : 7b794ba2dbe28c3d1cdb7c3a732743582c5097d5
     jira : YUK-13033
     updated : 2014-02-17
-    notes : 
+    notes : "This library is used to check/uncheck multiple checkboxes based on a single checkbox. Eg. implementing 'Select All' functionality."
 
   - project : chosen
     version : 1.8.7
@@ -5447,7 +5447,7 @@ JavaScript :
     sha1 : 3a1f8c853cb20eee88ea7e39c23196162049e622
     jira : YUK-12661
     updated : 2014-09-24
-    notes : "No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
+    notes : "This library is used for reading, writing and deleting cookies. No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
 
   - project : datetimeentry
     version : 2.0.0
@@ -5555,7 +5555,7 @@ JavaScript :
     sha1 : b57f57c9b79dc316ed9d678085c9ea36e02a0681
     jira : YUK-13033
     updated : 2014-02-17
-    notes : "Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
+    notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
     version : 3.4.1
@@ -5579,7 +5579,7 @@ JavaScript :
     sha1 : 971d20060e6230517f3746c6fa118a7b153dd0cf
     jira : YUK-18131
     updated : 2018-05-18
-    notes : 
+    notes : "Yukon UI uses effects, widgets (dialog, Accordion..etc) from this library."
 
   - project : modernizr
     version : 3.6.0 (Custom)
