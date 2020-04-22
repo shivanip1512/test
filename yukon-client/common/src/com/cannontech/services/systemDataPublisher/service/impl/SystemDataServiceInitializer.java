@@ -40,16 +40,13 @@ public class SystemDataServiceInitializer {
     private void init() {
         publishCloudDataConfigurations();
         new Thread(advisoryListener.advisoryListener()).start();
-        List<CloudDataConfiguration> cloudConfigurationToProcess = filterRelevantConfigurations(
-                readYamlConfiguration().getConfigurations());
-        handleCloudConfiguration(cloudConfigurationToProcess);
     }
 
     /**
      * Method to publish CloudDataConfigurations data to the topic.
      */
     public void publishCloudDataConfigurations() {
-        cloudDataConfigurationsPublisherService.publish(readYamlConfiguration());
+            cloudDataConfigurationsPublisherService.publish(readYamlConfiguration());
     }
 
     /**
@@ -73,8 +70,9 @@ public class SystemDataServiceInitializer {
     /**
      * Passes it to the handler to handle cloudConfiguration.
      */
-    private void handleCloudConfiguration(List<CloudDataConfiguration> cloudDataConfiguration) {
-        systemDataHandler.handle(cloudDataConfiguration);
+    public void handleCloudConfiguration(List<CloudDataConfiguration> cloudDataConfigurations) {
+        List<CloudDataConfiguration> cloudConfigurationToProcess = filterRelevantConfigurations(cloudDataConfigurations);
+        systemDataHandler.handle(cloudConfigurationToProcess);
     }
 
     /**

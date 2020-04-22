@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 
 public class SystemDataFieldType implements Serializable {
 
+    public SystemDataFieldType() {
+
+    }
     private static final long serialVersionUID = 1L;
 
     public enum FieldType {
@@ -62,8 +65,8 @@ public class SystemDataFieldType implements Serializable {
         }
     }
 
-    private final FieldType fieldType;
-    private final String stringValue;
+    private FieldType fieldType;
+    private String stringValue;
 
     public SystemDataFieldType(String stringValue) {
         this.fieldType = FieldType.getValue(stringValue);

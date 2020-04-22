@@ -3,6 +3,8 @@ package com.cannontech.services.systemDataPublisher.service.impl;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageType;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.util.jms.YukonJmsTemplate;
@@ -15,15 +17,18 @@ import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigura
 public class CloudDataConfigurationsPublisherServiceImpl implements CloudDataConfigurationsPublisherService {
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private YukonJmsTemplate jmsTemplate;
+    private MappingJackson2MessageConverter converter;
 
     @Override
-    public void publish(CloudDataConfigurations cloudDataConfiguration) {
-        jmsTemplate.convertAndSend(cloudDataConfiguration);
+    public void publish(CloudDataConfigurations cloudDataConfigurations) {
+        jmsTemplate.convertAndSend(cloudDataConfigurations);
     }
 
     @PostConstruct
     public void init() {
-        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.CLOUD_DATA_CONFIGURATIONS);
+        converter = new MappingJackson2MessageConverter();
+        converter.setTargetType(MessageType.TEXT);
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.CLOUD_DATA_CONFIGURATIONS, converter);
     }
 
 }
