@@ -543,7 +543,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             verifyDevicesByCurrentState(devices, deviceToState, result.getContext(), IN_SYNC, OUT_OF_SYNC, UNASSIGNED);
 
         } else if (result.getAction() == CollectionAction.UNASSIGN_CONFIG) {
-            log.debug("Removing that do not have existing device config status {}",
+            log.debug("Removing devices that do not have existing device config status {}",
                     devices.stream().filter(device -> deviceToState.get(device.getDeviceId()) == null).count());
             
             devices.removeIf(device -> deviceToState.get(device.getDeviceId()) == null);
