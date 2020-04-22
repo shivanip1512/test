@@ -88,13 +88,9 @@ public class DataDownloadServiceImpl implements DataDownloadService {
             for (EcobeeDeviceReadings deviceReadings : allDeviceReadings) {
 
                 for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
-                    String deviceReadingDate;
-                    if (dateFormattingService != null) {
-                        deviceReadingDate = dateFormattingService.format(deviceReading.getDate(),
-                                DateFormatEnum.FULL, userContext);
-                    } else {
-                        deviceReadingDate = deviceReading.getDate().toString();
-                    }
+                    String deviceReadingDate = dateFormattingService.format(deviceReading.getDate(),
+                            DateFormatEnum.FULL, userContext);
+
                     Integer runtimeSeconds = deviceReading.getRuntimeSeconds();
                     if (runtimeSeconds != null && 0 > runtimeSeconds) {
                         log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
