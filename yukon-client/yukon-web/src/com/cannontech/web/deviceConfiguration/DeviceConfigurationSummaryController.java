@@ -55,12 +55,12 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao.SortBy;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
 import com.cannontech.web.util.WebFileUtils;
 
 @Controller
@@ -123,8 +123,8 @@ public class DeviceConfigurationSummaryController {
         Direction dir = sorting.getDirection();
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllVerifiableConfigurations();
         model.addAttribute("configurations", configurations);
-        model.addAttribute("lastActionOptions", LastAction.values());
-        model.addAttribute("statusOptions", LastActionStatus.values());
+        model.addAttribute("lastActionOptions", LastAction.getDisplayableValues());
+        model.addAttribute("statusOptions", LastActionStatus.getDisplayableValues());
         model.addAttribute("syncOptions", InSync.values());
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -225,13 +225,13 @@ public class DeviceConfigurationSummaryController {
         filter.setGroups(subGroups);
         //default to all if user selects none
         if (filter.getActions() == null || filter.getActions().isEmpty()) {
-            filter.setActions(Arrays.asList(LastAction.values()));
+            filter.setActions(LastAction.getDisplayableValues());
         }
         if (filter.getInSync() == null || filter.getInSync().isEmpty()) {
             filter.setInSync(Arrays.asList(InSync.values()));
         }
         if (filter.getStatuses() == null || filter.getStatuses().isEmpty()) {
-            filter.setStatuses(Arrays.asList(LastActionStatus.values()));
+            filter.setStatuses(LastActionStatus.getDisplayableValues());
         }
     }
     

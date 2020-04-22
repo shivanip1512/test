@@ -15,21 +15,27 @@ import com.cannontech.user.YukonUserContext;
 
 public interface DeviceConfigService {
 
-    public int sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
-    
-    public int readConfigs(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
-    
-    public VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user);
+    int sendConfigs(DeviceCollection deviceCollection, String method, SimpleCallback<CollectionActionResult> callback,
+            YukonUserContext context);
 
-    public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user);
-    
-    public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception;
+    int readConfigs(DeviceCollection deviceCollection, SimpleCallback<CollectionActionResult> callback, YukonUserContext context);
 
-    public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception;
+    VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user);
 
-    public enum LogAction {
+    VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user);
+
+    CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception;
+
+    CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception;
+
+    enum LogAction {
         READ, SEND, VERIFY
     }
-    
+
     int verifyConfigs(DeviceCollection deviceCollection, YukonUserContext context);
+
+    /**
+     * Updates device config state for success results for assign and unassign collection action
+     */
+    void updateConfigStateForAssignAndUnassign(CollectionActionResult result);
 }

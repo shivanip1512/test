@@ -119,7 +119,7 @@ public class DeviceConfigController {
             deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
+                new AssignUnassignCallback(result, collectionActionService, collectionActionDao));
    
         return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
@@ -134,7 +134,7 @@ public class DeviceConfigController {
             deviceCollection, userContext);
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor,
-            new CollectionActionBulkProcessorCallback(result, collectionActionService, collectionActionDao));
+                new AssignUnassignCallback(result, collectionActionService, collectionActionDao));
         
         return "redirect:/collectionActions/progressReport/detail?key=" + result.getCacheKey();
     }
@@ -166,5 +166,19 @@ public class DeviceConfigController {
                 messageResolver.getMessageSourceAccessor(context), request);
         int key = deviceConfigService.sendConfigs(deviceCollection, method, alertCallback, context);
         return "redirect:/collectionActions/progressReport/detail?key=" + key;
+    }
+    
+    private class AssignUnassignCallback extends CollectionActionBulkProcessorCallback {
+
+        public AssignUnassignCallback(CollectionActionResult result, CollectionActionService collectionActionService,
+                CollectionActionDao collectionActionDao) {
+            super(result, collectionActionService, collectionActionDao);
+        }
+        
+        @Override
+        public void processingSucceeded() {
+            super.processingSucceeded();
+            deviceConfigService.updateConfigStateForAssignAndUnassign(result);
+        }
     }
 }
