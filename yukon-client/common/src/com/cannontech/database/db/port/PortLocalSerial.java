@@ -8,14 +8,14 @@ package com.cannontech.database.db.port;
  
 public class PortLocalSerial extends DBPersistent {
 	
-	private String physicalPort = " ";
+	private String physicalPort = null;
 	private Integer portID = null;
 /**
  * SerialPortSettings constructor comment.
  */
 public PortLocalSerial() {
 	super();
-	initialize( null, " " );
+	initialize( null, "" );
 }
 /**
  * This method was created in VisualAge.
@@ -91,7 +91,7 @@ public void retrieve() throws java.sql.SQLException {
 	Object results[] = retrieve( columnNames, "PortLocalSerial", constraintColumnNames, constraintColumnValues);
 	if( results.length == columnNames.length )
 	{
-		setPhysicalPort( (String) results[0] );
+	    setPhysicalPort( ((String) results[0]).trim() );
 	}
 	
 }
