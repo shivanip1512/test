@@ -5702,19 +5702,6 @@ JavaScript :
     updated : 2020-04-08
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
-  - project : tipsy
-    version : 1.0.0a
-    project URL : "https://github.com/jaz303/tipsy"
-    license : MIT
-    license URLs : "https://github.com/jaz303/tipsy/blob/master/LICENSE"
-    npm URL : "https://www.npmjs.com/package/tipsy"
-    md5 : 248e9f882e50d3942c17c4036506aa2b
-    sha1 : 5502e8ace2f711f3e17a517d224d6e5417708a16
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : 
-
-
 # -------
 Icons :
   - path : icons.png

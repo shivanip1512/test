@@ -19,7 +19,6 @@ public enum CssLibrary {
     BUTTONS_DEFAULT("/WebConfig/yukon/styles/buttons.default.css"), // compiled internally, unaffected by theming
     ICONS("/WebConfig/yukon/styles/icons.css"), // internal
     
-    TIPSY("/resources/js/lib/tipsy/tipsy.css"), // see JsLibrary.JQUERY_TIPSY
     SPECTRUM("/resources/js/lib/spectrum/spectrum.css"), // see JsLibrary.JQUERY_SPECTRUM
     CHOSEN("/resources/js/lib/chosen/chosen.min.css"), // see JsLibrary.JQUERY_CHOSEN
     TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.css"), // see JsLibrary.JQUERY_UI_TIME_PICKER
