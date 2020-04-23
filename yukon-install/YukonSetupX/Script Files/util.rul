@@ -1022,16 +1022,14 @@ end;
 //--------------------------------------------------------------------------------
 export prototype BackupEncryptedSystemPublisherMetadataFile(string);
 function BackupEncryptedSystemPublisherMetadataFile(suffix)
-string szFile;
+string szFile, svResult;
 begin
-    Disable(LOGGING);
     if(FindFile (TARGETDIR + "\\Server\\Config\\", "encryptedSystemPublisherMetadata.yaml", svResult ) == 0) then 
         CopyFile (TARGETDIR + "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml", TARGETDIR + "\\Server\\Config\\Backup\\encryptedSystemPublisherMetadata_" + suffix + ".yaml");
+        // Delete old encryptedSystemPublisherMetadata.yaml file.
+        szFile = TARGETDIR ^ "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml";
+        DeleteFile ( szFile );
     endif;
-    Enable(LOGGING);
-    // Delete old encryptedSystemPublisherMetadata.yaml file.
-    szFile = TARGETDIR ^ "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml";
-    DeleteFile ( szFile );
 end;
 
 //--------------------------------------------------------------------------------
