@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
@@ -121,6 +122,9 @@ public class PortServiceImpl implements PortService {
             break;
         case TSERVER_SHARED : 
             portBase = new TcpSharedPortDetail();
+            break;
+        case LOCAL_SHARED : 
+            portBase = new LocalSharedPortDetail();
             break;
         }
         

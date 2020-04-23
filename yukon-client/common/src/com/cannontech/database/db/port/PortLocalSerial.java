@@ -8,14 +8,14 @@ package com.cannontech.database.db.port;
  
 public class PortLocalSerial extends DBPersistent {
 	
-	private String physicalPort = null;
+	private String physicalPort = " ";
 	private Integer portID = null;
 /**
  * SerialPortSettings constructor comment.
  */
 public PortLocalSerial() {
 	super();
-	initialize( null, null );
+	initialize( null, " " );
 }
 /**
  * This method was created in VisualAge.
