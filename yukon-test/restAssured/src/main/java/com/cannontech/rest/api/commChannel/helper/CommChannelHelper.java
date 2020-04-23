@@ -12,6 +12,7 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.cannontech.rest.api.commChannel.request.MockBaudRate;
+import com.cannontech.rest.api.commChannel.request.MockLocalSharedPortDetail;
 import com.cannontech.rest.api.commChannel.request.MockPaoType;
 import com.cannontech.rest.api.commChannel.request.MockPortBase;
 import com.cannontech.rest.api.commChannel.request.MockPortSharing;
@@ -65,6 +66,19 @@ public class CommChannelHelper {
                     .keyInHex("00112233445566778899aabbccddeeff")
                     .build();
             break;
+        case LOCAL_SHARED:
+            tcpPort = MockLocalSharedPortDetail.builder()
+                    .type(paoType)
+                    .name(getTcpPortName(paoType))
+                    .enable(true)
+                    .baudRate(MockBaudRate.BAUD_2400)
+                    .timing(buildPortTiming())
+                    .sharing(buildPortSharing())
+                    .carrierDetectWaitInMilliseconds(544)
+                    .protocolWrap(MockProtocolWrap.IDLC)
+                    .physicalPort("com2")
+                    .build();
+            break;
         default:
             break;
         }
@@ -97,16 +111,22 @@ public class CommChannelHelper {
 
     public static FieldDescriptor[] buildTerminalServerPortDescriptor() {
         return new FieldDescriptor[] {
-                fieldWithPath("sharing.sharedPortType").type(JsonFieldType.STRING)
-                        .description("Shared Port Type Possible values of Shared Port Type are : NONE,ACS,ILEX").optional(),
-                fieldWithPath("sharing.sharedSocketNumber").type(JsonFieldType.NUMBER).description("Shared Socket Number")
-                        .optional(),
+                fieldWithPath("sharing.sharedPortType").type(JsonFieldType.STRING).description("Shared Port Type Possible values of Shared Port Type are : NONE,ACS,ILEX").optional(),
+                fieldWithPath("sharing.sharedSocketNumber").type(JsonFieldType.NUMBER).description("Shared Socket Number").optional(),
                 fieldWithPath("portNumber").type(JsonFieldType.NUMBER).description("Port Number").optional(),
-                fieldWithPath("carrierDetectWaitInMilliseconds").type(JsonFieldType.NUMBER)
-                        .description("Carrier Detect Wait In MiliSeconds").optional(),
-                fieldWithPath("protocolWrap").type(JsonFieldType.STRING)
-                        .description("Protocol Wrap Possible values of Protocol Wrap are None,IDLC").optional(),
+                fieldWithPath("carrierDetectWaitInMilliseconds").type(JsonFieldType.NUMBER).description("Carrier Detect Wait In MiliSeconds").optional(),
+                fieldWithPath("protocolWrap").type(JsonFieldType.STRING).description("Protocol Wrap Possible values of Protocol Wrap are None,IDLC").optional(),
                 fieldWithPath("ipAddress").type(JsonFieldType.STRING).description("IP Address(In case Of UDP Port ipAddress value is UDP)").optional(),
+        };
+    }
+
+    public static FieldDescriptor[] buildLocalPortDescriptor() {
+        return new FieldDescriptor[] {
+                fieldWithPath("sharing.sharedPortType").type(JsonFieldType.STRING).description("Shared Port Type Possible values of Shared Port Type are : NONE,ACS,ILEX").optional(),
+                fieldWithPath("sharing.sharedSocketNumber").type(JsonFieldType.NUMBER).description("Shared Socket Number").optional(),
+                fieldWithPath("carrierDetectWaitInMilliseconds").type(JsonFieldType.NUMBER).description("Carrier Detect Wait In MiliSeconds").optional(),
+                fieldWithPath("protocolWrap").type(JsonFieldType.STRING).description("Protocol Wrap Possible values of Protocol Wrap are None,IDLC").optional(),
+                fieldWithPath("physicalPort").type(JsonFieldType.STRING).description("Physical Port").optional(),
         };
     }
     
@@ -132,6 +152,13 @@ public class CommChannelHelper {
         List<FieldDescriptor> list = new ArrayList<>(udpTerminalServerPortDescriptor);
         list.addAll(Arrays.asList(buildTerminalServerPortDescriptor()));
         list.add(15, fieldWithPath("keyInHex").type(JsonFieldType.STRING).description("Key In Hex"));
+        return list;
+    }
+
+    public static List<FieldDescriptor> buildLocalSharedPortDescriptor() {
+        List<FieldDescriptor> localSharedPortDescriptor = Arrays.asList(portBaseFields());
+        List<FieldDescriptor> list = new ArrayList<>(localSharedPortDescriptor);
+        list.addAll(Arrays.asList(buildLocalPortDescriptor()));
         return list;
     }
 

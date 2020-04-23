@@ -6,7 +6,8 @@
         <classes>
           <class name = "com.cannontech.rest.api.documentation.commChannel.TcpPortSetupApiControllerTest" />
           <class name = "com.cannontech.rest.api.documentation.commChannel.TcpTerminalServerSetupApiControllerTest" />
-          <class name = "com.cannontech.rest.api.documentation.commChannel.UDPTerminalServerSetupApiControllerTest" />
+          <class name = "com.cannontech.rest.api.documentation.commChannel.UDPTerminalServerSetupApiControllerTest" /> 
+          <class name = "com.cannontech.rest.api.documentation.commChannel.LocalSharedPortSetupApiControllerTest" />
         </classes>
     </test>
 </suite>
