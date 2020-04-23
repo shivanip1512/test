@@ -1016,6 +1016,25 @@ begin
 end;
 
 //--------------------------------------------------------------------------------
+// Rename old encryptedSystemPublisherMetadataFile.yaml (based on passed suffix) 
+// if available and take backup in Yukon\\Server\\Config\\Backup\\. Also remove old 
+// files from Yukon\\Server\\config directory
+//--------------------------------------------------------------------------------
+export prototype BackupEncryptedSystemPublisherMetadataFile(string);
+function BackupEncryptedSystemPublisherMetadataFile(suffix)
+string szFile;
+begin
+    Disable(LOGGING);
+    if(FindFile (TARGETDIR + "\\Server\\Config\\", "encryptedSystemPublisherMetadata.yaml", svResult ) == 0) then 
+        CopyFile (TARGETDIR + "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml", TARGETDIR + "\\Server\\Config\\Backup\\encryptedSystemPublisherMetadata_" + suffix + ".yaml");
+    endif;
+    Enable(LOGGING);
+    // Delete old encryptedSystemPublisherMetadata.yaml file.
+    szFile = TARGETDIR ^ "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml";
+    DeleteFile ( szFile );
+end;
+
+//--------------------------------------------------------------------------------
 // Helper function to build up a list of the Yukon java
 // services And Yukon clients application names in the provided string array.
 //--------------------------------------------------------------------------------
