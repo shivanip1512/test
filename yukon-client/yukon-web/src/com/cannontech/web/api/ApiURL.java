@@ -53,4 +53,6 @@ public class ApiURL {
     public static final String drControlScenarioUpdateUrl = "/dr/setup/controlScenario/update/";
     public static final String drControlScenarioDeleteUrl = "/dr/setup/controlScenario/delete/";
 
+    public static final String commChannelListUrl = "/device/commChannel/list";
+
 }
