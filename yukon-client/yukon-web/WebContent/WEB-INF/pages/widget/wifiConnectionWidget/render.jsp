@@ -27,7 +27,7 @@
 <div class="dn js-refresh-msg ML15 PT10"><i:inline key="yukon.web.modules.operator.wifiConnection.refreshMsg"/></div>
 
 <div class="action-area">
-    <cti:button nameKey="refresh" icon="icon-arrow-refresh" classes="js-refresh-wifi" data-device-id="${device.paoIdentifier.paoId}"/>
+    <cti:button nameKey="query" icon="icon-read" classes="js-refresh-wifi" data-device-id="${device.paoIdentifier.paoId}"/>
 </div>
 
 <cti:includeScript link="/resources/js/pages/yukon.assets.wifi.connection.js"/>
