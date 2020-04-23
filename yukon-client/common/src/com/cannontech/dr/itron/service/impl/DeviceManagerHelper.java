@@ -86,6 +86,7 @@ public class DeviceManagerHelper implements SoapFaultParser {
         //Create EditESIType and add it to D2GAttributes
         EditESIType esi = new EditESIType();
         esi.setMacID(macAddress);
+        d2GAttributes.setESI(esi);
         
         //Create ServicePointUtilID and add it to D2GAttributes
         NullableString servicePointUtilId = new NullableString();
