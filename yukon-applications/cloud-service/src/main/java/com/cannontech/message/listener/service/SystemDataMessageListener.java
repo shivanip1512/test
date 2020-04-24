@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.cannontech.data.provider.DataProvider;
 import com.cannontech.message.model.SystemData;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Listen for system data on queue, once received call method to update cache.
@@ -29,9 +30,9 @@ public class SystemDataMessageListener {
             String json = null;
             try {
                 json = ((TextMessage) message).getText();
-                Gson gson = new Gson();
+                Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ").create();
                 SystemData data = gson.fromJson(json, SystemData.class);
-                log.info("System data received " + json);
+                log.info("System data received " + data);
                 dataProvider.updateSystemInformation(data);
             } catch (JMSException e) {
                 log.error("Error receiving system data " + e);

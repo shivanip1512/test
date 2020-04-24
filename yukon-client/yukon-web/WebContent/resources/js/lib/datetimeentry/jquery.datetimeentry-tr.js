@@ -2,7 +2,7 @@
    Turkish initialisation for the jQuery date/time entry extension
    Written by Vural Dinçer and Izzet Emre Erkan (kara@karalamalar.net) */
 (function($) {
-	$.datetimeEntry.regionalOptions['tr'] = {datetimeFormat: 'D.O.Y H:M',
+	$.datetimeEntry.regional['tr'] = {datetimeFormat: 'D.O.Y H:M',
 		monthNames: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
 		'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
 		monthNamesShort: ['Oca','Şub','Mar','Nis','May','Haz',
@@ -12,5 +12,5 @@
 		ampmNames: ['AM', 'PM'],
 		spinnerTexts: ['şu an', 'önceki alan', 'sonraki alan', 'arttır', 'azalt'],
 		isRTL: false};
-	$.datetimeEntry.setDefaults($.datetimeEntry.regionalOptions['tr']);
+	$.datetimeEntry.setDefaults($.datetimeEntry.regional['tr']);
 })(jQuery);

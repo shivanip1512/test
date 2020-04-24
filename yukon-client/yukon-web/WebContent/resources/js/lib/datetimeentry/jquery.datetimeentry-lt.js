@@ -2,7 +2,7 @@
    Lithuanian initialisation for the jQuery date/time entry extension
    Written by Andrej Andrejev and Arturas Paleicikas <arturas@avalon.lt>. */
 (function($) {
-	$.datetimeEntry.regionalOptions['lt'] = {datetimeFormat: 'Y-O-D H:M',
+	$.datetimeEntry.regional['lt'] = {datetimeFormat: 'Y-O-D H:M',
 		monthNames: ['Sausis','Vasaris','Kovas','Balandis','Gegužė','Birželis',
 		'Liepa','Rugpjūtis','Rugsėjis','Spalis','Lapkritis','Gruodis'],
 		monthNamesShort: ['Sau','Vas','Kov','Bal','Geg','Bir',
@@ -12,5 +12,5 @@
 		ampmNames: ['AM', 'PM'],
 		spinnerTexts: ['Dabar', 'Ankstesnis laukas', 'Kitas laukas', 'Daugiau', 'Mažiau'],
 		isRTL: false};
-	$.datetimeEntry.setDefaults($.datetimeEntry.regionalOptions['lt']);
+	$.datetimeEntry.setDefaults($.datetimeEntry.regional['lt']);
 })(jQuery);
