@@ -29,7 +29,6 @@ public enum WidgetType implements DisplayableEnum {
     SYSTEM_MESSAGING(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemMessagingWidget", "image-system-messaging"),
     INFRASTRUCTURE_WARNINGS(DashboardScope.GENERAL, WidgetCategory.OTHER, "infrastructureWarningsWidget", "image-infrastructure-warnings"),
     PAO_NOTES_SEARCH(DashboardScope.GENERAL, WidgetCategory.OTHER, "paoNotesSearchWidget", "image-notes-search"),
-    COMM_CHANNEL_DETAILS(DashboardScope.GENERAL, WidgetCategory.OTHER, "commChannelDetailsWidget", "image-monitors"),
 
     CSR_TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-csr-trend"), // individual device based trend
     TRENDS(DashboardScope.GENERAL, WidgetCategory.OTHER, "trendsWidget", "image-trends"),  // predefined graphDefinition based trend

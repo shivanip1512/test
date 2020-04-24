@@ -16,7 +16,8 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
@@ -32,12 +33,11 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private static final Logger log = YukonLogManager.getLogger(CommChannelInfoWidget.class);
 
     @Autowired
-    public CommChannelInfoWidget(@Qualifier("widgetInput.deviceId")
-            SimpleWidgetInput simpleWidgetInput,
-            RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
+    public CommChannelInfoWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
         addInput(simpleWidgetInput);
         setIdentityPath("common/deviceIdentity.jsp");
     }
@@ -47,20 +47,21 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         int deviceId = 0;
         try {
             deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-            try {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelViewUrl + deviceId);
-                ResponseEntity<? extends Object> response =
-                        apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, PortBase.class);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelViewUrl + deviceId);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
+                    HttpMethod.GET, PortBase.class);
 
-                    if (response.getStatusCode() == HttpStatus.OK) {
-                        PortBase commChannel = (PortBase) response.getBody();
-                        model.addAttribute("commChannel", commChannel);
-                    }
-            } catch (RestClientException ex) {
-                log.error("Error retrieving comm channel: " + ex.getMessage());
+            if (response.getStatusCode() == HttpStatus.OK) {
+                PortBase commChannel = (PortBase) response.getBody();
+                model.addAttribute("commChannel", commChannel);
             }
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering Comm Channel Information widget", e);
+        } catch (RestClientException ex) {
+            log.error("Error retrieving comm channel: " + ex.getMessage());
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String errorMsg = accessor.getMessage("yukon.exception.apiCommunicationException.communicationError");
+            model.addAttribute("errorMsg", errorMsg);
         }
         return "commChannelInfoWidget/render.jsp";
     }
