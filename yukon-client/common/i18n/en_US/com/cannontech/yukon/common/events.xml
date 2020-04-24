@@ -1028,5 +1028,10 @@
     <entry key="yukon.common.events.dr.setup.loadProgram.gearCreated">Gear {1} of type {2} assigned to load program={3} at order={7} created by {4}.</entry>
     <entry key="yukon.common.events.dr.setup.loadProgram.gearDeleted">Gear {1} of type {2} assigned to load program={3} at order={7} deleted by {4}.</entry>
 
+     <!-- Comm Channels -->
+     <entry key="yukon.common.events.device.commChannel.commChannelCreated">Comm Channel {1} of type {2} with baud rate: {3} created by {4}.</entry>
+     <entry key="yukon.common.events.device.commChannel.commChannelUpdated">Comm Channel {1} of type {2} with baud rate: {3} updated by {4}.</entry>
+     <entry key="yukon.common.events.device.commChannel.commChannelDeleted">Comm Channel {1} of type {2} with baud rate: {3} deleted by {4}.</entry>
+
 </properties>
 
