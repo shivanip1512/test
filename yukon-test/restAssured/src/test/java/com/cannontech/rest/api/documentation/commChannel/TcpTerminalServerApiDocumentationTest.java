@@ -10,7 +10,6 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.restdocs.ManualRestDocumentation;
@@ -29,20 +28,20 @@ import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-public class TcpPortSetupApiControllerTest {
+public class TcpTerminalServerApiDocumentationTest {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;
+    MockPortBase tcpTerminalServerPort = null;
     private String portId = null;
-    private MockPortBase tcpPort = null;
+    public final static String CONTEXT_PORT_ID = "id";
 
     @BeforeMethod
     public void setUp(Method method) {
         baseURI = ApiCallHelper.getProperty("baseURI");
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-
-        tcpPort = CommChannelHelper.buildCommChannel(MockPaoType.TCPPORT);
+        tcpTerminalServerPort = CommChannelHelper.buildCommChannel(MockPaoType.TSERVER_SHARED);
     }
 
     @AfterMethod
@@ -51,38 +50,40 @@ public class TcpPortSetupApiControllerTest {
     }
 
     @Test
-    public void Test_TcpPort_01_Create() {
-        List<FieldDescriptor> tcpPortDescriptor = Arrays.asList(CommChannelHelper.portBaseFields());
-        List<FieldDescriptor> list = new ArrayList<>(tcpPortDescriptor);
+    public void Test_TcpTerminalServer_01_Create() {
+        List<FieldDescriptor> terminalServerPortDescriptor = CommChannelHelper.buildTCPTerminalServerPortDescriptor();
+        List<FieldDescriptor> list = new ArrayList<>(terminalServerPortDescriptor);
         list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
         Response response = given(documentationSpec)
-                .filter(document("{ClassName}/{methodName}", requestFields(tcpPortDescriptor), responseFields(list)))
+                .filter(document("{ClassName}/{methodName}", requestFields(terminalServerPortDescriptor),
+                        responseFields(list)))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(tcpPort)
+                .body(tcpTerminalServerPort)
                 .when()
                 .post(ApiCallHelper.getProperty("createPort"))
                 .then()
                 .extract()
                 .response();
+
         portId = response.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
         assertTrue("Port Id should not be Null", portId != null);
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
-    public void Test_TcpPort_02_Update() {
-        
-        List<FieldDescriptor> tcpPortDescriptor = Arrays.asList(CommChannelHelper.portBaseFields());
-        List<FieldDescriptor> list = new ArrayList<>(tcpPortDescriptor);
+    @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
+    public void Test_TcpTerminalServer_02_Update() {
+
+        List<FieldDescriptor> tcpTerminalServerDescriptor =  CommChannelHelper.buildTCPTerminalServerPortDescriptor();
+        List<FieldDescriptor> list = new ArrayList<>(tcpTerminalServerDescriptor);
         list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
         Response response = given(documentationSpec)
-                .filter(document("{ClassName}/{methodName}", requestFields(tcpPortDescriptor), responseFields(list)))
+                .filter(document("{ClassName}/{methodName}", requestFields(tcpTerminalServerDescriptor), responseFields(list)))
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(tcpPort)
+                .body(tcpTerminalServerPort)
                 .when()
                 .post(ApiCallHelper.getProperty("updatePort") + portId)
                 .then()
@@ -93,10 +94,10 @@ public class TcpPortSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
-    public void Test_TcpPort_03_Get() {
-        List<FieldDescriptor> tcpPortDescriptor = Arrays.asList(CommChannelHelper.portBaseFields());
-        List<FieldDescriptor> list = new ArrayList<>(tcpPortDescriptor);
+    @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
+    public void Test_TcpTerminalServer_03_Get() {
+        List<FieldDescriptor> terminalServerPortDescriptor = CommChannelHelper.buildTCPTerminalServerPortDescriptor();
+        List<FieldDescriptor> list = new ArrayList<>(terminalServerPortDescriptor);
         list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
         Response response = given(documentationSpec)
                 .filter(document("{ClassName}/{methodName}", responseFields(list)))
@@ -111,8 +112,8 @@ public class TcpPortSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
-    public void Test_TcpPort_04_Delete() {
+    @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
+    public void Test_TcpTerminalServer_04_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}"))
                 .accept("application/json")
                 .contentType("application/json")
@@ -125,21 +126,4 @@ public class TcpPortSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test
-    public void Test_AllPorts_05_Get() {
-
-        List<FieldDescriptor> getAllPortDescriptor = Arrays.asList(CommChannelHelper.buildGetAllPortsDescriptor());
-        List<FieldDescriptor> list = new ArrayList<>(getAllPortDescriptor);
-        Response response = given(documentationSpec)
-                .filter(document("{ClassName}/{methodName}", responseFields(list)))
-                .accept("application/json")
-                .contentType("application/json")
-                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .when()
-                .get(ApiCallHelper.getProperty("getAllCommChannels"))
-                .then()
-                .extract()
-                .response();
-        assertTrue("Status code should be 200", response.statusCode() == 200);
-    }
 }

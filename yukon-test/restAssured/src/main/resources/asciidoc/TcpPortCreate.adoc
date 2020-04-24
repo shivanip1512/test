@@ -9,18 +9,18 @@
 
 *Request Properties* :
 
-include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_01_Create/request-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/request-fields.adoc[]
 
 *Request JSON* :
 
-include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_01_Create/http-request.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/http-request.adoc[]
 
 *Response Properties* :
 
-include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_01_Create/response-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/response-fields.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_01_Create/http-response.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/http-response.adoc[]
 
 

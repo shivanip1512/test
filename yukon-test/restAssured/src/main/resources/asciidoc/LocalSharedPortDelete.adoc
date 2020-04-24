@@ -10,8 +10,8 @@
 
 *Request JSON* :
 
-include::{snippets}/LocalSharedPortSetupApiControllerTest/Test_LocalSharedPort_04_Delete/http-request.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_04_Delete/http-request.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/LocalSharedPortSetupApiControllerTest/Test_LocalSharedPort_04_Delete/http-response.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_04_Delete/http-response.adoc[]
