@@ -8,10 +8,11 @@ import static com.google.common.base.Preconditions.checkArgument;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum SharedPortType implements DatabaseRepresentationSource {
+public enum SharedPortType implements DatabaseRepresentationSource, DisplayableEnum {
 
     NONE(CtiUtilities.STRING_NONE), 
     ACS(CommPort.SHARE_ACS), 
@@ -19,6 +20,7 @@ public enum SharedPortType implements DatabaseRepresentationSource {
 
     private final static ImmutableMap<String, SharedPortType> lookupBySharedPortTypeString;
     private final static Logger log = YukonLogManager.getLogger(SharedPortType.class);
+    private String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
 
     static {
         try {
@@ -52,5 +54,10 @@ public enum SharedPortType implements DatabaseRepresentationSource {
     @Override
     public Object getDatabaseRepresentation() {
         return sharedPortTypeString;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }

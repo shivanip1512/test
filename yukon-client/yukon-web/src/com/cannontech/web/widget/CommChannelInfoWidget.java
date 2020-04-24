@@ -1,5 +1,8 @@
 package com.cannontech.web.widget;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Logger;
@@ -17,6 +20,7 @@ import org.springframework.web.client.RestClientException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
@@ -35,6 +39,10 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private static final Logger log = YukonLogManager.getLogger(CommChannelInfoWidget.class);
+    /* This list will be updated for Local Serial Port */
+    private static final List<PaoType> supportedAdditionalConfigTypes = Arrays.asList(PaoType.UDPPORT, PaoType.TSERVER_SHARED);
+    private static final List<PaoType> supportedEncyptionTypes = Arrays.asList(PaoType.UDPPORT);
+    private static final List<PaoType> supportedPortNumberTypes = Arrays.asList(PaoType.UDPPORT, PaoType.TSERVER_SHARED);
 
     @Autowired
     public CommChannelInfoWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
@@ -54,6 +62,10 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             if (response.getStatusCode() == HttpStatus.OK) {
                 PortBase commChannel = (PortBase) response.getBody();
                 model.addAttribute("commChannel", commChannel);
+                model.addAttribute("isAdditionalConfigSupported", supportedAdditionalConfigTypes.contains(commChannel.getType()));
+                model.addAttribute("isEncyptionSupported", supportedEncyptionTypes.contains(commChannel.getType()));
+                model.addAttribute("isIpAddressSupported", commChannel.getType() == PaoType.TSERVER_SHARED);
+                model.addAttribute("isPortNumberSupported", supportedPortNumberTypes.contains(commChannel.getType()));
             }
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering Comm Channel Information widget", e);

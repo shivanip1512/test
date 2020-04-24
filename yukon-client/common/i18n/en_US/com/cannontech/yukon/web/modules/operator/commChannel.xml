@@ -26,4 +26,22 @@
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.BAUD_38400">38400</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.BAUD_57600">57600</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.BAUD_115200">115200</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.timing.title">Timing</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.preTxWait">Pre Tx Wait</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.rtsToTxWait">RTS To Tx Wait</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.postTxWait">Post Tx Wait</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.receiveDataWait">Receive Data Wait</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.additionalTimeOut">Additional Time Out</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.shared.title">Shared</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.sharedPortType">Shared Port Type</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.socketNumber">Socket Number</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.protocolWrap">Protocol Wrap</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.carrierDetectWait">Carrier Detect Wait</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.encyptionKey">Encryption key</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.general.title">General</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.ipAddress">IP Address</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.portNumber">Port Number</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.NONE">None</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.ACS">ACS</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.ILEX">ILEX</entry>
 </properties>
