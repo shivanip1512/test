@@ -14,7 +14,7 @@ public class YukonValidationHelper {
 
     @Autowired private IDatabaseCache serverDatabaseCache;
 
-    public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String pathVariable) {
+    public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoIdPathVariable) {
         if (!YukonValidationUtils.checkIsBlank(errors, "name", paoName, false)) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
@@ -23,7 +23,7 @@ public class YukonValidationHelper {
 
             if (!errors.hasFieldErrors("name")) {
                 // Check if pao name already exists for paoClass and paoCategory
-                String paoId = ServletUtils.getPathVariable(pathVariable);
+                String paoId = ServletUtils.getPathVariable(paoIdPathVariable);
                 Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
                                                                          .stream()
                                                                          .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoName) 
