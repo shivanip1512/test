@@ -26,6 +26,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
@@ -45,6 +46,7 @@ public class CommChannelController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private ServerDatabaseCache dbCache;
 
     @GetMapping("/list")
     public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash,
@@ -94,8 +96,8 @@ public class CommChannelController {
 
     @GetMapping("/{id}")
     public String view(@PathVariable int id, ModelMap model) {
-        model.addAttribute("id",id);
-        model.addAttribute("name","TCP Comm Channel");
+        model.addAttribute("id", id);
+        model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
         return "/commChannel/view.jsp";
     }
 
