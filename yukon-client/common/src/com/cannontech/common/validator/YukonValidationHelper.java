@@ -13,6 +13,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class YukonValidationHelper {
 
     @Autowired private IDatabaseCache serverDatabaseCache;
+    private final static String key = "yukon.web.api.error.";
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoIdPathVariable) {
         if (!YukonValidationUtils.checkIsBlank(errors, "name", paoName, false)) {
@@ -33,10 +34,20 @@ public class YukonValidationHelper {
 
                 if (!litePao.isEmpty()) {
                     if (paoId == null || (litePao.get().getLiteID() != Integer.valueOf(paoId))) {
-                        errors.rejectValue("name", "yukon.web.api.error.unique", new Object[] { fieldName }, "");
+                        errors.rejectValue("name", key + "unique", new Object[] { fieldName }, "");
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Check if paoType is matched with the poaObject present in the cache for paoId.
+    */
+    public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, Integer paoId) {
+        LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
+        if (litePao != null && litePao.getPaoType() != paoType) {
+            errors.rejectValue("type", key + "type");
         }
     }
 }
