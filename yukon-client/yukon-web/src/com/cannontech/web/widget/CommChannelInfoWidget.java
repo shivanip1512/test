@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiControllerHelper;
@@ -55,6 +57,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         int deviceId = 0;
         try {
             deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+            model.addAttribute("mode", PageEditMode.VIEW);
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelViewUrl + deviceId);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.GET, PortBase.class);
@@ -62,6 +65,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             if (response.getStatusCode() == HttpStatus.OK) {
                 PortBase commChannel = (PortBase) response.getBody();
                 model.addAttribute("commChannel", commChannel);
+                model.addAttribute("baudRateList", BaudRate.values());
                 model.addAttribute("isAdditionalConfigSupported", supportedAdditionalConfigTypes.contains(commChannel.getType()));
                 model.addAttribute("isEncyptionSupported", supportedEncyptionTypes.contains(commChannel.getType()));
                 model.addAttribute("isIpAddressSupported", commChannel.getType() == PaoType.TSERVER_SHARED);

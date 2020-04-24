@@ -44,4 +44,6 @@
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.NONE">None</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.ACS">ACS</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.ILEX">ILEX</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.edit">Edit {0}</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.IDLC">IDLC</entry>
 </properties>
