@@ -58,6 +58,8 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
     private static final String refreshShedType = "refreshShedType";
     private static final String shedTime = "shedTime";
     private static final String modeFieldName = "mode";
+    private static final String maxShedTime = "maxShedTime";
+    private static final String fixedShedTime = "fixedShedTime";
 
     private static Set<String> excludeGearFields = Set.of("groupSelectionMethod", "stopCommandRepeat", "capacityReduction", "numberOfGroups");
 
@@ -222,9 +224,9 @@ public class LMGearSetupFilterServiceImpl implements LMSetupFilterService<GearFi
         } else if (controlMethod == GearControlMethod.TimeRefresh && StringUtils.equals(fieldPath, shedTime)) {
             CycleCountSendType cycleCountSendType = CycleCountSendType.valueOf(fieldValueMap.get(refreshShedType));
             if (cycleCountSendType == CycleCountSendType.DynamicShedTime) {
-                fieldPath = "maxShedTime";
+                fieldPath = maxShedTime;
             } else {
-                fieldPath = cycleCountSendType.toString();
+                fieldPath = fixedShedTime;
             }
         }
         String fieldName = accessor.getMessage(new YukonMessageSourceResolvable(baseKey + fieldPath));
