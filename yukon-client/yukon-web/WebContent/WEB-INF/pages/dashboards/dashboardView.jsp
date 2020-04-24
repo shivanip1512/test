@@ -21,21 +21,21 @@
             <c:forEach var="ownedDashboard" items="${ownedDashboards}" varStatus="status">
                 <c:if test="${ownedDashboard.dashboardId != dashboard.dashboardId && status.index <= 10}">
                     <cti:url var="dashboardUrl" value="/dashboards/${ownedDashboard.dashboardId}/view?dashboardPageType=${dashboardPageType}"/>
-                    <cm:dropdownOption label="${ownedDashboard.name}" href="${dashboardUrl}"/>
+                    <cm:dropdownOption label="${ownedDashboard.name}" href="${dashboardUrl}" icon="icon-dashboard"/>
                 </c:if>
             </c:forEach>
             <li class="divider"/>
         </c:if>
         <c:if test="${user.userID == dashboard.owner.userID && dashboard.visibility != 'SYSTEM'}">
             <cti:url var="editUrl" value="/dashboards/${dashboard.dashboardId}/edit"/>
-            <cm:dropdownOption key=".edit" href="${editUrl}"/>
+            <cm:dropdownOption key=".edit" href="${editUrl}" icon="icon-pencil"/>
         </c:if>
         <cti:url var="manageDashboardsUrl" value="/dashboards/manage"/>
-        <cm:dropdownOption key=".manageDashboards" href="${manageDashboardsUrl}"/>
+        <cm:dropdownOption key=".manageDashboards" href="${manageDashboardsUrl}" icon="icon-dashboard-manage"/>
         <c:if test="${dashboardPageType == 'AMI'}">
             <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
                 <li class="divider"/>
-                <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+                <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}" icon="icon-plus-green"/>
             </cti:checkRolesAndProperties>
         </c:if>
     </div>
