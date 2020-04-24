@@ -8,6 +8,7 @@ import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
 public class PortCreationValidator <T extends PortBase<?>> extends SimpleValidator<T> {
@@ -26,19 +27,19 @@ public class PortCreationValidator <T extends PortBase<?>> extends SimpleValidat
     @Override
     protected void doValidation(T port, Errors errors) {
         // Check if type is NULL
-        portValidatorHelper.checkIfFieldRequired("type", errors, port.getType(), "Type");
+        YukonValidationUtils.checkIfFieldRequired("type", errors, port.getType(), "Type");
         // Check if name is NULL
-        portValidatorHelper.checkIfFieldRequired("name", errors, port.getName(), "Name");
+        YukonValidationUtils.checkIfFieldRequired("name", errors, port.getName(), "Name");
         // Check if baudRate is NULL
-        portValidatorHelper.checkIfFieldRequired("baudRate", errors, port.getBaudRate(), "Baud Rate");
+        YukonValidationUtils.checkIfFieldRequired("baudRate", errors, port.getBaudRate(), "Baud Rate");
 
         if (port instanceof TerminalServerPortDetailBase) {
             TerminalServerPortDetailBase<?> serverPortDetailBase = (TerminalServerPortDetailBase<?>) port;
-            portValidatorHelper.checkIfFieldRequired("portNumber", errors, serverPortDetailBase.getPortNumber(), "Port");
+            YukonValidationUtils.checkIfFieldRequired("portNumber", errors, serverPortDetailBase.getPortNumber(), "Port");
 
             if (port instanceof TcpSharedPortDetail) {
                 TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
-                portValidatorHelper.checkIfFieldRequired("ipAddress", errors, tcpSharedPortDetail.getIpAddress(), "IP Address");
+                YukonValidationUtils.checkIfFieldRequired("ipAddress", errors, tcpSharedPortDetail.getIpAddress(), "IP Address");
             }
         }
 

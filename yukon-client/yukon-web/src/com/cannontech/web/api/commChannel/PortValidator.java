@@ -10,12 +10,14 @@ import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.util.Validator;
 
 public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
     @Autowired PortValidatorHelper portValidatorHelper;
+    @Autowired YukonValidationHelper yukonValidationHelper;
 
     @SuppressWarnings("unchecked")
     public PortValidator() {
@@ -30,10 +32,7 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
     protected void doValidation(T port, Errors errors) {
         // Validate Name if present.
         if (port.getName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "name", port.getName(), false);
-            if (!errors.hasFieldErrors("name")) {
-                portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
-            }
+            yukonValidationHelper.validatePaoName(port.getName(), port.getType(), errors, "Name", "portId");
         }
 
         if (port instanceof TcpPortDetail) {
