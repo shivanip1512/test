@@ -143,7 +143,7 @@ public class DeviceConfigurationSummaryController {
     
     @RequestMapping(value="{id}/outOfSync", method=RequestMethod.GET)
     public String outOfSync(ModelMap model, YukonUserContext context, @PathVariable int id) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
+        SimpleDevice device = deviceDao.getYukonDevice(id);
         VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
         model.put("verifyResult", result);
         return "summary/outOfSync.jsp";
@@ -160,7 +160,7 @@ public class DeviceConfigurationSummaryController {
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public void sendConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
+        SimpleDevice device = deviceDao.getYukonDevice(id);
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
         executor.submit(() -> deviceConfigService.sendConfig(device, context.getYukonUser()));
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "sendConfig.success", pao.getPaoName()));
@@ -171,9 +171,8 @@ public class DeviceConfigurationSummaryController {
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public void readConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
-        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
-        executor.submit(() -> deviceConfigService.readConfig(device, context.getYukonUser()));
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        executor.submit(() -> deviceConfigService.readConfig(new SimpleDevice(pao.getLiteID(), pao.getPaoType()), context.getYukonUser()));
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "readConfig.success", pao.getPaoName()));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
@@ -181,7 +180,7 @@ public class DeviceConfigurationSummaryController {
     @RequestMapping(value="{id}/verifyConfig", method=RequestMethod.POST)
     public void verifyConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
+        SimpleDevice device = deviceDao.getYukonDevice(id);
         VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
         if (result == null) {
             flash.setError(

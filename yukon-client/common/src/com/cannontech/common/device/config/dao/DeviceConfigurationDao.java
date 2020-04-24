@@ -384,7 +384,7 @@ public interface DeviceConfigurationDao {
     void saveDeviceConfigState(DeviceConfigState state);
 
     /**
-     * Returns a map of device ids to state
+     * Returns a map of device ids to Device Config State
      */
     Map<Integer, DeviceConfigState> getDeviceConfigStatesByDeviceIds(Iterable<Integer> deviceIds);
 
@@ -392,4 +392,9 @@ public interface DeviceConfigurationDao {
      * Uses batch update to save Device Config States
      */
     void saveDeviceConfigStates(Set<DeviceConfigState> states);
+
+    /**
+     * Returns Device Config State for deviceId
+     */
+    DeviceConfigState getDeviceConfigStatesByDeviceId(int deviceId);
 }

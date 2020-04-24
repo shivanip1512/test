@@ -8,7 +8,6 @@ import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
@@ -22,11 +21,11 @@ public interface DeviceConfigService {
 
     VerifyConfigCommandResult verifyConfigs(List<SimpleDevice> devices, LiteYukonUser user);
 
-    VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user);
+    VerifyResult verifyConfig(SimpleDevice device, LiteYukonUser user);
 
-    CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception;
+    CommandResultHolder readConfig(SimpleDevice device, LiteYukonUser user) throws Exception;
 
-    CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception;
+    CommandResultHolder sendConfig(SimpleDevice device, LiteYukonUser user) throws Exception;
 
     enum LogAction {
         READ, SEND, VERIFY

@@ -27,6 +27,7 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -83,7 +84,7 @@ public class ConfigWidget extends WidgetControllerBase {
 
     private ModelAndView getConfigModelAndView(HttpServletRequest request) throws ServletRequestBindingException {
         ModelAndView mav = new ModelAndView("configWidget/render.jsp");
-        YukonDevice device = getYukonDevice(request);
+        YukonDevice device = getDevice(request);
         int deviceId = device.getPaoIdentifier().getPaoId();
         mav.addObject("deviceId", deviceId);
         
@@ -136,14 +137,14 @@ public class ConfigWidget extends WidgetControllerBase {
         return mav;
     }
 
-    private YukonDevice getYukonDevice(HttpServletRequest request) throws ServletRequestBindingException {
+    private SimpleDevice getDevice(HttpServletRequest request) throws ServletRequestBindingException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         return deviceDao.getYukonDevice(deviceId);
     }
     
     @RequestMapping(value = "assignConfig", method = RequestMethod.POST)
     public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, InvalidDeviceTypeException {
-        YukonDevice device = getYukonDevice(request);
+        YukonDevice device = getDevice(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
@@ -161,7 +162,7 @@ public class ConfigWidget extends WidgetControllerBase {
     
     @RequestMapping(value = "unassignConfig", method = RequestMethod.POST)
     public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        YukonDevice device = getYukonDevice(request);
+        YukonDevice device = getDevice(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
         deviceConfigurationService.unassignConfig(device, userContext.getYukonUser(), deviceName);
@@ -174,7 +175,7 @@ public class ConfigWidget extends WidgetControllerBase {
     public ModelAndView sendConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        YukonDevice device = getYukonDevice(request);
+        SimpleDevice device = getDevice(request);
         CommandResultHolder resultHolder = deviceConfigService.sendConfig(device, userContext.getYukonUser());
         
         mav.addObject("sendResult", resultHolder);
@@ -185,7 +186,7 @@ public class ConfigWidget extends WidgetControllerBase {
     public ModelAndView readConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        YukonDevice device = getYukonDevice(request);
+        SimpleDevice device = getDevice(request);
         CommandResultHolder resultHolder = deviceConfigService.readConfig(device, userContext.getYukonUser());
         mav.addObject("readResult", resultHolder);
         return mav;
@@ -195,7 +196,7 @@ public class ConfigWidget extends WidgetControllerBase {
     public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
-        YukonDevice device = getYukonDevice(request);
+        SimpleDevice device = getDevice(request);
         VerifyResult verifyResult = deviceConfigService.verifyConfig(device, userContext.getYukonUser());
         mav.addObject("verifyResult", verifyResult);
         return mav;

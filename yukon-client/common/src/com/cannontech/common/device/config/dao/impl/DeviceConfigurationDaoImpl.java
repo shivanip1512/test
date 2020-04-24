@@ -27,6 +27,7 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1278,6 +1279,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public Map<Integer, DeviceConfigState> getDeviceConfigStatesByDeviceIds(Iterable<Integer> deviceIds) {
+        if(IterableUtils.isEmpty(deviceIds)) {
+            return new HashMap<>();
+        }
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -1294,4 +1298,18 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                 DeviceConfigState::getDeviceId);
         return deviceIdsToState;
     }
+    
+    @Override
+    public DeviceConfigState getDeviceConfigStatesByDeviceId(int deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PaObjectId, CurrentState, LastAction, LastActionStatus, LastActionStart, LastActionEnd, CommandRequestExecId");
+        sql.append("FROM DeviceConfigState");
+        sql.append("WHERE PaObjectId").eq(deviceId);
+        try {
+            return jdbcTemplate.queryForObject(sql, new DeviceConfigStateRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
 }
