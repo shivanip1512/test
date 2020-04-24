@@ -3316,15 +3316,15 @@ Network Manager :
   - filename : annotations-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.20"
-    md5 : eac3f006e726336dfb687ae05e8eea4e
-    sha1 : 08d023d7b90f7b996ec15ca43b11dd0fc41e0692
-    updated : 2019-05-26
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-annotations-api/9.0.34"
+    md5 : 8cda64e6d543ec457da9592a8582582a
+    sha1 : 3e6e7ce901cce8d17d561763e032f44e78d6ecc9
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : asm.jar
@@ -3344,71 +3344,85 @@ Network Manager :
   - filename : catalina-ant.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ant/9.0.20"
-    md5 : 0aa81cda50ba549ed8ad52180195190e
-    sha1 : 2058c8dde07f9f962885bb53d02b84e5341ec325
-    updated : 2019-05-26
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ant/9.0.34"
+    md5 : 3c3bfe042387bfd9ce40b69cb2767f2d
+    sha1 : 2cfd9a27d08f9b6c93378ab6d7ef4440834566a2
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : catalina-ha.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.20"
-    md5 : 3b7c16dec05e7e61b1c261460149ae39
-    sha1 : b56fa5490258f64c0dce2bebacffd8a1aef1f3b7
-    updated : 2019-05-26
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.34"
+    md5 : 3e377209932b4e0c72be9053600d95ce
+    sha1 : 930f0ef9b5a93107dd7e934eb67ff23505ef90f1
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
+    notes : 
+
+  - filename : catalina-ssi.jar
+    yukon group : Tomcat
+    project : Apache Tomcat
+    version : 9.0.34
+    project URL : "https://tomcat.apache.org/"
+    license : Apache 2.0
+    license URLs : "https://opensource.org/licenses/Apache-2.0"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ssi/9.0.34"
+    md5 : 0a907935c4f708bbe9cda4ebabd319ab
+    sha1 : ecd21a6fe3f406a7d9404499887c6fdf45851c52
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : catalina-storeconfig.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-storeconfig/9.0.20"
-    md5 : 55e6e581c41b3979c03e8221f7e2377a
-    sha1 : 2a46049f24aae006e7016a1aad5bf669bcd40658
-    updated : 2019-05-26
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-storeconfig/9.0.34"
+    md5 : ef8d5913a9c5fdaf09ed08b4f5d00179
+    sha1 : 62eb164624e35067bc4428d558a63d9823a5b42e
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : catalina-tribes.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-tribes/9.0.20"
-    md5 : aa1ddeac07a30edc95254eadcef8c242
-    sha1 : 8cb31b7558d5c673864cca0f3b47b47619bfae4d
-    updated : 2019-05-26
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-tribes/9.0.34"
+    md5 : ac644d9a4efbbb6b8a6df9fab9f31906
+    sha1 : 675b7530f6dfbc5e5744dd7bce23dd8de0e66312
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : catalina.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina/9.0.20"
-    md5 : b4476a5e60d377ee5ac00b4c077e2646
-    sha1 : db3e671d6ed3391a003dfcac462238e58c11bbc8
-    updated : 2019-05-26
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina/9.0.34"
+    md5 : e4800fe5fbb194f94341eaf7d76c7aa2
+    sha1 : 7574087f119d9dedc307a0d8c8025de130f1ec97
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : cglib-nodep-2.2.2.jar
@@ -3761,32 +3775,32 @@ Network Manager :
     jira : NM-885
     notes : 
 
-  - filename : ecj-4.10.jar
+  - filename : ecj-4.15.jar
     yukon group : Tomcat
     project : Eclipse JDT Core Batch Compiler
-    version : 4.10
+    version : 4.15
     project URL : "http://www.eclipse.org/jdt/"
     license : EPL 1.0
     license URLs : "http://www.eclipse.org/org/documents/epl-v10.php"
     maven URL : "https://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj"
-    md5 : c64ce3bddbcea37463410eeff3a37d8f
-    sha1 : 6b45d497cb866f05cbae6393d8c1d0747a45345c
-    updated : 2019-05-30
-    jira : NM-1204
+    md5 : 4d1404f81be38fdf9186c9556c4ad3e9
+    sha1 : d06974eec06892e5594bdb8fbbc95cd81f1c57b2
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : el-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.20"
-    md5 : 520c5080200d5cd5a18943fe884e6dd4
-    sha1 : 2aae06a68a5ec6cb60fa892e8c46d6c1d287f549
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-el-api/9.0.34"
+    md5 : 0bdcfaf588eda7a79baf6fc9706533da
+    sha1 : 8ac6dae31e12e7577657d3b9c19332bd4eb6f2a5
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : gwt-dev.jar
@@ -4002,43 +4016,29 @@ Network Manager :
   - filename : jasper-el.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 6.0.18
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper-el/6.0.18"
-    md5 : c006be519e8e4ba89c4d9e167991a007
-    sha1 : 1136de6c43c718bac987719057ed740f9badc122
-    updated : 2009-02-10
-    jira : none
-    notes : 
-
-  - filename : jasper-jdt.jar
-    yukon group : Tomcat
-    project : Apache Tomcat
-    version : 6.0.18
-    project URL : "https://tomcat.apache.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper-jdt/6.0.18"
-    md5 : a24d9c35fee5b1e4002ad2f21640aafd
-    sha1 : 53e30b95a7f4fb3457c3797b7f2f249e199e4431
-    updated : 2009-02-10
-    jira : none
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper-el"
+    md5 : 8e32213070ece8996526b2716627d811
+    sha1 : d75ae2580bf40eed6b73046b6961c1bdeb90bf2c
+    updated : 2020-04-03
+    jira : NM-1458
     notes : 
 
   - filename : jasper.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 6.0.18
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper/6.0.18"
-    md5 : 35287182838ad603ce8207f5b9018207
-    sha1 : 6445dc4a9089f1a9b8ab1d697553996d4e8d3716
-    updated : 2009-02-10
-    jira : none
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper"
+    md5 : 43f43e0b49b75b248d0abd28e3bd5139
+    sha1 : 3b3c09fecacded52cd599a1ea6565211047a3c95
+    updated : 2020-04-03
+    jira : NM-1458
     notes : 
 
   - filename : jasperreports-3.6.0.jar
@@ -4058,15 +4058,15 @@ Network Manager :
   - filename : jaspic-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.20"
-    md5 : e132216cc64cbabdd45f1b1aa23cfb57
-    sha1 : 5eb61e19ebe7702852674389a0a6d3189b5e13c3
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jaspic-api/9.0.34"
+    md5 : 204813c4caf6bd514a5e3758f47ec8c2
+    sha1 : ddf913a3aa40099fee5c67b3741eb2a1738f8bc5
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : javassist-3.21.0-GA.jar
@@ -4184,15 +4184,15 @@ Network Manager :
   - filename : jsp-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 6.0.18
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/"
-    md5 : 8c0da0161ff80f6d3b4122974f1acc7e
-    sha1 : 8c9517ff993f2a71537d5e2973e9ae02dd1d5fdd
-    updated : 2009-02-10
-    jira : none
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/9.0.34"
+    md5 : 0f5b59d65f7b50329c49f09c31324a7b
+    sha1 : 1da099f7517a5ce18328b3c07d8d1e99d0cca8c4
+    updated : 2020-04-03
+    jira : NM-1458
     notes : 
 
   - filename : jtds-1.3.1_r1289.jar
@@ -4394,15 +4394,15 @@ Network Manager :
   - filename : servlet-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0, CDDL 1.0
     license URLs : "https://opensource.org/licenses/Apache-2.0, http://www.opensource.org/licenses/cddl1.txt"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.20"
-    md5 : 002a61ff6cb0f78dd625af29844b7caa
-    sha1 : 68c877fa080de7275bc0b3e8d5cd0a4eb7d9fb8b
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api/9.0.34"
+    md5 : e8cb45f4fd586ef9d9f7e1279179bdd9
+    sha1 : cf699993addfade33a37c447b3fe29dd39737890
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : struts-legacy.jar
@@ -4436,281 +4436,267 @@ Network Manager :
   - filename : tomcat-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api/9.0.20"
-    md5 : 7cd0f9dd2048e5880d06ca6738282447
-    sha1 : d569d339bdd4b677d1514427bf1846a4591e0a3a
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-api/9.0.34"
+    md5 : 72604155cd828572c692b5cfdbd7d973
+    sha1 : 3525e7b61247c492b7a66634ebce73a4a10456eb
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-coyote.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-coyote/9.0.20"
-    md5 : 4a5a1fbe3a15180da78823c221040e7d
-    sha1 : 22dc3d32f50e0841849326456ce2a790c484a792
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-coyote/9.0.34"
+    md5 : 5b8e0964ee4a39146eb5326b042a5075
+    sha1 : 5f376d650769a99a0411091b968bf75965b04ccd
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-dbcp.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp/9.0.20"
-    md5 : 964ab271b74fcbf2f0946a9629f09513
-    sha1 : f792705baaf84639f5d6d2698bc854b02d672e88
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-dbcp/9.0.34"
+    md5 : d6222289b062cad232de0a648cda2df3
+    sha1 : d930fee3126e64442e4a0b5085b65d5cd3f5be58
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-cs.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-cs/9.0.20"
-    md5 : 5e24f3cf603749e9f6a7c7beed1edfe6
-    sha1 : 379832a664b51dbb5fa20c364df339dff8b92ffe
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-cs/9.0.34"
+    md5 : 3720a3c5facfccd13a51731aeb627575
+    sha1 : a60cac71ce3f27a8e66a4e348b16c4ef903c8362
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-de.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-de/9.0.20"
-    md5 : 4df3ca58948e2f6a2b963a77dcd0ef5f
-    sha1 : a7214b392c1dc09c9cd95b84a318e7021993dec4
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-de/9.0.34"
+    md5 : 06c88e2504372fd18d6e7024804d7cf2
+    sha1 : 3095eb27c1e6d75c2d66a78f52d772b107e50682
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-es.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-es/9.0.20"
-    md5 : 05b14e020212b55a1b1b228aa8e7756c
-    sha1 : b3a3bed586542a6661dd8b339e4bf0ea10cf8303
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-es/9.0.34"
+    md5 : 2c8767dd42e386b79058dfbde513f8fd
+    sha1 : d604dde061c248b6fab7ac0665e35cdd613ecc99
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-fr.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-fr/9.0.20"
-    md5 : 980041e9c8c5b5d5ab1ad008e91eac1a
-    sha1 : 1c136324e4cb791cb1fb70da3d5496f433261d64
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-fr/9.0.34"
+    md5 : 76f362e98eb3fbd7469c9043eb755fe1
+    sha1 : 81899c98a4dc189eb5a63cd77de1726e917eb236
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-ja.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ja/9.0.20"
-    md5 : d0ddbe4dd60df50d5c614b36a61489fb
-    sha1 : db49c2e13e86f8dd926ad2debab2cc5b7f4c80ad
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ja/9.0.34"
+    md5 : 79f7f142aac50c3be480a1e080f7d6d5
+    sha1 : 0d2b3058cdc8cb386ef4e36e2faaa5663c7168ed
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-ko.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ko/9.0.20"
-    md5 : b949d52ed3ccb7749f5e0df53001ce4e
-    sha1 : bde0f9fed21805eeab52ff5400ec435966c470f4
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ko/9.0.34"
+    md5 : efb82e54bfc0adf49ca3009092749d7d
+    sha1 : 28bf259394648b723f69f10d457e3645bb5a769c
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-pt-BR.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-pt-BR/9.0.20"
-    md5 : 529b826bde15a87c8e544b8dae769cc8
-    sha1 : 85626f9ee4edd39a4f5eabe36aae5bb3756f57f2
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-pt-BR/9.0.34"
+    md5 : 5eea40be1f3e76cde50979a5dba8a68d
+    sha1 : 2393529d2e92b3a1b52c5b73004d82e1465fae9d
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-ru.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ru/9.0.20"
-    md5 : 4d5f52843fbc7a962223b01defe754d4
-    sha1 : 6cadc94d23a0d793e109ddac2da5a2c0622d50eb
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-ru/9.0.34"
+    md5 : e997bf9ba6ecb2d985a68a6a5055abd1
+    sha1 : a7b98ef453dc814cbe11d61d24d43bf86ab1f021
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-i18n-zh-CN.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-zh-CN/9.0.20"
-    md5 : a40656ce1f1a05721432945671ba69ea
-    sha1 : c058f76654c99e4cbeb16d05e443810304aa7008
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-i18n-zh-CN/9.0.34"
+    md5 : 53f1e9ccda6460c318b14d5a74f19f03
+    sha1 : f52f0fc2620ec86850daa525fe58896b1bf6ea7c
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-jdbc.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc/9.0.20"
-    md5 : afd720bae7a2320ea70ab39e2435b177
-    sha1 : ac3fa584ee657a97ad6b5e85007059cd520e1393
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jdbc/9.0.34"
+    md5 : d5f85fe8a689ed92efa6bec3d70f68c3
+    sha1 : 79b6fcd8b73a592a96b9e42ced087fea5a795383
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-jni.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jni/9.0.20"
-    md5 : 797304aa36b43427a2963270b6e8350b
-    sha1 : 5034217b4e1c11d13a4867cf1b1850e709c59b83
-    updated : 2019-05-30
-    jira : NM-1204
-    notes : 
-
-  - filename : tomcat-juli-adapters.jar
-    yukon group : Tomcat
-    project : Apache Tomcat
-    version : 9.0.20
-    project URL : "https://tomcat.apache.org/"
-    license : Apache 2.0
-    license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.20"
-    md5 : 26782378485c25e728295989f056eed7
-    sha1 : 5b5a5c864e008a02fe92c748f90bd6b68790d6cc
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jni/9.0.34"
+    md5 : 2b49e0378914fa54870b152a9f0f9a8d
+    sha1 : 5616e268c634872572bbc4af2a1600fd77d5b8d1
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-juli.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.20"
-    md5 : 53a54734ee93f95bbd749f56637f1b3f
-    sha1 : 35aeecf2a466f996910f3983c889b66ec0b6dc7f
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-juli/9.0.34"
+    md5 : 1ac55312af0bab57f7b272f96b20e2a2
+    sha1 : 7f095b3bcde2472c5284a279a5c0874a5504ae77
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-util-scan.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan/9.0.20"
-    md5 : f67c13e607e5eb7dfa39fabc3b2d96dc
-    sha1 : 0708fcbff3a13b0661bc4e473fb4616dbf3d8e4c
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util-scan/9.0.34"
+    md5 : afe849948623cdba628c938864414dd9
+    sha1 : f356788535365483361e5f97ae058744be443289
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-util.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util/9.0.20"
-    md5 : 370a8982d2f69ae2e66d71e238e6f454
-    sha1 : 5f96d82d99c31c939cc74889248996878588c9bc
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-util/9.0.34"
+    md5 : c0f8b648f94a6ed7747d29fd884ffc68
+    sha1 : 00e4717dd1597715e5ecd483e9dbd6fa3744a46b
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : tomcat-websocket.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket/9.0.20"
-    md5 : 58c667eb3a1438443f0cb8309cec9b9c
-    sha1 : 3b545ea02d836a6cf8eee01347762fd6d03c1c81
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket/9.0.34"
+    md5 : e5906d13011d20d65766f114fc630ba6
+    sha1 : 8c4201dea5849abb10bf7722454590b5d5739d48
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : websocket-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.20
+    version : 9.0.34
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api/9.0.20"
-    md5 : 932f8be43fc20e9d1e4dc730eb75fc1b
-    sha1 : b215bec41cd2cd97ea5864cf6ad2fcf52b206023
-    updated : 2019-05-30
-    jira : NM-1204
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-websocket-api/9.0.34"
+    md5 : da38f4d24cf8a1edf982b5b0a51805a5
+    sha1 : 64931306c5c2ae070d70cb330ed5a6e96566c3c7
+    updated : 2020-04-03
+    jira : NM-1204 NM-1458
     notes : 
 
   - filename : ant-antlr.jar
@@ -5411,7 +5397,7 @@ JavaScript :
     sha1 : eae43db5a1c972d0f74ea42ad48c1eb8aa74ee81
     jira : YUK-18302
     updated : 2018-05-29
-    notes : 
+    notes : "This library is used to return 0 (instead of actual height/width) for height and/or width of a DOM element if the element or its parent has css property 'display' set to 'none'."
 
   - project : checkall
     version : 1.4
@@ -5423,7 +5409,7 @@ JavaScript :
     sha1 : 7b794ba2dbe28c3d1cdb7c3a732743582c5097d5
     jira : YUK-13033
     updated : 2014-02-17
-    notes : 
+    notes : "This library is used to check/uncheck multiple checkboxes based on a single checkbox. Eg. implementing 'Select All' functionality."
 
   - project : chosen
     version : 1.8.7
@@ -5447,18 +5433,18 @@ JavaScript :
     sha1 : 3a1f8c853cb20eee88ea7e39c23196162049e622
     jira : YUK-12661
     updated : 2014-09-24
-    notes : "No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
+    notes : "This library is used for reading, writing and deleting cookies. No longer maintained, superseded by JS Cookie: https://github.com/js-cookie/js-cookie"
 
   - project : datetimeentry
-    version : 2.0.0
+    version : 1.1.1
     project URL : "http://keith-wood.name/datetimeEntry.html"
     license : MIT
     license URLs : "http://keith-wood.name/licence.html"
     npm URL : "n/a"
-    md5 : 7a403c4c30627858bc95cb5fd44ab6a6
-    sha1 : 5618bbb5c934d2e7048cd0c5228ce915f37e39bc
-    jira : YUK-21523
-    updated : 2020-04-08
+    md5 : d6b587f91184c6b3b8ef915d7ee94d1a
+    sha1 : 6effa521a52977fa70a5bae626ded7a2ff897826
+    jira : YUK-13033
+    updated : 2014-02-17
     notes : "Modernized clone available at https://www.npmjs.com/package/datetime-entry.  This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : debugger.js
@@ -5555,7 +5541,7 @@ JavaScript :
     sha1 : b57f57c9b79dc316ed9d678085c9ea36e02a0681
     jira : YUK-13033
     updated : 2014-02-17
-    notes : "Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
+    notes : "This library is used to display a grid on the Collection Actions -> Device Report page. Up to 4.7 is MIT/GPL2 licensed, subsequently commercialized as 'Guriddo jqGrid JavaScript', see http://guriddo.net/?p=1 for details"
 
   - project : jquery
     version : 3.4.1
@@ -5579,7 +5565,7 @@ JavaScript :
     sha1 : 971d20060e6230517f3746c6fa118a7b153dd0cf
     jira : YUK-18131
     updated : 2018-05-18
-    notes : 
+    notes : "Yukon UI uses effects, widgets (dialog, Accordion..etc) from this library."
 
   - project : modernizr
     version : 3.6.0 (Custom)
@@ -5607,15 +5593,15 @@ JavaScript :
     notes : "This library is used to display dates on UI in user's timezone."
 
   - project : mousewheel
-    version : 3.1.13
+    version : 3.1.9
     project URL : "https://github.com/jquery/jquery-mousewheel"
     license : MIT
     license URLs : "https://github.com/jquery/jquery-mousewheel/blob/master/LICENSE.txt"
-    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.13"
-    md5 : 1bfebd043755482879b80a5aa1421712
-    sha1 : b66abc517f48a02d986edec27b46765c7e7e118c
-    jira : YUK-21523
-    updated : 2020-04-08
+    npm URL : "https://www.npmjs.com/package/jquery-mousewheel/v/3.1.9"
+    md5 : f64a960563507f0f5f874c473f9dcb2a
+    sha1 : 0ceff045b5cb0c4e42e65af30e644dcd6e841ed7
+    jira : YUK-13033
+    updated : 2014-02-17
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
 
   - project : open-layers
@@ -5691,29 +5677,16 @@ JavaScript :
     notes : This library is used for selecting colors in Themes for Yukon.
 
   - project : time-picker
-    version : 1.6.3
+    version : 1.5.0
     project URL : "https://github.com/trentrichardson/jQuery-Timepicker-Addon"
     license : MIT
     license URLs : "https://github.com/trentrichardson/jQuery-Timepicker-Addon/blob/master/LICENSE-MIT"
     npm URL : "https://www.npmjs.com/package/spectrum-colorpicker"
-    md5 : 689199998a2607268b20f4be82e1a67d
-    sha1 : 619d93b35c0ab3511e43c310b5b2db2cc607d30c
-    jira : YUK-21523
-    updated : 2020-04-08
+    md5 : b6e477c9f70f52e13a1b800328e04199
+    sha1 : ef21c2ea9e712d05bcf13ec0d4cb5383e9f0f958
+    jira : YUK-10381
+    updated : 2014-11-13
     notes : "This library is used for the date, time, datetime and offset pickers used on UI."
-
-  - project : tipsy
-    version : 1.0.0a
-    project URL : "https://github.com/jaz303/tipsy"
-    license : MIT
-    license URLs : "https://github.com/jaz303/tipsy/blob/master/LICENSE"
-    npm URL : "https://www.npmjs.com/package/tipsy"
-    md5 : 248e9f882e50d3942c17c4036506aa2b
-    sha1 : 5502e8ace2f711f3e17a517d224d6e5417708a16
-    jira : YUK-13033
-    updated : 2014-02-17
-    notes : 
-
 
 # -------
 Icons :

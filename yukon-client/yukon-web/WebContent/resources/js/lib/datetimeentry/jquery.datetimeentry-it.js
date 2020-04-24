@@ -2,7 +2,7 @@
    Italian initialisation for the jQuery date/time entry extension
    Written by Apaella (apaella@gmail.com). */
 (function($) {
-	$.datetimeEntry.regionalOptions['it'] = {datetimeFormat: 'D/O/Y H:M',
+	$.datetimeEntry.regional['it'] = {datetimeFormat: 'D/O/Y H:M',
 		monthNames: ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
 		'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'],
 		monthNamesShort: ['Gen','Feb','Mar','Apr','Mag','Giu',
@@ -12,5 +12,5 @@
 		ampmNames: ['AM', 'PM'],
 		spinnerTexts: ['Adesso', 'Precedente', 'Successivo', 'Aumenta', 'Diminuisci'],
 		isRTL: false};
-	$.datetimeEntry.setDefaults($.datetimeEntry.regionalOptions['it']);
+	$.datetimeEntry.setDefaults($.datetimeEntry.regional['it']);
 })(jQuery);

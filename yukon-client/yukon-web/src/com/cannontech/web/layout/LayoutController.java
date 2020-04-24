@@ -95,7 +95,6 @@ public class LayoutController {
         b.add(JsLibrary.JQUERY_CHECK_ALL.getPath(dev));
         b.add(JsLibrary.JQUERY_FORM.getPath(dev));
         b.add(JsLibrary.JQUERY_PLACEHOLDER.getPath(dev));
-        b.add(JsLibrary.JQUERY_TIPSY.getPath(dev));
         b.add(JsLibrary.JQUERY_SPECTRUM.getPath(dev));
         b.add(JsLibrary.JQUERY_CHOSEN.getPath(dev));
         b.add(JsLibrary.JQUERY_ACTUAL.getPath(dev));
@@ -141,7 +140,6 @@ public class LayoutController {
         b.add(CssLibrary.BUTTONS.getPath());
         b.add(CssLibrary.ICONS.getPath());
         b.add(dev ? CssLibrary.JQUERY_UI.getPath() : CssLibrary.JQUERY_UI_MIN.getPath());
-        b.add(CssLibrary.TIPSY.getPath());
         b.add(CssLibrary.SPECTRUM.getPath());
         b.add(CssLibrary.CHOSEN.getPath());
         b.add(CssLibrary.FLOTCHARTS.getPath());
