@@ -26,12 +26,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CtiUtilities;
 
 public class SystemPublisherMetadataCryptoUtils {
 
     private static final Logger log = YukonLogManager.getLogger(SystemPublisherMetadataCryptoUtils.class);
     private static final String SECRET_KEY = "452C3BdAD-1RT2-508A-6D62-FDFB58B52TRM";
-    private static final String ENCRYPTED_FILE_PATH = "\\resource\\encryptedSystemPublisherMetadata.yaml";
     private static final String SYSTEM_PUBLISHER_METADATA = "systemPublisherMetadata.yaml";
     private static final String TRANSFORMATION = "AES/ECB/PKCS5Padding";
     private static final String CHARACTER_SET = "UTF-16";
@@ -50,6 +50,7 @@ public class SystemPublisherMetadataCryptoUtils {
                                                                         DICTIONARY_FIELDS_SPACE + "iotType",
                                                                         DICTIONARY_FIELDS_SPACE + "frequency");
 
+    private static File ENCRYPTED_FILE = null;
     private static SecretKeySpec secretKey;
     private static Cipher cipher;
 
@@ -102,15 +103,13 @@ public class SystemPublisherMetadataCryptoUtils {
     /**
      * Reads every lines of the YAML file and then encrypt the source field(Both multiline and single line).
      */
-    public static void processFile() throws IOException, IllegalBlockSizeException, BadPaddingException {
+    private static void processFile() throws IOException, IllegalBlockSizeException, BadPaddingException {
 
-        // Get the actual directory of the file as we need to encrypt the actual file.
-        File encryptedYamlFile = new File(System.getProperty("user.dir") + ENCRYPTED_FILE_PATH);
         StringBuilder tempYamlBuilder = new StringBuilder();
 
         processLines(tempYamlBuilder);
 
-        FileUtils.writeStringToFile(encryptedYamlFile, tempYamlBuilder.toString());
+        FileUtils.writeStringToFile(ENCRYPTED_FILE, tempYamlBuilder.toString());
     }
 
     /**
@@ -128,7 +127,7 @@ public class SystemPublisherMetadataCryptoUtils {
             List<String> lines = systemPublisherMetadataReader.lines().collect(Collectors.toList());
             for (String line : lines) {
                 String[] values = line.split(SEPARATOR, 2);
-                if (line.startsWith(DICTIONARY_FIELDS_SPACE + SOURCE_FIELD) && !values[1].contains(AUTO_ENCRYPTED_TEXT)) {
+                if (line.startsWith(DICTIONARY_FIELDS_SPACE + SOURCE_FIELD)) {
                     if (values[1].contains(YAML_MULTILINE_IDENTIFIER)) {
                         multiLineSource = true;
                     }
@@ -178,6 +177,13 @@ public class SystemPublisherMetadataCryptoUtils {
 
     public static void main(String ar[]) {
         try {
+            // ENCRYPTED_FILE location is different from different flow. If its executed from Jenkins, BUILD_PROCESS parameter is
+            // passed from build.xml file. For development team it get executed from builder without any parameter.
+            if (ar.length > 0 && ar[0].equals("BUILD_PROCESS")) {
+                ENCRYPTED_FILE = new File(System.getProperty("user.dir"), "resource/encryptedSystemPublisherMetadata.yaml");
+            } else {
+                ENCRYPTED_FILE = new File(CtiUtilities.getYukonBase(), "Server/Config/encryptedSystemPublisherMetadata.yaml");
+            }
             processFile();
         } catch (IOException | IllegalBlockSizeException | BadPaddingException e) {
             log.error("Error while processing the file ", e);

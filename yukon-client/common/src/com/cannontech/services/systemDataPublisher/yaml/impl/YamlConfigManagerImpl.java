@@ -1,6 +1,9 @@
 package com.cannontech.services.systemDataPublisher.yaml.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -11,11 +14,11 @@ import javax.crypto.IllegalBlockSizeException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
@@ -28,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class YamlConfigManagerImpl implements YamlConfigManager {
 
-    private final String SYSTEM_PUBLISHER_METADATA = "encryptedSystemPublisherMetadata.yaml";
+    private final String ENCRYPTED_SYSTEM_PUBLISHER_METADATA = "Server/Config/encryptedSystemPublisherMetadata.yaml";
     private final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
     private List<CloudDataConfiguration> cloudDataConfigurations = null;
@@ -47,9 +50,11 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
         ScalarField scalars = null;
         cloudDataConfigurations = new CopyOnWriteArrayList <>();
         try {
-            ClassPathResource systemPublisherYamlMetadata = new ClassPathResource(SYSTEM_PUBLISHER_METADATA);
+            InputStream systemPublisherYamlMetadataStream = new FileInputStream(
+                    new File(CtiUtilities.getYukonBase(), ENCRYPTED_SYSTEM_PUBLISHER_METADATA));
+
             Yaml yaml = new Yaml();
-            Object yamlObject = yaml.load(systemPublisherYamlMetadata.getInputStream());
+            Object yamlObject = yaml.load(systemPublisherYamlMetadataStream);
 
             ObjectMapper objectMapper = new ObjectMapper();
 

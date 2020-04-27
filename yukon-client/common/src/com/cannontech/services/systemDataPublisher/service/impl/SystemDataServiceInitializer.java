@@ -15,6 +15,7 @@ import com.cannontech.services.systemDataPublisher.context.NetworkManagerDBConfi
 import com.cannontech.services.systemDataPublisher.processor.SystemDataHandler;
 import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationPublisherService;
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
+import com.cannontech.services.systemDataPublisher.watcher.SystemPublisherMetadataWatcher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
@@ -25,6 +26,7 @@ public class SystemDataServiceInitializer {
     @Autowired private CloudDataConfigurationPublisherService cloudDataConfigurationPublisherService;
     @Autowired private SystemDataHandler systemDataHandler;
     @Autowired private NetworkManagerDBConfig networkManagerDBConfig;
+    @Autowired private SystemPublisherMetadataWatcher systemPublisherMetadataWatcher;
 
     private static final Logger log = YukonLogManager.getLogger(SystemDataServiceInitializer.class);
 
@@ -37,6 +39,7 @@ public class SystemDataServiceInitializer {
     private void init() {
         List<CloudDataConfiguration> cloudDataConfigurations = readYamlConfiguration();
         publishCloudDataConfigurations(cloudDataConfigurations);
+        new Thread(systemPublisherMetadataWatcher.watch()).start();
         List<CloudDataConfiguration> cloudConfigurationToProcess = filterRelevantConfigurations(cloudDataConfigurations);
         handleCloudConfiguration(cloudConfigurationToProcess);
     }

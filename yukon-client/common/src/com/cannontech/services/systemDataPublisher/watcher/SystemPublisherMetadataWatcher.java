@@ -8,20 +8,17 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.encryption.SystemPublisherMetadataCryptoUtils;
 import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationPublisherService;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
@@ -31,15 +28,13 @@ public class SystemPublisherMetadataWatcher {
 
     @Autowired private YamlConfigManager yamlConfigManager;
     @Autowired private CloudDataConfigurationPublisherService cloudDataConfigurationPublisherService;
-    private static final String SYSTEM_PUBLISHER_METADATA = "systemPublisherMetadata.yaml";
     private static final Logger log = YukonLogManager.getLogger(SystemPublisherMetadataWatcher.class);
 
     public Runnable watch() {
         return new Runnable() {
             public void run() {
                 try (WatchService watcher = FileSystems.getDefault().newWatchService()) {
-                    // File file = new File(CtiUtilities.getYukonBase() + "\\" + SYSTEM_PUBLISHER_METADATA);
-                    File file = new ClassPathResource(SYSTEM_PUBLISHER_METADATA).getFile();
+                    File file = new File(CtiUtilities.getYukonBase(), "Server/Config/encryptedSystemPublisherMetadata.yaml");
                     Path path = file.toPath().getParent();
                     path.register(watcher, StandardWatchEventKinds.ENTRY_MODIFY);
                     while (true) {
@@ -69,15 +64,12 @@ public class SystemPublisherMetadataWatcher {
                         }
                     }
                 } catch (Throwable e) {
-                    log.error("Error occured while watching systemPublisherMetadata.yaml", e);
+                    log.error("Error occurred while watching encryptedSystemPublisherMetadata.yaml", e);
                 }
             }
 
             private void doOnChange() throws IllegalBlockSizeException, BadPaddingException, IOException {
-                String currentDateTime = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
-                log.info("systemPublisherMetadata.yaml was modified on " + currentDateTime
-                        + ". Changes will be processed and published to the cloud.");
-                SystemPublisherMetadataCryptoUtils.processFile();
+                log.info("encryptedSystemPublisherMetadata.yaml has been modified. Changes will be processed and published to the cloud.");
                 List<CloudDataConfiguration> cloudDataConfigurations = yamlConfigManager.getCloudDataConfigurations();
                 cloudDataConfigurations.stream().forEach(config -> cloudDataConfigurationPublisherService.publish(config));
             }
