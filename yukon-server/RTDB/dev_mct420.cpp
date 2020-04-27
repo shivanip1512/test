@@ -20,9 +20,7 @@ using std::list;
 using std::vector;
 using std::make_pair;
 
-namespace Cti {
-namespace Devices {
-
+namespace Cti::Devices {
 
         const Mct420Device::CommandSet       Mct420Device::_commandStore = {
             {CommandStore(EmetconProtocol::GetConfig_Multiplier, EmetconProtocol::IO_Function_Read, 0xf3, 2)},
@@ -337,6 +335,12 @@ YukonError_t Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
     OutMessage->Request.RouteID   = getRouteID();
     strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
+    //  Disallow the MCT-410 version of "putconfig meter parameters" - see re_mct410_meter_parameters in cmdparse.cpp
+    if( parse.isKeyValid("display_resolution") &&
+        parse.isKeyValid("display_test_duration") )
+    {
+        return ClientErrors::NoMethod;
+    }
     if( parse.isKeyValid("lcd_cycle_time") )
     {
         OutMessage->Sequence = EmetconProtocol::PutConfig_Parameters;
@@ -1115,5 +1119,3 @@ bool Mct420Device::isSupported(const Mct410Device::Features feature) const
 
 
 }
-}
-
