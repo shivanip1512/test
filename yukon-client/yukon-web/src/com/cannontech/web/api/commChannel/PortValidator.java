@@ -40,10 +40,7 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
         // Validate Name if present.
         if (port.getName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "name", port.getName(), false);
-            if (!errors.hasFieldErrors("name")) {
-                portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
-            }
+            yukonValidationHelper.validatePaoName(port.getName(), port.getType(), errors, "Name", "portId");
         }
 
         if (port instanceof TcpPortDetail) {

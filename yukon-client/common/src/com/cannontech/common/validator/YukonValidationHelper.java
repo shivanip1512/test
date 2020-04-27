@@ -44,10 +44,10 @@ public class YukonValidationHelper {
     /**
      * Check if paoType is matched with the poaObject present in the cache for paoId.
     */
-    public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, Integer paoId) {
+    public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, int paoId) {
         LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
         if (litePao != null && litePao.getPaoType() != paoType) {
-            errors.rejectValue("type", key + "type");
+            errors.rejectValue("type", key + "type", new Object[] { paoType, litePao.getPaoType(), paoId }, "");
         }
     }
 }
