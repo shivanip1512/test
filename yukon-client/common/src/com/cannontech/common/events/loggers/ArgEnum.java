@@ -15,7 +15,6 @@ public enum ArgEnum {
     commandRequestExecutionType,
     commandRequestString,
     commandScheduleId,
-    commChannelName,
     contactName,
     controlAreaName,
     cron,

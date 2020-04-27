@@ -10,19 +10,19 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface CommChannelEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "device.commChannel")
-    public void commChannelCreated(@Arg(ArgEnum.commChannelName) String commChannelName,
+    public void commChannelCreated(@Arg(ArgEnum.deviceName) String commChannelName,
                                    @Arg(ArgEnum.paoType) PaoType portType,
                                    @Arg(ArgEnum.baudRate) BaudRate baudRate,
                                    @Arg(ArgEnum.username) LiteYukonUser userName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "device.commChannel")
-    public void commChannelUpdated(@Arg(ArgEnum.commChannelName) String commChannelName,
+    public void commChannelUpdated(@Arg(ArgEnum.deviceName) String commChannelName,
                                    @Arg(ArgEnum.paoType) PaoType portType,
                                    @Arg(ArgEnum.baudRate) BaudRate baudRate,
                                    @Arg(ArgEnum.username) LiteYukonUser userName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "device.commChannel")
-    public void commChannelDeleted(@Arg(ArgEnum.commChannelName) String commChannelName,
+    public void commChannelDeleted(@Arg(ArgEnum.deviceName) String commChannelName,
                                    @Arg(ArgEnum.paoType) PaoType portType,
                                    @Arg(ArgEnum.baudRate) BaudRate baudRate,
                                    @Arg(ArgEnum.username) LiteYukonUser userName);
