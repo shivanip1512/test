@@ -1,14 +1,14 @@
 package com.cannontech.web.api.commChannel;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.port.PortSharing;
 import com.cannontech.common.device.port.PortTiming;
 import com.cannontech.common.device.port.SharedPortType;
+import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
+import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -20,6 +20,7 @@ import com.cannontech.stars.util.ServletUtils;
 public class PortValidatorHelper {
 
     @Autowired private PaoDao paoDao;
+    @Autowired private PortDao portDao;
 
     private final static String key = "yukon.web.api.error.";
 
@@ -69,4 +70,15 @@ public class PortValidatorHelper {
             }
         }
     }
+
+    public void validateUniquePortTerminalServer(Errors errors, TerminalServerPortDetailBase<?> serverPortDetailBase, TcpSharedPortDetail tcpSharedPortDetail) {
+
+        Integer portId = portDao.findUniquePortTerminalServer(tcpSharedPortDetail.getIpAddress(), serverPortDetailBase.getPortNumber());
+
+        if (portId != null) {
+            errors.reject(key + "invalidPortTerminalServer",
+                    new Object[] { tcpSharedPortDetail.getIpAddress(), serverPortDetailBase.getPortNumber() }, "");
+        }
+    }
+
 }

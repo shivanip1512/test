@@ -60,6 +60,12 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
             if (detailBase.getPortNumber() != null) {
                 YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(detailBase.getPortNumber()));
+
+                if (port instanceof TcpSharedPortDetail) {
+                    TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
+                    // Checks for unique IP Address and Port number
+                    portValidatorHelper.validateUniquePortTerminalServer(errors, detailBase, tcpSharedPortDetail);
+                }
             }
         }
 
