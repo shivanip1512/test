@@ -10,7 +10,7 @@
             <c:when test="${wifiData.commStatusPoint.pointID != null}">
                 <cti:pointStatus pointId="${wifiData.commStatusPoint.pointID}"/>
                 <cti:pointValue pointId="${wifiData.commStatusPoint.pointID}" format="VALUE"/>&nbsp;
-                <tags:historicalValue pao="${device}" pointId="${wifiData.commStatusPoint.pointID}"/>
+                <tags:historicalValue pao="${device}" pointId="${wifiData.commStatusPoint.pointID}" format="DATE_QUALITY"/>
             </c:when>
             <c:otherwise>
                 <span class="error"><i:inline key="yukon.common.attributes.pointNotFound"/></span>
