@@ -323,4 +323,7 @@ The Comm Channel Queue Counts details are updated every 6 seconds. The Refresh b
     <!-- Wifi Connection Widget -->
     <entry key="yukon.web.widgets.wifiConnectionWidget">Wi-Fi Connection</entry>
 
+    <!-- Comm Channel Information Widget -->
+    <entry key="yukon.web.widgets.commChannelInfoWidget">Comm Channel Information</entry>
+
 </properties>
