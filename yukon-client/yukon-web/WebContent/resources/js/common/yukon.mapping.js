@@ -146,24 +146,21 @@ yukon.mapping = (function () {
               source: new ol.source.XYZ({ name: 'mqosm',
                   url: yg.map_devices_street_url,
                   attributions: _attributionText,
-                  tileSize: 512,
-                  zoomOffset: -1
+                  tileSize: 512
               })
           }),
           new ol.layer.Tile({ name: 'mqsat', visible: false,
               source: new ol.source.XYZ({ name: 'mqsat', 
                 url: yg.map_devices_satellite_url,
                 attributions: _attributionText,
-                tileSize: 512,
-                zoomOffset: -1
+                tileSize: 512
               })
           }),
           new ol.layer.Tile({ name: 'hybrid', visible: false,
               source: new ol.source.XYZ({ name: 'hybrid', 
                 url: yg.map_devices_hybrid_url,
                 attributions: _attributionText,
-                tileSize: 512,
-                zoomOffset: -1
+                tileSize: 512
               })
           })
     ],
