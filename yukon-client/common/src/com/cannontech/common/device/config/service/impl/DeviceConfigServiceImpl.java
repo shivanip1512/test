@@ -159,7 +159,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         result.getVerifyResultsMap().putAll(supported);
 
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback = waitableCommandCompletionCallbackFactory
-                .createWaitable(createsVerifyCallback(result, supported.keySet()));
+                .createWaitable(createVerifyCallback(result, supported.keySet()));
         logInitiated(devices, LogAction.VERIFY, user);
         CommandRequestExecution execution = createExecutionAndUpdateStateToInProgress(GROUP_DEVICE_CONFIG_VERIFY,
                 new ArrayList<>(supported.keySet()), user);
@@ -666,7 +666,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     /**
      * Creates callback for Verify request
      */
-    private CommandCompletionCallback<CommandRequestDevice> createsVerifyCallback(VerifyConfigCommandResult result, Set<SimpleDevice> supported) {
+    private CommandCompletionCallback<CommandRequestDevice> createVerifyCallback(VerifyConfigCommandResult result, Set<SimpleDevice> supported) {
         CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback = new CommandCompletionCallback<CommandRequestDevice>() {
             Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao
                     .getDeviceConfigStatesByDeviceIds(getDeviceIds(new ArrayList<>(supported)));
