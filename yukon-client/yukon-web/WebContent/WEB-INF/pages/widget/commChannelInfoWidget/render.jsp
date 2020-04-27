@@ -18,7 +18,7 @@
                     <c:when test="${not empty commChannel}">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".name">
-                                <tags:input path="name" maxlength="60"/>
+                                <tags:input path="name" maxlength="60" inputClass="w300 wrbw dib"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".type">
                                 <i:inline key="${commChannel.type}"/>
@@ -59,11 +59,7 @@
                                         <tags:radio path="protocolWrap" value="IDLC" classes="left yes ML0" key=".IDLC"/>
                                         <tags:radio path="protocolWrap" value="None" classes="right yes" key=".NONE"/>
                                     </tags:nameValue2>
-                                    <c:set var="cssClass" value="" />
-                                    <c:if test="${commChannel.carrierDetectWaitInMilliseconds == 0}">
-                                        <c:set var="cssClass" value="error" />
-                                    </c:if>
-                                    <tags:nameValue2 nameKey=".carrierDetectWait" valueClass="${cssClass}">
+                                    <tags:nameValue2 nameKey=".carrierDetectWait">
                                         <!--  TODO - Change the UI Component -->
                                         <c:choose>
                                             <c:when test="${commChannel.carrierDetectWaitInMilliseconds > 0}">
@@ -71,23 +67,19 @@
                                                 <i:inline key="yukon.common.units.ms"/>
                                             </c:when>
                                             <c:otherwise>
-                                                <i:inline key="yukon.common.no"/>
+                                                <span class="error"><i:inline key="yukon.common.no"/></span>
                                             </c:otherwise>
                                         </c:choose>
                                     </tags:nameValue2>
                                     <c:if test="${isEncyptionSupported}">
-                                        <c:set var="cssClass" value="" />
-                                        <c:if test="${empty commChannel.keyInHex}">
-                                            <c:set var="cssClass" value="error" />
-                                        </c:if>
-                                        <tags:nameValue2 nameKey=".encyptionKey" valueClass="${cssClass}">
+                                        <tags:nameValue2 nameKey=".encyptionKey">
                                             <!--  TODO - Change the UI Component -->
                                             <c:choose>
                                                 <c:when test="${not empty commChannel.keyInHex}">
                                                     ${commChannel.keyInHex}
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <i:inline key="yukon.common.no"/>
+                                                    <span class="error"><i:inline key="yukon.common.no"/></span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </tags:nameValue2>
