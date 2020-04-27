@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
@@ -34,11 +33,6 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
     private final String AUTO_ENCRYPTED_TEXT = "(AUTO_ENCRYPTED)";
     private static final Logger log = YukonLogManager.getLogger(YamlConfigManagerImpl.class);
     private CloudDataConfigurations cloudDataConfigurations;
-
-    @PostConstruct
-    private void init() {
-        loadConfig();
-    }
 
     /**
      * Load YAML config from classpath.
@@ -116,6 +110,7 @@ public class YamlConfigManagerImpl implements YamlConfigManager {
 
     @Override
     public CloudDataConfigurations getCloudDataConfigurations() {
+        loadConfig();
         return cloudDataConfigurations;
     }
 
