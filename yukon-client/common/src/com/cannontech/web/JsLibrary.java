@@ -17,7 +17,6 @@ public enum JsLibrary {
     JQUERY_COOKIE("/resources/js/lib/cookie/jquery.cookie.js"), // https://github.com/carhartl/jquery-cookie
     JQUERY_DATE_TIME_ENTRY("/resources/js/lib/datetimeentry/jquery.datetimeentry.min.js",
                            "/resources/js/lib/datetimeentry/jquery.datetimeentry.js"), // http://keith-wood.name/datetimeEntry.html
-    JQUERY_PLUGIN("/resources/js/lib/datetimeentry/jquery.plugin.min.js", "/resources/js/lib/datetimeentry/jquery.plugin.js"), // http://keith-wood.name/datetimeEntry.html
     JQUERY_FILE_UPLOAD("/resources/js/lib/fileupload/jquery.fileupload.js"), // https://github.com/blueimp/jQuery-File-Upload/tree/master/js
     JQUERY_FORM("/resources/js/lib/form/jquery.form.min.js", "/resources/js/lib/form/jquery.form.js"), // https://github.com/malsup/form/
     JQUERY_GRID("/resources/js/lib/jqgrid/js/jquery.jqGrid.min.js",
@@ -30,7 +29,6 @@ public enum JsLibrary {
     JQUERY_SCROLLTO("/resources/js/lib/scroll.to/jquery.scrollTo.min.js",
                     "/resources/js/lib/scroll.to/jquery.scrollTo.src.js"), // https://github.com/flesler/jquery.scrollTo/releases
     JQUERY_SPECTRUM("/resources/js/lib/spectrum/spectrum.js"), // http://bgrins.github.io/spectrum/
-    JQUERY_TIPSY("/resources/js/lib/tipsy/jquery.tipsy.js"), // https://github.com/jaz303/tipsy
     JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.min.js",
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
     JQUERY_TREE_HELPERS("/resources/js/tags/yukon.dynatree.js"), //in-house
@@ -42,7 +40,7 @@ public enum JsLibrary {
     JQUERY_UI("/resources/js/lib/jquery-ui/jquery-ui.min.js",
               "/resources/js/lib/jquery-ui/jquery-ui.js"), // http://www.jqueryui.com
     
-    JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js", "/resources/js/lib/time-picker/jquery-ui-timepicker-addon.js"), // https://github.com/trentrichardson/jQuery-Timepicker-Addon
+    JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js"), // https://github.com/trentrichardson/jQuery-Timepicker-Addon
     JQUERY_UI_WIDGET("/resources/js/lib/fileupload/jquery.ui.widget.js"), // https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_FLOTCHARTS("/resources/js/common/yukon.flot.js"), //in-house

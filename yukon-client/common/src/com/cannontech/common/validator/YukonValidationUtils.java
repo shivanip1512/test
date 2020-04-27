@@ -326,6 +326,14 @@ public class YukonValidationUtils extends ValidationUtils {
             errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
         }
     }
+    
+
+    /* Validate field is required */
+    public static void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
+        if (fieldValue == null) {
+            errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
+        }
+    }
 }
 
 
