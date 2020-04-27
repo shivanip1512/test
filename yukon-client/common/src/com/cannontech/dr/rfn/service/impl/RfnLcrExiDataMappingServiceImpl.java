@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -24,6 +26,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
 import com.cannontech.database.data.lite.LitePoint;
@@ -44,11 +47,18 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ExpressComReportedAddressDao expressComReportedAddressDao;
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
-    
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(RfnLcrExiDataMappingServiceImpl.class);
     private static final DateTime year2001 = new DateTime(2001, 1, 1, 0, 0);
     private static final int MAX_INTERVALS = 24;
     
+    @PostConstruct
+    public void init() {
+        jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.LM_ADDRESS_NOTIFICATION);
+    }
+
     @Override
     public List<PointData> mapPointData(RfnLcrReadingArchiveRequest request, SimpleXPathTemplate data) {
         
@@ -243,7 +253,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
     }
 
     @Override
-    public void storeAddressingData(YukonJmsTemplate jmsTemplate, SimpleXPathTemplate data, RfnDevice device) {
+    public void storeAddressingData(SimpleXPathTemplate data, RfnDevice device) {
         
         ExpressComReportedAddress address = new ExpressComReportedAddress();
         address.setDeviceId(device.getPaoIdentifier().getPaoId());
@@ -287,7 +297,7 @@ public class RfnLcrExiDataMappingServiceImpl extends RfnLcrDataMappingServiceImp
             expressComReportedAddressDao.insertAddress(address);
         }
 
-        jmsTemplate.convertAndSend(JmsApiDirectory.LM_ADDRESS_NOTIFICATION, address);
+        jmsTemplate.convertAndSend(address);
     }
     
     @Override

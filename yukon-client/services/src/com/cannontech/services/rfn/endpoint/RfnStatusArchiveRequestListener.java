@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +34,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.util.jms.ThriftRequestTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
@@ -48,8 +50,9 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private AttributeService attributeService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    private YukonJmsTemplate jmsTemplate;
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     /**
@@ -215,11 +218,12 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
         } else {
             log.debug("{} acknowledged statusPointId={}", processor, request.getStatusPointId());
         }
-        jmsTemplate.convertAndSendToResponseQueue(JmsApiDirectory.RFN_STATUS_ARCHIVE, response);
+        jmsTemplate.convertAndSend(response);
     }
 
     @PostConstruct
     public void initialize() {
+        jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
         thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
                 new MeterProgramStatusArchiveRequestSerializer());
     }

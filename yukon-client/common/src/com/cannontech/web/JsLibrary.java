@@ -29,7 +29,6 @@ public enum JsLibrary {
     JQUERY_SCROLLTO("/resources/js/lib/scroll.to/jquery.scrollTo.min.js",
                     "/resources/js/lib/scroll.to/jquery.scrollTo.src.js"), // https://github.com/flesler/jquery.scrollTo/releases
     JQUERY_SPECTRUM("/resources/js/lib/spectrum/spectrum.js"), // http://bgrins.github.io/spectrum/
-    JQUERY_TIPSY("/resources/js/lib/tipsy/jquery.tipsy.js"), // https://github.com/jaz303/tipsy
     JQUERY_TREE("/resources/js/lib/dynatree/jquery.dynatree.min.js",
                 "/resources/js/lib/dynatree/jquery.dynatree.js"), // http://wwwendt.de/tech/dynatree/doc/dynatree-doc.html
     JQUERY_TREE_HELPERS("/resources/js/tags/yukon.dynatree.js"), //in-house
@@ -84,7 +83,7 @@ public enum JsLibrary {
     
     MOMENT("/resources/js/lib/moment/moment.min.js"),
     MOMENT_TZ("/resources/js/lib/moment/moment-timezone-with-data.min.js"),
-    MODERNIZR("/resources/js/lib/modernizr/custom.js");
+    MODERNIZR("/resources/js/lib/modernizr/modernizr-custom.js");
     
     private String path = "";
     private String devPath;

@@ -22,13 +22,13 @@
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".maxCycleCount">
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <cti:msg2 key=".NONE" var="selectLbl"/>
+                            <cti:msg2 key="yukon.common.none" var="selectLbl"/>
                             <tags:selectWithItems items="${maxCycleCount}" path="fields.maxCycleCount" defaultItemLabel="${selectLbl}" defaultItemValue="0" />
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             <c:choose>
                                 <c:when test="${programGear.fields.maxCycleCount == 0}">
-                                    <i:inline key=".NONE" />
+                                    <i:inline key="yukon.common.none" />
                                 </c:when>
                                 <c:otherwise>
                                     <i:inline key="${programGear.fields.maxCycleCount}" />

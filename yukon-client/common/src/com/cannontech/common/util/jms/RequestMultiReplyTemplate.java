@@ -114,7 +114,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * @param replyHandler The callback that will handle results.
      */
     private void jmsExecute(R request, JmsMultiResponseHandler<Q> replyHandler) throws JMSException {
-        logBeforeSend(request);
+        logRequest(request.toString());
 
         jmsTemplate.execute(session -> {
             sendAndReceive(session, request, replyHandler);
@@ -143,7 +143,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             ObjectMessage requestMessage = session.createObjectMessage(request);
             requestMessage.setJMSReplyTo(replyQueue);
             producer.send(requestMessage);
-            handleRepliesAndOrTimeouts(replyHandler, replyConsumer);
+            handleRepliesAndOrTimeouts(replyHandler, replyConsumer, request.toString());
         } catch (Exception e) {
             log.error("Error sending request.", e);
         } finally {
@@ -157,7 +157,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
      * @param replyHandler The callback that will handle the responses.
      * @param replyConsumer The MessageConsumer that is receiving response messages from the JMS queue.
      */
-    private void handleRepliesAndOrTimeouts(JmsMultiResponseHandler<Q> replyHandler, MessageConsumer replyConsumer) 
+    private void handleRepliesAndOrTimeouts(JmsMultiResponseHandler<Q> replyHandler, MessageConsumer replyConsumer, String request) 
             throws JMSException {
         
         int expectedMessages = 0; //segmentNumber is 1-indexed
@@ -169,6 +169,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             
             // If we've timed out, give up and exit. No more messages will be received.
             if (replyMessage == null) {
+                logReply(request, "NULL", expectedMessages, messagesReceived);
                 replyHandler.handleTimeout();
                 return;
             }
@@ -178,6 +179,7 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
             replyHandler.handleReply(reply);
             expectedMessages = reply.getTotalSegments();
             messagesReceived += 1;
+            logReply(request, reply.toString(), expectedMessages, messagesReceived);
         }
     }
     
@@ -196,21 +198,28 @@ public class RequestMultiReplyTemplate<R extends Serializable, Q extends JmsMult
         }
         return replyQueue;
     }
-    
+        
     /**
-     * Log the request content before sending
+     * Adds an entry in rfnLogger
      */
-    private void logBeforeSend(R request) {
+    private void log(String text) {
         if (!isInternal && rfnLogger.isInfoEnabled()) {
-            rfnLogger.info("<<< " + request.toString());
+            rfnLogger.info(text);
         } else if (isInternal && rfnLogger.isDebugEnabled()) {
-            rfnLogger.debug("<<< " + request.toString());
-        }
-        if (log.isTraceEnabled()) {
-            log.trace("RequestMultiReplyTemplate execute Start " + request.toString());
+            rfnLogger.debug(text);
         }
     }
     
+    protected void logRequest(String request){
+        log.trace("RequestMultiReplyTemplate execute start: {}", request);
+        log("<<< Sent " + request);
+    }
+    
+    protected void logReply(String request, String reply, int expectedMessages, int messagesReceived) {
+        log.trace("RequestMultiReplyTemplate reply: {} [{} out of {}] {}", request, messagesReceived, expectedMessages, reply);
+        log(">>> Received " + reply + " [" + messagesReceived + " out of " + expectedMessages + "] for " + request);
+    }
+  
     /**
      * @return The request queue name string.
      */

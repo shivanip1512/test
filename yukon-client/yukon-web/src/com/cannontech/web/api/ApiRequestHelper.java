@@ -35,6 +35,7 @@ import com.cannontech.web.api.dr.setup.model.LoadGroupFilteredResult;
 import com.cannontech.web.api.dr.setup.model.LoadProgramFilteredResult;
 import com.cannontech.web.api.dr.setup.model.MacroLoadGroupFilteredResult;
 import com.cannontech.web.api.token.TokenHelper;
+import com.cannontech.web.stars.DeviceBaseModel;
 
 public class ApiRequestHelper {
 
@@ -62,6 +63,8 @@ public class ApiRequestHelper {
         });
         paramTypeRefMap.put(ControlRawState.class, new ParameterizedTypeReference<List<ControlRawState>>() {
         });
+        paramTypeRefMap.put(DeviceBaseModel.class, new ParameterizedTypeReference<List<DeviceBaseModel>>() {
+        });
     }
     
     @SuppressWarnings("rawtypes")
@@ -85,7 +88,6 @@ public class ApiRequestHelper {
         });
         paramTypeObjectRefMap.put(ProgramGear.class, new ParameterizedTypeReference<ProgramGear>() {
         });
-
     }
 
     /**

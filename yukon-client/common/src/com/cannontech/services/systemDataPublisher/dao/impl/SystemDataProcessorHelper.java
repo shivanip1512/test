@@ -19,10 +19,8 @@ public class SystemDataProcessorHelper {
      * 
      */
     public static SystemData processQueryResult(CloudDataConfiguration cloudDataConfiguration, List<Map<String, Object>> queryResult) {
-        SystemData systemData = null;
         String fieldValue = null;
         if (!queryResult.isEmpty()) {
-            systemData = new SystemData();
             if (queryResult.size() == 1 ) {
                 fieldValue = queryResult.get(0).entrySet()
                                                .stream()
@@ -37,21 +35,30 @@ public class SystemDataProcessorHelper {
                 Double finalValue = (actual / expected) * 100 ;
                 fieldValue = decimalFormat.format(finalValue);
             }
-            systemData.setFieldName(cloudDataConfiguration.getField());
-            systemData.setFieldValue(fieldValue);
-            systemData.setIotDataType(cloudDataConfiguration.getIotType());
-            systemData.setTimestamp(new DateTime());
         }
+        SystemData systemData = buildSystemData(cloudDataConfiguration, fieldValue);
+        return systemData;
+    }
+    
+    /**
+     * Builds System Data object.
+     */
+    public static SystemData buildSystemData(CloudDataConfiguration cloudDataConfiguration, String fieldValue) {
+        SystemData systemData = new SystemData();
+        systemData.setFieldName(cloudDataConfiguration.getField().getStringValue());
+        systemData.setFieldValue(fieldValue);
+        systemData.setIotDataType(cloudDataConfiguration.getIotType());
+        systemData.setTimestamp(new DateTime());
+        
         return systemData;
     }
     
     /**
      * Process data for "Other" field types available in YAML.
-     * 
      */
     public static SystemData processOtherData(CloudDataConfiguration cloudDataConfiguration) {
         SystemData systemData = new SystemData();
-        systemData.setFieldName(cloudDataConfiguration.getField());
+        systemData.setFieldName(cloudDataConfiguration.getField().getStringValue());
         systemData.setFieldValue(cloudDataConfiguration.getSource());
         systemData.setIotDataType(cloudDataConfiguration.getIotType());
         systemData.setTimestamp(new DateTime());

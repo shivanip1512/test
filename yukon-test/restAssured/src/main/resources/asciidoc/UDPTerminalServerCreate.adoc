@@ -1,0 +1,25 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+
+==== UDP Terminal Server
+
+*Request Properties* :
+
+include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_01_Create/request-fields.adoc[]
+
+*Request JSON* :
+
+include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_01_Create/http-request.adoc[]
+
+*Response Properties* :
+
+include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_01_Create/response-fields.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_01_Create/http-response.adoc[]

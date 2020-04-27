@@ -1,11 +1,18 @@
 package com.cannontech.common.device.port.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpPortDetail;
+import com.cannontech.common.device.port.TcpSharedPortDetail;
+import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -25,17 +32,19 @@ public class PortServiceImpl implements PortService {
 
     @Override
     @Transactional
-    public Integer create(PortBase portInfo) {
-        DirectPort port = (DirectPort ) PortFactory.createPort(portInfo.getType());
-        portInfo.buildDBPersistent(port);
-        dbPersistentDao.performDBChange(port, TransactionType.INSERT);
-        SimpleDevice device = SimpleDevice.of(port.getPAObjectID(), port.getPaoType());
+    public PortBase<? extends DirectPort> create(PortBase port) {
+        DirectPort directPort = PortFactory.createPort(port.getType());
+        port.buildDBPersistent(directPort);
+        dbPersistentDao.performDBChange(directPort, TransactionType.INSERT);
+        SimpleDevice device = SimpleDevice.of(directPort.getPAObjectID(), directPort.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
-        return port.getPAObjectID();
+        port.buildModel(directPort);
+        // TODO : Add eventLog in new Jira
+        return port;
     }
 
     @Override
-    public PortBase retrieve(int portId) {
+    public PortBase<? extends DirectPort> retrieve(int portId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(portId);
         if (pao == null) {
             throw new NotFoundException("Port Id not found");
@@ -46,15 +55,75 @@ public class PortServiceImpl implements PortService {
         return portBase;
     }
 
-    private PortBase getModel(PaoType paoType) {
-        PortBase port = null;
-        switch (paoType) {
-        case TCPPORT :
-            port = new TcpPortDetail();
-            break;
-        // TODO : Add for other Ports here.
+    @Override
+    @Transactional
+    public PortBase<? extends DirectPort> update(int portId, PortBase port) {
+        Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
+                                                      .stream()
+                                                      .filter(group -> group.getLiteID() == portId)
+                                                      .findFirst();
+        if (litePort.isEmpty()) {
+            throw new NotFoundException("Id not found " + portId);
+        }
+        DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(litePort.get());
+        port.buildDBPersistent(directPort);
+        dbPersistentDao.performDBChange(directPort, TransactionType.UPDATE);
+        // TODO : Add eventLog in new Jira
+        port.buildModel(directPort);
+        return port;
+    }
+   
+    @Override
+    @Transactional
+    public int delete(int portId) {
+        Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
+                                                      .stream()
+                                                      .filter(group -> group.getLiteID() == portId)
+                                                      .findFirst();
+        if (litePort.isEmpty()) {
+            throw new NotFoundException("Port Id not found");
         }
         
-        return port;
+        if (DirectPort.hasDevice(portId)) {
+            throw new NotFoundException(
+                    "You cannot delete the comm port '" + litePort.get().getPaoName() + "' because it is used by a device");
+        }
+
+        DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(litePort.get());
+        dbPersistentDao.performDBChange(directPort, TransactionType.DELETE);
+        return directPort.getPAObjectID();
+    }
+
+    @Override
+    public List<PortBase> getAllPorts() {
+        List<LiteYukonPAObject> listOfPorts = dbCache.getAllPorts();
+        List<PortBase> listOfPortBase = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(listOfPorts)) {
+            listOfPorts.forEach(liteYukonPaoObject -> {
+                PortBase portBase = new PortBase();
+                portBase.buildModel(liteYukonPaoObject);
+                listOfPortBase.add(portBase);
+            });
+        } else {
+            throw new NotFoundException("Ports not found");
+        }
+        return listOfPortBase;
+    }
+
+    private PortBase<? extends DirectPort> getModel(PaoType paoType) {
+        PortBase<? extends DirectPort> portBase = null;
+        switch (paoType) {
+        case TCPPORT :
+            portBase = new TcpPortDetail();
+            break;
+        case UDPPORT : 
+            portBase = new UdpPortDetail();
+            break;
+        case TSERVER_SHARED : 
+            portBase = new TcpSharedPortDetail();
+            break;
+        }
+        
+        return portBase;
     }
 }

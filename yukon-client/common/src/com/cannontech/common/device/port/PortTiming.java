@@ -1,6 +1,6 @@
 package com.cannontech.common.device.port;
 
-public class PortTiming {
+public class PortTiming implements DBPersistentConverter<com.cannontech.database.db.port.PortTiming> {
 
     private Integer preTxWait;
     private Integer rtsToTxWait;
@@ -48,11 +48,31 @@ public class PortTiming {
         this.extraTimeOut = extraTimeOut;
     }
 
+    @Override
     public void buildModel(com.cannontech.database.db.port.PortTiming portTiming) {
         setExtraTimeOut(portTiming.getExtraTimeOut());
         setPostTxWait(portTiming.getPostTxWait());
         setPreTxWait(portTiming.getPreTxWait());
         setReceiveDataWait(portTiming.getReceiveDataWait());
         setRtsToTxWait(portTiming.getRtsToTxWait());
+    }
+
+    @Override
+    public void buildDBPersistent(com.cannontech.database.db.port.PortTiming portTiming) {
+        if (getExtraTimeOut() != null) {
+            portTiming.setExtraTimeOut(getExtraTimeOut());
+        }
+        if (getPostTxWait() != null) {
+            portTiming.setPostTxWait(getPostTxWait());
+        }
+        if (getPreTxWait() != null) {
+            portTiming.setPreTxWait(getPreTxWait());
+        }
+        if (getReceiveDataWait() != null) {
+            portTiming.setReceiveDataWait(getReceiveDataWait());
+        }
+        if (getRtsToTxWait() != null) {
+            portTiming.setRtsToTxWait(getRtsToTxWait());
+        }
     }
 }

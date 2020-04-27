@@ -3,11 +3,12 @@ package com.cannontech.services.systemDataPublisher.yaml.model;
 import java.io.Serializable;
 
 import com.cannontech.services.systemDataPublisher.service.SystemDataPublisher;
+import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType;
 
 public class CloudDataConfiguration implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String field;
+    private SystemDataFieldType field;
     private String description;
     private String details;
     private String source;
@@ -15,7 +16,7 @@ public class CloudDataConfiguration implements Serializable {
     private SystemDataPublisherFrequency frequency;
     private SystemDataPublisher dataPublisher;
 
-    public CloudDataConfiguration(String field, String description, String details, String source, IOTDataType iotType,
+    public CloudDataConfiguration(SystemDataFieldType field, String description, String details, String source, IOTDataType iotType,
             SystemDataPublisherFrequency frequency, SystemDataPublisher dataPublisher) {
         this.field = field;
         this.description = description;
@@ -29,11 +30,11 @@ public class CloudDataConfiguration implements Serializable {
     public CloudDataConfiguration() {
     }
 
-    public String getField() {
+    public SystemDataFieldType getField() {
         return field;
     }
 
-    public void setField(String field) {
+    public void setField(SystemDataFieldType field) {
         this.field = field;
     }
 

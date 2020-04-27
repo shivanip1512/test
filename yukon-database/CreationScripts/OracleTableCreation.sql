@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/3/2020 9:59:17 AM                          */
+/* Created on:     4/16/2020 3:04:55 PM                         */
 /*==============================================================*/
 
 
@@ -6068,7 +6068,6 @@ create table JOB  (
 
 
 /* Skipping entry with jobId=-3 for oracle because the 'spSmartIndexMaintanenceJobDefinition' bean job entry is there with jobId=-3, and that is SqlServer specific only */
-INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-4, 'deviceConfigVerificationJobDefinition', 'N', -4);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N', -1);
 
@@ -6104,7 +6103,6 @@ create table JOBSCHEDULEDREPEATING  (
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
 
-INSERT INTO JobScheduledRepeating VALUES (-4, '0 01 0 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
 
