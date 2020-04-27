@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.services.systemDataPublisher.service.impl.SystemDataServiceInitializer;
+import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationsHandlerService;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,7 +20,7 @@ public class CloudDataConfigurationsListener implements MessageListener {
     private static final Logger log = (Logger) LogManager.getLogger(CloudDataConfigurationsListener.class);
 
     @Autowired private ConnectionFactory connectionFactory;
-    @Autowired private SystemDataServiceInitializer systemDataServiceInitializer;
+    @Autowired private CloudDataConfigurationsHandlerService cloudDataConfigurationsHandlerService;
 
     private String clientId;
 
@@ -45,7 +45,7 @@ public class CloudDataConfigurationsListener implements MessageListener {
                 // normal flow it will be null. So this clientId will be used to differentiate the flow / whether to consume
                 // the message or not.
                 if (StringUtils.isEmpty(configurations.getClientId()) || configurations.getClientId().equals(clientId)) {
-                    systemDataServiceInitializer.handleCloudConfiguration(configurations.getConfigurations());
+                    cloudDataConfigurationsHandlerService.handleCloudConfiguration(configurations.getConfigurations());
                 }
             } catch (Exception e) {
                 log.error("Error receiving cloud data configuration ", e);

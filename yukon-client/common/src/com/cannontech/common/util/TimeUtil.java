@@ -2,7 +2,6 @@ package com.cannontech.common.util;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -504,12 +503,5 @@ public static int differenceMinutes(Date from, Date to) {
             return LocalTime.MIN.plus(java.time.Duration.ofMinutes(minutes)).toString();
         else
             throw new RuntimeException("Invalid minute value.");
-    }
-    
-    /**
-     * Returns current data time in yyyy/MM/dd HH:mm:ss format.
-     */
-    public static String getCurrentDateTime() {
-        return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
     }
 }

@@ -22,7 +22,6 @@ import org.springframework.jms.support.converter.MessageType;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
@@ -69,27 +68,19 @@ public class CloudDataConfigurationsAdvisoryListener {
                                 if (consumerCount != previousConsumerCount) {
                                     ActiveMQMessage activeMQMessage = (ActiveMQMessage) message;
                                     DataStructure dataStructure = (DataStructure) activeMQMessage.getDataStructure();
-                                    String currentDateTime = TimeUtil.getCurrentDateTime();
-                                    // If a new consumer subscribes to the topic, consumerCount will be greater than
-                                    // previousConsumerCount.log the information of newly connected consumer and publish the data
-                                    // to the topic.
-                                    if (consumerCount > previousConsumerCount) {
-                                        if (dataStructure.getDataStructureType() == ConsumerInfo.DATA_STRUCTURE_TYPE) {
-                                            ConsumerInfo consumerInfo = (ConsumerInfo) dataStructure;
-                                            log.debug("Consumer with client ID: {} connected at: {}.", consumerInfo.getClientId(),
-                                                    currentDateTime);
-                                            previousConsumerCount++;
-                                            publishCloudDataConfigurations(consumerInfo.getClientId());
-                                        }
-                                    } else {
-                                        // If a consumer unsubscribes to the topic, consumerCount will be less than
-                                        // previousConsumerCount.
-                                        if (dataStructure.getDataStructureType() == RemoveInfo.DATA_STRUCTURE_TYPE) {
-                                            RemoveInfo removeInfo = (RemoveInfo) dataStructure;
-                                            log.debug("Consumer with object ID: {} disconnected at: {}.",
-                                                    removeInfo.getObjectId(), currentDateTime);
-                                            previousConsumerCount--;
-                                        }
+                                    // If a new consumer subscribes to the topic,log the information of newly connected consumer
+                                    // and publish the data to the topic.
+                                    if (dataStructure.getDataStructureType() == ConsumerInfo.DATA_STRUCTURE_TYPE) {
+                                        ConsumerInfo consumerInfo = (ConsumerInfo) dataStructure;
+                                        log.debug("Consumer with client ID: {} connected.", consumerInfo.getClientId());
+                                        publishCloudDataConfigurations(consumerInfo.getClientId());
+                                        previousConsumerCount++;
+                                    }
+                                    // If a consumer unsubscribes to the topic,log the information of disconnected consumer
+                                    if (dataStructure.getDataStructureType() == RemoveInfo.DATA_STRUCTURE_TYPE) {
+                                        RemoveInfo removeInfo = (RemoveInfo) dataStructure;
+                                        log.debug("Consumer with object ID: {} disconnected.", removeInfo.getObjectId());
+                                        previousConsumerCount--;
                                     }
                                 }
                             } catch (JMSException e) {
