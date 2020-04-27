@@ -11,11 +11,6 @@ public class PortLocalSerial extends DBPersistent {
 	private String physicalPort = "";
 	private Integer portID = null;
 	
-	
-    public void initialize(Integer portID, String physicalPort) {
-        setPortID(portID);
-        setPhysicalPort((physicalPort == null) ? "" : physicalPort);
-    }
 /**
  * SerialPortSettings constructor comment.public PortLocalSerial( 
  * 
