@@ -13,13 +13,13 @@ import com.cannontech.yukon.IDatabaseCache;
 public class YukonValidationHelper {
 
     @Autowired private IDatabaseCache serverDatabaseCache;
-    private final static String key = "yukon.web.api.error.";
+    private final static String key = "yukon.web.error.";
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoIdPathVariable) {
         if (!YukonValidationUtils.checkIsBlank(errors, "name", paoName, false)) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
-                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+                errors.rejectValue("name", key + "paoName.containsIllegalChars");
             }
 
             if (!errors.hasFieldErrors("name")) {
@@ -34,7 +34,7 @@ public class YukonValidationHelper {
 
                 if (!litePao.isEmpty()) {
                     if (paoId == null || (litePao.get().getLiteID() != Integer.valueOf(paoId))) {
-                        errors.rejectValue("name", key + "unique", new Object[] { fieldName }, "");
+                        errors.rejectValue("name", key + "nameConflict", new Object[] { fieldName }, "");
                     }
                 }
             }
@@ -47,7 +47,7 @@ public class YukonValidationHelper {
     public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, int paoId) {
         LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
         if (litePao != null && litePao.getPaoType() != paoType) {
-            errors.rejectValue("type", key + "type", new Object[] { paoType, litePao.getPaoType(), paoId }, "");
+            errors.rejectValue("type", key + "paoTypeMismatch", new Object[] { paoType, litePao.getPaoType(), paoId }, "");
         }
     }
 }

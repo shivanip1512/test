@@ -2,9 +2,6 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<entry key="yukon.web.api.error.unique">{0} must be unique.</entry>
-<entry key="yukon.web.api.error.type">Type {0} does not match existing type {1} for id: {2}.</entry>
-
 <entry key="yukon.web.api.error.udpPort.invalidHexFormat">Encryption Key must be in Hex format and 16 bytes long (32 hex values).</entry>
 <entry key="yukon.web.api.error.udpPort.invalidHexLength">Encryption Key must be 16 bytes long (32 hex values).</entry>
 <entry key="yukon.web.api.error.udpPort.invalidSocketNumber">Socket number must be 1025 when port type is not shared.</entry>
