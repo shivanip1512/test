@@ -737,22 +737,26 @@ public class TrendModel implements GraphDefines {
 
             if (GDSTypesFuncs.isPeakType(seriesTypeMask)) {
                 if (GDSTypesFuncs.isPeakType(getTrendSeries()[serieIndex].getTypeMask())) {
-                    day = retrievePeakIntervalTranslateDays(serieIndex);
+                    try {
+                        day = retrievePeakIntervalTranslateDays(serieIndex);
+                    } catch (IllegalArgumentException e) {
+                        CTILogger.info("No peak forund for serie index " + serieIndex);
+                    }
                 }
             } else if (GDSTypesFuncs.isDateType(seriesTypeMask)) {
                 if (GDSTypesFuncs.isDateType(getTrendSeries()[serieIndex].getTypeMask())) {
                     Date tempDate = new Date(Long.valueOf(getTrendSeries()[serieIndex].getMoreData()).longValue());
-                    day = TimeUtil.differenceInDays(roundDateBackwards(getStartDate()), tempDate);
+                    day = TimeUtil.differenceInDays(toBeginingOfDay(getStartDate()), tempDate);
                 }
             }
 
             tempCal.setTime(getStartDate());
-            tempCal = roundDateBackwards(tempCal); // Broken on case where start date == peak date
+            tempCal = toBeginingOfDay(tempCal);
             tempCal.add(Calendar.DATE, -day);
             startTS = tempCal.getTimeInMillis();
 
             tempCal.setTime(getStartDate());
-            tempCal = roundDateBackwards(tempCal);
+            tempCal = toBeginingOfDay(tempCal);
             tempCal.add(Calendar.DATE, -day + 1);
             stopTS = tempCal.getTimeInMillis();
             getTrendSeries()[serieIndex].setLabel(getSerieLabel(getTrendSeries()[serieIndex].getLabel(), new Date(startTS)));
@@ -885,12 +889,12 @@ public class TrendModel implements GraphDefines {
                 // This next call uses floating point divsion to calculate the number of days past, then rounds
                 // the result. If either start date or cal are not on an even day interval this may give inconsistent
                 // results
-                translateDays = TimeUtil.differenceInDays(roundDateBackwards(startDate), cal.getTime());
+                translateDays = TimeUtil.differenceInDays(toBeginingOfDay(startDate), cal.getTime());
                 CTILogger.info(" PEAK POINT TS/VALUE = " + pph.getPointID() + " | " + pph.getTimeStamp().getTime() + " | " + pph.getValue());
                 break;
             }
         } else {
-            return -1; // no peak found
+            throw new IllegalArgumentException("No peak value was found in the database for the given series.");
         }
 
         return translateDays;
@@ -1465,14 +1469,14 @@ public class TrendModel implements GraphDefines {
 
     }
 
-    private Date roundDateBackwards(Date date) {
+    private Date toBeginingOfDay(Date date) {
         GregorianCalendar gCalendar = new GregorianCalendar();
         gCalendar.setTime(date);
-        gCalendar = roundDateBackwards(gCalendar);
+        gCalendar = toBeginingOfDay(gCalendar);
         return gCalendar.getTime();
     }
 
-    private GregorianCalendar roundDateBackwards(GregorianCalendar gcDate) {
+    private GregorianCalendar toBeginingOfDay(GregorianCalendar gcDate) {
         GregorianCalendar gcTemp = (GregorianCalendar) gcDate.clone();
         gcTemp.set(Calendar.HOUR_OF_DAY, 0);
         gcTemp.set(Calendar.MINUTE, 0);
