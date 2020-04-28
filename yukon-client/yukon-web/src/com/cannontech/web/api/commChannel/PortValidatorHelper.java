@@ -9,6 +9,7 @@ import com.cannontech.common.device.port.SharedPortType;
 import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.port.CommPort;
+import com.cannontech.stars.util.ServletUtils;
 
 public class PortValidatorHelper {
 
@@ -42,10 +43,11 @@ public class PortValidatorHelper {
      * Validate Socket is unique or not.
      */
     public void validateDuplicateSocket(Errors errors, String ipAddress, Integer portNumber) {
+        Integer socketPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
+        String portIdString = ServletUtils.getPathVariable("portId");
+        Integer portId = portIdString != null ? Integer.valueOf(portIdString) : null;
 
-        Integer portId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
-
-        if (portId != null) {
+        if (socketPortId != null && !(socketPortId.equals(portId))) {
             errors.reject(key + "duplicateSocket", new Object[] { ipAddress, portNumber }, "");
         }
     }
