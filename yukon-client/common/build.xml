@@ -64,7 +64,6 @@
                     <include name="**/*.gif"/>
                     <include name="**/*.png"/>
                     <include name="**/*.au"/>
-                    <include name="**/*.yaml"/>
                 </fileset>
                 <fileset dir="src">
                     <exclude name="**/*.java"/>
