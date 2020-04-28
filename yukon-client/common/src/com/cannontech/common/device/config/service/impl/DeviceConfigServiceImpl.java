@@ -209,33 +209,15 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         List<SimpleDevice> devices = successGroup.getDevices().getDeviceList();
         Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao.getDeviceConfigStatesByDeviceIds(getDeviceIds(devices));
 
-        log.debug("Updating status for devices:{} collection action:{}", devices.size(), result.getAction());
+        log.info("Updating status for devices:{} collection action cache key:{}", devices.size(), result.getCacheKey());
         Set<DeviceConfigState> states = new HashSet<>();
+        List<SimpleDevice> devicesToVerify = new ArrayList<>();
         if (result.getAction() == CollectionAction.ASSIGN_CONFIG) {
-            states.addAll(devices.stream()
-                    .filter(device -> deviceToState.get(device.getDeviceId()) == null)
-                    .map(device -> new DeviceConfigState(device.getDeviceId(), UNREAD, ASSIGN, SUCCESS, result.getStartTime(),
-                            result.getStopTime(), null))
-                    .collect(Collectors.toList()));
-            
-            devices.removeIf(device -> deviceToState.get(device.getDeviceId()) == null);
-
-            states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, devices, deviceToState, result, UNREAD));
-            states.addAll(buildConfigStateByCurrentState(UNCONFIRMED, ASSIGN, devices, deviceToState, result, UNCONFIRMED));
-
-            verifyDevicesByCurrentState(devices, deviceToState, result.getContext(), IN_SYNC, OUT_OF_SYNC, UNASSIGNED);
-
+            states = buildNewStatesForAssignAction(devices, deviceToState, result.getStartTime(), result.getStopTime());
+            devicesToVerify = getDevicesToVerify(devices, deviceToState, result.getContext(), IN_SYNC, OUT_OF_SYNC, UNASSIGNED);
         } else if (result.getAction() == CollectionAction.UNASSIGN_CONFIG) {
-            log.debug("Removing devices that do not have existing device config status {}",
-                    devices.stream().filter(device -> deviceToState.get(device.getDeviceId()) == null).count());
-            
-            devices.removeIf(device -> deviceToState.get(device.getDeviceId()) == null);
-
-            states.addAll(buildConfigStateByCurrentState(UNKNOWN, UNASSIGN, devices, deviceToState, result, UNREAD));
-            states.addAll(buildConfigStateByCurrentState(UNASSIGNED, UNASSIGN, devices, deviceToState, result, IN_SYNC, OUT_OF_SYNC));
-            states.addAll(buildConfigStateByCurrentState(UNCONFIRMED, UNASSIGN, devices, deviceToState, result, UNCONFIRMED));
-
-            verifyDevicesByCurrentState(devices, deviceToState, result.getContext(), UNASSIGNED);
+            states = buildNewStatesForUnassignAction(devices, deviceToState, result.getStartTime(), result.getStopTime());
+            devicesToVerify = getDevicesToVerify(devices, deviceToState, result.getContext(), UNASSIGNED);
         }
         
         log.debug("{}",
@@ -243,9 +225,36 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                                 + " New State:" + newState + " CurrentState:" + deviceToState.get(newState.getDeviceId()))
                         .collect(Collectors.joining("|")));
         
+        if (!devicesToVerify.isEmpty()) {
+            int cacheKey = verifyConfigs(producer.createDeviceCollection(devicesToVerify), result.getContext());
+            log.info("Creating new collection action:{} to verify devices:{} verification collection action was created from successful devices in collection action:{}",
+                    cacheKey, devicesToVerify.size(), result.getCacheKey());
+        }
+        
         deviceConfigurationDao.saveDeviceConfigStates(states);
     }
-    
+
+    private Set<DeviceConfigState> buildNewStatesForUnassignAction(List<SimpleDevice> devices,
+            Map<Integer, DeviceConfigState> deviceToState, Instant stopTime, Instant startTime) {
+        Set<DeviceConfigState> states = new HashSet<>();
+        states.addAll(buildConfigStateByCurrentState(UNKNOWN, UNASSIGN, devices, deviceToState, startTime, stopTime, UNREAD));
+        states.addAll(buildConfigStateByCurrentState(UNASSIGNED, UNASSIGN, devices, deviceToState, startTime, stopTime, IN_SYNC, OUT_OF_SYNC));
+        states.addAll(buildConfigStateByCurrentState(UNCONFIRMED, UNASSIGN, devices, deviceToState, startTime, stopTime, UNCONFIRMED));
+        return states;
+    }
+
+    private Set<DeviceConfigState> buildNewStatesForAssignAction(List<SimpleDevice> devices,
+            Map<Integer, DeviceConfigState> deviceToState, Instant stopTime, Instant startTime) {
+        Set<DeviceConfigState> states = new HashSet<>();
+        states.addAll(devices.stream()
+                .filter(device -> deviceToState.get(device.getDeviceId()) == null)
+                .map(device -> new DeviceConfigState(device.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null))
+                .collect(Collectors.toList()));
+        states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, devices, deviceToState, startTime, stopTime, UNREAD));
+        states.addAll(buildConfigStateByCurrentState(UNCONFIRMED, ASSIGN, devices, deviceToState, startTime, stopTime, UNCONFIRMED));
+        return states;
+    }
+
     /**
      * Sends command to porter
      */
@@ -403,45 +412,37 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
      * @param action - action for new states
      * @param devices - devices to check
      * @param deviceToState - used to find a current state
-     * @param result - collection action result - used to get start and stop time for new state
      * @param states - list of current states to filter devices by
      * @return list of states
      */
-    private List<DeviceConfigState> buildConfigStateByCurrentState(ConfigState newState,
-            LastAction action, List<SimpleDevice> devices,
-            Map<Integer, DeviceConfigState> deviceToState, CollectionActionResult result, ConfigState... states) {
+    private List<DeviceConfigState> buildConfigStateByCurrentState(ConfigState newState, LastAction action,
+            List<SimpleDevice> devices, Map<Integer, DeviceConfigState> deviceToState, Instant startTime, Instant stopTime,
+            ConfigState... states) {
         return devices.stream()
                 .filter(device -> {
                     DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
-                    return Lists.newArrayList(states).contains(currentState.getState());
+                    return currentState != null && Lists.newArrayList(states).contains(currentState.getState());
                 })
-                .map(device -> new DeviceConfigState(device.getDeviceId(), newState, action, SUCCESS, result.getStartTime(),
-                        result.getStopTime(), null))
+                .map(device -> new DeviceConfigState(device.getDeviceId(), newState, action, SUCCESS, startTime, stopTime, null))
                 .collect(Collectors.toList());
     }
     
     /**
-     * Creates collection action to verify configs
+     * Returns a list of devices that should be verified
      * 
      * @param devices - devices to check
      * @param deviceToState - used to find a current state
      * @param states - list of current states to filter devices by
+     * @return 
      */
-    private void verifyDevicesByCurrentState(List<SimpleDevice> devices,
+    private List<SimpleDevice> getDevicesToVerify(List<SimpleDevice> devices,
             Map<Integer, DeviceConfigState> deviceToState, YukonUserContext context, ConfigState... states) {
-        List<SimpleDevice> devicesToVerify = devices.stream()
+        return devices.stream()
                 .filter(device -> {
                     DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
-                    return Lists.newArrayList(states).contains(currentState.getState());
+                    return currentState != null && Lists.newArrayList(states).contains(currentState.getState());
                 })
                 .collect(Collectors.toList());
-
-        if (!devicesToVerify.isEmpty()) {
-            log.debug("Creating collection action to verify devices:{}",
-                    devices.stream().map(device -> dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName())
-                            .collect(Collectors.joining(",")));
-            verifyConfigs(producer.createDeviceCollection(devicesToVerify), context);
-        }
     }
     
     /**
