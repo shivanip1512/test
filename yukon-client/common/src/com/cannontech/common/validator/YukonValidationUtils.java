@@ -301,7 +301,7 @@ public class YukonValidationUtils extends ValidationUtils {
    }
     
     public static void validatePort(Errors errors, String field, String fieldValue) {
-        rejectIfEmptyOrWhitespace(errors, "port", "yukon.web.error.invalidPort");
+        rejectIfEmptyOrWhitespace(errors, field, "yukon.web.error.invalidPort");
         if (!errors.hasFieldErrors(field)) {
             try {
                  Integer portID = Integer.valueOf(fieldValue);
@@ -323,6 +323,14 @@ public class YukonValidationUtils extends ValidationUtils {
     /* Validate a required list is empty */
     public static void checkIfListRequired(String field, Errors errors, List<?> fieldValue, String fieldName) {
         if (fieldValue == null || fieldValue.isEmpty()) {
+            errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
+        }
+    }
+    
+
+    /* Validate field is required */
+    public static void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
+        if (fieldValue == null) {
             errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
         }
     }

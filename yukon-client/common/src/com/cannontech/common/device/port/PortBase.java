@@ -13,7 +13,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "type", visible = true)
-@JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortDetail.class, name = "TCPPORT") })
+@JsonSubTypes({ @JsonSubTypes.Type(value = TcpPortDetail.class, name = "TCPPORT"), 
+                @JsonSubTypes.Type(value = TcpSharedPortDetail.class, name = "TSERVER_SHARED"),
+                @JsonSubTypes.Type(value = UdpPortDetail.class, name = "UDPPORT"),
+                @JsonSubTypes.Type(value = LocalSharedPortDetail.class, name = "LOCAL_SHARED") 
+              })
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> {
 
@@ -93,7 +97,7 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
     public void buildModel(LiteYukonPAObject liteYukonPAObject) {
         setId(liteYukonPAObject.getLiteID());
         setName(liteYukonPAObject.getPaoName());
-        setEnable(liteYukonPAObject.getDisableFlag().equals("Y") ? true : false);
+        setEnable(liteYukonPAObject.getDisableFlag().equals("N") ? true : false);
         setType(liteYukonPAObject.getPaoType());
     }
 }

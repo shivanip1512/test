@@ -29,6 +29,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.dao.EventLogDao;
@@ -139,6 +140,9 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.create(Boolean.class, Types.VARCHAR));
         builder.add(ArgumentMapper.create(Date.class, Types.TIMESTAMP));
         builder.add(ArgumentMapper.create(LiteYukonUser.class, Types.VARCHAR, new LiteYukonUserToNameMapper()));
+        builder.add(ArgumentMapper.create(BaudRate.class, Types.VARCHAR, (baudRate) -> {
+            return baudRate.getBaudRateValue().toString();
+        }));
         builder.add(ArgumentMapper.createForEnum(PaoType.class));
         builder.add(ArgumentMapper.createForEnum(PointType.class));
         builder.add(ArgumentMapper.createForEnum(DeviceRequestType.class));

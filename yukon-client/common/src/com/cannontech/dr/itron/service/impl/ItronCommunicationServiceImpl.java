@@ -142,10 +142,10 @@ public class ItronCommunicationServiceImpl implements ItronCommunicationService 
             log.debug("ITRON-addDevice url:{} account:{} mac address:{}.", url, account.getAccountNumber(),
                 hardware.getMacAddress());
             addServicePoint(account, accountId);
-            request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware.getMacAddress(), account);
+            request = DeviceManagerHelper.buildAddRequestWithServicePoint(hardware.getMacAddress(), hardware.getSerialNumber(), account);
         } else {
             log.debug("ITRON-addDevice url:{} mac address:{}.", url, hardware.getMacAddress());
-            request = DeviceManagerHelper.buildAddRequestWithoutServicePoint(hardware.getMacAddress());
+            request = DeviceManagerHelper.buildAddRequestWithoutServicePoint(hardware.getMacAddress(), hardware.getSerialNumber());
         }
         try {
             log.debug(XmlUtils.getPrettyXml(request));

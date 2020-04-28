@@ -8,10 +8,16 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.port.LocalSharedPortDetail;
+import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpPortDetail;
+import com.cannontech.common.device.port.TcpSharedPortDetail;
+import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.device.port.service.PortService;
+import com.cannontech.common.events.loggers.CommChannelEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -27,6 +33,7 @@ public class PortServiceImpl implements PortService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoCreationHelper paoCreationHelper;
+    @Autowired private CommChannelEventLogService commChannelEventLogService;
 
     @Override
     @Transactional
@@ -37,7 +44,13 @@ public class PortServiceImpl implements PortService {
         SimpleDevice device = SimpleDevice.of(directPort.getPAObjectID(), directPort.getPaoType());
         paoCreationHelper.addDefaultPointsToPao(device);
         port.buildModel(directPort);
-        // TODO : Add eventLog in new Jira
+
+        //event log comm channel creation
+        commChannelEventLogService.commChannelCreated(port.getName(),
+                                                      port.getType(),
+                                                      port.getBaudRate(),
+                                                      ApiRequestContext.getContext().getLiteYukonUser());
+
         return port;
     }
 
@@ -66,9 +79,43 @@ public class PortServiceImpl implements PortService {
         DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(litePort.get());
         port.buildDBPersistent(directPort);
         dbPersistentDao.performDBChange(directPort, TransactionType.UPDATE);
-        // TODO : Add eventLog in new Jira
         port.buildModel(directPort);
+
+      //event log comm channel update
+        commChannelEventLogService.commChannelUpdated(port.getName(),
+                                                      port.getType(),
+                                                      port.getBaudRate(),
+                                                      ApiRequestContext.getContext().getLiteYukonUser());
+
         return port;
+    }
+   
+    @Override
+    @Transactional
+    public int delete(int portId) {
+        Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
+                                                      .stream()
+                                                      .filter(group -> group.getLiteID() == portId)
+                                                      .findFirst();
+        if (litePort.isEmpty()) {
+            throw new NotFoundException("Port Id not found");
+        }
+        
+        if (DirectPort.hasDevice(portId)) {
+            throw new NotFoundException(
+                    "You cannot delete the comm port '" + litePort.get().getPaoName() + "' because it is used by a device");
+        }
+
+        DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(litePort.get());
+        dbPersistentDao.performDBChange(directPort, TransactionType.DELETE);
+
+        //event log comm channel deletion
+        commChannelEventLogService.commChannelDeleted(directPort.getPortName(),
+                                                      directPort.getPaoType(),
+                                                      BaudRate.getForRate(directPort.getPortSettings().getBaudRate()),
+                                                      ApiRequestContext.getContext().getLiteYukonUser());
+
+        return directPort.getPAObjectID();
     }
 
     @Override
@@ -93,7 +140,15 @@ public class PortServiceImpl implements PortService {
         case TCPPORT :
             portBase = new TcpPortDetail();
             break;
-        // TODO : Add for other Ports here.
+        case UDPPORT : 
+            portBase = new UdpPortDetail();
+            break;
+        case TSERVER_SHARED : 
+            portBase = new TcpSharedPortDetail();
+            break;
+        case LOCAL_SHARED : 
+            portBase = new LocalSharedPortDetail();
+            break;
         }
         
         return portBase;

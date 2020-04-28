@@ -17,3 +17,4 @@ import lombok.experimental.SuperBuilder;
 public class MockTcpPortDetail extends MockPortBase {
     private MockPortTiming timing;
 }
+
