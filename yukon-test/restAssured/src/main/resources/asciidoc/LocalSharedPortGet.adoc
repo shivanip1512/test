@@ -5,8 +5,8 @@
 :toclevels: 4
 :sectlinks:
 
-
 ==== Local Shared Port
+
 *Request JSON* :
 
 include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_03_Get/http-request.adoc[]
