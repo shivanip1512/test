@@ -5,9 +5,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import org.apache.logging.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.google.common.collect.ImmutableMap;
 
-public enum BaudRate {
+public enum BaudRate implements DisplayableEnum {
 
     BAUD_300(300),
     BAUD_1200(1200),
@@ -24,6 +25,7 @@ public enum BaudRate {
 
     private final static Logger log = YukonLogManager.getLogger(BaudRate.class);
     private final static ImmutableMap<Integer, BaudRate> lookupByRate;
+    private String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
 
     static {
         try {
@@ -50,5 +52,10 @@ public enum BaudRate {
 
     BaudRate(Integer baudRate) {
         this.baudRate = baudRate;
+    }
+
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }
