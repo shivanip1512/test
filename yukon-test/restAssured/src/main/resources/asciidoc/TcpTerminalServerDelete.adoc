@@ -10,8 +10,8 @@
 
 *Request JSON* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_04_Delete/http-request.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_04_Delete/http-request.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_04_Delete/http-response.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_04_Delete/http-response.adoc[]

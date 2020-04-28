@@ -4,18 +4,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.util.Validator;
 
 public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
     @Autowired PortValidatorHelper portValidatorHelper;
+    @Autowired YukonValidationHelper yukonValidationHelper;
 
     @SuppressWarnings("unchecked")
     public PortValidator() {
@@ -30,10 +33,7 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
     protected void doValidation(T port, Errors errors) {
         // Validate Name if present.
         if (port.getName() != null) {
-            YukonValidationUtils.checkIsBlank(errors, "name", port.getName(), false);
-            if (!errors.hasFieldErrors("name")) {
-                portValidatorHelper.validatePaoName(port.getName(), port.getType(), errors, "Name");
-            }
+            yukonValidationHelper.validatePaoName(port.getName(), port.getType(), errors, "Name", "portId");
         }
 
         if (port instanceof TcpPortDetail) {
@@ -60,6 +60,28 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
             if (detailBase.getPortNumber() != null) {
                 YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(detailBase.getPortNumber()));
+            }
+        }
+
+        if (port instanceof LocalSharedPortDetail) {
+            LocalSharedPortDetail localSharedPortDetail = (LocalSharedPortDetail) port;
+            if (localSharedPortDetail.getTiming() != null) {
+                portValidatorHelper.validatePortTimingFields(errors, localSharedPortDetail.getTiming());
+            }
+
+            if (localSharedPortDetail.getSharing() != null) {
+                portValidatorHelper.validatePortSharingFields(errors, localSharedPortDetail.getSharing());
+            }
+
+            if (localSharedPortDetail.getCarrierDetectWaitInMilliseconds() != null) {
+                YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", localSharedPortDetail.getCarrierDetectWaitInMilliseconds(), 0, 9999, false);
+            }
+
+            if (localSharedPortDetail.getPhysicalPort() != null) {
+                YukonValidationUtils.checkIsBlank(errors, "physicalPort", localSharedPortDetail.getPhysicalPort(), false);
+                if (!errors.hasFieldErrors("physicalPort")) {
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", localSharedPortDetail.getPhysicalPort(), 8);
+                }
             }
         }
 
