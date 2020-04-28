@@ -39,7 +39,7 @@ public class ThirdPartyJavaLibraryTest {
             "annotations-api.jar",
             "catalina-ant.jar",
             "catalina-ha.jar",
-            "catalina-ssi1.jar",
+            "catalina-ssi.jar",
             "catalina-storeconfig.jar",
             "catalina-tribes.jar",
             "ecj-4.13.jar",

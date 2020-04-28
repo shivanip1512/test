@@ -181,7 +181,7 @@ public class InfrastructureWarningsServiceImplTest {
         
         // Test warnings smart notification logic
         List<InfrastructureWarning> smartNotificationWarnings = ReflectionTestUtils.invokeMethod(service, 
-                "getSmartNotificationWarnings", oldWarnings, newWarnings);
+                "getSmartNotifications", oldWarnings, newWarnings);
         
         // Test warnings timestamp logic
         List<InfrastructureWarning> infrastructureWarnings =  ReflectionTestUtils.invokeMethod(service, 
