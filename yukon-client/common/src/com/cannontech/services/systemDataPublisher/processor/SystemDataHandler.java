@@ -47,14 +47,16 @@ public class SystemDataHandler {
     public void buildAndPublishSystemData(List<CloudDataConfiguration> cloudDataConifguration) {
         for (CloudDataConfiguration conf : cloudDataConifguration) {
             SystemDataProcessor processor = systemDataProcessorFactory.getProcessor(conf);
-            SystemData systemData = processor.buildSystemData(conf);
-            if (systemData != null) {
-                if (log.isDebugEnabled()) {
-                    log.info("Publishing system data to topic " + systemData);
+            if (processor != null) {
+                SystemData systemData = processor.buildSystemData(conf);
+                if (systemData != null) {
+                    if (log.isDebugEnabled()) {
+                        log.info("Publishing system data to topic " + systemData);
+                    }
+                    publishSystemData(systemData);
+                } else {
+                    log.info("Neither processor nor source found for field, not publishing it" + conf.getField());
                 }
-                publishSystemData(systemData);
-            } else {
-                log.info("Neither processor nor source found for field, not publishing it" + conf.getField());
             }
         }
     }

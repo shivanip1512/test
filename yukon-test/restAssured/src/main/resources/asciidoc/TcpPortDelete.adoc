@@ -10,8 +10,8 @@
 
 *Request JSON* :
 
-include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_04_Delete/http-request.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_04_Delete/http-request.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/TcpPortSetupApiControllerTest/Test_TcpPort_04_Delete/http-response.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_04_Delete/http-response.adoc[]

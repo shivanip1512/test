@@ -497,18 +497,18 @@ Java :
     jira : YUK-21375
     notes : 
     
-  - filename : catalina-ssi1.jar
+  - filename : catalina-ssi.jar
     yukon group : Tomcat
     project : Apache Tomcat
     version : 9.0.31
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-catalina-ha/9.0.31"
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/"
     md5 : 32e33e9fd27d722e77679312fdbdb5e0
     sha1 : 2ec2871a0435cc71c5a30f1df0a35dc5f03d3cc0
-    updated : 2020-03-11
-    jira : YUK-21375
+    updated : 2020-04-24
+    jira : YUK-21966
     notes : 
   
   - filename : catalina-storeconfig.jar
@@ -5696,10 +5696,10 @@ Icons :
     project URL : "http://www.famfamfam.com/lab/icons/silk/"
     license : Creative Commons Attribution 2.5
     license URLs : "https://creativecommons.org/licenses/by/2.5/"
-    md5 : f21dda510e6ac95145d8c94ed797acc9
-    sha1 : 07c64bfe13dc79c7767dbe2080cf95f27c245356
-    updated : 2019-07-15
-    jira : YUK-19812
+    md5 : b234877805b1eeba9c77f0fb4adfebba
+    sha1 : be349ab7267fb173622af04511beb7c676a2f287
+    updated : 2020-04-27
+    jira : YUK-19961
     notes : Custom built sprite assembled from the individual icons
     
   - path : icons-disabled.png
@@ -5708,10 +5708,10 @@ Icons :
     project URL : "http://www.famfamfam.com/lab/icons/silk/"
     license : Creative Commons Attribution 2.5
     license URLs : "https://creativecommons.org/licenses/by/2.5/"
-    md5 : 470070f15882b4fe373ca40fe8a86375
-    sha1 : 067552b9d674c09f4570e28681fa2e87f62a5685
-    updated : 2019-07-15
-    jira : YUK-19812
+    md5 : a9d52d9d8170b7e853187a3b28d0e366
+    sha1 : 7855e96e748747b3d0513c3f3881d150d379064b
+    updated : 2020-04-27
+    jira : YUK-19961
     notes : Custom built sprite assembled from the individual icons
     
   - path : icons-app-32.png

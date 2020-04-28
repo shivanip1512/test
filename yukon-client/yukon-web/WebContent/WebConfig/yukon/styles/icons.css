@@ -1109,6 +1109,8 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-notes-pin { background-position: -288px -416px; }
 .icon-map-pins { background-position: -305px -416px; }
 .icon-wifi-meter { background-position: -321px -416px; }
+.icon-dashboard { background-position: -339px -416px; }
+.icon-dashboard-manage { background-position: -357px -416px; }
 
 /* 32 pixel icons */
 .icon-32-blank  { background-position: 32px 32px; }
@@ -1444,4 +1446,3 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-app-32-page-excel { background-position: -299px -173px; }
 .icon-app-32-application-windows { background-position: -299px -215px; }
 .icon-app-32-cog-with-meter { background-position: -331px -4px; }
-
