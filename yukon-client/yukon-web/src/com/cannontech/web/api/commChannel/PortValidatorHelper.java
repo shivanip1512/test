@@ -6,8 +6,6 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.device.port.PortSharing;
 import com.cannontech.common.device.port.PortTiming;
 import com.cannontech.common.device.port.SharedPortType;
-import com.cannontech.common.device.port.TcpSharedPortDetail;
-import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -71,13 +69,15 @@ public class PortValidatorHelper {
         }
     }
 
-    public void validateUniquePortTerminalServer(Errors errors, TerminalServerPortDetailBase<?> serverPortDetailBase, TcpSharedPortDetail tcpSharedPortDetail) {
+    /**
+     * Validate Socket is unique or not.
+     */
+    public void validateDuplicateSocket(Errors errors, String ipAddress, Integer portNumber) {
 
-        Integer portId = portDao.findUniquePortTerminalServer(tcpSharedPortDetail.getIpAddress(), serverPortDetailBase.getPortNumber());
+        Integer portId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
 
         if (portId != null) {
-            errors.reject(key + "invalidPortTerminalServer",
-                    new Object[] { tcpSharedPortDetail.getIpAddress(), serverPortDetailBase.getPortNumber() }, "");
+            errors.reject(key + "duplicateSocket", new Object[] { ipAddress, portNumber }, "");
         }
     }
 
