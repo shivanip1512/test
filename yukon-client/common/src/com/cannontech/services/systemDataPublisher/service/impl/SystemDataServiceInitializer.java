@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.services.systemDataPublisher.listener.CloudDataConfigurationsAdvisoryListener;
 import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationsPublisherService;
+import com.cannontech.services.systemDataPublisher.watcher.SystemPublisherMetadataWatcher;
 import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 
@@ -16,6 +17,7 @@ public class SystemDataServiceInitializer {
     @Autowired private YamlConfigManager yamlConfigManager;
     @Autowired private CloudDataConfigurationsPublisherService cloudDataConfigurationsPublisherService;
     @Autowired private CloudDataConfigurationsAdvisoryListener advisoryListener;
+    @Autowired private SystemPublisherMetadataWatcher systemPublisherMetadataWatcher;
 
     private static final Logger log = YukonLogManager.getLogger(SystemDataServiceInitializer.class);
 
@@ -28,6 +30,7 @@ public class SystemDataServiceInitializer {
     private void init() {
         publishCloudDataConfigurations();
         new Thread(advisoryListener.advisoryListener()).start();
+        new Thread(systemPublisherMetadataWatcher.watch()).start();
     }
 
     /**

@@ -8,26 +8,20 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.List;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.services.systemDataPublisher.service.CloudDataConfigurationPublisherService;
-import com.cannontech.services.systemDataPublisher.yaml.YamlConfigManager;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
+import com.cannontech.services.systemDataPublisher.service.impl.SystemDataServiceInitializer;
 
-@Service
 public class SystemPublisherMetadataWatcher {
 
-    @Autowired private YamlConfigManager yamlConfigManager;
-    @Autowired private CloudDataConfigurationPublisherService cloudDataConfigurationPublisherService;
+    @Autowired private SystemDataServiceInitializer systemDataServiceInitializer;
     private static final Logger log = YukonLogManager.getLogger(SystemPublisherMetadataWatcher.class);
 
     public Runnable watch() {
@@ -70,8 +64,7 @@ public class SystemPublisherMetadataWatcher {
 
             private void doOnChange() throws IllegalBlockSizeException, BadPaddingException, IOException {
                 log.info("encryptedSystemPublisherMetadata.yaml has been modified. Changes will be processed and published to the cloud.");
-                List<CloudDataConfiguration> cloudDataConfigurations = yamlConfigManager.getCloudDataConfigurations();
-                cloudDataConfigurations.stream().forEach(config -> cloudDataConfigurationPublisherService.publish(config));
+                systemDataServiceInitializer.publishCloudDataConfigurations();
             }
         };
     }
