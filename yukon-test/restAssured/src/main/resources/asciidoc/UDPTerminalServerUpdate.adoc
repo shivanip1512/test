@@ -10,16 +10,16 @@
 
 *Request Properties* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_02_Update/request-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/request-fields.adoc[]
 
 *Request JSON* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_02_Update/http-request.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/http-request.adoc[]
 
 *Response Properties* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_02_Update/response-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/response-fields.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_02_Update/http-response.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/http-response.adoc[]

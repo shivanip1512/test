@@ -9,13 +9,13 @@
 ==== TCP Terminal Server
 *Request JSON* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_03_Get/http-request.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_03_Get/http-request.adoc[]
 
 *Response Properties* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_03_Get/response-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_03_Get/response-fields.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_03_Get/http-response.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_03_Get/http-response.adoc[]
 

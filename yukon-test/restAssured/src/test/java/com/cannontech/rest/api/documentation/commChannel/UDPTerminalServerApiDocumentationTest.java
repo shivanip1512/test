@@ -28,11 +28,11 @@ import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-public class TcpTerminalServerSetupApiControllerTest {
+public class UDPTerminalServerApiDocumentationTest {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;
-    MockPortBase tcpTerminalServerPort = null;
+    MockPortBase udpTerminalServerPort = null;
     private String portId = null;
     public final static String CONTEXT_PORT_ID = "id";
 
@@ -41,7 +41,7 @@ public class TcpTerminalServerSetupApiControllerTest {
         baseURI = ApiCallHelper.getProperty("baseURI");
         this.restDocumentation.beforeTest(getClass(), method.getName());
         this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-        tcpTerminalServerPort = CommChannelHelper.buildCommChannel(MockPaoType.TSERVER_SHARED);
+        udpTerminalServerPort = CommChannelHelper.buildCommChannel(MockPaoType.UDPPORT);
     }
 
     @AfterMethod
@@ -50,8 +50,8 @@ public class TcpTerminalServerSetupApiControllerTest {
     }
 
     @Test
-    public void Test_TcpTerminalServer_01_Create() {
-        List<FieldDescriptor> terminalServerPortDescriptor = CommChannelHelper.buildTCPTerminalServerPortDescriptor();
+    public void Test_UDPTerminalServer_01_Create() {
+        List<FieldDescriptor> terminalServerPortDescriptor = CommChannelHelper.buildUDPTerminalServerPortDescriptor();
         List<FieldDescriptor> list = new ArrayList<>(terminalServerPortDescriptor);
         list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
         Response response = given(documentationSpec)
@@ -60,7 +60,7 @@ public class TcpTerminalServerSetupApiControllerTest {
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(tcpTerminalServerPort)
+                .body(udpTerminalServerPort)
                 .when()
                 .post(ApiCallHelper.getProperty("createPort"))
                 .then()
@@ -72,10 +72,10 @@ public class TcpTerminalServerSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
-    public void Test_TcpTerminalServer_02_Update() {
+    @Test(dependsOnMethods = { "Test_UDPTerminalServer_01_Create" })
+    public void Test_UDPTerminalServer_02_Update() {
 
-        List<FieldDescriptor> tcpTerminalServerDescriptor =  CommChannelHelper.buildTCPTerminalServerPortDescriptor();
+        List<FieldDescriptor> tcpTerminalServerDescriptor = CommChannelHelper.buildUDPTerminalServerPortDescriptor();
         List<FieldDescriptor> list = new ArrayList<>(tcpTerminalServerDescriptor);
         list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
         Response response = given(documentationSpec)
@@ -83,7 +83,7 @@ public class TcpTerminalServerSetupApiControllerTest {
                 .accept("application/json")
                 .contentType("application/json")
                 .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(tcpTerminalServerPort)
+                .body(udpTerminalServerPort)
                 .when()
                 .post(ApiCallHelper.getProperty("updatePort") + portId)
                 .then()
@@ -94,9 +94,9 @@ public class TcpTerminalServerSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
-    public void Test_TcpTerminalServer_03_Get() {
-        List<FieldDescriptor> terminalServerPortDescriptor = CommChannelHelper.buildTCPTerminalServerPortDescriptor();
+    @Test(dependsOnMethods = { "Test_UDPTerminalServer_01_Create" })
+    public void Test_UDPTerminalServer_03_Get() {
+        List<FieldDescriptor> terminalServerPortDescriptor = CommChannelHelper.buildUDPTerminalServerPortDescriptor();
         List<FieldDescriptor> list = new ArrayList<>(terminalServerPortDescriptor);
         list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
         Response response = given(documentationSpec)
@@ -112,8 +112,8 @@ public class TcpTerminalServerSetupApiControllerTest {
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
 
-    @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
-    public void Test_TcpTerminalServer_04_Delete() {
+    @Test(dependsOnMethods = { "Test_UDPTerminalServer_01_Create" })
+    public void Test_UDPTerminalServer_04_Delete() {
         Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}"))
                 .accept("application/json")
                 .contentType("application/json")
@@ -125,5 +125,4 @@ public class TcpTerminalServerSetupApiControllerTest {
                 .response();
         assertTrue("Status code should be 200", response.statusCode() == 200);
     }
-
 }
