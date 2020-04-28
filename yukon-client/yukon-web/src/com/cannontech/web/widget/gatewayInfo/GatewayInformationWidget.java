@@ -226,7 +226,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         
         try {
             
-            int portNumber = settings.getPort();
+            String port = String.valueOf(settings.getPort());
             String updateServerUrl = null;
             Authentication auth = new Authentication();
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
@@ -244,17 +244,13 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             }
 
             if (settings.isUseDefaultPort()) {
-                if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
-                    portNumber = 32035;
-                } else {
-                    portNumber = 32030; // Non virtual gateways
-                }
+                port = null;
             }
 
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())
            .ipAddress(settings.getIpAddress())
-           .port(String.valueOf(portNumber))
+           .port(port)
            .name(settings.getName())
            .admin(settings.getAdmin())
            .superAdmin(settings.getSuperAdmin())
