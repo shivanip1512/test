@@ -7,7 +7,7 @@
 
 <cti:standardPage module="operator" page="wifiConnection">
 
-    <tags:alertBox type="success" key=".refreshMsg" classes="js-refresh-msg dn"></tags:alertBox>
+    <tags:alertBox type="success" key=".queryMsg" classes="js-refresh-msg dn"></tags:alertBox>
     <input type="hidden" id="gatewayId" value="${gateway.id}"/>
     <input type="hidden" id="deviceIds" value="${deviceIds}"/>
     <input type="hidden" id="connectedStatusValue" value="${connectedStatusValue}"/>
@@ -37,7 +37,7 @@
                 <cm:dropdownOption key="yukon.common.collectionActions" icon="icon-cog-go" href="${collectionActionsUrl}" newTab="true" classes="js-collection-actions"/>
                 <cm:dropdownOption key="yukon.common.download" icon="icon-csv" classes="js-download"/>
                 <cm:dropdownOption key="yukon.common.mapDevices" icon="icon-map-sat" classes="js-map"/>
-                <cm:dropdownOption key=".refreshAll" icon="icon-arrow-refresh" classes="js-refresh-all"/>
+                <cm:dropdownOption key=".queryAll" icon="icon-read" classes="js-refresh-all"/>
             </cm:dropdown>
         </span>
     </c:if>
@@ -65,7 +65,7 @@
                     <i:inline key=".rssiLastUpdated"/>
                     <i class="icon icon=blank"/>
                 </th>
-                <th class="action-column"><cti:icon icon="icon-arrow-refresh" classes="M0"/></th>
+                <th class="action-column"><cti:icon icon="icon-read" classes="M0"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -90,9 +90,9 @@
                         <tags:historicalValue pao="${data.device}" pointId="${data.rssiPoint.pointID}" format="DATE_QUALITY"/>
                     </td>
                     <td class="PL0">
-                        <cti:msg2 var="refreshTitle" key=".refreshStatus"/>
-                        <cti:button renderMode="image" icon="icon-arrow-refresh" classes="js-refresh-wifi show-on-hover" 
-                            data-device-id="${data.device.paoIdentifier.paoId}" title="${refreshTitle}"/>
+                        <cti:msg2 var="queryTitle" key=".queryStatus"/>
+                        <cti:button renderMode="image" icon="icon-read" classes="js-refresh-wifi show-on-hover" 
+                            data-device-id="${data.device.paoIdentifier.paoId}" title="${queryTitle}"/>
                     </td>
                 </tr>
             </c:forEach>
