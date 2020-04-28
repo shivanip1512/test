@@ -79,6 +79,7 @@
 <entry key="yukon.common.copy.prefix">Copy of</entry>
 <entry key="yukon.common.copy.suffix"> - Copy</entry>
 <entry key="yukon.common.create">Create</entry>
+<entry key="yukon.common.createPoint">Create Point</entry>
 <entry key="yukon.common.csv">CSV</entry>
 <entry key="yukon.common.dashes">---</entry>
 <entry key="yukon.common.dashesTwo">--</entry>
