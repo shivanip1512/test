@@ -20,7 +20,7 @@ public enum SharedPortType implements DatabaseRepresentationSource, DisplayableE
 
     private final static ImmutableMap<String, SharedPortType> lookupBySharedPortTypeString;
     private final static Logger log = YukonLogManager.getLogger(SharedPortType.class);
-    private String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
+    private String baseKey = "yukon.web.modules.operator.commChannel.sharedPortType.";
 
     static {
         try {

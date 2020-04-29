@@ -11,7 +11,7 @@
                            id="create-option" href="${createUrl}"/>
     </div>
     <tags:widgetContainer deviceId="${id}" identify="false">
-        <div class="column-12-12">
+        <div class="column-12-12 clearfix">
             <div class="one column">
                 <tags:widget bean="commChannelInfoWidget"/>
             </div>

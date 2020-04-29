@@ -20,6 +20,9 @@ import org.springframework.web.client.RestClientException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.TcpSharedPortDetail;
+import com.cannontech.common.device.port.TerminalServerPortDetailBase;
+import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -41,10 +44,6 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private static final Logger log = YukonLogManager.getLogger(CommChannelInfoWidget.class);
-    /* This list will be updated for Local Serial Port */
-    private static final List<PaoType> supportedAdditionalConfigTypes = Arrays.asList(PaoType.UDPPORT, PaoType.TSERVER_SHARED);
-    private static final List<PaoType> supportedEncyptionTypes = Arrays.asList(PaoType.UDPPORT);
-    private static final List<PaoType> supportedPortNumberTypes = Arrays.asList(PaoType.UDPPORT, PaoType.TSERVER_SHARED);
 
     @Autowired
     public CommChannelInfoWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
@@ -66,10 +65,16 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 PortBase commChannel = (PortBase) response.getBody();
                 model.addAttribute("commChannel", commChannel);
                 model.addAttribute("baudRateList", BaudRate.values());
-                model.addAttribute("isAdditionalConfigSupported", supportedAdditionalConfigTypes.contains(commChannel.getType()));
-                model.addAttribute("isEncyptionSupported", supportedEncyptionTypes.contains(commChannel.getType()));
-                model.addAttribute("isIpAddressSupported", commChannel.getType() == PaoType.TSERVER_SHARED);
-                model.addAttribute("isPortNumberSupported", supportedPortNumberTypes.contains(commChannel.getType()));
+                if (commChannel instanceof TerminalServerPortDetailBase) {
+                    model.addAttribute("isAdditionalConfigSupported", true);
+                    model.addAttribute("isPortNumberSupported", true);
+                    if (commChannel instanceof UdpPortDetail) {
+                        model.addAttribute("isEncyptionSupported", true);
+                    }
+                    if (commChannel instanceof TcpSharedPortDetail) {
+                        model.addAttribute("isIpAddressSupported", true);
+                    }
+                }
             }
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering Comm Channel Information widget", e);

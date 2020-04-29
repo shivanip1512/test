@@ -9,7 +9,7 @@ public enum ProtocolWrap implements DatabaseRepresentationSource, DisplayableEnu
     IDLC("IDLC");
 
     private String protocolWrapString;
-    private String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
+    private String baseKey = "yukon.web.modules.operator.commChannel.protocolWrap.";
 
     private ProtocolWrap(String protocolWrap) {
         this.protocolWrapString = protocolWrap;

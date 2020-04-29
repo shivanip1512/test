@@ -56,8 +56,8 @@
                             <tags:sectionContainer2 nameKey="general">
                                 <tags:nameValueContainer2>
                                     <tags:nameValue2 nameKey=".protocolWrap">
-                                        <tags:radio path="protocolWrap" value="IDLC" classes="left yes ML0" key=".IDLC"/>
-                                        <tags:radio path="protocolWrap" value="None" classes="right yes" key=".NONE"/>
+                                        <tags:radio path="protocolWrap" value="IDLC" classes="left yes ML0" key="yukon.web.modules.operator.commChannel.protocolWrap.IDLC"/>
+                                        <tags:radio path="protocolWrap" value="None" classes="right yes" key="yukon.web.modules.operator.commChannel.protocolWrap.NONE"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".carrierDetectWait">
                                         <!--  TODO - Change the UI Component -->
@@ -104,7 +104,7 @@
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".additionalTimeOut">
                                     <cti:msg2 var="seconds" key="yukon.common.units.sec"/>
-                                    <tags:input path="timing.extraTimeOut" units="${milliseconds}"/>
+                                    <tags:input path="timing.extraTimeOut" units="${seconds}"/>
                                 </tags:nameValue2>
                             </tags:nameValueContainer2>
                         </tags:sectionContainer2>
@@ -113,9 +113,9 @@
                             <tags:sectionContainer2 nameKey="shared">
                                 <tags:nameValueContainer2>
                                     <tags:nameValue2 nameKey=".sharedPortType">
-                                        <tags:radio path="sharing.sharedPortType" value="NONE" classes="left yes ML0" key=".NONE"/>
-                                        <tags:radio path="sharing.sharedPortType" value="ACS" classes="middle yes" key=".ACS"/>
-                                        <tags:radio path="sharing.sharedPortType" value="ILEX" classes="right yes" key=".ILEX"/>
+                                        <tags:radio path="sharing.sharedPortType" value="NONE" classes="left yes ML0" key="yukon.web.modules.operator.commChannel.sharedPortType.NONE"/>
+                                        <tags:radio path="sharing.sharedPortType" value="ACS" classes="middle yes" key="yukon.web.modules.operator.commChannel.sharedPortType.ACS"/>
+                                        <tags:radio path="sharing.sharedPortType" value="ILEX" classes="right yes" key="yukon.web.modules.operator.commChannel.sharedPortType.ILEX"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".socketNumber">
                                         <tags:input path="sharing.sharedSocketNumber"/>
