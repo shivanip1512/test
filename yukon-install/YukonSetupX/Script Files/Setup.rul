@@ -70,6 +70,7 @@ begin
     if(!CheckForBackUpFiles()) then
     BackupLoggingConfigFiles(formattedDateString);
     endif;
+    BackupEncryptedSystemPublisherMetadataFile(formattedDateString);
     RenameInstalledJavaServicesAndClientLog(formattedDateString);
     // Delete Yukon Client if exist.
     RemoveOldYukonClientDirectory();
@@ -374,6 +375,7 @@ begin
     if(IsInstalledVersionLesser("7.1.0")) then 
         BackupLoggingConfigFiles(sOldVersion);
     endif;
+    BackupEncryptedSystemPublisherMetadataFile(sOldVersion);
 	//remove the YukonWebApplicationService, if it exists (i.e. upgrade install)
 	//so the new service installs correctly
 	sCMD = SYS32 ^ "sc.exe";

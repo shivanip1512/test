@@ -46,7 +46,9 @@
                 <include name="**/*.jar" />
             </fileset>
         </path>
-        <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId"/>
+        <java classname="com.cannontech.encryption.SystemPublisherMetadataCryptoUtils" fork="true" failonerror="true" classpathref="classpathId">
+            <arg value="BUILD_PROCESS"/>
+        </java>
 
         <gitlogcount result="yukon-build-number"/>
 
@@ -62,7 +64,6 @@
                     <include name="**/*.gif"/>
                     <include name="**/*.png"/>
                     <include name="**/*.au"/>
-                    <include name="**/*.yaml"/>
                 </fileset>
                 <fileset dir="src">
                     <exclude name="**/*.java"/>

@@ -222,6 +222,9 @@ public class GlobalSettingValidatorTest {
         globalSettings.put(GlobalSettingType.CONTACT_EMAIL, "test@eaton.com");
         globalSettings.put(GlobalSettingType.SYSTEM_TIMEZONE, "America/Chicago");
         globalSettings.put(GlobalSettingType.HTTP_PROXY, "12.12.141.22:8080");
+        globalSettings.put(GlobalSettingType.PRODUCER_WINDOW_SIZE, 512);
+        globalSettings.put(GlobalSettingType.CLOUD_DATA_SENDING_FREQUENCY, 15);
+        globalSettings.put(GlobalSettingType.FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE, 249);
         command.setValues(globalSettings);
 
         errors = new BeanPropertyBindingResult(command, "ValidationResult");

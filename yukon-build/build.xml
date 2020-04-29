@@ -221,8 +221,8 @@
 
         <!-- Config Properties Component -->
         <copy todir="${install.bag}/Config Properties" preservelastmodified="true">
-            <fileset dir="${basedir}/yukon-install/resources" includes="*Logging.xml," casesensitive="false">
-            </fileset>
+            <fileset dir="${basedir}/yukon-install/resources" includes="*Logging.xml," casesensitive="false"/>
+            <fileset file="${basedir}/yukon-client/common/resource/encryptedSystemPublisherMetadata.yaml"/>
         </copy>
         
         <!-- Common Directories Component -->
