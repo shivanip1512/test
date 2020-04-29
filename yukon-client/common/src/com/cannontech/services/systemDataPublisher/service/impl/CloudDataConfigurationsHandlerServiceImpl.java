@@ -1,8 +1,10 @@
 package com.cannontech.services.systemDataPublisher.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,14 +37,17 @@ public class CloudDataConfigurationsHandlerServiceImpl implements CloudDataConfi
             List<CloudDataConfiguration> cloudDataConfigurations) {
 
         boolean networkManagerDBConfigured = networkManagerDBConfig.isNetworkManagerDBConnectionConfigured();
-
-        List<CloudDataConfiguration> releventConfigurations = cloudDataConfigurations.stream()
-                .filter(e -> (e.getDataPublisher() == SystemDataPublisher.YUKON
-                        || e.getDataPublisher() == SystemDataPublisher.OTHER
-                        || (networkManagerDBConfigured && e.getDataPublisher() == SystemDataPublisher.NETWORK_MANAGER
-                                && StringUtils.isNotEmpty(e.getSource()))))
-                .collect(Collectors.toList());
-        return releventConfigurations;
+        if (CollectionUtils.isNotEmpty(cloudDataConfigurations)) {
+            List<CloudDataConfiguration> releventConfigurations = cloudDataConfigurations.stream()
+                    .filter(e -> (e.getDataPublisher() == SystemDataPublisher.YUKON
+                            || e.getDataPublisher() == SystemDataPublisher.OTHER
+                            || (networkManagerDBConfigured && e.getDataPublisher() == SystemDataPublisher.NETWORK_MANAGER
+                                    && StringUtils.isNotEmpty(e.getSource()))))
+                    .collect(Collectors.toList());
+            return releventConfigurations;
+        } else {
+            return new ArrayList<CloudDataConfiguration>();
+        }
     }
 
 }
