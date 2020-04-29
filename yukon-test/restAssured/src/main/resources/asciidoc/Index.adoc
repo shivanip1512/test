@@ -189,19 +189,23 @@ include::DeviceReading.adoc[]
 include::TcpPortCreate.adoc[]
 include::TcpTerminalServerCreate.adoc[]
 include::UDPTerminalServerCreate.adoc[]
+include::LocalSharedPortCreate.adoc[]
 
 === Update
 include::TcpPortUpdate.adoc[]
 include::TcpTerminalServerUpdate.adoc[]
 include::UDPTerminalServerUpdate.adoc[]
+include::LocalSharedPortUpdate.adoc[]
 
 === Retrieve
 include::AllPortsGet.adoc[]
 include::TcpPortGet.adoc[]
 include::TcpTerminalServerGet.adoc[]
 include::UDPTerminalServerGet.adoc[]
+include::LocalSharedPortGet.adoc[]
 
 === Delete
 include::TcpPortDelete.adoc[]
 include::TcpTerminalServerDelete.adoc[]
 include::UDPTerminalServerDelete.adoc[]
+include::LocalSharedPortDelete.adoc[]

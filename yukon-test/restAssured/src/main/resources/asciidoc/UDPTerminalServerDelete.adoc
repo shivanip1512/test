@@ -10,8 +10,8 @@
 
 *Request JSON* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_04_Delete/http-request.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_04_Delete/http-request.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_04_Delete/http-response.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_04_Delete/http-response.adoc[]

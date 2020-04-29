@@ -15,6 +15,7 @@
     <entry key="yukon.common.events.action">Action</entry>
     <entry key="yukon.common.events.applianceCategoryName">Appliance Category Name</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
+    <entry key="yukon.common.events.baudRate">Baud Rate</entry>
     <entry key="yukon.common.events.cancelTime">Cancel Time</entry>
     <entry key="yukon.common.events.cancelledCount">Cancelled</entry>
     <entry key="yukon.common.events.changeId">ChangeId</entry>
@@ -1027,6 +1028,11 @@
     <entry key="yukon.common.events.dr.setup.loadProgram.loadProgramDeleted">Load program {1} of type {2} deleted by {3}.</entry>
     <entry key="yukon.common.events.dr.setup.loadProgram.gearCreated">Gear {1} of type {2} assigned to load program={3} at order={7} created by {4}.</entry>
     <entry key="yukon.common.events.dr.setup.loadProgram.gearDeleted">Gear {1} of type {2} assigned to load program={3} at order={7} deleted by {4}.</entry>
+
+     <!-- Comm Channels -->
+     <entry key="yukon.common.events.device.commChannel.commChannelCreated">Comm Channel {1} of type {2} with baud rate: {3} created by {4}.</entry>
+     <entry key="yukon.common.events.device.commChannel.commChannelUpdated">Comm Channel {1} of type {2} with baud rate: {3} updated by {4}.</entry>
+     <entry key="yukon.common.events.device.commChannel.commChannelDeleted">Comm Channel {1} of type {2} with baud rate: {3} deleted by {4}.</entry>
 
 </properties>
 

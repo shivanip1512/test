@@ -9,13 +9,13 @@
 ==== UDP Terminal Server
 *Request JSON* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_03_Get/http-request.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_03_Get/http-request.adoc[]
 
 *Response Properties* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_03_Get/response-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_03_Get/response-fields.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/UDPTerminalServerSetupApiControllerTest/Test_UDPTerminalServer_03_Get/http-response.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_03_Get/http-response.adoc[]
 

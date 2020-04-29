@@ -2807,6 +2807,123 @@
                     ]
                 },
                 {
+                    "name": "Local Shared Port",
+                    "item": [
+                        {
+                            "name": "Create",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n  \"name\" : \"Local Shared Port\",\r\n  \"enable\" : true,\r\n  \"baudRate\" : \"BAUD_2400\",\r\n  \"type\" : \"LOCAL_SHARED\",\r\n  \"carrierDetectWaitInMilliseconds\" : 123,\r\n  \"protocolWrap\" : \"IDLC\",\r\n  \"timing\" : {\r\n    \"preTxWait\" : 87,\r\n    \"rtsToTxWait\" : 82,\r\n    \"postTxWait\" : 89,\r\n    \"receiveDataWait\" : 76,\r\n    \"extraTimeOut\" : 98\r\n  },\r\n  \"sharing\" : {\r\n    \"sharedPortType\" : \"ACS\",\r\n    \"sharedSocketNumber\" : 100\r\n  },\r\n    \"physicalPort\" : \"com1\"\r\n  \r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/create",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "create"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update",
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n  \"name\" : \"Local Shared Port Update\",\r\n  \"enable\" : true,\r\n  \"baudRate\" : \"BAUD_2400\",\r\n  \"type\" : \"LOCAL_SHARED\",\r\n  \"carrierDetectWaitInMilliseconds\" : 144,\r\n  \"protocolWrap\" : \"IDLC\",\r\n  \"timing\" : {\r\n    \"preTxWait\" : 89,\r\n    \"rtsToTxWait\" : 89,\r\n    \"postTxWait\" : 99,\r\n    \"receiveDataWait\" : 89,\r\n    \"extraTimeOut\" : 89\r\n  },\r\n  \"sharing\" : {\r\n    \"sharedPortType\" : \"ACS\",\r\n    \"sharedSocketNumber\" : 99\r\n  },\r\n  \"physicalPort\" : \"com2\"\r\n}",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "update",
+                                        "977696"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Retrieve",
+                            "protocolProfileBehavior": {
+                                "disableBodyPruning": true
+                            },
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "977755"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "delete",
+                                        "{portId}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                },
+                {
                     "name": "GetAllCommChannels",
                     "protocolProfileBehavior": {
                         "disableBodyPruning": true

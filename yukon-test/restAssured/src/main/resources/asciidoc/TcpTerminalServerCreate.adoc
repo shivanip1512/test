@@ -10,16 +10,16 @@
 
 *Request Properties* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_01_Create/request-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/request-fields.adoc[]
 
 *Request JSON* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_01_Create/http-request.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/http-request.adoc[]
 
 *Response Properties* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_01_Create/response-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/response-fields.adoc[]
 
 *Response JSON* :
 
-include::{snippets}/TcpTerminalServerSetupApiControllerTest/Test_TcpTerminalServer_01_Create/http-response.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/http-response.adoc[]
