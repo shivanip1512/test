@@ -43,11 +43,11 @@ public class PortValidatorHelper {
      * Validate Socket is unique or not.
      */
     public void validateDuplicateSocket(Errors errors, String ipAddress, Integer portNumber) {
-        Integer socketPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
+        Integer existingPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
         String portIdString = ServletUtils.getPathVariable("portId");
         Integer portId = portIdString != null ? Integer.valueOf(portIdString) : null;
 
-        if (socketPortId != null && !(socketPortId.equals(portId))) {
+        if (existingPortId != null && !(existingPortId.equals(portId))) {
             errors.reject(key + "duplicateSocket", new Object[] { ipAddress, portNumber }, "");
         }
     }
