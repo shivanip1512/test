@@ -100,6 +100,10 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
                     }
                 }
             }
+            if (udpPortDetail.getPortNumber() != null && !errors.hasFieldErrors("portNumber")) {
+                // Checks for unique IP Address and Port number
+                portValidatorHelper.validateDuplicateSocket(errors, udpPortDetail.getIpAddress(), udpPortDetail.getPortNumber());
+            }
         }
 
         if (port instanceof TcpSharedPortDetail) {
@@ -108,6 +112,11 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
                 YukonValidationUtils.checkIsBlank(errors, "ipAddress", tcpSharedPortDetail.getIpAddress(), false);
                 if (!errors.hasFieldErrors("ipAddress")) {
                     YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", tcpSharedPortDetail.getIpAddress());
+                }
+
+                if (tcpSharedPortDetail.getPortNumber() != null && !errors.hasFieldErrors("ipAddress") && !errors.hasFieldErrors("portNumber")) {
+                    // Checks for unique IP Address and Port number
+                    portValidatorHelper.validateDuplicateSocket(errors, tcpSharedPortDetail.getIpAddress(), tcpSharedPortDetail.getPortNumber());
                 }
             }
         }
