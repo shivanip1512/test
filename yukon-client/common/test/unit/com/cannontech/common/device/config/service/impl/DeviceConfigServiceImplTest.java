@@ -111,8 +111,8 @@ public class DeviceConfigServiceImplTest {
         
         assertEquals(devicesToVerify, expected);
         
-        expected = List.of(four, five, six);
-        devicesToVerify = (List<SimpleDevice>) method.invoke(impl, all, statesInDatabase, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
+        expected = List.of(six);
+        devicesToVerify = (List<SimpleDevice>) method.invoke(impl, all, statesInDatabase, List.of(UNASSIGNED));
         
         assertEquals(devicesToVerify, expected);
     }
