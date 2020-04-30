@@ -464,6 +464,13 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 && !newGatewayData.getPort().equals(existingGatewayData.getPort())) {
             editData.setPort(Integer.valueOf(newGatewayData.getPort()));
             sendGatewayEditRequest = true;
+        } else if (existingGatewayData.getPort() != null && newGatewayData.getPort() == null) { // ToDo YUK-22048 && NM-1634
+            if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
+                editData.setPort(32035);
+            } else {
+                editData.setPort(32030); // Non virtual gateways
+            }
+            sendGatewayEditRequest = true;
         }
 
         GatewayUpdateResult result = GatewayUpdateResult.SUCCESSFUL;
