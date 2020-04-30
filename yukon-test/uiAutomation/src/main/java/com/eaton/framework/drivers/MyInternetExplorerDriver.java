@@ -26,7 +26,7 @@ public final class MyInternetExplorerDriver {
         InternetExplorerOptions options = new InternetExplorerOptions();
 
         options.introduceFlakinessByIgnoringSecurityDomains();
-        //options.enablePersistentHovering();       
+        // options.enablePersistentHovering();
         options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.ACCEPT);
         options.disableNativeEvents();
         options.ignoreZoomSettings();
@@ -36,8 +36,9 @@ public final class MyInternetExplorerDriver {
 
         if (useRemoteDriver) {
             driver = new RemoteWebDriver(options);
-        } else
+        } else {
             driver = new InternetExplorerDriver(options);
+        }
 
         driver.manage().deleteAllCookies();
         driver.manage().window().maximize();
