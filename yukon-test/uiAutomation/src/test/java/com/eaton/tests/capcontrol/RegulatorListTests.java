@@ -14,8 +14,8 @@ import com.eaton.pages.capcontrol.RegulatorListPage;
 
 public class RegulatorListTests extends SeleniumTestSetup {
 
-    RegulatorListPage listPage;
-    SoftAssert softAssertion;
+    private RegulatorListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {

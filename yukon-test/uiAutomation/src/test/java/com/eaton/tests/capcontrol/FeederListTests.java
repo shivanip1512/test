@@ -14,8 +14,8 @@ import com.eaton.pages.capcontrol.FeederListPage;
 
 public class FeederListTests extends SeleniumTestSetup {
 
-    FeederListPage listPage;
-    SoftAssert softAssertion;
+    private FeederListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {

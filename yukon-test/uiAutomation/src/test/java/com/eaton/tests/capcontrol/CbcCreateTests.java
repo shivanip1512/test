@@ -21,7 +21,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
     private CbcCreatePage createPage;
     private DriverExtensions driverExt;
-    Random randomNum;
+    private Random randomNum;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {

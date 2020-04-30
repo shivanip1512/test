@@ -12,7 +12,7 @@ import com.eaton.pages.capcontrol.pointimport.PointImportPage;
 
 public class PointImportTests extends SeleniumTestSetup {
 
-    PointImportPage importPage;
+    private PointImportPage importPage;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {

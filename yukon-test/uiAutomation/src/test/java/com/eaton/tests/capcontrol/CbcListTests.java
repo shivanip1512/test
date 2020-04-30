@@ -14,8 +14,8 @@ import com.eaton.pages.capcontrol.CbcListPage;
 
 public class CbcListTests extends SeleniumTestSetup {
 
-    CbcListPage listPage;
-    SoftAssert softAssertion;
+    private CbcListPage listPage;
+    private SoftAssert softAssertion;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {

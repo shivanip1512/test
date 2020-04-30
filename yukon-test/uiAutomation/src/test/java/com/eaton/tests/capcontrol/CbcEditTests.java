@@ -18,7 +18,7 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 
 public class CbcEditTests extends SeleniumTestSetup {
 
-    DriverExtensions driverExt;
+    private DriverExtensions driverExt;
     private static final String FOUND = "' but found: ";
 
     @BeforeClass(alwaysRun=true)

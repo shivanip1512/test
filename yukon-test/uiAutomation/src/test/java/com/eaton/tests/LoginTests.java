@@ -12,7 +12,7 @@ import com.eaton.pages.LoginPage;
 
 public class LoginTests extends SeleniumTestSetup {
 
-    LoginPage page;
+    private LoginPage page;
 
     //todo need to refactor this test class
     @Test(enabled = false)
