@@ -186,6 +186,12 @@ DELETE FROM Point WHERE POINTID IN (
 INSERT INTO DBUpdates VALUES ('YUK-21777', '7.5.0', GETDATE());
 /* @end YUK-21777 */
 
+/* @start YUK-21967 */
+DELETE FROM Job WHERE BeanName = 'deviceConfigVerificationJobDefinition';
+
+INSERT INTO DBUpdates VALUES ('YUK-21967', '7.5.0', GETDATE());
+/* @end YUK-21967 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

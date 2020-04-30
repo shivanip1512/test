@@ -473,18 +473,17 @@ function UpdateCparmValueInFile(sFile, sKey, sValue, sReplace)
 number nGrepResult, nGrepLineNumber, commentLocation, keyLocation, colonLocation, valueLocation;
 string sGrepReturnLine;
 begin
-    nGrepResult = 1;
-    while(nGrepResult >= 0)
-        nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, RESTART);
-        if(nGrepResult >= 0) then
+    nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, RESTART);
+    while (nGrepResult >= 0)
+        if (nGrepResult >= 0) then
             commentLocation = StrFindEx(sGrepReturnLine, "#", 0);
             keyLocation = StrFindEx(sGrepReturnLine, sKey, 0);
-            if(keyLocation < commentLocation || commentLocation < 0) then
+            if (keyLocation < commentLocation || commentLocation < 0) then
                 colonLocation = StrFindEx(sGrepReturnLine, ":", keyLocation);
-                if(colonLocation > keyLocation) then
+                if (colonLocation > keyLocation) then
                     valueLocation = StrFindEx(sGrepReturnLine, sValue, colonLocation);
-                    if(valueLocation > colonLocation) then
-                        if(valueLocation < commentLocation || commentLocation < 0) then
+                    if (valueLocation > colonLocation) then
+                        if (valueLocation < commentLocation || commentLocation < 0) then
                             StrReplace(sGrepReturnLine, sValue, sReplace, 0);
                             FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
                         endif;
@@ -492,6 +491,7 @@ begin
                 endif;
             endif;
         endif;
+        nGrepResult = FileGrep(sFile, sKey, sGrepReturnLine, nGrepLineNumber, CONTINUE);
     endwhile;
 end;
 
@@ -1013,6 +1013,23 @@ begin
     DeleteFile ( szFile );
     szFile = TARGETDIR ^ "\\Server\\Config\\remoteLogging.xml";
     DeleteFile ( szFile );
+end;
+
+//--------------------------------------------------------------------------------
+// Rename old encryptedSystemPublisherMetadataFile.yaml (based on passed suffix) 
+// if available and take backup in Yukon\\Server\\Config\\Backup\\. Also remove old 
+// files from Yukon\\Server\\config directory
+//--------------------------------------------------------------------------------
+export prototype BackupEncryptedSystemPublisherMetadataFile(string);
+function BackupEncryptedSystemPublisherMetadataFile(suffix)
+string szFile, svResult;
+begin
+    if(FindFile (TARGETDIR + "\\Server\\Config\\", "encryptedSystemPublisherMetadata.yaml", svResult ) == 0) then 
+        CopyFile (TARGETDIR + "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml", TARGETDIR + "\\Server\\Config\\Backup\\encryptedSystemPublisherMetadata_" + suffix + ".yaml");
+        // Delete old encryptedSystemPublisherMetadata.yaml file.
+        szFile = TARGETDIR ^ "\\Server\\Config\\encryptedSystemPublisherMetadata.yaml";
+        DeleteFile ( szFile );
+    endif;
 end;
 
 //--------------------------------------------------------------------------------

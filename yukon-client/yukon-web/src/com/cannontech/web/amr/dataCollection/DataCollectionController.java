@@ -2,6 +2,7 @@ package com.cannontech.web.amr.dataCollection;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +154,7 @@ public class DataCollectionController {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         List<DeviceGroup> subGroups = retrieveSubGroups(deviceSubGroups);
         List<RfnGateway> gateways = recentPointValueDao.getRfnGatewayList(group, subGroups, includeDisabled);
+        gateways.sort(Comparator.comparing(RfnGateway::getName, String.CASE_INSENSITIVE_ORDER));
         if (ranges == null) {
             ranges = RangeType.values();
         }

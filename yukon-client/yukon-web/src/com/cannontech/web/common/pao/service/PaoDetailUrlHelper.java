@@ -59,6 +59,9 @@ public class PaoDetailUrlHelper {
         
         urlBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, pao -> "/stars/operator/inventory/view?deviceId=" + pao.getPaoIdentifier().getPaoId());
         pageNameBuilder.put(PaoTag.ASSET_DETAIL_DISPLAYABLE, "hardware.VIEW");
+        
+        urlBuilder.put(PaoTag.PORT_DETAIL_DISPLAYABLE, pao -> "/stars/device/commChannel/" + pao.getPaoIdentifier().getPaoId());
+        pageNameBuilder.put(PaoTag.PORT_DETAIL_DISPLAYABLE, "commChannelDetail");
 
         supportDeviceUrlPatterns = urlBuilder.build();
         supportDevicePageNames = pageNameBuilder.build();

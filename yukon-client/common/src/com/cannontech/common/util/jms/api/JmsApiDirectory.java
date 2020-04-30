@@ -121,7 +121,7 @@ import com.cannontech.services.configurationSettingMessage.model.ConfigurationSe
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
-import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
+import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfigurations;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.stars.dr.jms.message.DrAttributeDataJmsMessage;
@@ -1128,15 +1128,15 @@ public final class JmsApiDirectory {
                   .receiver(YUKON_SERVICE_MANAGER)
                   .build();
 
-    public static final JmsApi<CloudDataConfiguration,?,?> CLOUD_DATA_CONFIGURATION =
-            JmsApi.builder(CloudDataConfiguration.class)
+    public static final JmsApi<CloudDataConfigurations,?,?> CLOUD_DATA_CONFIGURATIONS =
+            JmsApi.builder(CloudDataConfigurations.class)
                   .name("Yukon Cloud Data")
                   .description("Yukon Service Manager processes the data definition for cloud integrations and publishes"
                           + " it on a topic for other services to use")
                   .topic(true)
                   .communicationPattern(NOTIFICATION)
-                  .queue(new JmsQueue("com.eaton.eas.cloud.CloudDataConfiguration"))
-                  .requestMessage(CloudDataConfiguration.class)
+                  .queue(new JmsQueue("com.eaton.eas.cloud.CloudDataConfigurations"))
+                  .requestMessage(CloudDataConfigurations.class)
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .receiver(NETWORK_MANAGER)
@@ -1169,7 +1169,7 @@ public final class JmsApiDirectory {
                 ARCHIVE_STARTUP, 
                 BROKER_SYSTEM_METRICS,
                 CLOUD_CONFIGURATION_SETTINGS,
-                CLOUD_DATA_CONFIGURATION,
+                CLOUD_DATA_CONFIGURATIONS,
                 ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,

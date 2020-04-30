@@ -23,7 +23,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.service.BulkImportType;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.loggers.CommChannelEventLogService;
 import com.cannontech.common.events.loggers.CommandRequestExecutorEventLogService;
 import com.cannontech.common.events.loggers.CommandScheduleEventLogService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
@@ -85,6 +87,7 @@ public class DevEventLogCreationService {
     @Autowired private CommanderEventLogService commandEventLogService;
     @Autowired private CommandRequestExecutorEventLogService commandRequestExecutorEventLogService;
     @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
+    @Autowired private CommChannelEventLogService commChannelEventLogService;
     @Autowired private DataStreamingEventLogService dataStreamingEventLogService;
     @Autowired private DatabaseMigrationEventLogService databaseMigrationEventLogService;
     @Autowired private DemandResetEventLogService demandResetEventLogService;
@@ -340,6 +343,19 @@ public class DevEventLogCreationService {
                 commandScheduleEventLogService.scheduleDisabled(yukonUser, commandScheduleId);
                 commandScheduleEventLogService.scheduleEnabled(yukonUser, commandScheduleId);
                 commandScheduleEventLogService.scheduleUpdated(yukonUser, commandScheduleId);
+            }
+        });
+        executables.put(LogType.COMM_CHANNEL, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+                LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
+                String commChannelName = devEventLog.getIndicatorString() + "commChannelName";
+                PaoType portType = PaoType.TCPPORT;
+                BaudRate baudRate = BaudRate.BAUD_1200;
+
+                commChannelEventLogService.commChannelCreated(commChannelName, portType, baudRate, yukonUser);
+                commChannelEventLogService.commChannelUpdated(commChannelName, portType, baudRate, yukonUser);
+                commChannelEventLogService.commChannelDeleted(commChannelName, portType, baudRate, yukonUser);
             }
         });
         executables.put(LogType.DATA_STREAMING, new DevEventLogExecutable() {
@@ -1244,6 +1260,7 @@ public class DevEventLogCreationService {
         COMMAND(CommanderEventLogService.class, 12),
         COMMAND_REQUEST_EXECUTOR(CommandRequestExecutorEventLogService.class, 2),
         COMMAND_SCHEDULE(CommandScheduleEventLogService.class, 6),
+        COMM_CHANNEL(CommChannelEventLogService.class, 3),
         DATA_STREAMING(DataStreamingEventLogService.class, 6),
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 8),

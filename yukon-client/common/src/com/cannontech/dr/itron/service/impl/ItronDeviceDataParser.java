@@ -13,7 +13,10 @@ import java.util.zip.ZipFile;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,6 +56,8 @@ public class ItronDeviceDataParser {
     private static final Logger log = YukonLogManager.getLogger(ItronDeviceDataParser.class);
     private static final String eventIdKey = "load control event status update - event";
     private static final String statusKey = "status";
+    private static final DateTime y2k = new LocalDate(2000, 1, 1).toDateTimeAtStartOfDay();
+    private static final Duration year = Duration.standardDays(365);
 
     public Multimap<PaoIdentifier, PointValueHolder> parseAndSend(ZipFile zip) throws EmptyImportFileException {
         if(zip == null) {
@@ -142,6 +147,12 @@ public class ItronDeviceDataParser {
         String source = rowData[5]; //Mac address
         String[] text = rowData[9].split(",");//Tokenized CSV text
         
+        // Ignore data that is very old or very future
+        if (!isReasonableEventTime(eventTime)) {
+            log.warn("Ignoring data with invalid timestamp: {}", eventTime);
+            return pointValues;
+        }
+        
         switch(category) {
             case EVENT_CAT_NIC_EVENT:
                 pointValues = parseNicEvent(source, text, eventTime);
@@ -155,6 +166,15 @@ public class ItronDeviceDataParser {
         }
         
         return pointValues;
+    }
+    
+    /**
+     * Validate that this event timestamp is reasonable for valid data. Criteria are currently identical to 
+     * RfnDataValidator.isTimestampValid.
+     */
+    private boolean isReasonableEventTime(String eventTimeString) {
+        DateTime eventDateTime = new DateTime(eventTimeString);
+        return eventDateTime.isAfter(y2k) && eventDateTime.isBefore(Instant.now().plus(year));
     }
     
     private Multimap<PaoIdentifier, PointData> parseNicEvent(String source, String[] text, String eventTime) {
@@ -211,6 +231,9 @@ public class ItronDeviceDataParser {
                     updateAssetAvailability(pointData, pao);
                     updatePointDataWithLitePointSettings(pointData, litePoint);
                     pointValues.put(pao.getPaoIdentifier(), pointData);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Parsed point data for {} - {} ({} {}). Value: {} {}.", pao.getPaoName(), litePoint.getPointName(), litePoint.getPointTypeEnum(), litePoint.getPointOffset(), pointData.getValue(), pointData.getPointDataTimeStamp() );
+                    }
                 });
             } catch (Exception e) {
                 log.error("Error processing point data: " + Arrays.toString(decodedData) + " for point " + litePoint, e);

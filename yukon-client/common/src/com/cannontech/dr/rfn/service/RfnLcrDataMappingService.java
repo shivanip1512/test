@@ -26,10 +26,9 @@ public interface RfnLcrDataMappingService <T> {
     /**
      * Stores the LM addressing data reported by the device if it is not equivalent to the
      * current address recorded or no address is currently recorded.
-     * @param jmsTemplate 
      * @see {@link ExpressComReportedAddress#isEquivalent}
      */
-    public void storeAddressingData(YukonJmsTemplate jmsTemplate, T data, RfnDevice device);
+    public void storeAddressingData(T data, RfnDevice device);
 
     /**
      * This method extracts message id and the time the message was received by LCR.

@@ -1,11 +1,14 @@
 package com.cannontech.stars.dr.jms.service.impl;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.jms.message.DrJmsMessageType;
@@ -18,7 +21,18 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
 
     private final static Logger log = YukonLogManager.getLogger(DrJmsMessagingServiceImpl.class);
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private YukonJmsTemplate enrollmentNotificationJmsTemplate;
+    private YukonJmsTemplate optOutInNotificationJmsTemplate;
+    private YukonJmsTemplate programStatusNotificationJmsTemplate;
+
+    @PostConstruct
+    public void init() {
+        enrollmentNotificationJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ENROLLMENT_NOTIFICATION);
+        optOutInNotificationJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.OPTOUTIN_NOTIFICATION);
+        programStatusNotificationJmsTemplate= jmsTemplateFactory.createTemplate(JmsApiDirectory.PROGRAM_STATUS_NOTIFICATION);
+    }
 
     @Override
     public void publishEnrollmentNotice(LMHardwareControlGroup controlInformation) {
@@ -28,7 +42,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.ENROLLMENT);
 
         log.debug("Enrollment message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
+        enrollmentNotificationJmsTemplate.convertAndSend(message);
     }
 
     @Override
@@ -40,7 +54,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.UNENROLLMENT);
 
         log.debug("Unenrollment message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.ENROLLMENT_NOTIFICATION, message);
+        enrollmentNotificationJmsTemplate.convertAndSend(message);
     }
 
     private void setEnrollmentJmsMessageFields(EnrollmentJmsMessage message, LMHardwareControlGroup controlInformation) {
@@ -62,7 +76,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.OPTOUT);
 
         log.debug("OptOut message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
+        optOutInNotificationJmsTemplate.convertAndSend(message);
     }
 
     @Override
@@ -74,7 +88,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
         message.setMessageType(DrJmsMessageType.STOPOPTOUT);
 
         log.debug("Stop OptOut message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.OPTOUTIN_NOTIFICATION, message);
+        optOutInNotificationJmsTemplate.convertAndSend(message);
 
     }
 
@@ -82,7 +96,7 @@ public class DrJmsMessagingServiceImpl implements DrJmsMessagingService {
     public void publishProgramStatusNotice(DrProgramStatusJmsMessage message) {
 
         log.debug("Program Status Message pushed to jms queue: " + message);
-        jmsTemplate.convertAndSend(JmsApiDirectory.PROGRAM_STATUS_NOTIFICATION, message);
+        programStatusNotificationJmsTemplate.convertAndSend(message);
     }
 
 }

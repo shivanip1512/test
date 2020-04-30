@@ -360,4 +360,6 @@
 <entry key="yukon.common.weekend">Weekend</entry>
 <entry key="yukon.common.year">Year</entry>
 <entry key="yukon.common.yes">Yes</entry>
+<entry key="yukon.common.units.ms">ms</entry>
+<entry key="yukon.common.units.sec">sec</entry>
 </properties>

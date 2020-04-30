@@ -266,6 +266,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/inventory</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/mapNetwork</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/comprehensiveMap</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/commChannel</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/relay</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/rtu</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/scheduledDataImport</value>
@@ -370,6 +371,7 @@
       </property>
     </bean>
     
+    <bean class="com.cannontech.common.util.jms.YukonJmsTemplateFactory"/>
     <bean class="com.cannontech.common.util.jms.YukonJmsTemplate" scope="prototype"/>
     
     <bean class="org.springframework.aop.framework.ProxyFactoryBean">

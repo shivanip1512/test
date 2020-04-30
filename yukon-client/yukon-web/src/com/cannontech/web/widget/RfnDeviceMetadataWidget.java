@@ -132,7 +132,7 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "HARDWARE_VERSION"), data.getHardwareVersion()));
                 String dateTime = dateFormattingService.format(data.getInNetworkTimestamp(), DateFormatEnum.DATEHM, context);
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "IN_NETWORK_TIMESTAMP"), dateTime));
-                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_ADDRESS"), data.getFirmwareVersion()));
+                metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_ADDRESS"), data.getMacAddress()));
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_FIRMWARE_VERSION"), data.getFirmwareVersion()));
                 metadataPairs.add(Pair.of(accessor.getMessage(keyPrefix + "NODE_TYPE"),
                         accessor.getMessage(keyPrefix + "NODE_TYPE." + data.getNodeType())));
@@ -196,7 +196,9 @@ public class RfnDeviceMetadataWidget extends AdvancedWidgetControllerBase {
                 log.info("PRIMARY_FORWARD_ROUTE_DATA not found for {}", device);
             }
 
+            metadataPairs.removeIf(pair -> pair.getValue() == null);
             metadataPairs.sort(Comparator.comparing(pair -> pair.getKey()));
+            csrMetadataPairs.removeIf(pair -> pair.getValue() == null);
             csrMetadataPairs.sort(Comparator.comparing(pair -> pair.getKey()));
             model.addAttribute("metadata", metadataPairs);
             model.addAttribute("csrMetadata", csrMetadataPairs);

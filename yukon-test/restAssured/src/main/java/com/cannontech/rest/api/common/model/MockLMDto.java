@@ -15,8 +15,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
-
 public class MockLMDto {
 
     private Integer id;

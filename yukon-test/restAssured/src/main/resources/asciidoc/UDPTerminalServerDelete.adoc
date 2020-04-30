@@ -1,0 +1,17 @@
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+
+
+==== UDP Terminal Server
+
+*Request JSON* :
+
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_04_Delete/http-request.adoc[]
+
+*Response JSON* :
+
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_04_Delete/http-response.adoc[]
