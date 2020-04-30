@@ -26,12 +26,7 @@ public class ConfigFileReader {
             }
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Configuration.properties not found at " + FILE_PATH);
-        } finally {
-            if (reader != null) {
-                reader.close();
-            }
+            throw new RuntimeException("Configuration.properties not found at " + FILE_PATH, e);
         }
     }
 
