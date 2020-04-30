@@ -214,10 +214,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         List<SimpleDevice> devicesToVerify = new ArrayList<>();
         if (result.getAction() == CollectionAction.ASSIGN_CONFIG) {
             states = buildNewStatesForAssignAction(devices, deviceToState, result.getStartTime(), result.getStopTime());
-            devicesToVerify = getDevicesToVerify(devices, deviceToState, result.getContext(), IN_SYNC, OUT_OF_SYNC, UNASSIGNED);
+            devicesToVerify = getDevicesToVerify(devices, deviceToState, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
         } else if (result.getAction() == CollectionAction.UNASSIGN_CONFIG) {
             states = buildNewStatesForUnassignAction(devices, deviceToState, result.getStartTime(), result.getStopTime());
-            devicesToVerify = getDevicesToVerify(devices, deviceToState, result.getContext(), UNASSIGNED);
+            devicesToVerify = getDevicesToVerify(devices, deviceToState, List.of(UNASSIGNED));
         }
         
         log.debug("{}",
@@ -437,13 +437,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
      * @param states - list of current states to filter devices by
      * @return 
      */
-    private List<SimpleDevice> getDevicesToVerify(List<SimpleDevice> devices,
-            Map<Integer, DeviceConfigState> deviceToState, YukonUserContext context, ConfigState... states) {
+    private List<SimpleDevice> getDevicesToVerify(List<SimpleDevice> devices, Map<Integer, DeviceConfigState> deviceToState,
+            List<ConfigState> states) {
         return devices.stream()
                 .filter(device -> {
                     DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
                     return currentState != null && currentState.getStatus() != IN_PROGRESS
-                            && Lists.newArrayList(states).contains(currentState.getState());
+                            && states.contains(currentState.getState());
                 })
                 .collect(Collectors.toList());
     }

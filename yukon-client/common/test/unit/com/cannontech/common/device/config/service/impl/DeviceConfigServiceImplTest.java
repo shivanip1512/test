@@ -7,7 +7,9 @@ import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.Con
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState.UNASSIGNED;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState.UNCONFIRMED;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.ASSIGN;
+import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.UNASSIGN;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.SEND;
+import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.READ;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.IN_PROGRESS;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.SUCCESS;
 import static org.junit.Assert.assertEquals;
@@ -34,49 +36,86 @@ import com.cannontech.common.pao.PaoType;
 public class DeviceConfigServiceImplTest {
 
     private DeviceConfigServiceImpl impl = new DeviceConfigServiceImpl();
-    Map<Integer, DeviceConfigState> statesInDatabase = new HashMap<>();
-    Instant startTime = Instant.now();
-    Instant stopTime = Instant.now();
+    private Map<Integer, DeviceConfigState> statesInDatabase = new HashMap<>();
     private int oneHour = 3600000;
+    
+    private SimpleDevice one = new SimpleDevice(1, PaoType.RFN420FL);
+    private SimpleDevice two = new SimpleDevice(2, PaoType.RFN420FL);
+    private SimpleDevice three = new SimpleDevice(3, PaoType.RFN420FL);
+    private SimpleDevice four = new SimpleDevice(4, PaoType.RFN420FL);
+    private SimpleDevice five = new SimpleDevice(5, PaoType.RFN420FL);
+    private SimpleDevice six = new SimpleDevice(6, PaoType.RFN420FL);
+    private SimpleDevice seven = new SimpleDevice(7, PaoType.MCT420CL);
+    private SimpleDevice eight = new SimpleDevice(8, PaoType.MCT420CL);
+    
+    private List<SimpleDevice> all = List.of(one, two, three, four, five, six, seven, eight);
+    
+    
     {
+        Instant startTime = Instant.now();
+        Instant stopTime = Instant.now();
         stopTime = stopTime.plus(oneHour);
         //device with id 1 one will be missing from this map
-        statesInDatabase.put(2, new DeviceConfigState(2, UNKNOWN, SEND, IN_PROGRESS, startTime, null, null));
-        statesInDatabase.put(3, new DeviceConfigState(3, UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(4, new DeviceConfigState(4, IN_SYNC, ASSIGN, SUCCESS, startTime, stopTime, null)); 
-        statesInDatabase.put(5, new DeviceConfigState(5, OUT_OF_SYNC, ASSIGN, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(6, new DeviceConfigState(6, UNASSIGNED, ASSIGN, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(7, new DeviceConfigState(7, UNCONFIRMED, ASSIGN, SUCCESS, startTime, stopTime, null));
+        statesInDatabase.put(2, new DeviceConfigState(two.getDeviceId(), UNKNOWN, UNASSIGN, SUCCESS, startTime, null, null));
+        statesInDatabase.put(3, new DeviceConfigState(three.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null));
+        statesInDatabase.put(4, new DeviceConfigState(four.getDeviceId(), IN_SYNC, READ, SUCCESS, startTime, stopTime, null)); 
+        statesInDatabase.put(5, new DeviceConfigState(five.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null));
+        statesInDatabase.put(6, new DeviceConfigState(six.getDeviceId(), UNASSIGNED, READ, SUCCESS, startTime, stopTime, null));
+        statesInDatabase.put(7, new DeviceConfigState(seven.getDeviceId(), UNCONFIRMED, SEND, SUCCESS, startTime, stopTime, null));
+        statesInDatabase.put(8, new DeviceConfigState(eight.getDeviceId(), IN_SYNC, READ, IN_PROGRESS, startTime, stopTime, null));
     }
     
     @Test
-    public final void build_new_states_for_assign_action() throws Exception {
-        try {
-            
-            //Starting state:Unknown Action:Assign Status:Success New state:Unread
-            //device is not in the database 
-            checkState("buildNewStatesForAssignAction", new SimpleDevice(1,  PaoType.RFN420FL), UNREAD);
-            
-            //Starting state:Unknown Action:Assign Status:In Progress
-            //no change, action is not allowed while status is in In Progress
-            checkState("buildNewStatesForAssignAction", new SimpleDevice(2,  PaoType.RFN420FL), null);
-            
-            //Starting state:Unread Action:Assign Status:Success New state:Unread
-            //State remains the same, other table info changes such as start and stop time etc
-            checkState("buildNewStatesForAssignAction", new SimpleDevice(3,  PaoType.RFN420FL), UNREAD);
-            
-            //The cases below we are sending a verify, the state table will not change by assign
-            checkState("buildNewStatesForAssignAction", new SimpleDevice(4,  PaoType.RFN420FL), null);
-            checkState("buildNewStatesForAssignAction", new SimpleDevice(5,  PaoType.RFN420FL), null);
-            checkState("buildNewStatesForAssignAction", new SimpleDevice(6,  PaoType.RFN420FL), null);
-            
-            //Starting state:Unconfirmed Action:Assign Status:Success New state:Unconfirmed
-            //State remains the same, other table info changes such as start and stop time etc
-            checkState("buildNewStatesForAssignAction", new SimpleDevice(7,  PaoType.MCT420CL), UNCONFIRMED);
-            
-        } catch (Exception e) {
-            throw e;
-        }
+    public final void build_new_states_for_assign_action() throws Exception {     
+        // device is not in the states table -> UNREAD
+        checkState("buildNewStatesForAssignAction", one, UNREAD);
+        // UNKNOWN -> UNREAD
+        checkState("buildNewStatesForAssignAction", two, UNREAD);
+        // was UNREAD remains UNREAD
+        checkState("buildNewStatesForAssignAction", three, UNREAD);
+        // was IN_SYNC -> send verify
+        checkState("buildNewStatesForAssignAction", four, null);
+        // was OUT_OF_SYNC -> send verify
+        checkState("buildNewStatesForAssignAction", five, null);
+        // was UNASSIGNED -> send verify
+        checkState("buildNewStatesForAssignAction", six, null);
+        // was UNCONFIRMED remains UNCONFIRMED
+        checkState("buildNewStatesForAssignAction", seven, UNCONFIRMED);
+        // in progress -> NO CHANGE
+        checkState("buildNewStatesForAssignAction", eight, null);
+    }
+    
+    @Test
+    public final void build_new_states_for_unassign_action() throws Exception {
+        // device is not in states table -> NO CHANGE
+        checkState("buildNewStatesForUnassignAction", one, null);
+        // was UNKNOWN -> NO CHANGE
+        checkState("buildNewStatesForUnassignAction", two, null);
+        // was UNREAD -> UNKNOWN
+        checkState("buildNewStatesForUnassignAction", three, UNKNOWN);
+        // was IN_SYNC -> UNASSIGNED
+        checkState("buildNewStatesForUnassignAction", four, UNASSIGNED);
+        // was OUT_OF_SYNC -> UNASSIGNED
+        checkState("buildNewStatesForUnassignAction", five, UNASSIGNED);
+        // was UNASSIGNED -> send verify
+        checkState("buildNewStatesForUnassignAction", six, null);
+        // was UNCONFIRMED remains UNCONFIRMED
+        checkState("buildNewStatesForUnassignAction", seven, UNCONFIRMED);
+    }
+    
+    @Test
+    public final void get_devices_to_verify() throws Exception {
+        Method method = DeviceConfigServiceImpl.class.getDeclaredMethod("getDevicesToVerify", List.class, Map.class, List.class);
+        method.setAccessible(true);
+        List<SimpleDevice> expected = List.of(four, five, six);
+        List<SimpleDevice> devicesToVerify = (List<SimpleDevice>) method.invoke(impl, all, statesInDatabase, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
+        
+        assertEquals(devicesToVerify, expected);
+        
+        expected = List.of(four, five, six);
+        devicesToVerify = (List<SimpleDevice>) method.invoke(impl, all, statesInDatabase, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
+        
+        assertEquals(devicesToVerify, expected);
     }
 
     /**
@@ -93,10 +132,5 @@ public class DeviceConfigServiceImplTest {
         }
         assertEquals(newState, stateAfterChange);
     }    
-    
-    @Test
-    public final void build_new_states_for_unassign_action() {
-        
-    }
 }
 
