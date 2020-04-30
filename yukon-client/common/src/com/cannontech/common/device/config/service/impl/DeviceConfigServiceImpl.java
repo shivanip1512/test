@@ -250,6 +250,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 .filter(device -> deviceToState.get(device.getDeviceId()) == null)
                 .map(device -> new DeviceConfigState(device.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null))
                 .collect(Collectors.toList()));
+        states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, devices, deviceToState, startTime, stopTime, UNKNOWN));
         states.addAll(buildConfigStateByCurrentState(UNREAD, ASSIGN, devices, deviceToState, startTime, stopTime, UNREAD));
         states.addAll(buildConfigStateByCurrentState(UNCONFIRMED, ASSIGN, devices, deviceToState, startTime, stopTime, UNCONFIRMED));
         return states;
@@ -421,7 +422,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return devices.stream()
                 .filter(device -> {
                     DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
-                    return currentState != null && Lists.newArrayList(states).contains(currentState.getState());
+                    return currentState != null && currentState.getStatus() != IN_PROGRESS
+                            && Lists.newArrayList(states).contains(currentState.getState());
                 })
                 .map(device -> new DeviceConfigState(device.getDeviceId(), newState, action, SUCCESS, startTime, stopTime, null))
                 .collect(Collectors.toList());
@@ -440,7 +442,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return devices.stream()
                 .filter(device -> {
                     DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
-                    return currentState != null && Lists.newArrayList(states).contains(currentState.getState());
+                    return currentState != null && currentState.getStatus() != IN_PROGRESS
+                            && Lists.newArrayList(states).contains(currentState.getState());
                 })
                 .collect(Collectors.toList());
     }
