@@ -50,7 +50,6 @@ public class DeviceConfigServiceImplTest {
     
     private List<SimpleDevice> all = List.of(one, two, three, four, five, six, seven, eight);
     
-    
     {
         Instant startTime = Instant.now();
         Instant stopTime = Instant.now();
