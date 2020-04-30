@@ -25,7 +25,7 @@ public enum BaudRate implements DisplayableEnum {
 
     private final static Logger log = YukonLogManager.getLogger(BaudRate.class);
     private final static ImmutableMap<Integer, BaudRate> lookupByRate;
-    private String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
+    private String baseKey = "yukon.web.modules.operator.commChannel.baudRate.";
 
     static {
         try {

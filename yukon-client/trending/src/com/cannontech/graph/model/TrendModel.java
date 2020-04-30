@@ -737,22 +737,26 @@ public class TrendModel implements GraphDefines {
 
             if (GDSTypesFuncs.isPeakType(seriesTypeMask)) {
                 if (GDSTypesFuncs.isPeakType(getTrendSeries()[serieIndex].getTypeMask())) {
-                    day = retrievePeakIntervalTranslateDays(serieIndex);
-                    if (day == -1)
-                        return;
+                    try {
+                        day = retrievePeakIntervalTranslateDays(serieIndex);
+                    } catch (IllegalArgumentException e) {
+                        CTILogger.info("No peak forund for serie index " + serieIndex);
+                    }
                 }
             } else if (GDSTypesFuncs.isDateType(seriesTypeMask)) {
                 if (GDSTypesFuncs.isDateType(getTrendSeries()[serieIndex].getTypeMask())) {
                     Date tempDate = new Date(Long.valueOf(getTrendSeries()[serieIndex].getMoreData()).longValue());
-                    day = TimeUtil.differenceInDays(getStartDate(), tempDate);
+                    day = TimeUtil.differenceInDays(toBeginingOfDay(getStartDate()), tempDate);
                 }
             }
 
             tempCal.setTime(getStartDate());
+            tempCal = toBeginingOfDay(tempCal);
             tempCal.add(Calendar.DATE, -day);
             startTS = tempCal.getTimeInMillis();
 
             tempCal.setTime(getStartDate());
+            tempCal = toBeginingOfDay(tempCal);
             tempCal.add(Calendar.DATE, -day + 1);
             stopTS = tempCal.getTimeInMillis();
             getTrendSeries()[serieIndex].setLabel(getSerieLabel(getTrendSeries()[serieIndex].getLabel(), new Date(startTS)));
@@ -854,6 +858,12 @@ public class TrendModel implements GraphDefines {
         }
     }
 
+    /*
+     * Gets the number of days prior to the query window start date that the peak date occurred.
+     * This method assumes that dates are always at midnight and will provide inconsistent results if they are not.
+     * Negative numbers show that the peak occurred after the query window start, while positive
+     * numbers indicate that the peak occurred before the query window.
+     */
     private int retrievePeakIntervalTranslateDays(int serieIndex) {
         int translateDays = 0;
 
@@ -863,11 +873,12 @@ public class TrendModel implements GraphDefines {
             while (iter.hasNext()) {
                 PeakPointHistory pph = iter.next();
                 java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-                cal.setTime(pph.getTimeStamp().getTime());
+                cal.setTime(pph.getTimeStamp().getTime()); // Get the timestamp of the peak point value
                 String time = TRANSLATE_DATE.format(cal.getTime());
 
+                // If the peak point value was recorded at midnight exactly
                 if (Integer.valueOf(time).intValue() == 0) {
-                    // must have Day+1 00:00:00 instead of Day 00:00:01+
+                    // Count that point as having happened the PREVIOUS day
                     cal.add(Calendar.DATE, -1);
                 } else {
                     cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
@@ -875,12 +886,15 @@ public class TrendModel implements GraphDefines {
                     cal.set(java.util.Calendar.SECOND, 0);
                     cal.set(java.util.Calendar.MILLISECOND, 0);
                 }
-                translateDays = TimeUtil.differenceInDays(startDate, cal.getTime());
+                // This next call uses floating point divsion to calculate the number of days past, then rounds
+                // the result. If either start date or cal are not on an even day interval this may give inconsistent
+                // results
+                translateDays = TimeUtil.differenceInDays(toBeginingOfDay(startDate), cal.getTime());
                 CTILogger.info(" PEAK POINT TS/VALUE = " + pph.getPointID() + " | " + pph.getTimeStamp().getTime() + " | " + pph.getValue());
                 break;
             }
         } else {
-            return -1; // no peak found
+            throw new IllegalArgumentException("No peak value was found in the database for the given series.");
         }
 
         return translateDays;
@@ -1453,6 +1467,22 @@ public class TrendModel implements GraphDefines {
             }
         }
 
+    }
+
+    private Date toBeginingOfDay(Date date) {
+        GregorianCalendar gCalendar = new GregorianCalendar();
+        gCalendar.setTime(date);
+        gCalendar = toBeginingOfDay(gCalendar);
+        return gCalendar.getTime();
+    }
+
+    private GregorianCalendar toBeginingOfDay(GregorianCalendar gcDate) {
+        GregorianCalendar gcTemp = (GregorianCalendar) gcDate.clone();
+        gcTemp.set(Calendar.HOUR_OF_DAY, 0);
+        gcTemp.set(Calendar.MINUTE, 0);
+        gcTemp.set(Calendar.SECOND, 0);
+        gcTemp.set(Calendar.MILLISECOND, 0);
+        return gcTemp;
     }
 
     /**

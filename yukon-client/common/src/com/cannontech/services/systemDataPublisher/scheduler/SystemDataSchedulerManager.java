@@ -53,7 +53,7 @@ public class SystemDataSchedulerManager {
     /**
      * Stop already started schedules, this will happen when updates are received.
      */
-    private void cleanUpSchedulers() {
+    public void cleanUpSchedulers() {
         schedulersFuture.stream().forEach(future -> {
             future.cancel(true);
         });
