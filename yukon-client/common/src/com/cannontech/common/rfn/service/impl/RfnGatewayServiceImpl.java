@@ -459,6 +459,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 && !newGatewayData.getName().equals(existingGatewayData.getName())) {
             editData.setName(newGatewayData.getName());
             sendGatewayEditRequest = true;
+        } else if (newGatewayData.getUpdateServerUrl().equals(existingGatewayData.getUpdateServerUrl())) {
+            editData.setUpdateServerUrl(existingGatewayData.getUpdateServerUrl());
+            sendGatewayEditRequest = true;
         }
         if (newGatewayData.getPort() != null 
                 && !newGatewayData.getPort().equals(existingGatewayData.getPort())) {
@@ -699,12 +702,18 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
 
         String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        String defaultUsername = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER);
+        String defaultPassword = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD);
 
         String updateServerUrl = gateway.getData().getUpdateServerUrl();
+        Authentication updateServerLogin = gateway.getData().getUpdateServerLogin();
+
         settings.setUpdateServerUrl(updateServerUrl);
         settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
-        
-        if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
+
+        if (StringUtils.isBlank(updateServerUrl) || (updateServerUrl.equals(defaultUpdateServer)
+                && updateServerLogin.getUsername().equals(defaultUsername)
+                && updateServerLogin.getPassword().equals(defaultPassword))) {
             settings.setUseDefaultUpdateServer(true);
         }
         
