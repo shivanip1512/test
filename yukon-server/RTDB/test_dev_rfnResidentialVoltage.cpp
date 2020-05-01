@@ -25,6 +25,7 @@ struct test_state_rfnResidentialVoltage
 {
     std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
+    RfnDevice::RequestMsgList    requestMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
@@ -116,7 +117,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_install_ovuv_mete
     {
         dev.setDeviceType(type);
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
         for ( auto& cmd : rfnRequests )
@@ -150,7 +151,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv )
     {
         CtiCommandParser parse("putconfig install ovuv");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 6, rfnRequests.size() );
 
@@ -339,7 +340,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_mete
         {
             dut.setDeviceType(type);
 
-            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
             BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
             BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -371,7 +372,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
 
         CtiCommandParser parse("putconfig install ovuv");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -399,7 +400,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_ovuv_inva
 
         CtiCommandParser parse("putconfig install ovuv");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 3, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
 
@@ -576,7 +577,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -595,7 +596,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
                         category.first,
                         category.second));
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -837,7 +838,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
 
     request->setUserMessageId(11235);
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     BOOST_CHECK_EQUAL( 2, rfnRequests.size() );
 
@@ -1074,7 +1075,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -1093,7 +1094,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
                         category.first,
                         category.second));
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -1110,7 +1111,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile )
 
     CtiCommandParser parse("putconfig emetcon voltage profile demandinterval 17 lpinterval 34");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1128,7 +1129,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_e
 
     CtiCommandParser parse("putconfig emetcon voltage profile enable");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1159,7 +1160,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_voltage_profile_d
 
     CtiCommandParser parse("putconfig emetcon voltage profile disable");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1190,7 +1191,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getconfig_voltage_profile )
 
     CtiCommandParser parse("getconfig voltage profile");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -1208,7 +1209,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_getvalue_voltage_profile_st
 
     CtiCommandParser parse("getconfig voltage profile state");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1248,7 +1249,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
     {
         CtiCommandParser parse("putconfig install voltageprofile");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -1315,7 +1316,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_voltagepr
     {
         CtiCommandParser parse("putconfig install voltageprofile");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 

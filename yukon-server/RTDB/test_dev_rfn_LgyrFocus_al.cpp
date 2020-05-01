@@ -15,6 +15,7 @@ struct test_state_rfn_lgyr_focus_al
 {
     CtiRequestMsg request;
     Cti::Devices::RfnDevice::ReturnMsgList  returnMsgs;
+    Cti::Devices::RfnDevice::RequestMsgList requestMsgs;
     Cti::Devices::RfnDevice::RfnCommandList rfnRequests;
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
@@ -65,7 +66,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display )
     {
         CtiCommandParser parse("putconfig install display");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, requestMsgs, rfnRequests) );
     }
 
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
@@ -186,7 +187,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_display_out_of_order_slot_disabled )
     {
         CtiCommandParser parse("putconfig install display");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, requestMsgs, rfnRequests) );
     }
 
     BOOST_REQUIRE_EQUAL( 2, returnMsgs.size() );

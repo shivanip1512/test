@@ -37,6 +37,7 @@ class IM_EX_DEVDB CtiDeviceSingle : public CtiDeviceBase
 
 public:
     using ReturnMsgList = std::vector<std::unique_ptr<CtiReturnMsg>>;
+    using RequestMsgList = std::vector<std::unique_ptr<CtiRequestMsg>>;
 
     enum ScanFlags
     {

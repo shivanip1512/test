@@ -1137,6 +1137,7 @@ struct RequestExecuter : Devices::DeviceHandler
     {
         Devices::RfnDevice::RfnCommandList commands;
         Devices::RfnDevice::ReturnMsgList returnMsgList;
+        Devices::RfnDevice::RequestMsgList requestMsgList;
 
         if(dev.isInhibited())
         {
@@ -1154,7 +1155,7 @@ struct RequestExecuter : Devices::DeviceHandler
             return ClientErrors::DeviceInhibited;
         }
 
-        const YukonError_t retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, commands);
+        const YukonError_t retVal = dev.ExecuteRequest(pReq, parse, returnMsgList, requestMsgList, commands);
 
         RfnDeviceRequest::Parameters parameters {
             dev.getRfnIdentifier(),
@@ -1165,9 +1166,10 @@ struct RequestExecuter : Devices::DeviceHandler
             pReq->GroupMessageId(),
             pReq->getConnectionHandle() };
 
-        static const auto releaseUniquePtr = [](std::unique_ptr<CtiReturnMsg> &retMsg) { return retMsg.release(); };
+        static const auto releaseUniquePtr = [](auto& msg) { return msg.release(); };
 
-        boost::insert(retList, retList.end(), returnMsgList | boost::adaptors::transformed(releaseUniquePtr));
+        boost::insert(retList, retList.end(), returnMsgList  | boost::adaptors::transformed(releaseUniquePtr));
+        boost::insert(retList, retList.end(), requestMsgList | boost::adaptors::transformed(releaseUniquePtr));
 
         for( auto &command : commands )
         {

@@ -25,6 +25,7 @@ struct test_state_rfnCommercial
 {
     std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
+    RfnDevice::RequestMsgList    requestMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
@@ -71,7 +72,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_immediate_demand_freeze )
 
     CtiCommandParser    parse("putstatus freeze");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
     BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -102,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_freezeday_reset )
 
     CtiCommandParser    parse("putconfig freezeday reset");
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dev.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
     BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
 
     {
@@ -167,7 +168,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
     {
         CtiCommandParser parse("putconfig install channelconfig");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
@@ -331,7 +332,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
     {
         CtiCommandParser parse("putconfig install channelconfig");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
@@ -508,7 +509,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
 
     ////// empty configuration (no valid configuration) //////
 
-    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+    BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
     requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -527,7 +528,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
                         category.first,
                         category.second));
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
 
         requestMsgsRcv.push_back( rfnRequests.size() );
 
@@ -583,7 +584,7 @@ BOOST_AUTO_TEST_CASE(test_putconfig_install_aggregate)
 
     Commands::RfnAggregateCommand::setGlobalContextId(0x4444, test_tag);
 
-    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+    BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
 
     BOOST_REQUIRE_EQUAL(rfnRequests.size(), 1);
 
