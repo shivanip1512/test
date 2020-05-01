@@ -449,6 +449,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 && !newGatewayData.getUpdateServerUrl().equals(existingGatewayData.getUpdateServerUrl())) {
             editData.setUpdateServerUrl(newGatewayData.getUpdateServerUrl());
             sendGatewayEditRequest = true;
+        } else if (newGatewayData.getUpdateServerUrl().equals(existingGatewayData.getUpdateServerUrl())) {
+            editData.setUpdateServerUrl(existingGatewayData.getUpdateServerUrl());
         }
         if (newGatewayData.getUpdateServerLogin() != null 
                 && !newGatewayData.getUpdateServerLogin().equals(existingGatewayData.getUpdateServerLogin())) {
@@ -464,7 +466,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 && !newGatewayData.getPort().equals(existingGatewayData.getPort())) {
             editData.setPort(Integer.valueOf(newGatewayData.getPort()));
             sendGatewayEditRequest = true;
-        } else if (existingGatewayData.getPort() != null && newGatewayData.getPort() == null) { // ToDo YUK-22048 && NM-1634
+        } else if (existingGatewayData.getPort() != null && newGatewayData.getPort() == null) { // TODO YUK-22048 && NM-1634
             if (gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY) {
                 editData.setPort(32035);
             } else {
@@ -699,12 +701,18 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
 
         String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        String defaultUsername = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER);
+        String defaultPassword = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD);
 
         String updateServerUrl = gateway.getData().getUpdateServerUrl();
+        Authentication updateServerLogin = gateway.getData().getUpdateServerLogin();
+
         settings.setUpdateServerUrl(updateServerUrl);
         settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
-        
-        if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
+
+        if (StringUtils.isEmpty(updateServerUrl) || (updateServerUrl.equals(defaultUpdateServer)
+                && updateServerLogin.getUsername().equals(defaultUsername)
+                && updateServerLogin.getPassword().equals(defaultPassword))) {
             settings.setUseDefaultUpdateServer(true);
         }
         
