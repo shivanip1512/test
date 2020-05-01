@@ -26,10 +26,32 @@
     
         <div class="column-12-12">
             <div class="column one">
+            
                 <cti:url var="createAnalog" value="/tools/points/Analog/create">
                     <cti:param name="parentId" value="${paoId}"></cti:param>
                 </cti:url>
                 <a href="${createAnalog}"><i:inline key="yukon.common.point.pointType.Analog.long"/></a>
+                
+                <div class="PT10">
+                    <cti:url var="createCalcAnalog" value="/tools/points/CalcAnalog/create">
+                        <cti:param name="parentId" value="${paoId}"></cti:param>
+                    </cti:url>
+                    <a href="${createCalcAnalog}"><i:inline key="yukon.common.point.pointType.CalcAnalog.long"/></a>
+                </div>
+                
+                <div class="PT10">
+                    <cti:url var="createCalcStatus" value="/tools/points/CalcStatus/create">
+                        <cti:param name="parentId" value="${paoId}"></cti:param>
+                    </cti:url>
+                    <a href="${createCalcStatus}"><i:inline key="yukon.common.point.pointType.CalcStatus.long"/></a>
+                </div>
+            </div>
+            <div class="column two nogutter">
+
+                <cti:url var="createDemandAccumulator" value="/tools/points/DemandAccumulator/create">
+                    <cti:param name="parentId" value="${paoId}"></cti:param>
+                </cti:url>
+                <a href="${createDemandAccumulator}"><i:inline key="yukon.common.point.pointType.DemandAccumulator.long"/></a>
                 
                 <div class="PT10">
                     <cti:url var="createPulseAccumulator" value="/tools/points/PulseAccumulator/create">
@@ -38,25 +60,13 @@
                     <a href="${createPulseAccumulator}"><i:inline key="yukon.common.point.pointType.PulseAccumulator.long"/></a>
                 </div>
                 
-                <div class="PT10">
-                    <cti:url var="createCalcAnalog" value="/tools/points/CalcAnalog/create">
+               <div class="PT10">
+                    <cti:url var="createStatus" value="/tools/points/Status/create">
                         <cti:param name="parentId" value="${paoId}"></cti:param>
                     </cti:url>
-                    <a href="${createCalcAnalog}"><i:inline key="yukon.common.point.pointType.CalcAnalog.long"/></a>
+                    <a href="${createStatus}"><i:inline key="yukon.common.point.pointType.Status.long"/></a>
                 </div>
-            </div>
-            <div class="column two nogutter">
-                <cti:url var="createStatus" value="/tools/points/Status/create">
-                    <cti:param name="parentId" value="${paoId}"></cti:param>
-                </cti:url>
-                <a href="${createStatus}"><i:inline key="yukon.common.point.pointType.Status.long"/></a>
-                
-                <div class="PT10">
-                    <cti:url var="createCalcStatus" value="/tools/points/CalcStatus/create">
-                        <cti:param name="parentId" value="${paoId}"></cti:param>
-                    </cti:url>
-                    <a href="${createCalcStatus}"><i:inline key="yukon.common.point.pointType.CalcStatus.long"/></a>
-                </div>
+
             </div>
         </div>
         
