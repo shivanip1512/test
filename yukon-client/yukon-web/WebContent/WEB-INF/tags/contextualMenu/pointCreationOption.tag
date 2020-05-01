@@ -7,7 +7,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <%@ attribute name="paoId" type="java.lang.String" required="true" description="The id of the pao that will have the point attached." %>
-<%@ attribute name="includeDividerAfter" type="java.lang.Boolean" required="false" description="If true, add a divider after the Create Point option." %>
 
 <c:set var="isPointCreate" value="false" />
 <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
@@ -21,9 +20,7 @@
 
     <cm:dropdownOption key="yukon.common.createPoint" icon="icon-plus-green" data-popup="#createPointPopup"/>
     
-    <c:if test="${includeDividerAfter}">
-        <li class="divider"/>
-    </c:if>
+    <li class="divider"/>
     
     <div id="createPointPopup" class="dn" data-title="<i:inline key="yukon.common.createPoint"/>" data-width="400">
     

@@ -7,7 +7,7 @@
 <cti:standardPage module="amr" page="meter.points">
 
     <div id="page-actions" class="dn">
-        <cm:pointCreationOption paoId="${paoId}" includeDividerAfter="true"/>
+        <cm:pointCreationOption paoId="${paoId}"/>
         <cti:url var="download" value="/common/pao/${paoId}/download"/>
         <cm:dropdownOption key="yukon.common.download" icon="icon-page-white-excel" href="${download}"/>
     </div>

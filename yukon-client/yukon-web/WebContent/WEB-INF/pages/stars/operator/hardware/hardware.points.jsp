@@ -8,7 +8,7 @@
     <cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     
         <div id="page-actions" class="dn">
-            <cm:pointCreationOption paoId="${deviceId}" includeDividerAfter="true"/>
+            <cm:pointCreationOption paoId="${deviceId}"/>
             <cti:url var="download" value="/common/pao/${deviceId}/download"/>
             <cm:dropdownOption key="yukon.common.download" icon="icon-page-white-excel" href="${download}"/>
         </div>
