@@ -129,7 +129,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
 
                 lmValidatorHelper.checkIfFieldRequired("program", errors, loadGroup.getProgram(), "Program");
                 if (!errors.hasFieldErrors("program")) {
-                    YukonValidationUtils.checkRange(errors, "program", loadGroup.getProgram(), 0, 254, true);
+                    YukonValidationUtils.checkRange(errors, "program", loadGroup.getProgram(), 1, 254, true);
                 }
             } else {
                 loadGroup.setProgram(0);
@@ -138,7 +138,7 @@ public class LoadGroupExpresscomValidator extends LoadGroupSetupValidator<LoadGr
                 // validate Splinter
                 lmValidatorHelper.checkIfFieldRequired("splinter", errors, loadGroup.getSplinter(), "Splinter");
                 if (!errors.hasFieldErrors("splinter")) {
-                    YukonValidationUtils.checkRange(errors, "splinter", loadGroup.getSplinter(), 0, 254, true);
+                    YukonValidationUtils.checkRange(errors, "splinter", loadGroup.getSplinter(), 1, 254, true);
                 }
             } else {
                 loadGroup.setSplinter(0);
