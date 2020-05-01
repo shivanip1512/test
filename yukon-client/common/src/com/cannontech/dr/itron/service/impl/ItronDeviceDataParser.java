@@ -114,7 +114,11 @@ public class ItronDeviceDataParser {
               int currentRecordId = Integer.parseInt(row[0]);
               if (currentRecordId > maxRecordId) {
                   maxRecordId = currentRecordId;
-                  pointValues.putAll(generatePointData(row));
+                  try {
+                      pointValues.putAll(generatePointData(row));
+                  } catch (Exception e) {
+                      log.error("Unexpected error parsing data row.", e);
+                  }
               }
               row = csvReader.readNext();
           }
@@ -124,7 +128,7 @@ public class ItronDeviceDataParser {
       setMaxRecordId(maxRecordId);
       return pointValues;
     }
-
+    
     /**
      * Bulk of parsing logic is done here for the parser. 
      * @param rowData - parses single row of a csv entry
@@ -193,6 +197,11 @@ public class ItronDeviceDataParser {
                 String[] data = entry.getValue().split("data\\(");
                 decodedData = decodeData(data);
             }
+        }
+        
+        if (decodedData == null) {
+            log.trace("Ignoring EVENT_CAT_NIC_EVENT with no payload.");
+            return pointValues;
         }
         
         ItronDataEventType event = ItronDataEventType.getFromHex(eventId); //This could be null if the mapping doesn't exist.

@@ -126,6 +126,17 @@ public class ItronDeviceDataParserTest {
     }
     
     @Test
+    public void validateRowParsingMissingPayload() {
+        String[] rowData = rowData("duty cycle: 100, cycle period: 15, cycles number: 28, event control: 1, monitor event: 1, event state: 1");
+        try {
+            Collection<PointData> data = parseRow(BuiltInAttribute.MAXIMUM_VOLTAGE, rowData); //attribute doesn't matter here
+            Assert.assertEquals("Incorrect data size for missing payload.", data.size(), 0);
+        } catch (Exception e) {
+            Assert.fail("Exception thrown parsing row with empty payload: " + e.getMessage());
+        }
+    }
+    
+    @Test
     public void validateRowParsingForLoadControlEventReceived() {
         String[] rowData = loadControlRowData("2018-04-25T10:27:53.117-0700", "Load Control Event status update - Event: 344, HAN Device: 00:0c:c1:00:01:00:03:c1, ESI: 00:13:50:05:00:92:86:41, Status: Event Received. ");
         setupMocksForLoadControl(344, ItronLoadControlEventStatus.EVENT_RECEIVED, new Instant("2018-04-25T10:27:53.117-0700"));
