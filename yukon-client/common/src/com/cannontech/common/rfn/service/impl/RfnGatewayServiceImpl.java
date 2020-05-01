@@ -449,7 +449,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 && !newGatewayData.getUpdateServerUrl().equals(existingGatewayData.getUpdateServerUrl())) {
             editData.setUpdateServerUrl(newGatewayData.getUpdateServerUrl());
             sendGatewayEditRequest = true;
-        } else if (newGatewayData.getUpdateServerUrl().equals(existingGatewayData.getUpdateServerUrl())) {
+        } else if (newGatewayData.getUpdateServerUrl() != null
+                && newGatewayData.getUpdateServerUrl().equals(existingGatewayData.getUpdateServerUrl())) {
             editData.setUpdateServerUrl(existingGatewayData.getUpdateServerUrl());
         }
         if (newGatewayData.getUpdateServerLogin() != null 
