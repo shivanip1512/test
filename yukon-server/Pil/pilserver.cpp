@@ -585,7 +585,7 @@ struct InMessageResultProcessor : Devices::DeviceHandler
 
     YukonError_t execute(CtiDeviceBase &dev)
     {
-        return dev.ProcessResult(im, CtiTime::now(), vgList, retList, outList);
+        return dev.ProcessInMessageResult(im, CtiTime::now(), vgList, retList, outList);
     }
 
     YukonError_t execute(Devices::RfnDevice &dev)
