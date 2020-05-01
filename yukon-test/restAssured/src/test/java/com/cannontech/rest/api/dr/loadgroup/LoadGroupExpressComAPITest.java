@@ -207,7 +207,7 @@ public class LoadGroupExpressComAPITest {
                 .protocolPriority(MockControlPriority.DEFAULT)
                 .build();
 
-        loadGroup.setSplinter(Integer.valueOf(spid));
+        loadGroup.setSplinter(Integer.valueOf(spid));   //TODO This seems incorrect. spid should be "service provider", not splinter
         loadGroup.setGeo(Integer.valueOf(geoId));
         loadGroup.setZip(Integer.valueOf(zip));
         loadGroup.setUser(Integer.valueOf(user));
@@ -243,15 +243,21 @@ public class LoadGroupExpressComAPITest {
     }
 
     /**
-     * DataProvider provides data to test method in the form of object array Data provided in test data sheet - col1 :
-     * serviceProviderId col2 : geoId col3 : substationId col4 : feeder col5 : zip col6 : user col7 : Expected field
-     * errors code in response col8 : Expected response code
+     * DataProvider provides data to test method in the form of object array Data provided in test data sheet -
+     * col1 : serviceProviderId
+     * col2 : geoId
+     * col3 : substationId
+     * col4 : feeder
+     * col5 : zip
+     * col6 : user
+     * col7 : Expected field errors code in response 
+     * col8 : Expected response code
      */
     @DataProvider(name = "ExpresscomAddressData")
     public Object[][] getExpresscomAddressData(ITestContext context) {
 
-        return new Object[][] { { "65535", "22", "36", "16777214", "36", "Must be between 1 and 99.", 422 },
-                { "0", "22", "36", "16777214", "36", "Must be between 1 and 99.", 422 },
+        return new Object[][] { { "65535", "22", "36", "16777214", "36", "Must be between 1 and 254.", 422 },
+                { "0", "22", "36", "16777214", "36", "Must be between 1 and 254.", 422 },
                 { "22", "65535", "36", "16777214", "36", "Must be between 1 and 65,534.", 422 },
                 { "22", "0", "36", "16777214", "36", "Must be between 1 and 65,534.", 422 },
                 { "22", "22", "0", "16777214", "36", "Must be between 1 and 65,534.", 422 },
