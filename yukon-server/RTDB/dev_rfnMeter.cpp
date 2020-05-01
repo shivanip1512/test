@@ -73,7 +73,7 @@ YukonError_t RfnMeterDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandPar
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, InstallType::PutConfig);
+        return executeConfigInstall(pReq, parse, returnMsgs, requestMsgs, rfnRequests, InstallType::PutConfig);
     }
     if( parse.isKeyValid("behavior") )
     {
@@ -100,7 +100,7 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandPar
 {
     if( parse.isKeyValid("install") )
     {
-        return executeConfigInstall(pReq, parse, returnMsgs, rfnRequests, InstallType::GetConfig);
+        return executeConfigInstall(pReq, parse, returnMsgs, requestMsgs, rfnRequests, InstallType::GetConfig);
     }
     if( parse.isKeyValid("behavior") )
     {
@@ -318,7 +318,7 @@ RfnMeterDevice::ConfigMap RfnMeterDevice::getConfigMethods(InstallType installTy
 /**
  * Execute putconfig/getconfig Install
  */
-YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests, InstallType installType )
+YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests, InstallType installType )
 {
     boost::optional<std::string> configPart = parse.findStringForKey("installvalue");
     if( ! configPart )
@@ -339,6 +339,16 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiComman
             if( areAggregateCommandsSupported() )
             {
                 rfnRequests.emplace_back(std::make_unique<Commands::RfnConfigNotificationCommand>());
+
+                auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
+
+                verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
+                verifyRequest->setCommandString("putconfig emectron install all verify");
+
+                incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
+
+                requestMsgs.push_back(std::move(verifyRequest));
+
                 return ClientErrors::None;
             }
         }
@@ -358,6 +368,17 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg *pReq, CtiComman
         if( notCurrent )
         {
             return ClientErrors::ConfigNotCurrent;
+        }
+        else if( ! parse.isKeyValid("verify") )
+        {
+            auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
+
+            verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
+            verifyRequest->setCommandString("putconfig emectron install all verify");
+
+            incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
+
+            requestMsgs.push_back(std::move(verifyRequest));
         }
     }
     else

@@ -87,7 +87,7 @@ private:
     YukonError_t executePutConfigBehavior(const CtiRequestMsg& req, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
     YukonError_t executePutConfigBehaviorRfnDataStreaming(const CtiRequestMsg& req, ReturnMsgList& returnMsgs, RfnIndividualCommandList& rfnRequests);
 
-    YukonError_t executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests, InstallType installType);
+    YukonError_t executeConfigInstall(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests, InstallType installType);
     YukonError_t compareChannels(
         CtiRequestMsg    * pReq,
         CtiCommandParser & parse,
