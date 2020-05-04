@@ -592,6 +592,87 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2 );
     }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_centron)
+    {
+        //  This is the old MCT-410 command and should fail.
+        CtiCommandParser parse("putconfig emetcon centron ratio 1 display 5x1 test 1 errors enable");
+
+        BOOST_CHECK_EQUAL(ClientErrors::NoMethod, test_Mct420CL().beginExecuteRequest(&request, parse, vgList, retList, outList));
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_meter_parameters_no_lcd_digits)
+    {
+        test_Mct420CL mct420;
+
+        CtiCommandParser parse("putconfig emetcon meter parameters ratio 1 lcd cycle time 8 disconnect display enable");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(outList.size(), 1);
+
+        const OUTMESS* om = outList.front();
+
+        BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 0xf3);
+        BOOST_REQUIRE_EQUAL(om->Buffer.BSt.Length, 3);
+
+        const Cti::Test::byte_str expected = "ff 08 01";
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            expected.begin(),
+            expected.end(),
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length);
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_meter_parameters_lcd_digits_insufficient_sspec)
+    {
+        test_Mct420CL mct420;
+
+        CtiCommandParser parse("putconfig emetcon meter parameters ratio 1 lcd cycle time 8 disconnect display enable lcd display digits 5x1");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+
+        const auto retMsg = dynamic_cast<const CtiReturnMsg*>(retList.front());
+
+        BOOST_REQUIRE(retMsg);
+
+        BOOST_CHECK_EQUAL(retMsg->Status(), 269);
+        BOOST_CHECK_EQUAL(retMsg->ResultString(),
+            "Test MCT-420CL / LCD display digits not supported for this device's SSPEC");
+    }
+
+    BOOST_AUTO_TEST_CASE(test_putconfig_meter_parameters_lcd_digits)
+    {
+        test_Mct420CL mct420;
+
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec, 10290);
+        mct420.setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision, 44);  //  set the device to SSPEC revision 4.4
+
+        CtiCommandParser parse("putconfig emetcon meter parameters ratio 1 lcd cycle time 8 disconnect display enable lcd display digits 4x1");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(outList.size(), 1);
+
+        const OUTMESS* om = outList.front();
+
+        BOOST_CHECK_EQUAL(om->Buffer.BSt.IO, Cti::Protocols::EmetconProtocol::IO_Function_Write);
+        BOOST_CHECK_EQUAL(om->Buffer.BSt.Function, 0xf3);
+        BOOST_REQUIRE_EQUAL(om->Buffer.BSt.Length, 3);
+
+        const Cti::Test::byte_str expected = "ff 28 01";
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            expected.begin(),
+            expected.end(),
+            om->Buffer.BSt.Message,
+            om->Buffer.BSt.Message + om->Buffer.BSt.Length);
+    }
+
     BOOST_AUTO_TEST_CASE(test_dev_mct420_getconfig_options_all_zeroes)
     {
         test_Mct420CL mct420;

@@ -78,7 +78,7 @@
                 <tags:sectionContainer2 nameKey="general">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".name">
-                            <tags:input id="name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
+                            <tags:input id="name" path="name" maxlength="60"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".type">
                             <cti:displayForPageEditModes modes="CREATE">

@@ -3,6 +3,7 @@ package com.cannontech.services.systemDataPublisher.processor;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +34,16 @@ public class SystemDataHandler {
      * This method calls other services/method for handling data.
      */
     public void handle(List<CloudDataConfiguration> cloudDataConfiguration) {
-        List<CloudDataConfiguration> configurationToSchedule = cloudDataConfiguration.stream()
-                .filter(e -> e.getFrequency() != SystemDataPublisherFrequency.ON_STARTUP_ONLY).collect(Collectors.toList());
-        schedulerManager.manageScheduler(configurationToSchedule);
+        if (CollectionUtils.isNotEmpty(cloudDataConfiguration)) {
+            List<CloudDataConfiguration> configurationToSchedule = cloudDataConfiguration.stream()
+                    .filter(e -> e.getFrequency() != SystemDataPublisherFrequency.ON_STARTUP_ONLY).collect(Collectors.toList());
+            schedulerManager.manageScheduler(configurationToSchedule);
 
-        cloudDataConfiguration.removeAll(configurationToSchedule);
-        buildAndPublishSystemData(cloudDataConfiguration);
+            cloudDataConfiguration.removeAll(configurationToSchedule);
+            buildAndPublishSystemData(cloudDataConfiguration);
+        } else {
+            schedulerManager.cleanUpSchedulers();
+        }
     }
 
     /**
@@ -47,14 +52,16 @@ public class SystemDataHandler {
     public void buildAndPublishSystemData(List<CloudDataConfiguration> cloudDataConifguration) {
         for (CloudDataConfiguration conf : cloudDataConifguration) {
             SystemDataProcessor processor = systemDataProcessorFactory.getProcessor(conf);
-            SystemData systemData = processor.buildSystemData(conf);
-            if (systemData != null) {
-                if (log.isDebugEnabled()) {
-                    log.info("Publishing system data to topic " + systemData);
+            if (processor != null) {
+                SystemData systemData = processor.buildSystemData(conf);
+                if (systemData != null) {
+                    if (log.isDebugEnabled()) {
+                        log.info("Publishing system data to topic " + systemData);
+                    }
+                    publishSystemData(systemData);
+                } else {
+                    log.info("Neither processor nor source found for field, not publishing it" + conf.getField());
                 }
-                publishSystemData(systemData);
-            } else {
-                log.info("Neither processor nor source found for field, not publishing it" + conf.getField());
             }
         }
     }

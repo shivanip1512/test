@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="SeleniumTestNG suite">
+	<listeners>
+        <listener class-name="com.eaton.screenshotutils.TestListener"></listener>
+    </listeners>
+    <test name="Selenium Tests">
+		<classes>
+			<class name="com.eaton.tests.HomeTests"></class>
+		</classes>
+    </test>
+</suite>

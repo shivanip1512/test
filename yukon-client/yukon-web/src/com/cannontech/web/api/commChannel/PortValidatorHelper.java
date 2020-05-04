@@ -1,16 +1,20 @@
 package com.cannontech.web.api.commChannel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.port.PortSharing;
 import com.cannontech.common.device.port.PortTiming;
 import com.cannontech.common.device.port.SharedPortType;
+import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.db.port.CommPort;
+import com.cannontech.stars.util.ServletUtils;
 
 public class PortValidatorHelper {
 
     private final static String key = "yukon.web.api.error.";
+    @Autowired private PortDao portDao;
 
     public void validatePortTimingFields(Errors errors, PortTiming timing) {
         YukonValidationUtils.checkRange(errors, "timing.preTxWait", timing.getPreTxWait(), 0, 10000000, false);
@@ -32,6 +36,19 @@ public class PortValidatorHelper {
                     && sharing.getSharedSocketNumber() != CommPort.DEFAULT_SHARED_SOCKET_NUMBER) {
                 errors.rejectValue("sharing.sharedSocketNumber", key + "udpPort.invalidSocketNumber");
             }
+        }
+    }
+
+    /**
+     * Validate Socket is unique or not.
+     */
+    public void validateDuplicateSocket(Errors errors, String ipAddress, Integer portNumber) {
+        Integer existingPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
+        String portIdString = ServletUtils.getPathVariable("portId");
+        Integer portId = portIdString != null ? Integer.valueOf(portIdString) : null;
+
+        if (existingPortId != null && !(existingPortId.equals(portId))) {
+            errors.reject(key + "duplicateSocket", new Object[] { ipAddress, portNumber }, "");
         }
     }
 }

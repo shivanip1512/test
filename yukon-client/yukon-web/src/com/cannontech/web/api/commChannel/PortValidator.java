@@ -13,12 +13,13 @@ import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.util.Validator;
 
 public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
     @Autowired PortValidatorHelper portValidatorHelper;
-    @Autowired YukonValidationHelper yukonValidationHelper;
+    @Autowired private YukonValidationHelper yukonValidationHelper;
 
     @SuppressWarnings("unchecked")
     public PortValidator() {
@@ -31,6 +32,13 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
 
     @Override
     protected void doValidation(T port, Errors errors) {
+        
+        // Validate if type is changed during update.
+        String paoId = ServletUtils.getPathVariable("portId");
+        if (paoId != null) {
+            yukonValidationHelper.checkIfPaoTypeChanged(errors, port.getType(), Integer.valueOf(paoId));
+        }
+
         // Validate Name if present.
         if (port.getName() != null) {
             yukonValidationHelper.validatePaoName(port.getName(), port.getType(), errors, "Name", "portId");
@@ -100,6 +108,10 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
                     }
                 }
             }
+            if (udpPortDetail.getPortNumber() != null && !errors.hasFieldErrors("portNumber")) {
+                // Checks for unique IP Address and Port number
+                portValidatorHelper.validateDuplicateSocket(errors, udpPortDetail.getIpAddress(), udpPortDetail.getPortNumber());
+            }
         }
 
         if (port instanceof TcpSharedPortDetail) {
@@ -108,6 +120,11 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
                 YukonValidationUtils.checkIsBlank(errors, "ipAddress", tcpSharedPortDetail.getIpAddress(), false);
                 if (!errors.hasFieldErrors("ipAddress")) {
                     YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", tcpSharedPortDetail.getIpAddress());
+                }
+
+                if (tcpSharedPortDetail.getPortNumber() != null && !errors.hasFieldErrors("ipAddress") && !errors.hasFieldErrors("portNumber")) {
+                    // Checks for unique IP Address and Port number
+                    portValidatorHelper.validateDuplicateSocket(errors, tcpSharedPortDetail.getIpAddress(), tcpSharedPortDetail.getPortNumber());
                 }
             }
         }
