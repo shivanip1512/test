@@ -78,6 +78,7 @@ public class LoginFilter implements Filter {
                          "/**/*.jpg",
                          "/**/*.html",
                          "/common/images/*",
+                         "/common/runningStatus",
                          "/resources/favicon.ico",
                          "/login/ping",
                          "/dev/mockecobee/**",
