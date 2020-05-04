@@ -343,7 +343,7 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
                 auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
 
                 verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-                verifyRequest->setCommandString("putconfig emectron install all verify");
+                verifyRequest->setCommandString("putconfig emetcon install all verify");
 
                 incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
 
@@ -374,7 +374,7 @@ YukonError_t RfnMeterDevice::executeConfigInstall(CtiRequestMsg* pReq, CtiComman
             auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
 
             verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
-            verifyRequest->setCommandString("putconfig emectron install all verify");
+            verifyRequest->setCommandString("putconfig emetcon install all verify");
 
             incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
 

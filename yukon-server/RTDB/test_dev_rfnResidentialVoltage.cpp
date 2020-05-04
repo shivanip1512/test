@@ -842,6 +842,11 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
 
     BOOST_CHECK_EQUAL( 2, rfnRequests.size() );
 
+    BOOST_REQUIRE_EQUAL( 1, requestMsgs.size() );
+
+    BOOST_CHECK_EQUAL( requestMsgs.front()->CommandString(), "putconfig emetcon install all verify" );
+    BOOST_CHECK_EQUAL( requestMsgs.front()->UserMessageId(), 11235);
+
     std::vector<bool>       expectMoreRcv;
     const std::vector<bool> expectMoreExp( 5, true );
 
@@ -871,7 +876,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
 
     auto& command = rfnRequests.front();
 
-    BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
+    BOOST_CHECK_EQUAL( 3, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle()) );
 
     {
         // execute
@@ -906,7 +911,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
         dut.decrementGroupMessageCount(request->UserMessageId(), request->getConnectionHandle());
     }
 
-    BOOST_CHECK_EQUAL( 1, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
+    BOOST_CHECK_EQUAL( 2, dut.getGroupMessageCount(request->UserMessageId(), request->getConnectionHandle() ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disconnect_meter )
