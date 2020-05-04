@@ -762,7 +762,7 @@ void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-YukonError_t CtiDeviceSystem::ProcessResult(const INMESS& InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
+YukonError_t CtiDeviceSystem::ProcessInMessageResult(const INMESS& InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
     string resultString;
     string commandType;

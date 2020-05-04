@@ -22,6 +22,7 @@ struct test_state_rfnMeter
 {
     std::unique_ptr<CtiRequestMsg> request;
     RfnDevice::ReturnMsgList     returnMsgs;
+    RfnDevice::RequestMsgList    requestMsgs;
     RfnDevice::RfnCommandList    rfnRequests;
 
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
@@ -75,7 +76,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
     {
         CtiCommandParser parse("putconfig install temperaturealarm");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -158,7 +159,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch 
     {
         CtiCommandParser parse("putconfig install temperaturealarm");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -246,7 +247,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_failure )
     {
         CtiCommandParser parse("putconfig install temperaturealarm");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -314,7 +315,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
     {
         CtiCommandParser parse("putconfig install temperaturealarm");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 
@@ -436,7 +437,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_missing )
     {
         CtiCommandParser parse( "putconfig install channelconfig verify" );
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
 
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -480,7 +481,7 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_extra)
     {
         CtiCommandParser parse("putconfig install channelconfig verify");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
 
         BOOST_REQUIRE_EQUAL(0, rfnRequests.size());
 
@@ -522,7 +523,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_match )
     {
         CtiCommandParser parse( "putconfig install channelconfig verify" );
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
 
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -558,7 +559,7 @@ BOOST_AUTO_TEST_CASE(test_dev_rfnMeter_putconfig_install_channel_verify_disjoint
     {
         CtiCommandParser parse("putconfig install channelconfig verify");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
 
         BOOST_REQUIRE_EQUAL(0, rfnRequests.size());
 
@@ -596,7 +597,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_channel_verify_uninitialized )
     {
         CtiCommandParser parse( "putconfig install channelconfig verify" );
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, rfnRequests ) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest( request.get(), parse, returnMsgs, requestMsgs, rfnRequests ) );
 
         BOOST_REQUIRE_EQUAL( 0, rfnRequests.size() );
 
@@ -619,7 +620,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
@@ -712,7 +713,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_no_channels )
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_CHECK(rfnRequests.empty());
 
@@ -741,7 +742,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_two_channels_no_device
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
@@ -806,7 +807,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_mat
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_CHECK(rfnRequests.empty());
 
@@ -851,7 +852,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
@@ -907,7 +908,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_device
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
@@ -966,7 +967,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_one_channe
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
@@ -1034,7 +1035,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
@@ -1114,7 +1115,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_dis
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
 
@@ -1189,7 +1190,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_unsupported_attribute)
     {
         CtiCommandParser parse("putconfig behavior rfndatastreaming");
 
-        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests));
         BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
         BOOST_CHECK(rfnRequests.empty());
 
@@ -1285,7 +1286,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_install_all_separate )
     {
         CtiCommandParser parse("getconfig install all");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 3, rfnRequests.size() );
 
@@ -1344,7 +1345,7 @@ BOOST_AUTO_TEST_CASE( test_getconfig_install_all_aggregate )
     {
         CtiCommandParser parse("getconfig install all");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 

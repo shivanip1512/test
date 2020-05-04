@@ -25,8 +25,7 @@ using std::list;
 using std::set;
 using std::map;
 
-namespace Cti {
-namespace Devices {
+namespace Cti::Devices {
 
 const char *Mct4xxDevice::PutConfigPart_basic           = "basic";
 const char *Mct4xxDevice::PutConfigPart_all             = "all";
@@ -1020,7 +1019,21 @@ YukonError_t Mct4xxDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParse
 {
     if(parse.isKeyValid("install"))
     {
-        return executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
+        const auto readStatus = executeInstallReads(pReq, parse, OutMessage, vgList, retList, outList);
+            
+        if( ! readStatus )
+        {
+            auto verifyRequest = std::make_unique<CtiRequestMsg>(*pReq);
+            
+            verifyRequest->setConnectionHandle(pReq->getConnectionHandle());
+            verifyRequest->setCommandString(pReq->CommandString() + " verify");
+
+            incrementGroupMessageCount(verifyRequest->UserMessageId(), verifyRequest->getConnectionHandle());
+
+            retList.push_back(verifyRequest.release());
+        }
+
+        return readStatus;
     }
 
     if( parse.isKeyValid("tou") )
@@ -1141,7 +1154,6 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 {
     bool  found = false;
     YukonError_t nRet = ClientErrors::None;
-    int sRet, function;
 
     auto errRet =
         std::make_unique<CtiReturnMsg>(
@@ -1166,12 +1178,12 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
             || parse.getsValue("installvalue") == PutConfigPart_all )
         {
             ConfigPartsList tempList = getPartsList();
-            sRet = executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
+            const auto ignored = executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
         }
         else
         {
             strncpy(OutMessage->Request.CommandStr, (pReq->CommandString()).c_str(), COMMAND_STR_SIZE);
-            sRet = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
+            const auto ignored = executePutConfigSingle(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
         }
 
         incrementGroupMessageCount(pReq->UserMessageId(), pReq->getConnectionHandle(), outList.size());
@@ -1184,7 +1196,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
     }
     else if( parse.isKeyValid("holiday_offset") )
     {
-        function = EmetconProtocol::PutConfig_Holiday;
+        const auto function = EmetconProtocol::PutConfig_Holiday;
 
         if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
@@ -1252,13 +1264,13 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
     {
         if( parse.isKeyValid("tou_enable") )
         {
-            function = EmetconProtocol::PutConfig_TOUEnable;
+            const auto function = EmetconProtocol::PutConfig_TOUEnable;
             found = getOperation(function, OutMessage->Buffer.BSt);
             OutMessage->Sequence = function;
         }
         else if( parse.isKeyValid("tou_disable") )
         {
-            function = EmetconProtocol::PutConfig_TOUDisable;
+            const auto function = EmetconProtocol::PutConfig_TOUDisable;
             found = getOperation(function, OutMessage->Buffer.BSt);
             OutMessage->Sequence = function;
         }
@@ -1590,7 +1602,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 
         CtiTime interest_time(CtiDate(day, month, year), hour, minute);
 
-        function = EmetconProtocol::PutConfig_LoadProfileInterest;
+        const auto function = EmetconProtocol::PutConfig_LoadProfileInterest;
 
         found = getOperation(function, OutMessage->Buffer.BSt);
 
@@ -1787,6 +1799,9 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                                            OutMessageList &outList,
                                            bool readsOnly)
 {
+    const bool isForce = parse.isKeyValid("force");
+    const bool isVerify = parse.isKeyValid("verify");
+
     int ret = ClientErrors::NoMethod;
     std::vector<std::string> nonCurrentConfigParts;
 
@@ -1808,11 +1823,11 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                 {
                     string tempString = "putconfig install ";
                     tempString += configPart;
-                    if( parse.isKeyValid("force") )
+                    if( isForce )
                     {
                         tempString += " force";
                     }
-                    else if( parse.isKeyValid("verify") )
+                    else if( isVerify )
                     {
                         tempString += " verify";
                     }
@@ -1866,6 +1881,11 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
                                 CtiMultiMsg_vec( ));
 
         retList.push_back( retMsg );
+    }
+
+    if( isVerify )
+    {
+        decrementGroupMessageCount(pReq->GroupMessageId(), pReq->getConnectionHandle());
     }
 
     return ret;
@@ -1987,7 +2007,7 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
             ReturnMsg->setUserMessageId(InMessage.Return.UserID);
             ReturnMsg->setResultString( resultString );
 
-            //note that at the moment only putconfig install will ever have a group message count.
+            // note that at the moment the only putconfig command with a group message count is "putconfig install all".
             decrementGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection);
             if (InMessage.MessageFlags & MessageFlag_ExpectMore || getGroupMessageCount(InMessage.Return.UserID, InMessage.Return.Connection)!=0)
             {
@@ -3416,5 +3436,3 @@ bool Mct4xxDevice::is_valid_time( const CtiTime timestamp ) const
 }
 
 }
-}
-

@@ -8,22 +8,16 @@
 
 namespace Cti::Devices {
 
-
 class IM_EX_DEVDB RfnCommercialDevice
     :   public RfnMeterDevice
 {
 protected:
 
-    YukonError_t executePutConfig            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
-
-    YukonError_t executeGetConfig            (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests) override;
+    YukonError_t executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
+    YukonError_t executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests) override;
 
     YukonError_t executeImmediateDemandFreeze(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
-
     YukonError_t executeReadDemandFreezeInfo (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests);
-
-public:
-    RfnCommercialDevice() {};
 };
 
 typedef RfnCommercialDevice Rfn430a3dDevice;
@@ -41,6 +35,5 @@ typedef RfnCommercialDevice Rfn530s4eaxDevice;
 typedef RfnCommercialDevice Rfn530s4eaxrDevice;
 typedef RfnCommercialDevice Rfn530s4erxDevice;
 typedef RfnCommercialDevice Rfn530s4erxrDevice;
-
 
 }
