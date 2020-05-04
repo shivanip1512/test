@@ -19,4 +19,9 @@ public class IvvcSimulatorSettingsChangedRequest implements SimulatorRequest {
     public IvvcSimulatorSettings getSettings() {
         return ivvcSimulatorSettings;
     }
+
+    @Override
+    public String toString() {
+        return String.format("IvvcSimulatorSettingsChangedRequest [ivvcSimulatorSettings=%s]", ivvcSimulatorSettings);
+    }
 }

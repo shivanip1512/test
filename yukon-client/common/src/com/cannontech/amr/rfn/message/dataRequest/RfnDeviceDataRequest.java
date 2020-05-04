@@ -19,4 +19,9 @@ public class RfnDeviceDataRequest implements Serializable {
     public Instant getLastUpdateTime() {
         return lastUpdateTime;
     }
+
+    @Override
+    public String toString() {
+        return String.format("RfnDeviceDataRequest [lastUpdateTime=%s]", lastUpdateTime);
+    }
 }
