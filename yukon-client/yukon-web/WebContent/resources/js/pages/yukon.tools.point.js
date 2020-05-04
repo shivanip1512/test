@@ -270,7 +270,7 @@ yukon.tools.point = (function () {
     };
 
     /**
-     * Hides the selected row and clears its tranlsation
+     * Hides the selected row and clears its translation
      * @param {event} Click event within the row
      */
     var removeFdr = function (event) {
@@ -304,8 +304,6 @@ yukon.tools.point = (function () {
             newRow.find('.js-function-options').on('change', changeFunctionType);
             newRow.find('.js-baseline-options').on('change', changeBaseLine);
             checkIfBaselineExists();
-            var pointPickerId = newRow.data("pointPickerId");
-            yukon.pickers[pointPickerId].removeEvent();
             newRow.removeClass('js-add-calc-row');
             yukon.ui.reindexInputs(calcTable);
         });
