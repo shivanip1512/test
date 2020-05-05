@@ -192,6 +192,20 @@ DELETE FROM Job WHERE BeanName = 'deviceConfigVerificationJobDefinition';
 INSERT INTO DBUpdates VALUES ('YUK-21967', '7.5.0', GETDATE());
 /* @end YUK-21967 */
 
+/* @start YUK-21857 */
+UPDATE POINT
+SET ArchiveType = 'On Change'
+WHERE PointOffset IN (394, 2000)
+AND PointName IN ('Comm Status', 'RSSI');
+
+UPDATE POINT
+SET ArchiveInterval = 0
+WHERE PointOffset IN (394, 2000)
+AND PointName IN ('Comm Status', 'RSSI');
+
+INSERT INTO DBUpdates VALUES ('YUK-21857', '7.5.0', GETDATE());
+/* @end YUK-21857 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
