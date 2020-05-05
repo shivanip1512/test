@@ -30,6 +30,7 @@ import javax.xml.validation.SchemaFactory;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -56,6 +57,7 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.model.jaxb.DeviceConfigurationCategories;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -114,17 +116,11 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Value("classpath:device/config/configurationCategoryDefinition.xsd") private Resource schemaFile;
     
     private Map<CategoryType, Category> typeToCategoryMap;
-    
-    private final class DeviceConfigStateRowMapper implements YukonRowMapper<DeviceConfigState> { 
-        
-        @Override
-        public DeviceConfigState mapRow(YukonResultSet rs) throws SQLException {
-            return new DeviceConfigState(rs.getInt("PaObjectId"), rs.getEnum("CurrentState", ConfigState.class),
-                    rs.getEnum("LastAction", LastAction.class), rs.getEnum("LastActionStatus", LastActionStatus.class),
-                    rs.getInstant("LastActionStart"), rs.getInstant("LastActionEnd"), rs.getInt("CommandRequestExecId"));
-        }
-    }
-    
+
+    private final YukonRowMapper<DeviceConfigState> deviceConfigStateRowMapper = rs -> new DeviceConfigState(
+            rs.getInt("PaObjectId"), rs.getEnum("CurrentState", ConfigState.class),
+            rs.getEnum("LastAction", LastAction.class), rs.getEnum("LastActionStatus", LastActionStatus.class),
+            rs.getInstant("LastActionStart"), rs.getInstant("LastActionEnd"), rs.getInt("CommandRequestExecId"));
     
     
     @Override
@@ -1228,6 +1224,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public void saveDeviceConfigState(DeviceConfigState state) {
+        if (state == null) {
+            return;
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaObjectId");
         sql.append("FROM DeviceConfigState");
@@ -1294,7 +1293,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             }
         };
         Map<Integer, DeviceConfigState> deviceIdsToState = new HashMap<>();
-        MapUtils.populateMap(deviceIdsToState, template.query(generator, deviceIds, new DeviceConfigStateRowMapper()),
+        MapUtils.populateMap(deviceIdsToState, template.query(generator, deviceIds, deviceConfigStateRowMapper),
                 DeviceConfigState::getDeviceId);
         return deviceIdsToState;
     }
@@ -1306,10 +1305,27 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("FROM DeviceConfigState");
         sql.append("WHERE PaObjectId").eq(deviceId);
         try {
-            return jdbcTemplate.queryForObject(sql, new DeviceConfigStateRowMapper());
+            return jdbcTemplate.queryForObject(sql, deviceConfigStateRowMapper);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+    
+    @Override
+    public void failInProgressDevices() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE DeviceConfigState").set("LastActionStatus", LastActionStatus.FAILURE, "LastActionEnd", Instant.now());
+        sql.append("WHERE LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public int getInProgressCount() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT count(PaObjectId)");
+        sql.append("FROM DeviceConfigState");
+        sql.append("WHERE LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
+        return jdbcTemplate.queryForInt(sql);
     }
 
 }

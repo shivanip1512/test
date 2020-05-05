@@ -69,7 +69,7 @@ public interface DeviceConfigurationDao {
 
         private final static Map<DeviceRequestType, LastAction> lookupByRequestType;
         static {
-            lookupByRequestType = Arrays.asList(LastAction.values()).stream()
+            lookupByRequestType = Arrays.stream(LastAction.values())
                     .filter(value -> value.requestType != null)
                     .collect(Collectors.toMap(value -> value.requestType, value -> value));
         }
@@ -84,8 +84,8 @@ public interface DeviceConfigurationDao {
         
 
         public static List<LastAction> getDisplayableValues() {
-            return Arrays.asList(LastAction.values()).stream()
-                    .filter(value -> value.isDisplayable).collect(Collectors.toList());
+            return Arrays.stream(LastAction.values()).
+                    filter(value -> value.isDisplayable).collect(Collectors.toList());
         }
     }
     
@@ -397,4 +397,14 @@ public interface DeviceConfigurationDao {
      * Returns Device Config State for deviceId
      */
     DeviceConfigState getDeviceConfigStatesByDeviceId(int deviceId);
+
+    /**
+     * This method is called on the start of WS to mark devices that are still in progress as failed
+     */
+    void failInProgressDevices();
+
+    /**
+     * Returns device count in progress status
+     */
+    int getInProgressCount();
 }
