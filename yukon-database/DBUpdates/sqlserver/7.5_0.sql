@@ -195,13 +195,21 @@ INSERT INTO DBUpdates VALUES ('YUK-21967', '7.5.0', GETDATE());
 /* @start YUK-21857 */
 UPDATE POINT
 SET ArchiveType = 'On Change'
-WHERE PointOffset IN (394, 2000)
-AND PointName IN ('Comm Status', 'RSSI');
+WHERE PointID IN 
+    (SELECT POINTID FROM POINT p
+    JOIN YukonPAObject ypo on p.PAObjectID = ypo.PAObjectID
+    WHERE (Type LIKE ('RFN-%') OR Type LIKE ('WRL-%'))
+    AND ((PointOffset = 394 AND PointType = 'Analog') 
+        OR (PointOffset = 2000 AND PointType = 'Status')));
 
 UPDATE POINT
 SET ArchiveInterval = 0
-WHERE PointOffset IN (394, 2000)
-AND PointName IN ('Comm Status', 'RSSI');
+WHERE PointID IN 
+    (SELECT POINTID FROM POINT p
+    JOIN YukonPAObject ypo on p.PAObjectID = ypo.PAObjectID
+    WHERE (Type LIKE ('RFN-%') OR Type LIKE ('WRL-%'))
+    AND ((PointOffset = 394 AND PointType = 'Analog') 
+        OR (PointOffset = 2000 AND PointType = 'Status')));
 
 INSERT INTO DBUpdates VALUES ('YUK-21857', '7.5.0', GETDATE());
 /* @end YUK-21857 */
