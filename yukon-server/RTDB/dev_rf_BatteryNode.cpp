@@ -12,10 +12,9 @@
 #include <future>
 
 
-namespace Cti       {
-namespace Devices   {
+namespace Cti::Devices {
 
-YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
@@ -31,7 +30,7 @@ YukonError_t RfBatteryNodeDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
     return ClientErrors::NoMethod; 
 }
 
-YukonError_t RfBatteryNodeDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfBatteryNodeDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if ( auto configPart = parse.findStringForKey("installvalue") )
     {
@@ -290,5 +289,3 @@ YukonError_t RfBatteryNodeDevice::executeGetConfigIntervals(CtiRequestMsg *pReq,
 }
 
 }
-}
-

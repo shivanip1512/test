@@ -14,7 +14,7 @@ namespace
     static const std::string meterProgrammingCmd { " meter programming" };
 }
 
-YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if( containsString(parse.getCommandStr(), " freezeday reset") )
     {
@@ -69,10 +69,10 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
         return ClientErrors::NoMeterProgramAssigned;
     }
 
-    return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, rfnRequests);
+    return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
 }
 
-YukonError_t RfnCommercialDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnCommercialDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
     {
@@ -81,7 +81,7 @@ YukonError_t RfnCommercialDevice::executeGetConfig(CtiRequestMsg *pReq, CtiComma
         return ClientErrors::None;
     }
 
-    return RfnMeterDevice::executeGetConfig(pReq, parse, returnMsgs, rfnRequests);
+    return RfnMeterDevice::executeGetConfig(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
 }
 
 YukonError_t RfnCommercialDevice::executeImmediateDemandFreeze( CtiRequestMsg     * pReq,
