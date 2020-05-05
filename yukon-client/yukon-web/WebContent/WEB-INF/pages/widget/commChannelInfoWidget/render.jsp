@@ -8,8 +8,11 @@
 <cti:msgScope paths="yukon.web.modules.operator.commChannelInfoWidget">
     <tags:setFormEditMode mode="${mode}" />
     <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
-    <form:form modelAttribute="commChannel">
+    <form:form modelAttribute="commChannel" action="${action}" method="post" id="commChannel-info-form">
         <cti:csrfToken />
+        <tags:hidden path="id"/>
+        <tags:hidden path="type"/>
+        <input type="hidden" name="commChannel" value="${commChannel.type}">
         <cti:tabs>
         <!-- Info Tab -->
             <cti:msg2 var="infoTab" key=".info" />
@@ -131,4 +134,17 @@
             </cti:tab>
         </cti:tabs>
     </form:form>
+    <cti:displayForPageEditModes modes="VIEW">
+        <div class="action-area">
+            <cti:url var="editUrl" value="/widget/commChannelInfoWidget/${commChannel.id}/edit"/>
+            <cti:msg2 var="saveText" key="components.button.save.label"/>
+            <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.commChannelInfoWidget.edit" argument="${commChannel.name}"/>
+            <cti:button icon="icon-pencil" 
+                        nameKey="edit" 
+                        data-popup="#js-edit-comm-channel-popup"/>
+        </div>
+        <div class="dn" id="js-edit-comm-channel-popup" data-title="${editPopupTitle}" data-dialog data-ok-text="${saveText}" 
+            data-event="yukon:assets:commChannel:save" data-url="${editUrl}"></div>
+    </cti:displayForPageEditModes>
+    <cti:includeScript link="/resources/js/widgets/yukon.widget.commChannel.info.js"/>
 </cti:msgScope>
