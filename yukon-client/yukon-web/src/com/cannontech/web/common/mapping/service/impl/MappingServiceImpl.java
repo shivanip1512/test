@@ -22,7 +22,7 @@ public class MappingServiceImpl implements MappingService {
     private final static String mappingHybridUrl = "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/{z}/{x}/{y}?access_token=";
     private final static String mappingElevationUrl = "https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-terrain-v2/{z}/{x}/{y}.mvt?access_token=";
     private final static String mappingDevKey = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
-    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2szcTI0enIwMDc3bjNidWc1aXhydDJqNyJ9.3l_eK63fhZgFve58MzQcYA";
+    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2s5c2c3enNkMTUxZTNncXhkYmdhbWMwZSJ9.wIujl9uPYzzP5Ut5daRf1g";
 
     @Override
     public String getMappingUrl(String viewType) {
