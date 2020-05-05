@@ -6,8 +6,7 @@
 
 #include "std_helper.h"
 
-namespace Cti {
-namespace Devices {
+namespace Cti::Devices {
 
 std::string RfnDevice::getSQLCoreStatement() const
 {
@@ -74,7 +73,7 @@ std::unique_ptr<CtiReturnMsg> RfnDevice::makeReturnMsg(const CtiRequestMsg& req,
 }
 
 
-YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
+YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnCommandList& rfnRequests)
 {
     using RfnExecuteMethod = decltype(&RfnDevice::executeGetConfig);
 
@@ -95,7 +94,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         try
         {
-            errorCode = (this->**executeMethod)(pReq, parse, returnMsgs, commands);
+            errorCode = (this->**executeMethod)(pReq, parse, returnMsgs, requestMsgs, commands);
 
             if( errorCode )
             {
@@ -107,7 +106,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
             errorCode        = ce.error_code;
             errorDescription = ce.error_description;
         }
-        catch( std::exception &e )
+        catch( const std::exception &e )
         {
             errorCode        = ClientErrors::E2eErrorUnmapped;
             errorDescription = e.what();
@@ -245,35 +244,34 @@ YukonError_t RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiComma
     return nRet;
 }
 
-YukonError_t RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnDevice::executePutConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnDevice::executeGetConfig(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnDevice::executeGetStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnDevice::executeGetStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnDevice::executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnDevice::executePutStatus(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnDevice::executeGetValue(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-YukonError_t RfnDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
+YukonError_t RfnDevice::executePutValue(CtiRequestMsg* pReq, CtiCommandParser& parse, ReturnMsgList& returnMsgs, RequestMsgList& requestMsgs, RfnIndividualCommandList& rfnRequests)
 {
     return ClientErrors::NoMethod;
 }
 
-}
 }
