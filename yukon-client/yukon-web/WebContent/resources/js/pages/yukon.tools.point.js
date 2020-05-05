@@ -303,6 +303,7 @@ yukon.tools.point = (function () {
             newRow.find('.js-component-type').trigger("change");
             newRow.find('.js-function-options').on('change', changeFunctionType);
             newRow.find('.js-baseline-options').on('change', changeBaseLine);
+            newRow.find('.js-calc-point-comp').val(0);
             checkIfBaselineExists();
             newRow.removeClass('js-add-calc-row');
             yukon.ui.reindexInputs(calcTable);

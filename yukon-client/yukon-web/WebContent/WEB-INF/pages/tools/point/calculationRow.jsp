@@ -16,7 +16,7 @@
             <span class="js-constant dn"><tags:input path="pointModel.pointBase.calcComponents[${nextIndex}].constant" inputClass="js-constant-value"/></span>
             <span class="js-point-picker">
                 <form:hidden id="calc-component-point-${uniqueId}-input"
-                    path="pointModel.pointBase.calcComponents[${nextIndex}].componentPointID" />
+                    path="pointModel.pointBase.calcComponents[${nextIndex}].componentPointID" cssClass="js-calc-point-comp"/>
                 <tags:pickerDialog
                     id="calcPoint${uniqueId}Picker"
                     type="notSystemPointPicker"
