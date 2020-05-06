@@ -120,8 +120,10 @@ public class ConfigWidget extends WidgetControllerBase {
             // display status "in sync"
         } else if (configState.getState() == ConfigState.OUT_OF_SYNC) {
             // display status "out of sync"
-        } else if (configState.getState() == ConfigState.UNCONFIRMED && configState.getState() == ConfigState.UNREAD) {
+        } else if (configState.getState() == ConfigState.UNCONFIRMED) {
             // display status "needs validation"
+        } else if (configState.getState() == ConfigState.UNREAD) {
+            // display status "Needs Upload"
         }
  
         //check for data streaming config
