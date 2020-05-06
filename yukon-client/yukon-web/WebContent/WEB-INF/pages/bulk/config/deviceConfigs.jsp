@@ -26,7 +26,6 @@
                                 <c:set var="configAction" value="ASSIGN"/>
                             </c:if>
                             <tags:radio name="action" value="ASSIGN" key=".assign.label" checked="${configAction == 'ASSIGN'}"/>
-                            <tags:radio name="action" value="UNASSIGN" key=".unassign.label" checked="${configAction == 'UNASSIGN'}"/>
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
                             <c:if test="${empty configAction}">
@@ -35,10 +34,9 @@
                             <tags:radio name="action" value="SEND" key=".send.label" checked="${configAction == 'SEND'}"/>
                             <tags:radio name="action" value="READ" key=".read.label" checked="${configAction == 'READ'}"/>
                         </cti:checkRolesAndProperties>
-                        <c:if test="${empty configAction}">
-                            <c:set var="configAction" value="VERIFY"/>
-                        </c:if>
-                        <tags:radio name="action" value="VERIFY" key=".verify.label" checked="${configAction == 'VERIFY'}"/>
+                        <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+                            <tags:radio name="action" value="UNASSIGN" key=".unassign.label" checked="${configAction == 'UNASSIGN'}"/>
+                        </cti:checkRolesAndProperties>
                     </div>
                 </tags:nameValue2>
                 
