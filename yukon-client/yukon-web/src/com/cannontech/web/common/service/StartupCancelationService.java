@@ -1,4 +1,4 @@
-package com.cannontech.web.collectionActions.service;
+package com.cannontech.web.common.service;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -14,11 +14,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.dao.CollectionActionDao;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionResult;
 import com.cannontech.common.bulk.collection.device.service.CollectionActionService;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.user.YukonUserContext;
 
-/**
- * Cancels started collection actions with command request execution entry on start-up
- */
 public class StartupCancelationService {
 
     private static final Logger log = YukonLogManager.getLogger(StartupCancelationService.class);
@@ -26,20 +24,27 @@ public class StartupCancelationService {
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     @Autowired private CollectionActionDao collectionActionDao;
     @Autowired private CollectionActionService collectionActionService;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     
     @PostConstruct
     public void init() {
         scheduledExecutorService.schedule(() -> {
             try {
+                //Cancels started collection actions with command request execution entry on start-up
                 List<CollectionActionResult> results =  collectionActionDao.loadIncompeteResultsFromDb();
                 log.info("Attempting to terminate {} Collection Actions", results.size());
                 results.forEach(result -> {
                     collectionActionService.cancel(result, YukonUserContext.system.getYukonUser());
                     collectionActionService.removeResultFromCache(result.getCacheKey());
                 });
-                log.info("Terminated {} Collection Actions", results.size());
+                
+                int inProgressCount = deviceConfigurationDao.getInProgressCount();
+                //Change DeviceConfigState status from "In Progress" to "Failure"
+                deviceConfigurationDao.failInProgressDevices();
+
+                log.info("Terminated Collection Actions:{} DeviceConfigState in progress:{}", results.size(), inProgressCount);
             } catch (Exception e) {
-                log.error("Failed to cancel started collection actions", e);
+                log.error(e);
             }
         }, MIN_TO_WAIT, TimeUnit.MINUTES);
     }

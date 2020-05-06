@@ -1,10 +1,15 @@
 package com.cannontech.common.device.config.dao;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
+import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.DisplayableConfigurationCategory;
 import com.cannontech.common.device.config.model.HeartbeatConfiguration;
@@ -21,6 +26,69 @@ import com.cannontech.core.dao.NotFoundException;
  */
 public interface DeviceConfigurationDao {
 
+    enum LastActionStatus {
+        SUCCESS(true), 
+        FAILURE(true), 
+        IN_PROGRESS(true), 
+        NA(true), 
+        CONFIG_NOT_CURRENT(false)
+        ;
+        
+        private boolean isDisplayable;
+
+        private LastActionStatus(boolean isDisplayable) {
+            this.isDisplayable = isDisplayable;
+        }
+        
+        public static List<LastActionStatus> getDisplayableValues() {
+            return Arrays.asList(LastActionStatus.values()).stream()
+                    .filter(value -> value.isDisplayable).collect(Collectors.toList());
+        }
+    }
+
+    enum ConfigState {
+        UNKNOWN, UNREAD, IN_SYNC, OUT_OF_SYNC, UNCONFIRMED, UNASSIGNED;
+    }
+
+    enum LastAction {
+        SEND(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, true),
+        READ(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, true),
+        VERIFY(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, true),
+        ASSIGN(null, false),
+        UNASSIGN(null, false)
+        ;
+
+        private DeviceRequestType requestType;
+        
+        private boolean isDisplayable;
+
+        LastAction(DeviceRequestType requestType, boolean isDisplayable) {
+            this.requestType = requestType;
+            this.isDisplayable = isDisplayable;
+        }
+
+        private final static Map<DeviceRequestType, LastAction> lookupByRequestType;
+        static {
+            lookupByRequestType = Arrays.stream(LastAction.values())
+                    .filter(value -> value.requestType != null)
+                    .collect(Collectors.toMap(value -> value.requestType, value -> value));
+        }
+
+        public static LastAction getByRequestType(DeviceRequestType type) {
+            return lookupByRequestType.get(type);
+        }
+
+        public DeviceRequestType getRequestType() {
+            return requestType;
+        }
+        
+
+        public static List<LastAction> getDisplayableValues() {
+            return Arrays.stream(LastAction.values()).
+                    filter(value -> value.isDisplayable).collect(Collectors.toList());
+        }
+    }
+    
     /**
      * Returns the JAXB Category class whose category type matches the provided type.
      * @param categoryType
@@ -309,4 +377,34 @@ public interface DeviceConfigurationDao {
      * Returns configs that have at least one category that can be verified.
      */
     List<LightDeviceConfiguration> getAllVerifiableConfigurations();
+
+    /**
+     * Inserts/updates Device Config State
+     */
+    void saveDeviceConfigState(DeviceConfigState state);
+
+    /**
+     * Returns a map of device ids to Device Config State
+     */
+    Map<Integer, DeviceConfigState> getDeviceConfigStatesByDeviceIds(Iterable<Integer> deviceIds);
+
+    /**
+     * Uses batch update to save Device Config States
+     */
+    void saveDeviceConfigStates(Set<DeviceConfigState> states);
+
+    /**
+     * Returns Device Config State for deviceId
+     */
+    DeviceConfigState getDeviceConfigStatesByDeviceId(int deviceId);
+
+    /**
+     * This method is called on the start of WS to mark devices that are still in progress as failed
+     */
+    void failInProgressDevices();
+
+    /**
+     * Returns device count in progress status
+     */
+    int getInProgressCount();
 }
