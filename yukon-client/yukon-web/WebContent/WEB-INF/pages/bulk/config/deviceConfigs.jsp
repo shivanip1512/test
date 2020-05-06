@@ -10,7 +10,10 @@
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.deviceConfigs" deviceCollection="${deviceCollection}" helpText="${helpText}">
     
         <c:if test="${someRF}">
-            <tags:alertBox type="warning" key=".sendConfig.rfnWarning" classes="js-send-config"/>
+            <tags:alertBox type="warning" key=".sendConfig.rfnWarning" classes="js-send-config" includeCloseButton="true"/>
+        </c:if>
+        <c:if test="${somePlc}">
+            <tags:alertBox type="warning" key=".uploadConfig.plcWarning" classes="js-upload-config-plc-warning" includeCloseButton="true"/>
         </c:if>
     
         <cti:url var="configUrl" value="/bulk/config/deviceConfigs" />
