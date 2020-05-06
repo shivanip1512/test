@@ -139,6 +139,7 @@ public class RfnNodeWiFiCommArchiveRequestListener implements RfnArchiveProcesso
         pointData.setValue(value);
         pointData.setTime(timestamp);
         pointData.setType(point.getPointType());
+        pointData.setTagsPointMustArchive(false);
         return pointData;
     }
 
