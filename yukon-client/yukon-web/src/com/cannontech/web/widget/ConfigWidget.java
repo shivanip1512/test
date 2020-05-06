@@ -108,7 +108,7 @@ public class ConfigWidget extends WidgetControllerBase {
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
         
         if (configState == null
-                || (configState.getState() == ConfigState.UNASSIGNED && configState.getState() == ConfigState.UNKNOWN)) {
+                || (configState.getState() == ConfigState.UNASSIGNED || configState.getState() == ConfigState.UNKNOWN)) {
             // "Current Configuration: None" should display. No Status row, no Actions row, but with the Change Configuration row
             // still below.
         } else if (configState.getStatus() == LastActionStatus.IN_PROGRESS) {
