@@ -129,7 +129,10 @@ public class VersacomLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmVersacom_Update" })
     public void Test_LmVersacom_Copy() {
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_VERSACOM)).routeId(1).build();
+        String routeIdStr = ApiCallHelper.getProperty("loadGroupRouteId");
+        Integer routeId = Integer.valueOf(routeIdStr);
+
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_VERSACOM)).routeId(routeId).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
