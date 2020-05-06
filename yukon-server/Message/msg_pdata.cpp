@@ -256,3 +256,9 @@ bool CtiPointDataMsg::isValid()
     return _time.isValid();
 }
 
+std::size_t CtiPointDataMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   stringMemoryConsumption( _str );
+}
+

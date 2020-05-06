@@ -290,5 +290,23 @@ CtiMessage* CtiCustomerNotifEmailMsg::replicateMessage() const
    return( ( CtiMessage*)ret );
 }
 
+std::size_t CtiNotifEmailMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+       +   stringMemoryConsumption( _to )
+       +   stringMemoryConsumption( _subject )
+       +   stringMemoryConsumption( _body )
+       +   stringMemoryConsumption( _toCC )
+       +   stringMemoryConsumption( _toBCC );
+}
 
+std::size_t CtiCustomerNotifEmailMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+       +   stringMemoryConsumption( _to )
+       +   stringMemoryConsumption( _subject )
+       +   stringMemoryConsumption( _body )
+       +   stringMemoryConsumption( _toCC )
+       +   stringMemoryConsumption( _toBCC );
+}
 

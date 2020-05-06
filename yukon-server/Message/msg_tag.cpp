@@ -189,6 +189,11 @@ CtiTagMsg& CtiTagMsg::setClientMsgId(int id)
     return *this;
 }
 
-
-
+std::size_t CtiTagMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+      +   stringMemoryConsumption( _descriptionStr )
+      +   stringMemoryConsumption( _referenceStr )
+      +   stringMemoryConsumption( _taggedForStr );
+}
 

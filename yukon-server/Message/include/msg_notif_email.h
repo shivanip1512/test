@@ -30,6 +30,10 @@ public:
    CtiNotifEmailMsg();
    //NEED TO ADD A COPY CONSTRUCTOR!
    virtual ~CtiNotifEmailMsg();
+
+   std::size_t getFixedSize() const override    { return sizeof( *this ); }
+   std::size_t getVariableSize() const override;
+
    virtual std::string toString() const override;
 
    CtiMessage* replicateMessage() const;
@@ -73,6 +77,10 @@ public:
    CtiCustomerNotifEmailMsg();
    //NEED TO ADD A COPY CONSTRUCTOR!
    virtual ~CtiCustomerNotifEmailMsg();
+
+   std::size_t getFixedSize() const override    { return sizeof( *this ); }
+   std::size_t getVariableSize() const override;
+
    virtual std::string toString() const override;
 
    CtiMessage* replicateMessage() const;

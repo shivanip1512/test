@@ -33,6 +33,9 @@ public:
 
     CtiMessage* replicateMessage() const;
 
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+    std::size_t getVariableSize() const override;
+
     virtual std::string toString() const override;
 
     CtiTraceMsg& resetAttributes();

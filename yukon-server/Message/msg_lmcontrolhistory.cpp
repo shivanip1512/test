@@ -205,3 +205,11 @@ bool CtiLMControlHistoryMsg::isValid()
 {
     return _startDateTime.isValid();
 }
+
+std::size_t CtiLMControlHistoryMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   stringMemoryConsumption( _controlType )
+        +   stringMemoryConsumption( _activeRestore );
+}
+

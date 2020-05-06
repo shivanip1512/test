@@ -89,6 +89,9 @@ public:
     CtiMultiMsg_vec&       PointData();
     CtiReturnMsg&    setPointData(const CtiMultiMsg_vec& point_data);
 
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+    std::size_t getVariableSize() const override;
+
     virtual std::string toString() const override;
 };
 
