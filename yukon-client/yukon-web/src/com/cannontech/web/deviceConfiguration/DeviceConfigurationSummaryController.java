@@ -123,8 +123,8 @@ public class DeviceConfigurationSummaryController {
         Direction dir = sorting.getDirection();
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllVerifiableConfigurations();
         model.addAttribute("configurations", configurations);
-        model.addAttribute("lastActionOptions", LastAction.getDisplayableValues());
-        model.addAttribute("statusOptions", LastActionStatus.getDisplayableValues());
+        model.addAttribute("lastActionOptions", List.of(LastAction.READ));
+        model.addAttribute("statusOptions", List.of(LastActionStatus.FAILURE));
         model.addAttribute("syncOptions", InSync.values());
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -224,13 +224,13 @@ public class DeviceConfigurationSummaryController {
         filter.setGroups(subGroups);
         //default to all if user selects none
         if (filter.getActions() == null || filter.getActions().isEmpty()) {
-            filter.setActions(LastAction.getDisplayableValues());
+            filter.setActions(Arrays.asList(LastAction.values()));
         }
         if (filter.getInSync() == null || filter.getInSync().isEmpty()) {
             filter.setInSync(Arrays.asList(InSync.values()));
         }
         if (filter.getStatuses() == null || filter.getStatuses().isEmpty()) {
-            filter.setStatuses(LastActionStatus.getDisplayableValues());
+            filter.setStatuses(Arrays.asList(LastActionStatus.values()));
         }
     }
     

@@ -11,7 +11,6 @@ import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.Con
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState.UNREAD;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.ASSIGN;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.UNASSIGN;
-import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.CONFIG_NOT_CURRENT;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.FAILURE;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.IN_PROGRESS;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.SUCCESS;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionCancellationCallback;
 import com.cannontech.common.bulk.collection.device.model.CollectionActionDetail;
@@ -60,10 +58,13 @@ import com.cannontech.common.device.commands.service.CommandExecutionService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
+import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -94,8 +95,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     @Autowired private CommandExecutionService commandExecutionService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
-    @Autowired private DeviceMemoryCollectionProducer producer;
     @Autowired private CommandRequestExecutionDao executionDao;
+    @Autowired private DeviceConfigurationService deviceConfigurationService;
 
     private static final Map<DeviceRequestType, String> commands = 
             Map.of(GROUP_DEVICE_CONFIG_VERIFY,"putconfig emetcon install all verify", 
@@ -200,24 +201,55 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         commandExecutionService.cancel(key, user);
     }
 
+    
     @Override
     public void updateConfigStateForAssignAndUnassign(CollectionActionResult result) {
         CollectionActionDetailGroup successGroup = result.getDetails().get(CollectionActionDetail.SUCCESS);
         if (successGroup == null || successGroup.getDevices().getDeviceList().isEmpty()) {
             return;
         }
-        
-        List<SimpleDevice> devices = successGroup.getDevices().getDeviceList();
-        Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao.getDeviceConfigStatesByDeviceIds(getDeviceIds(devices));
 
+        List<SimpleDevice> devices = successGroup.getDevices().getDeviceList();
         log.info("Updating status for devices:{} collection action cache key:{}", devices.size(), result.getCacheKey());
+        if (result.getAction() == CollectionAction.ASSIGN_CONFIG) {
+            updateConfigStateForAssignAndUnassign(devices, LastAction.ASSIGN, result.getStartTime(), result.getStopTime(),
+                    result.getContext().getYukonUser());
+        } else if (result.getAction() == CollectionAction.UNASSIGN_CONFIG) {
+            updateConfigStateForAssignAndUnassign(devices, LastAction.UNASSIGN, result.getStartTime(), result.getStopTime(),
+                    result.getContext().getYukonUser());
+        }
+    }
+    
+    @Override
+    public DeviceConfigState assignConfigToDevice(SimpleDevice device, DeviceConfiguration configuration,
+            LiteYukonUser user) throws InvalidDeviceTypeException {
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        deviceConfigurationService.assignConfigToDevice(configuration, device, user, deviceName);
+        updateConfigStateForAssignAndUnassign(List.of(device), LastAction.ASSIGN, Instant.now(), Instant.now(), user);
+        return deviceConfigurationDao.getDeviceConfigStatesByDeviceId(device.getPaoIdentifier().getPaoId());
+    }
+    
+    
+    @Override
+    public void unassignConfig(SimpleDevice device, LiteYukonUser user) throws InvalidDeviceTypeException {
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        deviceConfigurationService.unassignConfig(device, user, deviceName);
+        updateConfigStateForAssignAndUnassign(List.of(device), LastAction.UNASSIGN, Instant.now(), Instant.now(), user);
+    }
+    
+    /**
+     * Updates device config state for for devices based on last action and entry in DeviceConfigState
+     */
+    private void updateConfigStateForAssignAndUnassign(List<SimpleDevice> devices, LastAction action, Instant startTime, Instant stopTime, LiteYukonUser user) {
+        log.debug("Updating status for devices:{}", devices.size());
+        Map<Integer, DeviceConfigState> deviceToState = deviceConfigurationDao.getDeviceConfigStatesByDeviceIds(getDeviceIds(devices));
         Set<DeviceConfigState> states = new HashSet<>();
         List<SimpleDevice> devicesToVerify = new ArrayList<>();
-        if (result.getAction() == CollectionAction.ASSIGN_CONFIG) {
-            states = buildNewStatesForAssignAction(devices, deviceToState, result.getStartTime(), result.getStopTime());
+        if (action == ASSIGN) {
+            states = buildNewStatesForAssignAction(devices, deviceToState, startTime, stopTime);
             devicesToVerify = getDevicesToVerify(devices, deviceToState, List.of(IN_SYNC, OUT_OF_SYNC, UNASSIGNED));
-        } else if (result.getAction() == CollectionAction.UNASSIGN_CONFIG) {
-            states = buildNewStatesForUnassignAction(devices, deviceToState, result.getStartTime(), result.getStopTime());
+        } else if (action == UNASSIGN) {
+            states = buildNewStatesForUnassignAction(devices, deviceToState,  startTime, stopTime);
             devicesToVerify = getDevicesToVerify(devices, deviceToState, List.of(UNASSIGNED));
         }
         
@@ -227,9 +259,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                         .collect(Collectors.joining("|")));
         
         if (!devicesToVerify.isEmpty()) {
-            int cacheKey = verifyConfigs(producer.createDeviceCollection(devicesToVerify), result.getContext());
-            log.info("Creating new collection action:{} to verify devices:{} verification collection action was created from successful devices in collection action:{}",
-                    cacheKey, devicesToVerify.size(), result.getCacheKey());
+            VerifyConfigCommandResult verifResult = verifyConfigs(devicesToVerify, user);
+            log.info("Verified devices:{}",verifResult.getVerifyResultsMap().size());
         }
         
         deviceConfigurationDao.saveDeviceConfigStates(states);
@@ -305,7 +336,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
             if (hasConfigNotCurrentError) {
                 updateNewState(requestType, DeviceError.CONFIG_NOT_CURRENT, device, currentState);
             } else {
-                updateNewState(requestType, Iterables.getOnlyElement(resultHolder.getErrors()).getDeviceError(), device,
+                updateNewState(requestType, Iterables.getLast(resultHolder.getErrors()).getDeviceError(), device,
                         currentState);
             }
         } else {
@@ -638,9 +669,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 newState.setState(IN_SYNC);
             }
         } else {
+            newState.setStatus(FAILURE);
             if (error == DeviceError.CONFIG_NOT_CURRENT) {
+                newState.setStatus(SUCCESS);
                 newState.setState(OUT_OF_SYNC);
-                newState.setStatus(CONFIG_NOT_CURRENT);
             } else {
                 newState.setStatus(FAILURE);
             }

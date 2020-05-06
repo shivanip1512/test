@@ -10,7 +10,6 @@ import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.Las
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.READ;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.SEND;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction.UNASSIGN;
-import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.CONFIG_NOT_CURRENT;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.FAILURE;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.IN_PROGRESS;
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus.SUCCESS;
@@ -22,9 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.joda.time.Instant;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.common.device.DeviceRequestType;
@@ -33,6 +34,7 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction
 import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.stream.StreamUtils;
 import com.google.common.collect.Iterables;
 
 /**
@@ -63,15 +65,18 @@ public class DeviceConfigServiceImplTest {
         Instant stopTime = Instant.now();
         stopTime = stopTime.plus(oneHour);
         //device with id 1 one will be missing from this map
-        statesInDatabase.put(two.getDeviceId(), new DeviceConfigState(two.getDeviceId(), UNKNOWN, UNASSIGN, SUCCESS, startTime, null, null));
-        statesInDatabase.put(three.getDeviceId(), new DeviceConfigState(three.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(four.getDeviceId(), new DeviceConfigState(four.getDeviceId(), IN_SYNC, READ, SUCCESS, startTime, stopTime, null)); 
-        statesInDatabase.put(five.getDeviceId(), new DeviceConfigState(five.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(six.getDeviceId(), new DeviceConfigState(six.getDeviceId(), UNASSIGNED, READ, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(seven.getDeviceId(), new DeviceConfigState(seven.getDeviceId(), UNCONFIRMED, SEND, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(eight.getDeviceId(), new DeviceConfigState(eight.getDeviceId(), IN_SYNC, READ, IN_PROGRESS, startTime, stopTime, null));
-        statesInDatabase.put(nine.getDeviceId(), new DeviceConfigState(nine.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null));
-        statesInDatabase.put(ten.getDeviceId(), new DeviceConfigState(ten.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null));
+        statesInDatabase = Stream.of(
+                //device with id 1 one will be missing from this map
+                new DeviceConfigState(two.getDeviceId(), UNKNOWN, UNASSIGN, SUCCESS, startTime, null, null),
+                new DeviceConfigState(three.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null),
+                new DeviceConfigState(four.getDeviceId(), IN_SYNC, READ, SUCCESS, startTime, stopTime, null), 
+                new DeviceConfigState(five.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null),
+                new DeviceConfigState(six.getDeviceId(), UNASSIGNED, READ, SUCCESS, startTime, stopTime, null),
+                new DeviceConfigState(seven.getDeviceId(), UNCONFIRMED, SEND, SUCCESS, startTime, stopTime, null),
+                new DeviceConfigState(eight.getDeviceId(), IN_SYNC, READ, IN_PROGRESS, startTime, stopTime, null),
+                new DeviceConfigState(nine.getDeviceId(), UNREAD, ASSIGN, SUCCESS, startTime, stopTime, null),
+                new DeviceConfigState(ten.getDeviceId(), OUT_OF_SYNC, READ, SUCCESS, startTime, stopTime, null))
+                .collect(StreamUtils.mapToSelf(DeviceConfigState::getDeviceId));
     }
     
     @Test
@@ -120,40 +125,33 @@ public class DeviceConfigServiceImplTest {
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, three, null, FAILURE);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, nine, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, nine, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC, SUCCESS);
 
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, three, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, three, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, three, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, three, OUT_OF_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, nine, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, nine, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, nine, OUT_OF_SYNC, SUCCESS);
 
         // In sync
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, four, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, four, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, four, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, four, OUT_OF_SYNC, SUCCESS);
 
         // Out of sync
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, ten, UNCONFIRMED, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, ten, null, FAILURE);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, five, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CATASTROPHIC_FAILURE, five, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC, SUCCESS);
 
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, ten, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, ten, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, ten, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, ten, OUT_OF_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, five, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, five, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT, five, OUT_OF_SYNC, SUCCESS);
 
         // unconfirmed
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, null, seven, UNCONFIRMED, SUCCESS);
@@ -161,8 +159,7 @@ public class DeviceConfigServiceImplTest {
         
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, null, seven, IN_SYNC, SUCCESS);
         checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CATASTROPHIC_FAILURE, seven, null, FAILURE);
-        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT,  seven, OUT_OF_SYNC,
-                CONFIG_NOT_CURRENT);
+        checkState(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, DeviceError.CONFIG_NOT_CURRENT,  seven, OUT_OF_SYNC, SUCCESS);
     }
     
     @Test
@@ -185,9 +182,7 @@ public class DeviceConfigServiceImplTest {
      */
     private void checkState(String methodName, SimpleDevice device, ConfigState stateAfterChange)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SecurityException {
-        Method method = DeviceConfigServiceImpl.class.getDeclaredMethod(methodName, List.class, Map.class, Instant.class, Instant.class);
-        method.setAccessible(true);
-        Set<DeviceConfigState> newStates = (Set<DeviceConfigState>) method.invoke(impl, List.of(device), statesInDatabase, Instant.now(), Instant.now());
+        Set<DeviceConfigState> newStates = ReflectionTestUtils.<Set<DeviceConfigState>>invokeMethod(impl, methodName, List.of(device), statesInDatabase, Instant.now(), Instant.now());
         ConfigState newState = null;
         if(!newStates.isEmpty()) {
             newState = Iterables.getOnlyElement(newStates).getState();

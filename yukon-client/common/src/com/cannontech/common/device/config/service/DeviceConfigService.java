@@ -6,6 +6,9 @@ import com.cannontech.common.bulk.collection.device.model.CollectionActionResult
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.VerifyConfigCommandResult;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.DeviceConfigState;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SimpleCallback;
@@ -37,4 +40,10 @@ public interface DeviceConfigService {
      * Updates device config state for success results for assign and unassign collection action
      */
     void updateConfigStateForAssignAndUnassign(CollectionActionResult result);
+
+    DeviceConfigState assignConfigToDevice(SimpleDevice device, DeviceConfiguration configuration, LiteYukonUser user)
+            throws InvalidDeviceTypeException;
+
+    void unassignConfig(SimpleDevice device, LiteYukonUser user) throws InvalidDeviceTypeException;
+    
 }
