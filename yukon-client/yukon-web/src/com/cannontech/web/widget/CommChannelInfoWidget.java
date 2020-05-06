@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.port.BaudRate;
@@ -55,8 +54,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private static final Logger log = YukonLogManager.getLogger(CommChannelInfoWidget.class);
-    private static final String bindingResultKey = "org.springframework.validation.BindingResult.commChannel";
-    private static final String baseKey = "yukon.web.modules.dr.setup.";
+    private static final String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
 
     @Autowired
     public CommChannelInfoWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
@@ -65,7 +63,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     }
 
     @RequestMapping("render")
-    public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
+    public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         int deviceId = 0;
         try {
             deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -73,27 +71,14 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             retrieveCommChannel(userContext, request, deviceId, model);
         } catch (ServletRequestBindingException e) {
             log.error("Error rendering Comm Channel Information widget", e);
-        } catch (ApiCommunicationException ex) {
-            log.error("Error retrieving comm channel: " + ex.getMessage());
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = accessor.getMessage("yukon.exception.apiCommunicationException.communicationError");
-            model.addAttribute("errorMsg", errorMsg);
         }
         return "commChannelInfoWidget/render.jsp";
     }
 
     @GetMapping("/{id}/edit")
-    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, FlashScope flash,
-            HttpServletRequest request) {
+    public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        try {
-            retrieveCommChannel(userContext, request, id, model);
-        } catch (ApiCommunicationException ex) {
-            log.error("Error retrieving comm channel: " + ex.getMessage());
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = accessor.getMessage("yukon.exception.apiCommunicationException.communicationError");
-            model.addAttribute("errorMsg", errorMsg);
-        }
+        retrieveCommChannel(userContext, request, id, model);
         return "commChannelInfoWidget/render.jsp";
     }
 
@@ -118,18 +103,23 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                     }
                 }
             }
+        } catch (ApiCommunicationException ex) {
+            log.error(ex.getMessage());
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String errorMsg = accessor.getMessage("yukon.exception.apiCommunicationException.communicationError");
+            model.addAttribute("errorMsg", errorMsg);
         } catch (RestClientException ex) {
             log.error("Error retrieving comm Channel: " + ex.getMessage());
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = accessor.getMessage("yukon.exception.restClientCommunicationException.communicationError");
+            String errorMsg = accessor.getMessage("yukon.web.modules.operator.commChannelInfoWidget.retrieveError",
+                    ex.getMessage());
             model.addAttribute("errorMsg", errorMsg);
         }
     }
 
     @PostMapping("/save")
     public String save(@ModelAttribute("commChannel") PortBase commChannel, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request, ModelMap model,
-            HttpServletResponse resp) throws IOException {
+            FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) throws IOException {
 
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
@@ -140,7 +130,6 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 result = helper.populateBindingError(result, error, response);
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                    model.addAttribute(bindingResultKey, result);
                     model.addAttribute("baudRateList", BaudRate.values());
                     return "commChannelInfoWidget/render.jsp";
                 }
@@ -156,10 +145,13 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 return null;
             }
 
-        } catch (ApiCommunicationException | RestClientException e) {
-            log.error(e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.exception.apiCommunicationException.communicationError"));
-            return "redirect:/device/commChannel/" + commChannel.getId();
+        } catch (ApiCommunicationException ex) {
+            log.error(ex.getMessage());
+            return "commChannelInfoWidget/render.jsp";
+        } catch (RestClientException e) {
+            log.error("Error updating comm Channel: {}. Error: {}", commChannel.getName(), e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "saveError", commChannel.getName(), e.getMessage()));
+            return "commChannelInfoWidget/render.jsp";
         }
         return null;
     }

@@ -19,23 +19,33 @@ yukon.widget.commChannel.info = (function () {
         init: function () {
  
             if (_initialized) return;
-
             $(document).on("yukon:assets:commChannel:save", function(event) {
                 var dialog = $(event.target),
                     form = dialog.find('#commChannel-info-form'),
-                    popup = $('#js-edit-comm-channel-popup');
-                $.ajax({
-                    type: "POST",
-                    url: yukon.url("/widget/commChannelInfoWidget/save"),
-                    data: form.serialize()
-                }).done(function (data) {
+                    popup = $('#js-edit-comm-channel-popup'),
+                    errorMessage = popup.find('.user-message'),
+                    errorMessageFound = errorMessage.is(":visible");
+
+                if (!errorMessageFound) {
+                    yukon.ui.blockPage();
+                    $.ajax({
+                        type: "POST",
+                        url: yukon.url("/widget/commChannelInfoWidget/save"),
+                        data: form.serialize()
+                    }).done(function (data) {
+                        window.location.href = window.location.href;
+                        dialog.dialog('close');
+                        dialog.empty();
+                    }).fail(function (xhr, status, error){
+                        popup.html(xhr.responseText);
+                        yukon.ui.initContent(popup);
+                        yukon.ui.highlightErrorTabs();
+                        yukon.ui.unblockPage();
+                    });
+                } else {
+                    yukon.ui.unblockPage();
                     window.location.href = window.location.href;
-                    dialog.dialog('close');
-                    dialog.empty();
-                }).fail(function (xhr, status, error){
-                    popup.html(xhr.responseText);
-                    yukon.ui.initContent(popup);
-                });
+                }
             });
 
             _initialized = true;

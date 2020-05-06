@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.BaudRate;
-import com.cannontech.common.device.port.GetPortTypeFactory;
+import com.cannontech.common.device.port.CommChannelFactory;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.events.loggers.CommChannelEventLogService;
@@ -30,7 +30,7 @@ public class PortServiceImpl implements PortService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private CommChannelEventLogService commChannelEventLogService;
-    @Autowired private GetPortTypeFactory getPortType;
+    @Autowired private CommChannelFactory commChannel;
 
     @Override
     @Transactional
@@ -58,7 +58,7 @@ public class PortServiceImpl implements PortService {
             throw new NotFoundException("Port Id not found");
         }
         DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(pao);
-        PortBase portBase = getPortType.getModel(directPort.getPaoType());
+        PortBase portBase = commChannel.getModel(directPort.getPaoType());
         portBase.buildModel(directPort);
         return portBase;
     }

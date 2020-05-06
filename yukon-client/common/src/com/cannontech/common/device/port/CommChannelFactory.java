@@ -2,7 +2,7 @@ package com.cannontech.common.device.port;
 
 import com.cannontech.common.pao.PaoType;
 
-public class GetPortTypeFactory {
+public class CommChannelFactory {
     public PortBase getModel(PaoType paoType) {
         PortBase portBase = null;
         switch (paoType) {
