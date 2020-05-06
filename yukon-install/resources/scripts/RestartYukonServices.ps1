@@ -246,19 +246,29 @@ If($Operation -ne 'stop')
 {
     # Calling StartServices function to start services
     StartServices
-
-    # Wait for 1 minute and again check if any service is not running 
-    Write-Host "Waiting 1 minute to check Running status of all services.."
-    Start-Sleep -s 60
+    
+    Write-Host "Waiting 5 minute to check Running status of all services.."
 
     Write-Host "-------------------------------------------" 
+
     Write-Host "Checking Services Status $RUNNING"
     Write-Host "-------------------------------------------" 
-
+    # In the time span of 5 minute we check running status of each service in one minute.
+    $timeout = new-timespan -Minutes 5
+    $sw = [diagnostics.stopwatch]::StartNew()
+    while ($sw.elapsed -lt $timeout)
+    {
+         start-sleep -seconds 60
+         $AllRunning = CheckServiceStatus($RUNNING)
+    }
     $AllRunning = CheckServiceStatus($RUNNING)
     if($AllRunning)
     {
-        Write-Host "All Services are running."
+       Write-Host "All Services are running."
+    }
+    else
+    {
+       throw 'ERROR'
     }
 }
 Write-Host ""

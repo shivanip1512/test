@@ -113,6 +113,7 @@ public class GearFieldHelper {
                                      .capacityReduction(50)
                                      .whenToChangeFields(MockWhenToChangeFields.builder().whenToChange(MockWhenToChange.None).build())
                                      .build();
+            break;
         case ItronCycle:
                 gearFields = MockItronCycleGearFields.builder()
                                                  .dutyCycleType(MockItronCycleType.STANDARD)

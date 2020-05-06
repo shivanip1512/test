@@ -31,7 +31,7 @@ public class DeviceReadingsApiControllerTest {
     private RequestSpecification documentationSpec;
     private List<FieldDescriptor> deviceReadingsFieldDescriptor = null;
     private List<FieldDescriptor> requestDescriptor=null;
-    private final static String meterNumber = "789456";
+    private final static String meterNumber = ApiCallHelper.getProperty("meterNumber");
 
     @BeforeMethod
     public void setUp(Method method) {

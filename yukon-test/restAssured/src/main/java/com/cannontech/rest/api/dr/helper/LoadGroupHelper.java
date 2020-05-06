@@ -106,7 +106,7 @@ public class LoadGroupHelper {
             loadGroup = MockLoadGroupExpresscom.builder()
                     .name(getLoadGroupName(paoType))
                     .type(MockPaoType.LM_GROUP_EXPRESSCOMM)
-                    .routeId(1)
+                    .routeId(getRouteId())
                     .disableControl(false)
                     .disableGroup(false)
                     .kWCapacity(123.0)
@@ -174,7 +174,7 @@ public class LoadGroupHelper {
             loadGroup = MockLoadGroupVersacom.builder()
                     .name(getLoadGroupName(paoType))
                     .type(MockPaoType.LM_GROUP_VERSACOM)
-                    .routeId(1)
+                    .routeId(getRouteId())
                     .disableControl(false)
                     .disableGroup(false)
                     .kWCapacity(123.0)
@@ -224,12 +224,15 @@ public class LoadGroupHelper {
                     .silverAddress(4)
                     .kWCapacity(4.0)
                     .relayUsage(MockEmetconRelayUsage.RELAY_A)
-                    .routeId(1)
+                    .routeId(getRouteId())
                     .build();
             break;
         case LM_GROUP_POINT:
-            MockLMDto deviceUsage = MockLMDto.builder().id(2).build();
-            MockLMDto pointUsage = MockLMDto.builder().id(1234).build();
+            String deviceIdStr = ApiCallHelper.getProperty("loadGroupPointDeviceUsage");
+            String pointIdStr = ApiCallHelper.getProperty("loadGroupPointPointUsage");
+            
+            MockLMDto deviceUsage = MockLMDto.builder().id(Integer.valueOf(deviceIdStr)).build();
+            MockLMDto pointUsage = MockLMDto.builder().id(Integer.valueOf(pointIdStr)).build();
             MockControlRawState startControlRawState = MockControlRawState.builder().rawState(0).build();
             loadGroup = MockLoadGroupPoint.builder()
                     .name(getLoadGroupName(paoType))
@@ -249,7 +252,7 @@ public class LoadGroupHelper {
             loadGroup = MockLoadGroupMCT.builder()
                     .name(getLoadGroupName(paoType))
                     .type(MockPaoType.LM_GROUP_MCT)
-                    .routeId(1)
+                    .routeId(getRouteId())
                     .disableControl(false)
                     .disableGroup(false)
                     .kWCapacity(223.0)
@@ -265,7 +268,7 @@ public class LoadGroupHelper {
                      .kWCapacity(4.0)
                      .disableControl(false)
                      .disableGroup(false)
-                     .routeId(3611)
+                     .routeId(getRouteId())
                      .shedTime(450)
                      .control("00001111111111111111000011111111111111111111111111")
                      .restore("00001111111111111111000011111111111111111111111111")
@@ -311,5 +314,9 @@ public class LoadGroupHelper {
 
         return loadGroup;
     }
-
+    
+    private static Integer getRouteId() {
+        String routeIdStr = ApiCallHelper.getProperty("loadGroupRouteId");
+        return Integer.valueOf(routeIdStr);
+    }
 }

@@ -30,8 +30,8 @@ import com.cannontech.web.tools.device.config.model.DeviceConfigActionHistoryDet
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
