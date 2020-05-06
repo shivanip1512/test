@@ -96,7 +96,7 @@ public class HoneywellProgramGearSetupApiControllerTest {
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellCycle);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_GROUP_HONEYWELL,
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  loadGroups,
                                                                                  gearTypes,
                                                                                  programConstraint.getId());
@@ -127,7 +127,7 @@ public class HoneywellProgramGearSetupApiControllerTest {
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellSetpoint);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_GROUP_HONEYWELL,
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  loadGroups,
                                                                                  gearTypes,
                                                                                  programConstraint.getId());
