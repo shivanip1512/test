@@ -12,7 +12,7 @@ import com.cannontech.common.device.model.SimpleDevice;
  */
 public class CollectionActionBulkProcessorCallback implements BulkProcessorCallback<SimpleDevice, SimpleDevice>{
 
-    private CollectionActionResult result;
+    protected CollectionActionResult result;
     private CollectionActionService collectionActionService;
     private CollectionActionDao collectionActionDao;
 

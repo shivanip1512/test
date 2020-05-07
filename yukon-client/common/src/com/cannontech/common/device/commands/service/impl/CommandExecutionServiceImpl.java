@@ -185,11 +185,18 @@ public class CommandExecutionServiceImpl implements CommandExecutionService {
 
     @Override
     public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type, LiteYukonUser user) {
+        ExecutionParameters params = createExecParams(type, user, false);
+        CommandRequestExecution execution = createAndSaveExecution(params, Lists.newArrayList(command));
+        return execute(command, type, execution, user);
+
+    }
+    
+    @Override
+    public CommandResultHolder execute(CommandRequestBase command, DeviceRequestType type,  CommandRequestExecution execution, LiteYukonUser user) {
         CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback();
         WaitableCommandCompletionCallback<? extends CommandRequestBase> waitableCallback =
             waitableFactory.createWaitable(callback, command.getPaoType());
         ExecutionParameters params = createExecParams(type, user, false);
-        CommandRequestExecution execution = createAndSaveExecution(params, Lists.newArrayList(command));
         CommandRequestExecutionIdentifier identifier =
             sendToPorter(Lists.newArrayList(command), waitableCallback, params, execution);
         callback.setCommandRequestExecutionIdentifier(identifier);

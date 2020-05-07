@@ -1,8 +1,6 @@
 package com.cannontech.web.tools.device.config.model;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -11,40 +9,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 
 public class DeviceConfigSummaryFilter {
-    public enum LastAction {
-        SEND(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND),
-        READ(DeviceRequestType.GROUP_DEVICE_CONFIG_READ),
-        VERIFY(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY);
-        private DeviceRequestType requestType;
-
-        LastAction(DeviceRequestType requestType) {
-            this.requestType = requestType;
-        }
-        
-        private final static Map<DeviceRequestType, LastAction> lookupByRequestType;
-        static {
-            lookupByRequestType = Maps.uniqueIndex(Arrays.asList(LastAction.values()), x -> x.requestType);
-        }
-        public static LastAction getByRequestType(DeviceRequestType type) {
-            return lookupByRequestType.get(type);
-        }
-        
-        public DeviceRequestType getRequestType() {
-            return requestType;
-        }
-    }
 
     public enum InSync {
         IN_SYNC, OUT_OF_SYNC, UNVERIFIED, NA
     }
 
-    public enum LastActionStatus {
-        SUCCESS, FAILURE, IN_PROGRESS, NA
-    }
-    
     private List<LastAction> actions;
     private List<InSync> inSync;
     private List<LastActionStatus> statuses;
@@ -52,6 +25,7 @@ public class DeviceConfigSummaryFilter {
     //has all ids if "ALL" selected.
     private List<Integer> configurationIds;
     private boolean displayUnassigned;
+    private String status;  //change to new enum
 
     public List<DeviceGroup> getGroups() {
         return groups;
@@ -126,5 +100,11 @@ public class DeviceConfigSummaryFilter {
             tsb.append("configurationIds", Joiner.on(",").join(configurationIds));
         }
         return tsb.toString();
+    }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
