@@ -134,7 +134,7 @@ public class PortServiceImpl implements PortService {
         return listOfPortBase;
     }
 
-    private PortBase<? extends DirectPort> getModel(PaoType paoType) {
+    public static PortBase<? extends DirectPort> getModel(PaoType paoType) {
         PortBase<? extends DirectPort> portBase = null;
         switch (paoType) {
         case TCPPORT :
