@@ -2765,9 +2765,6 @@
                         },
                         {
                             "name": "Retrieve",
-                            "protocolProfileBehavior": {
-                                "disableBodyPruning": true
-                            },
                             "request": {
                                 "method": "GET",
                                 "header": [],
