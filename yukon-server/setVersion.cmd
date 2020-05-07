@@ -38,7 +38,7 @@ echo +---------------------------------------
 
 setlocal enabledelayedexpansion
 rem if it exists, check if it needs updating
-if exist %versionFilename% (
+if exist %version_filename% (
   for /f "tokens=2* delims== " %%p in (%version_filename%) do (
     if "%%p" == "D_PRODUCT_VERSION_STR" (
       call :trim %%q rev
@@ -52,10 +52,10 @@ if exist %versionFilename% (
 if defined do_version_update (
   echo Updating %version_filename%
   echo #define D_FILE_VERSION %version_csv_triplet%,%build_release_number% >%version_filename%
-  echo #define D_PRODUCT_VERSION_STR %version_dot_triplet%.%git_hash% >>%versionFileName%
-  echo.>>%versionFileName%
+  echo #define D_PRODUCT_VERSION_STR %version_dot_triplet%.%git_hash% >>%version_filename%
+  echo.>>%version_filename%
 
-  echo #define BUILD_VERSION %version_dot_triplet% ^(build %build_release_number%^) >>%versionFileName%
+  echo #define BUILD_VERSION %version_dot_triplet% ^(build %build_release_number%^) >>%version_filename%
 )
 
 goto :EOF
