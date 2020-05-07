@@ -1,128 +1,69 @@
 package com.cannontech.rest.api.documentation.commChannel;
 
-import static io.restassured.RestAssured.baseURI;
-import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
-import com.cannontech.rest.api.commChannel.request.MockPaoType;
-import com.cannontech.rest.api.commChannel.request.MockPortBase;
-import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
+import com.cannontech.rest.api.common.model.MockPaoType;
 
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
-
-public class LocalSharedPortApiDocumentationTest {
+public class LocalSharedPortApiDocumentationTest extends CommChannelApiDocBase {
     
-    private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
-    private RequestSpecification documentationSpec;
-    MockPortBase localSharedPort = null;
     private String portId = null;
     public final static String CONTEXT_PORT_ID = "id";
 
-    @BeforeMethod
-    public void setUp(Method method) {
-        baseURI = ApiCallHelper.getProperty("baseURI");
-        this.restDocumentation.beforeTest(getClass(), method.getName());
-        this.documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-        localSharedPort = CommChannelHelper.buildCommChannel(MockPaoType.LOCAL_SHARED);
+    private static FieldDescriptor[] buildLocalPortDescriptor() {
+        return new FieldDescriptor[] {
+                fieldWithPath("sharing.sharedPortType").type(JsonFieldType.STRING).description("Shared Port Type Possible values of Shared Port Type are : NONE,ACS,ILEX").optional(),
+                fieldWithPath("sharing.sharedSocketNumber").type(JsonFieldType.NUMBER).description("Shared Socket Number").optional(),
+                fieldWithPath("carrierDetectWaitInMilliseconds").type(JsonFieldType.NUMBER).description("Carrier Detect Wait In MiliSeconds").optional(),
+                fieldWithPath("protocolWrap").type(JsonFieldType.STRING).description("Protocol Wrap Possible values of Protocol Wrap are None,IDLC").optional(),
+                fieldWithPath("physicalPort").type(JsonFieldType.STRING).description("Physical Port").optional(),
+        };
     }
-
-    @AfterMethod
-    public void tearDown() {
-        this.restDocumentation.afterTest();
+    
+    private static List<FieldDescriptor> buildLocalSharedPortDescriptor() {
+        List<FieldDescriptor> list = new ArrayList<>(Arrays.asList(portBaseFields()));
+        list.addAll(Arrays.asList(buildLocalPortDescriptor()));
+        return list;
     }
 
     @Test
     public void Test_LocalSharedPort_01_Create() {
-        List<FieldDescriptor> localSharedPortDescriptor = CommChannelHelper.buildLocalSharedPortDescriptor();
-        List<FieldDescriptor> list = new ArrayList<>(localSharedPortDescriptor);
-        list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
-        Response response = given(documentationSpec)
-                .filter(document("{ClassName}/{methodName}", requestFields(localSharedPortDescriptor),
-                        responseFields(list)))
-                .accept("application/json")
-                .contentType("application/json")
-                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(localSharedPort)
-                .when()
-                .post(ApiCallHelper.getProperty("createPort"))
-                .then()
-                .extract()
-                .response();
-
-        portId = response.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
-        assertTrue("Port Id should not be Null", portId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        portId = createDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LocalSharedPort_01_Create" })
     public void Test_LocalSharedPort_02_Update() {
-
-        List<FieldDescriptor> localSharedPortDescriptor = CommChannelHelper.buildLocalSharedPortDescriptor();
-        List<FieldDescriptor> list = new ArrayList<>(localSharedPortDescriptor);
-        list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
-        Response response = given(documentationSpec)
-                .filter(document("{ClassName}/{methodName}", requestFields(localSharedPortDescriptor), responseFields(list)))
-                .accept("application/json")
-                .contentType("application/json")
-                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .body(localSharedPort)
-                .when()
-                .post(ApiCallHelper.getProperty("updatePort") + portId)
-                .then()
-                .extract()
-                .response();
-        portId = response.path(CommChannelHelper.CONTEXT_PORT_ID).toString();
-        assertTrue("Port Id should not be Null", portId != null);
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        portId = updateDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LocalSharedPort_01_Create" })
     public void Test_LocalSharedPort_03_Get() {
-        List<FieldDescriptor> terminalServerPortDescriptor = CommChannelHelper.buildLocalSharedPortDescriptor();
-        List<FieldDescriptor> list = new ArrayList<>(terminalServerPortDescriptor);
-        list.add(0, fieldWithPath("id").type(JsonFieldType.NUMBER).description("Port Id"));
-        Response response = given(documentationSpec)
-                .filter(document("{ClassName}/{methodName}", responseFields(list)))
-                .accept("application/json")
-                .contentType("application/json")
-                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .when()
-                .get(ApiCallHelper.getProperty("getPort") + portId)
-                .then()
-                .extract()
-                .response();
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        getDoc();
     }
 
     @Test(dependsOnMethods = { "Test_LocalSharedPort_01_Create" })
     public void Test_LocalSharedPort_04_Delete() {
-        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}"))
-                .accept("application/json")
-                .contentType("application/json")
-                .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                .when()
-                .delete(ApiCallHelper.getProperty("deletePort") + portId)
-                .then()
-                .extract()
-                .response();
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        deleteDoc();
+    }
+
+    @Override
+    protected List<FieldDescriptor> getFieldDescriptors() {
+        return buildLocalSharedPortDescriptor();
+    }
+    @Override
+    protected MockPaoType getMockPaoType() {
+        return MockPaoType.LOCAL_SHARED;
+    }
+    
+    @Override
+    protected String getPortId() {
+        return portId;
     }
 }

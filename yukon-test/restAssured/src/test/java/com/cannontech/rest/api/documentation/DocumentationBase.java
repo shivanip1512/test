@@ -2,6 +2,7 @@ package com.cannontech.rest.api.documentation;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -19,6 +20,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.documentation.DocumentationFields.*;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
 import io.restassured.response.Response;
@@ -44,63 +47,38 @@ public abstract class DocumentationBase {
     /**
      * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains newly created object
-     * @param requestFields 
-     * @param responseFields
-     * @param responseFieldPath path of value to return
-     * @param responseFieldDesc description of value to return
-     * @param body the object of the request
-     * @param url
      * @return value in response having identifier of responseFieldPath 
      */
-    protected String createDoc(List<FieldDescriptor> requestFields, List<FieldDescriptor> responseFields, 
-            String responseFieldPath, String responseFieldDesc, Object body, String url) {
-        return post(requestFields, responseFields, responseFieldPath, responseFieldDesc, body, url, null);
+    protected String createDoc() {
+        Create fields = buildCreateFields();
+        validateFields("createDoc", fields);
+        return post(fields.requestFields, fields.responseFields, fields.responseFieldPath, fields.responseFieldDesc, fields.body, fields.url, null);
     }
     
     /**
      * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains updated object.
-     * @param requestFields 
-     * @param responseFields
-     * @param responseFieldPath path of value to return
-     * @param responseFieldDesc description of value to return
-     * @param body the object of the request
-     * @param url 
-     * @return value in response having identifier of responseFieldPath 
-     * @param updateId the object identifier to request as part of url (ie: url=url/updateId)
-     * @return
+     * @return value in response having identifier of responseFieldPath
      */
-    protected String updateDoc(List<FieldDescriptor> requestFields, List<FieldDescriptor> responseFields, 
-            String responseFieldPath, String responseFieldDesc, Object body, String url, String updateId) {
-        return post(requestFields, responseFields, responseFieldPath, responseFieldDesc, body, url, updateId);
+    protected String updateDoc() {
+        Update fields = buildUpdateFields();
+        validateFields("updateDoc", fields);
+        return post(fields.requestFields, fields.responseFields, fields.responseFieldPath, fields.responseFieldDesc, fields.body, fields.url, fields.id);
     }
     
     /**
      * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains newly created object (as copied from object with copyId). 
-     * @param requestFields
-     * @param responseFields
-     * @param responseFieldPath path of value to return
-     * @param responseFieldDesc description of value to return
-     * @param body the object of the request
-     * @param url
-     * @param copyId the object identifier to request as part of url (ie: url=url/copyId)
      * @return value in response having identifier of responseFieldPath 
      */
-    protected String copyDoc(List<FieldDescriptor> requestFields, List<FieldDescriptor> responseFields, 
-            String responseFieldPath, String responseFieldDesc, Object body, String url, String copyId) {
-        return post(requestFields, responseFields, responseFieldPath, responseFieldDesc, body, url, copyId);
+    protected String copyDoc() {
+        Copy fields = buildCopyFields();
+        validateFields("copyDoc", fields);
+        return post(fields.requestFields, fields.responseFields, fields.responseFieldPath, fields.responseFieldDesc, fields.body, fields.url, fields.id);
     }
-    
+
     /**
      * Helper method to make a POST call having request and response fields with a body to generate restDocumentation.
-     * @param requestFields
-     * @param responseFields
-     * @param responseFieldPath path of value to return
-     * @param responseFieldDesc description of value to return
-     * @param body the object of the request
-     * @param url
-     * @param id the object identifier to request as part of url (ie: url=url/id)
      * @return value in response having identifier of responseFieldPath
      */
     private String post(List<FieldDescriptor> requestFields, List<FieldDescriptor> responseFields, 
@@ -118,69 +96,64 @@ public abstract class DocumentationBase {
 
     /**
      * Make a GET call for responseFields of getId
-     * Request has no object, id parameter only. Response contains object of getId. 
-     * @param responseFields
-     * @param url
-     * @param getId the object identifier to request as part of url (ie: url=url/getId)
      */
-    protected void getOneDoc(List<FieldDescriptor> responseFields, String url, String getId) {
-        get(responseFields, url, getId);
+    public void getDoc() {
+        Response response;
+        Get fields = buildGetFields();
+        validateFields("getDoc", fields);
+        
+        if (fields instanceof GetWithBody) {
+            GetWithBody getFields = (GetWithBody)fields;
+            response = getHeader(getFields.requestFields, getFields.responseFields)
+                    .when()
+                    .body(getFields.body)
+                    .get(ApiCallHelper.getProperty(fields.url) + fields.id)
+                    .then().extract().response();
+        } else {
+            response = getHeader(null, fields.responseFields)
+                .when()
+                .get(ApiCallHelper.getProperty(fields.url) + fields.id)
+                .then().extract().response();
+        }
+        validateStatusCode(response);
     }
-
+    
     /**
      * Make a GET call for responseFields
      * Request has no object, response contains object of getId.
      * @param responseFields
      * @param url
+     * TODO - not sure what to do with this yet...
      */
     protected void getAllDoc(List<FieldDescriptor> responseFields, String url) {
-        get(responseFields, url, null);
-    }
-    
-    /**
-     * Helper method to make a GET call for responseFields of id
-     * @param responseFields
-     * @param url
-     * @param id the object identifier to request as part of url (ie: url=url/id)
-     */
-    private void get(List<FieldDescriptor> responseFields, String url, String id) {
-        String urlWithId = ApiCallHelper.getProperty(url) + (StringUtils.defaultIfEmpty(id, ""));
         Response response = getHeader(null, responseFields)
                 .when()
-                .get(urlWithId)
+                .get(ApiCallHelper.getProperty(url))
                 .then().extract().response();
         validateStatusCode(response);
     }
     
     /**
-     * Make a basic DELETE call for deleteId
-     * Request has no object, id parameter only.
-     * @param url
-     * @param deleteId
+     * Make a basic DELETE call
      */
-    protected void deleteDoc(String url, String deleteId) {
-        Response response = getHeader(null, null)
-                .when()
-                .delete(ApiCallHelper.getProperty(url) + deleteId)
-                .then().extract().response();
-        validateStatusCode(response);
-    }
-
-    /**
-     * Make a DELETE call for deleteId having request fields and response fields
-     * Request contains object (as defined by body object).
-     * @param requestFields
-     * @param responseFields
-     * @param body the object of the request
-     * @param url
-     * @param deleteId
-     */
-    protected void deleteWithFieldsDoc(List<FieldDescriptor> requestFields, List<FieldDescriptor> responseFields, Object body, String url, String deleteId) {
-        Response response = getHeader(requestFields, responseFields)
-                .body(body)
-                .when()
-                .delete(ApiCallHelper.getProperty(url) + deleteId)
-                .then().extract().response();
+    protected void deleteDoc() {
+        Response response;
+        Delete fields = buildDeleteFields();
+        validateFields("deleteDoc", fields);
+        
+        if (fields instanceof DeleteWithBody) { // we have an object to use
+            DeleteWithBody deleteFields = (DeleteWithBody)fields;
+            response = getHeader(deleteFields.requestFields, deleteFields.responseFields)
+                    .body(deleteFields.body)
+                    .when()
+                    .delete(ApiCallHelper.getProperty(fields.url) + fields.id)
+                    .then().extract().response();
+        } else {   // just have an id to use
+            response = getHeader(null, null)
+                    .when()
+                    .delete(ApiCallHelper.getProperty(fields.url) + fields.id)
+                    .then().extract().response();
+        }
         validateStatusCode(response);
     }
 
@@ -230,4 +203,41 @@ public abstract class DocumentationBase {
         assertTrue(responseFieldDesc + " should not be Null", idStr != null);
         return idStr;
     }
+    
+    /**
+     * Helper method to assert DocumentationFields are set for respective method
+     * @param methodName
+     * @param fields
+     */
+    private void validateFields(String methodName, Object fields) {
+        assertNotNull("Fields not set for use with " + methodName, fields);
+    }
+    
+    protected abstract MockPaoType getMockPaoType();
+    
+    /**
+     * Return the DocumentationFields for use with getDoc
+     */
+    protected abstract DocumentationFields.Get buildGetFields();
+
+    /**
+     * Return the DocumentationFields for use with createDoc
+     */
+    protected abstract DocumentationFields.Create buildCreateFields();
+
+    /**
+     * Return the DocumentationFields for use with updateDoc
+     */
+    protected abstract DocumentationFields.Update buildUpdateFields();
+
+    /**
+     * Return the DocumentationFields for use with copyDoc
+     */
+    protected abstract DocumentationFields.Copy buildCopyFields();
+    
+    /**
+     * Return the DocumentationFields for use with deleteDoc 
+     */
+    protected abstract DocumentationFields.Delete buildDeleteFields();
+
 }

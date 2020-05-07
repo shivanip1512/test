@@ -2,18 +2,19 @@ package com.cannontech.rest.api.documentation.commChannel;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.testng.annotations.Test;
 
+import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
 import com.cannontech.rest.api.commChannel.request.MockPortBase;
 import com.cannontech.rest.api.documentation.DocumentationBase;
+import com.cannontech.rest.api.documentation.DocumentationFields;
+import com.cannontech.rest.api.documentation.DocumentationFields.*;
 
-public class CommChannelApiDocBase extends DocumentationBase {
+public abstract class CommChannelApiDocBase extends DocumentationBase {
 
     public final static String idStr = "id";
     public final static String idDescStr = "Port Id";
@@ -56,48 +57,47 @@ public class CommChannelApiDocBase extends DocumentationBase {
         };
     }
 
-    protected static FieldDescriptor[] allPortsFields() {
-        return new FieldDescriptor[] {
-                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description(idDescStr),
-                fieldWithPath("[].name").type(JsonFieldType.STRING).description("Comm Channel Name"),
-                fieldWithPath("[].enable").type(JsonFieldType.BOOLEAN).description("Status"),
-                fieldWithPath("[].type").type(JsonFieldType.STRING).description("Type"),
-        };
+    private MockPortBase getMockObject() {
+        return CommChannelHelper.buildCommChannel(getMockPaoType());
     }
     
-    protected static List<FieldDescriptor> buildAllPortsDescriptor() {
-        List<FieldDescriptor> portBaseDescriptor = Arrays.asList(allPortsFields());
-        return portBaseDescriptor;
+    /**
+     * Return the request fieldDescriptors
+     */
+    protected abstract List<FieldDescriptor> getFieldDescriptors();
+    
+    protected abstract String getPortId();
+    
+    @Override
+    protected Create buildCreateFields() {
+        List<FieldDescriptor> requestFields  = getFieldDescriptors();
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), "createPort");
     }
     
-    protected String create(List<FieldDescriptor> descriptor, MockPortBase portBase) {
-        List<FieldDescriptor> requestFields  = descriptor;
-        List<FieldDescriptor> responseFields = new ArrayList<>(descriptor);
+    @Override
+    protected Update buildUpdateFields() {
+        List<FieldDescriptor> requestFields  = getFieldDescriptors();
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        
-        return createDoc(requestFields, responseFields, idStr, idDescStr, portBase, "createPort");
+        return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), "updatePort", getPortId());
     }
-
-    protected String update(List<FieldDescriptor> descriptor, MockPortBase portBase, String portId) {
-        List<FieldDescriptor> requestFields =  descriptor;
-        List<FieldDescriptor> responseFields = new ArrayList<>(descriptor);
-        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        return updateDoc(requestFields, responseFields, idStr,  idDescStr, portBase, "updatePort", portId);
-    }
-
-    protected void getOne(List<FieldDescriptor> descriptor, String portId) {
-        List<FieldDescriptor> responseFields = new ArrayList<>(descriptor);
-        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        getOneDoc(responseFields, "getPort", portId);
-    }
-
-    public void getAll(List<FieldDescriptor> descriptor) {
-        List<FieldDescriptor> responseFields = new ArrayList<>(descriptor);
-        getAllDoc(responseFields, "getAllCommChannels");
-    }
-
     
-    protected void delete (String portId) {
-        deleteDoc("deletePort", portId);
+    @Override
+    protected Get buildGetFields() {
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        return new DocumentationFields.Get(responseFields, "getPort", getPortId());
+    }
+    
+    @Override
+    protected Delete buildDeleteFields() {
+        return new DocumentationFields.Delete("deletePort", getPortId());
+    }
+    
+    @Override
+    protected Copy buildCopyFields() {
+        return null;
     }
 }
