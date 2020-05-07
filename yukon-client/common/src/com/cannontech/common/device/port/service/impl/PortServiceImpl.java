@@ -30,7 +30,6 @@ public class PortServiceImpl implements PortService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private CommChannelEventLogService commChannelEventLogService;
-    @Autowired private CommChannelFactory commChannel;
 
     @Override
     @Transactional
@@ -58,7 +57,7 @@ public class PortServiceImpl implements PortService {
             throw new NotFoundException("Port Id not found");
         }
         DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(pao);
-        PortBase portBase = commChannel.getModel(directPort.getPaoType());
+        PortBase portBase = CommChannelFactory.getModel(directPort.getPaoType());
         portBase.buildModel(directPort);
         return portBase;
     }

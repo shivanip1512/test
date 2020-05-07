@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.commChannel;
 
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -16,7 +15,6 @@ import com.cannontech.common.pao.PaoType;
  */
 public class CommChannelBaseConverter implements Converter<String, PortBase> {
     private static final Logger log = YukonLogManager.getLogger(CommChannelBaseConverter.class);
-    @Autowired private CommChannelFactory commChannel;
 
     @Override
     public PortBase convert(String portType) {
@@ -26,6 +24,6 @@ public class CommChannelBaseConverter implements Converter<String, PortBase> {
         } catch (IllegalArgumentException e) {
             log.error(portType + " pao type doesn't match with existing pao types", e);
         }
-        return commChannel.getModel(paoType);
+        return CommChannelFactory.getModel(paoType);
     }
 }

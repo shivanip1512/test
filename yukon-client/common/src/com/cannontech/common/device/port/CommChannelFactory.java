@@ -3,7 +3,7 @@ package com.cannontech.common.device.port;
 import com.cannontech.common.pao.PaoType;
 
 public class CommChannelFactory {
-    public PortBase getModel(PaoType paoType) {
+    public static PortBase getModel(PaoType paoType) {
         PortBase portBase = null;
         switch (paoType) {
         case TCPPORT :
