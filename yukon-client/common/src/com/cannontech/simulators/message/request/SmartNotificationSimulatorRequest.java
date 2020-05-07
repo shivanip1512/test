@@ -92,4 +92,13 @@ public class SmartNotificationSimulatorRequest implements SimulatorRequest {
         return userContext;
     }
 
+    @Override
+    public String toString() {
+        return String.format("SmartNotificationSimulatorRequest [requestAction=%s, dailyDigestHour=%s, "
+                             + "waitTime=%s, eventsPerMessage=%s, numberOfMessages=%s, userGroupId=%s, "
+                             + "generateTestEmailAddresses=%s, subscription=%s, userContext=%s]",
+                             requestAction, dailyDigestHour, waitTime, eventsPerMessage, numberOfMessages,
+                             userGroupId, generateTestEmailAddresses, subscription, userContext);
+    }
+
 }
