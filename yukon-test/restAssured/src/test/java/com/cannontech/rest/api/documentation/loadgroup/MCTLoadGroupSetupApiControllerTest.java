@@ -126,7 +126,10 @@ public class MCTLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmMCT_Update" })
     public void Test_LmMCT_Copy() {
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_MCT)).routeId(1).build();
+        String routeIdStr = ApiCallHelper.getProperty("loadGroupRouteId");
+        Integer routeId = Integer.valueOf(routeIdStr);
+        
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_MCT)).routeId(routeId).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(

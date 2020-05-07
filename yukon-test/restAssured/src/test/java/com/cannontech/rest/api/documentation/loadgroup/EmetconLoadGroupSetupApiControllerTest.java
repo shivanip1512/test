@@ -129,7 +129,9 @@ public class EmetconLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmEmetcon_Update" })
     public void Test_LmEmetcon_Copy() {
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).routeId(1).build();
+        String routeIdStr = ApiCallHelper.getProperty("loadGroupRouteId");
+        Integer routeId = Integer.valueOf(routeIdStr);
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EMETCON)).routeId(routeId).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(

@@ -55,12 +55,12 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.cannontech.web.tools.device.config.dao.DeviceConfigSummaryDao.SortBy;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryDetail;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter;
 import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.InSync;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastAction;
-import com.cannontech.web.tools.device.config.model.DeviceConfigSummaryFilter.LastActionStatus;
 import com.cannontech.web.util.WebFileUtils;
 
 @Controller
@@ -123,8 +123,8 @@ public class DeviceConfigurationSummaryController {
         Direction dir = sorting.getDirection();
         List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllVerifiableConfigurations();
         model.addAttribute("configurations", configurations);
-        model.addAttribute("lastActionOptions", LastAction.values());
-        model.addAttribute("statusOptions", LastActionStatus.values());
+        model.addAttribute("lastActionOptions", List.of(LastAction.READ));
+        model.addAttribute("statusOptions", List.of(LastActionStatus.FAILURE));
         model.addAttribute("syncOptions", InSync.values());
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -143,7 +143,7 @@ public class DeviceConfigurationSummaryController {
     
     @RequestMapping(value="{id}/outOfSync", method=RequestMethod.GET)
     public String outOfSync(ModelMap model, YukonUserContext context, @PathVariable int id) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
+        SimpleDevice device = deviceDao.getYukonDevice(id);
         VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
         model.put("verifyResult", result);
         return "summary/outOfSync.jsp";
@@ -160,7 +160,7 @@ public class DeviceConfigurationSummaryController {
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public void sendConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
+        SimpleDevice device = deviceDao.getYukonDevice(id);
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
         executor.submit(() -> deviceConfigService.sendConfig(device, context.getYukonUser()));
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "sendConfig.success", pao.getPaoName()));
@@ -171,9 +171,8 @@ public class DeviceConfigurationSummaryController {
     @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public void readConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
-        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId());
-        executor.submit(() -> deviceConfigService.readConfig(device, context.getYukonUser()));
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        executor.submit(() -> deviceConfigService.readConfig(new SimpleDevice(pao.getLiteID(), pao.getPaoType()), context.getYukonUser()));
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "readConfig.success", pao.getPaoName()));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
@@ -181,7 +180,7 @@ public class DeviceConfigurationSummaryController {
     @RequestMapping(value="{id}/verifyConfig", method=RequestMethod.POST)
     public void verifyConfig(ModelMap model, @PathVariable int id, FlashScope flash, YukonUserContext context,
             HttpServletResponse resp) {
-        YukonDevice device = deviceDao.getYukonDevice(id);
+        SimpleDevice device = deviceDao.getYukonDevice(id);
         VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
         if (result == null) {
             flash.setError(

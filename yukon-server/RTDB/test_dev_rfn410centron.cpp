@@ -20,6 +20,7 @@ struct test_state_rfn410centron
 {
     CtiRequestMsg request;
     Cti::Devices::RfnDevice::ReturnMsgList  returnMsgs;
+    Cti::Devices::RfnDevice::RequestMsgList requestMsgs;
     Cti::Devices::RfnDevice::RfnCommandList rfnRequests;
     Cti::Test::Override_DynamicPaoInfoManager overrideDynamicPaoInfoManager;
     boost::shared_ptr<Cti::Test::test_DeviceConfig> fixtureConfig;
@@ -87,7 +88,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn410Centron_putconfig_display )
     {
         CtiCommandParser parse("putconfig install display");
 
-        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, rfnRequests) );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(&request, parse, returnMsgs, requestMsgs, rfnRequests) );
         BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         BOOST_REQUIRE_EQUAL( 1, rfnRequests.size() );
 

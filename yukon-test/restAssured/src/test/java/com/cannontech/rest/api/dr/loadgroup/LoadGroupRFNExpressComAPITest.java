@@ -165,7 +165,7 @@ public class LoadGroupRFNExpressComAPITest {
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
 
         assertTrue(ValidationHelper.validateFieldError(response, "splinter",
-                "Must be between 1 and 99."), "Expected Error not found: Must be between 1 and 99.");
+                "Must be between 1 and 254."), "Expected Error not found: Must be between 1 and 254.");
         assertTrue(ValidationHelper.validateFieldError(response, "geo",
                 "Must be between 1 and 65,534."), "Expected Error not found: Must be between 1 and 65,534.");
         assertTrue(ValidationHelper.validateFieldError(response, "substation",
@@ -194,7 +194,7 @@ public class LoadGroupRFNExpressComAPITest {
         ExtractableResponse<?> response = ApiCallHelper.post("saveloadgroup", loadGroup);
 
         assertTrue(ValidationHelper.validateFieldError(response, "splinter",
-                "Must be between 1 and 99."), "Expected Error not found: Must be between 1 and 99.");
+                "Must be between 1 and 254."), "Expected Error not found: Must be between 1 and 254.");
         assertTrue(ValidationHelper.validateFieldError(response, "geo",
                 "Must be between 1 and 65,534."), "Expected Error not found: Must be between 1 and 65,534.");
         assertTrue(ValidationHelper.validateFieldError(response, "substation",

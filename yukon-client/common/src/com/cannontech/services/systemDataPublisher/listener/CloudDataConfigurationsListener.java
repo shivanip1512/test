@@ -1,6 +1,7 @@
 package com.cannontech.services.systemDataPublisher.listener;
 
 import javax.annotation.PostConstruct;
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -27,7 +28,9 @@ public class CloudDataConfigurationsListener implements MessageListener {
     @PostConstruct
     public void init() {
         try {
-            clientId = connectionFactory.createConnection().getClientID();
+            Connection connection = connectionFactory.createConnection();
+            clientId = connection.getClientID();
+            connection.close();
         } catch (JMSException e) {
             log.error("Error occurred while retrieving clientId", e);
         }

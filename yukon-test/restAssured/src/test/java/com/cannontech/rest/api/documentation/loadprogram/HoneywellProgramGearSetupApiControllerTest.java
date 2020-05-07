@@ -84,7 +84,8 @@ public class HoneywellProgramGearSetupApiControllerTest {
     public void Test_LoadProgram_HoneywellCycleGear_Create() {
         /*-------Honeywell Cycle Field Descriptor-------*/
 
-        FieldDescriptor[] honeywellCycleDescriptor = new FieldDescriptor[] { fieldWithPath("gears[].fields.mandatory").type(JsonFieldType.BOOLEAN).description("Mandatory"),
+        FieldDescriptor[] honeywellCycleDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.mandatory").type(JsonFieldType.BOOLEAN).description("Mandatory"),
                 fieldWithPath("gears[].fields.rampInOut").type(JsonFieldType.BOOLEAN).description("RampInOut"),
                 fieldWithPath("gears[].fields.controlPercent").type(JsonFieldType.NUMBER).description("Control Percent. Min Value: 5, Max Value: 100"),
                 fieldWithPath("gears[].fields.cyclePeriodInMinutes").type(JsonFieldType.NUMBER).description("Cycle Period"),
@@ -96,7 +97,7 @@ public class HoneywellProgramGearSetupApiControllerTest {
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellCycle);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_GROUP_HONEYWELL,
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  loadGroups,
                                                                                  gearTypes,
                                                                                  programConstraint.getId());
@@ -116,7 +117,8 @@ public class HoneywellProgramGearSetupApiControllerTest {
     public void Test_LoadProgram_HoneywellSetpointGear_Create() {
         /*-------Honeywell Setpoint Field Descriptor-------*/
 
-        FieldDescriptor[] honeywellSetpointDescriptor = new FieldDescriptor[] { fieldWithPath("gears[].fields.mandatory").type(JsonFieldType.BOOLEAN).description("Mandatory"),
+        FieldDescriptor[] honeywellSetpointDescriptor = new FieldDescriptor[] {
+                fieldWithPath("gears[].fields.mandatory").type(JsonFieldType.BOOLEAN).description("Mandatory"),
                 fieldWithPath("gears[].fields.howToStopControl").type(JsonFieldType.STRING).ignored().description("How To Stop Control"),
                 fieldWithPath("gears[].fields.capacityReduction").type(JsonFieldType.NUMBER).description("Capacity Reduction. Min Value: 0, Max Value: 100"),
                 fieldWithPath("gears[].fields.whenToChangeFields").type(JsonFieldType.OBJECT).description("Consists of When to change fields"),
@@ -127,7 +129,7 @@ public class HoneywellProgramGearSetupApiControllerTest {
 
         List<MockGearControlMethod> gearTypes = new ArrayList<>();
         gearTypes.add(MockGearControlMethod.HoneywellSetpoint);
-        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_GROUP_HONEYWELL,
+        MockLoadProgram loadProgram = LoadProgramSetupHelper.buildLoadProgramRequest(MockPaoType.LM_HONEYWELL_PROGRAM,
                                                                                  loadGroups,
                                                                                  gearTypes,
                                                                                  programConstraint.getId());

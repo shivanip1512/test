@@ -226,6 +226,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         
         try {
             
+            String port = String.valueOf(settings.getPort());
             String updateServerUrl = null;
             Authentication auth = new Authentication();
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
@@ -242,10 +243,14 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                 auth.setPassword(settings.getUpdateServerLogin().getPassword());
             }
 
+            if (settings.isUseDefaultPort()) {
+                port = null;
+            }
+
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())
            .ipAddress(settings.getIpAddress())
-           .port(String.valueOf(settings.getPort()))
+           .port(port)
            .name(settings.getName())
            .admin(settings.getAdmin())
            .superAdmin(settings.getSuperAdmin())

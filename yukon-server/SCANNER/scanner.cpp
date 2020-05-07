@@ -748,7 +748,7 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
             while( !ScannerQuit && !pendingInQueue.empty() )
             {
                 boost::ptr_deque<INMESS>::auto_type pInMessage = pendingInQueue.pop_front();
-                INMESS &InMessage = *pInMessage;
+                const INMESS& InMessage = *pInMessage;
 
                 LastPorterInTime = LastPorterInTime.now();
 
@@ -794,7 +794,7 @@ void ResultThread (Cti::StreamAmqConnection<CtiOutMessage, INMESS>& PorterNexus)
                     list< CtiMessage* > vgList;
 
                     // Do some device dependent work on this Inbound message!
-                    pSingle->ProcessResult(InMessage, TimeNow, vgList, retList, outList);
+                    pSingle->ProcessInMessageResult(InMessage, TimeNow, vgList, retList, outList);
 
                     // Send any new porter requests to porter
                     if((ScannerDebugLevel & SCANNER_DEBUG_OUTLIST) && ! outList.empty())

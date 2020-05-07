@@ -136,7 +136,9 @@ public class ExpresscomLoadGroupSetupApiControllerTest {
 
     @Test(dependsOnMethods = { "Test_LmExpresscom_Update" })
     public void Test_LmExpresscom_Copy() {
-        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).routeId(1).build();
+        String routeIdStr = ApiCallHelper.getProperty("loadGroupRouteId");
+        Integer routeId = Integer.valueOf(routeIdStr);
+        MockLoadGroupCopy loadGroupCopy = MockLoadGroupCopy.builder().name(LoadGroupHelper.getCopiedLoadGroupName(MockPaoType.LM_GROUP_EXPRESSCOMM)).routeId(routeId).build();
         Response response = given(documentationSpec)
                                 .filter(document("{ClassName}/{methodName}", 
                                     requestFields(
