@@ -27,23 +27,7 @@ import com.cannontech.core.dao.NotFoundException;
 public interface DeviceConfigurationDao {
 
     enum LastActionStatus {
-        SUCCESS(true), 
-        FAILURE(true), 
-        IN_PROGRESS(true), 
-        NA(true), 
-        CONFIG_NOT_CURRENT(false)
-        ;
-        
-        private boolean isDisplayable;
-
-        private LastActionStatus(boolean isDisplayable) {
-            this.isDisplayable = isDisplayable;
-        }
-        
-        public static List<LastActionStatus> getDisplayableValues() {
-            return Arrays.asList(LastActionStatus.values()).stream()
-                    .filter(value -> value.isDisplayable).collect(Collectors.toList());
-        }
+        SUCCESS, FAILURE, IN_PROGRESS, NA
     }
 
     enum ConfigState {
@@ -51,20 +35,17 @@ public interface DeviceConfigurationDao {
     }
 
     enum LastAction {
-        SEND(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, true),
-        READ(DeviceRequestType.GROUP_DEVICE_CONFIG_READ, true),
-        VERIFY(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY, true),
-        ASSIGN(null, false),
-        UNASSIGN(null, false)
+        SEND(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND),
+        READ(DeviceRequestType.GROUP_DEVICE_CONFIG_READ),
+        VERIFY(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY),
+        ASSIGN(null),
+        UNASSIGN(null)
         ;
 
         private DeviceRequestType requestType;
         
-        private boolean isDisplayable;
-
-        LastAction(DeviceRequestType requestType, boolean isDisplayable) {
+        LastAction(DeviceRequestType requestType) {
             this.requestType = requestType;
-            this.isDisplayable = isDisplayable;
         }
 
         private final static Map<DeviceRequestType, LastAction> lookupByRequestType;
@@ -80,12 +61,6 @@ public interface DeviceConfigurationDao {
 
         public DeviceRequestType getRequestType() {
             return requestType;
-        }
-        
-
-        public static List<LastAction> getDisplayableValues() {
-            return Arrays.stream(LastAction.values()).
-                    filter(value -> value.isDisplayable).collect(Collectors.toList());
         }
     }
     
