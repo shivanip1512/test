@@ -21,6 +21,12 @@
                                 <form:option value="${configuration.configurationId}">${configuration.name}</form:option>
                             </c:forEach>
                         </form:select>
+                        <select name="status">
+                            <option value="ALL">All Statuses</option>
+                            <option value="IN_PROGRESS">In Progress</option>
+                            <option value="NEEDS_UPLOAD">Needs Upload</option>
+                            <option value="NEEDS_VALIDATION">Needs Validation</option>
+                        </select>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".deviceGroups">
                         <cti:list var="groups">
