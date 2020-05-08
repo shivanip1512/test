@@ -40,6 +40,19 @@ public class YukonJmsTemplateFactory {
     }
 
     /**
+     * Create and return a YukonJmsTemplate object after setting defaultDestinationName, pubSubDomain, timeToLive and
+     * recieveTimeout.
+     */
+    public YukonJmsTemplate createTemplate(JmsApi<?, ?, ?> jmsApi, int recieveTimeout) {
+        YukonJmsTemplate jmsTemplate = new YukonJmsTemplate(connectionFactory);
+        jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
+        jmsTemplate.setPubSubDomain(jmsApi.isTopic());
+        jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
+        jmsTemplate.setReceiveTimeout(recieveTimeout);
+        return jmsTemplate;
+    }
+    
+    /**
      * Create and return a YukonJmsTemplate object after setting responseQueueName in defaultDestinationName, pubSubDomain and
      * timeToLive.
      */
