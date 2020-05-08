@@ -61,6 +61,7 @@ public class SimulatorsService {
 
     private SimulatorMessageListener messageListener;
     private ImmutableMap<SimulatorType, AutoStartableSimulator> simulatorTypeToSimulator;
+    private static final int incomingMessageWaitMillis = 1000;
 
     /**
      * Gets this simulators service as a Spring bean and starts it.
@@ -90,7 +91,7 @@ public class SimulatorsService {
     }
 
     private synchronized void start() {
-        var jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
+        var jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS, incomingMessageWaitMillis);
         messageListener = new SimulatorMessageListener(jmsTemplate, messageHandlers);
         messageListener.start();
         autoStartSimulators();

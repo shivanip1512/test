@@ -58,12 +58,13 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     private volatile boolean isRunning;
     private volatile boolean isStopping;
     private volatile SimulatedDataStreamingSettings settings;
+    public static final int incomingMessageWaitMillis = 1000;
 
     @PostConstruct
     public void init() {
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(JmsApiDirectory.DATA_STREAMING_CONFIG,
                 JmsApiDirectory.GATEWAY_DATA_STREAMING_INFO);
-        jmsTemplate = jmsTemplateFactory.createTemplate(requestQueue);
+        jmsTemplate = jmsTemplateFactory.createTemplate(requestQueue, incomingMessageWaitMillis);
     }
     @Override
     public void setSettings(SimulatedDataStreamingSettings settings) {

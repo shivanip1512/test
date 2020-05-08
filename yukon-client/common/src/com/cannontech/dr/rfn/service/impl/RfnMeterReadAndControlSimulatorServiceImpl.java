@@ -64,12 +64,14 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     
     private volatile boolean meterDisconnectReplyActive;
     private volatile boolean meterDisconnectReplyStopping;
+    public static final int incomingMessageWaitMillis = 1000;
 
     @PostConstruct
     public void init() {
-        rfnMeterReadJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ);
+        rfnMeterReadJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ, incomingMessageWaitMillis);
         rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
-        rfnMeterDisconnectJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT);
+        rfnMeterDisconnectJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT,
+                incomingMessageWaitMillis);
         rfnStatusArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
     }
 

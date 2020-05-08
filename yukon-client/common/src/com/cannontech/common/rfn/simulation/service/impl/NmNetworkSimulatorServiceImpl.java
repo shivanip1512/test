@@ -97,6 +97,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private final static Logger log = YukonLogManager.getLogger(NmNetworkSimulatorServiceImpl.class);
 
     private static final double DISTANCE_IN_MILES = 10;
+    public static final int incomingMessageWaitMillis = 1000;
 
     private SimulatedNmMappingSettings settings;
 
@@ -127,10 +128,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
 
     @PostConstruct
     public void init() {
-        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST);
+        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST, incomingMessageWaitMillis);
         networkTreeUpdateResponseJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE);
-        rfnMeterDemandResetJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DEMAND_RESET);
-        rfMetadataMultiJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI);
+        rfnMeterDemandResetJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DEMAND_RESET, incomingMessageWaitMillis);
+        rfMetadataMultiJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI, incomingMessageWaitMillis);
         rfnStatusArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
     }
 
