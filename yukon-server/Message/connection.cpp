@@ -43,7 +43,9 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
     _outthread( WorkerThread::Function([this]{ outThreadFunc(); })
             .name( boost::replace_all_copy( title, " ", "" ) + "_outThread" ) // use the title and remove all white spaces to set the thread name
             .priority( THREAD_PRIORITY_HIGHEST )),
-    _amqOutThreadHandle{nullptr}
+    _amqOutThreadHandle{nullptr},
+    _outQueueLogCountConfig(0),
+    _outQueueLogPeriodConfig(0)
 {
     CTILOG_DEBUG( dout, who() << " - CtiConnection::CtiConnection() @0x" << std::hex << this );
 
@@ -611,6 +613,20 @@ YukonError_t CtiConnection::WriteConnQue(std::unique_ptr<CtiMessage> msg, ::Cti:
         }
     }
 
+    if ( doLogByTime() || doLogByCount( outQueueSize ) )
+    {
+        constexpr size_t MaximumConsumption = 3 * 1024 * 1024 * 1024;   // 3GB - our arbitrary limit du jour
+        size_t consumption = _outQueue.getQueueMemoryConsumption();
+
+        CTILOG_DEBUG( dout, who() << " - queue has " << outQueueSize << " entries consuming " << consumption << " bytes." );
+        if ( _outQueue.getQueueMemoryConsumption() > MaximumConsumption )
+        {
+            CTILOG_DEBUG( dout, who() << " - queue has consumed the maximum allowable memory amount of " << MaximumConsumption << " bytes.  Closing and re-connecting." );
+            close();
+            return ClientErrors::Abnormal;
+        }
+    }
+
     if( timeoutMillis > 0 )
     {
         if( !_outQueue.putQueue( msg.get(), timeoutMillis ) )
@@ -996,3 +1012,68 @@ void CtiConnection::releaseResources()
 
     _connection.reset();
 }
+
+void CtiConnection::setOutQueueLogging( unsigned messageCount, unsigned period )
+{
+    if ( messageCount > 0 )
+    {
+        // Turn on and configure message count based logging
+        _outQueueLogCountConfig = messageCount;
+
+        auto originalCount = _outQueueLogCount.load();
+        if ( ! _outQueueLogCount.compare_exchange_strong( originalCount, originalCount + _outQueueLogCountConfig ) )
+        {
+            CTILOG_WARN( dout, who() << " - could not update _outQueueLogCount, value was set to " << originalCount << " by another thread" );
+        }
+    }
+
+    if ( period > 0 )
+    {
+        // Turn on and configure time interval based logging
+        _outQueueLogPeriodConfig = period;
+
+        CtiTime now;
+
+        auto originalPeriod = _outQueueLogPeriod.load();
+        if ( ! _outQueueLogPeriod.compare_exchange_strong( originalPeriod, originalPeriod + now.seconds() + _outQueueLogPeriodConfig ) )
+        {
+            CTILOG_WARN( dout, who() << " - could not update _outQueueLogPeriod, value was set to " << originalPeriod << " by another thread" );
+        }
+    }
+}
+
+bool CtiConnection::doLogByCount( size_t queueSize )
+{
+    auto logCount = _outQueueLogCount.load();
+
+    if ( logCount > 0 && queueSize > logCount )
+    {
+        if ( ! _outQueueLogCount.compare_exchange_strong( logCount, logCount + _outQueueLogCountConfig ) )
+        {
+            CTILOG_WARN( dout, who() << " - could not update _outQueueLogCount, value was set to " << logCount << " by another thread" );
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+bool CtiConnection::doLogByTime()
+{
+    CtiTime now;
+    auto logPeriod = _outQueueLogPeriod.load();
+
+    if ( logPeriod > 0 && now.seconds() > logPeriod )
+    {
+        if ( ! _outQueueLogPeriod.compare_exchange_strong( logPeriod, logPeriod + _outQueueLogPeriodConfig ) )
+        {
+            CTILOG_WARN( dout, who() << " - could not update _outQueueLogPeriod, value was set to " << logPeriod << " by another thread" );
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
