@@ -147,4 +147,5 @@ public:
     const std::vector<std::string>& getStringParams()   const;
     const std::vector<CtiTime>&     getDateTimeParams() const;
 
+    std::size_t getMemoryConsumption() const;
 };

@@ -472,6 +472,28 @@ void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(Cti::RowReader &rdr)
     }*/
 }
 
+std::size_t CtiLMEnergyExchangeCustomerReply::getMemoryConsumption() const
+{
+    // the fixed object size
+    std::size_t sz = sizeof( *this );
+
+    // the local dynamic size
+    sz  +=  stringMemoryConsumption( _acceptstatus )
+        +   stringMemoryConsumption( _ipaddressofacceptuser )
+        +   stringMemoryConsumption( _useridname )
+        +   stringMemoryConsumption( _nameofacceptperson )
+        +   stringMemoryConsumption( _energyexchangenotes );
+
+    sz += _lmenergyexchangehourlycustomers.capacity() * sizeof( CtiLMEnergyExchangeHourlyCustomer* );
+    for ( const auto & customer : _lmenergyexchangehourlycustomers )
+    {
+        sz += customer->getMemoryConsumption();
+    }
+
+    return sz;
+}
+
+
 // Static Members
 
 // Possible accept statuses

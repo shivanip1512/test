@@ -1244,6 +1244,26 @@ void CtiLMProgramBase::setOrigin(const std::string& origin)
 {
 }
 
+std::size_t CtiLMProgramBase::getMemoryConsumption() const
+{
+    // This will return the dynamically allocated size only.  The fixed size will be added in in the
+    //  derived child classes.
+
+    std::size_t  sz =  stringMemoryConsumption( _paocategory )
+                    +  stringMemoryConsumption( _paoclass )
+                    +  stringMemoryConsumption( _paoname )
+                    +  stringMemoryConsumption( _paoTypeString )
+                    +  stringMemoryConsumption( _paodescription )
+                    +  stringMemoryConsumption( _controltype )
+                    +  stringMemoryConsumption( _constraintname )
+                    +  stringMemoryConsumption( _availableweekdays );
+
+    sz += _lmprogramcontrolwindows.capacity() * sizeof( CtiLMProgramControlWindow* );
+    sz += _lmprogramcontrolwindows.size() * sizeof( CtiLMProgramControlWindow );
+
+    return sz;
+}
+
 // Static Members
 const string CtiLMProgramBase::AutomaticType = "Automatic";
 const string CtiLMProgramBase::ManualOnlyType = "ManualOnly";

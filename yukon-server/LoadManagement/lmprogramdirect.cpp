@@ -6375,6 +6375,46 @@ void CtiLMProgramDirect::setPendingGroupsInactive()
     }
 }
 
+std::size_t CtiLMProgramDirect::getMemoryConsumption() const
+{
+    // the fixed memeory amount
+    std::size_t sz = sizeof( *this );
+
+    // the base class allocated amount
+    sz +=   CtiLMProgramBase::getMemoryConsumption();
+
+    // this class allocations
+    sz +=   stringMemoryConsumption( _message_subject )
+        +   stringMemoryConsumption( _message_header )
+        +   stringMemoryConsumption( _message_footer )
+        +   stringMemoryConsumption( _additionalinfo )
+        +   stringMemoryConsumption( _last_user )
+        +   stringMemoryConsumption( _change_reason )
+        +   stringMemoryConsumption( _origin );
+
+    sz += _lmprogramdirectgears.capacity() * sizeof( CtiLMProgramDirectGear* );
+    for ( const auto & gear : _lmprogramdirectgears )
+    {
+        sz += calculateMemoryConsumption( gear );
+    }
+
+    sz += _lmprogramdirectgroups.capacity() * sizeof( CtiLMGroupVec::value_type );
+    for ( const auto & group : _lmprogramdirectgroups )
+    {
+        sz += calculateMemoryConsumption( group.get() );
+    }
+
+    // these are just hierarchy designations - don't include their memory consumption here.
+    // These are std::set<>, we are a little short on the memory consumption by the underlying node info.
+    sz += _master_programs.size() * sizeof( CtiLMProgramDirectSPtr );
+    sz += _subordinate_programs.size() * sizeof( CtiLMProgramDirectSPtr );
+
+    // elements stored by value
+    sz += _notificationgroupids.capacity() * sizeof( int );
+
+    return sz;
+}
+
 // Static Members
 int CtiLMProgramDirect::defaultLMStartPriority = 13;
 int CtiLMProgramDirect::defaultLMRefreshPriority = 11;

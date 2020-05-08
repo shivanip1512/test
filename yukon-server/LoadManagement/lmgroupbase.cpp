@@ -27,6 +27,12 @@ using Cti::MacroOffset;
 extern ULONG _LM_DEBUG;
 extern std::set<long> _CHANGED_GROUP_LIST;
 
+std::size_t calculateMemoryConsumption( const CtiLMGroupBase * g )
+{
+    return  g->getFixedSize()
+        +   g->getVariableSize();
+}
+
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
@@ -1466,6 +1472,16 @@ void CtiLMGroupBase::updateDailyOps()
 bool CtiLMGroupBase::doesStopRequireCommandAt(const CtiTime &currentTime) const
 {
     return true;
+}
+
+std::size_t CtiLMGroupBase::getVariableSize() const
+{
+    return  stringMemoryConsumption( _paocategory )
+        +   stringMemoryConsumption( _paoclass )
+        +   stringMemoryConsumption( _paoname )
+        +   stringMemoryConsumption( _paoTypeString )
+        +   stringMemoryConsumption( _paodescription )
+        +   stringMemoryConsumption( _lastcontrolstring );
 }
 
 // Static Members
