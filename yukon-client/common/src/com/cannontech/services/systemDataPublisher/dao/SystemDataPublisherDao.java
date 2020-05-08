@@ -20,4 +20,10 @@ public interface SystemDataPublisherDao {
      * 
      */
     List<Map<String, Object>> getNMSystemData(CloudDataConfiguration cloudDataConfiguration);
+    
+    /**
+     * This method returns read rates for the devices in the passed device group.
+     * Read rates are the % of meters reported in defined number of days. 
+     */
+    int getReadRate(String deviceGroupName);
 }
