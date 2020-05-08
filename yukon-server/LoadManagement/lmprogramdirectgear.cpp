@@ -686,14 +686,14 @@ void CtiLMProgramDirectGear::restore(Cti::RowReader &rdr)
 
 std::size_t CtiLMProgramDirectGear::getVariableSize() const
 {
-    return  stringMemoryConsumption( _gearname )
-        +   stringMemoryConsumption( _controlmethod )
-        +   stringMemoryConsumption( _methodstoptype )
-        +   stringMemoryConsumption( _changecondition )
-        +   stringMemoryConsumption( _groupselectionmethod )
-        +   stringMemoryConsumption( _methodoptiontype )
-        +   stringMemoryConsumption( _front_ramp_option )
-        +   stringMemoryConsumption( _back_ramp_option );
+    return  dynamic_sizeof( _gearname )
+        +   dynamic_sizeof( _controlmethod )
+        +   dynamic_sizeof( _methodstoptype )
+        +   dynamic_sizeof( _changecondition )
+        +   dynamic_sizeof( _groupselectionmethod )
+        +   dynamic_sizeof( _methodoptiontype )
+        +   dynamic_sizeof( _front_ramp_option )
+        +   dynamic_sizeof( _back_ramp_option );
 }
 
 

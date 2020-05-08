@@ -455,7 +455,7 @@ void CtiLMEnergyExchangeOfferRevision::restoreDynamicData()
 std::size_t CtiLMEnergyExchangeOfferRevision::getMemoryConsumption() const
 {
     std::size_t sz = sizeof( *this )
-        +   stringMemoryConsumption( _additionalinfo )
+        +   dynamic_sizeof( _additionalinfo )
         +   _lmenergyexchangehourlyoffers.capacity() * sizeof( CtiLMEnergyExchangeHourlyOffer* );
 
     for ( const auto & offer : _lmenergyexchangehourlyoffers )

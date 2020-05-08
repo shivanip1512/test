@@ -1040,13 +1040,13 @@ std::size_t CtiLMProgramCurtailment::getMemoryConsumption() const
     sz +=   CtiLMProgramBase::getMemoryConsumption();
 
     // this class allocations
-    sz +=   stringMemoryConsumption( _heading )
-        +   stringMemoryConsumption( _messageheader )
-        +   stringMemoryConsumption( _messagefooter )
-        +   stringMemoryConsumption( _canceledmsg )
-        +   stringMemoryConsumption( _stoppedearlymsg )
-        +   stringMemoryConsumption( _runstatus )
-        +   stringMemoryConsumption( _additionalinfo );
+    sz +=   dynamic_sizeof( _heading )
+        +   dynamic_sizeof( _messageheader )
+        +   dynamic_sizeof( _messagefooter )
+        +   dynamic_sizeof( _canceledmsg )
+        +   dynamic_sizeof( _stoppedearlymsg )
+        +   dynamic_sizeof( _runstatus )
+        +   dynamic_sizeof( _additionalinfo );
 
     // the vector<CtiLMCurtailCustomer*>
     sz += _lmprogramcurtailmentcustomers.capacity() * sizeof( CtiLMCurtailCustomer* );

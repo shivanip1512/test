@@ -1249,14 +1249,14 @@ std::size_t CtiLMProgramBase::getMemoryConsumption() const
     // This will return the dynamically allocated size only.  The fixed size will be added in in the
     //  derived child classes.
 
-    std::size_t  sz =  stringMemoryConsumption( _paocategory )
-                    +  stringMemoryConsumption( _paoclass )
-                    +  stringMemoryConsumption( _paoname )
-                    +  stringMemoryConsumption( _paoTypeString )
-                    +  stringMemoryConsumption( _paodescription )
-                    +  stringMemoryConsumption( _controltype )
-                    +  stringMemoryConsumption( _constraintname )
-                    +  stringMemoryConsumption( _availableweekdays );
+    std::size_t  sz =  dynamic_sizeof( _paocategory )
+                    +  dynamic_sizeof( _paoclass )
+                    +  dynamic_sizeof( _paoname )
+                    +  dynamic_sizeof( _paoTypeString )
+                    +  dynamic_sizeof( _paodescription )
+                    +  dynamic_sizeof( _controltype )
+                    +  dynamic_sizeof( _constraintname )
+                    +  dynamic_sizeof( _availableweekdays );
 
     sz += _lmprogramcontrolwindows.capacity() * sizeof( CtiLMProgramControlWindow* );
     sz += _lmprogramcontrolwindows.size() * sizeof( CtiLMProgramControlWindow );

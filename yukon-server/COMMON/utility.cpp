@@ -2362,7 +2362,7 @@ IM_EX_CTIBASE bool canConnectToDatabase()
 // This is counting the amount of memory allocated from the free store.  It is taking the
 //  small string optimization into account.  Strings less than 16 bytes long are stored in
 //  the object directly and are not dynamically allocated.
-std::size_t stringMemoryConsumption( const std::string & s )
+std::size_t dynamic_sizeof( const std::string & s )
 {
     return s.capacity() < 16 ? 0 : s.capacity();
 }

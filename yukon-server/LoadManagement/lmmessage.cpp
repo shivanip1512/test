@@ -38,7 +38,7 @@ CtiLMMessage::CtiLMMessage(const string& message) :  _message(message)
 std::size_t CtiLMMessage::getVariableSize() const
 {
     return  CtiMessage::getVariableSize()
-        +   stringMemoryConsumption( _message );
+        +   dynamic_sizeof( _message );
 }
 
 /*===========================================================================
@@ -349,8 +349,8 @@ CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManua
 std::size_t CtiLMManualControlRequest::getVariableSize() const
 {
     return CtiLMMessage::getVariableSize()
-        +   stringMemoryConsumption( _additionalinfo )
-        +   stringMemoryConsumption( _origin );
+        +   dynamic_sizeof( _additionalinfo )
+        +   dynamic_sizeof( _origin );
 }
 
 /*===========================================================================
@@ -453,7 +453,7 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::setConstraintViolations(
 std::size_t CtiLMManualControlResponse::getVariableSize() const
 {
     std::size_t sz = CtiLMMessage::getVariableSize()
-        +   stringMemoryConsumption( _best_fit_action );
+        +   dynamic_sizeof( _best_fit_action );
 
     for ( const auto & entry : _constraintViolations )
     {
@@ -666,7 +666,7 @@ CtiLMEnergyExchangeControlMsg& CtiLMEnergyExchangeControlMsg::operator=(const Ct
 std::size_t CtiLMEnergyExchangeControlMsg::getVariableSize() const
 {
     return  CtiLMMessage::getVariableSize()
-        +   stringMemoryConsumption( _additionalinfo );
+        +   dynamic_sizeof( _additionalinfo );
 }
 
 /*===========================================================================
@@ -852,11 +852,11 @@ CtiLMEnergyExchangeAcceptMsg& CtiLMEnergyExchangeAcceptMsg::operator=(const CtiL
 std::size_t CtiLMEnergyExchangeAcceptMsg::getVariableSize() const
 {
     return  CtiLMMessage::getVariableSize()
-        +   stringMemoryConsumption( _acceptstatus )
-        +   stringMemoryConsumption( _ipaddressofacceptuser )
-        +   stringMemoryConsumption( _useridname )
-        +   stringMemoryConsumption( _nameofacceptperson )
-        +   stringMemoryConsumption( _energyexchangenotes );
+        +   dynamic_sizeof( _acceptstatus )
+        +   dynamic_sizeof( _ipaddressofacceptuser )
+        +   dynamic_sizeof( _useridname )
+        +   dynamic_sizeof( _nameofacceptperson )
+        +   dynamic_sizeof( _energyexchangenotes );
 }
 
 /*===========================================================================
@@ -1076,11 +1076,11 @@ CtiLMCurtailmentAcknowledgeMsg& CtiLMCurtailmentAcknowledgeMsg::operator=(const 
 std::size_t CtiLMCurtailmentAcknowledgeMsg::getVariableSize() const
 {
     return  CtiLMMessage::getVariableSize()
-        +   stringMemoryConsumption( _acknowledgestatus )
-        +   stringMemoryConsumption( _ipaddressofackuser )
-        +   stringMemoryConsumption( _useridname )
-        +   stringMemoryConsumption( _nameofackperson )
-        +   stringMemoryConsumption( _curtailmentnotes );
+        +   dynamic_sizeof( _acknowledgestatus )
+        +   dynamic_sizeof( _ipaddressofackuser )
+        +   dynamic_sizeof( _useridname )
+        +   dynamic_sizeof( _nameofackperson )
+        +   dynamic_sizeof( _curtailmentnotes );
 }
 
 DEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID )
@@ -1338,7 +1338,7 @@ std::size_t CtiLMDynamicGroupDataMsg::getVariableSize() const
 std::size_t CtiLMDynamicProgramDataMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _origin );
+        +   dynamic_sizeof( _origin );
 }
 
 std::size_t CtiLMDynamicControlAreaDataMsg::getVariableSize() const

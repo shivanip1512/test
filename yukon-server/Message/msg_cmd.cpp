@@ -119,7 +119,7 @@ CtiCommandMsg::CtiCommandMsg(const CtiCommandMsg &aRef, int Pri)
 std::size_t CtiCommandMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( iOpString )
+        +   dynamic_sizeof( iOpString )
         +   iOpArgList.capacity() * sizeof( int );
 }
 

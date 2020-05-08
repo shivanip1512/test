@@ -259,6 +259,6 @@ bool CtiPointDataMsg::isValid()
 std::size_t CtiPointDataMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _str );
+        +   dynamic_sizeof( _str );
 }
 

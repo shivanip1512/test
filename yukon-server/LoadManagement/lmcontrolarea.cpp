@@ -2813,12 +2813,12 @@ std::size_t CtiLMControlArea::getMemoryConsumption() const
     std::size_t sz = sizeof( *this );
 
     // the additional allocated string memory
-    sz  += stringMemoryConsumption( _paocategory )
-        +  stringMemoryConsumption( _paoclass )
-        +  stringMemoryConsumption( _paoname )
-        +  stringMemoryConsumption( _paoTypeString )
-        +  stringMemoryConsumption( _paodescription )
-        +  stringMemoryConsumption( _defoperationalstate );
+    sz  += dynamic_sizeof( _paocategory )
+        +  dynamic_sizeof( _paoclass )
+        +  dynamic_sizeof( _paoname )
+        +  dynamic_sizeof( _paoTypeString )
+        +  dynamic_sizeof( _paodescription )
+        +  dynamic_sizeof( _defoperationalstate );
 
     // the allocated array
     sz += _lmcontrolareatriggers.capacity() * sizeof( CtiLMControlAreaTrigger* );

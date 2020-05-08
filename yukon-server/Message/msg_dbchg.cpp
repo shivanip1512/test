@@ -89,7 +89,7 @@ INT          CtiDBChangeMsg::getTypeOfChange() const    { return _typeofchange; 
 std::size_t CtiDBChangeMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _category )
-        +   stringMemoryConsumption( _objecttype );
+        +   dynamic_sizeof( _category )
+        +   dynamic_sizeof( _objecttype );
 }
 

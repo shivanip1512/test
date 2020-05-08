@@ -341,11 +341,11 @@ std::size_t CtiLMCurtailCustomer::getMemoryConsumption() const
     sz  += CtiLMCICustomerBase::getMemoryConsumption();
 
     // the local dynamic size
-    sz  +=  stringMemoryConsumption( _acknowledgestatus )
-        +   stringMemoryConsumption( _ipaddressofackuser )
-        +   stringMemoryConsumption( _useridname )
-        +   stringMemoryConsumption( _nameofackperson )
-        +   stringMemoryConsumption( _curtailmentnotes );
+    sz  +=  dynamic_sizeof( _acknowledgestatus )
+        +   dynamic_sizeof( _ipaddressofackuser )
+        +   dynamic_sizeof( _useridname )
+        +   dynamic_sizeof( _nameofackperson )
+        +   dynamic_sizeof( _curtailmentnotes );
 
     return sz;
 }

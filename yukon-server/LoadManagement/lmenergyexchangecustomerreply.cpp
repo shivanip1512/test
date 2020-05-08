@@ -478,11 +478,11 @@ std::size_t CtiLMEnergyExchangeCustomerReply::getMemoryConsumption() const
     std::size_t sz = sizeof( *this );
 
     // the local dynamic size
-    sz  +=  stringMemoryConsumption( _acceptstatus )
-        +   stringMemoryConsumption( _ipaddressofacceptuser )
-        +   stringMemoryConsumption( _useridname )
-        +   stringMemoryConsumption( _nameofacceptperson )
-        +   stringMemoryConsumption( _energyexchangenotes );
+    sz  +=  dynamic_sizeof( _acceptstatus )
+        +   dynamic_sizeof( _ipaddressofacceptuser )
+        +   dynamic_sizeof( _useridname )
+        +   dynamic_sizeof( _nameofacceptperson )
+        +   dynamic_sizeof( _energyexchangenotes );
 
     sz += _lmenergyexchangehourlycustomers.capacity() * sizeof( CtiLMEnergyExchangeHourlyCustomer* );
     for ( const auto & customer : _lmenergyexchangehourlycustomers )

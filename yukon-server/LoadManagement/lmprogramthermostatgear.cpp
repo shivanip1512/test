@@ -105,6 +105,6 @@ void CtiLMProgramThermostatGear::restore(Cti::RowReader &rdr)
 std::size_t CtiLMProgramThermostatGear::getVariableSize() const
 {
     return  CtiLMProgramDirectGear::getVariableSize()
-        +   stringMemoryConsumption( _settings );
+        +   dynamic_sizeof( _settings );
 }
 

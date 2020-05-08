@@ -425,7 +425,7 @@ void CtiLMEnergyExchangeOffer::restoreDynamicData(Cti::RowReader &rdr)
 std::size_t CtiLMEnergyExchangeOffer::getMemoryConsumption() const
 {
     std::size_t sz = sizeof( *this )
-        +   stringMemoryConsumption( _runstatus )
+        +   dynamic_sizeof( _runstatus )
         +   _lmenergyexchangeofferrevisions.capacity() * sizeof( CtiLMEnergyExchangeOfferRevision* );
 
     for ( const auto & revision : _lmenergyexchangeofferrevisions )

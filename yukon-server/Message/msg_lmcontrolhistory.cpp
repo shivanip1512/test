@@ -209,7 +209,7 @@ bool CtiLMControlHistoryMsg::isValid()
 std::size_t CtiLMControlHistoryMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _controlType )
-        +   stringMemoryConsumption( _activeRestore );
+        +   dynamic_sizeof( _controlType )
+        +   dynamic_sizeof( _activeRestore );
 }
 

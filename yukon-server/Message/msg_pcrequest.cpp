@@ -181,6 +181,6 @@ CtiRequestMsg& CtiRequestMsg::operator=(const CtiRequestMsg& aRef)
 std::size_t CtiRequestMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _command_string );
+        +   dynamic_sizeof( _command_string );
 }
 

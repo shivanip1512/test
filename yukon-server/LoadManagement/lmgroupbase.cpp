@@ -1476,12 +1476,12 @@ bool CtiLMGroupBase::doesStopRequireCommandAt(const CtiTime &currentTime) const
 
 std::size_t CtiLMGroupBase::getVariableSize() const
 {
-    return  stringMemoryConsumption( _paocategory )
-        +   stringMemoryConsumption( _paoclass )
-        +   stringMemoryConsumption( _paoname )
-        +   stringMemoryConsumption( _paoTypeString )
-        +   stringMemoryConsumption( _paodescription )
-        +   stringMemoryConsumption( _lastcontrolstring );
+    return  dynamic_sizeof( _paocategory )
+        +   dynamic_sizeof( _paoclass )
+        +   dynamic_sizeof( _paoname )
+        +   dynamic_sizeof( _paoTypeString )
+        +   dynamic_sizeof( _paodescription )
+        +   dynamic_sizeof( _lastcontrolstring );
 }
 
 // Static Members

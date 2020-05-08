@@ -727,11 +727,11 @@ std::size_t CtiLMProgramEnergyExchange::getMemoryConsumption() const
     sz +=   CtiLMProgramBase::getMemoryConsumption();
 
     // this class allocations
-    sz +=   stringMemoryConsumption( _heading )
-        +   stringMemoryConsumption( _messageheader )
-        +   stringMemoryConsumption( _messagefooter )
-        +   stringMemoryConsumption( _canceledmsg )
-        +   stringMemoryConsumption( _stoppedearlymsg );
+    sz +=   dynamic_sizeof( _heading )
+        +   dynamic_sizeof( _messageheader )
+        +   dynamic_sizeof( _messagefooter )
+        +   dynamic_sizeof( _canceledmsg )
+        +   dynamic_sizeof( _stoppedearlymsg );
 
     // the vectors
     sz += _lmenergyexchangeoffers.capacity() * sizeof( CtiLMEnergyExchangeOffer* );

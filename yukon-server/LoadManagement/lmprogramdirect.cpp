@@ -6384,13 +6384,13 @@ std::size_t CtiLMProgramDirect::getMemoryConsumption() const
     sz +=   CtiLMProgramBase::getMemoryConsumption();
 
     // this class allocations
-    sz +=   stringMemoryConsumption( _message_subject )
-        +   stringMemoryConsumption( _message_header )
-        +   stringMemoryConsumption( _message_footer )
-        +   stringMemoryConsumption( _additionalinfo )
-        +   stringMemoryConsumption( _last_user )
-        +   stringMemoryConsumption( _change_reason )
-        +   stringMemoryConsumption( _origin );
+    sz +=   dynamic_sizeof( _message_subject )
+        +   dynamic_sizeof( _message_header )
+        +   dynamic_sizeof( _message_footer )
+        +   dynamic_sizeof( _additionalinfo )
+        +   dynamic_sizeof( _last_user )
+        +   dynamic_sizeof( _change_reason )
+        +   dynamic_sizeof( _origin );
 
     sz += _lmprogramdirectgears.capacity() * sizeof( CtiLMProgramDirectGear* );
     for ( const auto & gear : _lmprogramdirectgears )

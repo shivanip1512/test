@@ -93,6 +93,6 @@ CtiTraceMsg& CtiTraceMsg::setEnd(bool nd)
 std::size_t CtiTraceMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _trace );
+        +   dynamic_sizeof( _trace );
 }
 

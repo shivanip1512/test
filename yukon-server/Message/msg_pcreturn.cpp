@@ -261,7 +261,7 @@ CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
 std::size_t CtiReturnMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _command_string )
-        +   stringMemoryConsumption( _result_string );
+        +   dynamic_sizeof( _command_string )
+        +   dynamic_sizeof( _result_string );
 }
 

@@ -89,6 +89,6 @@ void     CtiRegistrationMsg::setAppExpirationDelay(int d)  { _appExpirationDelay
 std::size_t CtiRegistrationMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _appName );
+        +   dynamic_sizeof( _appName );
 }
 

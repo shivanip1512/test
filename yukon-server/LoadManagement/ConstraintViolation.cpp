@@ -139,7 +139,7 @@ std::size_t ConstraintViolation::getMemoryConsumption() const
     // the allocated contents for any strings
     for ( const auto & str : _stringParams )
     {
-        sz += stringMemoryConsumption( str );
+        sz += dynamic_sizeof( str );
     }
 
     return  sz;

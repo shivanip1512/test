@@ -275,7 +275,7 @@ std::string CtiMessage::formatMessageName(const std::string &name)
 
 std::size_t CtiMessage::getVariableSize() const
 {
-    return stringMemoryConsumption( _usr )
-        +  stringMemoryConsumption( _src );
+    return dynamic_sizeof( _usr )
+        +  dynamic_sizeof( _src );
 }
 

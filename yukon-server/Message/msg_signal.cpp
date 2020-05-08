@@ -222,8 +222,8 @@ CtiSignalMsg& CtiSignalMsg::setLogID(const unsigned lid)
 std::size_t CtiSignalMsg::getVariableSize() const
 {
     return  Inherited::getVariableSize()
-        +   stringMemoryConsumption( _text )
-        +   stringMemoryConsumption( _additional )
-        +   stringMemoryConsumption( _user );
+        +   dynamic_sizeof( _text )
+        +   dynamic_sizeof( _additional )
+        +   dynamic_sizeof( _user );
 }
 

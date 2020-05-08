@@ -162,7 +162,7 @@ IM_EX_CTIBASE std::vector<int> getPointIdsOnPao(long paoid);
 
 IM_EX_CTIBASE bool canConnectToDatabase();
 
-IM_EX_CTIBASE std::size_t stringMemoryConsumption( const std::string & s );
+IM_EX_CTIBASE std::size_t dynamic_sizeof( const std::string & s );
 
 //String Functions
 inline void CtiToLower( std::string& str)
