@@ -1,12 +1,13 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -16,14 +17,14 @@ import com.eaton.pages.demandresponse.ProgramListPage;
 public class ProgramListTests extends SeleniumTestSetup {
 
     private ProgramListPage listPage;
-    private SoftAssert softAssertion;
+    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softAssertion = getSoftAssertion();
+        softly = new SoftAssertions();
 
         driver.get(getBaseUrl() + Urls.DemandResponse.PROGRAMS);
 
@@ -36,7 +37,7 @@ public class ProgramListTests extends SeleniumTestSetup {
         
         String actualPageTitle = listPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page Title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test
@@ -47,13 +48,15 @@ public class ProgramListTests extends SeleniumTestSetup {
         
         int actualCount = headers.size();
 
-        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
-        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
-        softAssertion.assertTrue(headers.contains("State"), "Expected Column Header of State");
-        softAssertion.assertTrue(headers.contains("Start"), "Expected Column Header of Start");
-        softAssertion.assertTrue(headers.contains("Stop"), "Expected Column Header of Stop");
-        softAssertion.assertTrue(headers.contains("Current Gear"), "Expected Column Header of Current Gear");
-        softAssertion.assertTrue(headers.contains("Priority"), "Expected Column Header of Priority");
-        softAssertion.assertTrue(headers.contains("Reduction"), "Expected Column Header of Reduction");
+        softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
+        softly.assertThat(headers).contains("Name");
+        softly.assertThat(headers).contains("State");
+        softly.assertThat(headers).contains("Start");
+        softly.assertThat(headers).contains("Stop");
+        softly.assertThat(headers).contains("Current Gear");
+        softly.assertThat(headers).contains("Priority");
+        softly.assertThat(headers).contains("Reduction");
+
+        softly.assertAll();
     }
 }

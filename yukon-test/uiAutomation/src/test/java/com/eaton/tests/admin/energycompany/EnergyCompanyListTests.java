@@ -1,7 +1,7 @@
 package com.eaton.tests.admin.energycompany;
 
+import static org.assertj.core.api.Assertions.*;
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -15,8 +15,6 @@ public class EnergyCompanyListTests extends SeleniumTestSetup {
 
     private EnergyCompanyListPage page;
     private DriverExtensions driverExt;
-    private static final String FOUND = "' but found: ";
-    private static final String EXPECTED = "Expected Page title: '";
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -34,6 +32,6 @@ public class EnergyCompanyListTests extends SeleniumTestSetup {
         
         String actualPageTitle = page.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, EXPECTED + EXPECTED_TITLE + FOUND + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }         
 }

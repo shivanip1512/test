@@ -1,7 +1,8 @@
 package com.eaton.tests.assets;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -15,8 +16,6 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
     private static final int ASSETS_INDEX = 3;
-    private static final String EXPECTED = "Expected Url: ";
-    private static final String ACTUAL = " Actual Url: ";
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -34,7 +33,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 0);
 
-        Assert.assertTrue(url.contains(Urls.Assets.DASHBOARD), EXPECTED + Urls.Assets.DASHBOARD + ACTUAL + url);
+        assertThat(url).contains(Urls.Assets.DASHBOARD);
     }
 
     @Test
@@ -42,7 +41,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 1);
 
-        Assert.assertTrue(url.contains(Urls.Assets.GATEWAYS), EXPECTED + Urls.Assets.GATEWAYS + ACTUAL+ url);
+        assertThat(url).contains(Urls.Assets.GATEWAYS);
     }
 
     @Test
@@ -50,7 +49,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 2);
 
-        Assert.assertTrue(url.contains(Urls.Assets.RELAYS), EXPECTED + Urls.Assets.RELAYS + ACTUAL + url);
+        assertThat(url).contains(Urls.Assets.RELAYS);
     }
 
     @Test
@@ -58,7 +57,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 3);
 
-        Assert.assertTrue(url.contains(Urls.Assets.RTUS), EXPECTED + Urls.Assets.RTUS + ACTUAL + url);
+        assertThat(url).contains(Urls.Assets.RTUS);
     }
 
     @Test
@@ -66,7 +65,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 4);
 
-        Assert.assertTrue(url.contains(Urls.Assets.OPT_OUT_STATUS), EXPECTED + Urls.Assets.OPT_OUT_STATUS + ACTUAL + url);
+        assertThat(url).contains(Urls.Assets.OPT_OUT_STATUS);
     }
 
     @Test
@@ -74,7 +73,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 5);
 
-        Assert.assertTrue(url.contains(Urls.Assets.WORK_ORDERS), EXPECTED + Urls.Assets.WORK_ORDERS + ACTUAL + url);
+        assertThat(url).contains(Urls.Assets.WORK_ORDERS);
     }
 
     @Test
@@ -82,7 +81,7 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 6);
 
-        Assert.assertTrue(url.contains(Urls.Assets.IMPORT), EXPECTED + Urls.Assets.IMPORT + ACTUAL+ url);
+        assertThat(url).contains(Urls.Assets.IMPORT);
     }
 
     @Test
@@ -90,6 +89,6 @@ public class AssetsMenuTests extends SeleniumTestSetup {
 
         String url = page.getMenu().getMenuOptionUrl(ASSETS_INDEX, 7);
 
-        Assert.assertTrue(url.contains(Urls.Assets.REPORTS), EXPECTED + Urls.Assets.REPORTS + ACTUAL + url);
+        assertThat(url).contains(Urls.Assets.REPORTS);
     }
 }
