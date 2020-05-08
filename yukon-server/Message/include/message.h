@@ -76,7 +76,7 @@ public:
    // Adjust the time to now.
    void resetTime();
 
-   virtual std::string toString() const override;
+   std::string toString() const override;
    std::string typeString() const;
 
    virtual bool isValid();

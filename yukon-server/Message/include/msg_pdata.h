@@ -83,7 +83,7 @@ public:
 
    std::string getTrackingId() const;
 
-   virtual std::string toString() const override;
+   std::string toString() const override;
 
    bool isValid() override;
 
