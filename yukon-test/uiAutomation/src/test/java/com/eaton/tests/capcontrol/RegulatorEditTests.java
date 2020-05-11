@@ -1,9 +1,10 @@
 package com.eaton.tests.capcontrol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
@@ -62,7 +63,7 @@ public class RegulatorEditTests extends SeleniumTestSetup {
 //        Assert.assertEquals(userMsg, "Regulator was saved successfully.");
         String actualPageTitle = detailsPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, "Regulator: " + name, "Expected Page title: 'Regulator: " + name + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo("Regulator: " + name);
     }   
     
     @Test(enabled = false, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
@@ -84,6 +85,6 @@ public class RegulatorEditTests extends SeleniumTestSetup {
         
 //        String userMsg = detailsPage.getUserMessageSuccess();
 //        
-//        Assert.assertEquals(userMsg, "Feeder AT Delete Feeder deleted successfully.");
+//        assertThat(userMsg).isEqualTo("Feeder AT Delete Feeder deleted successfully.");
     }
 }

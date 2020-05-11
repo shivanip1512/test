@@ -1,12 +1,13 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
 
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -16,14 +17,14 @@ import com.eaton.pages.demandresponse.LoadGroupListPage;
 public class LoadGroupListTests extends SeleniumTestSetup {
 
     private LoadGroupListPage listPage;
-    private SoftAssert softAssertion;
+    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softAssertion = getSoftAssertion();        
+        softly = new SoftAssertions();        
 
         driver.get(getBaseUrl() + Urls.DemandResponse.LOAD_GROUPS);
 
@@ -36,7 +37,7 @@ public class LoadGroupListTests extends SeleniumTestSetup {
         
         String actualPageTitle = listPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test
@@ -47,11 +48,14 @@ public class LoadGroupListTests extends SeleniumTestSetup {
         
         int actualCount = headers.size();
         
-        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
-        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
-        softAssertion.assertTrue(headers.contains("State"), "Expected Column Header of State");
-        softAssertion.assertTrue(headers.contains("Last Action"), "Expected Column Header of Last Action");
-        softAssertion.assertTrue(headers.contains("Day/Month/Season/Year Hrs"), "Expected Column Header of Day/Month/Season/Year Hrs");
-        softAssertion.assertTrue(headers.contains("Reduction"), "Expected Column Header of Reduction");
+        softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
+        
+        softly.assertThat(headers).contains("Name");
+        softly.assertThat(headers).contains("State");
+        softly.assertThat(headers).contains("Last Action");
+        softly.assertThat(headers).contains("Day/Month/Season/Year Hrs");
+        softly.assertThat(headers).contains("Reduction");
+        
+        softly.assertAll();
     }
 }

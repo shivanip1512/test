@@ -1,7 +1,7 @@
 package com.eaton.tests;
 
+import static org.assertj.core.api.Assertions.*;
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
@@ -14,7 +14,7 @@ public class LoginTests extends SeleniumTestSetup {
 
     private LoginPage page;
 
-    //todo need to refactor this test class
+    //TODO need to refactor this test class
     @Test(enabled = false)
     public void loginSuccessfully() {
         final String EXPECTED_TITLE = "Dashboard: Default Main Dashboard";
@@ -32,6 +32,6 @@ public class LoginTests extends SeleniumTestSetup {
         HomePage homePage = new HomePage(driverExt);
         String actualPageTitle = homePage.getPageTitle();
 
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

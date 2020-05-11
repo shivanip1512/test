@@ -1,8 +1,8 @@
 package com.eaton.tests.admin.energycompany;
 
+import static org.assertj.core.api.Assertions.*;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -40,14 +40,13 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
         
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
     public void deleteEnergyComapnySuccess() {
-        final String START_EXPECTED_MSG = "The energy company ";
-        final String END_EXPECTED_MSG = " was deleted successfully.";
         final String NAME = "AT Delete EC";
+        final String EXPECTED_MSG = "The energy company " + NAME + " was deleted successfully.";
         
         navigate(Urls.Admin.ENERGY_COMPANY_GENERAL_INFO + "822");
         
@@ -73,7 +72,7 @@ public class EnergyCompanyGeneralInfoEditTests extends SeleniumTestSetup {
         
         String userMsg = listPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, START_EXPECTED_MSG + NAME + END_EXPECTED_MSG, "Expected User Msg: '" + START_EXPECTED_MSG + NAME + END_EXPECTED_MSG + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }   
 
 }

@@ -1,9 +1,10 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -33,7 +34,7 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
 
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_10_EditControlArea"})
@@ -43,8 +44,10 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         ControlAreaEditPage editPage = new ControlAreaEditPage(driverExt, 514);
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-                 
-        String name = "AT Edited Control Area " + timeStamp;         
+        String name = "AT Edited Control Area " + timeStamp;  
+        
+        final String EXPECTED_MSG = name + " saved successfully.";
+        
         editPage.getName().setInputValue(name);  
         
         editPage.getSave().click();
@@ -55,6 +58,6 @@ public class ControlAreaEditTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }        
 }
