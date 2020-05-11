@@ -4884,8 +4884,8 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/harvesthq/chosen/blob/f093b3930e83f2fd656fe63d6cdb35cac52a74dc/LICENSE.md"
     npm URL : "https://www.npmjs.com/package/chosen-js"
-    md5 : c8e16998bbb406d52fca3ff418f783e6
-    sha1 : e8e830f5a97ebb67afec0019acf1e3b3871cc803
+    md5 : 89a97a32afa7df2eb7285a29a3f61c10
+    sha1 : a6198f5d0afa5ee7ca22638195836ed8a3faccb0
     jira : YUK-13080
     updated : 2014-04-19
     notes : 
@@ -4944,8 +4944,8 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/blueimp-file-upload"
-    md5 : 8b57a1ec5a3e7c98e572e50ac84951b7
-    sha1 : 5825b88f821c97568ae53fce2c775f553da19a28
+    md5 : 222eeb8fd90b5c2ca6f11ba6bf18a7ac
+    sha1 : 5e7e3967f87bf92ae127071a5b6145b699ecb0db
     jira : YUK-13033
     updated : 2014-02-17
     notes : 
@@ -4992,8 +4992,8 @@ JavaScript :
     license : Eaton-owned
     license URLs : n/a
     npm URL : "https://www.npmjs.com/package/highcharts/v/6.0.4"
-    md5 : bd0fbb0cd958c9ee5f31dd05d46ba3c4
-    sha1 : 0a3f528572645aa0a9f695df9280cb1b0b7e0cb7
+    md5 : d21c81a52fc73f75a88ec8a2f7932f8a
+    sha1 : 536e1e8f75cd9560cf8b8294a879997ce8f8140a
     jira : YUK-17366
     updated : 2017-12-20
     notes : 
@@ -5016,8 +5016,8 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/jquery/jquery/blob/master/LICENSE.txt"
     npm URL : "https://www.npmjs.com/package/jquery/v/3.3.1"
-    md5 : 86a1c9da00997c2c1161b1c98d949b59
-    sha1 : 87eb28c1c4e1cc2005d46b0356dcc8c2f3efb481
+    md5 : 074f6329ab5c2e13fa02805863afeb94
+    sha1 : 718e71e3d1efb6ba3bffb2a8d0f873b09b30912b
     jira : YUK-18131
     updated : 2018-05-18
     notes : 
@@ -5052,8 +5052,8 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/moment/moment/blob/develop/LICENSE"
     npm URL : "https://www.npmjs.com/package/moment/v/2.8.3"
-    md5 : 067aa38e6be00d8c0b485fd6c997c677
-    sha1 : 23ed6fc4d75ee6f399950d9b5ee7af5a9ad2de67
+    md5 : 602f5aac5e835d120bcf088f38eb0cc8
+    sha1 : 0b92406328486c660f85c6595429efb51a2d225c
     jira : YUK-12661
     updated : 2014-09-16
     notes : 
@@ -5076,8 +5076,8 @@ JavaScript :
     license : BSD 2-clause
     license URLs : "https://raw.githubusercontent.com/openlayers/openlayers/master/LICENSE.md"
     npm URL : "https://www.npmjs.com/package/ol/v/5.3.0"
-    md5 : ff1f13729b498edca3524e77dcc4dd01
-    sha1 : ed5d792b2a6f423ed42e2f57eb0d504fed57df25
+    md5 : 068d9f345f42be4c1b285150d77b6aeb
+    sha1 : edf754bf20d58dbc929c43106b81404402956c58
     jira : YUK-19887
     updated : 2019-05-09
     notes : 
@@ -5160,8 +5160,8 @@ JavaScript :
     license : MIT
     license URLs : "https://github.com/jaz303/tipsy/blob/master/LICENSE"
     npm URL : "https://www.npmjs.com/package/tipsy"
-    md5 : 248e9f882e50d3942c17c4036506aa2b
-    sha1 : 5502e8ace2f711f3e17a517d224d6e5417708a16
+    md5 : ebdda674c177707f21f8722754863ed9
+    sha1 : 282743f4ba1302897824e3bea445b038c6071b75
     jira : YUK-13033
     updated : 2014-02-17
     notes : 
