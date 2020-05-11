@@ -14,30 +14,30 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 @SuppressWarnings("serial")
-public class JsonDeserializePaoTypeLookup extends StdDeserializer<Object> {
+public class PortJsonSerializer extends StdDeserializer<PortBase<?>> {
 
-    protected JsonDeserializePaoTypeLookup() {
-        super(Object.class);
+    protected PortJsonSerializer() {
+        super(PortBase.class);
     }
 
     private IDatabaseCache serverDatabaseCache = YukonSpringHook.getBean(IDatabaseCache.class);
 
     @Override
-    public Object deserialize(JsonParser parser, DeserializationContext ctxt)
+    public PortBase<?> deserialize(JsonParser parser, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
         TreeNode node = parser.readValueAsTree();
-        // Catch the update case here.
+        // Catch the update case here
         String portId = ServletUtils.getPathVariable("portId");
         PaoType paoType = null;
         if (portId == null) {
             // Create case.
             paoType = PaoType.valueOf(node.get("type").toString().replace("\"", ""));
         } else {
-            // Update case.
+            // Update case
             paoType = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(portId)).getPaoType();
         }
 
         Class<?> clazz = PortServiceImpl.getModel(paoType).getClass();
-        return parser.getCodec().treeToValue(node, clazz);
+        return (PortBase<?>) parser.getCodec().treeToValue(node, clazz);
     }
 }
