@@ -67,9 +67,6 @@
                 </tags:nameValue2>
             </cti:checkRolesAndProperties>
         </tags:nameValueContainer2>
-        <c:if test="${displayUploadPopup}">
-            <div data-dialog></div>
-        </c:if>
     </c:if>
     
     <!-- Data Streaming Configuration -->
