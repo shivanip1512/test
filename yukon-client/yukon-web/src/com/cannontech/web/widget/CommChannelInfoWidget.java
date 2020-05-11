@@ -1,9 +1,5 @@
 package com.cannontech.web.widget;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,7 +28,6 @@ import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -119,7 +114,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
     @PostMapping("/save")
     public String save(@ModelAttribute("commChannel") PortBase commChannel, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) throws IOException {
+            FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) {
 
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
@@ -137,10 +132,6 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 model.clear();
-                Map<String, Object> json = new HashMap<>();
-                json.put("success", true);
-                resp.setContentType("application/json");
-                JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", commChannel.getName()));
                 return null;
             }

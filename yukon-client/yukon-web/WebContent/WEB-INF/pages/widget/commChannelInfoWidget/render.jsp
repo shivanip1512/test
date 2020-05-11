@@ -8,7 +8,7 @@
 <cti:msgScope paths="yukon.web.modules.operator.commChannelInfoWidget">
     <tags:setFormEditMode mode="${mode}" />
     <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
-    <form:form modelAttribute="commChannel" action="${action}" method="post" id="commChannel-info-form">
+    <form:form modelAttribute="commChannel" method="post" id="commChannel-info-form">
         <cti:csrfToken />
         <cti:tabs>
         <!-- Info Tab -->
@@ -151,9 +151,8 @@
              data-title="${editPopupTitle}" 
              data-dialog 
              data-ok-text="${saveText}" 
-             data-position-my="right bottom"
-             data-position-of="#edit-btn"
-             data-position-at="left top-4"
+             data-width="500"
+             data-height="400"
              data-event="yukon:assets:commChannel:save" 
              data-url="${editUrl}"/>
         </div>
