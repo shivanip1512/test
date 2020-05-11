@@ -2,7 +2,6 @@ package com.cannontech.rest.api.documentation.commChannel;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 
-
 import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -10,6 +9,8 @@ import org.springframework.restdocs.payload.JsonFieldType;
 
 import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
 import com.cannontech.rest.api.commChannel.request.MockPortBase;
+import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.documentation.DocumentationBase;
 import com.cannontech.rest.api.documentation.DocumentationFields;
 import com.cannontech.rest.api.documentation.DocumentationFields.*;
@@ -73,7 +74,8 @@ public abstract class CommChannelApiDocBase extends DocumentationBase {
         List<FieldDescriptor> requestFields  = getFieldDescriptors();
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), "createPort");
+        String url = ApiCallHelper.getProperty("createPort");
+        return new DocumentationFields.Create(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
     
     @Override
@@ -81,23 +83,28 @@ public abstract class CommChannelApiDocBase extends DocumentationBase {
         List<FieldDescriptor> requestFields  = getFieldDescriptors();
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), "updatePort", getPortId());
+        String url = ApiCallHelper.getProperty("updatePort") + getPortId();
+        return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
     
     @Override
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
         responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
-        return new DocumentationFields.Get(responseFields, "getPort", getPortId());
+        String url = ApiCallHelper.getProperty("getPort") + getPortId();
+        return new DocumentationFields.Get(responseFields, url);
     }
     
     @Override
     protected Delete buildDeleteFields() {
-        return new DocumentationFields.Delete("deletePort", getPortId());
+        String url = ApiCallHelper.getProperty("deletePort") + getPortId();
+        return new DocumentationFields.Delete(url);
     }
     
     @Override
     protected Copy buildCopyFields() {
         return null;
     }
+    
+    protected abstract MockPaoType getMockPaoType();
 }

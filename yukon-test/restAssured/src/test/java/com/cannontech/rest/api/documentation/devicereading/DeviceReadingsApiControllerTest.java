@@ -7,7 +7,6 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.deviceReadings.request.MockIdentifierType;
 import com.cannontech.rest.api.devicereading.helper.DeviceReadingHelper;
 import com.cannontech.rest.api.documentation.DocumentationBase;
@@ -30,11 +29,6 @@ public class DeviceReadingsApiControllerTest extends DocumentationBase {
     }
 
     @Override
-    protected MockPaoType getMockPaoType() {
-        return null;
-    }
-
-    @Override
     protected Create buildCreateFields() {
         return null;
     }
@@ -49,9 +43,10 @@ public class DeviceReadingsApiControllerTest extends DocumentationBase {
         List<FieldDescriptor> requestFields = Arrays.asList(DeviceReadingHelper.buildRequestDescriptorForGet());
         List<FieldDescriptor> responseFields = Arrays.asList(DeviceReadingHelper.buildResponseDescriptorForGet());
         String meterNumber = ApiCallHelper.getProperty("meterNumber");
+        String url = ApiCallHelper.getProperty("getLatestReading") + "getLatestReading";
         return new DocumentationFields.GetWithBody(responseFields, requestFields,
                                             DeviceReadingHelper.buildDeviceReadingRequest(MockIdentifierType.METERNUMBER, meterNumber),
-                                            "getLatestReading", "getLatestReading");
+                                            url);
     }
 
     @Override

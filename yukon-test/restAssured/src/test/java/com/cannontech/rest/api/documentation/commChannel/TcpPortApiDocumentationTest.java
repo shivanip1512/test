@@ -10,6 +10,7 @@ import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.annotations.Test;
 
+import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockPaoType;
 
 public class TcpPortApiDocumentationTest extends CommChannelApiDocBase {
@@ -48,8 +49,8 @@ public class TcpPortApiDocumentationTest extends CommChannelApiDocBase {
             fieldWithPath("[].name").type(JsonFieldType.STRING).description("Comm Channel Name"),
             fieldWithPath("[].enable").type(JsonFieldType.BOOLEAN).description("Status"),
             fieldWithPath("[].type").type(JsonFieldType.STRING).description("Type"));
-
-        getAllDoc(allPortsDescriptor, "getAllCommChannels");
+        String url = ApiCallHelper.getProperty("getAllCommChannels");
+        getAllDoc(allPortsDescriptor, url);
     }
 
     @Override

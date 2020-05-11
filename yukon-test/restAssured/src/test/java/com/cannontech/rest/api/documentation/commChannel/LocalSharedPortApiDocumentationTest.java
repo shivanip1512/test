@@ -15,7 +15,6 @@ import com.cannontech.rest.api.common.model.MockPaoType;
 public class LocalSharedPortApiDocumentationTest extends CommChannelApiDocBase {
     
     private String portId = null;
-    public final static String CONTEXT_PORT_ID = "id";
 
     private static FieldDescriptor[] buildLocalPortDescriptor() {
         return new FieldDescriptor[] {
