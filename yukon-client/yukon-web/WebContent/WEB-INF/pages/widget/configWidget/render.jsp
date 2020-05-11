@@ -13,37 +13,55 @@
 <!-- Device Configuration -->
 <c:if test="${configurableDevice}">
     <tags:nameValueContainer2 tableClass="spaced-form-controls">
-        <tags:nameValue2 nameKey=".currentConfiguration" nameColumnWidth="150px">${fn:escapeXml(currentConfigName)}</tags:nameValue2>
+        <tags:nameValue2 nameKey=".currentConfiguration" nameColumnWidth="160px">
+            ${fn:escapeXml(currentConfigName)}
+            <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
+                <c:if test="${not empty currentConfigId}">
+                    <tags:widgetActionRefresh method="removeConfig" nameKey="remove" renderMode="image" classes="fn vam js-config-action-btns" icon="icon-cross"/>
+                </c:if>
+            </cti:checkRolesAndProperties>
+        </tags:nameValue2>
 
         <c:if test="${not empty currentConfigId}">
+            <tags:nameValue2 nameKey=".status">
+                <cti:dataUpdaterValue identifier="${deviceId}/STATUS_TEXT" type="DEVICE_CONFIG"/>
+                <cti:dataUpdaterCallback function="yukon.widget.config.inProgressUpdater" initialize="true" value="DEVICE_CONFIG/${deviceId}/IN_PROGRESS"/>
+            </tags:nameValue2>
+            
             <tags:nameValue2 nameKey=".action">
-                <div class="button-group">
-                    <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-                        <tags:widgetActionRefresh method="unassignConfig" nameKey="unassign" classes="M0"/>
-                    </cti:checkRolesAndProperties>
+                <div class="button-group" style="vertical-align:unset;">
                     <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-                        <tags:widgetActionUpdate method="sendConfig" nameKey="send" container="${widgetParameters.widgetId}_config_results" classes="M0"/>
-                        <tags:widgetActionUpdate method="readConfig" nameKey="read" container="${widgetParameters.widgetId}_config_results" classes="M0"/>
+                        <tags:widgetActionRefresh method="uploadConfig" nameKey="upload" container="${widgetParameters.widgetId}_config_results" classes="M0 js-config-action-btns"/>
+                        <tags:widgetActionRefresh method="validateConfig" nameKey="validate" container="${widgetParameters.widgetId}_config_results" classes="M0 js-config-action-btns"/>
                     </cti:checkRolesAndProperties>
-                    <tags:widgetActionUpdate method="verifyConfig" nameKey="verify" container="${widgetParameters.widgetId}_config_results" classes="M0"/>
                 </div>
             </tags:nameValue2>
+            <c:if test="${not empty userMessage}">
+                <tags:alertBox type="success" includeCloseButton="true">${userMessage}</tags:alertBox>
+            </c:if>
         </c:if>
     </tags:nameValueContainer2>
 
     <tags:nameValueContainer2 tableClass="spaced-form-controls">
         <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
-            <tags:nameValue2 nameKey=".deviceConfigurations" nameColumnWidth="150px">
-                <select id="configuration" name="configuration" style="max-width: 200px; margin-left: -1px;">
+            <tags:nameValue2 nameKey=".changeConfiguration" nameColumnWidth="160px">
+                <select id="configuration" name="configuration" style="max-width: 200px;">
                     <c:forEach var="config" items="${existingConfigs}">
                         <option value="${config.configurationId}" <c:if test="${config.configurationId == currentConfigId}">selected</c:if>>${fn:escapeXml(config.name)}</option>
                     </c:forEach>
                 </select>
-                <tags:widgetActionRefresh method="assignConfig" nameKey="assign" classes="fr dib ML10"/>
+                <cti:button nameKey="change" classes="js-change-config js-config-action-btns fn vam" data-device-id="${deviceId}"/>
+                <cti:msg2 var="uploadTitle" key=".uploadPopup.title"/>
+                <cti:msg2 var="uploadButton" key=".upload.label"/>
+                <div id="uploadPopup" data-dialog class="dn" data-title="${uploadTitle}" data-upload-btn="${uploadButton}">
+                    <span class=js-upload-msg></span>
+                </div>
             </tags:nameValue2>
         </cti:checkRolesAndProperties>
-        <div id="${widgetParameters.widgetId}_config_results"></div>
     </tags:nameValueContainer2>
+    <c:if test="${displayUploadPopup}">
+        <div data-dialog></div>
+    </c:if>
 </c:if>
 
 <!-- Data Streaming Configuration -->
@@ -130,3 +148,6 @@
         </tags:nameValueContainer2>
     </tags:sectionContainer>
 </c:if>
+
+<cti:includeScript link="/resources/js/widgets/yukon.widget.config.js"/>
+
