@@ -23,4 +23,9 @@ public class RfnDeviceDataResponse implements Serializable {
     public Boolean isSuccess() {
         return success;
     }
+
+    @Override
+    public String toString() {
+        return String.format("RfnDeviceDataResponse [success=%s]", success);
+    }
 }
