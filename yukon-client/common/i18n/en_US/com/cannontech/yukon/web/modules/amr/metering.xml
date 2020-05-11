@@ -187,6 +187,8 @@
     <entry key="yukon.web.widgets.configWidget.status">Status</entry>
     <entry key="yukon.web.widgets.configWidget.uploadPopup.title">Upload Device Configuration</entry>
     <entry key="yukon.web.widgets.configWidget.uploadPopup.message">Device Configuration has been changed to ''{0}'' for device ''{1}'', would you like to Upload the Configuration to the device?</entry>
+    <entry key="yukon.web.widgets.configWidget.actionsDisabledMessage">Actions are disabled while Status is In Progress</entry>
+    <entry key="yukon.web.widgets.configWidget.actionInProgress">Action not allowed while Status is In Progress.</entry>
 
     <!-- touWidget/render.jsp -->
     <entry key="yukon.web.widgets.touWidget.title">Tou Readings</entry>

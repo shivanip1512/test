@@ -6,20 +6,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.amr.rfn.dataStreaming.model.DiscrepancyResult;
@@ -28,6 +22,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigLicenseKey;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
@@ -47,13 +42,11 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
 import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
-import com.cannontech.web.widget.support.WidgetParameterHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
@@ -140,10 +133,52 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
             }
         }
     }
+    
+    @GetMapping("getStatus")
+    @ResponseBody
+    public Map<String, Object> getStatus(ModelMap model, int deviceId, YukonUserContext userContext) {
+        Map<String, Object> jsonResponse = new HashMap<>();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId); 
+        final String summaryKey = "yukon.web.modules.tools.configs.summary.status.";
+        boolean isInProgress = false;
+        boolean isInSync = false;
+        boolean notConfigured = false;
+        boolean isOutOfSync = false;
+  
+        String statusText = null;
+                        
+        if (configState == null
+                || (configState.getState() == ConfigState.UNASSIGNED || configState.getState() == ConfigState.UNKNOWN)) {
+            // "Current Configuration: None" should display. No Status row, no Actions row, but with the Change Configuration row
+            // still below.
+            notConfigured = true;
+        } else if (configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+            statusText = accessor.getMessage(summaryKey + "IN_PROGRESS");
+            isInProgress = true;
+            // disable buttons
+            // display status "In Progress" -  we can end up in this state for a short while
+        } else if (configState.getState() == ConfigState.IN_SYNC) {
+            // display status "in sync"
+            statusText = accessor.getMessage(summaryKey + "IN_SYNC");
+            isInSync = true;
+        } else if (configState.getState() == ConfigState.OUT_OF_SYNC || configState.getState() == ConfigState.UNREAD) {
+            // display status "needs upload"
+            statusText = accessor.getMessage(summaryKey + "NEEDS_UPLOAD");
+            isOutOfSync = true;
+        } else if (configState.getState() == ConfigState.UNCONFIRMED) {
+            // display status "needs validation"
+            statusText = accessor.getMessage(summaryKey + "NEEDS_VALIDATION");
+        }
+        
+        jsonResponse.put("statusText", statusText);
+        jsonResponse.put("notConfigured", notConfigured);
+        jsonResponse.put("isInProgress", isInProgress);
+        jsonResponse.put("isInSync", isInSync);
+        jsonResponse.put("isOutOfSync", isOutOfSync);
 
-    private SimpleDevice getDevice(HttpServletRequest request) throws ServletRequestBindingException {
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        return deviceDao.getYukonDevice(deviceId);
+        return jsonResponse;
+
     }
     
     @PostMapping("changeConfig")
@@ -151,20 +186,25 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     public Map<String, Object> changeConfig(ModelMap model, int deviceId, int configuration, YukonUserContext userContext) throws InvalidDeviceTypeException {
         Map<String, Object> jsonResponse = new HashMap<>();
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        if (configuration > -1) {
-            DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
-            DeviceConfigState configState = deviceConfigService.assignConfigToDevice(device, deviceConfig,
-                    userContext.getYukonUser());
-            
-            if(configState.getState() == ConfigState.OUT_OF_SYNC) {
-                MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
-                // display popup suggesting upload
-                jsonResponse.put("displayUploadPopup", true);
-                jsonResponse.put("popupMessage", accessor.getMessage(baseKey + "uploadPopup.message", deviceConfig.getName(), pao.getPaoName()));
-            }
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DeviceConfigState currentConfigState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
+        if(currentConfigState != null && currentConfigState.getStatus() == LastActionStatus.IN_PROGRESS) {
+            jsonResponse.put("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
-            deviceConfigService.unassignConfig(device, userContext.getYukonUser());
+            if (configuration > -1) {
+                DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
+                DeviceConfigState configState = deviceConfigService.assignConfigToDevice(device, deviceConfig,
+                        userContext.getYukonUser());
+                
+                if(configState.getState() == ConfigState.OUT_OF_SYNC) {
+                    LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
+                    // display popup suggesting upload
+                    jsonResponse.put("displayUploadPopup", true);
+                    jsonResponse.put("popupMessage", accessor.getMessage(baseKey + "uploadPopup.message", deviceConfig.getName(), pao.getPaoName()));
+                }
+            } else {
+                deviceConfigService.unassignConfig(device, userContext.getYukonUser());
+            }
         }
 
         return jsonResponse;
@@ -174,7 +214,13 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     @PostMapping("removeConfig")
     public String removeConfig(ModelMap model, int deviceId, YukonUserContext userContext) throws InvalidDeviceTypeException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        deviceConfigService.unassignConfig(device, userContext.getYukonUser());
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
+        if(configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
+        } else {
+            deviceConfigService.unassignConfig(device, userContext.getYukonUser());
+        }
         getConfigModelAndView(model, deviceId, userContext);
         return "configWidget/render.jsp";
     }
@@ -182,32 +228,38 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     @PostMapping("uploadConfig")
     public String uploadConfig(ModelMap model, int deviceId, YukonUserContext userContext) {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        executor.submit(() -> deviceConfigService.sendConfig(device, userContext.getYukonUser()));
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        model.addAttribute("userMessage", accessor.getMessage(baseKey + "uploadSent"));
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
+        if(configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+            model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
+        } else {
+            executor.submit(() -> deviceConfigService.sendConfig(device, userContext.getYukonUser()));
+            model.addAttribute("userMessage", accessor.getMessage(baseKey + "uploadSent"));
+        }
         getConfigModelAndView(model, deviceId, userContext);
         return "configWidget/render.jsp";
     }
 
     @PostMapping("validateConfig")
     public String validateConfig(ModelMap model, int deviceId, YukonUserContext userContext) {
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        executor.submit(() -> deviceConfigService.readConfig(device, userContext.getYukonUser()));
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        model.addAttribute("userMessage", accessor.getMessage(baseKey + "validateSent"));
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
+        if(configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+            model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
+        } else {
+            executor.submit(() -> deviceConfigService.readConfig(device, userContext.getYukonUser()));
+            model.addAttribute("userMessage", accessor.getMessage(baseKey + "validateSent"));
+        }
         getConfigModelAndView(model, deviceId, userContext);
         return "configWidget/render.jsp";
     }
     
-    @RequestMapping(value = "verifyConfig", method = RequestMethod.POST)
-    public ModelAndView verifyConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        //Use this method when the user clicks on "Out of Sync" 
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        ModelAndView mav = new ModelAndView("summary/outOfSync.jsp");
-        SimpleDevice device = getDevice(request);
+    @GetMapping("outOfSyncPopup")
+    public String outOfSyncPopup(ModelMap model, int deviceId, YukonUserContext userContext) {
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         VerifyResult verifyResult = deviceConfigService.verifyConfig(device, userContext.getYukonUser());
-        mav.addObject("verifyResult", verifyResult);
-        return mav;
+        model.addAttribute("verifyResult", verifyResult);
+        return "../deviceConfiguration/summary/outOfSync.jsp";
     }
 }
 
