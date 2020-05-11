@@ -9,13 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.api.token.ApiRequestContext;
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.BaudRate;
+import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.UdpPortDetail;
+import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.events.loggers.CommChannelEventLogService;
 import com.cannontech.common.pao.PaoType;
@@ -34,6 +36,7 @@ public class PortServiceImpl implements PortService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private CommChannelEventLogService commChannelEventLogService;
+    @Autowired private PortDao portDao;
 
     @Override
     @Transactional
@@ -152,5 +155,14 @@ public class PortServiceImpl implements PortService {
         }
         
         return portBase;
+    }
+
+    @Override
+    public List<DeviceBaseModel> getAssignedDevicesForPort(int portId) {
+        List<DeviceBaseModel> devices = portDao.getAllAssignedDevicesForPort(portId);
+        if (devices.isEmpty()) {
+            throw new NotFoundException("No device found for portId : " + portId);
+        }
+        return devices;
     }
 }
