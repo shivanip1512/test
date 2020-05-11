@@ -1,11 +1,12 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -42,18 +43,19 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_01_CreateLoadGrp()"})
     public void createEcobeeLoadGroupSuccess() {
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-        
         String name = "AT ecobee " + timeStamp;
         double randomDouble = randomNum.nextDouble();   
         int randomInt = randomNum.nextInt(9999);
         double capacity = randomDouble + randomInt;
+        
+        final String EXPECTED_MSG = name + " saved successfully.";
         
         createPage.getName().setInputValue(name);
         createPage.getType().selectItemByText("ecobee Group");
@@ -69,7 +71,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }    
     
     @AfterMethod(alwaysRun=true)

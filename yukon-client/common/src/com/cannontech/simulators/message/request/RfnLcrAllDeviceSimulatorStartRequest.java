@@ -19,4 +19,9 @@ public class RfnLcrAllDeviceSimulatorStartRequest implements SimulatorRequest {
     public SimulatorSettings getSettings() {
         return settings;
     }
+
+    @Override
+    public String toString() {
+        return String.format("RfnLcrAllDeviceSimulatorStartRequest [settings=%s]", settings);
+    }
 }
