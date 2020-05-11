@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
@@ -29,6 +30,7 @@ public class LoadProgramSetupHelper {
     public final static String CONTEXT_PROGRAM_ID = "programId"; 
     public final static String CONTEXT_PROGRAM_NAME = "programName";
     public final static String CONTEXT_COPIED_PROGRAM_NAME = "copiedProgramName";
+    private final static String notificationGrpName = ApiCallHelper.getProperty("notificationGrpName");
     
     public static MockLoadProgram buildLoadProgramRequest(MockPaoType type, List<MockLoadGroupBase> loadGroups, List <MockGearControlMethod> gearTypes, Integer constraintId) {
 
@@ -72,8 +74,8 @@ public class LoadProgramSetupHelper {
 
         List<MockNotificationGroup> assignedNotificationGroups = new ArrayList<>();
         MockNotificationGroup notificationGroup = MockNotificationGroup.builder()
-                                                               .notificationGrpID(2)
-                                                               .notificationGrpName("Jess Notification")
+                                                               .notificationGrpID(getNotificationGrpID())
+                                                               .notificationGrpName(notificationGrpName)
                                                                .build();
         assignedNotificationGroups.add(notificationGroup);
 
@@ -197,5 +199,10 @@ public class LoadProgramSetupHelper {
 
     public static FieldDescriptor requestFieldDesriptorForDelete() {
         return fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name");
+    }
+    
+    private static Integer getNotificationGrpID() {
+        String notificationGrpIDStr = ApiCallHelper.getProperty("notificationGrpID");
+        return Integer.valueOf(notificationGrpIDStr);
     }
 }
