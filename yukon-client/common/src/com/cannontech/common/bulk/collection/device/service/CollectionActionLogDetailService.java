@@ -13,8 +13,9 @@ public interface CollectionActionLogDetailService {
 
     /**
      * Helper method to build log details.
+     * @param deviceErrorText - text to be added to log
      */
-    List<CollectionActionLogDetail> buildLogDetails(List<? extends YukonPao> paos, CollectionActionDetail detail);
+    List<CollectionActionLogDetail> buildLogDetails(List<? extends YukonPao> paos, CollectionActionDetail detail, String deviceErrorText);
 
     /**
      * Appends log detail to a log file.

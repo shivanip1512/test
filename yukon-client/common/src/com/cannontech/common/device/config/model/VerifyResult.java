@@ -11,6 +11,11 @@ public class VerifyResult {
     private List<String> matching = Lists.newArrayList();
     private List<String> discrepancies = Lists.newArrayList();
 
+    public VerifyResult(DisplayablePao device, LightDeviceConfiguration config) {
+        this.device = device;
+        this.config = config;
+    }
+    
     public VerifyResult(DisplayablePao device) {
         this.device = device;
     }

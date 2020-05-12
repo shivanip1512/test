@@ -65,13 +65,20 @@ public interface CollectionActionService {
             List<? extends YukonPao> unsupportedDevices);
 
     /**
-     * Adds unsupported devices to the list.
-     */
-    void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, int execId,
-            List<? extends YukonPao> devices);
-
-    /**
      * Removes cached result
      */
     void removeResultFromCache(int key);
+
+
+    /**
+     *  Adds unsupported devices to the list with explanation as to why device is unsupported (deviceErrorText)
+     */
+    void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, int execId,
+            List<? extends YukonPao> devices, String deviceErrorText);
+    
+    /**
+     *  Adds unsupported devices to the list with explanation as to why device is unsupported (deviceErrorText)
+     */
+    void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, List<? extends YukonPao> devices,
+            String deviceErrorText);
 }

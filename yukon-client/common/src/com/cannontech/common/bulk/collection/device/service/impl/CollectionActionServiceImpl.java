@@ -194,18 +194,23 @@ public class CollectionActionServiceImpl implements CollectionActionService {
     @Override
     public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
             List<? extends YukonPao> devices) {
-        addUnsupportedToResult(detail, result, result.getExecution().getId(), devices);
+        addUnsupportedToResult(detail, result,  devices, null);
+    }
+    
+    @Override
+    public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result,
+            List<? extends YukonPao> devices, String deviceErrorText) {
+        addUnsupportedToResult(detail, result, result.getExecution().getId(), devices, deviceErrorText);
     }
 
     @Override
     public void addUnsupportedToResult(CollectionActionDetail detail, CollectionActionResult result, int execId,
-            List<? extends YukonPao> devices) {
+            List<? extends YukonPao> devices, String deviceErrorText) {
         if (!devices.isEmpty()) {
-            log.debug("Adding unsupported devices:" + devices.size() + " detail:" + detail + " cacheKey:"
-                + result.getCacheKey());
-            result.addDevicesToGroup(detail, devices, logService.buildLogDetails(devices, detail));
+            log.debug("Adding unsupported devices:{} detail:{} cacheKey:{}", devices.size(), detail, result.getCacheKey());
+            result.addDevicesToGroup(detail, devices, logService.buildLogDetails(devices, detail, deviceErrorText));
             commandRequestExecutionResultDao.saveUnsupported(Sets.newHashSet(devices), execId,
-                detail.getCreUnsupportedType());
+                    detail.getCreUnsupportedType());
         }
     }
 
