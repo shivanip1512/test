@@ -312,7 +312,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     }
     
     /**
-     * Creates a per-populate result with devices and configurations to keep track of the values recieved from Porter
+     * Creates a pre-populated result with devices and configurations to keep track of the values received from Porter
      */
     private VerifyConfigCommandResult getInitializedConfigResult(Map<Integer, LightDeviceConfiguration> configurations,
             List<SimpleDevice> supportedDevices) {
