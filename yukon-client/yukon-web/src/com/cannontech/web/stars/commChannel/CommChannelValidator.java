@@ -58,7 +58,7 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
         YukonValidationUtils.checkIfFieldRequired("timing.postTxWait", errors, timing.getPostTxWait(), "Post Tx Wait");
         YukonValidationUtils.checkIfFieldRequired("timing.receiveDataWait", errors, timing.getReceiveDataWait(),
                 "Receive Data Wait");
-        YukonValidationUtils.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(), "Extra Time Out");
+        YukonValidationUtils.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(), "Additional Time Out");
     }
 
     private void validateSharingField(Errors errors, PortSharing sharing) {
