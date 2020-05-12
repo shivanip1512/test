@@ -1,7 +1,7 @@
 package com.eaton.tests.ami;
 
+import static org.assertj.core.api.Assertions.*;
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -32,6 +32,6 @@ public class AmiDashboardTests extends SeleniumTestSetup {
         
         String actualPageTitle = amiPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 }

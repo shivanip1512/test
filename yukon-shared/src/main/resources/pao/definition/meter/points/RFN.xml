@@ -1926,6 +1926,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="394" type="Analog">
         <name>RSSI</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <multiplier value="1"/>
         <unitofmeasure value="DBM"/>
         <decimalplaces value="0"/>
@@ -2432,6 +2433,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
     </point>
     <point offset="2000" type="Status">
         <name>Comm Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Comm Status State"/>
     </point>
 </points>

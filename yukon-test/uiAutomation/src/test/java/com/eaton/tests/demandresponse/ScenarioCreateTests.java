@@ -1,10 +1,11 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -38,14 +39,15 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_12_CreateScenario"})
     public void createScenarioRequiredFieldsOnlySuccess() {        
-        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-                 
+        String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());                 
         String name = "AT Scenario " + timeStamp;         
+        final String EXPECTED_MSG = name + " saved successfully.";
+        
         createPage.getName().setInputValue(name);  
         
         createPage.getLoadProgramAssignments().addSingleAvailable("AT Ldprm for Create Scenario");
@@ -58,7 +60,7 @@ public class ScenarioCreateTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg: '" + name + " saved successfully.' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }    
     
     @AfterMethod(alwaysRun=true)

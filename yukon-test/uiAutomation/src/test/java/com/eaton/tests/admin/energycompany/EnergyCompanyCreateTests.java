@@ -1,10 +1,10 @@
 package com.eaton.tests.admin.energycompany;
 
+import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -38,18 +38,17 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
     public void createEnergyCompanyRequiredFieldsOnlySuccess() {
-        final String START_EXPECTED_MSG = "Energy Company ";
-        final String END_EXPECTED_MSG = " Created Successfully";
-        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String companyName = "AT Energy Company " + timeStamp;
         
-        String name = "AT Energy Company " + timeStamp;
-        createPage.getCompanyName().setInputValue(name);
+        final String EXPECTED_MSG = "Energy Company " + companyName + " Created Successfully";
+                                
+        createPage.getCompanyName().setInputValue(companyName);
         createPage.getEmail().setInputValue("atenergyco@eas.com");
         createPage.getUserName().setInputValue("atenergyco");
         createPage.getPassword().setInputValue("atec1!");
@@ -60,13 +59,13 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         
         createPage.getSaveBtn().click();
         
-        waitForPageToLoad(name, Optional.empty());
+        waitForPageToLoad(companyName, Optional.empty());
         
         EnergyCompanyGeneralInfoPage page = new EnergyCompanyGeneralInfoPage(driverExt);
         
         String userMsg = page.getUserMessage();
         
-        Assert.assertEquals(userMsg, START_EXPECTED_MSG + name + END_EXPECTED_MSG, "Expected User Msg: '" + START_EXPECTED_MSG + name + END_EXPECTED_MSG + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }    
     
     @AfterMethod(alwaysRun=true)

@@ -1,11 +1,11 @@
 package com.eaton.tests.admin.energycompany;
 
+import static org.assertj.core.api.Assertions.*;
 import java.util.Optional;
 
-import org.testng.Assert;
+import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 import com.eaton.elements.WebTable;
 import com.eaton.elements.WebTableRow;
@@ -20,12 +20,12 @@ import com.eaton.pages.admin.energycompany.EnergyCompanyOperatorUserListPage;
 public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
-    private SoftAssert softAssertion;
+    private SoftAssertions softly;
     
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
         driverExt = getDriverExt();   
-        softAssertion = getSoftAssertion();
+        softly = new SoftAssertions();
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, ""})
@@ -38,12 +38,12 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
                                  
         String actualPageTitle = page.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     } 
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
     public void deleteOperatorUserSuccess() {
-        final String EXPECTED_USER_MSG = "Successfully deleted the user";
+        final String EXPECTED_USER_MSG = "Successfully deleted the user.";
         final String OPERATOR_USER = "ATDeleteUser";
         
         navigate(Urls.Admin.ENERGY_COMPANY_OPERATOR_USER_EDIT + "64" + Urls.Admin.ENERGY_COMPANY_OPERATOR_LOGIN_ID + "302");
@@ -62,7 +62,9 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         WebTable table = listPage.getTable();
         WebTableRow row = table.getDataRowByName(OPERATOR_USER);
 
-        softAssertion.assertEquals(actualUserMsg, EXPECTED_USER_MSG, "Expected User Msg: '" + EXPECTED_USER_MSG + "' but found " + actualUserMsg);
-        softAssertion.assertNotNull(row);
+        softly.assertThat(actualUserMsg).isEqualTo(EXPECTED_USER_MSG);
+        softly.assertThat(row).isNull();
+        
+        softly.assertAll();
     }  
 }

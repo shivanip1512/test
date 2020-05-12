@@ -76,13 +76,9 @@ public class DeviceConfigController {
         List<LightDeviceConfiguration> existingConfigs = deviceConfigurationDao.getAllLightDeviceConfigurations();
         model.addAttribute("existingConfigs", existingConfigs);
         
-        //used for sending a config
-        for (SimpleDevice sd : deviceCollection.getDeviceList()) {
-            if (sd.getDeviceType().isRfn()) {
-                model.addAttribute("someRF", true);
-                break;
-            }
-        }
+        //used for uploading a config
+        model.addAttribute("someRF", deviceCollection.getDeviceList().stream().anyMatch(device -> device.getDeviceType().isRfn()));
+        model.addAttribute("somePlc", deviceCollection.getDeviceList().stream().anyMatch(device -> device.getDeviceType().isPlc()));
 
         model.addAttribute("configAction", action);
     }
