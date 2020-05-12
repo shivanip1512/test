@@ -37,6 +37,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.stars.commChannel.CommChannelValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -48,6 +49,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CommChannelValidator<? extends PortBase<?>> commChannelValidator;
     private static final Logger log = YukonLogManager.getLogger(CommChannelInfoWidget.class);
     private static final String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
 
@@ -117,6 +119,22 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) {
 
         try {
+            commChannelValidator.validate(commChannel, result);
+            if (result.hasErrors()) {
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                model.addAttribute("baudRateList", BaudRate.values());
+                if (commChannel instanceof TerminalServerPortDetailBase) {
+                    model.addAttribute("isAdditionalConfigSupported", true);
+                    model.addAttribute("isPortNumberSupported", true);
+                    if (commChannel instanceof UdpPortDetail) {
+                        model.addAttribute("isEncyptionSupported", true);
+                    }
+                    if (commChannel instanceof TcpSharedPortDetail) {
+                        model.addAttribute("isIpAddressSupported", true);
+                    }
+                }
+                return "commChannelInfoWidget/render.jsp";
+            }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.POST, Object.class, commChannel);
@@ -126,6 +144,16 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
                     model.addAttribute("baudRateList", BaudRate.values());
+                    if (commChannel instanceof TerminalServerPortDetailBase) {
+                        model.addAttribute("isAdditionalConfigSupported", true);
+                        model.addAttribute("isPortNumberSupported", true);
+                        if (commChannel instanceof UdpPortDetail) {
+                            model.addAttribute("isEncyptionSupported", true);
+                        }
+                        if (commChannel instanceof TcpSharedPortDetail) {
+                            model.addAttribute("isIpAddressSupported", true);
+                        }
+                    }
                     return "commChannelInfoWidget/render.jsp";
                 }
             }

@@ -1487,4 +1487,5 @@
     <bean class="com.cannontech.web.api.commChannel.PortValidator"/>
     <bean class="com.cannontech.web.api.commChannel.PortValidatorHelper"/>
     <bean class="com.cannontech.common.validator.YukonValidationHelper"/>
+    <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
 </beans>
