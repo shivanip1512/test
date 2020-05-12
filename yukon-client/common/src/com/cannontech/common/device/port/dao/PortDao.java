@@ -12,7 +12,7 @@ public interface PortDao {
     public Integer findUniquePortTerminalServer(String ipAddress, Integer port);
     
     /**
-     * Retrieves the list of devices for a port.
+     * Retrieves the list of assigned devices for a port.
      */
     public List<DeviceBaseModel> getAllAssignedDevicesForPort(Integer portId);
 }
