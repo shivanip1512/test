@@ -34,11 +34,11 @@ public class PortDaoImpl implements PortDao {
     @Override
     public List<DeviceBaseModel> getAllAssignedDevicesForPort(Integer portId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ddcs.DeviceId, ypo.type, ypo.PaoName, ypo.DisableFlag ");
+        sql.append("SELECT ddcs.DeviceId, ypo.type, ypo.PaoName, ypo.DisableFlag");
         sql.append("FROM DeviceDirectCommSettings ddcs");
         sql.append("JOIN YukonPAObject ypo");
         sql.append("ON ddcs.DeviceId = ypo.PaObjectId");
-        sql.append("WHERE PortId").eq_k(portId);
+        sql.append("WHERE PortId").eq(portId);
 
         return jdbcTemplate.query(sql, deviceBaseModelRowMapper);
     }
