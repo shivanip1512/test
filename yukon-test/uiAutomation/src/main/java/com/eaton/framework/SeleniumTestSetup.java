@@ -18,7 +18,6 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
-import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.drivers.DriverFactory;
 import com.eaton.pages.LoginPage;
@@ -31,8 +30,6 @@ public class SeleniumTestSetup {
     private static DriverExtensions driverExt;
 
     private static String baseUrl;
-
-    private static SoftAssert softAssertion;
 
     private static Logger logger;
 
@@ -48,7 +45,6 @@ public class SeleniumTestSetup {
     public static void beforeSuite() {
 
         try {
-            setSoftAssertion(new SoftAssert());
             setRandomNum(new Random());
             logger = setupLogger();
             initialSetup();
@@ -153,14 +149,6 @@ public class SeleniumTestSetup {
 
     public static String getBaseUrl() {
         return baseUrl;
-    }
-
-    public static SoftAssert getSoftAssertion() {
-        return softAssertion;
-    }
-
-    private static void setSoftAssertion(SoftAssert softAssertion) {
-        SeleniumTestSetup.softAssertion = softAssertion;
     }
 
     public static Random getRandomNum() {

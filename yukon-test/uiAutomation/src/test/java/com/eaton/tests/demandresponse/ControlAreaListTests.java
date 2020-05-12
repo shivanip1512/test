@@ -1,11 +1,12 @@
 package com.eaton.tests.demandresponse;
 
 import java.util.List;
+
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -17,14 +18,14 @@ import com.eaton.pages.demandresponse.ControlAreaListPage;
 public class ControlAreaListTests extends SeleniumTestSetup {
 
     private ControlAreaListPage listPage;
-    private SoftAssert softAssertion;
+    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
-        softAssertion = getSoftAssertion();
+        softly = new SoftAssertions();
 
         driver.get(getBaseUrl() + Urls.DemandResponse.CONTROL_AREA);
 
@@ -46,15 +47,15 @@ public class ControlAreaListTests extends SeleniumTestSetup {
         
         List<String> headers = this.listPage.getTable().getListTableHeaders();
         
-        int actualCount = headers.size();
+        softly.assertThat(headers.size()).isEqualTo(EXPECTED_COUNT);
+        softly.assertThat(headers).contains("Name");
+        softly.assertThat(headers).contains("State");
+        softly.assertThat(headers).contains("Value / Threshold");
+        softly.assertThat(headers).contains("Peak / Projection");
+        softly.assertThat(headers).contains("ATKU");
+        softly.assertThat(headers).contains("Priority");
+        softly.assertThat(headers).contains("Time Window");
         
-        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
-        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
-        softAssertion.assertTrue(headers.contains("State"), "Expected Column Header of State");
-        softAssertion.assertTrue(headers.contains("Value / Threshold"), "Expected Column Header of Value / Threshold");
-        softAssertion.assertTrue(headers.contains("Peak / Projection"), "Expected Column Header of Peak / Projection");
-        softAssertion.assertTrue(headers.contains("ATKU"), "Expected Column Header of ATKU");
-        softAssertion.assertTrue(headers.contains("Priority"), "Expected Column Header of Priority");
-        softAssertion.assertTrue(headers.contains("Time Window"), "Expected Column Header of Time Window");
+        softly.assertAll();
     }
 }

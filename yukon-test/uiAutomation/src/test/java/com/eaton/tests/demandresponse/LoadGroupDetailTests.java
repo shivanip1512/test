@@ -1,5 +1,7 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
@@ -35,7 +37,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
 
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_03_CopyLoadGrp"})
@@ -49,6 +51,9 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         String name = "AT Copied RFN Expresscom Ldgrp " + timeStamp;
+        
+        final String EXPECTED_MSG = name + " copied successfully.";
+        
         modal.getName().setInputValue(name);
         
         modal.clickOkAndWait();
@@ -59,7 +64,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " copied successfully.", "Expected User Msg: '" + name + " copied succssfully' but found: " + userMsg); 
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
     @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_04_DeleteLoadGrp"})
@@ -80,7 +85,6 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         
         String userMsg = setupPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }  
-
 }

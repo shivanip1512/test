@@ -1,7 +1,7 @@
 package com.eaton.tests;
 
+import static org.assertj.core.api.Assertions.*;
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -14,8 +14,6 @@ import com.eaton.pages.HomePage;
 public class HomeTests extends SeleniumTestSetup {
     
     private HomePage page;
-    private static final String EXPECTED_URL = "Expected Url: ";
-    private static final String ACTUAL_URL = " Actual Url: ";
     
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -33,19 +31,18 @@ public class HomeTests extends SeleniumTestSetup {
     public void supportUrlCorrect() {
         String url = page.getUtilityUrl("Support");
 
-        Assert.assertTrue(url.contains(Urls.SUPPORT), EXPECTED_URL + Urls.SUPPORT + ACTUAL_URL + url);
+        assertThat(url).contains(Urls.SUPPORT);
     }
     
     @Test
     public void siteMapUrlCorrect() {
         String url = page.getUtilityUrl("Site Map");
 
-        Assert.assertTrue(url.contains(Urls.SITE_MAP), EXPECTED_URL + Urls.SITE_MAP + ACTUAL_URL + url);
+        assertThat(url).contains(Urls.SITE_MAP);
     }
     
-    //"SM03_01_CheckYukonBuild"
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS })
     public void versionDisplayed() {        
-        Assert.assertTrue(page.versionDisplayed());        
+        assertThat(page.versionDisplayed()).isTrue();
     }
 }

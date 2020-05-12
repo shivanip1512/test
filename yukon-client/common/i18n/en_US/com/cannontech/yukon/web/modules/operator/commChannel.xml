@@ -50,4 +50,8 @@
     
     <entry key="yukon.web.modules.operator.commChannel.protocolWrap.NONE">None</entry>
     <entry key="yukon.web.modules.operator.commChannel.protocolWrap.IDLC">IDLC</entry>
+    
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.saveError">{0} could not be saved. Error: {1}</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.retrieveError">Comm Channel could not be retrieved. Error: {0}</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.save.success">{0} saved successfully.</entry>
 </properties>
