@@ -1,9 +1,10 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -27,6 +28,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
     public void pageTitleCorrect() {
         final String PROGRAM_NAME = "AT Load Program";
+        final String EXPECTED_TITLE = "Edit Load Program: " + PROGRAM_NAME;
         
         navigate(Urls.DemandResponse.LOAD_PROGRAM_EDIT + "665" + Urls.EDIT);
         
@@ -34,7 +36,7 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
 
         String actualPageTitle = editPage.getPageTitle();
 
-        Assert.assertTrue(actualPageTitle.contains("Edit Load Program: " + PROGRAM_NAME), "Expected Page title: 'Edit Load Program: " + PROGRAM_NAME + "' but found: " + actualPageTitle);      
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_06_EditLoadPgm()"})
@@ -45,6 +47,8 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String name = "AT Edited Direct Program " + timeStamp;
+        final String EXPECTED_MSG = name + " saved successfully.";
+        
         editPage.getName().setInputValue(name);
         
         editPage.getSaveBtn().click();
@@ -55,6 +59,6 @@ public class LoadProgramEditTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name + " saved successfully.", "Expected User Msg '" + name + " saved successfully.' But found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }       
 }

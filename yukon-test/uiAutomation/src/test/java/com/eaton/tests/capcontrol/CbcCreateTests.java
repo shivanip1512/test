@@ -1,11 +1,12 @@
 package com.eaton.tests.capcontrol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -42,7 +43,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
@@ -66,7 +67,7 @@ public class CbcCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User MsgL:'" + EXPECTED_MSG + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @AfterMethod(alwaysRun=true)

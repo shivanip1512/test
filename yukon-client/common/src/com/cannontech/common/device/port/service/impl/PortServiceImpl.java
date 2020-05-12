@@ -9,18 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.api.token.ApiRequestContext;
-import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.BaudRate;
-import com.cannontech.common.device.port.LocalSharedPortDetail;
+import com.cannontech.common.device.port.CommChannelFactory;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.TcpPortDetail;
-import com.cannontech.common.device.port.TcpSharedPortDetail;
-import com.cannontech.common.device.port.UdpPortDetail;
-import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.events.loggers.CommChannelEventLogService;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -36,7 +30,6 @@ public class PortServiceImpl implements PortService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private CommChannelEventLogService commChannelEventLogService;
-    @Autowired private PortDao portDao;
 
     @Override
     @Transactional
@@ -64,7 +57,7 @@ public class PortServiceImpl implements PortService {
             throw new NotFoundException("Port Id not found");
         }
         DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(pao);
-        PortBase portBase = getModel(directPort.getPaoType());
+        PortBase portBase = CommChannelFactory.getModel(directPort.getPaoType());
         portBase.buildModel(directPort);
         return portBase;
     }
@@ -135,34 +128,5 @@ public class PortServiceImpl implements PortService {
             throw new NotFoundException("Ports not found");
         }
         return listOfPortBase;
-    }
-
-    private PortBase<? extends DirectPort> getModel(PaoType paoType) {
-        PortBase<? extends DirectPort> portBase = null;
-        switch (paoType) {
-        case TCPPORT :
-            portBase = new TcpPortDetail();
-            break;
-        case UDPPORT : 
-            portBase = new UdpPortDetail();
-            break;
-        case TSERVER_SHARED : 
-            portBase = new TcpSharedPortDetail();
-            break;
-        case LOCAL_SHARED : 
-            portBase = new LocalSharedPortDetail();
-            break;
-        }
-        
-        return portBase;
-    }
-
-    @Override
-    public List<DeviceBaseModel> getAssignedDevicesForPort(int portId) {
-        List<DeviceBaseModel> devices = portDao.getAllAssignedDevicesForPort(portId);
-        if (devices.isEmpty()) {
-            throw new NotFoundException("No device found for portId : " + portId);
-        }
-        return devices;
     }
 }
