@@ -19,6 +19,10 @@ public class DeviceBaseModel implements YukonDevice {
         this.enable = enable;
     }
 
+    public DeviceBaseModel() {
+        super();
+    }
+
     public Integer getId() {
         return id;
     }

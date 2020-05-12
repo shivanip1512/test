@@ -1,6 +1,5 @@
 package com.cannontech.common.device.port.dao.impl;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +7,9 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.dao.PortDao;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.impl.DeviceBaseModelRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 
 public class PortDaoImpl implements PortDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -40,19 +37,6 @@ public class PortDaoImpl implements PortDao {
         sql.append("ON ddcs.DeviceId = ypo.PaObjectId");
         sql.append("WHERE PortId").eq(portId);
 
-        return jdbcTemplate.query(sql, deviceBaseModelRowMapper);
+        return jdbcTemplate.query(sql, new DeviceBaseModelRowMapper());
     }
-
-    private final YukonRowMapper<DeviceBaseModel> deviceBaseModelRowMapper = new YukonRowMapper<>() {
-        @Override
-        public DeviceBaseModel mapRow(YukonResultSet rs) throws SQLException {
-
-            Integer deviceId = rs.getInt("deviceId");
-            PaoType type = rs.getEnum("type", PaoType.class);
-            String deviceName = rs.getString("paoName");
-            Boolean enable = !rs.getBoolean("disableFlag");
-
-            return new DeviceBaseModel(deviceId, type, deviceName, enable);
-        }
-    };
 }
