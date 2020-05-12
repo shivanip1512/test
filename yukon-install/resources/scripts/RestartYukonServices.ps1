@@ -27,7 +27,7 @@ Clear-Host
 
 # Just Add/Remove any service here if any change comes The first service in the list is stopped first and started last.
 # These values must be the Service Name, not the Display Name.
-[System.Collections.ArrayList]$YukonServices =
+[System.Collections.ArrayList]$YukonServiceGroups =
 @(@("YukonWatchdogService",
 "YukonWebApplicationService",
 "YukonSimulatorsService",
@@ -53,10 +53,10 @@ $global:STOPPENDING = "StopPending"
 $global:SERVICES_STOPPED = $True
 
 # Adding only those services to ServicesToRestart list if they are set start automatically or currently running #
-foreach($YukonServiceGroup in $YukonServicesGroup)
+foreach($YukonServicesGroup in $YukonServiceGroups)
 {   
     [System.Collections.ArrayList]$ServicesToRest = @()
-    foreach($YukonService in $YukonServices)
+    foreach($YukonService in $YukonServicesGroup)
     {
 	    $ServiceStartMode = (Get-WmiObject Win32_Service -filter "Name='$YukonService'").StartMode
 
@@ -90,9 +90,9 @@ Write-Host "Services configured for automatic start or currently running: `r`n`r
 Function CheckServiceStatus($ServiceStatus) {
     If($ServiceStatus -eq $STOPPED)
     {
-        foreach($Services in $ServicesToRestart)
+        foreach($ServiceGroup in $ServicesToRestart)
         {
-            foreach($Service in $Services)
+            foreach($Service in $ServiceGroup)
             {
                 $Service = Get-Service $Service
                 If($Service.Status -ne $STOPPED)
@@ -110,9 +110,9 @@ Function CheckServiceStatus($ServiceStatus) {
     ElseIf($ServiceStatus -eq $RUNNING)
     {
     $AllRunning = $True
-        foreach($Services in $ServicesToRestart)
+        foreach($ServiceGroup in $ServicesToRestart)
         {
-            foreach($Service in $Services)
+            foreach($Service in $ServiceGroup)
             {
                $Svc = Get-Service $Service
                If($Svc.Status -ne $RUNNING)
@@ -134,9 +134,9 @@ Function StopServices {
     Write-Host "-------------------------------------------" 
     Write-Host "Stopping Services"
     Write-Host "-------------------------------------------" 
-    foreach($ServicesToStop in $ServicesToRestart)
+    foreach($ServiceGroupToStop in $ServicesToRestart)
     {
-        foreach($ServiceToStop in $ServicesToStop)
+        foreach($ServiceToStop in $ServiceGroupToStop)
         {
             $Service = Get-Service $ServiceToStop
             $CurrentServiceStatus = $Service.Status
@@ -147,7 +147,7 @@ Function StopServices {
             }       
         }
         Start-Sleep -s 15
-        foreach($ServiceToStop in $ServicesToStop)
+        foreach($ServiceToStop in $ServiceGroupToStop)
         {
             $Service = Get-Service $ServiceToStop
             $timeoutSeconds = 0
@@ -184,9 +184,9 @@ $ServicesToRestart.Reverse()
     Write-Host "Starting Services" 
     Write-Host "-------------------------------------------" 
 
-    foreach($ServicesToStart in $ServicesToRestart)
+    foreach($ServiceGroupToStart in $ServicesToRestart)
     {
-        foreach($ServiceToStart in $ServicesToStart)
+        foreach($ServiceToStart in $ServiceGroupToStart)
         {
            $Service = Get-Service $ServiceToStart
            $CurrentServiceStatus = $Service.Status
@@ -215,9 +215,9 @@ Function KillServices {
     Write-Host "Killing Services" 
     Write-Host "-------------------------------------------" 
 
-    foreach($ServicesToKill in $ServicesToRestart)
+    foreach($ServiceGroupToKill in $ServicesToRestart)
     {
-        foreach($ServiceToKill in $ServiceToKill)
+        foreach($ServiceToKill in $ServiceGroupToKill)
         {
           $Service = Get-Service $ServiceToKill
           $CurrentServiceStatus = $Service.Status
