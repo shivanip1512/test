@@ -30,7 +30,6 @@ public class LoadProgramSetupHelper {
     public final static String CONTEXT_PROGRAM_ID = "programId"; 
     public final static String CONTEXT_PROGRAM_NAME = "programName";
     public final static String CONTEXT_COPIED_PROGRAM_NAME = "copiedProgramName";
-    private final static String notificationGrpName = ApiCallHelper.getProperty("notificationGrpName");
     
     public static MockLoadProgram buildLoadProgramRequest(MockPaoType type, List<MockLoadGroupBase> loadGroups, List <MockGearControlMethod> gearTypes, Integer constraintId) {
 
@@ -73,11 +72,7 @@ public class LoadProgramSetupHelper {
         });
 
         List<MockNotificationGroup> assignedNotificationGroups = new ArrayList<>();
-        MockNotificationGroup notificationGroup = MockNotificationGroup.builder()
-                                                               .notificationGrpID(getNotificationGrpID())
-                                                               .notificationGrpName(notificationGrpName)
-                                                               .build();
-        assignedNotificationGroups.add(notificationGroup);
+        assignedNotificationGroups.add(getMockNotificationGroup());
 
         MockNotification notification = MockNotification.builder()
                                                 .notifyOnAdjust(false)
@@ -201,8 +196,10 @@ public class LoadProgramSetupHelper {
         return fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name");
     }
     
-    private static Integer getNotificationGrpID() {
-        String notificationGrpIDStr = ApiCallHelper.getProperty("notificationGrpID");
-        return Integer.valueOf(notificationGrpIDStr);
+    private static MockNotificationGroup getMockNotificationGroup() {
+        return MockNotificationGroup.builder()
+                .notificationGrpID(Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID")))
+                .notificationGrpName(ApiCallHelper.getProperty("notificationGrpName"))
+                .build();
     }
 }
