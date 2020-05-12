@@ -29,7 +29,7 @@ public class PortDaoImpl implements PortDao {
     }
 
     @Override
-    public List<DeviceBaseModel> getAllAssignedDevicesForPort(Integer portId) {
+    public List<DeviceBaseModel> getDevicesUsingPort(Integer portId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ddcs.DeviceId, ypo.type, ypo.PaoName, ypo.DisableFlag");
         sql.append("FROM DeviceDirectCommSettings ddcs");

@@ -34,8 +34,8 @@ public interface PortService {
     List<PortBase> getAllPorts();
 
     /**
-     * Retrieve List of all devices assigned to a Comm channel.
+     * Retrieves list of all devices using portId. Returns empty list when no devices found.
      */
-    List<DeviceBaseModel> getAssignedDevicesForPort(int portId);
+    List<DeviceBaseModel> getDevicesAssignedPort(int portId);
 
 }

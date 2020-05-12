@@ -121,20 +121,16 @@ public class PortServiceImpl implements PortService {
     public List<PortBase> getAllPorts() {
         List<LiteYukonPAObject> listOfPorts = dbCache.getAllPorts();
         List<PortBase> listOfPortBase = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(listOfPorts)) {
-            listOfPorts.forEach(liteYukonPaoObject -> {
-                PortBase portBase = new PortBase();
-                portBase.buildModel(liteYukonPaoObject);
-                listOfPortBase.add(portBase);
-            });
-        } else {
-            throw new NotFoundException("Ports not found");
-        }
+        listOfPorts.forEach(liteYukonPaoObject -> {
+            PortBase portBase = new PortBase();
+            portBase.buildModel(liteYukonPaoObject);
+            listOfPortBase.add(portBase);
+        });
         return listOfPortBase;
     }
-    
+
     @Override
-    public List<DeviceBaseModel> getAssignedDevicesForPort(int portId) {
-        return portDao.getAllAssignedDevicesForPort(portId);
+    public List<DeviceBaseModel> getDevicesAssignedPort(int portId) {
+        return portDao.getDevicesUsingPort(portId);
     }
 }
