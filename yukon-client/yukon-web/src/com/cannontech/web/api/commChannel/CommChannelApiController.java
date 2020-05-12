@@ -59,7 +59,7 @@ public class CommChannelApiController {
     
     @GetMapping("/devices/{portId}")
     public ResponseEntity<Object> retrieveAllDevicesForPort(@PathVariable int portId) {
-        List<DeviceBaseModel> listOfDevices = portService.getAssignedDevicesForPort(portId);
+        List<DeviceBaseModel> listOfDevices = portService.getDevicesAssignedPort(portId);
         return new ResponseEntity<>(listOfDevices, HttpStatus.OK);
     }
 
