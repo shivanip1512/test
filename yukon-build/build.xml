@@ -239,7 +239,6 @@
         </copy>
 
         <!-- Tomcat Component -->
-       <!-- <verifyShutdownPortDisabled serverXmlFilename="${basedir}/yukon-install/conf/server.xml"/>-->
         <verifyShutdownPortDisabled serverXmlFilename="${basedir}/yukon-install/ApacheTomcat/conf/server.xml"/>
     	
         <copy todir="${install.bag}/Tomcat" preservelastmodified="true">
