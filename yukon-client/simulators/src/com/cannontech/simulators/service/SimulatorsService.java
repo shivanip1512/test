@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -61,7 +62,7 @@ public class SimulatorsService {
 
     private SimulatorMessageListener messageListener;
     private ImmutableMap<SimulatorType, AutoStartableSimulator> simulatorTypeToSimulator;
-    private static final int incomingMessageWaitMillis = 1000;
+    public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     /**
      * Gets this simulators service as a Spring bean and starts it.
@@ -91,7 +92,7 @@ public class SimulatorsService {
     }
 
     private synchronized void start() {
-        var jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS, incomingMessageWaitMillis);
+        var jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS, incomingMessageWait);
         messageListener = new SimulatorMessageListener(jmsTemplate, messageHandlers);
         messageListener.start();
         autoStartSimulators();

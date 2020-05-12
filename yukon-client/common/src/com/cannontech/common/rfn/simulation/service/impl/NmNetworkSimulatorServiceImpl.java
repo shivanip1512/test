@@ -23,6 +23,7 @@ import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -97,7 +98,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private final static Logger log = YukonLogManager.getLogger(NmNetworkSimulatorServiceImpl.class);
 
     private static final double DISTANCE_IN_MILES = 10;
-    public static final int incomingMessageWaitMillis = 1000;
+    public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     private SimulatedNmMappingSettings settings;
 
@@ -128,10 +129,10 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
 
     @PostConstruct
     public void init() {
-        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST, incomingMessageWaitMillis);
+        networkTreeUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_REQUEST, incomingMessageWait);
         networkTreeUpdateResponseJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.NETWORK_TREE_UPDATE_RESPONSE);
-        rfnMeterDemandResetJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DEMAND_RESET, incomingMessageWaitMillis);
-        rfMetadataMultiJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI, incomingMessageWaitMillis);
+        rfnMeterDemandResetJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DEMAND_RESET, incomingMessageWait);
+        rfMetadataMultiJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_METADATA_MULTI, incomingMessageWait);
         rfnStatusArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
     }
 

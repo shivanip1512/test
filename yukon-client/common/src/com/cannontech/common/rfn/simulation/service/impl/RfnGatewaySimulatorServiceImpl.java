@@ -14,6 +14,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -102,7 +103,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private YukonJmsTemplate rfGatewayUpdateJmsTemplate;
     private YukonJmsTemplate rfGatewaySetConfigJmsTemplate;
     private YukonJmsTemplate rfGatewayDataJmsTemplate;
-    public static final int incomingMessageWaitMillis = 1000;
+    public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     @PostConstruct
     public void init() {
@@ -110,19 +111,19 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         rfGatewayArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_ARCHIVE);
         rfGatewayDeleteFromNmJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DELETE_FROM_NM);
         rfGatewayFirmwareUpgradeJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE,
-                incomingMessageWaitMillis);
+                incomingMessageWait);
         rfGatewayFirmwareUpgradeResponseJmsTemplate = jmsTemplateFactory
                 .createResponseTemplate(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE);
         rfUpdateServerAvailableVersionJmsTemplate = jmsTemplateFactory
-                .createTemplate(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION, incomingMessageWaitMillis);
+                .createTemplate(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION, incomingMessageWait);
         rfGatewayCertificateUpdateJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE,
-                incomingMessageWaitMillis);
+                incomingMessageWait);
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
                 JmsApiDirectory.RF_GATEWAY_CREATE, JmsApiDirectory.RF_GATEWAY_EDIT, JmsApiDirectory.RF_GATEWAY_DELETE);
-        rfGatewayUpdateJmsTemplate = jmsTemplateFactory.createTemplate(requestQueue, incomingMessageWaitMillis);
+        rfGatewayUpdateJmsTemplate = jmsTemplateFactory.createTemplate(requestQueue, incomingMessageWait);
         rfGatewaySetConfigJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_SET_CONFIG,
-                incomingMessageWaitMillis);
-        rfGatewayDataJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA, incomingMessageWaitMillis);
+                incomingMessageWait);
+        rfGatewayDataJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA, incomingMessageWait);
     }
 
     @Override

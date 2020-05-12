@@ -14,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -58,13 +59,13 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     private volatile boolean isRunning;
     private volatile boolean isStopping;
     private volatile SimulatedDataStreamingSettings settings;
-    public static final int incomingMessageWaitMillis = 1000;
+    public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     @PostConstruct
     public void init() {
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(JmsApiDirectory.DATA_STREAMING_CONFIG,
                 JmsApiDirectory.GATEWAY_DATA_STREAMING_INFO);
-        jmsTemplate = jmsTemplateFactory.createTemplate(requestQueue, incomingMessageWaitMillis);
+        jmsTemplate = jmsTemplateFactory.createTemplate(requestQueue, incomingMessageWait);
     }
     @Override
     public void setSettings(SimulatedDataStreamingSettings settings) {

@@ -8,6 +8,7 @@ import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -64,14 +65,14 @@ public class RfnMeterReadAndControlSimulatorServiceImpl implements RfnMeterReadA
     
     private volatile boolean meterDisconnectReplyActive;
     private volatile boolean meterDisconnectReplyStopping;
-    public static final int incomingMessageWaitMillis = 1000;
+    public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     @PostConstruct
     public void init() {
-        rfnMeterReadJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ, incomingMessageWaitMillis);
+        rfnMeterReadJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ, incomingMessageWait);
         rfnMeterReadArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ_ARCHIVE);
         rfnMeterDisconnectJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT,
-                incomingMessageWaitMillis);
+                incomingMessageWait);
         rfnStatusArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
     }
 

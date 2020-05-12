@@ -1,6 +1,8 @@
 package com.cannontech.common.util.jms;
 
 import javax.jms.ConnectionFactory;
+
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.stereotype.Service;
@@ -43,12 +45,12 @@ public class YukonJmsTemplateFactory {
      * Create and return a YukonJmsTemplate object after setting defaultDestinationName, pubSubDomain, timeToLive and
      * recieveTimeout.
      */
-    public YukonJmsTemplate createTemplate(JmsApi<?, ?, ?> jmsApi, int recieveTimeout) {
+    public YukonJmsTemplate createTemplate(JmsApi<?, ?, ?> jmsApi, Duration recieveTimeout) {
         YukonJmsTemplate jmsTemplate = new YukonJmsTemplate(connectionFactory);
         jmsTemplate.setDefaultDestinationName(jmsApi.getQueueName());
         jmsTemplate.setPubSubDomain(jmsApi.isTopic());
         jmsTemplate.setTimeToLive(jmsApi.getTimeToLive().getMillis());
-        jmsTemplate.setReceiveTimeout(recieveTimeout);
+        jmsTemplate.setReceiveTimeout(recieveTimeout.getMillis());
         return jmsTemplate;
     }
     
