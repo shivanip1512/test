@@ -14,6 +14,7 @@ import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -95,30 +96,34 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private YukonJmsTemplate rfGatewayDataUnsolicitedJmsTemplate;
     private YukonJmsTemplate rfGatewayArchiveJmsTemplate;
     private YukonJmsTemplate rfGatewayDeleteFromNmJmsTemplate;
-    private YukonJmsTemplate rfGateWayFirmwareUpgradeJmsTemplate;
-    private YukonJmsTemplate rfGateWayFirmwareUpgradeResponseJmsTemplate;
+    private YukonJmsTemplate rfGatewayFirmwareUpgradeJmsTemplate;
+    private YukonJmsTemplate rfGatewayFirmwareUpgradeResponseJmsTemplate;
     private YukonJmsTemplate rfUpdateServerAvailableVersionJmsTemplate;
     private YukonJmsTemplate rfGatewayCertificateUpdateJmsTemplate;
     private YukonJmsTemplate rfGatewayUpdateJmsTemplate;
     private YukonJmsTemplate rfGatewaySetConfigJmsTemplate;
     private YukonJmsTemplate rfGatewayDataJmsTemplate;
+    public static final Duration incomingMessageWait = Duration.standardSeconds(1);
 
     @PostConstruct
     public void init() {
         rfGatewayDataUnsolicitedJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA_UNSOLICITED);
         rfGatewayArchiveJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_ARCHIVE);
         rfGatewayDeleteFromNmJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DELETE_FROM_NM);
-        rfGateWayFirmwareUpgradeJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE);
-        rfGateWayFirmwareUpgradeResponseJmsTemplate = jmsTemplateFactory
+        rfGatewayFirmwareUpgradeJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE,
+                incomingMessageWait);
+        rfGatewayFirmwareUpgradeResponseJmsTemplate = jmsTemplateFactory
                 .createResponseTemplate(JmsApiDirectory.RF_GATEWAY_FIRMWARE_UPGRADE);
         rfUpdateServerAvailableVersionJmsTemplate = jmsTemplateFactory
-                .createTemplate(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION);
-        rfGatewayCertificateUpdateJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE);
+                .createTemplate(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION, incomingMessageWait);
+        rfGatewayCertificateUpdateJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE,
+                incomingMessageWait);
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
                 JmsApiDirectory.RF_GATEWAY_CREATE, JmsApiDirectory.RF_GATEWAY_EDIT, JmsApiDirectory.RF_GATEWAY_DELETE);
-        rfGatewayUpdateJmsTemplate = jmsTemplateFactory.createTemplate(requestQueue);
-        rfGatewaySetConfigJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_SET_CONFIG);
-        rfGatewayDataJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA);
+        rfGatewayUpdateJmsTemplate = jmsTemplateFactory.createTemplate(requestQueue, incomingMessageWait);
+        rfGatewaySetConfigJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_SET_CONFIG,
+                incomingMessageWait);
+        rfGatewayDataJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA, incomingMessageWait);
     }
 
     @Override
@@ -274,7 +279,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                 log.info("Auto firmware reply thread starting up.");
                 while (!autoFirmwareReplyStopping) {
                     try {
-                        Object message = rfGateWayFirmwareUpgradeJmsTemplate.receive();
+                        Object message = rfGatewayFirmwareUpgradeJmsTemplate.receive();
                         if (message != null && message instanceof ObjectMessage) {
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             RfnGatewayFirmwareUpdateRequest request = 
@@ -283,7 +288,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                             log.info("Sending firmware upgrade response for updateId: " + request.getUpdateId() +
                                      ", gateway: " + request.getGateway());
                             RfnGatewayFirmwareUpdateResponse response = setUpFirmwareUpdateResponse(request, settings);
-                            rfGateWayFirmwareUpgradeResponseJmsTemplate.convertAndSend(response);
+                            rfGatewayFirmwareUpgradeResponseJmsTemplate.convertAndSend(response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in auto firmware reply.", e);
