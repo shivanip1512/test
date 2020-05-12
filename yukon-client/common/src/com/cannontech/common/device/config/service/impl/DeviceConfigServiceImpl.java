@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.Logger;
@@ -76,6 +78,7 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.porter.message.Request;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Iterables;
@@ -218,6 +221,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         }
     }
     
+    public void updateDeviceConfigStateForPorterRequestsToInProgress(List<Request> requests) {
+        
+    }
+    
     @Override
     public DeviceConfigState assignConfigToDevice(SimpleDevice device, DeviceConfiguration configuration,
             LiteYukonUser user) throws InvalidDeviceTypeException {
@@ -293,7 +300,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         List<SimpleDevice> inProgress = new ArrayList<>();
 
         DeviceSummary(List<SimpleDevice> devices, Map<Integer, LightDeviceConfiguration> configurations) {
-            supported.addAll(devices.stream().filter(device -> {
+            List<SimpleDevice> supportedDevices = devices.stream().filter(device -> {
                 LightDeviceConfiguration configuration = configurations.get(device.getDeviceId());
                 if (isConfigCommandSupported(device) && configuration != null
                         && deviceConfigurationDao.isTypeSupportedByConfiguration(configuration,
@@ -301,12 +308,11 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                     return true;
                 }
                 return false;
-            }).collect(Collectors.toList()));
-            unsupported.addAll(devices);
+            }).collect(Collectors.toList());
+            
             inProgress.addAll(deviceConfigurationDao.getInProgressDevices(getDeviceIds(supported)));
-            supported.removeAll(inProgress);
-            unsupported.removeAll(supported);
-            unsupported.removeAll(inProgress);
+            supported.addAll(ListUtils.subtract(supportedDevices, inProgress));
+            unsupported.addAll(ListUtils.subtract(devices, supportedDevices));           
             log.debug("supported:{} unsupported:{} inProgress:{} total:{}", supported.size(), unsupported.size(), inProgress.size(), devices.size());
         }
     }
