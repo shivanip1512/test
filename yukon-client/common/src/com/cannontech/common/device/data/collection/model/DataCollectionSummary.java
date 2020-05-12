@@ -1,4 +1,4 @@
-package com.cannontech.web.common.widgets.model;
+package com.cannontech.common.device.data.collection.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

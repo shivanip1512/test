@@ -8,11 +8,11 @@ import org.joda.time.Instant;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
+import com.cannontech.common.device.data.collection.model.DataCollectionSummary;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 
 public interface DataCollectionWidgetService {
 

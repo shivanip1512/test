@@ -3,6 +3,7 @@ package com.cannontech.services.systemDataPublisher.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.device.data.collection.model.DataCollectionSummary;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 public interface SystemDataPublisherDao {
@@ -25,5 +26,5 @@ public interface SystemDataPublisherDao {
      * This method returns read rates for the devices in the passed device group.
      * Read rates are the % of meters reported in defined number of days. 
      */
-    int getReadRate(String deviceGroupName);
+    DataCollectionSummary getReadRate(String deviceGroupName);
 }

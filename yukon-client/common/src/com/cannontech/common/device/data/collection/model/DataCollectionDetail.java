@@ -1,4 +1,4 @@
-package com.cannontech.web.common.widgets.model;
+package com.cannontech.common.device.data.collection.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
