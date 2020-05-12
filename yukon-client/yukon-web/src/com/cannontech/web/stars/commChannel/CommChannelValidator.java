@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.commChannel;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.port.LocalSharedPortDetail;
@@ -11,13 +10,10 @@ import com.cannontech.common.device.port.SharedPortType;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationHelper;
+import com.cannontech.common.validator.YukonValidationUtils;
 
 public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator<T> {
-
-    @Autowired private YukonValidationHelper yukonValidationHelper;
 
     @SuppressWarnings("unchecked")
     public CommChannelValidator() {
@@ -29,48 +25,45 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
     }
 
     @Override
-    protected void doValidation(PortBase commChannel, Errors errors) {
-        yukonValidationHelper.checkIfFieldRequired("name", errors, commChannel.getName(), "Name");
-        if (!errors.hasFieldErrors("name")) {
-            if (!PaoUtils.isValidPaoName(commChannel.getName())) {
-                errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
-            }
-        }
+    protected void doValidation(T commChannel, Errors errors) {
+        YukonValidationUtils.checkIsBlank(errors, "name", commChannel.getName(), false);
         if (commChannel instanceof TcpPortDetail) {
             validateTimingField(errors, ((TcpPortDetail) commChannel).getTiming());
         }
 
         if (commChannel instanceof TerminalServerPortDetailBase) {
-            validateTimingField(errors, ((TerminalServerPortDetailBase) commChannel).getTiming());
+            TerminalServerPortDetailBase<?> terminalServerPortDetail = (TerminalServerPortDetailBase<?>) commChannel;
+            validateTimingField(errors, terminalServerPortDetail.getTiming());
 
-            validateSharingField(errors, ((TerminalServerPortDetailBase) commChannel).getSharing());
+            validateSharingField(errors, terminalServerPortDetail.getSharing());
 
-            yukonValidationHelper.checkIfFieldRequired("portNumber", errors,
-                    ((TerminalServerPortDetailBase) commChannel).getPortNumber(), "Port Number");
+            YukonValidationUtils.checkIfFieldRequired("portNumber", errors, terminalServerPortDetail.getPortNumber(),
+                    "Port Number");
 
             if (commChannel instanceof TcpSharedPortDetail) {
-                yukonValidationHelper.checkIfFieldRequired("ipAddress", errors,
-                        ((TcpSharedPortDetail) commChannel).getIpAddress(), "IP Address");
+                YukonValidationUtils.checkIsBlank(errors, "ipAddress", ((TcpSharedPortDetail) commChannel).getIpAddress(), false);
             }
         }
 
         if (commChannel instanceof LocalSharedPortDetail) {
             validateTimingField(errors, ((LocalSharedPortDetail) commChannel).getTiming());
             validateSharingField(errors, ((LocalSharedPortDetail) commChannel).getSharing());
+            YukonValidationUtils.checkIsBlank(errors, "physicalPort", ((LocalSharedPortDetail) commChannel).getPhysicalPort(), false);
         }
     }
 
     private void validateTimingField(Errors errors, PortTiming timing) {
-        yukonValidationHelper.checkIfFieldRequired("timing.preTxWait", errors, timing.getPreTxWait(), "Pre Tx Wait");
-        yukonValidationHelper.checkIfFieldRequired("timing.rtsToTxWait", errors, timing.getRtsToTxWait(), "RTS To Tx Wait");
-        yukonValidationHelper.checkIfFieldRequired("timing.postTxWait", errors, timing.getPostTxWait(), "Post Tx Wait");
-        yukonValidationHelper.checkIfFieldRequired("timing.receiveDataWait", errors, timing.getReceiveDataWait(), "Receive Data Wait");
-        yukonValidationHelper.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(), "Extra Time Out");
+        YukonValidationUtils.checkIfFieldRequired("timing.preTxWait", errors, timing.getPreTxWait(), "Pre Tx Wait");
+        YukonValidationUtils.checkIfFieldRequired("timing.rtsToTxWait", errors, timing.getRtsToTxWait(), "RTS To Tx Wait");
+        YukonValidationUtils.checkIfFieldRequired("timing.postTxWait", errors, timing.getPostTxWait(), "Post Tx Wait");
+        YukonValidationUtils.checkIfFieldRequired("timing.receiveDataWait", errors, timing.getReceiveDataWait(),
+                "Receive Data Wait");
+        YukonValidationUtils.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(), "Extra Time Out");
     }
 
     private void validateSharingField(Errors errors, PortSharing sharing) {
         if (sharing.getSharedPortType() != SharedPortType.NONE) {
-            yukonValidationHelper.checkIfFieldRequired("sharing.sharedSocketNumber", errors, sharing.getSharedSocketNumber(),
+            YukonValidationUtils.checkIfFieldRequired("sharing.sharedSocketNumber", errors, sharing.getSharedSocketNumber(),
                     "Socket Number");
         }
     }

@@ -2,7 +2,6 @@ package com.cannontech.common.validator;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.PaoType;
@@ -51,14 +50,4 @@ public class YukonValidationHelper {
             errors.rejectValue("type", key + "paoTypeMismatch", new Object[] { paoType, litePao.getPaoType(), paoId }, "");
         }
     }
-    
-    /** 
-     * Check if the field is required
-     */
-    public void checkIfFieldRequired(String field, Errors errors, Object fieldValue, String fieldName) {
-        if (fieldValue == null || !StringUtils.hasText(fieldValue.toString())) {
-            errors.rejectValue(field, key + "field.required", new Object[] { fieldName }, "");
-        }
-    }
-
 }

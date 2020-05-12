@@ -88,17 +88,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 PortBase commChannel = (PortBase) response.getBody();
                 commChannel.setId(id);
                 model.addAttribute("commChannel", commChannel);
-                model.addAttribute("baudRateList", BaudRate.values());
-                if (commChannel instanceof TerminalServerPortDetailBase) {
-                    model.addAttribute("isAdditionalConfigSupported", true);
-                    model.addAttribute("isPortNumberSupported", true);
-                    if (commChannel instanceof UdpPortDetail) {
-                        model.addAttribute("isEncyptionSupported", true);
-                    }
-                    if (commChannel instanceof TcpSharedPortDetail) {
-                        model.addAttribute("isIpAddressSupported", true);
-                    }
-                }
+                setupCommChannelFields(commChannel, model);
             }
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());
@@ -122,17 +112,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             commChannelValidator.validate(commChannel, result);
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                model.addAttribute("baudRateList", BaudRate.values());
-                if (commChannel instanceof TerminalServerPortDetailBase) {
-                    model.addAttribute("isAdditionalConfigSupported", true);
-                    model.addAttribute("isPortNumberSupported", true);
-                    if (commChannel instanceof UdpPortDetail) {
-                        model.addAttribute("isEncyptionSupported", true);
-                    }
-                    if (commChannel instanceof TcpSharedPortDetail) {
-                        model.addAttribute("isIpAddressSupported", true);
-                    }
-                }
+                setupCommChannelFields(commChannel, model);
                 return "commChannelInfoWidget/render.jsp";
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
@@ -143,17 +123,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 result = helper.populateBindingError(result, error, response);
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                    model.addAttribute("baudRateList", BaudRate.values());
-                    if (commChannel instanceof TerminalServerPortDetailBase) {
-                        model.addAttribute("isAdditionalConfigSupported", true);
-                        model.addAttribute("isPortNumberSupported", true);
-                        if (commChannel instanceof UdpPortDetail) {
-                            model.addAttribute("isEncyptionSupported", true);
-                        }
-                        if (commChannel instanceof TcpSharedPortDetail) {
-                            model.addAttribute("isIpAddressSupported", true);
-                        }
-                    }
+                    setupCommChannelFields(commChannel, model);
                     return "commChannelInfoWidget/render.jsp";
                 }
             }
@@ -174,4 +144,19 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         }
         return null;
     }
+
+    private void setupCommChannelFields(PortBase commChannel, ModelMap model) {
+        model.addAttribute("baudRateList", BaudRate.values());
+        if (commChannel instanceof TerminalServerPortDetailBase) {
+            model.addAttribute("isAdditionalConfigSupported", true);
+            model.addAttribute("isPortNumberSupported", true);
+            if (commChannel instanceof UdpPortDetail) {
+                model.addAttribute("isEncyptionSupported", true);
+            }
+            if (commChannel instanceof TcpSharedPortDetail) {
+                model.addAttribute("isIpAddressSupported", true);
+            }
+        }
+    }
+
 }
