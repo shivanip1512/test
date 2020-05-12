@@ -2,8 +2,9 @@ package com.cannontech.common.device.port;
 
 import java.io.IOException;
 
-import com.cannontech.common.device.port.service.impl.PortServiceImpl;
+import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -27,17 +28,22 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<Object> {
             throws IOException, JsonProcessingException {
         TreeNode node = parser.readValueAsTree();
         // Catch the update case here.
-        String portId = ServletUtils.getPathVariable("portId");
+        String id = ServletUtils.getPathVariable("id");
         PaoType paoType = null;
-        if (portId == null) {
+        if (id == null) {
             // Create case.
-            paoType = PaoType.valueOf(node.get("type").toString().replace("\"", ""));
+            TreeNode type = node.get("type");
+            if (type != null) {
+                paoType = PaoType.valueOf(type.toString().replace("\"", ""));
+            } else {
+                throw new NotFoundException("type is not found in the request.");
+            }
         } else {
             // Update case.
-            paoType = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(portId)).getPaoType();
+            paoType = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(id)).getPaoType();
         }
 
-        Class<?> clazz = PortServiceImpl.getModel(paoType).getClass();
+        Class<?> clazz = PaoModelFactory.getModel(paoType).getClass();
         return parser.getCodec().treeToValue(node, clazz);
     }
 }

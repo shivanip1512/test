@@ -34,14 +34,14 @@ public class PortValidator<T extends PortBase<?>> extends SimpleValidator<T> {
     protected void doValidation(T port, Errors errors) {
         
         // Validate if type is changed during update.
-        String paoId = ServletUtils.getPathVariable("portId");
-        if (paoId != null) {
-            yukonValidationHelper.checkIfPaoTypeChanged(errors, port.getType(), Integer.valueOf(paoId));
+        String portId = ServletUtils.getPathVariable("id");
+        if (portId != null && port.getType() != null) {
+            yukonValidationHelper.checkIfPaoTypeChanged(errors, port.getType(), Integer.valueOf(portId));
         }
 
         // Validate Name if present.
         if (port.getName() != null) {
-            yukonValidationHelper.validatePaoName(port.getName(), port.getType(), errors, "Name", "portId");
+            yukonValidationHelper.validatePaoName(port.getName(), port.getType(), errors, "Name", "id");
         }
 
         if (port instanceof TcpPortDetail) {
