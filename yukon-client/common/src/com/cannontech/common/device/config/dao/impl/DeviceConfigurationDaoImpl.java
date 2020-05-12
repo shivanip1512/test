@@ -1344,10 +1344,14 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public void failInProgressDevices() {
+        jdbcTemplate.update(getFailInProgressDevicesSql());
+    }
+
+    private SqlStatementBuilder getFailInProgressDevicesSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE DeviceConfigState").set("LastActionStatus", LastActionStatus.FAILURE, "LastActionEnd", Instant.now());
         sql.append("WHERE LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
-        jdbcTemplate.update(sql);
+        return sql;
     }
     
     @Override
@@ -1356,9 +1360,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         template.update(new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("UPDATE DeviceConfigState").set("LastActionStatus", LastActionStatus.FAILURE, "LastActionEnd", Instant.now());
-                sql.append("WHERE LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
+                SqlStatementBuilder sql = getFailInProgressDevicesSql();
                 sql.append("AND PaObjectId").in(subList);
                 return sql;
             }
