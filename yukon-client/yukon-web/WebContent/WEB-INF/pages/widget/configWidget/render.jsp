@@ -32,21 +32,21 @@
     
             <c:if test="${not empty currentConfigId}">
                 <tags:nameValue2 nameKey=".status" rowClass="js-status-row">
-                    <span class="js-status"></span>
+                    <span class="js-status"><i class="icon icon-spinner"></i></span>
                     <cti:msg2 var="actionsDisabledMessage" key=".actionsDisabledMessage"/>
                     <input id="actionsDisabledMessage" type="hidden" value="${actionsDisabledMessage}"/>
                     <div class="dn js-out-of-sync-popup" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key="yukon.web.modules.tools.configs.summary.outOfSync"/>" 
                         data-width="600"></div>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 nameKey=".action">
-                    <div class="button-group" style="vertical-align:unset;">
-                        <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
-                            <tags:widgetActionRefresh method="uploadConfig" nameKey="upload" container="${widgetParameters.widgetId}_config_results" classes="M0 js-config-action-btns"/>
-                            <tags:widgetActionRefresh method="validateConfig" nameKey="validate" container="${widgetParameters.widgetId}_config_results" classes="M0 js-config-action-btns"/>
-                        </cti:checkRolesAndProperties>
-                    </div>
-                </tags:nameValue2>
+                <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
+                    <tags:nameValue2 nameKey=".action">
+                        <div class="button-group" style="vertical-align:unset;">
+                            <tags:widgetActionRefresh method="uploadConfig" nameKey="upload" classes="M0 js-config-action-btns"/>
+                            <tags:widgetActionRefresh method="validateConfig" nameKey="validate" classes="M0 js-config-action-btns"/>
+                        </div>
+                    </tags:nameValue2>
+                </cti:checkRolesAndProperties>
             </c:if>
         </tags:nameValueContainer2>
     
@@ -58,7 +58,7 @@
                             <option value="${config.configurationId}" <c:if test="${config.configurationId == currentConfigId}">selected</c:if>>${fn:escapeXml(config.name)}</option>
                         </c:forEach>
                     </select>
-                    <cti:button nameKey="change" classes="js-change-config js-config-action-btns fn vam" data-device-id="${deviceId}"/>
+                    <cti:button nameKey="change" busy="true" classes="js-change-config js-config-action-btns fn vam" data-device-id="${deviceId}"/>
                     <cti:msg2 var="uploadTitle" key=".uploadPopup.title"/>
                     <cti:msg2 var="uploadButton" key=".upload.label"/>
                     <div id="uploadPopup" data-dialog class="dn" data-title="${uploadTitle}" data-upload-btn="${uploadButton}">

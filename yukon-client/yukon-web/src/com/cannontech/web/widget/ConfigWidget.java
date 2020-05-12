@@ -40,9 +40,12 @@ import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionServi
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
 import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
@@ -61,6 +64,8 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private MeterProgrammingSummaryDao meterProgrammingSummaryDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
+
     private ExecutorService executor = Executors.newCachedThreadPool();
 
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -182,13 +187,14 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     }
     
     @PostMapping("changeConfig")
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
     @ResponseBody
     public Map<String, Object> changeConfig(ModelMap model, int deviceId, int configuration, YukonUserContext userContext) throws InvalidDeviceTypeException {
         Map<String, Object> jsonResponse = new HashMap<>();
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState currentConfigState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
-        if(currentConfigState != null && currentConfigState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (currentConfigState != null && currentConfigState.getStatus() == LastActionStatus.IN_PROGRESS) {
             jsonResponse.put("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             if (configuration > -1) {
@@ -196,11 +202,14 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
                 DeviceConfigState configState = deviceConfigService.assignConfigToDevice(device, deviceConfig,
                         userContext.getYukonUser());
                 
-                if(configState.getState() == ConfigState.OUT_OF_SYNC) {
-                    LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
-                    // display popup suggesting upload
-                    jsonResponse.put("displayUploadPopup", true);
-                    jsonResponse.put("popupMessage", accessor.getMessage(baseKey + "uploadPopup.message", deviceConfig.getName(), pao.getPaoName()));
+                if (configState.getState() == ConfigState.OUT_OF_SYNC) {
+                    //check for upload permission
+                    if (rolePropertyDao.checkProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser())) {
+                        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
+                        // display popup suggesting upload
+                        jsonResponse.put("displayUploadPopup", true);
+                        jsonResponse.put("popupMessage", accessor.getMessage(baseKey + "uploadPopup.message", deviceConfig.getName(), pao.getPaoName()));
+                    }
                 }
             } else {
                 deviceConfigService.unassignConfig(device, userContext.getYukonUser());
@@ -212,10 +221,11 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     }
     
     @PostMapping("removeConfig")
+    @CheckRoleProperty(YukonRoleProperty.ASSIGN_CONFIG)
     public String removeConfig(ModelMap model, int deviceId, YukonUserContext userContext) throws InvalidDeviceTypeException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
-        if(configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
@@ -226,11 +236,12 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     }
     
     @PostMapping("uploadConfig")
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public String uploadConfig(ModelMap model, int deviceId, YukonUserContext userContext) {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
-        if(configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
             model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             executor.submit(() -> deviceConfigService.sendConfig(device, userContext.getYukonUser()));
@@ -241,10 +252,12 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     }
 
     @PostMapping("validateConfig")
+    @CheckRoleProperty(YukonRoleProperty.SEND_READ_CONFIG)
     public String validateConfig(ModelMap model, int deviceId, YukonUserContext userContext) {
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(deviceId);
-        if(configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
             model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             executor.submit(() -> deviceConfigService.readConfig(device, userContext.getYukonUser()));
