@@ -25,9 +25,8 @@ import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.service.FlotChartService;
@@ -40,7 +39,6 @@ import com.google.common.collect.Lists;
 public class ChartController {
     
     @Autowired private FlotChartService flotChartService;
-    @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private PointDao pointDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -60,7 +58,7 @@ public class ChartController {
         List<Integer> ids = Lists.newArrayList(StringUtils.parseIntStringForList(pointIds));
         Integer pointId = ids.get(0);
         LitePoint point = pointDao.getLitePoint(pointId);
-        LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
+        UnitOfMeasure unitMeasure = UnitOfMeasure.getForId(point.getUofmID());
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String chartIntervalString = messageSourceAccessor.getMessage(interval.getIntervalString());
         String leftYLabelUnits = messageSourceAccessor.getMessage(converterType.getFormattedUnits(unitMeasure, chartIntervalString));

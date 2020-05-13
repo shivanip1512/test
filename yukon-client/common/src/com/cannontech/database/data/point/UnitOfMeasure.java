@@ -1,5 +1,9 @@
 package com.cannontech.database.data.point;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableSet;
@@ -73,6 +77,7 @@ public enum UnitOfMeasure implements DisplayableEnum {
     private static final ImmutableSet<UnitOfMeasure> DURATION = ImmutableSet.of(HOURS, MINUTES, SECONDS, MS);
     private static final String keyBase = "yukon.common.unitOfMeasure.";
     
+    private static List<UnitOfMeasure> values;
     private int id;
     private String abbreviation;
     private String longName;
@@ -137,4 +142,17 @@ public enum UnitOfMeasure implements DisplayableEnum {
         return CAP_CONTROL_WATTS_UOM;
     }
     
+    @Override
+    public String toString() {
+        return longName;
+    }
+    
+    public static List<UnitOfMeasure> allValidValues() {
+        if (values == null) {
+            values = Arrays.stream(values())
+                           .filter(uom -> uom != UnitOfMeasure.INVALID)
+                           .collect(Collectors.toList());
+        }
+        return values;
+    }
 }

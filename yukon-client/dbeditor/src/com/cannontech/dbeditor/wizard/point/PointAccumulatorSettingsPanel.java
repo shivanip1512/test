@@ -4,10 +4,8 @@ import java.util.List;
 
 import javax.swing.JLabel;
 
-import com.cannontech.core.dao.UnitMeasureDao;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointType;
-import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.database.data.point.UnitOfMeasure;
 
 /**
  * This type was created in VisualAge.
@@ -16,7 +14,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class PointAccumulatorSettingsPanel extends com.cannontech.common.gui.util.DataInputPanel {
 	private javax.swing.JLabel ivjDataOffsetLabel = null;
 	private javax.swing.JLabel ivjMultiplierLabel = null;
-	private javax.swing.JComboBox ivjUnitOfMeasureComboBox = null;
+	private javax.swing.JComboBox<UnitOfMeasure> ivjUnitOfMeasureComboBox = null;
 	private javax.swing.JLabel ivjUnitOfMeasureLabel = null;
 	private javax.swing.JTextField ivjDataOffsetTextField = null;
 	private javax.swing.JTextField ivjMultiplierTextField = null;
@@ -289,25 +287,21 @@ private javax.swing.JPanel getReadingPanel() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getUnitOfMeasureComboBox() {
+private javax.swing.JComboBox<UnitOfMeasure> getUnitOfMeasureComboBox() {
 	if (ivjUnitOfMeasureComboBox == null) {
 		try {
-			ivjUnitOfMeasureComboBox = new javax.swing.JComboBox();
+			ivjUnitOfMeasureComboBox = new javax.swing.JComboBox<>();
 			ivjUnitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
 			ivjUnitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjUnitOfMeasureComboBox.setMaximumRowCount(6);
-			// user code begin {1}
-            
+			
 			//Add units of measure to the Unit of Measure combo box
-            List<LiteUnitMeasure> unitMeasures = 
-                 YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
-            for (LiteUnitMeasure lum : unitMeasures) {
-                getUnitOfMeasureComboBox().addItem(lum);
+            List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
+            for (UnitOfMeasure uom : unitMeasures) {
+                getUnitOfMeasureComboBox().addItem(uom);
             }			
-			// user code end
+			
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -340,15 +334,17 @@ private javax.swing.JLabel getUnitOfMeasureLabel() {
  * @return java.lang.Object
  * @param val java.lang.Object
  */
+@Override
 public Object getValue(Object val)
 {
 	//Assuming commonObject is an AccumulatorPoint
 	com.cannontech.database.data.point.AccumulatorPoint point = (com.cannontech.database.data.point.AccumulatorPoint) val;
 
-	if( getAccumulatorPointType() == PointType.PulseAccumulator)
-		point.getPoint().setPointTypeEnum(PointType.PulseAccumulator);
-	else
-		point.getPoint().setPointTypeEnum(PointType.DemandAccumulator);
+	if( getAccumulatorPointType() == PointType.PulseAccumulator) {
+        point.getPoint().setPointTypeEnum(PointType.PulseAccumulator);
+    } else {
+        point.getPoint().setPointTypeEnum(PointType.DemandAccumulator);
+    }
 	
 	//Make sure the text in correct format
 	Double multiplier = null;
@@ -374,16 +370,14 @@ public Object getValue(Object val)
 		dataOffset = new Double(0.0);
 	}
 
-	int uOfMeasureID =
-		((com.cannontech.database.data.lite.LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
-
+	int uOfMeasureID = ((UnitOfMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getId();
 
 	point.getPointAccumulator().setDataOffset(dataOffset);
 	point.getPointAccumulator().setMultiplier(multiplier);
-	point.getPointUnit().setUomID( new Integer(uOfMeasureID) );
-	point.getPointUnit().setDecimalPlaces(new Integer(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces()));
-	point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
-	point.getPoint().setStateGroupID(new Integer(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG));
+	point.getPointUnit().setUomID(uOfMeasureID);
+	point.getPointUnit().setDecimalPlaces(com.cannontech.dbeditor.DatabaseEditor.getDecimalPlaces());
+	point.getPointUnit().setMeterDials(((Number) getMeterDialsSpinner().getValue()).intValue());
+	point.getPoint().setStateGroupID(com.cannontech.database.db.state.StateGroupUtils.STATEGROUP_ANALOG);
 
 	return val;
 }
@@ -515,13 +509,16 @@ public static void main(java.lang.String[] args) {
  * This method was created in VisualAge.
  * @param val java.lang.Object
  */
+@Override
 public void setValue(Object val) {
 }
 
+@Override
 public void setFirstFocus() {
     // Make sure that when its time to display this panel, the focus starts in the top component
     javax.swing.SwingUtilities.invokeLater( new Runnable() 
         { 
+        @Override
         public void run() 
             { 
             getUnitOfMeasureComboBox().requestFocus(); 
