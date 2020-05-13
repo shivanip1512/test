@@ -160,7 +160,7 @@ public class CommChannelController {
      * Get devices names using port 
      */
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId) {
-        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelAssignedDevicesUrl + portId);
+        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDevicesAssignedUrl + portId);
         List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
 
         if (!devicesList.isEmpty()) {
