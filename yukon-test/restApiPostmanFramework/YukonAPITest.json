@@ -2768,8 +2768,26 @@
                             "request": {
                                 "method": "GET",
                                 "header": [],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "",
+                                    "options": {
+                                        "raw": {
+                                            "language": "json"
+                                        }
+                                    }
+                                },
                                 "url": {
-                                    "raw": ""
+                                    "raw": "{{api-url}}/api/device/commChannel/{portId}",
+                                    "host": [
+                                        "{{api-url}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "device",
+                                        "commChannel",
+                                        "{portId}"
+                                    ]
                                 }
                             },
                             "response": []
@@ -2862,7 +2880,7 @@
                                         "device",
                                         "commChannel",
                                         "update",
-                                        "977696"
+                                        "{portId}"
                                     ]
                                 }
                             },
@@ -2894,7 +2912,7 @@
                                         "api",
                                         "device",
                                         "commChannel",
-                                        "977755"
+                                        "{portId}"
                                     ]
                                 }
                             },

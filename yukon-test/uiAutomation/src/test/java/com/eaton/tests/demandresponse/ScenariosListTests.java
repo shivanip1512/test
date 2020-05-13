@@ -2,11 +2,11 @@ package com.eaton.tests.demandresponse;
 
 import java.util.List;
 
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
@@ -17,14 +17,14 @@ public class ScenariosListTests extends SeleniumTestSetup {
 
     DriverExtensions driverExt;
     ScenariosListPage listPage;
-    SoftAssert softAssertion;
+    SoftAssertions softly;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
 
         WebDriver driver = getDriver();
         driverExt = getDriverExt();
-        softAssertion = getSoftAssertion();
+        softly = new SoftAssertions();
 
         driver.get(getBaseUrl() + Urls.DemandResponse.SCENARIOS);
 
@@ -48,7 +48,9 @@ public class ScenariosListTests extends SeleniumTestSetup {
 
         int actualCount = headers.size();
         
-        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
-        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
+        softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
+        softly.assertThat(headers).contains("Name");  
+        
+        softly.assertAll();
     }
 }

@@ -1,8 +1,9 @@
-package com.cannontech.web.stars;
+package com.cannontech.common.device.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class DeviceBaseModel implements YukonDevice {
 
@@ -10,6 +11,17 @@ public class DeviceBaseModel implements YukonDevice {
     private PaoType type;
     private String name;
     private Boolean enable;
+ 
+    public DeviceBaseModel(Integer id, PaoType type, String name, Boolean enable) {
+        this.id = id;
+        this.type = type;
+        this.name = name;
+        this.enable = enable;
+    }
+
+    public DeviceBaseModel() {
+        super();
+    }
 
     public Integer getId() {
         return id;
@@ -44,6 +56,7 @@ public class DeviceBaseModel implements YukonDevice {
     }
 
     @Override
+    @JsonIgnore
     public PaoIdentifier getPaoIdentifier() {
         return new PaoIdentifier(id, type);
     }

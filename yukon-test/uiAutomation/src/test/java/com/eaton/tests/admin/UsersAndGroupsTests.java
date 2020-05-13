@@ -1,10 +1,10 @@
 package com.eaton.tests.admin;
 
+import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -25,8 +25,6 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
     
     private UsersAndGroupsPage page;
     private DriverExtensions driverExt;
-    private static final String FOUND = "' but found: ";
-    private static final String EXPECTED = "Expected Page title: '";
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -44,7 +42,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         
         String actualPageTitle = page.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, EXPECTED + EXPECTED_TITLE + FOUND + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_06_CreateUser"})
@@ -68,7 +66,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, "User (" + name + ")", EXPECTED + "User ( " + name + ")" + FOUND + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo("User (" + name + ")");
     }  
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_05_CreateRoleGroup"})
@@ -89,7 +87,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, "Role Group (" + name + ")", EXPECTED + "User ( " + name + ")" + FOUND + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo("Role Group (" + name + ")");
     } 
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_04_CreateUserGroup"})
@@ -110,7 +108,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, "User Group (" + name + ")", EXPECTED + "User ( " + name + ")" + FOUND + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo("User Group (" + name + ")");
     }
     
     @AfterMethod(alwaysRun=true)

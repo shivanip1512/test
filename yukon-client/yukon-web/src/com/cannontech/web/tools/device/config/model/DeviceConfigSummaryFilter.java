@@ -25,6 +25,7 @@ public class DeviceConfigSummaryFilter {
     //has all ids if "ALL" selected.
     private List<Integer> configurationIds;
     private boolean displayUnassigned;
+    private String status;  //change to new enum
 
     public List<DeviceGroup> getGroups() {
         return groups;
@@ -99,5 +100,11 @@ public class DeviceConfigSummaryFilter {
             tsb.append("configurationIds", Joiner.on(",").join(configurationIds));
         }
         return tsb.toString();
+    }
+    public String getStatus() {
+        return status;
+    }
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Selenium test Suite" verbose="1">
+	<listeners>
+        <listener class-name="com.eaton.screenshotutils.TestListener"></listener>
+        <listener class-name="org.uncommons.reportng.HTMLReporter"/>
+      	<listener class-name="org.uncommons.reportng.JUnitXMLReporter"/>
+    </listeners>
+  <test name="All Tests">
+    <packages>
+    	<package name="com.eaton.tests"/>
+    	<package name="com.eaton.tests.admin"/>
+    	<package name="com.eaton.tests.admin.energycompany"/>
+    	<package name="com.eaton.tests.ami"/>
+    	<package name="com.eaton.tests.assets"/>
+    	<package name="com.eaton.tests.capcontrol"/>
+    	<package name="com.eaton.tests.capcontrol.orphans"/>
+    	<package name="com.eaton.tests.capcontrol.pointimport"/>
+    	<package name="com.eaton.tests.capcontrol.regulatorsetup"/>
+    	<package name="com.eaton.tests.reports"/>
+    	<package name="com.eaton.tests.demandresponse"/>
+    	<package name="com.eaton.tests.demandresponse.cicurtailment"/>
+    	<package name="com.eaton.tests.support"/>
+    	<package name="com.eaton.tests.tools"/>
+    </packages>
+  </test>
+</suite>

@@ -1,9 +1,10 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -35,7 +36,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
 
         String actualPageTitle = detailPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_07_CopyLoadPgm()"})
@@ -49,6 +50,8 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         String timeStamp = new SimpleDateFormat("ddMMyyyyHHmmss").format(System.currentTimeMillis());
         String name = "AT Copied Program " + timeStamp;
+        final String EXPECTED_MSG = name +" copied successfully.";
+        
         modal.getName().setInputValue(name);
         
         modal.clickOkAndWait();
@@ -59,7 +62,7 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, name +" copied successfully.", "Expected User Msg: '" + name +" copied successfully.' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
     @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_08_DeleteLoadPgm()"})
@@ -80,6 +83,6 @@ public class LoadProgramDetailsTests extends SeleniumTestSetup {
         
         String userMsg = setupPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }   
 }

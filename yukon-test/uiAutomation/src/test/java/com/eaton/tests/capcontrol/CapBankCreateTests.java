@@ -11,11 +11,12 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.capcontrol.CapBankCreatePage;
 import com.eaton.pages.capcontrol.CapBankDetailPage;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 
 public class CapBankCreateTests extends SeleniumTestSetup {
 
@@ -38,7 +39,8 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
+
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
@@ -58,7 +60,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailsPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 
     @AfterMethod(alwaysRun=true)

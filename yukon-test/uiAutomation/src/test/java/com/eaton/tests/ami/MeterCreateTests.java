@@ -1,12 +1,12 @@
 package com.eaton.tests.ami;
 
+import static org.assertj.core.api.Assertions.*;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,8 +26,6 @@ public class MeterCreateTests extends SeleniumTestSetup {
     private Random randomNum;
     private static final String CREATED = " created successfully.";
     private static final String METER = "Meter ";
-    private static final String EXPECTED = "Expected User Msg: 'Meter";
-    private static final String FOUND = " created successfully.' but found: ";
     
     private static final String DATE_FORMAT = "ddMMyyyyHHmmss";
 
@@ -68,7 +66,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, METER + name + CREATED, EXPECTED + name + FOUND + userMsg);
+        assertThat(userMsg).isEqualTo(METER + name + CREATED);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
@@ -96,7 +94,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, METER + name + CREATED, EXPECTED + name + FOUND + userMsg);
+        assertThat(userMsg).isEqualTo(METER + name + CREATED);
     }
     
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
@@ -125,7 +123,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
 
         String userMsg = detailPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, METER + name + CREATED, EXPECTED + name + FOUND + userMsg);
+        assertThat(userMsg).isEqualTo(METER + name + CREATED);
     }
 
     private String randomString(int length) {

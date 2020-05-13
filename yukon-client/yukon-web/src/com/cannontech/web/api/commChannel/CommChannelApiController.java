@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.stars.util.ServletUtils;
@@ -54,6 +55,12 @@ public class CommChannelApiController {
     public ResponseEntity<Object> retrieveAllPorts() {
         List<PortBase> listOfPorts = portService.getAllPorts();
         return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
+    }
+    
+    @GetMapping("/devices/{portId}")
+    public ResponseEntity<Object> retrieveAllDevicesForPort(@PathVariable int portId) {
+        List<DeviceBaseModel> listOfDevices = portService.getDevicesAssignedPort(portId);
+        return new ResponseEntity<>(listOfDevices, HttpStatus.OK);
     }
 
     @InitBinder("portBase")

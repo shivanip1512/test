@@ -1,68 +1,61 @@
 package com.cannontech.rest.api.documentation.devicereading;
 
-import static io.restassured.RestAssured.baseURI;
-import static io.restassured.RestAssured.given;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.restassured3.RestAssuredRestDocumentation.document;
-
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.deviceReadings.request.MockIdentifierType;
 import com.cannontech.rest.api.devicereading.helper.DeviceReadingHelper;
-import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
+import com.cannontech.rest.api.documentation.DocumentationBase;
+import com.cannontech.rest.api.documentation.DocumentationFields;
+import com.cannontech.rest.api.documentation.DocumentationFields.Copy;
+import com.cannontech.rest.api.documentation.DocumentationFields.Create;
+import com.cannontech.rest.api.documentation.DocumentationFields.Delete;
+import com.cannontech.rest.api.documentation.DocumentationFields.Get;
+import com.cannontech.rest.api.documentation.DocumentationFields.Update;
 
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
+public class DeviceReadingsApiControllerTest extends DocumentationBase {
 
-public class DeviceReadingsApiControllerTest {
-
-    private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
-    private RequestSpecification documentationSpec;
-    private List<FieldDescriptor> deviceReadingsFieldDescriptor = null;
-    private List<FieldDescriptor> requestDescriptor=null;
-    private final static String meterNumber = ApiCallHelper.getProperty("meterNumber");
-
-    @BeforeMethod
-    public void setUp(Method method) {
-        baseURI = ApiCallHelper.getProperty("baseURI");
-        restDocumentation.beforeTest(getClass(), method.getName());
-        documentationSpec = RestApiDocumentationUtility.buildRequestSpecBuilder(restDocumentation, method);
-        deviceReadingsFieldDescriptor = Arrays.asList(DeviceReadingHelper.buildResponseDescriptorForGet());
-        requestDescriptor = Arrays.asList(DeviceReadingHelper.buildRequestDescriptorForGet());
-    }
-    
-    @AfterMethod
-    public void tearDown() {
-        this.restDocumentation.afterTest();
-    }
-    
     /**
      * Test case is to get Device reading for device and to
      * generate Rest api documentation for get request.
      */
     @Test
     public void Test_DeviceReading_Get() {
-        Response response = given(documentationSpec).filter(document("{ClassName}/{methodName}",requestFields(requestDescriptor), responseFields(deviceReadingsFieldDescriptor)))
-                                                    .accept("application/json")
-                                                    .contentType("application/json")
-                                                    .header("Authorization", "Bearer " + ApiCallHelper.authToken)
-                                                    .when()
-                                                    .body(DeviceReadingHelper.buildDeviceReadingRequest(MockIdentifierType.METERNUMBER, meterNumber))
-                                                    .get(ApiCallHelper.getProperty("getLatestReading") + "getLatestReading")
-                                                    .then()
-                                                    .extract()
-                                                    .response();
-        assertTrue("Status code should be 200", response.statusCode() == 200);
+        getDoc();
+    }
+
+    @Override
+    protected Create buildCreateFields() {
+        return null;
+    }
+
+    @Override
+    protected Update buildUpdateFields() {
+        return null;
+    }
+
+    @Override
+    protected Get buildGetFields() {
+        List<FieldDescriptor> requestFields = Arrays.asList(DeviceReadingHelper.buildRequestDescriptorForGet());
+        List<FieldDescriptor> responseFields = Arrays.asList(DeviceReadingHelper.buildResponseDescriptorForGet());
+        String meterNumber = ApiCallHelper.getProperty("meterNumber");
+        String url = ApiCallHelper.getProperty("getLatestReading") + "getLatestReading";
+        return new DocumentationFields.GetWithBody(responseFields, requestFields,
+                                            DeviceReadingHelper.buildDeviceReadingRequest(MockIdentifierType.METERNUMBER, meterNumber),
+                                            url);
+    }
+
+    @Override
+    protected Copy buildCopyFields() {
+        return null;
+    }
+
+    @Override
+    protected Delete buildDeleteFields() {
+        return null;
     }
 }

@@ -29,4 +29,9 @@ public class DemandResetStatusArchiveSimulatorRequest implements SimulatorReques
     public DemandResetStatusCode getDemandResetStatusCode() {
         return code;
     }
+
+    @Override
+    public String toString() {
+        return String.format("DemandResetStatusArchiveSimulatorRequest [messageCount=%s, code=%s]", messageCount, code);
+    }
 }

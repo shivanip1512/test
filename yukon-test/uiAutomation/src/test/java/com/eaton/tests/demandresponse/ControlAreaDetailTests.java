@@ -1,8 +1,9 @@
 package com.eaton.tests.demandresponse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -33,7 +34,7 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
 
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }    
     
     @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_11_DeleteControlArea"})
@@ -54,7 +55,6 @@ public class ControlAreaDetailTests extends SeleniumTestSetup {
         
         String userMsg = setupPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }  
-
 }

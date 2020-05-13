@@ -1,7 +1,8 @@
 package com.eaton.tests.tools;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -14,8 +15,6 @@ public class ToolsMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
     private static final int TOOLS_INDEX = 4;
-    private static final String EXPECTED = "Expected Url: ";
-    private static final String ACTUAL = " Actual Url: ";
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -31,69 +30,69 @@ public class ToolsMenuTests extends SeleniumTestSetup {
     public void collectionActionsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 0);
         
-        Assert.assertTrue(url.contains(Urls.Tools.COLLECTION_ACTIONS), EXPECTED + Urls.Tools.COLLECTION_ACTIONS + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.COLLECTION_ACTIONS);
     }
 
     @Test
     public void commanderUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 1);
 
-        Assert.assertTrue(url.contains(Urls.Tools.COMMANDER), EXPECTED + Urls.Tools.COMMANDER + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.COMMANDER);
     }
     
     @Test
     public void dataExportActionsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 2);
 
-        Assert.assertTrue(url.contains(Urls.Tools.DATA_EXPORTER), EXPECTED + Urls.Tools.DATA_EXPORTER + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.DATA_EXPORTER);
     }
     
     @Test
     public void dataViewerUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 3);
 
-        Assert.assertTrue(url.contains(Urls.Tools.DATA_VIEWER), EXPECTED + Urls.Tools.DATA_VIEWER + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.DATA_VIEWER);
     }
     
     @Test
     public void deviceConfigurationUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 4);
 
-        Assert.assertTrue(url.contains(Urls.Tools.DEVICE_CONFIGURATION), EXPECTED + Urls.Tools.DEVICE_CONFIGURATION + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.DEVICE_CONFIGURATION);
     }
     
     @Test
     public void deviceGroupsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 5);
 
-        Assert.assertTrue(url.contains(Urls.Tools.DEVICE_GROUP), EXPECTED + Urls.Tools.DEVICE_GROUP + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.DEVICE_GROUP);
     }
     
     @Test
     public void schedulesUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 6);
 
-        Assert.assertTrue(url.contains(Urls.Tools.SCHEDULES), EXPECTED + Urls.Tools.SCHEDULES + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.SCHEDULES);
     }
     
     @Test
     public void scriptsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 7);
 
-        Assert.assertTrue(url.contains(Urls.Tools.SCRIPTS), EXPECTED + Urls.Tools.SCRIPTS + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.SCRIPTS);
     }
     
     @Test
     public void trendsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 8);
 
-        Assert.assertTrue(url.contains(Urls.Tools.TRENDS), EXPECTED + Urls.Tools.TRENDS + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.TRENDS);
     }
     
     @Test
     public void reportsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(TOOLS_INDEX, 9);
 
-        Assert.assertTrue(url.contains(Urls.Tools.REPORTS), EXPECTED + Urls.Tools.REPORTS + ACTUAL + url);
+        assertThat(url).contains(Urls.Tools.REPORTS);
     }
 }

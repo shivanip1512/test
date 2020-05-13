@@ -1,9 +1,10 @@
 package com.eaton.tests.capcontrol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -19,7 +20,6 @@ import com.eaton.pages.capcontrol.orphans.OrphansPage;
 public class FeederEditTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
-    private static final String FOUND = "' but found: ";
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -36,7 +36,7 @@ public class FeederEditTests extends SeleniumTestSetup {
 
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
 
     @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
@@ -60,7 +60,7 @@ public class FeederEditTests extends SeleniumTestSetup {
 
         String userMsg = detailsPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND+ userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
     @Test(enabled = true, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
@@ -81,6 +81,6 @@ public class FeederEditTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
 }

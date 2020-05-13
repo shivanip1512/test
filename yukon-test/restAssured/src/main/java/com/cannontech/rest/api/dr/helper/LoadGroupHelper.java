@@ -43,6 +43,7 @@ import io.restassured.response.ExtractableResponse;
 public class LoadGroupHelper {
     private static final Logger log = LogManager.getLogger(LoadGroupHelper.class);
     public final static String CONTEXT_GROUP_ID = "groupId";
+    public final static String CONTEXT_GROUP_ID_DESC = "Load Group Id";
     public final static int INVALID_ROUTE_ID = 2222222;
     public final static String CONTEXT_MOCK_LOAD_GROUP = "mockloadGroup";
 
@@ -318,5 +319,14 @@ public class LoadGroupHelper {
     private static Integer getRouteId() {
         String routeIdStr = ApiCallHelper.getProperty("loadGroupRouteId");
         return Integer.valueOf(routeIdStr);
+    }
+    
+    /**
+     * Helper method to determine if MockPaoType supports routes
+     */
+    public static boolean isLoadGroupSupportRoute(MockPaoType paoType) {
+        return (paoType == MockPaoType.LM_GROUP_EXPRESSCOMM || paoType == MockPaoType.LM_GROUP_EMETCON || 
+                paoType == MockPaoType.LM_GROUP_GOLAY || paoType == MockPaoType.LM_GROUP_MCT || 
+                paoType == MockPaoType.LM_GROUP_RIPPLE || paoType == MockPaoType.LM_GROUP_VERSACOM);
     }
 }
