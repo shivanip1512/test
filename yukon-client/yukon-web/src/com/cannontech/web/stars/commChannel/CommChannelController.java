@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -30,7 +28,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -96,9 +93,12 @@ public class CommChannelController {
     }
 
     @GetMapping("/{id}")
-    public String view(@PathVariable int id, ModelMap model) {
+    public String view(@PathVariable int id, ModelMap model,YukonUserContext userContext,HttpServletRequest request) {
+        
+        String deviceNames = getDevicesNamesForPort(userContext, request, id);
         model.addAttribute("id", id);
         model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
+        model.addAttribute("deviceNames", deviceNames);
         return "/commChannel/view.jsp";
     }
 
@@ -106,32 +106,30 @@ public class CommChannelController {
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
             String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDeleteUrl + id);
-            String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelAssignedDevicesUrl + id);
 
-            String deviceNames = getDevicesNamesForPort(userContext, request, assignedDevicesUrl);
+            // Fetches device names using this port
+            String deviceNames = getDevicesNamesForPort(userContext, request, id);
 
-            Optional<LiteYukonPAObject> litePort = dbCache.getAllPorts()
-                                                          .stream()
-                                                          .filter(group -> group.getLiteID() == id)
-                                                          .findFirst();
+            String portName = dbCache.getAllPaosMap().get(id).getPaoName();
 
             if (deviceNames != null) {
-                log.error("Error deleting comm channel: {}. Error: {}", litePort.get().getPaoName(), deviceNames);
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", litePort.get().getPaoName(), deviceNames));
-                return "/commChannel/view.jsp";
+                log.error("Error deleting comm channel: {}. Error: {}", portName, deviceNames);
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", portName, deviceNames));
+                return "redirect:" + "/stars/device/commChannel/" + id;
             }
 
             ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", litePort.get().getPaoName()));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", portName));
+                return "redirect:" + "/stars/device/commChannel/list";
             }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "/commChannel/view.jsp";
+            return "redirect:" + "/stars/device/commChannel/" + id;
         }
-        return "/commChannel/list.jsp";
+        return "redirect:" + "/stars/device/commChannel/list";
     }
 
     public enum CommChannelSortBy implements DisplayableEnum {
@@ -146,7 +144,7 @@ public class CommChannelController {
     }
 
     /**
-     * Get the response for delete
+     * Get the response for comm channel delete
      */
     private ResponseEntity<? extends Object> deleteCommChannel(YukonUserContext userContext, HttpServletRequest request, String url) throws RestClientException {
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, 
@@ -159,10 +157,11 @@ public class CommChannelController {
     }
 
     /**
-     * Get devices names from response
+     * Get devices names using port 
      */
-    private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, String url) throws RestClientException {
-        List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, url);
+    private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId) {
+        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelAssignedDevicesUrl + portId);
+        List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
 
         if (!devicesList.isEmpty()) {
             return devicesList.stream()
