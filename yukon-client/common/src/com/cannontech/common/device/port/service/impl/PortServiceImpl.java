@@ -133,6 +133,6 @@ public class PortServiceImpl implements PortService {
 
     @Override
     public List<DeviceBaseModel> getDevicesAssignedPort(int portId) {
-        return portDao.getDevicesUsingPort(portId);
+        return portDao.getDevicesAssignedPort(portId);
     }
 }

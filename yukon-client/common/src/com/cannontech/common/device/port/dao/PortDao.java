@@ -14,5 +14,5 @@ public interface PortDao {
     /**
      * Retrieves list of all devices using portId. Returns empty list when no devices found.
      */
-    public List<DeviceBaseModel> getDevicesUsingPort(Integer portId);
+    public List<DeviceBaseModel> getDevicesAssignedPort(Integer portId);
 }
