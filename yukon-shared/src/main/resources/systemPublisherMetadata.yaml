@@ -30,37 +30,13 @@ Yukon :
 
   - field: dcelectric
     description: Data Completeness Electric
-    details: Find the data completeness of RFN electric meters for point type analog for the given time interval of 7 days which is 3 days previus from current time.
-    source: >-
-        SELECT COUNT(*) AS Actual FROM (
-        SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, Timestamp, Value, Quality FROM RawPointHistory rph
-        JOIN Point p ON rph.PointId = p.PointId
-        AND PointType = 'Analog' AND PointOffset = 1
-        WHERE Timestamp > DATEADD(day,-10, CONVERT(date,SYSDATETIME())) and Timestamp <= DATEADD(day,-3, CONVERT(date,SYSDATETIME())) 
-        AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
-        JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
-        JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
-        JOIN RfnAddress rfn ON  pao.PaObjectId = rfn.DeviceId
-        WHERE Type LIKE 'RFN%'
-        GROUP BY PaoName, Type, MeterNumber, SerialNumber, DisableFlag, PointName
+    details: Find the data completeness of RFN electric meters for point type analog for the given time interval of 7 days which is 3 days previous from current time.
     iotType: Both
     frequency : EverySixHours
 
   - field: dcwater
     description: Data Completeness Water
-    details:  Find the data completeness of RFN gas meters for point type analog for the given time interval of 7 days which is 3 days previus from current time.
-    source: >-
-        SELECT COUNT(*) AS Actual FROM (
-        SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, TimeStamp, Value, Quality FROM RawPointHistory rph 
-        JOIN Point p ON rph.PointId = p.PointId
-        AND PointType = 'Analog' AND PointOffset = 1
-        WHERE Timestamp > DATEADD(day,-10, CONVERT(date,SYSDATETIME())) and Timestamp <= DATEADD(day,-3, CONVERT(date,SYSDATETIME()))
-        AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS distinctRph
-        JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId
-        JOIN DeviceMeterGroup dmg ON pao.PaObjectId = dmg.DeviceId
-        JOIN RfnAddress rfn ON pao.PaObjectId = rfn.DeviceId
-        WHERE Type LIKE 'RFW%'
-        GROUP BY PaoName, Type, MeterNumber, SerialNumber, DisableFlag, PointName
+    details:  Find the data completeness of RFN gas meters for point type analog for the given time interval of 7 days which is 3 days previous from current time.
     iotType: Telemetry
     frequency : EverySixHours
 

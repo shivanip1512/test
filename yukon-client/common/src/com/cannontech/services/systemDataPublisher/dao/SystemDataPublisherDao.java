@@ -32,5 +32,5 @@ public interface SystemDataPublisherDao {
      * This method returns value of Data completeness for the devices in the passed device group.
      * Count of Data Completeness of meters reported in defined number of days. 
      */
-    int getDataCompleteness(String deviceGroupName);
+    DataCollectionSummary getDataCompleteness(String deviceGroupName);
 }

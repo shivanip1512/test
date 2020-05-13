@@ -82,10 +82,14 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
     }
     
     @Override
-    public int getDataCompleteness(String deviceGroupName) {
-        /*
-         * TODO : Will update final SQL query after discussion
-         */
-        return 1;
+    public DataCollectionSummary getDataCompleteness(String deviceGroupName) {
+        boolean includeDisabled = true;
+        DeviceGroup deviceGroup = deviceGroupService.findGroupName(deviceGroupName);
+        Duration days = Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS));
+        Map<RangeType, Range<Instant>> ranges = DataCollectionHelper.getRanges(days);
+        DataCollectionSummary summary = new DataCollectionSummary(Instant.now());
+        summary.setExpected(
+                rpvDao.getDeviceCount(deviceGroup, includeDisabled, null, RangeType.EXPECTED, ranges.get(RangeType.EXPECTED)));
+        return summary;
     }
 }
