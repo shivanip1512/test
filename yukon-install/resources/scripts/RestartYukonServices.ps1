@@ -77,7 +77,9 @@ foreach($ServiceGroup in $YukonServiceGroups)
 	[void]$ServicesToRestart.Add($ServicesToRest)
 }
 
-Write-Host "Services configured for automatic start or currently running: `r`n`r`n$(foreach($Services in $ServicesToRestart){foreach($Service in $Services){Write-Host $Service}})`r`n"
+Write-Host "Services configured for automatic start or currently running: `r`n" 
+foreach($Services in $ServicesToRestart){foreach($Service in $Services){Write-Host $Service}}
+Write-Host "-------------------------------------------" 
 
 <#
     CheckServiceStatus function check running and stopped status of services.
