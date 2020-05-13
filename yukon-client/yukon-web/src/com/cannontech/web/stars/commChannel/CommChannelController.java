@@ -94,11 +94,10 @@ public class CommChannelController {
 
     @GetMapping("/{id}")
     public String view(@PathVariable int id, ModelMap model,YukonUserContext userContext,HttpServletRequest request) {
-        
-        String deviceNames = getDevicesNamesForPort(userContext, request, id);
+
         model.addAttribute("id", id);
         model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
-        model.addAttribute("deviceNames", deviceNames);
+        model.addAttribute("deviceNames", getDevicesNamesForPort(userContext, request, id));
         return "/commChannel/view.jsp";
     }
 
@@ -109,12 +108,11 @@ public class CommChannelController {
 
             // Fetches device names using this port
             String deviceNames = getDevicesNamesForPort(userContext, request, id);
-
             String portName = dbCache.getAllPaosMap().get(id).getPaoName();
 
             if (deviceNames != null) {
                 log.error("Error deleting comm channel: {}. Error: {}", portName, deviceNames);
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", portName, deviceNames));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.devicesAssigned.error", portName, deviceNames));
                 return "redirect:" + "/stars/device/commChannel/" + id;
             }
 
@@ -127,6 +125,11 @@ public class CommChannelController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return "redirect:" + "/stars/device/commChannel/" + id;
+        } catch (RestClientException ex) {
+            String portName = dbCache.getAllPaosMap().get(id).getPaoName();
+            log.error("Error deleting comm Channel: {}. Error: {}", portName, ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", portName, ex.getMessage()));
             return "redirect:" + "/stars/device/commChannel/" + id;
         }
         return "redirect:" + "/stars/device/commChannel/list";
