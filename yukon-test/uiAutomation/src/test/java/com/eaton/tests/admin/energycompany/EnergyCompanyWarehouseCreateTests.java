@@ -1,10 +1,10 @@
 package com.eaton.tests.admin.energycompany;
 
+import static org.assertj.core.api.Assertions.*;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,17 +37,17 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
     public void createEnergyCompanyWarehouseAllFieldsSuccess() {
-        final String START_EXPECTED_MSG = "Successfully saved ";
-        
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+        String wareHouseName = "AT EC Warehouse " + timeStamp;
         
-        String name = "AT EC Warehouse " + timeStamp;
-        createPage.getWarehouseName().setInputValue(name);
+        final String EXPECTED_MSG = "Successfully saved " + wareHouseName + ".";
+        
+        createPage.getWarehouseName().setInputValue(wareHouseName);
         createPage.getAddress().setInputValue("505 State Hwy 55");
         createPage.getAddress2().setInputValue("Suite 301");
         createPage.getCity().setInputValue("Plymouth");
@@ -63,7 +63,7 @@ public class EnergyCompanyWarehouseCreateTests extends SeleniumTestSetup {
         
         String userMsg = listPage.getUserMessage();
         
-        Assert.assertEquals(userMsg, START_EXPECTED_MSG + name + ".", "Expected User Msg: '" + START_EXPECTED_MSG + name + "' but found: " + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }    
     
     @AfterMethod(alwaysRun=true)

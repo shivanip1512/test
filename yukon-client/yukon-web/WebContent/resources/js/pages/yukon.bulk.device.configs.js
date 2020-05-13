@@ -18,6 +18,7 @@ yukon.bulk.device.configs = (function () {
         $('.js-assign-config').toggleClass('dn', value != 'ASSIGN');
         $('.js-unassign-config').toggleClass('dn', value != 'UNASSIGN');
         $('.js-send-config').toggleClass('dn', value != 'SEND');
+        $('.js-upload-config-plc-warning').toggleClass('dn', value != 'SEND');
         $('.js-read-config').toggleClass('dn', value != 'READ');
         $('.js-verify-config').toggleClass('dn', value != 'VERIFY');
     };

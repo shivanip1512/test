@@ -1,10 +1,10 @@
 package com.eaton.tests.admin.energycompany;
 
+import static org.assertj.core.api.Assertions.*;
 import java.util.Optional;
 import java.util.Random;
 
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -37,7 +37,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         
         String actualPageTitle = createPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + "' but found: " + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_02_AddLogin"})
@@ -61,7 +61,7 @@ public class EnergyCompanyOperatorUserCreateTests extends SeleniumTestSetup {
         
         String actualUserMsg = listPage.getUserMessage();
         
-        Assert.assertEquals(actualUserMsg, EXPECTED_USER_MSG, "Expected User Msg: '" + EXPECTED_USER_MSG + "' but found: " + actualUserMsg);
+        assertThat(actualUserMsg).isEqualTo(EXPECTED_USER_MSG);
     }        
     
     @AfterMethod(alwaysRun=true)

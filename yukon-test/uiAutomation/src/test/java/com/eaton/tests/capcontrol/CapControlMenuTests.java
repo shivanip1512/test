@@ -1,7 +1,8 @@
 package com.eaton.tests.capcontrol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -15,8 +16,6 @@ public class CapControlMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
     private static final int CAP_CONTROL_INDEX = 2;
-    private static final String EXPECTED = "Expected Url: ";
-    private static final String ACTUAL = " Actual Url: ";
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -33,62 +32,62 @@ public class CapControlMenuTests extends SeleniumTestSetup {
     public void dashboardUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 0);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.DASHBOARD), EXPECTED + Urls.CapControl.DASHBOARD + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.DASHBOARD);
     }
 
     @Test
     public void schedulesUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 1);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.SCHEDULES), EXPECTED + Urls.CapControl.SCHEDULES + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.SCHEDULES);
     }
     
     @Test
     public void strategiesUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 2);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.STRATEGIES), EXPECTED + Urls.CapControl.STRATEGIES + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.STRATEGIES);
     }
     
     @Test
     public void recentTempMovesUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 3);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.RECENT_TEMP_MOVES), EXPECTED + Urls.CapControl.RECENT_TEMP_MOVES + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.RECENT_TEMP_MOVES);
     }
     
     @Test
     public void orphansUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 4);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.ORPHANS), EXPECTED + Urls.CapControl.ORPHANS + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.ORPHANS);
     }    
     
     @Test
     public void regulatroSetupUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 5);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.REGULATOR_SETUP), EXPECTED + Urls.CapControl.REGULATOR_SETUP + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.REGULATOR_SETUP);
     }
     
     @Test
     public void importUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 6);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.IMPORT), EXPECTED + Urls.CapControl.IMPORT + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.IMPORT);
     }    
     
     @Test
     public void pointImportUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 7);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.POINT_IMPORT), EXPECTED + Urls.CapControl.POINT_IMPORT + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.POINT_IMPORT);
     }
     
     @Test
     public void reportsUrlCorrect() {
         String url = page.getMenu().getMenuOptionUrl(CAP_CONTROL_INDEX, 8);
 
-        Assert.assertTrue(url.contains(Urls.CapControl.REPORTS), EXPECTED + Urls.CapControl.REPORTS + ACTUAL + url);
+        assertThat(url).contains(Urls.CapControl.REPORTS);
     }
 }

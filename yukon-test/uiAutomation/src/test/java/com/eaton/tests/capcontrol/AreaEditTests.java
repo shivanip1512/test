@@ -1,5 +1,7 @@
 package com.eaton.tests.capcontrol;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
@@ -36,7 +38,7 @@ public class AreaEditTests extends SeleniumTestSetup {
 
         String actualPageTitle = editPage.getPageTitle();
         
-        Assert.assertEquals(actualPageTitle, EXPECTED_TITLE, "Expected Page title: '" + EXPECTED_TITLE + FOUND + actualPageTitle);
+        assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
@@ -60,7 +62,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }       
     
     @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
@@ -81,6 +83,6 @@ public class AreaEditTests extends SeleniumTestSetup {
         
         String userMsg = detailsPage.getUserMessage();
 
-        Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg: '" + EXPECTED_MSG + FOUND + userMsg);
+        assertThat(userMsg).isEqualTo(EXPECTED_MSG);        
     }
 }

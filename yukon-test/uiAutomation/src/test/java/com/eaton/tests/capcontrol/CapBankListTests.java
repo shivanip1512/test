@@ -2,11 +2,10 @@ package com.eaton.tests.capcontrol;
 
 import java.util.List;
 
+import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.testng.asserts.SoftAssert;
-
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
@@ -15,7 +14,7 @@ import com.eaton.pages.capcontrol.CapBankListPage;
 public class CapBankListTests extends SeleniumTestSetup {
 
     private CapBankListPage listPage;
-    private SoftAssert softAssertion;
+    private SoftAssertions softly;
 
     @BeforeClass(alwaysRun=true)
     public void beforeClass() {
@@ -23,7 +22,7 @@ public class CapBankListTests extends SeleniumTestSetup {
         WebDriver driver = getDriver();
         DriverExtensions driverExt = getDriverExt();
 
-        softAssertion = getSoftAssertion();
+        softly = new SoftAssertions();
 
         driver.get(getBaseUrl() + Urls.CapControl.CAP_BANK_LIST);
 
@@ -38,9 +37,11 @@ public class CapBankListTests extends SeleniumTestSetup {
         
         int actualCount = headers.size();
 
-        softAssertion.assertEquals(actualCount, EXPECTED_COUNT, "Expected: " + EXPECTED_COUNT + "colmns but found: " + actualCount);
-        softAssertion.assertTrue(headers.contains("Name"), "Expected Column Header of Name");
-        softAssertion.assertTrue(headers.contains("Item Type"), "Expected Column Header of Item Type");
-        softAssertion.assertTrue(headers.contains("Description"), "Expected Column Header of Description");
+        softly.assertThat(actualCount).isEqualTo(EXPECTED_COUNT);
+        softly.assertThat(headers).contains("Name");
+        softly.assertThat(headers).contains("Item Type");
+        softly.assertThat(headers).contains("Description");
+        
+        softly.assertAll();
     }
 }

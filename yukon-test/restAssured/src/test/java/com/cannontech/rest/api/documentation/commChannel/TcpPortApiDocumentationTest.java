@@ -1,47 +1,70 @@
 package com.cannontech.rest.api.documentation.commChannel;
 
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.annotations.Test;
 
-import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
-import com.cannontech.rest.api.commChannel.request.MockPaoType;
-import com.cannontech.rest.api.commChannel.request.MockPortBase;
+import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockPaoType;
 
 public class TcpPortApiDocumentationTest extends CommChannelApiDocBase {
 
     private String portId = null;
-    private MockPortBase tcpPort = CommChannelHelper.buildCommChannel(MockPaoType.TCPPORT);
 
     private static List<FieldDescriptor> buildPortBaseDescriptor() {
-        List<FieldDescriptor> portBaseDescriptor = Arrays.asList(portBaseFields());
+        List<FieldDescriptor> portBaseDescriptor = new ArrayList<>(Arrays.asList(portBaseFields()));
         return portBaseDescriptor;
     }
 
     @Test
     public void Test_TcpPort_01_Create() {
-        portId = create(buildPortBaseDescriptor(), tcpPort);
+        portId = createDoc();
     }
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
     public void Test_TcpPort_02_Update() {
-        portId = update(buildPortBaseDescriptor(), tcpPort, portId);
+        portId = updateDoc();
     }
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
     public void Test_TcpPort_03_Get() {
-        getOne(buildPortBaseDescriptor(), portId);
+        getDoc();
     }
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
     public void Test_TcpPort_04_Delete() {
-        delete(portId);
+        deleteDoc();
     }
 
     @Test
     public void Test_AllPorts_05_Get() {
-        getAll(buildAllPortsDescriptor());
+        List<FieldDescriptor> allPortsDescriptor = Arrays.asList(
+            fieldWithPath("[].id").type(JsonFieldType.NUMBER).description(idDescStr),
+            fieldWithPath("[].name").type(JsonFieldType.STRING).description("Comm Channel Name"),
+            fieldWithPath("[].enable").type(JsonFieldType.BOOLEAN).description("Status"),
+            fieldWithPath("[].type").type(JsonFieldType.STRING).description("Type"));
+        String url = ApiCallHelper.getProperty("getAllCommChannels");
+        getAllDoc(allPortsDescriptor, url);
+    }
+
+    @Override
+    protected List<FieldDescriptor> getFieldDescriptors() {
+        return buildPortBaseDescriptor();
+    }
+
+    @Override
+    protected MockPaoType getMockPaoType() {
+        return MockPaoType.TCPPORT;
+    }
+    
+    @Override
+    protected String getPortId() {
+        return portId;
     }
 }

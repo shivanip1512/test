@@ -442,10 +442,10 @@
 <entry key="yukon.common.roleProperty.MASS_DELETE.description">Controls access to mass delete devices action.</entry>
 <entry key="yukon.common.roleProperty.ADD_REMOVE_POINTS">Add/Update/Remove Points</entry>
 <entry key="yukon.common.roleProperty.ADD_REMOVE_POINTS.description">Controls access to Add, Update and Remove Points collection actions.</entry>
-<entry key="yukon.common.roleProperty.ASSIGN_CONFIG">Assign Configs</entry>
-<entry key="yukon.common.roleProperty.ASSIGN_CONFIG.description">Controls access to Assign Config collection action.</entry>
-<entry key="yukon.common.roleProperty.SEND_READ_CONFIG">Send/Read Configs</entry>
-<entry key="yukon.common.roleProperty.SEND_READ_CONFIG.description">Controls access to Send Config and Read Config collection actions.</entry>
+<entry key="yukon.common.roleProperty.ASSIGN_CONFIG">Device Config Change/Remove</entry>
+<entry key="yukon.common.roleProperty.ASSIGN_CONFIG.description">Controls access to Device Configs Change/Remove collection action.</entry>
+<entry key="yukon.common.roleProperty.SEND_READ_CONFIG">Device Config Upload/Validate</entry>
+<entry key="yukon.common.roleProperty.SEND_READ_CONFIG.description">Controls access to Device Configs Upload/Validate Config collection actions.</entry>
 <entry key="yukon.common.roleProperty.ARCHIVED_DATA_ANALYSIS">Archived Data Analysis</entry>
 <entry key="yukon.common.roleProperty.ARCHIVED_DATA_ANALYSIS.description">Controls access to Archived Data Analysis collection action.</entry>
 <entry key="yukon.common.roleProperty.FDR_TRANSLATION_MANAGER">Manage FDR Translations</entry>

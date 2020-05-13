@@ -1,7 +1,7 @@
 package com.eaton.tests.admin;
 
+import static org.assertj.core.api.Assertions.*;
 import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -14,8 +14,6 @@ public class AdminMenuTests extends SeleniumTestSetup {
 
     private HomePage page;
     private static final int ADMIN_INDEX = 5;
-    private static final String EXPECTED = "Expected Url: ";
-    private static final String ACTUAL = " Actual Url: ";
     private String baseUrl;
 
     @BeforeClass(alwaysRun=true)
@@ -37,7 +35,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
 
         System.out.println("1 " + Thread.currentThread().getId());
         
-        Assert.assertTrue(url.contains(Urls.Admin.CONFIGURATION), EXPECTED + baseUrl + Urls.Admin.CONFIGURATION + ACTUAL + url);        
+        assertThat(url).contains(Urls.Admin.CONFIGURATION);
     }
     
     @Test
@@ -47,7 +45,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         
         System.out.println("2 " + Thread.currentThread().getId());
 
-        Assert.assertTrue(url.contains(Urls.Admin.ENERGY_COMPANY), EXPECTED + baseUrl + Urls.Admin.ENERGY_COMPANY + ACTUAL + url);
+        assertThat(url).contains(Urls.Admin.ENERGY_COMPANY);
     }
     
     @Test
@@ -57,7 +55,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         
         System.out.println("3 " + Thread.currentThread().getId());
 
-        Assert.assertTrue(url.contains(Urls.Admin.MAINTENANCE), EXPECTED + baseUrl + Urls.Admin.MAINTENANCE + ACTUAL + url);
+        assertThat(url).contains(Urls.Admin.MAINTENANCE);
     }
     
     @Test
@@ -67,7 +65,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         
         System.out.println("4 " + Thread.currentThread().getId());
 
-        Assert.assertTrue(url.contains(Urls.Admin.MULTI_SPEAK), EXPECTED + baseUrl + Urls.Admin.MULTI_SPEAK + ACTUAL + url);
+        assertThat(url).contains(Urls.Admin.MULTI_SPEAK);
     }
     
     @Test
@@ -77,7 +75,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         
         System.out.println("5 " + Thread.currentThread().getId());
 
-        Assert.assertTrue(url.contains(Urls.Admin.SUBSTATIONS), EXPECTED + baseUrl + Urls.Admin.SUBSTATIONS + ACTUAL + url);
+        assertThat(url).contains(Urls.Admin.SUBSTATIONS);
     }
     
     @Test
@@ -87,7 +85,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         
         System.out.println("6 " + Thread.currentThread().getId());
 
-        Assert.assertTrue(url.contains(Urls.Admin.USERS_AND_GROUPS), EXPECTED + baseUrl + Urls.Admin.USERS_AND_GROUPS + ACTUAL + url);
+        assertThat(url).contains(Urls.Admin.USERS_AND_GROUPS);
     }
     
     @Test
@@ -97,6 +95,6 @@ public class AdminMenuTests extends SeleniumTestSetup {
         
         System.out.println("7 " + Thread.currentThread().getId());
 
-        Assert.assertTrue(url.contains(Urls.Admin.REPORTS), EXPECTED + baseUrl + Urls.Admin.REPORTS + ACTUAL + url);
+        assertThat(url).contains(Urls.Admin.REPORTS);
     }
 }
