@@ -32,7 +32,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         String id = ServletUtils.getPathVariable("id");
         PaoType paoType = null;
         if (id == null) {
-            // Create case.
+            // Create case. We should expect "type" field in the request.
             TreeNode type = node.get("type");
             if (type != null) {
                 paoType = PaoType.valueOf(type.toString().replace("\"", ""));
