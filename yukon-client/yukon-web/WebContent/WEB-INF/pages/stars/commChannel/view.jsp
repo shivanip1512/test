@@ -14,8 +14,9 @@
         <li class="divider"></li>
         <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="delete-option" 
            data-ok-event="yukon:commChannel:delete"/>
+
         <cti:msg2 var="userWarningMessage" key="yukon.web.modules.operator.commChannel.delete.warning"/>
-        <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${fn:escapeXml(commChannel.name)}" userMessage="${userWarningMessage}" userMessageClass="warning"/>
+        <d:confirm on="#delete-option" nameKey="confirmDelete" argument="${fn:escapeXml(commChannel.name)}" userMessage="${userWarningMessage}" userMessageClass="warning"/>
         <cti:url var="deleteUrl" value="/stars/device/commChannel/delete/${commChannel.id}"/>
             <form:form id="delete-commChannel-form" action="${deleteUrl}" method="delete" modelAttribute="commChannel">
                   <tags:hidden path="id" />
