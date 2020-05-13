@@ -93,7 +93,7 @@ public class CommChannelController {
     }
 
     @GetMapping("/{id}")
-    public String view(@PathVariable int id, ModelMap model,YukonUserContext userContext,HttpServletRequest request) {
+    public String view(@PathVariable int id, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
 
         model.addAttribute("id", id);
         model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
