@@ -1,6 +1,8 @@
 package com.cannontech.common.device.port.service;
 
 import java.util.List;
+
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.database.data.port.DirectPort;
 
@@ -30,5 +32,10 @@ public interface PortService {
      * Retrieve List of all Comm channels.
      */
     List<PortBase> getAllPorts();
+
+    /**
+     * Retrieves list of all devices using portId. Returns empty list when no devices found.
+     */
+    List<DeviceBaseModel> getDevicesAssignedPort(int portId);
 
 }

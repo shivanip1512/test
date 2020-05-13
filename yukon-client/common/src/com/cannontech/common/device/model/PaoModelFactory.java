@@ -5,25 +5,26 @@ import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 
 public class PaoModelFactory {
 
-    public static Object getModel(PaoType paoType) {
-        Object portBase = null;
+    public static YukonPao getModel(PaoType paoType) {
+        YukonPao yukonPaoModel = null;
         switch (paoType) {
         case TCPPORT :
-            portBase = new TcpPortDetail();
+            yukonPaoModel = new TcpPortDetail();
             break;
         case UDPPORT : 
-            portBase = new UdpPortDetail();
+            yukonPaoModel = new UdpPortDetail();
             break;
         case TSERVER_SHARED : 
-            portBase = new TcpSharedPortDetail();
+            yukonPaoModel = new TcpSharedPortDetail();
             break;
         case LOCAL_SHARED : 
-            portBase = new LocalSharedPortDetail();
+            yukonPaoModel = new LocalSharedPortDetail();
             break;
         }
-        return portBase;
+        return yukonPaoModel;
     }
 }

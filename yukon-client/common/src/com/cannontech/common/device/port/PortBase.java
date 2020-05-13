@@ -2,7 +2,7 @@ package com.cannontech.common.device.port;
 
 import org.apache.commons.lang3.BooleanUtils;
 
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.port.DirectPort;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,37 +10,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
 @JsonDeserialize(using = JsonDeserializePaoTypeLookup.class)
-public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> {
+public class PortBase<T extends DirectPort> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
-    private Integer id;
-    private String name;
-    private Boolean enable;
     private BaudRate baudRate;
-    private PaoType type;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Boolean getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Boolean enable) {
-        this.enable = enable;
-    }
 
     public BaudRate getBaudRate() {
         return baudRate;
@@ -48,14 +20,6 @@ public class PortBase<T extends DirectPort> implements DBPersistentConverter<T> 
 
     public void setBaudRate(BaudRate baudRate) {
         this.baudRate = baudRate;
-    }
-
-    public PaoType getType() {
-        return type;
-    }
-
-    public void setType(PaoType type) {
-        this.type = type;
     }
 
     @Override

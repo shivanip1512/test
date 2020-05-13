@@ -1,5 +1,6 @@
 package com.cannontech.rest.api.commChannel.request;
 
+import com.cannontech.rest.api.common.model.MockPaoType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

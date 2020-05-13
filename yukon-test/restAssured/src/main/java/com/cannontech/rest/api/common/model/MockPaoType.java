@@ -32,4 +32,9 @@ public enum MockPaoType {
     LM_CONTROL_AREA, 
     LM_SCENARIO,
 
+    
+    TCPPORT,
+    UDPPORT,
+    TSERVER_SHARED,
+    LOCAL_SHARED
 }

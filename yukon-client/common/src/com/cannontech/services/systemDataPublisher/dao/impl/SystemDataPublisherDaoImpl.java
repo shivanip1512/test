@@ -46,4 +46,11 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
         return nmSystemData;
     }
 
+    @Override
+    public int getDataCompleteness(String deviceGroupName) {
+        /*
+         * TODO : Will update final SQL query after discussion
+         */
+        return 1;
+    }
 }

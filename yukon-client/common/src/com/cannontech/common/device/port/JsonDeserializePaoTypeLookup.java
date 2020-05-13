@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServletUtils;
@@ -15,16 +16,16 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 @SuppressWarnings("serial")
-public class JsonDeserializePaoTypeLookup extends StdDeserializer<Object> {
+public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
 
     protected JsonDeserializePaoTypeLookup() {
-        super(Object.class);
+        super(YukonPao.class);
     }
 
     private IDatabaseCache serverDatabaseCache = YukonSpringHook.getBean(IDatabaseCache.class);
 
     @Override
-    public Object deserialize(JsonParser parser, DeserializationContext ctxt)
+    public YukonPao deserialize(JsonParser parser, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
         TreeNode node = parser.readValueAsTree();
         // Catch the update case here.
@@ -44,6 +45,6 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<Object> {
         }
 
         Class<?> clazz = PaoModelFactory.getModel(paoType).getClass();
-        return parser.getCodec().treeToValue(node, clazz);
+        return (YukonPao) parser.getCodec().treeToValue(node, clazz);
     }
 }

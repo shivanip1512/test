@@ -763,6 +763,12 @@
     <entry key="yukon.web.modules.tools.configs.summary.send">Send</entry>
     <entry key="yukon.web.modules.tools.configs.summary.verify">Verify</entry>
     
+    <!-- Statuses -->
+    <entry key="yukon.web.modules.tools.configs.summary.status.IN_SYNC">In Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.status.IN_PROGRESS">In Progress</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.status.NEEDS_UPLOAD">Needs Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.status.NEEDS_VALIDATION">Needs Validation</entry>
+    
     <!-- Action Types -->
     <entry key="yukon.web.modules.tools.configs.summary.actionType.READ">Read</entry>
     <entry key="yukon.web.modules.tools.configs.summary.actionType.SEND">Send</entry>
