@@ -3,7 +3,7 @@ package com.cannontech.database.data.lite;
 /**
  * @deprecated Use UnitOfMeasure instead of this, and prefer the i18ned name keys to the hard-coded values.
  */
-@Deprecated(since="5/2020")
+@Deprecated(since="7.4")
 public class LiteUnitMeasure extends LiteBase
 {
 	private String unitMeasureName = null;
