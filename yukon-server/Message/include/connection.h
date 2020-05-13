@@ -84,11 +84,11 @@ protected:
 
     size_t  _outQueueLogCountConfig;
     std::atomic<size_t> _outQueueLogCount = 0;
-    bool doLogByCount( size_t queueSize );
+    bool shouldLogByCount( size_t queueSize );
 
-    time_t  _outQueueLogPeriodConfig;
-    std::atomic<time_t> _outQueueLogPeriod = 0;
-    bool doLogByTime();
+    std::chrono::seconds _outQueueLogInterval;
+    std::atomic<time_t> _nextOutQueueLogTime = 0;
+    bool shouldLogByTime();
 
     using Lock = Cti::readers_writer_lock_t;
     using ReaderGuard = Lock::reader_lock_guard_t;
@@ -179,7 +179,7 @@ public:
     bool isViable() const;
     bool valid() const;
 
-    void setOutQueueLogging( unsigned messageCount, unsigned period );
+    void setOutQueueLogging( std::size_t messageCount, std::chrono::seconds period );
 
     const CtiTime& getLastReceiptTime() const;
 

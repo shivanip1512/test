@@ -212,7 +212,7 @@ void CtiLMClientListener::_listen()
                 CtiLMConnectionPtr new_conn( CTIDBG_new CtiServerConnection( _listenerConnection, &_incomingQueue ));
 
                 // Log the outQueue memory consumption every additional 100 messages queued or 300 seconds
-                new_conn->setOutQueueLogging( 100, 300 );
+                new_conn->setOutQueueLogging( 100, std::chrono::seconds( 300 ) );
 
                 // Kick off the connection's communication threads.
                 new_conn->start();

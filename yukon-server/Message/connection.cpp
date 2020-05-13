@@ -45,7 +45,7 @@ CtiConnection::CtiConnection( const string& title, Que_t *inQ, int termSeconds )
             .priority( THREAD_PRIORITY_HIGHEST )),
     _amqOutThreadHandle{nullptr},
     _outQueueLogCountConfig(0),
-    _outQueueLogPeriodConfig(0)
+    _outQueueLogInterval(0)
 {
     CTILOG_DEBUG( dout, who() << " - CtiConnection::CtiConnection() @0x" << std::hex << this );
 
@@ -613,7 +613,7 @@ YukonError_t CtiConnection::WriteConnQue(std::unique_ptr<CtiMessage> msg, ::Cti:
         }
     }
 
-    if ( doLogByTime() || doLogByCount( outQueueSize ) )
+    if ( shouldLogByTime() || shouldLogByCount( outQueueSize ) )
     {
         constexpr size_t MaximumConsumption = 3 * 1024 * 1024 * 1024;   // 3GB - our arbitrary limit du jour
         size_t consumption = _outQueue.getQueueMemoryConsumption();
@@ -1013,7 +1013,7 @@ void CtiConnection::releaseResources()
     _connection.reset();
 }
 
-void CtiConnection::setOutQueueLogging( unsigned messageCount, unsigned period )
+void CtiConnection::setOutQueueLogging( std::size_t messageCount, std::chrono::seconds period )
 {
     if ( messageCount > 0 )
     {
@@ -1027,22 +1027,22 @@ void CtiConnection::setOutQueueLogging( unsigned messageCount, unsigned period )
         }
     }
 
-    if ( period > 0 )
+    if ( period.count() > 0 )
     {
         // Turn on and configure time interval based logging
-        _outQueueLogPeriodConfig = period;
+        _outQueueLogInterval = period;
 
         CtiTime now;
 
-        auto originalPeriod = _outQueueLogPeriod.load();
-        if ( ! _outQueueLogPeriod.compare_exchange_strong( originalPeriod, originalPeriod + now.seconds() + _outQueueLogPeriodConfig ) )
+        auto nextLogTime = _nextOutQueueLogTime.load();
+        if ( ! _nextOutQueueLogTime.compare_exchange_strong( nextLogTime, nextLogTime + now.seconds() + _outQueueLogInterval.count() ) )
         {
-            CTILOG_WARN( dout, who() << " - could not update _outQueueLogPeriod, value was set to " << originalPeriod << " by another thread" );
+            CTILOG_WARN( dout, who() << " - could not update _nextOutQueueLogTime, value was set to " << nextLogTime << " by another thread" );
         }
     }
 }
 
-bool CtiConnection::doLogByCount( size_t queueSize )
+bool CtiConnection::shouldLogByCount( size_t queueSize )
 {
     auto logCount = _outQueueLogCount.load();
 
@@ -1059,16 +1059,16 @@ bool CtiConnection::doLogByCount( size_t queueSize )
     return false;
 }
 
-bool CtiConnection::doLogByTime()
+bool CtiConnection::shouldLogByTime()
 {
     CtiTime now;
-    auto logPeriod = _outQueueLogPeriod.load();
+    auto logPeriod = _nextOutQueueLogTime.load();
 
     if ( logPeriod > 0 && now.seconds() > logPeriod )
     {
-        if ( ! _outQueueLogPeriod.compare_exchange_strong( logPeriod, logPeriod + _outQueueLogPeriodConfig ) )
+        if ( ! _nextOutQueueLogTime.compare_exchange_strong( logPeriod, logPeriod + _outQueueLogInterval.count() ) )
         {
-            CTILOG_WARN( dout, who() << " - could not update _outQueueLogPeriod, value was set to " << logPeriod << " by another thread" );
+            CTILOG_WARN( dout, who() << " - could not update _nextOutQueueLogTime, value was set to " << logPeriod << " by another thread" );
         }
 
         return true;
