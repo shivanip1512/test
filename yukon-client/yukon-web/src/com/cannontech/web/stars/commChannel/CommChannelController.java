@@ -125,14 +125,13 @@ public class CommChannelController {
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", litePort.get().getPaoName()));
-                return "/commChannel/list.jsp";
             }
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "/commChannel/view.jsp";
         }
-        return "redirect:" + "/commChannel/view.jsp";
+        return "/commChannel/list.jsp";
     }
 
     public enum CommChannelSortBy implements DisplayableEnum {
