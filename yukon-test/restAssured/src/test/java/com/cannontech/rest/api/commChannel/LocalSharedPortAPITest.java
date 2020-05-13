@@ -9,8 +9,8 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
 import com.cannontech.rest.api.commChannel.request.MockBaudRate;
 import com.cannontech.rest.api.commChannel.request.MockLocalSharedPortDetail;
-import com.cannontech.rest.api.commChannel.request.MockPaoType;
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.utilities.Log;
 
 import io.restassured.response.ExtractableResponse;
