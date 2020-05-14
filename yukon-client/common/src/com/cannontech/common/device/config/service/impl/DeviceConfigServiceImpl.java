@@ -256,9 +256,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
      * Returns DeviceRequestType matched to the command
      */
     private DeviceRequestType getRequestTypeByCommand(String commandString) {
+        String formattedString = commandString.replaceAll("\\s{2,}", " ");
         Map<String, DeviceRequestType> commandToRequestType = MapUtils.invertMap(commands);
         List<String> commands = commandToRequestType.keySet().stream()
-                .filter(cmd -> commandString.contains(cmd)).collect(Collectors.toList());
+                .filter(cmd -> formattedString.replaceAll("\\s{2,}", " ").contains(cmd)).collect(Collectors.toList());
         if(commands.isEmpty()) {
             return null;
         } else if(commands.size() == 1) {
