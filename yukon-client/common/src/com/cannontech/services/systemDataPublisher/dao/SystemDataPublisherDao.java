@@ -3,6 +3,8 @@ package com.cannontech.services.systemDataPublisher.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.device.data.collection.model.DataCollectionDetail;
+import com.cannontech.common.device.data.collection.model.DataCollectionSummary;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 
 public interface SystemDataPublisherDao {
@@ -20,10 +22,16 @@ public interface SystemDataPublisherDao {
      * 
      */
     List<Map<String, Object>> getNMSystemData(CloudDataConfiguration cloudDataConfiguration);
+    
+    /**
+     * This method returns read rates for the devices in the passed device group.
+     * Read rates are the % of meters reported in defined number of days. 
+     */
+    DataCollectionSummary getReadRate(String deviceGroupName);
 
     /**
-     * This method returns value of Data completeness for the devices in the passed device group.
-     * Count of Data Completeness of meters reported in defined number of days. 
+     * This method returns Data Collection detail for Data completeness of devices in the passed device group.
+     * Count of device reported in defined number of days.
      */
-    int getDataCompleteness(String deviceGroupName);
+    DataCollectionDetail getDataCompleteness(String deviceGroupName);
 }

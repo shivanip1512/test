@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.cannontech.services.systemDataPublisher.service.model.SystemDataFieldType.FieldType;
 
 @Service
-public class WaterDataCompletenessProcessor extends DataCompletenessProcessor {
+public class WaterReadRateDataProcessor extends ReadRateDataProcessor {
 
     @Override
     public String getDeviceGroupName() {
@@ -14,6 +14,6 @@ public class WaterDataCompletenessProcessor extends DataCompletenessProcessor {
 
     @Override
     public boolean supportsField(FieldType field) {
-        return field == FieldType.DATA_COMPLETENESS_WATER;
+        return field == FieldType.WATER_READ_RATE;
     }
 }

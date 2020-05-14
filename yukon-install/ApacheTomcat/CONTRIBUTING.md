@@ -9,7 +9,7 @@ for more information on how to contribute.
 
 ## Code of Conduct
 
-This project and everyone participating in it is governed by the Apache
+This project and everyone participating in it are governed by the Apache
 software Foundation's
 [Code of Conduct](https://www.apache.org/foundation/policies/conduct.html). By
 participating, you are expected to adhere to this code. If you are aware of
@@ -84,7 +84,7 @@ Download Page. There is one such page for every major Tomcat version:
 
 If you have chosen to attach a patch to the Bugzilla issue (or email
 one), then you'll need to download the sources as noted above, make your
-desired changes and then manually generate your patch using diff (other
+desired changes and then manually generate your patch using diff (or any
 other tool).
 
 ##### GitHub
