@@ -3,6 +3,7 @@ package com.cannontech.services.systemDataPublisher.processor.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cannontech.common.device.data.collection.model.DataCollectionDetail;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
 import com.cannontech.services.systemDataPublisher.dao.impl.SystemDataProcessorHelper;
 import com.cannontech.services.systemDataPublisher.service.model.SystemData;
@@ -21,10 +22,13 @@ public abstract class DataCompletenessProcessor extends YukonDataProcessor {
         return systemData;
     }
 
+    /**
+     * Make DAO call to get data
+     */
     private int getData() {
         String deviceGroupName = getDeviceGroupName();
-        int dataCompleteness = publisherDao.getDataCompleteness(deviceGroupName);
-        return dataCompleteness;
+        DataCollectionDetail detail = publisherDao.getDataCompleteness(deviceGroupName);
+        return detail.getDeviceCount();
     }
 
     public abstract String getDeviceGroupName();

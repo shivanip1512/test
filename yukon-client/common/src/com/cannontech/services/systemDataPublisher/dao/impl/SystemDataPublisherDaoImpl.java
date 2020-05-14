@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
+import com.cannontech.common.device.data.collection.model.DataCollectionDetail;
 import com.cannontech.common.device.data.collection.model.DataCollectionSummary;
 import com.cannontech.common.device.data.collection.service.DataCollectionHelper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -80,12 +81,16 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
 
         return summary;
     }
-    
+
     @Override
-    public int getDataCompleteness(String deviceGroupName) {
-        /*
-         * TODO : Will update final SQL query after discussion
-         */
-        return 1;
+    public DataCollectionDetail getDataCompleteness(String deviceGroupName) {
+        boolean includeDisabled = true;
+        DeviceGroup deviceGroup = deviceGroupService.findGroupName(deviceGroupName);
+        Duration days = Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS));
+        Map<RangeType, Range<Instant>> ranges = DataCollectionHelper.getRanges(days);
+        DataCollectionDetail detail = new DataCollectionDetail(
+                rpvDao.getDeviceCount(deviceGroup, includeDisabled, null, RangeType.EXPECTED,
+                        ranges.get(RangeType.EXPECTED)));
+        return detail;
     }
 }
