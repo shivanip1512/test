@@ -3,11 +3,13 @@ package com.cannontech.common.device.port;
 import com.cannontech.database.data.port.TerminalServerSharedPort;
 import com.cannontech.database.data.port.TerminalServerSharedPortBase;
 import com.cannontech.database.db.port.PortTerminalServer;
-import com.cannontech.database.db.port.PortTerminalServer.EncodingType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonPropertyOrder({ "id", "name", "type", "ipAddress", "portNumber", "baudRate", "enable", "carrierDetectWaitInMilliseconds",
         "protocolWrap", "timing", "sharing" })
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class TcpSharedPortDetail extends TerminalServerPortDetailBase<TerminalServerSharedPort> {
 
     private String ipAddress;

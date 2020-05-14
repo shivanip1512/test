@@ -25,11 +25,12 @@ public class YukonValidationHelper {
             if (!errors.hasFieldErrors("name")) {
                 // Check if pao name already exists for paoClass and paoCategory
                 String paoId = ServletUtils.getPathVariable(paoIdPathVariable);
+                PaoType paoType = (type == null && paoId != null) ? serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(paoId)).getPaoType() : type;
                 Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
                                                                          .stream()
                                                                          .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoName) 
-                                                                                  && pao.getPaoType().getPaoClass() == type.getPaoClass()
-                                                                                  && pao.getPaoType().getPaoCategory() == type.getPaoCategory())
+                                                                                  && pao.getPaoType().getPaoClass() == paoType.getPaoClass()
+                                                                                  && pao.getPaoType().getPaoCategory() == paoType.getPaoCategory())
                                                                          .findFirst();
 
                 if (!litePao.isEmpty()) {
