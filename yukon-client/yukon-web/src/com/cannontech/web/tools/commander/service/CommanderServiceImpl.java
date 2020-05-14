@@ -103,7 +103,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         }
         
         List<Request> reqs = buildPorterRequest(user, commands);
-        deviceConfigService.updateStatusToInProgress(reqs);
+        deviceConfigService.processCommandRequest(reqs);
         for (Request req : reqs) {
             porter.write(req);
             log.info("User: " + user + " produced request to porter: " + req);
@@ -197,7 +197,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
                 req.getResponses().add(resp);
                 if (resp.getExpectMore() == 0) {
                     req.setComplete(true);
-                    deviceConfigService.updateStatus(rtn);
+                    deviceConfigService.processCommandReturn(rtn);
                 }
                 break;
             }

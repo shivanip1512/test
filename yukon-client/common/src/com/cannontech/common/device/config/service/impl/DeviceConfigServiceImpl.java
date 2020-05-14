@@ -17,6 +17,7 @@ import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.Las
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -224,41 +225,53 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     }
 
     @Override
-    public void updateStatusToInProgress(List<Request> commandRequests) {
-        Map<String, DeviceRequestType> commandToRequestType = MapUtils.invertMap(commands);
+    public void processCommandRequest(List<Request> commandRequests) {
         commandRequests.forEach(request -> {
             SimpleDevice device = new SimpleDevice(dbCache.getAllPaosMap().get(request.getDeviceID()));
             if (isConfigCommandSupported(device)) {
-                commandToRequestType.keySet().stream()
-                .filter(commandString -> request.getCommandString().contains(commandString))
-                .findAny()
-                .ifPresent(command -> {
-                    DeviceRequestType requestType = commandToRequestType.get(command);
+                DeviceRequestType requestType = getRequestTypeByCommand(request.getCommandString());
+                if (requestType != null) {
                     updateStatusToInProgress(requestType, List.of(request.getDeviceID()), Instant.now(), null);
-                });
+                }
             }
         });
     }
     
     @Override
-    public void updateStatus(Return response) {
-        Map<String, DeviceRequestType> commandToRequestType = MapUtils.invertMap(commands);
+    public void processCommandReturn(Return response) {
         SimpleDevice device = new SimpleDevice(dbCache.getAllPaosMap().get(response.getDeviceID()));
         if (!isConfigCommandSupported(device)) {
             return;
         }
-        commandToRequestType.keySet().stream()
-                .filter(commandString -> response.getCommandString().contains(commandString))
-                .findAny()
-                .ifPresent(command -> {
-                    DeviceConfigState state = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(response.getDeviceID());
-                    DeviceRequestType requestType = commandToRequestType.get(command);
-                    DeviceError error = null;
-                    if (response.isError()) {
-                        error = deviceErrorTranslatorDao.translateErrorCode(response.getStatus()).getError();
-                    }
-                    updateState(requestType, error, device, state);
-                });
+        DeviceRequestType requestType = getRequestTypeByCommand(response.getCommandString());
+        if (requestType != null) {
+            DeviceConfigState state = deviceConfigurationDao.getDeviceConfigStatesByDeviceId(response.getDeviceID());
+            DeviceError error = response.isError() ? deviceErrorTranslatorDao.translateErrorCode(response.getStatus())
+                    .getError() : null;
+            updateState(requestType, error, device, state);
+        }
+    }
+    
+    /**
+     * Returns DeviceRequestType matched to the command
+     */
+    private DeviceRequestType getRequestTypeByCommand(String commandString) {
+        Map<String, DeviceRequestType> commandToRequestType = MapUtils.invertMap(commands);
+        List<String> commands = commandToRequestType.keySet().stream()
+                .filter(cmd -> commandString.contains(cmd)).collect(Collectors.toList());
+        if(commands.isEmpty()) {
+            return null;
+        } else if(commands.size() == 1) {
+            return commandToRequestType.get(commands.get(0));
+        } else {
+            // if there are multiple commands return longest command matched
+            // example - commandString = "putconfig emetcon install all verify update noqueue"
+            // The string contains both "putconfig emetcon install all" and "putconfig emetcon install all verify"
+            // "putconfig emetcon install all verify" is the longest matched string
+            // the DeviceRequestType for that string will be returned
+            String command = Collections.max(commands, Comparator.comparingInt(String::length));
+            return commandToRequestType.get(command);
+        }
     }
 
     @Override

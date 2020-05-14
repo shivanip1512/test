@@ -51,10 +51,10 @@ public interface DeviceConfigService {
     /**
      * Updates status to "In Progress", used by Commander
      */
-    void updateStatusToInProgress(List<Request> commandRequests);
+    void processCommandRequest(List<Request> commandRequests);
 
     /**
      * Updates status based on return value from Porter, used by Commander
      */
-    void updateStatus(Return response);
+    void processCommandReturn(Return response);
 }
