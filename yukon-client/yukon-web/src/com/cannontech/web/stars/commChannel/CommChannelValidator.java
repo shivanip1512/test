@@ -11,6 +11,7 @@ import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.device.port.dao.PortDao;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.PortValidatorHelper;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationHelper;
@@ -47,11 +48,11 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
             if (commChannel instanceof TcpSharedPortDetail) {
                 PortValidatorHelper.validateIPAddress(errors, ((TcpSharedPortDetail) commChannel).getIpAddress(), true);
-                validatePort(errors, terminalServerPortDetail.getPortNumber(), ((TcpSharedPortDetail) commChannel).getIpAddress(), paoId);
+                validatePort(errors, terminalServerPortDetail.getPortNumber(), ((TcpSharedPortDetail) commChannel).getIpAddress(), paoId, commChannel.getType());
             }
 
             if (commChannel instanceof UdpPortDetail) {
-                validatePort(errors, terminalServerPortDetail.getPortNumber(), ((UdpPortDetail) commChannel).getIpAddress(), paoId);
+                validatePort(errors, terminalServerPortDetail.getPortNumber(), ((UdpPortDetail) commChannel).getIpAddress(), paoId, commChannel.getType());
                 PortValidatorHelper.validateEncryptionKey(errors, ((UdpPortDetail) commChannel).getKeyInHex());
             }
         }
@@ -74,10 +75,10 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
         PortValidatorHelper.validatePortTimingFields(errors, timing);
     }
 
-    private void validatePort(Errors errors, Integer portNumber, String ipAddress, String portIdString) {
+    private void validatePort(Errors errors, Integer portNumber, String ipAddress, String portIdString, PaoType portType) {
         YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(portNumber));
         Integer existingPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
-        PortValidatorHelper.validateUniquePortAndIpAddress(errors, portNumber, ipAddress, existingPortId, portIdString);
+        PortValidatorHelper.validateUniquePortAndIpAddress(errors, portNumber, ipAddress, existingPortId, portIdString, portType);
     }
 
     private void validateCarrierDetectWait(Errors errors, Integer carrierDetectWaitInMilliseconds) {

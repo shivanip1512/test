@@ -32,6 +32,7 @@ import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -117,7 +118,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 setupCommChannelFields(commChannel, model);
-                setupGlobalError(result, model, userContext);
+                setupGlobalError(result, model, userContext, commChannel.getType());
                 return "commChannelInfoWidget/render.jsp";
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
@@ -129,7 +130,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
                     setupCommChannelFields(commChannel, model);
-                    setupGlobalError(result, model, userContext);
+                    setupGlobalError(result, model, userContext, commChannel.getType());
                     return "commChannelInfoWidget/render.jsp";
                 }
             }
@@ -165,7 +166,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         }
     }
 
-    private void setupGlobalError(BindingResult result, ModelMap model, YukonUserContext userContext) {
+    private void setupGlobalError(BindingResult result, ModelMap model, YukonUserContext userContext, PaoType commChannelType) {
         if (result.hasGlobalErrors()) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             List<ObjectError> globalError = result.getGlobalErrors();
@@ -173,7 +174,9 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             for (ObjectError objectError : globalError) {
                 uniqueErrorMsg.add(accessor.getMessage(objectError.getCode(), objectError.getArguments()));
             }
-            result.rejectValue("ipAddress", "yukon.common.blank");
+            if (PaoType.TSERVER_SHARED == commChannelType) {
+                result.rejectValue("ipAddress", "yukon.common.blank");
+            }
             result.rejectValue("portNumber", "yukon.common.blank");
             model.addAttribute("uniqueErrorMsg", uniqueErrorMsg);
         }

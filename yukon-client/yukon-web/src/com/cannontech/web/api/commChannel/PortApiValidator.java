@@ -94,8 +94,10 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
             }
             if (udpPortDetail.getPortNumber() != null && !errors.hasFieldErrors("portNumber")) {
                 // Checks for unique IP Address and Port number
-                Integer existingPortId = portDao.findUniquePortTerminalServer(udpPortDetail.getIpAddress(), udpPortDetail.getPortNumber());
-                PortValidatorHelper.validateUniquePortAndIpAddress(errors, udpPortDetail.getPortNumber(), udpPortDetail.getIpAddress(), existingPortId, paoId);
+                Integer existingPortId = portDao.findUniquePortTerminalServer(udpPortDetail.getIpAddress(),
+                        udpPortDetail.getPortNumber());
+                PortValidatorHelper.validateUniquePortAndIpAddress(errors, udpPortDetail.getPortNumber(),
+                        udpPortDetail.getIpAddress(), existingPortId, paoId, udpPortDetail.getType());
             }
         }
 
@@ -103,8 +105,10 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
             TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
             if (tcpSharedPortDetail.getIpAddress() != null) {
                 PortValidatorHelper.validateIPAddress(errors, tcpSharedPortDetail.getIpAddress(), false);
-                Integer existingPortId = portDao.findUniquePortTerminalServer(tcpSharedPortDetail.getIpAddress(), tcpSharedPortDetail.getPortNumber());
-                PortValidatorHelper.validateUniquePortAndIpAddress(errors, tcpSharedPortDetail.getPortNumber(), tcpSharedPortDetail.getIpAddress(), existingPortId, paoId);
+                Integer existingPortId = portDao.findUniquePortTerminalServer(tcpSharedPortDetail.getIpAddress(),
+                        tcpSharedPortDetail.getPortNumber());
+                PortValidatorHelper.validateUniquePortAndIpAddress(errors, tcpSharedPortDetail.getPortNumber(),
+                        tcpSharedPortDetail.getIpAddress(), existingPortId, paoId, tcpSharedPortDetail.getType());
             }
         }
     }
