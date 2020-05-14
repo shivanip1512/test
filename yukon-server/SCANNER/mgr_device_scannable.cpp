@@ -37,8 +37,8 @@ bool ScannableDeviceManager::shouldDiscardDevice(CtiDeviceSPtr dev) const
         return true;
     }
 
-    //  then look to see if the device has a scan rate or is collecting load profile
-    if( dev && dev->isSingle() )
+    //  then look to see if the device has a scan rate or is collecting load profile and is enabled (non-inhibited)
+    if( dev && dev->isSingle() && ! dev->isInhibited() )
     {
         CtiDeviceSingleSPtr devSingle = boost::static_pointer_cast<CtiDeviceSingle>(dev);
 
@@ -75,14 +75,37 @@ void ScannableDeviceManager::refreshAllDevices()
     map<int, Database::id_set > type_paoids;
 
     {
-        static const string sql =  "SELECT YP.paobjectid, YP.type "
-                                   "FROM yukonpaobject YP "
-                                   "WHERE YP.paobjectid IN (SELECT DSR.deviceid "
-                                                           "FROM devicescanrate DSR "
-                                                           "UNION "
-                                                           "SELECT DLP.deviceid "
-                                                           "FROM deviceloadprofile DLP "
-                                                           "WHERE DLP.loadprofilecollection != 'NNNN')";
+        static const string sql =
+            "SELECT "
+                "DISTINCT "
+                "X.PAObjectID, "
+                "X.Type "
+            "FROM ( "
+                "SELECT "
+                    "YD.PAObjectID, "
+                    "YD.Type, "
+                    "YD.DisableFlag AS DeviceDisabled, "
+                    "YP.DisableFlag AS CommDisabled "
+                "FROM "
+                    "YukonPAObject YD "
+                    "JOIN DEVICESCANRATE DSR ON YD.PAObjectID = DSR.DEVICEID "
+                    "LEFT OUTER JOIN DeviceDirectCommSettings DCS ON YD.PAObjectID = DCS.DEVICEID "
+                    "LEFT OUTER JOIN YukonPAObject YP ON DCS.PORTID = YP.PAObjectID "
+                "UNION "
+                "SELECT "
+                    "YD.PAObjectID, "
+                    "YD.Type, "
+                    "YD.DisableFlag AS DeviceDisabled, "
+                    "YP.DisableFlag AS CommDisabled "
+                "FROM "
+                    "YukonPAObject YD "
+                    "JOIN DEVICELOADPROFILE DLP ON (YD.PAObjectID = DLP.DEVICEID AND DLP.LOADPROFILECOLLECTION <> 'NNNN') "
+                    "LEFT OUTER JOIN DeviceDirectCommSettings DCS ON YD.PAObjectID = DCS.DEVICEID "
+                    "LEFT OUTER JOIN YukonPAObject YP ON DCS.PORTID = YP.PAObjectID "
+                ") X "
+            "WHERE "
+                "X.DeviceDisabled = 'N' "
+                "AND (X.CommDisabled IS NULL OR X.CommDisabled = 'N')";
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader rdr(connection, sql);
