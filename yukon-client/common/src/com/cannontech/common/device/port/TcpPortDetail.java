@@ -1,7 +1,10 @@
 package com.cannontech.common.device.port;
 
 import com.cannontech.database.data.port.TcpPort;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class TcpPortDetail extends PortBase<TcpPort> {
 
     private PortTiming timing;

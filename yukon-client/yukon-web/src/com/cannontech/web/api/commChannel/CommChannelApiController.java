@@ -41,8 +41,8 @@ public class CommChannelApiController {
         return new ResponseEntity<>(portService.retrieve(portId), HttpStatus.OK);
     }
 
-    @PostMapping("/update/{portId}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable int portId) {
+    @PostMapping("/update/{id}")
+    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable("id") int portId) {
         return new ResponseEntity<>(portService.update(portId, port), HttpStatus.OK);
     }
 
@@ -67,7 +67,7 @@ public class CommChannelApiController {
     public void setupBinder(WebDataBinder binder) {
         binder.addValidators(portApiValidator);
 
-        String portId = ServletUtils.getPathVariable("portId");
+        String portId = ServletUtils.getPathVariable("id");
         if (portId == null) {
             binder.addValidators(portApiCreationValidator);
         }

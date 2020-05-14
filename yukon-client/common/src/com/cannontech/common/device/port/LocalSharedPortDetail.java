@@ -4,9 +4,12 @@ import com.cannontech.database.data.port.LocalSharedPortBase;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonPropertyOrder({ "id", "name", "type", "baudRate", "enable", "physicalPort", "carrierDetectWaitInMilliseconds",
         "protocolWrap", "timing", "sharing" })
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class LocalSharedPortDetail extends PortBase<LocalSharedPortBase> {
 
     private Integer carrierDetectWaitInMilliseconds;
