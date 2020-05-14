@@ -1484,8 +1484,7 @@
     
     <bean class="com.cannontech.web.stars.service.impl.RfnWiFiCommDataServiceImpl"/>
     <bean class="com.cannontech.common.device.port.service.impl.PortServiceImpl"/>
-    <bean class="com.cannontech.web.api.commChannel.PortValidator"/>
-    <bean class="com.cannontech.web.api.commChannel.PortValidatorHelper"/>
+    <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
     <bean class="com.cannontech.common.validator.YukonValidationHelper"/>
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
 </beans>

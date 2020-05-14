@@ -1,6 +1,5 @@
 package com.cannontech.web.api.commChannel;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
@@ -11,16 +10,14 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
-public class PortCreationValidator <T extends PortBase<?>> extends SimpleValidator<T> {
-
-    @Autowired PortValidatorHelper portValidatorHelper;
+public class PortCreateApiValidator <T extends PortBase<?>> extends SimpleValidator<T> {
 
     @SuppressWarnings("unchecked")
-    public PortCreationValidator() {
+    public PortCreateApiValidator() {
         super((Class<T>) PortBase.class);
     }
 
-    public PortCreationValidator(Class<T> objectType) {
+    public PortCreateApiValidator(Class<T> objectType) {
         super(objectType);
     }
 

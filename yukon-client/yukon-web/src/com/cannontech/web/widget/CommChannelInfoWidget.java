@@ -1,5 +1,8 @@
 package com.cannontech.web.widget;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -113,6 +117,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 setupCommChannelFields(commChannel, model);
+                setupGlobalError(result, model, userContext);
                 return "commChannelInfoWidget/render.jsp";
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
@@ -124,6 +129,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
                     setupCommChannelFields(commChannel, model);
+                    setupGlobalError(result, model, userContext);
                     return "commChannelInfoWidget/render.jsp";
                 }
             }
@@ -159,4 +165,17 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         }
     }
 
+    private void setupGlobalError(BindingResult result, ModelMap model, YukonUserContext userContext) {
+        if (result.hasGlobalErrors()) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            List<ObjectError> globalError = result.getGlobalErrors();
+            List<String> uniqueErrorMsg = new ArrayList<>();
+            for (ObjectError objectError : globalError) {
+                uniqueErrorMsg.add(accessor.getMessage(objectError.getCode(), objectError.getArguments()));
+            }
+            result.rejectValue("ipAddress", "yukon.common.blank");
+            result.rejectValue("portNumber", "yukon.common.blank");
+            model.addAttribute("uniqueErrorMsg", uniqueErrorMsg);
+        }
+    }
 }

@@ -1,13 +1,14 @@
 package com.cannontech.common.validator;
 
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class YukonValidationHelper {
@@ -15,8 +16,8 @@ public class YukonValidationHelper {
     @Autowired private IDatabaseCache serverDatabaseCache;
     private final static String key = "yukon.web.error.";
 
-    public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoIdPathVariable) {
-        if (!YukonValidationUtils.checkIsBlank(errors, "name", paoName, false)) {
+    public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
+        if (StringUtils.hasText(paoName)) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
             if (!PaoUtils.isValidPaoName(paoName)) {
                 errors.rejectValue("name", key + "paoName.containsIllegalChars");
@@ -24,7 +25,6 @@ public class YukonValidationHelper {
 
             if (!errors.hasFieldErrors("name")) {
                 // Check if pao name already exists for paoClass and paoCategory
-                String paoId = ServletUtils.getPathVariable(paoIdPathVariable);
                 Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
                                                                          .stream()
                                                                          .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoName) 
@@ -38,6 +38,8 @@ public class YukonValidationHelper {
                     }
                 }
             }
+        } else {
+            errors.rejectValue("name", key + "fieldrequired", new Object[] { "Name" }, "");
         }
     }
 

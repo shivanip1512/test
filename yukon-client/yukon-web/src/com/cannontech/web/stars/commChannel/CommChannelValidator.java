@@ -1,19 +1,24 @@
 package com.cannontech.web.stars.commChannel;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.PortSharing;
 import com.cannontech.common.device.port.PortTiming;
-import com.cannontech.common.device.port.SharedPortType;
 import com.cannontech.common.device.port.TcpPortDetail;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
+import com.cannontech.common.device.port.UdpPortDetail;
+import com.cannontech.common.device.port.dao.PortDao;
+import com.cannontech.common.validator.PortValidatorHelper;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator<T> {
+    @Autowired private YukonValidationHelper yukonValidationHelper;
+    @Autowired private PortDao portDao;
 
     @SuppressWarnings("unchecked")
     public CommChannelValidator() {
@@ -26,29 +31,36 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
     @Override
     protected void doValidation(T commChannel, Errors errors) {
-        YukonValidationUtils.checkIsBlank(errors, "name", commChannel.getName(), false);
+        String paoId = commChannel.getId() != null ? commChannel.getId().toString() : null;
+
+        yukonValidationHelper.validatePaoName(commChannel.getName(), commChannel.getType(), errors, "Name", paoId);
         if (commChannel instanceof TcpPortDetail) {
             validateTimingField(errors, ((TcpPortDetail) commChannel).getTiming());
         }
 
         if (commChannel instanceof TerminalServerPortDetailBase) {
             TerminalServerPortDetailBase<?> terminalServerPortDetail = (TerminalServerPortDetailBase<?>) commChannel;
+
+            validateCarrierDetectWait(errors, terminalServerPortDetail.getCarrierDetectWaitInMilliseconds());
             validateTimingField(errors, terminalServerPortDetail.getTiming());
-
-            validateSharingField(errors, terminalServerPortDetail.getSharing());
-
-            YukonValidationUtils.checkIfFieldRequired("portNumber", errors, terminalServerPortDetail.getPortNumber(),
-                    "Port Number");
+            PortValidatorHelper.validatePortSharingFields(errors, terminalServerPortDetail.getSharing());
 
             if (commChannel instanceof TcpSharedPortDetail) {
-                YukonValidationUtils.checkIsBlank(errors, "ipAddress", ((TcpSharedPortDetail) commChannel).getIpAddress(), false);
+                PortValidatorHelper.validateIPAddress(errors, ((TcpSharedPortDetail) commChannel).getIpAddress(), true);
+                validatePort(errors, terminalServerPortDetail.getPortNumber(), ((TcpSharedPortDetail) commChannel).getIpAddress(), paoId);
+            }
+
+            if (commChannel instanceof UdpPortDetail) {
+                validatePort(errors, terminalServerPortDetail.getPortNumber(), ((UdpPortDetail) commChannel).getIpAddress(), paoId);
+                PortValidatorHelper.validateEncryptionKey(errors, ((UdpPortDetail) commChannel).getKeyInHex());
             }
         }
 
         if (commChannel instanceof LocalSharedPortDetail) {
+            PortValidatorHelper.validatePhysicalPort(errors, ((LocalSharedPortDetail) commChannel).getPhysicalPort());
+            validateCarrierDetectWait(errors, ((LocalSharedPortDetail) commChannel).getCarrierDetectWaitInMilliseconds());
             validateTimingField(errors, ((LocalSharedPortDetail) commChannel).getTiming());
-            validateSharingField(errors, ((LocalSharedPortDetail) commChannel).getSharing());
-            YukonValidationUtils.checkIsBlank(errors, "physicalPort", ((LocalSharedPortDetail) commChannel).getPhysicalPort(), false);
+            PortValidatorHelper.validatePortSharingFields(errors, ((LocalSharedPortDetail) commChannel).getSharing());
         }
     }
 
@@ -59,12 +71,18 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
         YukonValidationUtils.checkIfFieldRequired("timing.receiveDataWait", errors, timing.getReceiveDataWait(),
                 "Receive Data Wait");
         YukonValidationUtils.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(), "Additional Time Out");
+        PortValidatorHelper.validatePortTimingFields(errors, timing);
     }
 
-    private void validateSharingField(Errors errors, PortSharing sharing) {
-        if (sharing.getSharedPortType() != SharedPortType.NONE) {
-            YukonValidationUtils.checkIfFieldRequired("sharing.sharedSocketNumber", errors, sharing.getSharedSocketNumber(),
-                    "Socket Number");
+    private void validatePort(Errors errors, Integer portNumber, String ipAddress, String portIdString) {
+        YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(portNumber));
+        Integer existingPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
+        PortValidatorHelper.validateUniquePortAndIpAddress(errors, portNumber, ipAddress, existingPortId, portIdString);
+    }
+
+    private void validateCarrierDetectWait(Errors errors, Integer carrierDetectWaitInMilliseconds) {
+        if (carrierDetectWaitInMilliseconds != null) {
+            YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", carrierDetectWaitInMilliseconds, 0, 9999, false);
         }
     }
 }

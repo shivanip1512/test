@@ -24,9 +24,11 @@ yukon.widget.commChannel.info = (function () {
                     form = dialog.find('#commChannel-info-form'),
                     popup = $('#js-edit-comm-channel-popup'),
                     errorMessage = popup.find('.user-message'),
-                    errorMessageFound = errorMessage.is(":visible");
+                    errorMessageFound = errorMessage.is(":visible"),
+                    globalError = popup.find('.js-global-error'),
+                    globalErrorFound = globalError.is(":visible");
 
-                if (!errorMessageFound) {
+                if (!errorMessageFound || globalErrorFound) {
                     yukon.ui.blockPage();
                     $.ajax({
                         type: "POST",
