@@ -100,9 +100,9 @@ public class CollectionActionLogDetailServiceImpl implements CollectionActionLog
 
     @Override
     public List<CollectionActionLogDetail> buildLogDetails(List<? extends YukonPao> paos,
-            CollectionActionDetail detail) {
+            CollectionActionDetail detail, String deviceErrorText) {
         return paos.stream()
-                .map(pao -> new CollectionActionLogDetail(pao, detail))
+                .map(pao -> new CollectionActionLogDetail(pao, detail, deviceErrorText))
                 .collect(Collectors.toList());
     }
        

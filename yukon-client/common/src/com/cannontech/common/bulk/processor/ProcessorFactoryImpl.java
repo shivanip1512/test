@@ -1,8 +1,12 @@
 package com.cannontech.common.bulk.processor;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastActionStatus;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
+import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -18,26 +22,35 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
     @Autowired private IDatabaseCache dbCache;
 
     @Override
-    public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(final DeviceConfiguration configuration, LiteYukonUser user) {
+    public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(final DeviceConfiguration configuration,
+            Map<Integer, DeviceConfigState> deviceToState, LiteYukonUser user) {
         return new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
+                DeviceConfigState state = deviceToState.get(device.getDeviceId());
+                if(state != null && state.getStatus() == LastActionStatus.IN_PROGRESS) {
+                    throw new ProcessingException("Cannot assign while config action is in progress.");
+                }
                 try {
                     String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
                     deviceConfigurationService.assignConfigToDevice(configuration, device, user, deviceName);
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage(), "invalidDeviceType", e, device.getDeviceType(),
-                        dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName());
+                            dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName());
                 }
             }
         };
     }
-    
+
     @Override
-    public Processor<SimpleDevice> createUnassignConfigurationToYukonDeviceProcessor(LiteYukonUser user) {
+    public Processor<SimpleDevice> createUnassignConfigurationToYukonDeviceProcessor(Map<Integer, DeviceConfigState> deviceToState, LiteYukonUser user) {
         return new SingleProcessor<SimpleDevice>() {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
+                DeviceConfigState state = deviceToState.get(device.getDeviceId());
+                if(state != null && state.getStatus() == LastActionStatus.IN_PROGRESS) {
+                    throw new ProcessingException("Cannot unassign while config action is in progress.");
+                }
                 try {
                     String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
                     deviceConfigurationService.unassignConfig(device, user, deviceName);

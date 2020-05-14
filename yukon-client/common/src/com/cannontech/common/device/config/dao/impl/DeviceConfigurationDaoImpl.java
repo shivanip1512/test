@@ -57,7 +57,8 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.model.jaxb.DeviceConfigurationCategories;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -997,6 +998,36 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                         device.getPaoIdentifier().getPaoId());
         }
     }
+    
+    @Override
+    public Map<Integer, LightDeviceConfiguration> getConfigurations(Iterable<Integer> deviceIds) {
+        if(IterableUtils.isEmpty(deviceIds)) {
+            return new HashMap<>();
+        }
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DCDM.DeviceId, DC.DeviceConfigurationId, DC.Name, DC.Description");
+                sql.append("FROM DeviceConfiguration DC");
+                sql.append("   JOIN DeviceConfigurationDeviceMap DCDM ON");
+                sql.append("   DC.DeviceConfigurationId = DCDM.DeviceConfigurationId");
+                sql.append("WHERE DCDM.DeviceId").in(subList);
+                return sql;
+            }
+        };
+        Map<Integer, LightDeviceConfiguration> configurations = new HashMap<>();
+        template.query(generator, deviceIds, new YukonRowCallbackHandler() {
+            LightConfigurationRowMapper mapper = new LightConfigurationRowMapper();
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                configurations.put(rs.getInt("DeviceId"), mapper.mapRow(rs));
+            }
+        });
+        return configurations;
+    }
+    
 
     @Override
     public LightDeviceConfiguration getLightConfigurationById(int id) {
@@ -1313,10 +1344,27 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     
     @Override
     public void failInProgressDevices() {
+        jdbcTemplate.update(getFailInProgressDevicesSql());
+    }
+
+    private SqlStatementBuilder getFailInProgressDevicesSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE DeviceConfigState").set("LastActionStatus", LastActionStatus.FAILURE, "LastActionEnd", Instant.now());
         sql.append("WHERE LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
-        jdbcTemplate.update(sql);
+        return sql;
+    }
+    
+    @Override
+    public void failInProgressDevices(List<Integer> deviceIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        template.update(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = getFailInProgressDevicesSql();
+                sql.append("AND PaObjectId").in(subList);
+                return sql;
+            }
+        }, deviceIds);
     }
     
     @Override
@@ -1327,5 +1375,20 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("WHERE LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
         return jdbcTemplate.queryForInt(sql);
     }
-
+    
+    @Override
+    public List<SimpleDevice> getInProgressDevices(List<Integer> deviceIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        return template.query(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT ypo.PAObjectID, type");
+                sql.append("FROM DeviceConfigState state JOIN YukonPAObject ypo ON state.PaObjectId = ypo.PAObjectID");
+                sql.append("WHERE LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
+                sql.append("AND state.PaObjectId").in(subList);
+                return sql;
+            }
+        }, deviceIds, new YukonDeviceRowMapper());
+    }
 }

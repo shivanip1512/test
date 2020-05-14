@@ -18,6 +18,10 @@ public class ProcessingException extends DisplayableRuntimeException implements
 
     private static final String keyBase = "yukon.exception.processingException.";
 
+    public ProcessingException(String message) {
+        super(message);
+    }
+    
     public ProcessingException(String message, String key, Throwable cause, PaoIdentifier paoId) {
         super(message, cause, keyBase + key, paoId);
     }

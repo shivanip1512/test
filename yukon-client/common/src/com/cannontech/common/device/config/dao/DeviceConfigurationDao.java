@@ -17,6 +17,7 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.NotFoundException;
@@ -382,4 +383,19 @@ public interface DeviceConfigurationDao {
      * Returns device count in progress status
      */
     int getInProgressCount();
+
+    /**
+     * Returns deviceId to configuration
+     */
+    Map<Integer, LightDeviceConfiguration> getConfigurations(Iterable<Integer> deviceIds);
+
+    /**
+     * Returns in progress devices
+     */
+    List<SimpleDevice> getInProgressDevices(List<Integer> deviceIds);
+
+    /**
+     * Marks in progress devices as failed
+     */
+    void failInProgressDevices(List<Integer> deviceIds);
 }

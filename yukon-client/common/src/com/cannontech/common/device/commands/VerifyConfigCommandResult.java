@@ -9,8 +9,15 @@ import com.cannontech.common.device.model.SimpleDevice;
 
 public class VerifyConfigCommandResult {
     
-    Map<SimpleDevice, VerifyResult> verifyResultsMap = new HashMap<>();
-
+    private Map<SimpleDevice, VerifyResult> verifyResultsMap = new HashMap<>();
+    
+    public VerifyConfigCommandResult(Map<SimpleDevice, VerifyResult> verifyResultsMap) {
+        this.verifyResultsMap = verifyResultsMap;
+    }
+    
+    public VerifyConfigCommandResult() {
+    }
+    
     public void addResultString(SimpleDevice device, String value) {
         verifyResultsMap.get(device).getMatching().add(value);
     }
