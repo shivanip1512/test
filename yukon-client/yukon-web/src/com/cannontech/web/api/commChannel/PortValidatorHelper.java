@@ -44,7 +44,7 @@ public class PortValidatorHelper {
      */
     public void validateDuplicateSocket(Errors errors, String ipAddress, Integer portNumber) {
         Integer existingPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
-        String portIdString = ServletUtils.getPathVariable("portId");
+        String portIdString = ServletUtils.getPathVariable("id");
         Integer portId = portIdString != null ? Integer.valueOf(portIdString) : null;
 
         if (existingPortId != null && !(existingPortId.equals(portId))) {

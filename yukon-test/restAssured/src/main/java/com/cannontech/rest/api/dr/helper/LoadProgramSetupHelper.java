@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.gear.fields.MockGearControlMethod;
@@ -71,11 +72,7 @@ public class LoadProgramSetupHelper {
         });
 
         List<MockNotificationGroup> assignedNotificationGroups = new ArrayList<>();
-        MockNotificationGroup notificationGroup = MockNotificationGroup.builder()
-                                                               .notificationGrpID(2)
-                                                               .notificationGrpName("Jess Notification")
-                                                               .build();
-        assignedNotificationGroups.add(notificationGroup);
+        assignedNotificationGroups.add(getMockNotificationGroup());
 
         MockNotification notification = MockNotification.builder()
                                                 .notifyOnAdjust(false)
@@ -197,5 +194,12 @@ public class LoadProgramSetupHelper {
 
     public static FieldDescriptor requestFieldDesriptorForDelete() {
         return fieldWithPath("name").type(JsonFieldType.STRING).description("Load Program Name");
+    }
+    
+    private static MockNotificationGroup getMockNotificationGroup() {
+        return MockNotificationGroup.builder()
+                .notificationGrpID(Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID")))
+                .notificationGrpName(ApiCallHelper.getProperty("notificationGrpName"))
+                .build();
     }
 }

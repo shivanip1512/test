@@ -23,9 +23,9 @@ public class ProgramConstraintHelper {
 
     public static MockProgramConstraint buildProgramConstraint() {
 
-        MockLMDto seasonSchedule = MockLMDto.builder().id(1).build();
+        MockLMDto seasonSchedule = MockLMDto.builder().id(getSeasonalId()).build();
 
-        MockLMDto holidaySchedule = MockLMDto.builder().id(1).build();
+        MockLMDto holidaySchedule = MockLMDto.builder().id(getHolidayId()).build();
 
         List<MockDayOfWeek> daySelection = new ArrayList<>();
         daySelection.add(MockDayOfWeek.MONDAY);
@@ -89,5 +89,15 @@ public class ProgramConstraintHelper {
         programConstraint.setId(constraintId);
 
         return programConstraint;
+    }
+    
+    private static Integer getSeasonalId() {
+        String seasonScheduleIdStr = ApiCallHelper.getProperty("seasonScheduleId");
+        return Integer.valueOf(seasonScheduleIdStr);
+    }
+    
+    private static Integer getHolidayId() {
+        String holidayScheduleIdStr = ApiCallHelper.getProperty("holidayScheduleId");
+        return Integer.valueOf(holidayScheduleIdStr);
     }
 }
