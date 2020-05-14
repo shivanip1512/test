@@ -105,16 +105,7 @@ public class CommChannelController {
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
             String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDeleteUrl + id);
-
-            // Fetches device names using this port
-            String deviceNames = getDevicesNamesForPort(userContext, request, id);
             String portName = dbCache.getAllPaosMap().get(id).getPaoName();
-
-            if (deviceNames != null) {
-                log.error("Error deleting comm channel: {}. Error: {}", portName, deviceNames);
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.devicesAssigned.error", portName, deviceNames));
-                return "redirect:" + "/stars/device/commChannel/" + id;
-            }
 
             ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
 
@@ -122,6 +113,7 @@ public class CommChannelController {
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", portName));
                 return "redirect:" + "/stars/device/commChannel/list";
             }
+
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
@@ -160,7 +152,7 @@ public class CommChannelController {
     }
 
     /**
-     * Get devices names using port 
+     * Returns comma separated device names for that port 
      */
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId) {
         String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDevicesAssignedUrl + portId);
