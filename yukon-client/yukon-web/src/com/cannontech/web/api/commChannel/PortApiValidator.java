@@ -34,7 +34,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
     protected void doValidation(T port, Errors errors) {
         
         // Validate if type is changed during update.
-        String paoId = ServletUtils.getPathVariable("portId");
+        String paoId = ServletUtils.getPathVariable("id");
         if (paoId != null) {
             yukonValidationHelper.checkIfPaoTypeChanged(errors, port.getType(), Integer.valueOf(paoId));
         }
