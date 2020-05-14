@@ -28,8 +28,8 @@ import com.cannontech.stars.util.ServletUtils;
 public class CommChannelApiController {
 
     @Autowired private PortService portService;
-    @Autowired private PortCreationValidator<? extends PortBase<?>> portCreationValidator;
-    @Autowired private PortValidator<? extends PortBase<?>> portValidator;
+    @Autowired private PortCreateApiValidator<? extends PortBase<?>> portApiCreationValidator;
+    @Autowired private PortApiValidator<? extends PortBase<?>> portApiValidator;
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
@@ -65,11 +65,11 @@ public class CommChannelApiController {
 
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
-        binder.addValidators(portValidator);
+        binder.addValidators(portApiValidator);
 
         String portId = ServletUtils.getPathVariable("id");
         if (portId == null) {
-            binder.addValidators(portCreationValidator);
+            binder.addValidators(portApiCreationValidator);
         }
     }
    
