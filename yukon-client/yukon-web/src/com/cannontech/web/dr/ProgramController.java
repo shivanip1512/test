@@ -59,6 +59,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.program.widget.model.ProgramData;
@@ -209,6 +210,8 @@ public class ProgramController extends ProgramControllerBase {
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(program, model, userContext);
         }
+        boolean supportsPing = program.getPaoIdentifier().getPaoType() != PaoType.LM_ITRON_PROGRAM;
+        model.addAttribute("allowPing", supportsPing);
         return "dr/assetAvailability.jsp";
     }
     

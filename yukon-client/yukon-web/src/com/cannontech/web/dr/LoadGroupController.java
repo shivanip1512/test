@@ -151,6 +151,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(loadGroup, model, userContext);
         }
+        boolean supportsPing = loadGroup.getPaoIdentifier().getPaoType() != PaoType.LM_GROUP_ITRON;
+        model.addAttribute("allowPing", supportsPing);
         return "dr/assetAvailability.jsp";
     }
 

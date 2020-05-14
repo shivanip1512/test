@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -33,6 +34,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -48,8 +50,11 @@ import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -64,6 +69,7 @@ public class ScenarioController extends DemandResponseControllerBase {
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private ProgramDao programDao;
     @Autowired private ProgramsHelper programsHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private ScenarioDao scenarioDao;
@@ -137,6 +143,15 @@ public class ScenarioController extends DemandResponseControllerBase {
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(scenario, model, userContext);
         }
+        Map<Integer, ScenarioProgram> programIds = scenarioDao.findScenarioProgramsForScenario(scenario.getPaoIdentifier().getPaoId());
+        List<Program> programs = programDao.getByProgramIds(programIds.keySet());
+        boolean supportsPing = false;
+        for (Program program : programs) {
+            if (program.getPaoType() != PaoType.LM_ITRON_PROGRAM) {
+                supportsPing = true;
+            }
+        }
+        model.addAttribute("allowPing", supportsPing);
         return "dr/assetAvailability.jsp";
     }
 

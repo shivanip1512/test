@@ -11,6 +11,7 @@
     <c:otherwise>
         <dr:assetAvailabilityStatus assetId="${paoId}"
             assetAvailabilitySummary="${assetAvailabilitySummary}" 
-            pieJSONData="${pieJSONData}" showDetails="true"/>
+            pieJSONData="${pieJSONData}" showDetails="true" 
+            allowPing="${allowPing}" />
     </c:otherwise>
 </c:choose>
