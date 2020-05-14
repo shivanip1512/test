@@ -55,9 +55,9 @@ public class PortValidatorHelper {
 
         if (existingPortId != null && !(existingPortId.equals(portId))) {
             if (PaoType.TSERVER_SHARED == portType) {
-                errors.reject(key + "terminalServer.duplicateSocket", new Object[] { ipAddress, portNumber }, "");
+                errors.reject(key + "terminalServer.duplicateSocket", new Object[] { ipAddress, portNumber.toString() }, "");
             } else {
-                errors.reject(key + "udp.duplicateSocket", new Object[] { portNumber }, "");
+                errors.reject(key + "udp.duplicateSocket", new Object[] { portNumber.toString() }, "");
             }
         }
     }
