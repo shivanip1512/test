@@ -8,6 +8,13 @@
 <cti:msgScope paths="yukon.web.modules.operator.commChannelInfoWidget">
     <tags:setFormEditMode mode="${mode}" />
     <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
+    <div class="js-global-error">
+        <c:if test="${not empty uniqueErrorMsg}">
+            <c:forEach var="globalErrorMsg" items="${uniqueErrorMsg}">
+                <tags:alertBox>${globalErrorMsg}</tags:alertBox>
+            </c:forEach>
+        </c:if>
+    </div>
     <form:form modelAttribute="commChannel" method="post" id="commChannel-info-form">
         <cti:csrfToken />
         <cti:tabs>
@@ -70,7 +77,7 @@
                                                 <i:inline key="yukon.common.units.ms"/>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="error"><i:inline key="yukon.common.no"/></span>
+                                                <span><i:inline key="yukon.common.no"/></span>
                                             </c:otherwise>
                                         </c:choose>
                                     </tags:nameValue2>
@@ -82,7 +89,7 @@
                                                     ${commChannel.keyInHex}
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="error"><i:inline key="yukon.common.no"/></span>
+                                                    <span><i:inline key="yukon.common.no"/></span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </tags:nameValue2>

@@ -4016,29 +4016,29 @@ Network Manager :
   - filename : jasper-el.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.34
+    version : 6.0.18
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper-el"
-    md5 : 8e32213070ece8996526b2716627d811
-    sha1 : d75ae2580bf40eed6b73046b6961c1bdeb90bf2c
-    updated : 2020-04-03
-    jira : NM-1458
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper-el/6.0.18"
+    md5 : c006be519e8e4ba89c4d9e167991a007
+    sha1 : 1136de6c43c718bac987719057ed740f9badc122
+    updated : 2009-02-10
+    jira : none
     notes : 
 
   - filename : jasper.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.34
+    version : 6.0.18
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper"
-    md5 : 43f43e0b49b75b248d0abd28e3bd5139
-    sha1 : 3b3c09fecacded52cd599a1ea6565211047a3c95
-    updated : 2020-04-03
-    jira : NM-1458
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/jasper/6.0.18"
+    md5 : 35287182838ad603ce8207f5b9018207
+    sha1 : 6445dc4a9089f1a9b8ab1d697553996d4e8d3716
+    updated : 2009-02-10
+    jira : none
     notes : 
 
   - filename : jasperreports-3.6.0.jar
@@ -4184,15 +4184,15 @@ Network Manager :
   - filename : jsp-api.jar
     yukon group : Tomcat
     project : Apache Tomcat
-    version : 9.0.34
+    version : 6.0.18
     project URL : "https://tomcat.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/9.0.34"
-    md5 : 0f5b59d65f7b50329c49f09c31324a7b
-    sha1 : 1da099f7517a5ce18328b3c07d8d1e99d0cca8c4
-    updated : 2020-04-03
-    jira : NM-1458
+    maven URL : "https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-jsp-api/"
+    md5 : 8c0da0161ff80f6d3b4122974f1acc7e
+    sha1 : 8c9517ff993f2a71537d5e2973e9ae02dd1d5fdd
+    updated : 2009-02-10
+    jira : none
     notes : 
 
   - filename : jtds-1.3.1_r1289.jar
@@ -5901,12 +5901,12 @@ C++ :
     project URL : none
     license : Eaton-owned
     license URLs : none
-    md5 : 9e8ae7b06f9cab31f38096274c31ae83
-    sha1 : e59acbe67b49b758c41361a56dcaa8de0adce36e
+    md5 : d43028268a907ecd7ba0281838b74387
+    sha1 : bce701a809a7680474030bd0210a4c32d946788a
     fileCount : 3
-    totalSize : 56790
-    updated : 2020-01-24
-    jira : YUK-21329
+    totalSize : 57814
+    updated : 2020-05-12
+    jira : YUK-22109
     notes : 
     
   - project : SQLAPI 

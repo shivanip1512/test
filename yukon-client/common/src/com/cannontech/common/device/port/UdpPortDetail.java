@@ -9,12 +9,14 @@ import com.cannontech.database.db.port.PortTerminalServer;
 import com.cannontech.database.db.port.PortTerminalServer.EncodingType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonPropertyOrder({ "id", "name", "type", "ipAddress", "portNumber", "baudRate", "enable", "keyInHex",
         "carrierDetectWaitInMilliseconds", "protocolWrap", "timing", "sharing" })
 
- 
 @JsonIgnoreProperties(value={"ipAddress"}, allowGetters= true, ignoreUnknown = true)
+@JsonDeserialize(using = JsonDeserializer.None.class)
 public class UdpPortDetail extends TerminalServerPortDetailBase<UdpPort> {
 
     private String keyInHex;

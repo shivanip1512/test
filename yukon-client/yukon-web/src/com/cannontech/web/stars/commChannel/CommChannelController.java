@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,11 +15,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -34,7 +38,6 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.stars.DeviceBaseModel;
 
 @Controller
 @RequestMapping("/device/commChannel")
@@ -53,12 +56,7 @@ public class CommChannelController {
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelListUrl);
-            List<DeviceBaseModel> commChannelList = new ArrayList<>();
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext, request, url,
-                    DeviceBaseModel.class, HttpMethod.GET, DeviceBaseModel.class);
-            if (response.getStatusCode() == HttpStatus.OK) {
-                commChannelList = (List<DeviceBaseModel>) response.getBody();
-            }
+            List<DeviceBaseModel> commChannelList = getDeviceBaseModelResponse(userContext, request, url);
 
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
@@ -95,10 +93,38 @@ public class CommChannelController {
     }
 
     @GetMapping("/{id}")
-    public String view(@PathVariable int id, ModelMap model) {
+    public String view(@PathVariable int id, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+
         model.addAttribute("id", id);
         model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
+        model.addAttribute("deviceNames", getDevicesNamesForPort(userContext, request, id));
         return "/commChannel/view.jsp";
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+        try {
+            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDeleteUrl + id);
+            String portName = dbCache.getAllPaosMap().get(id).getPaoName();
+
+            ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
+
+            if (deleteResponse.getStatusCode() == HttpStatus.OK) {
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", portName));
+                return "redirect:" + "/stars/device/commChannel/list";
+            }
+
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return "redirect:" + "/stars/device/commChannel/" + id;
+        } catch (RestClientException ex) {
+            String portName = dbCache.getAllPaosMap().get(id).getPaoName();
+            log.error("Error deleting comm Channel: {}. Error: {}", portName, ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", portName, ex.getMessage()));
+            return "redirect:" + "/stars/device/commChannel/" + id;
+        }
+        return "redirect:" + "/stars/device/commChannel/list";
     }
 
     public enum CommChannelSortBy implements DisplayableEnum {
@@ -110,5 +136,52 @@ public class CommChannelController {
         public String getFormatKey() {
             return baseKey + name();
         }
+    }
+
+    /**
+     * Get the response for comm channel delete
+     */
+    private ResponseEntity<? extends Object> deleteCommChannel(YukonUserContext userContext, HttpServletRequest request, String url) throws RestClientException {
+        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, 
+                                                                                      request,
+                                                                                      url, 
+                                                                                      HttpMethod.DELETE, 
+                                                                                      Object.class, 
+                                                                                      Integer.class);
+        return response;
+    }
+
+    /**
+     * Returns comma separated device names for that port 
+     */
+    private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId) {
+        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDevicesAssignedUrl + portId);
+        List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
+
+        if (!devicesList.isEmpty()) {
+            return devicesList.stream()
+                              .map(device -> device.getName())
+                              .collect(Collectors.joining(", "));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the response in form of DevicesBaseModel
+     */
+    private List<DeviceBaseModel> getDeviceBaseModelResponse(YukonUserContext userContext, HttpServletRequest request, String url) {
+        List<DeviceBaseModel> deviceBaseModelList = new ArrayList<>();
+
+        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext,
+                                                                                    request,
+                                                                                    url,
+                                                                                    DeviceBaseModel.class,
+                                                                                    HttpMethod.GET,
+                                                                                    DeviceBaseModel.class);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            deviceBaseModelList = (List<DeviceBaseModel>) response.getBody();
+        }
+        return deviceBaseModelList;
     }
 }

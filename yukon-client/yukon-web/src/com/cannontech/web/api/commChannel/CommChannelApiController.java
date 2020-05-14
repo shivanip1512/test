@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.stars.util.ServletUtils;
@@ -27,8 +28,8 @@ import com.cannontech.stars.util.ServletUtils;
 public class CommChannelApiController {
 
     @Autowired private PortService portService;
-    @Autowired private PortCreationValidator<? extends PortBase<?>> portCreationValidator;
-    @Autowired private PortValidator<? extends PortBase<?>> portValidator;
+    @Autowired private PortCreateApiValidator<? extends PortBase<?>> portApiCreationValidator;
+    @Autowired private PortApiValidator<? extends PortBase<?>> portApiValidator;
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
@@ -40,8 +41,8 @@ public class CommChannelApiController {
         return new ResponseEntity<>(portService.retrieve(portId), HttpStatus.OK);
     }
 
-    @PostMapping("/update/{portId}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable int portId) {
+    @PostMapping("/update/{id}")
+    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable("id") int portId) {
         return new ResponseEntity<>(portService.update(portId, port), HttpStatus.OK);
     }
 
@@ -55,14 +56,20 @@ public class CommChannelApiController {
         List<PortBase> listOfPorts = portService.getAllPorts();
         return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
     }
+    
+    @GetMapping("/devicesAssigned/{portId}")
+    public ResponseEntity<Object> retrieveAllDevicesForPort(@PathVariable int portId) {
+        List<DeviceBaseModel> listOfDevices = portService.getDevicesAssignedPort(portId);
+        return new ResponseEntity<>(listOfDevices, HttpStatus.OK);
+    }
 
     @InitBinder("portBase")
     public void setupBinder(WebDataBinder binder) {
-        binder.addValidators(portValidator);
+        binder.addValidators(portApiValidator);
 
-        String portId = ServletUtils.getPathVariable("portId");
+        String portId = ServletUtils.getPathVariable("id");
         if (portId == null) {
-            binder.addValidators(portCreationValidator);
+            binder.addValidators(portApiCreationValidator);
         }
     }
    

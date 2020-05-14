@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.api.token.ApiRequestContext;
+import com.cannontech.common.device.model.PaoModelFactory;
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.port.BaudRate;
-import com.cannontech.common.device.port.CommChannelFactory;
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.dao.PortDao;
 import com.cannontech.common.device.port.service.PortService;
 import com.cannontech.common.events.loggers.CommChannelEventLogService;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
@@ -30,6 +32,7 @@ public class PortServiceImpl implements PortService {
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoCreationHelper paoCreationHelper;
     @Autowired private CommChannelEventLogService commChannelEventLogService;
+    @Autowired private PortDao portDao;
 
     @Override
     @Transactional
@@ -57,7 +60,7 @@ public class PortServiceImpl implements PortService {
             throw new NotFoundException("Port Id not found");
         }
         DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(pao);
-        PortBase portBase = CommChannelFactory.getModel(directPort.getPaoType());
+        PortBase portBase = (PortBase) PaoModelFactory.getModel(directPort.getPaoType());
         portBase.buildModel(directPort);
         return portBase;
     }
@@ -124,9 +127,12 @@ public class PortServiceImpl implements PortService {
                 portBase.buildModel(liteYukonPaoObject);
                 listOfPortBase.add(portBase);
             });
-        } else {
-            throw new NotFoundException("Ports not found");
         }
         return listOfPortBase;
+    }
+
+    @Override
+    public List<DeviceBaseModel> getDevicesAssignedPort(int portId) {
+        return portDao.getDevicesAssignedPort(portId);
     }
 }
