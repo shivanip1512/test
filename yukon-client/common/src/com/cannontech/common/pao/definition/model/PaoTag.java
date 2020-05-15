@@ -66,7 +66,8 @@ public enum PaoTag {
     ITRON_PROGRAM_ENROLLMENT("Itron Program Enrollment"),
     METER_PROGRAMMING("Meter Programming"),
     DATA_STREAMING("Data Streaming Capable"),
-    PORT_DETAIL_DISPLAYABLE("Port Detail Displayable")
+    PORT_DETAIL_DISPLAYABLE("Port Detail Displayable"),
+    SUPPORTS_PING("Supports Device Pinging")
     ;
 
     private final String description;

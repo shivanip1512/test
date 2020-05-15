@@ -34,6 +34,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -65,6 +67,7 @@ public class LoadGroupController extends DemandResponseControllerBase {
     @Autowired private LoadGroupHelper loadGroupHelper;
     @Autowired private LoadGroupService loadGroupService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ProgramService programService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -151,6 +154,8 @@ public class LoadGroupController extends DemandResponseControllerBase {
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(loadGroup, model, userContext);
         }
+        boolean allowPing = paoDefinitionDao.isTagSupported(loadGroup.getPaoIdentifier().getPaoType(), PaoTag.SUPPORTS_PING);
+        model.addAttribute("allowPing", allowPing);
         return "dr/assetAvailability.jsp";
     }
 
