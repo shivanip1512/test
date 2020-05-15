@@ -59,9 +59,10 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.program.widget.model.ProgramData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.smartNotification.service.SmartNotificationEventCreationService;
@@ -132,6 +133,7 @@ public class ProgramController extends ProgramControllerBase {
     @Autowired private PointFormattingService pointFormattingService;
     @Autowired private MeterDao meterDao;
     @Autowired private DisconnectService disconnectService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ProgramWidgetService programWidgetService;
     @Autowired private DisconnectStatusService disconnectStatusService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -210,8 +212,8 @@ public class ProgramController extends ProgramControllerBase {
         if(rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser())) {
             getAssetAvailabilityInfo(program, model, userContext);
         }
-        boolean supportsPing = program.getPaoIdentifier().getPaoType() != PaoType.LM_ITRON_PROGRAM;
-        model.addAttribute("allowPing", supportsPing);
+        boolean allowPing = paoDefinitionDao.isTagSupported(program.getPaoIdentifier().getPaoType(), PaoTag.SUPPORTS_PING);
+        model.addAttribute("allowPing", allowPing);
         return "dr/assetAvailability.jsp";
     }
     
