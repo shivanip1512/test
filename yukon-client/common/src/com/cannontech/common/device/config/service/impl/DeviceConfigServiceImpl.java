@@ -252,7 +252,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         }
     }
     
-    
     /**
      * Returns DeviceRequestType matched to the command
      */
@@ -266,29 +265,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return commandToRequestType.get(formattedString);
     }
     
-    /**
-     * Returns DeviceRequestType matched to the command
-     */
-   /* private DeviceRequestType getRequestTypeByCommand(String commandString) {
-        String formattedString = commandString.replaceAll("\\s{2,}", " ");
-        Map<String, DeviceRequestType> commandToRequestType = MapUtils.invertMap(commands);
-        List<String> commands = commandToRequestType.keySet().stream()
-                .filter(cmd -> formattedString.contains(cmd)).collect(Collectors.toList());
-        if(commands.isEmpty()) {
-            return null;
-        } else if(commands.size() == 1) {
-            return commandToRequestType.get(commands.get(0));
-        } else {
-            // if there are multiple commands return longest command matched
-            // example - commandString = "putconfig emetcon install all verify update noqueue"
-            // The string contains both "putconfig emetcon install all" and "putconfig emetcon install all verify"
-            // "putconfig emetcon install all verify" is the longest matched string
-            // the DeviceRequestType for that string will be returned
-            String command = Collections.max(commands, Comparator.comparingInt(String::length));
-            return commandToRequestType.get(command);
-        }
-    }*/
-
     @Override
     public DeviceConfigState assignConfigToDevice(SimpleDevice device, DeviceConfiguration configuration,
             LiteYukonUser user) throws InvalidDeviceTypeException {
