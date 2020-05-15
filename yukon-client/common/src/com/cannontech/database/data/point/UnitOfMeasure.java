@@ -1,9 +1,10 @@
 package com.cannontech.database.data.point;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableSet;
 
-public enum UnitOfMeasure {
+public enum UnitOfMeasure implements DisplayableEnum {
     
     INVALID(-1, "", ""),
     KW(0, "kW", "kW"),
@@ -64,13 +65,13 @@ public enum UnitOfMeasure {
     CUBIC_METERS(55, "m^3", "Cubic Meters"),
     MEGABYTES(56, "MB", "Megabytes"),
     DBM(57, "dBm", "Decibel-Milliwatts");
+    // When adding a new UoM, remember to update displayableEnums.xml and point.xsd
     
-    
-    private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_VAR_UOM = ImmutableSet.of(KVAR, VARS, MVAR, KQ);
-    private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_WATTS_UOM = ImmutableSet.of(KW, MW, WATTS);
-    private final static ImmutableSet<UnitOfMeasure> CAP_CONTROL_VOLTS_UOM = ImmutableSet.of(KVOLTS, VOLTS, VOLTS_V2H, KV);
-    
-    private final static ImmutableSet<UnitOfMeasure> DURATION = ImmutableSet.of(HOURS, MINUTES, SECONDS, MS);
+    private static final ImmutableSet<UnitOfMeasure> CAP_CONTROL_VAR_UOM = ImmutableSet.of(KVAR, VARS, MVAR, KQ);
+    private static final ImmutableSet<UnitOfMeasure> CAP_CONTROL_WATTS_UOM = ImmutableSet.of(KW, MW, WATTS);
+    private static final ImmutableSet<UnitOfMeasure> CAP_CONTROL_VOLTS_UOM = ImmutableSet.of(KVOLTS, VOLTS, VOLTS_V2H, KV);
+    private static final ImmutableSet<UnitOfMeasure> DURATION = ImmutableSet.of(HOURS, MINUTES, SECONDS, MS);
+    private static final String keyBase = "yukon.common.unitOfMeasure.";
     
     private int id;
     private String abbreviation;
@@ -80,6 +81,11 @@ public enum UnitOfMeasure {
         this.id = id;
         this.abbreviation = abbreviation;
         this.longName = longName;
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return keyBase + name();
     }
     
     public int getId() {
@@ -108,24 +114,6 @@ public enum UnitOfMeasure {
     
     public boolean isDuration() {
         return DURATION.contains(this);
-    }
-    
-    public static UnitOfMeasure getForLongName(String longName) {
-        for (UnitOfMeasure uom : values()) {
-            if (uom.getLongName().equalsIgnoreCase(longName)) {
-                return uom;
-            }
-        }
-        throw new NotFoundException("No UoM found for longName: " + longName);
-    }
-    
-    public static UnitOfMeasure getForAbbreviation(String abbreviation) {
-        for (UnitOfMeasure uom : values()) {
-            if (uom.getAbbreviation().equalsIgnoreCase(abbreviation)) {
-                return uom;
-            }
-        }
-        throw new NotFoundException("No UoM found for abbreviation: " + abbreviation);
     }
     
     public static UnitOfMeasure getForId(int id) {
