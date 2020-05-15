@@ -202,7 +202,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
                 DeviceConfigState configState = deviceConfigService.assignConfigToDevice(device, deviceConfig,
                         userContext.getYukonUser());
                 
-                if (configState.getState() == ConfigState.OUT_OF_SYNC) {
+                if (configState != null && configState.getState() == ConfigState.OUT_OF_SYNC) {
                     //check for upload permission
                     if (rolePropertyDao.checkProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser())) {
                         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());

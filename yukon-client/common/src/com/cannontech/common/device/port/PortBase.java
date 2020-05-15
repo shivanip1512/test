@@ -6,9 +6,12 @@ import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.port.DirectPort;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonIgnoreProperties(value={"id"}, allowGetters= true, ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
 @JsonDeserialize(using = JsonDeserializePaoTypeLookup.class)
 public class PortBase<T extends DirectPort> extends DeviceBaseModel implements DBPersistentConverter<T> {
 
