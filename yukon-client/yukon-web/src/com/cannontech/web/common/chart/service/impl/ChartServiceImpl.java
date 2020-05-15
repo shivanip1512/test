@@ -20,12 +20,11 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
@@ -38,7 +37,6 @@ public class ChartServiceImpl implements ChartService {
     
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private PointDao pointDao;
-    @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -64,7 +62,7 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setMinimumFractionDigits(pointUnit.getDecimalPlaces());
             pointValueFormat.setGroupingUsed(false);
 
-            LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
+            UnitOfMeasure unitMeasure = UnitOfMeasure.getForId(pointUnit.getUomID());
             String chartIntervalString = messageSourceAccessor.getMessage(graphDetail.getInterval().getIntervalString());
             String units =
                 messageSourceAccessor.getMessage(graphDetail.getConverterType().getFormattedUnits(unitMeasure, chartIntervalString));
@@ -202,7 +200,7 @@ public class ChartServiceImpl implements ChartService {
      * so the times line up between the plot and the data.
      */
     private ChartValue<Double> adjustForFlotTimezone(ChartValue<Double> originalChartValue) {
-        ChartValue<Double> adjusted = new ChartValue<Double>(originalChartValue);
+        ChartValue<Double> adjusted = new ChartValue<>(originalChartValue);
         long timeStamp = adjusted.getTime();
         timeStamp += TimeZone.getDefault().getOffset(timeStamp);
         adjusted.setTime(timeStamp);
