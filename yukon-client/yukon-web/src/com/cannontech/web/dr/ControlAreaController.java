@@ -41,7 +41,8 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.IntegerRange;
 import com.cannontech.common.util.JsonUtils;
@@ -97,6 +98,7 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DurationFormattingService durationFormattingService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ProgramDao programDao;
     @Autowired private ProgramsHelper programsHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -302,13 +304,9 @@ public class ControlAreaController extends DemandResponseControllerBase {
         }
         Set<Integer> programIds = controlAreaDao.getProgramIdsForControlArea(controlArea.getPaoIdentifier().getPaoId());
         List<Program> programs = programDao.getByProgramIds(programIds);
-        boolean supportsPing = false;
-        for (Program program : programs) {
-            if (program.getPaoType() != PaoType.LM_ITRON_PROGRAM) {
-                supportsPing = true;
-            }
-        }
-        model.addAttribute("allowPing", supportsPing);
+        boolean allowPing = programs.stream().anyMatch(
+            program -> paoDefinitionDao.isTagSupported(program.getPaoType(), PaoTag.SUPPORTS_PING));
+        model.addAttribute("allowPing", allowPing);
         return "dr/assetAvailability.jsp";
     }
 

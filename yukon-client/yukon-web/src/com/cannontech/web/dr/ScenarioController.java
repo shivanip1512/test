@@ -34,7 +34,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
-import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -69,6 +70,7 @@ public class ScenarioController extends DemandResponseControllerBase {
     @Autowired private AssetAvailabilityPingService assetAvailabilityPingService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ProgramDao programDao;
     @Autowired private ProgramsHelper programsHelper;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -145,13 +147,9 @@ public class ScenarioController extends DemandResponseControllerBase {
         }
         Map<Integer, ScenarioProgram> programIds = scenarioDao.findScenarioProgramsForScenario(scenario.getPaoIdentifier().getPaoId());
         List<Program> programs = programDao.getByProgramIds(programIds.keySet());
-        boolean supportsPing = false;
-        for (Program program : programs) {
-            if (program.getPaoType() != PaoType.LM_ITRON_PROGRAM) {
-                supportsPing = true;
-            }
-        }
-        model.addAttribute("allowPing", supportsPing);
+        boolean allowPing = programs.stream().anyMatch(
+             program -> paoDefinitionDao.isTagSupported(program.getPaoType(), PaoTag.SUPPORTS_PING));
+        model.addAttribute("allowPing", allowPing);
         return "dr/assetAvailability.jsp";
     }
 

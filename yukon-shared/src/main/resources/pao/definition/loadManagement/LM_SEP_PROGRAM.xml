@@ -5,6 +5,7 @@
     </pointFiles>
     <tags>
         <tag name="LM_PROGRAM"/>
+        <tag name="SUPPORTS_PING"/>
         <tag name="SEP_PROGRAM_ENROLLMENT"/>
     </tags>
     <pointInfos>
