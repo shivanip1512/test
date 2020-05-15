@@ -29,14 +29,14 @@ yukon.widget.config = (function () {
                 statusRow.addClass('dn');
             } else {
                 statusRow.removeClass('dn');
-                status.text(data.statusText);
+                status.text(yukon.escapeXml(data.statusText));
                 if (data.isInSync) {
                     status.addClass('success');
                 } else {
                     status.removeClass('success');
                     if (data.isOutOfSync){
                         //show link for popup
-                        status.html("<a href=javascript:void(0) class=js-out-of-sync>" + data.statusText + "</a>");
+                        status.html("<a href=javascript:void(0) class=js-out-of-sync>" + yukon.escapeXml(data.statusText) + "</a>");
                     }
                 }
             }
