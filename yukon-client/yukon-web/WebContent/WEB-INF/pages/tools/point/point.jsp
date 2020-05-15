@@ -107,7 +107,7 @@
 
                         <tags:nameValue2 nameKey="yukon.common.units">
                             <tags:selectWithItems path="pointBase.pointUnit.uomID" items="${unitMeasures}" 
-                                itemValue="liteID" itemLabel="unitMeasureName" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
+                                itemValue="id" itemLabel="abbreviation" inputClass="${viewMode ? '' : 'js-init-chosen'}"/>
                         </tags:nameValue2>
 
                         <tags:nameValue2 nameKey=".decimalPlaces">

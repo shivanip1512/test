@@ -11,12 +11,11 @@ import javax.swing.JPanel;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.util.SwingUtil;
 import com.cannontech.core.dao.StateGroupDao;
-import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.field.DataProperties;
@@ -27,7 +26,7 @@ import com.klg.jclass.util.value.JCValueListener;
 import com.klg.jclass.util.value.MutableValueModel;
 
 public class AccumulatorBasePanel extends DataInputPanel implements JCValueListener, ActionListener {
-    private JComboBox<LiteUnitMeasure> unitOfMeasureComboBox = null;
+    private JComboBox<UnitOfMeasure> unitOfMeasureComboBox = null;
     private JLabel unitOfMeasureLabel = null;
     private JComboBox<String> archiveIntervalComboBox = null;
     private JLabel archiveIntervalLabel = null;
@@ -53,7 +52,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
                 e.getSource() == getArchiveIntervalComboBox() ||
                 e.getSource() == getStateGroupComboBox()) {
             try {
-                this.fireInputUpdate();
+                fireInputUpdate();
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
@@ -70,7 +69,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
      */
     private void connEtoC3(java.awt.event.ActionEvent arg1) {
         try {
-            this.fireInputUpdate();
+            fireInputUpdate();
             if (((String) getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointArchiveType.NONE.getPointArchiveTypeName()) || ((String) getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointArchiveType.ON_CHANGE.getPointArchiveTypeName()) || ((String) getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointArchiveType.ON_UPDATE.getPointArchiveTypeName())) {
                 getArchiveIntervalLabel().setEnabled(false);
                 getArchiveIntervalComboBox().setEnabled(false);
@@ -91,7 +90,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
     private JComboBox<String> getArchiveIntervalComboBox() {
         if (archiveIntervalComboBox == null) {
             try {
-                archiveIntervalComboBox = new JComboBox<String>();
+                archiveIntervalComboBox = new JComboBox<>();
                 archiveIntervalComboBox.setName("ArchiveIntervalComboBox");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
@@ -117,7 +116,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
     private JComboBox<String> getArchiveTypeComboBox() {
         if (archiveTypeComboBox == null) {
             try {
-                archiveTypeComboBox = new JComboBox<String>();
+                archiveTypeComboBox = new JComboBox<>();
                 archiveTypeComboBox.setName("ArchiveTypeComboBox");
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
@@ -193,7 +192,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
     private JComboBox<LiteStateGroup> getStateGroupComboBox() {
         if (stateGroupComboBox == null) {
             try {
-                stateGroupComboBox = new JComboBox<LiteStateGroup>();
+                stateGroupComboBox = new JComboBox<>();
                 stateGroupComboBox.setName("StateGroupComboBoxl");
                 stateGroupComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 
@@ -255,10 +254,10 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         return archivePanel;
     }
 
-    private JComboBox<LiteUnitMeasure> getUnitOfMeasureComboBox() {
+    private JComboBox<UnitOfMeasure> getUnitOfMeasureComboBox() {
         if (unitOfMeasureComboBox == null) {
             try {
-                unitOfMeasureComboBox = new JComboBox<LiteUnitMeasure>();
+                unitOfMeasureComboBox = new JComboBox<>();
                 unitOfMeasureComboBox.setName("UnitOfMeasureComboBox");
                 unitOfMeasureComboBox.setFont(new java.awt.Font("dialog", 0, 14));
             } catch (java.lang.Throwable ivjExc) {
@@ -287,18 +286,18 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         // Assuming that commonObject is an instance of com.cannontech.database.data.point.AccumulatorPoint
         AccumulatorPoint point = (AccumulatorPoint) val;
 
-        int uOfMeasureID = ((LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
+        int uOfMeasureID = ((UnitOfMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getId();
 
-        point.getPointUnit().setUomID(new Integer(uOfMeasureID));// setUnit(uOfMeasure);
-        point.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
-        point.getPointUnit().setMeterDials(new Integer(((Number) getMeterDialsSpinner().getValue()).intValue()));
+        point.getPointUnit().setUomID(uOfMeasureID);
+        point.getPointUnit().setDecimalPlaces(((Number) getDecimalPlacesSpinner().getValue()).intValue());
+        point.getPointUnit().setMeterDials(((Number) getMeterDialsSpinner().getValue()).intValue());
 
         String selectedArchiveType = getArchiveTypeComboBox().getSelectedItem().toString();
         point.getPoint().setArchiveType(PointArchiveType.getByDisplayName(selectedArchiveType));
 
         point.getPoint().setArchiveInterval(SwingUtil.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
         LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
-        point.getPoint().setStateGroupID(new Integer(stateGroup.getStateGroupID()));
+        point.getPoint().setStateGroupID(stateGroup.getStateGroupID());
 
         return point;
     }
@@ -346,11 +345,8 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
             java.awt.GridBagConstraints constraintsJPanelArchive = new java.awt.GridBagConstraints();
             constraintsJPanelArchive.gridx = 0;
             constraintsJPanelArchive.gridy = 1;
-            // constraintsJPanelArchive.gridwidth = 2;
             constraintsJPanelArchive.fill = java.awt.GridBagConstraints.BOTH;
             constraintsJPanelArchive.anchor = java.awt.GridBagConstraints.WEST;
-            // constraintsJPanelArchive.weightx = 1.0;
-            // constraintsJPanelArchive.weighty = 1.0;
             constraintsJPanelArchive.insets = new java.awt.Insets(2, 2, 2, 2);
             add(getJPanelArchive(), constraintsJPanelArchive);
 
@@ -365,9 +361,9 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         setBorder(border);
 
         // Load the unit of measure combo box with default possible values
-        List<LiteUnitMeasure> unitMeasures = YukonSpringHook.getBean(UnitMeasureDao.class).getLiteUnitMeasures();
-        for (LiteUnitMeasure lum : unitMeasures) {
-            getUnitOfMeasureComboBox().addItem(lum);
+        List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
+        for (UnitOfMeasure uom : unitMeasures) {
+            getUnitOfMeasureComboBox().addItem(uom);
         }
 
         // Load the Archive Type combo box with default possible values
@@ -497,7 +493,7 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
         getArchiveIntervalComboBox().setEnabled(false);
 
         for (int i = 0; i < getUnitOfMeasureComboBox().getModel().getSize(); i++) {
-            if (getUnitOfMeasureComboBox().getItemAt(i).getUomID() == uOfMeasureID) {
+            if (getUnitOfMeasureComboBox().getItemAt(i).getId() == uOfMeasureID) {
                 getUnitOfMeasureComboBox().setSelectedIndex(i);
                 break;
             }
@@ -533,8 +529,9 @@ public class AccumulatorBasePanel extends DataInputPanel implements JCValueListe
 
     @Override
     public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) {
-        if (arg1.getSource() == getDecimalPlacesSpinner() || arg1.getSource() == getMeterDialsSpinner())
-            this.fireInputUpdate();
+        if (arg1.getSource() == getDecimalPlacesSpinner() || arg1.getSource() == getMeterDialsSpinner()) {
+            fireInputUpdate();
+        }
     }
 
     @Override
