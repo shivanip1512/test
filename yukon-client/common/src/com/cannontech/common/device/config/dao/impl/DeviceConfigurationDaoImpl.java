@@ -1330,7 +1330,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
-    public DeviceConfigState getDeviceConfigStatesByDeviceId(int deviceId) {
+    public DeviceConfigState getDeviceConfigStateByDeviceId(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaObjectId, CurrentState, LastAction, LastActionStatus, LastActionStart, LastActionEnd, CommandRequestExecId");
         sql.append("FROM DeviceConfigState");
