@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.logging.log4j.Logger;
@@ -83,6 +82,8 @@ import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -104,10 +105,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    private static final Map<DeviceRequestType, String> commands = 
-            Map.of(GROUP_DEVICE_CONFIG_VERIFY,"putconfig emetcon install all verify", 
-                    GROUP_DEVICE_CONFIG_READ, "getconfig install all", 
-                    GROUP_DEVICE_CONFIG_SEND, "putconfig emetcon install all");
+    private static final BiMap<DeviceRequestType, String> commands = new ImmutableBiMap.Builder<DeviceRequestType, String>()
+            .put(GROUP_DEVICE_CONFIG_VERIFY, "putconfig emetcon install all verify")
+            .put(GROUP_DEVICE_CONFIG_READ, "getconfig install all")
+            .put(GROUP_DEVICE_CONFIG_SEND, "putconfig emetcon install all")
+            .build();
+
     
     @Override
     public int sendConfigs(DeviceCollection deviceCollection, String method,
@@ -261,8 +264,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                 .replaceAll("noqueue", "")
                 .strip()
                 .replaceAll("\\s{2,}"," ");
-        Map<String, DeviceRequestType> commandToRequestType = MapUtils.invertMap(commands);
-        return commandToRequestType.get(formattedString);
+        return commands.inverse().get(formattedString);
     }
     
     @Override
