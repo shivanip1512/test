@@ -764,7 +764,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
     {
         Timing::DebugTimer timer("removing invalidated devices ");
 
-        std::vector<CtiDeviceSPtr> evictedDevices;
+        std::vector<CtiDeviceSPtr> devicesToEvict;
 
         //  If this was a "reload all"...
         if( paoids.empty() )
@@ -772,7 +772,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
             //  ...make sure we loaded something before we evict any records
             if( rowFound )
             {
-                evictedDevices = getDiscardableDevices();
+                devicesToEvict = getDiscardableDevices();
             }
         }
         else
@@ -783,13 +783,13 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
                 {
                     if( shouldDiscardDevice(dev) )
                     {
-                        evictedDevices.push_back(dev);
+                        devicesToEvict.push_back(dev);
                     }
                 }
             }
         }
 
-        evictDevices(evictedDevices);
+        evictDevices(devicesToEvict);
     }
 }
 
@@ -805,7 +805,7 @@ void CtiDeviceManager::evictDevices(std::vector<CtiDeviceSPtr> &devices)
         //  We need to grab the writer lock since we're modifying the associations.
         coll_type::writer_lock_guard_t guard(getLock());
 
-        for (CtiDeviceSPtr evictedDevice : devices)
+        for (const auto & evictedDevice : devices)
         {
             CTILOG_INFO(dout, "Evicting \""<< evictedDevice->getName() <<"\" from list");
 
