@@ -772,7 +772,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
             //  ...make sure we loaded something before we evict any records
             if( rowFound )
             {
-                evictedDevices = _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
+                evictedDevices = getDiscardableDevices();
             }
         }
         else
@@ -789,19 +789,29 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const lo
             }
         }
 
-        if( ! evictedDevices.empty() )
+        evictDevices(evictedDevices);
+    }
+}
+
+std::vector<CtiDeviceSPtr> CtiDeviceManager::getDiscardableDevices() const
+{
+    return _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
+}
+
+void CtiDeviceManager::evictDevices(std::vector<CtiDeviceSPtr> &devices)
+{
+    if( ! devices.empty() )
+    {
+        //  We need to grab the writer lock since we're modifying the associations.
+        coll_type::writer_lock_guard_t guard(getLock());
+
+        for (CtiDeviceSPtr evictedDevice : devices)
         {
-            //  We need to grab the writer lock since we're modifying the associations.
-            coll_type::writer_lock_guard_t guard(getLock());
+            CTILOG_INFO(dout, "Evicting \""<< evictedDevice->getName() <<"\" from list");
 
-            for each( CtiDeviceSPtr evictedDevice in evictedDevices )
-            {
-                CTILOG_INFO(dout, "Evicting \""<< evictedDevice->getName() <<"\" from list");
+            removeAssociations(*evictedDevice);
 
-                removeAssociations(*evictedDevice);
-
-                _smartMap.remove(evictedDevice->getID());
-            }
+            _smartMap.remove(evictedDevice->getID());
         }
     }
 }

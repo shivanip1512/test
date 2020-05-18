@@ -14,6 +14,15 @@ using namespace std;
 
 namespace Cti {
 
+namespace   {
+
+void applyDeviceResetUpdated(const long unusedkey, CtiDeviceSPtr Device, void* d)
+{
+    Device->resetUpdatedFlag();
+}
+
+}   // anon
+
 void ScannableDeviceManager::refreshDeviceProperties(Database::id_set &paoids, int type)
 {
     Inherited::refreshDeviceProperties(paoids, type);
@@ -138,12 +147,19 @@ void ScannableDeviceManager::refreshAllDevices()
         CTILOG_INFO(dout, "loaded "<< load_count <<" scannables ");
     }
 
+    // this 'full reload' code is not calling the 'full reload' code of the base class.  This resets the update
+    //  flag on all devices so the device eviction code that follows works correctly.
+    apply(applyDeviceResetUpdated, NULL);
+
     map<int, Cti::Database::id_set >::iterator itr, itr_end = type_paoids.end();
 
     for( itr = type_paoids.begin(); itr != itr_end; ++itr )
     {
         Inherited::refreshList(itr->second, itr->first);
     }
+
+    // evict any non-updated devices
+    evictDevices( getDiscardableDevices() );
 }
 
 
