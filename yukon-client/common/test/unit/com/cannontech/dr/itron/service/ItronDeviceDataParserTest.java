@@ -71,7 +71,7 @@ public class ItronDeviceDataParserTest {
     @Test
     public void validateRowParsingForRelayNumberFinding() {
         String[] rowData = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (3)  data(0300000000)");
-        Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_4_SHED_STATUS, rowData);
+        Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_3_SHED_STATUS, rowData);
         assertOnlyEntryEquals(data, 1);
     }
     
