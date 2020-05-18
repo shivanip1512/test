@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.authorization.service.LMCommandAuthorizationService;
@@ -81,6 +82,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
     @Autowired private LMCommandAuthorizationService lmCommandAuthService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    @Autowired private DeviceConfigService deviceConfigService;
     
     @Override
     public List<CommandRequest> sendCommand(YukonUserContext userContext, CommandParams params, Map<String, Integer> commandCounts) throws CommandRequestException {
@@ -101,6 +103,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
         }
         
         List<Request> reqs = buildPorterRequest(user, commands);
+        deviceConfigService.processCommandRequest(reqs);
         for (Request req : reqs) {
             porter.write(req);
             log.info("User: " + user + " produced request to porter: " + req);
@@ -194,6 +197,7 @@ public class CommanderServiceImpl implements CommanderService, MessageListener {
                 req.getResponses().add(resp);
                 if (resp.getExpectMore() == 0) {
                     req.setComplete(true);
+                    deviceConfigService.processCommandReturn(rtn);
                 }
                 break;
             }

@@ -113,7 +113,7 @@ public class DeviceConfigController {
                 .getDeviceConfigStatesByDeviceIds(getDeviceIds(deviceCollection.getDeviceList()));
         DeviceConfiguration deviceConfig = deviceConfigurationDao.getDeviceConfiguration(configuration);
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(deviceConfig,
-                deviceToState, userContext.getYukonUser());
+                deviceToState, userContext);
 
         LinkedHashMap<String, String> userInputs = new LinkedHashMap<>();
         userInputs.put(CollectionActionInput.CONFIGURATION.name(), deviceConfig.getName());
