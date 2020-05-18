@@ -258,3 +258,10 @@ CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
     return *this;
 }
 
+std::size_t CtiReturnMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   dynamic_sizeof( _command_string )
+        +   dynamic_sizeof( _result_string );
+}
+

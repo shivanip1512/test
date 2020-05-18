@@ -71,6 +71,8 @@ DECLARE_COLLECTABLE( CtiLMProgramCurtailment );
     int operator==(const CtiLMProgramCurtailment& right) const;
     int operator!=(const CtiLMProgramCurtailment& right) const;
 
+    std::size_t getMemoryConsumption() const override;
+
     // Static Members
 
     // Possible run statuses

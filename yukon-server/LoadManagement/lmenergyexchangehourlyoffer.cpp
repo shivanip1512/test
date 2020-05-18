@@ -343,6 +343,12 @@ void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData()
     }
 }
 
+std::size_t CtiLMEnergyExchangeHourlyOffer::getMemoryConsumption() const
+{
+    // there is no dynamic data here
+    return sizeof( *this );
+}
+
 // Static Members
 
 // Possible  statuses

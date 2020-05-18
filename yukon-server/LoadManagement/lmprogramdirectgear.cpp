@@ -13,6 +13,12 @@ using std::string;
 
 extern ULONG _LM_DEBUG;
 
+std::size_t calculateMemoryConsumption( const CtiLMProgramDirectGear * g )
+{
+    return  g->getFixedSize()
+        +   g->getVariableSize();
+}
+
 DEFINE_COLLECTABLE( CtiLMProgramDirectGear, CTILMPROGRAMDIRECTGEAR_ID )
 
 /*---------------------------------------------------------------------------
@@ -677,6 +683,20 @@ void CtiLMProgramDirectGear::restore(Cti::RowReader &rdr)
     rdr["kwreduction"] >> _kw_reduction;
     rdr["stopcommandrepeat"] >> _stop_repeat_count;
 }
+
+std::size_t CtiLMProgramDirectGear::getVariableSize() const
+{
+    return  dynamic_sizeof( _gearname )
+        +   dynamic_sizeof( _controlmethod )
+        +   dynamic_sizeof( _methodstoptype )
+        +   dynamic_sizeof( _changecondition )
+        +   dynamic_sizeof( _groupselectionmethod )
+        +   dynamic_sizeof( _methodoptiontype )
+        +   dynamic_sizeof( _front_ramp_option )
+        +   dynamic_sizeof( _back_ramp_option );
+}
+
+
 
 // Static Members
 

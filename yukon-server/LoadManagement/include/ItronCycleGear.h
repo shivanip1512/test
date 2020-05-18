@@ -35,6 +35,8 @@ public:
 
     double calculateLoadReduction( double groupCapacity ) const;
 
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+
     long getCyclingOption() const;
 
 private:

@@ -2807,6 +2807,40 @@ string* CtiLMControlArea::getAutomaticallyStartedSignalString()
     return returnString;
 }
 
+std::size_t CtiLMControlArea::getMemoryConsumption() const
+{
+    // The fixed size
+    std::size_t sz = sizeof( *this );
+
+    // the additional allocated string memory
+    sz  += dynamic_sizeof( _paocategory )
+        +  dynamic_sizeof( _paoclass )
+        +  dynamic_sizeof( _paoname )
+        +  dynamic_sizeof( _paoTypeString )
+        +  dynamic_sizeof( _paodescription )
+        +  dynamic_sizeof( _defoperationalstate );
+
+    // the allocated array
+    sz += _lmcontrolareatriggers.capacity() * sizeof( CtiLMControlAreaTrigger* );
+
+    // each of the triggers memory consumption
+    for ( const auto & trigger : _lmcontrolareatriggers )
+    {
+        sz += trigger->getMemoryConsumption();
+    }
+
+    // the allocated array
+    sz += _lmprograms.capacity() * sizeof( CtiLMProgramBaseSPtr );
+
+    // each programs memory consumption
+    for ( const auto & program : _lmprograms )
+    {
+        sz += program->getMemoryConsumption();
+    }
+
+    return sz;
+}
+
 
 /* Public Static members */
 const string CtiLMControlArea::DefOpStateEnabled = "Enabled";
