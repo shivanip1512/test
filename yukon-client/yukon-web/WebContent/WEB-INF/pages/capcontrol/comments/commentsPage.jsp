@@ -5,6 +5,13 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.comments">
+    <c:if test="${addPermission}">
+        <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)" placeholder="Enter comment text" class="MR10">
+        <cti:button nameKey="create" icon="icon-plus-green" classes="M0 fr js-save-comment" busy="true"/>
+        <br>
+        <br>
+    </c:if>
+    
     <cti:url var="commentsURL" value="/capcontrol/comments/"/>
 
     <div id="comment_editor" class="scroll-lg stacked">
@@ -75,16 +82,4 @@
             </c:if>
         </form>
     </div>
-    <c:if test="${addPermission}">
-        <div id="newRow" style="display: none;">
-            <span><i:inline key=".enterText"/></span>
-            <span>
-                <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)">
-            </span>
-            <span><a href="javascript:yukon.da.comments.addComment()"><i:inline key=".save"/></a> <a href="javascript:yukon.da.comments.hideNewRow()"><i:inline key=".cancel"/></a></span>
-        </div>
-        <div class="compactResultsFooter">
-            <cti:button nameKey="add" icon="icon-add" onclick="javascript:yukon.da.comments.showNewRow()"/>
-        </div>
-    </c:if>
 </cti:msgScope>
