@@ -6,7 +6,8 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.comments">
     <c:if test="${addPermission}">
-        <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)" placeholder="Enter comment text" class="MR10">
+        <cti:msg2 var="commentText" key=".enterText"/>
+        <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)" placeholder="${commentText}" class="MR10">
         <cti:button nameKey="create" icon="icon-plus-green" classes="M0 fr js-save-comment" busy="true"/>
         <br>
         <br>

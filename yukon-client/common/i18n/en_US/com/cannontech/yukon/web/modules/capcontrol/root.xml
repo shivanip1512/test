@@ -313,7 +313,7 @@
     <entry key="yukon.web.modules.capcontrol.comments.save">Save</entry>
     <entry key="yukon.web.modules.capcontrol.comments.cancel">Cancel</entry>
     <entry key="yukon.web.modules.capcontrol.comments.clickToEdit">Click to edit</entry>
-    <entry key="yukon.web.modules.capcontrol.comments.enterText">Enter Comment Text:</entry>
+    <entry key="yukon.web.modules.capcontrol.comments.enterText">Comment Text</entry>
     <entry key="yukon.web.modules.capcontrol.comments.enterComment">Enter a comment for this operation:</entry>
     <entry key="yukon.web.modules.capcontrol.comments.previousComment">&lt;Choose a previously entered comment&gt;</entry>
     
