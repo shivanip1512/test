@@ -480,7 +480,7 @@ WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
     
 UNION
 
-SELECT distinct PaObjectId, 'UNREAD', 'ASSIGN', 'SUCCESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, (SELECT TOP 1 CommandRequestExecId FROM CommandRequestExec)
+SELECT distinct PaObjectId, 'UNREAD', 'ASSIGN', 'SUCCESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL
 FROM YukonPAObject y 
     --  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices
     JOIN DeviceConfigurationDeviceMap dcdm ON y.paobjectid=dcdm.deviceid
