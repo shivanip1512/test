@@ -4,7 +4,7 @@
 #include "logger.h"
 #include "BeatThePeakAlertLevel.h"
 
-extern CtiTime gEndOfCtiTime;
+extern const CtiTime gEndOfCtiTime;
 
 using std::endl;
 using namespace Cti::LoadManagement;

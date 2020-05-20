@@ -1132,7 +1132,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
     //I hate to use a smart pointer in this way, however our check for 0 should have been done above
     //and the smart pointer will have a life as long as the checker, so we should be ok.
-    CtiLMProgramConstraintChecker checker((CtiLMProgramDirect&)*program, CtiTime().seconds());
+    CtiLMProgramConstraintChecker checker((CtiLMProgramDirect&)*program, CtiTime());
     bool passed_check = false;
 
     switch( _controlMsg->getCommand() )

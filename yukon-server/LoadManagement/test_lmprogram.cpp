@@ -11,7 +11,7 @@
 
 #include "ConstraintViolation.h"
 
-extern CtiTime gEndOfCtiTime;
+extern const CtiTime gEndOfCtiTime;
 
 // Nonexistent window
 const CtiLMProgramControlWindow *no_window = 0;
@@ -430,7 +430,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -459,7 +459,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -488,7 +488,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -517,7 +517,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -539,7 +539,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -568,7 +568,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -596,7 +596,7 @@ BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -631,7 +631,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -844,7 +844,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -876,7 +876,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -908,7 +908,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -930,7 +930,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -962,7 +962,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1000,7 +1000,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_bo
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1022,7 +1022,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1054,7 +1054,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1086,7 +1086,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1118,7 +1118,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1150,7 +1150,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1182,7 +1182,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1212,7 +1212,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1241,7 +1241,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1270,7 +1270,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1299,7 +1299,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1328,7 +1328,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1350,7 +1350,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1372,7 +1372,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1401,7 +1401,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1430,7 +1430,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1452,7 +1452,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1481,7 +1481,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1510,7 +1510,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1542,7 +1542,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1574,7 +1574,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1596,7 +1596,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
@@ -1618,7 +1618,7 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_with_midnight_overlap_st
     CtiLMProgramDirect lmProgram;
     CtiLMControlArea controlArea;
 
-    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime());
 
     // set the date to: July 01, 2009
     CtiDate today(1, 7, 2009);
