@@ -170,8 +170,7 @@ public enum ItronDataEventType {
      * @throws IllegalArgumentException if no appropriate attribute can be found.
      */
     public BuiltInAttribute getAttribute(byte[] byteArray) throws IllegalArgumentException {
-        // Relay number comes back 0-indexed, but relay-related attributes are 1-indexed, so increment.
-        long relayNumber = decode(byteArray) + 1;
+        long relayNumber = decode(byteArray);
         switch (this) {
         case LOAD_ON:
         case LOAD_OFF:
