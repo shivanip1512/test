@@ -127,6 +127,7 @@ public class ConfigWidget extends WidgetControllerBase {
                 mav.addObject("showMeterProgramming", true);
                 try {
                     MeterProgramWidgetDisplay program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
+                    mav.addObject("isInsufficentFirmware", program.getProgramInfo().getSource().isOldFirmware());
                     mav.addObject("meterProgram", program);
                 } catch (NotFoundException e) {
                     //not programmed yet
