@@ -49,6 +49,7 @@
     <entry key="yukon.web.modules.smartNotifications.existingSubscriptions.title">Existing {0} Subscriptions</entry>
     <entry key="yukon.web.modules.smartNotifications.actionLink">Notifications</entry>
     <entry key="yukon.web.modules.smartNotifications.popup.title">Notification Setup</entry>
+    <entry key="yukon.web.modules.smartNotifications.recentNotificationDetail">Recent Notification Details</entry>
     <entry key="yukon.web.modules.smartNotifications.createPopup.title">Create New Subscription</entry>
     <entry key="yukon.web.modules.smartNotifications.editPopup.title">Edit Subscription</entry>
     <entry key="yukon.web.modules.smartNotifications.type">Type</entry>
