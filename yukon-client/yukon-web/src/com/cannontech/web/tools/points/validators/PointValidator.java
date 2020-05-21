@@ -15,11 +15,13 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
+import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.point.PointLimit;
+import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointModel;
@@ -101,6 +103,8 @@ public class PointValidator extends SimpleValidator<PointModel> {
         doAnalogValidation(base, errors);
         doAccumulatorValidation(base, errors);
         doStatusValidation(pointModel, errors);
+        doCalcPointValidation(base,errors);
+        
 
         Set<FdrUniquenessKey> usedTypes = new HashSet<>();
 
@@ -245,4 +249,17 @@ public class PointValidator extends SimpleValidator<PointModel> {
         YukonValidationUtils.checkRange(errors, "pointBase.pointStatusControl.commandTimeOut", 
             point.getPointStatusControl().getCommandTimeOut(), 0, 9999999, true);
     }
+
+    private void doCalcPointValidation(PointBase base, Errors errors){
+    	if (base instanceof CalculatedPoint) {
+    		CalculatedPoint calcPoint = (CalculatedPoint) base;
+    		int index = 0;
+            for (CalcComponent calcComponent : calcPoint.getCalcComponents()) {
+            	if(calcComponent.getConstant()==null) {
+            		errors.rejectValue("pointBase.calcComponents[" +index + "].constant", "yukon.web.error.isBlank");
+            	} 
+            	index++;
+            }
+    	}
+    } 
 }
