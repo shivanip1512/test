@@ -387,8 +387,8 @@ FROM YukonPAObject y
         GROUP BY DeviceId) successful_verify
             ON successful_verify.DeviceId=y.PAObjectID
     JOIN CommandRequestExecResult crer
-        ON crer.CompleteTime=successful_verify.maxCompleteTime
-            AND crer.DeviceId=successful_verify.DeviceId
+        ON crer.CompleteTime=failed_verify.maxCompleteTime
+            AND crer.DeviceId=failed_verify.DeviceId
     JOIN CommandRequestExec cre
         ON cre.CommandRequestExecId=crer.CommandRequestExecId
     --  Only include metering types - do not include RTUs, CBCs, regulators, etc
