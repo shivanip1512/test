@@ -337,7 +337,7 @@ SELECT
     PaObjectId, 
     'OUT_OF_SYNC' AS CurrentState, 
     'VERIFY' AS LastAction, 
-    'FAILED' AS LastActionStatus, 
+    'FAILURE' AS LastActionStatus, 
     cre.StartTime AS LastActionStart, 
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
@@ -450,7 +450,7 @@ SELECT
          WHEN CommandRequestExecType='GROUP_DEVICE_CONFIG_READ' THEN 'READ' 
          WHEN CommandRequestExecType='GROUP_DEVICE_CONFIG_VERIFY' THEN 'VERIFY' END AS LastAction, 
     CASE WHEN crer.ErrorCode=0 THEN 'SUCCESS'
-         WHEN crer.ErrorCode<>0 THEN 'FAILED' END AS LastActionStatus, 
+         WHEN crer.ErrorCode<>0 THEN 'FAILURE' END AS LastActionStatus, 
     cre.StartTime AS LastActionStart, 
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
