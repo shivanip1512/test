@@ -1152,14 +1152,11 @@ void CtiLMManualControlRequestExecutor::Execute()
         switch( _controlMsg->getConstraintCmd() )
         {
         case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
-            passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
-                                                         startTime.seconds(),
-                                                         stopTime.seconds());
-
+            passed_check = checker.checkConstraints( _controlMsg->getStartGear()-1, startTime, stopTime );
 
             if( controlArea != NULL )
             {
-                passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds(), CtiDate::now());
+                passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime, stopTime, CtiDate::now());
             }
 
             if( response != NULL )
@@ -1197,8 +1194,8 @@ void CtiLMManualControlRequestExecutor::Execute()
             // Fix up program control window if necessary
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
             CoerceStartStopTime(program, startTime, stopTime, controlArea);
-            if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
-                checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds(), CtiDate::now()) )
+            if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime, stopTime) &&
+                checker.checkControlAreaControlWindows(*controlArea, startTime, stopTime, CtiDate::now()) )
             {
                 StartProgram(program, controlArea, startTime, stopTime);
                 controlReason = "Manual Start Command";
@@ -1280,9 +1277,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             switch( _controlMsg->getConstraintCmd() )
             {
             case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
-                passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
-                                                             startTime.seconds(),
-                                                             stopTime.seconds());
+                passed_check = checker.checkConstraints( _controlMsg->getStartGear()-1, startTime, stopTime );
 
                 passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds());
 
