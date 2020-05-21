@@ -1279,7 +1279,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
                 passed_check = checker.checkConstraints( _controlMsg->getStartGear()-1, startTime, stopTime );
 
-                passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds());
+                passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime );
 
                 if( response != NULL )
                 {
@@ -1299,7 +1299,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
             case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
             case CtiLMManualControlRequest::USE_CONSTRAINTS:
-                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds()) )
+                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime ) )
                 {
                     {
                         const CtiLMProgramDirect &directProgram = static_cast<const CtiLMProgramDirect &>(*program);
