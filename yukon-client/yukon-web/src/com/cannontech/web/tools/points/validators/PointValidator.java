@@ -103,7 +103,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
         doAnalogValidation(base, errors);
         doAccumulatorValidation(base, errors);
         doStatusValidation(pointModel, errors);
-        doCalcPointValidation(base,errors);
+		doCalcPointValidation(base, errors);
         
 
         Set<FdrUniquenessKey> usedTypes = new HashSet<>();
@@ -250,16 +250,16 @@ public class PointValidator extends SimpleValidator<PointModel> {
             point.getPointStatusControl().getCommandTimeOut(), 0, 9999999, true);
     }
 
-    private void doCalcPointValidation(PointBase base, Errors errors){
-    	if (base instanceof CalculatedPoint) {
-    		CalculatedPoint calcPoint = (CalculatedPoint) base;
-    		int index = 0;
-            for (CalcComponent calcComponent : calcPoint.getCalcComponents()) {
-            	if(calcComponent.getConstant()==null) {
-            		errors.rejectValue("pointBase.calcComponents[" +index + "].constant", "yukon.web.error.isBlank");
-            	} 
-            	index++;
-            }
-    	}
-    } 
+	private void doCalcPointValidation(PointBase base, Errors errors) {
+		if (base instanceof CalculatedPoint) {
+			CalculatedPoint calcPoint = (CalculatedPoint) base;
+			int index = 0;
+			for (CalcComponent calcComponent : calcPoint.getCalcComponents()) {
+				if (calcComponent.getConstant() == null) {
+					errors.rejectValue("pointBase.calcComponents[" + index + "].constant", "yukon.web.error.isBlank");
+				}
+				index++;
+			}
+		}
+	}
 }
