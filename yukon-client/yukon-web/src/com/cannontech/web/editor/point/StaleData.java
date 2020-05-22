@@ -9,6 +9,7 @@ import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class StaleData {
     
@@ -44,6 +45,7 @@ public class StaleData {
     //private SelectItem[] updateStyles = null;
     private Integer updateStyle = 0;
     private Integer time = 5;
+    @JsonIgnore
     private boolean enabled = false;
     private PointBase point = null;
     

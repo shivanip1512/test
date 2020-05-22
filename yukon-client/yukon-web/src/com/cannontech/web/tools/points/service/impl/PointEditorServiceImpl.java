@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
@@ -30,6 +31,7 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
@@ -42,12 +44,14 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
+import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
 @Service
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class PointEditorServiceImpl implements PointEditorService {
     
     @Autowired private AlarmCatDao alarmCatDao;
@@ -199,7 +203,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
     
     @Override
-    public int save(PointModel model, YukonUserContext userContext) {
+    public int save(PointModel model, LiteYukonUser liteYukonUser) {
         
         PointBase base = model.getPointBase();
         Integer pointId = base.getPoint().getPointID();
@@ -230,7 +234,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         saveStaleData(pointId, model.getStaleData());
         LiteYukonPAObject pao = cache.getAllPaosMap().get(base.getPoint().getPaoID());
         eventLog.pointUpdated(pao.getPaoName(), base.getPoint().getPointName(), base.getPoint().getPointTypeEnum(),
-            base.getPoint().getPointOffset(), userContext.getYukonUser());
+            base.getPoint().getPointOffset(), liteYukonUser);
         return pointId;
     }
     
@@ -460,6 +464,42 @@ public class PointEditorServiceImpl implements PointEditorService {
                                                            base.getPoint().getPaoID());
         
         return copyPointModel;
+    }
+
+    @Override
+    public int create(PointBaseModel pointBaseModel) {
+        PointBase pointBase = PointBaseModelFactory.createPointBase(pointBaseModel);
+        pointBaseModel.buildDBPersistent(pointBase);
+
+        PointModel pointModel = new PointModel();
+
+        pointModel.setPointBase(pointBase);
+
+        if (pointBaseModel.getStaleData() != null) {
+            StaleData staleData = pointBaseModel.getStaleData();
+            if (!(staleData.getTime() == 5 && staleData.getUpdateStyle() == 1)) {
+                staleData.setEnabled(true);
+            }
+            pointModel.setStaleData(pointBaseModel.getStaleData());
+        }
+
+        save(pointModel, ApiRequestContext.getContext().getLiteYukonUser());
+
+        return pointBase.getPoint().getPointID();
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
+
+        PointModel<?> pointModel = getModelForId(pointId);
+
+        PointType ptType = PointType.getForString(pointModel.getPointBase().getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointBaseModelFactory.createPointBaseModel(ptType);
+        pointBaseModel.buildModel(pointModel.getPointBase());
+
+        pointBaseModel.setStaleData(pointModel.getStaleData());
+
+        return pointBaseModel;
     }
 
 }

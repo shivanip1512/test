@@ -5,9 +5,12 @@ import java.util.Map;
 
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.points.model.LitePointModel;
+import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
@@ -22,7 +25,7 @@ public interface PointEditorService {
      * 
      * @return the id of the point
      */
-    int save(PointModel model, YukonUserContext userContext);
+    int save(PointModel model, LiteYukonUser liteYukonUser);
 
     /**
      * @param interfaceType
@@ -109,6 +112,7 @@ public interface PointEditorService {
 
     /**
      * Attempts to delete the point with the given id.
+     * @return 
      * 
      * @throws AttachedException if the point has attachments that prevent it from being deleted
      */
@@ -139,4 +143,16 @@ public interface PointEditorService {
      * @return LitePointModel
      */
     LitePointModel getLitePointModel(Integer pointId);
+    
+    /**
+     * Create the Point.
+     */
+    int create(PointBaseModel<? extends PointBase> point);
+
+    /**
+     * Retrieve Point for passed pointId.
+     */
+    PointBaseModel<? extends PointBase> retrieve(int pointId);
+
+
 }

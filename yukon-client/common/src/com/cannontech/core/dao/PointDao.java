@@ -272,4 +272,11 @@ public interface PointDao {
 
     List<LitePoint> getLitePointsByDeviceIds(Iterable<Integer> deviceIds);
 
+    /**
+     * Returns the point for specified pointId.
+     * 
+     * @return LitePoint or null
+     */
+    LitePoint findLitePoint(int pointId);
+
 }

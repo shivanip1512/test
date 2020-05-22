@@ -258,4 +258,10 @@ public class MockPointDao implements PointDao {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public LitePoint findLitePoint(int pointId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

@@ -131,6 +131,15 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
+    public LitePoint findLitePoint(int pointId) {
+        try {
+            return getLitePoint(pointId);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     public PaoPointIdentifier getPaoPointIdentifier(int pointId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();

@@ -467,7 +467,7 @@ public class PointController {
             return bindAndForward(pointModel, result, redirectAttributes);
         }
         
-        int id = pointEditorService.save(pointModel, userContext);
+        int id = pointEditorService.save(pointModel, userContext.getYukonUser());
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saveSuccess"));
         
         return "redirect:/tools/points/" + id;
