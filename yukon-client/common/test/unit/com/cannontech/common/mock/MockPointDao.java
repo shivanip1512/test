@@ -315,5 +315,4 @@ public class MockPointDao implements PointDao {
     public List<LitePoint> getLitePointsByDeviceIds(Iterable<Integer> deviceIds) {
         return null;
     }
-
 }
