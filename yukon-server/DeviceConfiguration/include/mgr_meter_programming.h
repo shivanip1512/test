@@ -3,7 +3,10 @@
 #include "dlldefs.h"
 #include "rfn_identifier.h"
 
+#include "error_helper.h"
+
 #include <vector>
+#include <variant>
 
 namespace Cti::MeterProgramming {
 
@@ -14,13 +17,15 @@ class IM_EX_CONFIG MeterProgrammingManager
 public:
     using Bytes = std::vector<unsigned char>;
 
-    Bytes getProgram(const std::string guid);
+    ErrorOr<Bytes> getProgram(const std::string guid);
 
-    std::optional<ProgramDescriptor> describeAssignedProgram(const RfnIdentifier rfnIdentifier);
+    ErrorOr<ProgramDescriptor> describeAssignedProgram(const RfnIdentifier rfnIdentifier);
 
-    bool isUploading(const RfnIdentifier rfnIdentifier, const std::string guid);
+    bool isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid);
 
     double calculateMeterProgrammingProgress(RfnIdentifier rfnIdentifier, std::string guid, size_t size);
+
+    virtual ~MeterProgrammingManager() = default;
 
 protected:
 
@@ -29,12 +34,12 @@ protected:
         Bytes program;
         Bytes password;
     };
-    virtual RawProgram loadRawProgram(const std::string guid);
+    virtual ErrorOr<RawProgram> loadRawProgram(const std::string guid);
 
 private:
 
-    Bytes loadProgram(const std::string guid);
-    size_t getProgramSize(const std::string guid);
+    ErrorOr<Bytes> loadProgram(const std::string guid);
+    ErrorOr<size_t> getProgramSize(const std::string guid);
     
     Bytes convertRawProgram(const RawProgram& raw, const std::string guid);
 
