@@ -122,34 +122,27 @@
     </cti:checkLicenseKey>
     
     <!-- Meter Programming -->
-    <c:if test="${showMeterProgramming}">
+    <c:if test="${showMeterProgramming && !empty meterProgram}">
         <cti:msg var="meterProgrammingTitle" key="yukon.web.widgets.configWidget.meterProgramming"/>
         <tags:sectionContainer title="${meterProgrammingTitle}">
             <tags:nameValueContainer2 tableClass="spaced-form-controls">
-                <c:choose>
-                    <c:when test="${!empty meterProgram}">
-                        <tags:nameValue2 nameKey=".currentMeterProgram">
-                            <cti:url var="summaryUrl" value="/amr/meterProgramming/summary">
-                                <cti:param name="programs[0].guid" value="${meterProgram.programInfo.guid}"/>
-                                <cti:param name="programs[0].name" value="${meterProgram.programInfo.name}"/>
-                                <cti:param name="programs[0].source" value="${meterProgram.programInfo.source}"/>
-                            </cti:url>
-                            <a href="${summaryUrl}">${fn:escapeXml(meterProgram.programInfo.name)}</a>
-                        </tags:nameValue2>
-                    </c:when>
-                    <c:otherwise>
-                        <tags:nameValue2 nameKey=".currentMeterProgram">
-                            <i:inline key="yukon.common.none.choice"/>
-                            <cti:url var="programUrl" value="/bulk/meterProgramming/program">
-                                <cti:param name="collectionType" value="idList"/>
-                                <cti:param name="idList.ids" value="${deviceId}"/>
-                            </cti:url>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".action">
-                            <cti:button nameKey="program" href="${programUrl}" classes="fr M0"/>
-                        </tags:nameValue2>
-                    </c:otherwise>
-                </c:choose>
+                <tags:nameValue2 nameKey=".currentMeterProgram">
+                    <cti:url var="summaryUrl" value="/amr/meterProgramming/summary">
+                        <cti:param name="programs[0].guid" value="${meterProgram.programInfo.guid}"/>
+                        <cti:param name="programs[0].name" value="${meterProgram.programInfo.name}"/>
+                        <cti:param name="programs[0].source" value="${meterProgram.programInfo.source}"/>
+                    </cti:url>
+                    <a href="${summaryUrl}">${fn:escapeXml(meterProgram.programInfo.name)}</a>
+                </tags:nameValue2>
+                <c:if test="${!isInsufficentFirmware}">
+                    <tags:nameValue2 nameKey=".action">
+                        <cti:url var="programUrl" value="/bulk/meterProgramming/program">
+                            <cti:param name="collectionType" value="idList"/>
+                            <cti:param name="idList.ids" value="${deviceId}"/>
+                        </cti:url>
+                        <cti:button nameKey="program" href="${programUrl}" classes="M0"/>
+                    </tags:nameValue2>
+                </c:if>
             </tags:nameValueContainer2>
         </tags:sectionContainer>
     </c:if>

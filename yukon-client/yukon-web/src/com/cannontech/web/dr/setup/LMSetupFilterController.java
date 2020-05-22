@@ -176,7 +176,7 @@ public class LMSetupFilterController {
     private String getAbbreviatedText(MessageSourceAccessor accessor, List<LMDto> lmObjects) {
         StringBuilder builder = new StringBuilder();
         if (CollectionUtils.isEmpty(lmObjects)) {
-            builder.append(accessor.getMessage("yukon.common.none.choice"));
+            builder.append(accessor.getMessage("yukon.common.none"));
         } else if (lmObjects.size() > 5) {
             builder.append(lmObjects.subList(0, 5).stream().map(lmObject -> lmObject.getName())
                                                            .collect(Collectors.joining(", ")));

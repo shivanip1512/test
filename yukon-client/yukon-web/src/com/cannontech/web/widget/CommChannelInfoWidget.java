@@ -27,6 +27,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.port.BaudRate;
+import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
@@ -163,6 +164,9 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             if (commChannel instanceof TcpSharedPortDetail) {
                 model.addAttribute("isIpAddressSupported", true);
             }
+        }
+        if (commChannel instanceof LocalSharedPortDetail) {
+            model.addAttribute("isAdditionalConfigSupported", true);
         }
     }
 

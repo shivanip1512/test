@@ -53,7 +53,7 @@
                                     ${coolBtnLbl}
                                 </c:when>
                                 <c:otherwise>
-                                    <i:inline key="yukon.common.none.choice"/>
+                                    <i:inline key="yukon.common.none"/>
                                 </c:otherwise>
                             </c:choose>
                         </cti:displayForPageEditModes>
