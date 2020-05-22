@@ -131,6 +131,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
                 model.addAttribute("showMeterProgramming", true);
                 try {
                     MeterProgramWidgetDisplay program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
+                    model.addAttribute("isInsufficentFirmware", program.getProgramInfo().getSource().isOldFirmware());
                     model.addAttribute("meterProgram", program);
                 } catch (NotFoundException e) {
                     //not programmed yet
