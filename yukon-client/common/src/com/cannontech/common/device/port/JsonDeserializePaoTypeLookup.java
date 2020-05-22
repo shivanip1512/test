@@ -6,6 +6,7 @@ import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -31,17 +32,27 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         // Catch the update case here.
         String id = ServletUtils.getPathVariable("id");
         PaoType paoType = null;
+        TreeNode type = node.get("type");
         if (id == null) {
-            // Create case. We should expect "type" field in the request.
-            TreeNode type = node.get("type");
+            // Create Case
             if (type != null) {
-                paoType = PaoType.valueOf(type.toString().replace("\"", ""));
+                try {
+                    paoType = PaoType.valueOf(type.toString().replace("\"", ""));
+                } catch (IllegalArgumentException e) {
+                    throw new NotFoundException("type is not valid.");
+                }
             } else {
                 throw new NotFoundException("type is not found in the request.");
             }
+
         } else {
             // Update case.
-            paoType = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(id)).getPaoType();
+            LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(id));
+            if (pao != null) {
+                paoType = pao.getPaoType();
+            } else {
+                throw new NotFoundException("id not found.");
+            }
         }
 
         Class<?> clazz = PaoModelFactory.getModel(paoType).getClass();
