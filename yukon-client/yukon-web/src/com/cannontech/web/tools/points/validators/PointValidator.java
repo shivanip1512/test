@@ -255,7 +255,10 @@ public class PointValidator extends SimpleValidator<PointModel> {
             int index = 0;
             for (CalcComponent calcComponent : calcPoint.getCalcComponents()) {
                 if (calcComponent.getConstant() == null) {
-                    errors.rejectValue("pointBase.calcComponents[" + index + "].constant", "yukon.web.error.isBlank");
+                    if (!errors.hasFieldErrors("pointBase.calcComponents[" + index + "].constant")
+                            && calcComponent.getConstant() == null) {
+                        errors.rejectValue("pointBase.calcComponents[" + index + "].constant", "yukon.web.error.isBlank");
+                    }
                 }
                 index++;
             }
