@@ -6,7 +6,6 @@
 #include "error_helper.h"
 
 #include <vector>
-#include <variant>
 
 namespace Cti::MeterProgramming {
 
