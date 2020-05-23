@@ -18,7 +18,8 @@ public:
 
     ErrorOr<Bytes> getProgram(const std::string guid);
 
-    ErrorOr<ProgramDescriptor> describeAssignedProgram(const RfnIdentifier rfnIdentifier);
+    std::string getAssignedGuid(RfnIdentifier rfnIdentifier);
+    ErrorOr<size_t> getProgramSize(const std::string guid);
 
     bool isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid);
 
@@ -38,7 +39,6 @@ protected:
 private:
 
     ErrorOr<Bytes> loadProgram(const std::string guid);
-    ErrorOr<size_t> getProgramSize(const std::string guid);
     
     Bytes convertRawProgram(const RawProgram& raw, const std::string guid);
 
