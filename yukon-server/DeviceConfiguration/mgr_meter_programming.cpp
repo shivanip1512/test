@@ -235,7 +235,7 @@ auto MeterProgrammingManager::convertRawProgram(const RawProgram &raw, const std
     return globalBuffer;
 }
 
-ErrorOr<ProgramDescriptor> MeterProgrammingManager::describeAssignedProgram(const RfnIdentifier rfnIdentifier)
+std::string MeterProgrammingManager::getAssignedGuid(const RfnIdentifier rfnIdentifier)
 {
     CTILOG_DEBUG(dout, rfnIdentifier);
 
@@ -262,15 +262,10 @@ ErrorOr<ProgramDescriptor> MeterProgrammingManager::describeAssignedProgram(cons
     {
         CTILOG_WARN(dout, "Could not retrieve Meter Program Assignment for " << rfnIdentifier);
 
-        return ClientErrors::NoMeterProgramAssigned;
+        return {};
     }
 
-    auto guid = rdr.as<std::string>();
-
-    return getProgramSize(guid)
-            .map([guid](size_t programSize) {
-                return ProgramDescriptor{ guid, programSize };
-            });
+    return rdr.as<std::string>();
 }
 
 bool MeterProgrammingManager::isAssigned(const RfnIdentifier rfnIdentifier, const std::string guid)
