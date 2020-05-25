@@ -183,7 +183,6 @@
              id="js-edit-comm-channel-popup" 
              data-title="${editPopupTitle}" 
              data-dialog
-             data-load-event="yukon:assets:commChannel:load" 
              data-ok-text="${saveText}" 
              data-width="550"
              data-height="450"
