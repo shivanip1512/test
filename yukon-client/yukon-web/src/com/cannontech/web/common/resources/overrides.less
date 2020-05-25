@@ -79,6 +79,7 @@
 .pf { position: fixed; }
 .pr { position: relative; }
 .R0 { right: 0; }
+.rn { resize: none; }
 .scroll_x { overflow-x: auto; }
 .scroll_y { overflow-y: auto; }
 .T0 { top: 0px; }
@@ -807,6 +808,14 @@ input[readonly], input[readonly="readonly"] {
 /** Text area dynamic width. Overrides cols property */
 .tadw {
     width: 100%;
+    -moz-box-sizing:border-box;
+    -webkit-box-sizing:border-box;
+    box-sizing:border-box;
+}
+
+/** Text area width 250px. Overrides cols property */
+.taw250 {
+    width: 250px;
     -moz-box-sizing:border-box;
     -webkit-box-sizing:border-box;
     box-sizing:border-box;
