@@ -6,9 +6,12 @@
 
 <cti:msgScope paths="yukon.web.modules.capcontrol.comments">
     <c:if test="${addPermission}">
-        <cti:msg2 var="commentText" key=".enterText"/>
-        <input type="text" id="newCommentInput" onKeyPress="return yukon.da.comments.addOrCancel(event)" placeholder="${commentText}" class="MR10">
-        <cti:button nameKey="create" icon="icon-plus-green" classes="M0 fr js-save-comment" busy="true"/>
+        <div class="dib">
+            <cti:msg2 var="commentText" key=".enterText"/>
+            <textarea rows="2" cols="0" id="newCommentInput" placeholder="${commentText}" class="MR10 fl rn taw250" 
+                             onKeyPress="return yukon.da.comments.addOrCancel(event)"></textarea>
+            <cti:button nameKey="create" icon="icon-plus-green" classes="M0 js-save-comment" busy="true"/>
+        </div>
         <br>
         <br>
     </c:if>
@@ -62,7 +65,7 @@
                                     </c:when>
                                     <c:otherwise>
                                         <td>${fn:escapeXml(comment.userName)}</td>
-                                	</c:otherwise>
+                                    </c:otherwise>
                                 </c:choose>
                                 <td><cti:formatDate value="${comment.date}" type="BOTH" /></td>
                                 <td>
