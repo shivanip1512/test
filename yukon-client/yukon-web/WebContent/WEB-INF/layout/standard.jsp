@@ -145,8 +145,6 @@
                                     <cti:displayForPageEditModes modes="EDIT,VIEW">
                                         <c:if test="${!empty info.smartNotificationsEvent}">
                                             <cm:dropdownOption key="yukon.web.modules.smartNotifications.actionLink" icon="icon-email-open" data-popup="#subscriptionPopup"/>
-                                            <cti:url value="/notifications/events/infrastructureWarnings" var="recentNotificationDetail"/>
-                                            <cm:dropdownOption key="yukon.web.modules.smartNotifications.recentNotificationDetail" icon="icon-email-open" href="${recentNotificationDetail}"/>
                                         </c:if>
                                     </cti:displayForPageEditModes>
                                 </cm:dropdown>
