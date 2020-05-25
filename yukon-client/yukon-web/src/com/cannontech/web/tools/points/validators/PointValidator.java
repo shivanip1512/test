@@ -102,7 +102,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
         doAnalogValidation(base, errors);
         doAccumulatorValidation(base, errors);
         doStatusValidation(pointModel, errors);
-        doCalcPointValidation(base, errors);
+        doCalcValidation(base, errors);
 
         Set<FdrUniquenessKey> usedTypes = new HashSet<>();
 
@@ -248,7 +248,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
             point.getPointStatusControl().getCommandTimeOut(), 0, 9999999, true);
     }
 
-    private void doCalcPointValidation(PointBase base, Errors errors) {
+    private void doCalcValidation(PointBase base, Errors errors) {
         if (base instanceof CalculatedPoint) {
             CalculatedPoint calcPoint = (CalculatedPoint) base;
             int index = 0;
