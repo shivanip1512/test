@@ -17,7 +17,7 @@ import com.cannontech.rest.api.documentation.DocumentationFields.Delete;
 import com.cannontech.rest.api.documentation.DocumentationFields.Get;
 import com.cannontech.rest.api.documentation.DocumentationFields.Update;
 
-public class DeviceReadingsApiControllerTest extends DocumentationBase {
+public class DeviceReadingsApiDoc extends DocumentationBase {
 
     /**
      * Test case is to get Device reading for device and to

@@ -10,7 +10,7 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 
-public class PointLoadGroupSetupApiControllerTest extends LoadGroupApiDocBase {
+public class PointLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     private String paoId = null;
     private String copyPaoId = null;

@@ -26,7 +26,7 @@ import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-public class ProgramConstraintControllerTest {
+public class ProgramConstraintApiDoc {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;

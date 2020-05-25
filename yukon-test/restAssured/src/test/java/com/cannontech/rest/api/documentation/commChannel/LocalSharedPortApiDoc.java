@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.model.MockPaoType;
 
-public class LocalSharedPortApiDocumentationTest extends CommChannelApiDocBase {
+public class LocalSharedPortApiDoc extends CommChannelApiDocBase {
     
     private String portId = null;
 

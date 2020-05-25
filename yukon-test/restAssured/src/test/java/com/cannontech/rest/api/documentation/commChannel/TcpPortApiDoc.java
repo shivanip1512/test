@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockPaoType;
 
-public class TcpPortApiDocumentationTest extends CommChannelApiDocBase {
+public class TcpPortApiDoc extends CommChannelApiDocBase {
 
     private String portId = null;
 

@@ -15,7 +15,7 @@ import com.cannontech.rest.api.utilities.Log;
 
 import io.restassured.response.ExtractableResponse;
 
-public class LocalSharedPortAPITest {
+public class LocalSharedPortApiTest {
     MockLocalSharedPortDetail localSharedPortDetail = null;
 
     @BeforeClass

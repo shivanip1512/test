@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.model.MockPaoType;
 
-public class UDPTerminalServerApiDocumentationTest extends CommChannelApiDocBase {
+public class UdpTerminalServerApiDoc extends CommChannelApiDocBase {
 
     private String portId = null;
 

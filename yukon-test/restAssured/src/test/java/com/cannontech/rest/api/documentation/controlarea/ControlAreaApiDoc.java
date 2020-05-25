@@ -39,7 +39,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-public class ControlAreaSetupApiControllerTest {
+public class ControlAreaApiDoc {
 
     private ManualRestDocumentation restDocumentation = new ManualRestDocumentation();
     private RequestSpecification documentationSpec;

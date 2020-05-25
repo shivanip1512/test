@@ -9,7 +9,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.model.MockPaoType;
 
-public class NestLoadGroupSetupApiControllerTest extends LoadGroupApiDocBase {
+public class NestLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     private String paoId = null;
     private FieldDescriptor[] nestFieldDescriptor = new FieldDescriptor[] {
