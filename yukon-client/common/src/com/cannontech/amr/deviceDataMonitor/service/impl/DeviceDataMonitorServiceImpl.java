@@ -39,7 +39,6 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
     @Autowired private SmartNotificationSubscriptionService smartNotificationSubscriptionService;
     @Autowired private UserPageDao userPageDao;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    @Autowired private YukonJmsTemplate jmsTemplate;
     
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorServiceImpl.class);
     
@@ -121,7 +120,8 @@ public class DeviceDataMonitorServiceImpl implements DeviceDataMonitorService {
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DEVICE_DATA_MONITOR_STATUS);
         statusRequestTemplate = new RequestTemplateImpl<>("DEVICE_DATA_MONITOR_CALC_STATUS", configSource, jmsTemplate,
-                JmsApiDirectory.DEVICE_DATA_MONITOR_STATUS, true);
+                true);
     }
 }
