@@ -29,7 +29,9 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     @Override
     public YukonPao deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         TreeNode node = parser.readValueAsTree();
-        // Catch the update case here.
+        if (node == null) {
+            throw new NotFoundException("request is not valid");
+        }
         String id = ServletUtils.getPathVariable("id");
         PaoType paoType;
 
@@ -44,7 +46,9 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     }
 
     /**
-     * Retrieves PaoType from type field provided JSON.
+     * Retrieves PaoType from type field provided in JSON.
+     * @throws TypeNotSupportedExcpetion when invalid PaoType is provided in JSON,
+     * this exception is handled by ApiExceptionHandler which will convert it into a global error.
      */
     private PaoType getPaoTypeFromJson(TreeNode node) {
         TreeNode type = node.get("type");
@@ -74,7 +78,10 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     }
 
     /**
-     * Retrieves valid Yukon pao from model factory.
+     * Retrieves valid Yukon PAO from model factory.
+     * @throws TypeNotSupportedExcpetion when a valid PaoType is provided in JSON but
+     * that PaoType is not present in PaoModelFactory, this exception is handled by
+     * ApiExceptionHandler which will convert it a into global error.
      */
     private YukonPao getYukonPaoFromModelFactory(PaoType paoType) {
         YukonPao pao = PaoModelFactory.getModel(paoType);
@@ -83,7 +90,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         } else {
             // throw exception for not supported paoType
             throw new TypeNotSupportedExcpetion("type is not valid.");
-           
+
         }
     }
 }
