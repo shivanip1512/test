@@ -372,7 +372,7 @@ public interface DeviceConfigurationDao {
     /**
      * Returns Device Config State for deviceId
      */
-    DeviceConfigState getDeviceConfigStatesByDeviceId(int deviceId);
+    DeviceConfigState getDeviceConfigStateByDeviceId(int deviceId);
 
     /**
      * This method is called on the start of WS to mark devices that are still in progress as failed

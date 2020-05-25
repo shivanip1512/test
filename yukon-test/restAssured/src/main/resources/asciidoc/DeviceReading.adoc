@@ -1,22 +1,10 @@
-:doctype: book
-:icons: font
-:source-highlighter: highlightjs
-:toc: left
-:toclevels: 4
-:sectlinks:
 
-*Request Properties* :
-
+=== Retrieve Device Reading
+*Request Properties* 
 include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/request-fields.adoc[]
-
-*Request JSON* :
-
+*Request JSON* 
 include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/http-request.adoc[]
-
-*Response Properties* :
-
+*Response Properties* 
 include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/response-fields.adoc[]
-
-*Response JSON* :
-
+*Response JSON* 
 include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/http-response.adoc[]

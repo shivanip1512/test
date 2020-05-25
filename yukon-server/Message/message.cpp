@@ -8,6 +8,12 @@ using std::endl;
 
 using boost::shared_ptr;
 
+std::size_t calculateMemoryConsumption( const CtiMessage * m )
+{
+    return  m->getFixedSize()
+        +   m->getVariableSize();
+}
+
 #define DEFAULT_SYSTEM_USER "(yukon system)"
 DEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
 
@@ -266,3 +272,10 @@ std::string CtiMessage::formatMessageName(const std::string &name)
     
     return formattedName;
 }
+
+std::size_t CtiMessage::getVariableSize() const
+{
+    return dynamic_sizeof( _usr )
+        +  dynamic_sizeof( _src );
+}
+

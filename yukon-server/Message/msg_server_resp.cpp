@@ -118,4 +118,10 @@ CtiServerResponseMsg& CtiServerResponseMsg::operator=(const CtiServerResponseMsg
    return *this;
 }
 
+std::size_t CtiServerResponseMsg::getVariableSize() const
+{
+    return  Inherited::getVariableSize()
+        +   dynamic_sizeof( _message )
+        +   calculateMemoryConsumption( _payload );
+}
 

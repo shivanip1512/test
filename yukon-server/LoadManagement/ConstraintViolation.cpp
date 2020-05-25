@@ -2,6 +2,7 @@
 
 #include "ConstraintViolation.h"
 #include "lmid.h"
+#include "utility.h"
 
 #include <algorithm>
 
@@ -123,3 +124,24 @@ bool ConstraintViolation::operator==(const ConstraintViolation &rhs) const
              equal(  _stringParams.begin(),   _stringParams.end(),   rhs.getStringParams().begin()) &&
              equal(_datetimeParams.begin(), _datetimeParams.end(), rhs.getDateTimeParams().begin()) );
 }
+
+std::size_t ConstraintViolation::getMemoryConsumption() const
+{
+    // the fixed memory size
+    std::size_t sz = sizeof( *this );
+
+    // the allocated memory for the array contents
+    sz  +=  _doubleParams.capacity() * sizeof( double )
+        +   _integerParams.capacity() * sizeof( int )
+        +   _stringParams.capacity() * sizeof( std::string )
+        +   _datetimeParams.capacity() * sizeof( CtiTime );
+
+    // the allocated contents for any strings
+    for ( const auto & str : _stringParams )
+    {
+        sz += dynamic_sizeof( str );
+    }
+
+    return  sz;
+}
+

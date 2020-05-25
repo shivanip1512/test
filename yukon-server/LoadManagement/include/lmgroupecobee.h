@@ -38,6 +38,7 @@ public:
                               bool mandatory,
                               long temperatureOffset ) override;
 
+    std::size_t getFixedSize() const override   { return sizeof( *this ); }
 
     //Unused
     CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const override;

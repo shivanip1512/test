@@ -71,6 +71,11 @@ DECLARE_COLLECTABLE( CtiLMProgramDirectGear );
 
     virtual CtiLMProgramDirectGear* replicate() const;
 
+   // This is the 'object representation' size
+   virtual std::size_t getFixedSize() const     { return sizeof( *this ); }
+   // This is any additional data that is allocated from free store memory
+   virtual std::size_t getVariableSize() const;
+
     /* Static Members */
 
     //Possible control methods
@@ -173,4 +178,6 @@ inline bool operator!=( const CtiLMProgramDirectGear & lhs, const CtiLMProgramDi
 {
     return ! ( lhs == rhs );
 }
+
+std::size_t calculateMemoryConsumption( const CtiLMProgramDirectGear * g );
 

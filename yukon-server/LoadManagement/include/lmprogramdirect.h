@@ -239,4 +239,6 @@ private:
     void setPendingGroupsInactive();
 
     void restore(Cti::RowReader &rdr);
+
+    std::size_t getMemoryConsumption() const override;
 };

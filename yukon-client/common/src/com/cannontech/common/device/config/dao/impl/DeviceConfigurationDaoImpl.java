@@ -121,7 +121,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private final YukonRowMapper<DeviceConfigState> deviceConfigStateRowMapper = rs -> new DeviceConfigState(
             rs.getInt("PaObjectId"), rs.getEnum("CurrentState", ConfigState.class),
             rs.getEnum("LastAction", LastAction.class), rs.getEnum("LastActionStatus", LastActionStatus.class),
-            rs.getInstant("LastActionStart"), rs.getInstant("LastActionEnd"), rs.getInt("CommandRequestExecId"));
+            rs.getInstant("LastActionStart"), rs.getInstant("LastActionEnd"), rs.getNullableInt("CommandRequestExecId"));
     
     
     @Override
@@ -1330,7 +1330,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
     
     @Override
-    public DeviceConfigState getDeviceConfigStatesByDeviceId(int deviceId) {
+    public DeviceConfigState getDeviceConfigStateByDeviceId(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaObjectId, CurrentState, LastAction, LastActionStatus, LastActionStart, LastActionEnd, CommandRequestExecId");
         sql.append("FROM DeviceConfigState");

@@ -36,9 +36,6 @@ import com.google.common.collect.ImmutableSet;
  */
 public enum ItronDataEventType {
     //Event where the value and attribute are known and defined. decode() is not used for these enums.
-    EVENT_STARTED(0x000E, BuiltInAttribute.CONTROL_STATUS, 0, 4, 1),
-    EVENT_STOPPED(0x000F, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
-    EVENT_CANCELED(0x0010, BuiltInAttribute.CONTROL_STATUS, 0, 4, 0),
     MEMORY_MAP_LOST(0x8081, BuiltInAttribute.MEMORY_MAP_LOST, 0, 0, 1),
     CONFIGURATION_UPDATED_HASH(0x808A, BuiltInAttribute.CONFIGURATION_UPDATED_HASH, 0, 0, 1),
     
@@ -94,9 +91,6 @@ public enum ItronDataEventType {
                                        MAX_VOLTAGE,
                                        MAX_VOLTAGE_TIME);
         controlEventTypes = ImmutableSet.of(
-                                            EVENT_STARTED,
-                                            EVENT_STOPPED,
-                                            EVENT_CANCELED,
                                             EVENT_SUPERSEDED);
     }
     
@@ -170,8 +164,7 @@ public enum ItronDataEventType {
      * @throws IllegalArgumentException if no appropriate attribute can be found.
      */
     public BuiltInAttribute getAttribute(byte[] byteArray) throws IllegalArgumentException {
-        // Relay number comes back 0-indexed, but relay-related attributes are 1-indexed, so increment.
-        long relayNumber = decode(byteArray) + 1;
+        long relayNumber = decode(byteArray);
         switch (this) {
         case LOAD_ON:
         case LOAD_OFF:
