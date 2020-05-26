@@ -39,7 +39,7 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
         validateScanIntervals(rtuDnp, errors);
         if (dbCache.getAllPaosMap().get(rtuDnp.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
             YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", rtuDnp.getIpAddress());
-            YukonValidationUtils.validatePort(errors, "port", rtuDnp.getPort());
+            YukonValidationUtils.validatePort(errors, "port", rtuDnp.getPort(), "yukon.web.error.port.required");
         }
        
     }
