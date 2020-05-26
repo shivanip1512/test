@@ -10,6 +10,39 @@ yukon.widget.commChannel.info = (function () {
  
     'use strict';
  
+    /**
+     * Shows physical port field based on the drop down value selected
+     */
+    var updatePhysicalPort = function (event) {
+        if ($(".js-physical-port").is(":visible")) {
+            var physicalPortError = $("#physicalPortErrors").val();
+            if (physicalPortError) {
+                var otherPhysicalPort = $("#otherPhysicalPort").val();
+                $(".js-physical-port").val(otherPhysicalPort);
+                $('.js-user-physical-port-value').removeClass('dn');
+                $('.js-physical-port-row').find('br').eq(0).remove();
+                $('.js-physical-port-row').find('span:first').remove();
+            } else {
+                var physicalPort = $('.js-physical-port option:selected').val();
+                var phyicalPortField = physicalPort === 'Other';
+                $('.js-user-physical-port-value').toggleClass('dn', !phyicalPortField);
+                $('.js-user-physical-port-value').val("");
+                var userValue = $('.js-user-physical-port-value').val();
+                $("input[name='physicalPort']").val(userValue);
+            }
+        } else {
+            var dialog = $(event.target),
+                commChannelForm = dialog.find('#commChannel-info-form'),
+                physicalPortElement = commChannelForm.find('.js-user-physical-port-value').val(),
+                isPhysicalPortOther = $("#otherPhysicalPort").val();
+            if (!$.isEmptyObject(isPhysicalPortOther)) {
+                var otherPhysicalPort = $("#otherPhysicalPort").val();
+                $(".js-physical-port").val(otherPhysicalPort);
+                $('.js-user-physical-port-value').removeClass('dn');
+            }
+        }
+    };
+
     var
     _initialized = false,
  
@@ -19,6 +52,18 @@ yukon.widget.commChannel.info = (function () {
         init: function () {
  
             if (_initialized) return;
+
+            $(document).on('change', '.js-physical-port', function (event) {
+                var physicalPortError = $("#physicalPortErrors").val();
+                if (physicalPortError) {
+                    $("span[id='physicalPort.errors']").remove();
+                    $('.js-physical-port').removeClass("error");
+                    $('.js-user-physical-port-value').removeClass("error");
+                    $("#physicalPortErrors").val("");
+                }
+                updatePhysicalPort(event);
+            });
+
             $(document).on("yukon:assets:commChannel:save", function(event) {
                 var dialog = $(event.target),
                     form = dialog.find('#commChannel-info-form'),
@@ -41,6 +86,7 @@ yukon.widget.commChannel.info = (function () {
                     }).fail(function (xhr, status, error){
                         popup.html(xhr.responseText);
                         yukon.ui.initContent(popup);
+                        updatePhysicalPort(event);
                         yukon.ui.highlightErrorTabs();
                         yukon.ui.unblockPage();
                     });
@@ -70,6 +116,10 @@ yukon.widget.commChannel.info = (function () {
                     $('.js-encryptionKey').removeClass("error");
                     $("span[id='keyInHex.errors']").remove();
                 }
+            });
+
+            $(document).on("yukon:assets:commChannel:load", function(event) {
+                updatePhysicalPort(event);
             });
 
             _initialized = true;

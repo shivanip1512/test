@@ -43,6 +43,26 @@
                                     <tags:input path="portNumber"/>
                                 </tags:nameValue2>
                             </c:if>
+                            <c:if test="${isPhysicalPortSupported}">
+                                <tags:nameValue2 nameKey=".physicalPort" rowClass="js-physical-port-row">
+                                    <cti:displayForPageEditModes modes="VIEW">
+                                        ${commChannel.physicalPort}
+                                    </cti:displayForPageEditModes>
+                                    <cti:displayForPageEditModes modes="EDIT">
+                                        <c:set var="physicalPortError">
+                                            <form:errors path="physicalPort"/>
+                                        </c:set>
+                                        <c:if test="${not empty physicalPortError}">
+                                            <input type=hidden id="physicalPortErrors" value="true">
+                                        </c:if>
+                                        <c:if var="isUserDefined" test="${isPhyicalPortUserDefined || physicalPortError}">
+                                            <input type=hidden id="otherPhysicalPort" value="${otherPhysicalPort}">
+                                        </c:if>
+                                        <tags:selectWithItems path="physicalPort" items="${physicalPortList}" inputClass="js-physical-port"/>
+                                        <tags:input path="physicalPort" maxlength="8" inputClass="js-user-physical-port-value dn"/>
+                                    </cti:displayForPageEditModes>
+                                </tags:nameValue2>
+                            </c:if>
                             <tags:nameValue2 nameKey=".baudRate">
                                 <tags:selectWithItems items="${baudRateList}" path="baudRate"/>
                             </tags:nameValue2>
@@ -183,6 +203,7 @@
              id="js-edit-comm-channel-popup" 
              data-title="${editPopupTitle}" 
              data-dialog
+             data-load-event="yukon:assets:commChannel:load"
              data-ok-text="${saveText}" 
              data-width="550"
              data-height="450"

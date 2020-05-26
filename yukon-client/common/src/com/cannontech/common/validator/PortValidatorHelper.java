@@ -101,7 +101,9 @@ public class PortValidatorHelper {
      * Validate Physical Port
      */
     public static void validatePhysicalPort(Errors errors, String physicalPort) {
-        YukonValidationUtils.checkIsBlank(errors, "physicalPort", physicalPort, false);
+        if (!org.springframework.util.StringUtils.hasText(physicalPort)) {
+            errors.rejectValue("physicalPort", "yukon.web.error.fieldrequired", new Object[] { "Physical Port" }, "");
+        }
         if (!errors.hasFieldErrors("physicalPort")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", physicalPort, 8);
         }

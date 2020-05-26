@@ -35,6 +35,7 @@
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.ipAddress">IP Address</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.portNumber">Port Number</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.edit">Edit {0}</entry>
+    <entry key="yukon.web.modules.operator.commChannelInfoWidget.physicalPort">Physical Port</entry>
     
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_300">300</entry>
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_1200">1200</entry>
@@ -57,4 +58,17 @@
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.saveError">{0} could not be saved. Error: {1}</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.retrieveError">Comm Channel could not be retrieved. Error: {0}</entry>
     <entry key="yukon.web.modules.operator.commChannelInfoWidget.save.success">{0} saved successfully.</entry>
+    
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_1">com1</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_2">com2</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_3">com3</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_4">com4</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_5">com5</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_6">com6</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_7">com7</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_8">com8</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_50">com50</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_89">com89</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_90">com90</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.OTHER">Other</entry>
 </properties>
