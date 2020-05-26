@@ -181,10 +181,10 @@ void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::st
 }
 
 
-bool isUploading(Devices::RfnDevice& rfnDevice, const std::string& guid)
+bool isUploading(const Devices::RfnDevice& rfnDevice, const std::string& guid)
 {
     return rfnDevice.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress)
-        && MeterProgramming::gMeterProgrammingManager->isUploading(rfnDevice.getRfnIdentifier(), guid);
+        && MeterProgramming::gMeterProgrammingManager->isAssigned(rfnDevice.getRfnIdentifier(), guid);
 }
 
 
@@ -222,16 +222,20 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
-                CTILOG_WARN(dout, "Meter program request received for idle device " << rfnIdentifier);
+                CTILOG_WARN(dout, "Meter program request received, but device is not uploading" << FormattedList::of(
+                    "GUID", guid,
+                    "RfnIdentifier", rfnIdentifier));
 
                 return;
             }
 
-            auto program = MeterProgramming::gMeterProgrammingManager->getProgram(guid);
+            const auto program = MeterProgramming::gMeterProgrammingManager->getProgram(guid);
 
-            if( program.empty() )
+            if( const auto error = program.error() )
             {
-                CTILOG_WARN(dout, "Meter program request had no program for device " << rfnIdentifier);
+                CTILOG_WARN(dout, CtiError::GetErrorString(error) << FormattedList::of(
+                    "GUID", guid,
+                    "RfnIdentifier", rfnIdentifier));
 
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
@@ -241,7 +245,7 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
             Block block = message.block
                             .value_or(Block { 0, true, E2EDT_DEFAULT_BLOCK_SIZE });
 
-            if( program.size() < block.start() )
+            if( program->size() < block.start() )
             {
                 sendE2eDataAck(message.id, AckType::BadRequest, asid, rfnIdentifier);
 
@@ -250,20 +254,20 @@ void RfnRequestManager::handleNodeOriginated(const CtiTime Now, RfnIdentifier rf
                 return;
             }
 
-            block.more = program.size() > block.end();
+            block.more = program->size() > block.end();
 
-            auto begin = program.begin() + block.start();
-            auto end = block.more
-                ? program.begin() + block.end()
-                : program.end();
-            auto totalSent = block.more
+            const auto begin = program->begin() + block.start();
+            const auto end = block.more
+                ? program->begin() + block.end()
+                : program->end();
+            const auto totalSent = block.more
                 ? block.end()
-                : program.size();
+                : program->size();
 
             CTILOG_INFO(dout, "Sending meter programming block reply: "
                 << FormattedList::of("Device", rfnIdentifier,
                     "GUID", guid,
-                    "Program size", program.size(),
+                    "Program size", program->size(),
                     "Block number", block.num,
                     "Block size", block.blockSize.getSize(),
                     "Last block", ! block.more));

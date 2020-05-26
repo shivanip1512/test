@@ -5,6 +5,8 @@
 #include "cmd_rfn_MeterProgramming.h"
 #include "MeterProgramStatusArchiveRequestMsg.h"
 
+#include "error.h"
+
 using namespace Cti::Messaging::Pil;
 
 namespace Cti::Devices {
@@ -65,8 +67,13 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg* pReq, CtiComma
 
             return ClientErrors::None;
         }
+        else
+        {
+            CTILOG_ERROR(dout, CtiError::GetErrorString(programDescriptor.error()) << FormattedList::of(
+                "RfnIdentifier", getRfnIdentifier()));
 
-        return ClientErrors::NoMeterProgramAssigned;
+            return programDescriptor.error();
+        }
     }
 
     return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
