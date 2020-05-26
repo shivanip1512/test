@@ -731,7 +731,7 @@
     <entry key="yukon.web.modules.tools.configs.summary.lastAction">Last Action</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionStatus">Last Action Status</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastVerificationStatus">Last Verification Status</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.inSync">In Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.currentState">Device Status</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionStart">Last Action Start</entry>
     <entry key="yukon.web.modules.tools.configs.summary.lastActionEnd">Last Action End</entry>
     <entry key="yukon.web.modules.tools.configs.summary.filteredResults">Filtered Results:</entry>
@@ -764,25 +764,23 @@
     <entry key="yukon.web.modules.tools.configs.summary.verify">Verify</entry>
     
     <!-- Statuses -->
-    <entry key="yukon.web.modules.tools.configs.summary.status.IN_SYNC">In Sync</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.status.IN_PROGRESS">In Progress</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.status.NEEDS_UPLOAD">Needs Upload</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.status.NEEDS_VALIDATION">Needs Validation</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNKNOWN">Unassigned</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNASSIGNED">Unassigned</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.IN_SYNC">In Sync</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.OUT_OF_SYNC">Needs Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNREAD">Needs Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.configState.UNCONFIRMED">Needs Validation</entry>
     
     <!-- Action Types -->
-    <entry key="yukon.web.modules.tools.configs.summary.actionType.READ">Read</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.actionType.SEND">Send</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.actionType.VERIFY">Verify</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.READ">Validate</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.SEND">Upload</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.VERIFY">Change</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.ASSIGN">Change</entry>
+    <entry key="yukon.web.modules.tools.configs.summary.actionType.UNASSIGN">Remove</entry>
     <!-- Status Types -->
     <entry key="yukon.web.modules.tools.configs.summary.statusType.SUCCESS">Success</entry>
     <entry key="yukon.web.modules.tools.configs.summary.statusType.FAILURE">Failure</entry>
     <entry key="yukon.web.modules.tools.configs.summary.statusType.IN_PROGRESS">In Progress</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.statusType.NA">N/A</entry>
-    <!-- Status Types -->
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.IN_SYNC">In Sync</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.OUT_OF_SYNC">Out Of Sync</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.UNVERIFIED">Unverified</entry>
-    <entry key="yukon.web.modules.tools.configs.summary.syncType.NA">N/A</entry>
     
     <entry key="yukon.web.modules.tools.configs.summary.error">Error</entry>
     <entry key="yukon.web.modules.tools.configs.summary.description">Description</entry>

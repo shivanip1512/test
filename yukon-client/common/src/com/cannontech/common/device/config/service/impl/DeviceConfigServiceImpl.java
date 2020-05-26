@@ -219,12 +219,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
 
         List<SimpleDevice> devices = successGroup.getDevices().getDeviceList();
         log.info("Updating status for devices:{} collection action cache key:{}", devices.size(), result.getCacheKey());
-        if (result.getAction() == CollectionAction.ASSIGN_CONFIG) {
-            updateConfigStateForAssignAndUnassign(devices, LastAction.ASSIGN, result.getStartTime(), result.getStopTime(),
-                    result.getContext().getYukonUser());
-            updateConfigStateForAssignAndUnassign(devices, LastAction.UNASSIGN, result.getStartTime(), result.getStopTime(),
-                    result.getContext().getYukonUser());
-        }
+        updateConfigStateForAssignAndUnassign(devices,
+                result.getAction() == CollectionAction.ASSIGN_CONFIG ? LastAction.ASSIGN : LastAction.UNASSIGN,
+                result.getStartTime(), result.getStopTime(),
+                result.getContext().getYukonUser());
     }
 
     @Override

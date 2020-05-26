@@ -1240,6 +1240,22 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return verifiableConfigurations;
     }
     
+    @Override
+    public List<LightDeviceConfiguration> getAllConfigurationsContainingMeters() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT DC.DeviceConfigurationId, DC.Name, DC.Description");
+        sql.append("FROM DeviceConfiguration DC");
+        sql.append("   JOIN DeviceConfigurationDeviceMap DCDM ON DCDM.DeviceConfigurationId = DC.DeviceConfigurationID");
+        sql.append("   JOIN DeviceConfigState DCS ON DCS.PAObjectID = DCDM.DeviceID");
+        sql.append("ORDER BY DC.Name");
+        return jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            int configurationId = rs.getInt("DeviceConfigurationId");
+            String name = rs.getString("Name");
+            String description = rs.getString("Description");
+            return new LightDeviceConfiguration(configurationId, name, description);
+        });
+    }
+
     private Multimap<LightDeviceConfiguration, String> getDeviceConfigToCategoryMap(SqlStatementBuilder sql){
         Multimap<LightDeviceConfiguration, String> deviceConfigToCategoryMap = ArrayListMultimap.create();
 

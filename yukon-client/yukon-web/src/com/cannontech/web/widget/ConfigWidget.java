@@ -160,21 +160,21 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
             // still below.
             notConfigured = true;
         } else if (configState.getStatus() == LastActionStatus.IN_PROGRESS) {
-            statusText = accessor.getMessage(summaryKey + "IN_PROGRESS");
+            statusText = accessor.getMessage(configState.getStatus());
             isInProgress = true;
             // disable buttons
             // display status "In Progress" -  we can end up in this state for a short while
         } else if (configState.getState() == ConfigState.IN_SYNC) {
             // display status "in sync"
-            statusText = accessor.getMessage(summaryKey + "IN_SYNC");
+            statusText = accessor.getMessage(configState.getState());
             isInSync = true;
         } else if (configState.getState() == ConfigState.OUT_OF_SYNC || configState.getState() == ConfigState.UNREAD) {
             // display status "needs upload"
-            statusText = accessor.getMessage(summaryKey + "NEEDS_UPLOAD");
+            statusText = accessor.getMessage(configState.getState());
             isOutOfSync = true;
         } else if (configState.getState() == ConfigState.UNCONFIRMED) {
             // display status "needs validation"
-            statusText = accessor.getMessage(summaryKey + "NEEDS_VALIDATION");
+            statusText = accessor.getMessage(configState.getState());
         }
         
         jsonResponse.put("statusText", statusText);

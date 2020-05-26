@@ -1,5 +1,7 @@
 package com.cannontech.web.tools.device.config.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction;
@@ -41,5 +43,11 @@ public class DeviceConfigActionHistoryDetail {
 
     public void setActionEnd(Instant actionEnd) {
         this.actionEnd = actionEnd;
+    }
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                + System.getProperty("line.separator");
     }
 }

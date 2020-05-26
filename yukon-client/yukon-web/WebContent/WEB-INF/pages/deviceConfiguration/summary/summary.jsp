@@ -16,16 +16,16 @@
                     <tags:nameValue2 nameKey=".configurations">
                         <form:select multiple="true" path="configurationIds" size="6" style="min-width:200px;">
                             <form:option value="-999">Unassigned</form:option>
-                            <form:option value="-998">Assigned to Any</form:option>
+                            <form:option value="-998">All Configurations</form:option>
                             <c:forEach var="configuration" items="${configurations}">
                                 <form:option value="${configuration.configurationId}">${configuration.name}</form:option>
                             </c:forEach>
                         </form:select>
-                        <select name="status">
-                            <option value="ALL">All Statuses</option>
-                            <option value="IN_PROGRESS">In Progress</option>
-                            <option value="NEEDS_UPLOAD">Needs Upload</option>
-                            <option value="NEEDS_VALIDATION">Needs Validation</option>
+                        <select name="selection">
+                            <option value="ALL">ALL</option>
+                            <option value="IN_PROGRESS">IN_PROGRESS</option>
+                            <option value="NEEDS_UPLOAD">NEEDS_UPLOAD</option>
+                            <option value="NEEDS_VALIDATION">NEEDS_VALIDATION</option>
                         </select>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".deviceGroups">
@@ -39,54 +39,7 @@
                 </tags:nameValueContainer2>
                 <br/>
                 
-                <div>
-                    <div class="column one tac">
-                        <div><i:inline key=".lastAction"/></div>
-                         <div class="button-group dib">
-                            <c:forEach var="lastAction" items="${lastActionOptions}">
-                                <c:set var="checked" value="${false}"/>
-                                <c:forEach var="action" items="${filter.actions}">
-                                    <c:if test="${action eq lastAction}">
-                                        <c:set var="checked" value="${true}"/>
-                                    </c:if>
-                                </c:forEach>
-                                <tags:check name="actions" key=".actionType.${lastAction}" classes="M0 no-color" value="${lastAction}" checked="${checked}"></tags:check>
-                            </c:forEach>
-                        </div>
-                    </div>
-                    <div class="column two tac">
-                        <div><i:inline key=".lastActionStatus"/></div>
-                        <div class="button-group dib">
-                            <c:forEach var="status" items="${statusOptions}">
-                                <c:if test="${status != 'NA'}">
-                                    <c:set var="checked" value="${false}"/>
-                                    <c:forEach var="lastStatus" items="${filter.statuses}">
-                                        <c:if test="${lastStatus eq status}">
-                                            <c:set var="checked" value="${true}"/>
-                                        </c:if>
-                                    </c:forEach>
-                                    <tags:check name="statuses" key=".statusType.${status}" classes="M0 no-color" value="${status}" checked="${checked}"></tags:check>
-                                </c:if>
-                            </c:forEach>
-                        </div> 
-                    </div>
-                    <div class="column three tac">
-                        <div><i:inline key=".lastVerificationStatus"/></div>
-                        <div class="button-group dib">
-                            <c:forEach var="syncOption" items="${syncOptions}">
-                                <c:if test="${syncOption != 'NA'}">
-                                    <c:set var="checked" value="${false}"/>
-                                    <c:forEach var="sync" items="${filter.inSync}">
-                                        <c:if test="${sync eq syncOption}">
-                                            <c:set var="checked" value="${true}"/>
-                                        </c:if>
-                                    </c:forEach>
-                                    <tags:check name="inSync" key=".syncType.${syncOption}" classes="M0 no-color" value="${syncOption}" checked="${checked}"></tags:check>
-                                </c:if>
-                            </c:forEach>
-                        </div>
-                    </div>
-                </div><br/>
+                
             
                 <div class="action-area stacked">
                     <cti:button nameKey="filter" classes="primary action" type="submit" busy="true"/>
@@ -103,15 +56,6 @@
         </c:forEach>
         <c:forEach var="subGroup" items="${filter.groups}">
             <cti:param name="deviceSubGroups" value="${subGroup.fullName}"/>
-        </c:forEach>
-        <c:forEach var="action" items="${filter.actions}">
-            <cti:param name="actions" value="${action}"/>
-        </c:forEach>
-        <c:forEach var="sync" items="${filter.inSync}">
-            <cti:param name="inSync" value="${sync}"/>
-        </c:forEach>
-        <c:forEach var="status" items="${filter.statuses}">
-            <cti:param name="statuses" value="${status}"/>
         </c:forEach>
     </cti:url>
     <div data-url="${dataUrl}" data-static>

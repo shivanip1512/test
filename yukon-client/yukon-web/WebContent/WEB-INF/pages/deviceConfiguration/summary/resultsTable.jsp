@@ -33,15 +33,6 @@
                 <c:forEach var="subGroup" items="${filter.groups}">
                     <cti:param name="deviceSubGroups" value="${subGroup.fullName}"/>
                 </c:forEach>
-                <c:forEach var="action" items="${filter.actions}">
-                    <cti:param name="actions" value="${action}"/>
-                </c:forEach>
-                <c:forEach var="sync" items="${filter.inSync}">
-                    <cti:param name="inSync" value="${sync}"/>
-                </c:forEach>
-                <c:forEach var="status" items="${filter.statuses}">
-                    <cti:param name="statuses" value="${status}"/>
-                </c:forEach>
             </cti:url>
             
             <table class="compact-results-table row-highlighting has-actions">
@@ -52,7 +43,7 @@
                         <tags:sort column="${deviceConfiguration}" />                 
                         <tags:sort column="${lastAction}" />                  
                         <tags:sort column="${lastActionStatus}" />                  
-                        <tags:sort column="${inSync}" />                  
+                        <tags:sort column="${currentState}" />                  
                         <tags:sort column="${lastActionStart}" />                 
                         <tags:sort column="${lastActionEnd}" />                  
                         <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
@@ -66,14 +57,29 @@
                             <td><cti:paoDetailUrl yukonPao="${detail.device.paoIdentifier}" newTab="true">${fn:escapeXml(detail.device.name)}</cti:paoDetailUrl></td>
                             <td class="wsnw">${detail.device.paoIdentifier.paoType.paoTypeName}</td>
                             <cti:url var="configUrl" value="/deviceConfiguration/config/view?configId=${detail.deviceConfig.configurationId}"/>
-                            <td><a href="${configUrl}">${detail.deviceConfig.name}</a></td>
+                         
+                            
+                             <c:if test="${detail.deviceConfig != null}">
+                                <td><a href="${configUrl}">${detail.deviceConfig.name}</a></td>
+                             </c:if>
+                            <c:if test="${detail.deviceConfig == null}">
+                                <td>N/A</td>
+                            </c:if>
+                            
                             <c:if test="${detail.action != null}">
                                 <td><i:inline key=".actionType.${detail.action}"/></td>
                             </c:if>
                             <c:if test="${detail.action == null}">
-                                <td></td>
+                                <td>N/A</td>
                             </c:if>
                             <td>
+                            
+                            <c:choose>
+									<c:when test="${detail.status == null}">
+                                        N/A
+                                    </c:when>
+									<c:otherwise>
+									
                                  <c:choose>
                                     <c:when test="${detail.status == 'FAILURE'}">
                                         <div class="dn js-failure-${deviceId}" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key=".failure"/>" 
@@ -84,19 +90,34 @@
                                         <i:inline key=".statusType.${detail.status}"/>
                                     </c:otherwise>
                                 </c:choose>
+                                	</c:otherwise>
+								</c:choose>
                             </td>
                             <td>
-                                <c:choose>
-                                    <c:when test="${detail.inSync == 'OUT_OF_SYNC'  && detail.status != 'IN_PROGRESS'}">
-                                        <div class="dn js-outofsync-${deviceId}" data-dialog data-cancel-omit="true" data-title="<cti:msg2 key=".outOfSync"/>" 
-                                        data-width="600" data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>"></div>
-                                        <a href="javascript:void(0);" data-popup=".js-outofsync-${deviceId}" ><i:inline key=".syncType.${detail.inSync}"/></a>
+                            	<c:choose>
+									<c:when test="${detail.state == null}">
+                                        N/A
                                     </c:when>
-                                    <c:otherwise>
-                                        <i:inline key=".syncType.${detail.inSync}"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
+									<c:otherwise>
+										<c:choose>
+											<c:when
+												test="${detail.state == 'OUT_OF_SYNC' && detail.status != 'IN_PROGRESS'}">
+												<div class="dn js-outofsync-${deviceId}" data-dialog
+													data-cancel-omit="true"
+													data-title="<cti:msg2 key=".outOfSync"/>" data-width="600"
+													data-url="<cti:url value="/deviceConfiguration/summary/${deviceId}/outOfSync"/>"></div>
+												<a href="javascript:void(0);"
+													data-popup=".js-outofsync-${deviceId}"><i:inline
+														key="${detail.state.formatKey}" /></a>
+											</c:when>
+											<c:otherwise>
+												<i:inline key="${detail.state.formatKey}" />
+											</c:otherwise>
+										</c:choose>
+									</c:otherwise>
+								</c:choose>
+
+							</td>
                             <td><cti:formatDate type="BOTH" value="${detail.actionStart}" nullText="N/A"/></td>
                             <td><cti:formatDate type="BOTH" value="${detail.actionEnd}" nullText="N/A"/></td>
                             <td>
