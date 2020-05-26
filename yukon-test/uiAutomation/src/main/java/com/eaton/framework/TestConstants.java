@@ -4,6 +4,7 @@ public final class TestConstants {
     
     public static final class TestNgGroups {
         public static final String SMOKE_TESTS = "Smoke_Tests";
+        public static final String GENERAL_TESTS = "General_Tests";
     }
     
     public static final String DATE_FORMAT = "MMddyyyyHHmmss";
