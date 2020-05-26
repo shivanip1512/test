@@ -170,7 +170,7 @@ yukon.da.capbank = (function () {
             
             if ($("#CapBank\\.bankSizeCustom\\.errors").exists()) {
                 $(".js-custom-size-checkbox-container").insertBefore($("#CapBank\\.bankSizeCustom\\.errors").prev("br"));
-                $(".js-custom-size-checkbox-container").addClass("ML15")
+                $(".js-custom-size-checkbox-container").addClass("ML15");
             }
             
             initialized = true;

@@ -172,21 +172,17 @@
                                         items="${opMethods}" itemValue="dbString"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".bankSize">
-										<div class="dib">
-											<div class="dib">
-												<tags:selectWithItems id="bankSize" path="CapBank.bankSize"
-													items="${bankSizes}" itemValue="displayValue" />
-												<span> <tags:input units="kVar" id="customBankSize"
-														path="CapBank.bankSizeCustom" inputClass="dn" size="6" />
-												</span>
-											</div>
-											<div class="dib js-custom-size-checkbox-container">
-												<i:inline key=".custom" />
-												<tags:checkbox path="CapBank.customBankSize"
-													id="customSizeCheckbox" styleClass="js-custom-bankSize vam" />
-											</div>
-										</div>
-									</tags:nameValue2>
+                                        <div class="dib">
+                                            <div class="dib">
+                                                <tags:selectWithItems id="bankSize" path="CapBank.bankSize" items="${bankSizes}" itemValue="displayValue" />
+                                                    <span> <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" /> </span>
+                                            </div>
+                                            <div class="dib js-custom-size-checkbox-container">
+                                                <i:inline key=".custom" />
+                                                <tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize vam" />
+                                            </div>
+                                        </div>
+                                    </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".recloseDelay">
                                         <tags:intervalDropdown path="CapBank.recloseDelay"
                                             intervals="${timeIntervals}"
