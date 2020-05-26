@@ -6,6 +6,7 @@ import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.Con
 import static com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState.UNREAD;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
 import com.cannontech.common.model.Direction;
@@ -19,7 +20,7 @@ public interface DeviceConfigSummaryDao {
     
     public enum StateSelection {
         ALL(List.of(IN_SYNC, OUT_OF_SYNC, UNCONFIRMED, UNREAD)),
-        IN_PROGRESS(null),
+        IN_PROGRESS(new ArrayList<>()),
         NEEDS_UPLOAD(List.of(OUT_OF_SYNC, UNREAD)),
         NEEDS_VALIDATION(List.of(UNCONFIRMED));
 
