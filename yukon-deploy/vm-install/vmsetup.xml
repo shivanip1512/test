@@ -21,11 +21,11 @@
     <property name="guest_username" value="${env.VM_GUEST_USERNAME}" if:set="env.VM_GUEST_USERNAME"/>
     <property name="guest_username" value="Administrator"/> <!-- This is set if not done above -->
     <property name="guest_userid" value="${env.VM_GUEST_USERID}" if:set="env.VM_GUEST_USERID"/>
-    <property name="guest_userid" value="${vm_host_prefix}{version.major}{version.minor}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
+    <property name="guest_userid" value="${vm_host_prefix}${version.major}${version.minor}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
     <property name="guest_password" value="${env.VM_GUEST_PASSWORD}" if:set="env.VM_GUEST_PASSWORD"/>
     <property name="guest_password" value="cti123" if:set="env.VM_GUEST_PASSWORD"/>
+    <property name="guest_address" value="${vm_host_prefix}${version.major}${version.minor}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
     <property name="guest_address" value="${env.VM_GUEST_ADDRESS}" /> 
-    <property name="guest_address" value="${vm_host_prefix}{version.major}{version.minor}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
     <property name="config_file_path" value="${env.VM_CONFIG_FILE_PATH}" />
     
     <property name="hudson.home" value="${HUDSON_HOME}"/>
