@@ -53,7 +53,7 @@ yukon.assets.rtu = (function() {
                 }
             });
             
-            if ($('#tcp-comm-ports').length) {
+            if ($('#tcp-comm-ports').exists()) {
             	tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
             }
            
