@@ -77,18 +77,18 @@ yukon.da.capbank = (function () {
             bankSize.val(600);
             bankSize.addClass("dn");
             customBankSize.removeClass("dn");
-            if(customBankSizeErrors.exists()) {
-                customBankSizeErrors.removeClass("dn");
-            }
+			if (customBankSizeErrors.exists()) {
+				customBankSizeErrors.removeClass("dn");
+			}
             if (initialized) 
                 customBankSize.val(commValue);
         } else {
             bankSize.removeClass("dn");
             customBankSize.val(null);
             customBankSize.addClass("dn");
-            if(customBankSizeErrors.exists()) {
-                customBankSizeErrors.addClass("dn");
-            }
+			if (customBankSizeErrors.exists()) {
+				customBankSizeErrors.addClass("dn");
+			}
             if (initialized) 
                 bankSize.val(600);
         }
