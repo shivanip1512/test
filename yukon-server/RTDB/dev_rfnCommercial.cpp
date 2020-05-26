@@ -57,23 +57,42 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg* pReq, CtiComma
     }
     else if( containsString(parse.getCommandStr(), meterProgrammingCmd) )
     {
-        if( auto programDescriptor = MeterProgramming::gMeterProgrammingManager->describeAssignedProgram(getRfnIdentifier()) )
+        const auto guid = MeterProgramming::gMeterProgrammingManager->getAssignedGuid(getRfnIdentifier());
+        if( guid.empty() )
         {
-            // when we have a ProgrammingProgress entry we also have a ProgrammingConfigID entry
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
-            setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, programDescriptor->guid);
+            const auto error = ClientErrors::NoMeterProgramAssigned;
 
-            rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>(programDescriptor->guid, programDescriptor->length));
-
-            return ClientErrors::None;
-        }
-        else
-        {
-            CTILOG_ERROR(dout, CtiError::GetErrorString(programDescriptor.error()) << FormattedList::of(
+            CTILOG_ERROR(dout, CtiError::GetErrorString(error) << FormattedList::of(
                 "RfnIdentifier", getRfnIdentifier()));
 
-            return programDescriptor.error();
+            //  No assignment, can't send a MeterProgramStatusUpdate
+            
+            return error;
         }
+        
+        const auto programSize = MeterProgramming::gMeterProgrammingManager->getProgramSize(guid);
+        if( ! programSize )
+        {
+            CTILOG_ERROR(dout, CtiError::GetErrorString(programSize.error()) << FormattedList::of(
+                "RfnIdentifier", getRfnIdentifier()));
+
+            sendMeterProgramStatusUpdate({
+                    getRfnIdentifier(),
+                    guid,
+                    ProgrammingStatus::Failed,
+                    programSize.error(),
+                    std::chrono::system_clock::now() });
+
+            return programSize.error();
+        }
+
+        // when we have a ProgrammingProgress entry we also have a ProgrammingConfigID entry
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, 0.0);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingConfigID, guid);
+
+        rfnRequests.push_back(std::make_unique<Commands::RfnMeterProgrammingSetConfigurationCommand>(guid, *programSize));
+
+        return ClientErrors::None;
     }
 
     return RfnMeterDevice::executePutConfig(pReq, parse, returnMsgs, requestMsgs, rfnRequests);
