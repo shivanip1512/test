@@ -10,7 +10,7 @@ import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
-import com.eaton.pages.support.SiteMapPage;;
+import com.eaton.pages.support.SiteMapPage;
 
 public class SiteMapDetailsTests extends SeleniumTestSetup {
 
