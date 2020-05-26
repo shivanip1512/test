@@ -4,33 +4,45 @@
 <suite name="Demand Response Setup Documentation Suite" preserve-order="true">
     <test name="DR Setup Documentation Test" >
         <classes>
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.MeterDisconnectLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.DigiSepLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.EcobeeLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.NestLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.ExpresscomLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.VersacomLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.EmetconLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.HoneywellLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.ItronLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.PointLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadgroup.MCTLoadGroupSetupApiControllerTest" />
+            <!-- Load Group Api Documentation -->
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.MeterDisconnectLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.DigiSepLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.EcobeeLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.NestLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.ExpresscomLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.VersacomLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.EmetconLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.HoneywellLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.ItronLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.PointLoadGroupApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadgroup.MCTLoadGroupApiDoc" />
+          
+           <!-- Macro Load Group Api Documentation -->
+           <class name = "com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupApiDoc" />
+           
+           <!-- Program Constraint Api Documentation -->
+           <class name = "com.cannontech.rest.api.documentation.constraint.ProgramConstraintApiDoc" />
+           
+           <!-- Load Program Api Documentation -->
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.EcobeeProgramApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.HoneywellProgramApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.ItronProgramApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.MeterDisconnectProgramApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramGearApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramGearApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.EcobeeProgramGearApiDoc" />
+           <class name = "com.cannontech.rest.api.documentation.loadprogram.HoneywellProgramGearApiDoc" />
 
-           <class name = "com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.constraint.ProgramConstraintControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.EcobeeProgramSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.HoneywellProgramSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.ItronProgramSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.MeterDisconnectProgramSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.DirectProgramGearSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.SepProgramGearSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.EcobeeProgramGearSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.loadprogram.HoneywellProgramGearSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.controlarea.ControlAreaSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.scenario.ControlScenarioSetupApiControllerTest" />
-           <class name = "com.cannontech.rest.api.documentation.uicomponent.PickerApiControllerTest" />
+           <!-- ControlArea Api Documentation -->
+           <class name = "com.cannontech.rest.api.documentation.controlarea.ControlAreaApiDoc" />
+           
+           <!-- ControlScenario Api Documentation -->
+           <class name = "com.cannontech.rest.api.documentation.scenario.ControlScenarioApiDoc" />
+           
+           <!-- Picker Api Documentation -->
+           <class name = "com.cannontech.rest.api.documentation.uicomponent.PickerApiDoc" />
         </classes>
     </test>
 </suite>
