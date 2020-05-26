@@ -54,7 +54,7 @@ yukon.assets.rtu = (function() {
             });
             
             if ($('#tcp-comm-ports').exists()) {
-            	tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
+                tcpCommPorts = yukon.fromJson('#tcp-comm-ports');
             }
            
             /** User change comm channel dropdown value */
