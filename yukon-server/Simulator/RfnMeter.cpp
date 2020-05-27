@@ -16,6 +16,8 @@
 
 #include "NodeInfo.h"
 
+#include <boost/algorithm/string/split.hpp>
+
 #include <map>
 #include <random>
 #include <optional>
@@ -190,6 +192,7 @@ void doBadRequest(const E2eReplySender e2eReplySender, const e2edt_request_packe
 void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
 void processChannelManagerPost(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& post_request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
 void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
+void doHubMeterRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
 
 void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
 {
@@ -220,6 +223,11 @@ void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2e
                 case ASIDs::ChannelManager:
                 {
                     doChannelManagerRequest(e2eRequestSender, e2eReplySender, request, requestMsg);
+                    return;
+                }
+                case ASIDs::HubMeterCommandSet:
+                {
+                    doHubMeterRequest(e2eReplySender, request, requestMsg);
                     return;
                 }
             }
@@ -328,6 +336,7 @@ void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eR
 {
     if( request.payload.empty() )
     {
+        doBadRequest(e2eReplySender, request, originalRequest);
         return;
     }
 
@@ -386,6 +395,7 @@ void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_reque
 {
     if( request.payload.empty() )
     {
+        doBadRequest(e2eReplySender, request, originalRequest);
         return;
     }
 
@@ -398,9 +408,9 @@ void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_reque
             doBadRequest(e2eReplySender, request, originalRequest);
             return;
         }
-/*        case 0x1d:
+/*        case 0x01:
         {
-            reply.payload = DataStreamingRead(request.payload, requestMsg.rfnIdentifier);
+            reply.payload = // parse aggregate message payload
             reply.token = request.token;
             reply.status = Protocols::Coap::ResponseCode::Content;
             break;
@@ -412,61 +422,234 @@ void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_reque
     e2eReplySender(originalRequest, reply);
 }
 
+auto GetConfigNotification(const Bytes& request, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+
+void doHubMeterRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& originalRequest)
+{
+    if( request.payload.empty() )
+    {
+        doBadRequest(e2eReplySender, request, originalRequest);
+        return;
+    }
+
+    e2edt_reply_packet reply{};
+
+    switch( request.payload[0] )
+    {
+        default:
+        {
+            doBadRequest(e2eReplySender, request, originalRequest);
+            return;
+        }
+        case 0x1d:
+        {
+            if( auto payload = GetConfigNotification(request.payload, originalRequest.rfnIdentifier) )
+            {
+                reply.payload = *payload;
+                reply.token = request.token;
+                reply.status = Protocols::Coap::ResponseCode::Content;
+            }
+
+            break;
+        }
+    }
+
+    reply.id = request.id;
+
+    e2eReplySender(originalRequest, reply);
+}
+
+Bytes asBytes(const char* hex_string)
+{
+    Bytes result;
+
+    for( auto pos = hex_string; *pos; )
+    {
+        if( std::isalnum(*pos) )
+        {
+            char* end;
+            result.push_back(strtoul(pos, &end, 16));
+            pos = end;
+        }
+        else
+        {
+            pos++;
+        }
+    }
+
+    return result;
+}
+
+auto GetConfigNotification(const Bytes& request, const RfnIdentifier& rfnId) -> std::optional<Bytes>
+{
+    if( rfnId.manufacturer == "ITRN" && rfnId.model == "C2SX" )
+    {
+        return asBytes(
+            "1e 00 0f"
+                " 00 0b 00 12"
+                    " 04 07 e6 01 0f 3c 02 01 06 00 01 f4 00 10 80 00"
+                    " 01 c0"
+                " 00 0b 00 12"
+                    " 04 07 e7 01 0f 3c 02 01 06 00 01 e8 48 10 80 00"
+                    " 01 c0"
+                " 00 0c 00 07"
+                    " 01 00 23 00 19 0f 03"
+                " 00 01 00 01"
+                    " 01"
+                " 00 02 00 38"
+                    " 02 00 64 00 f0 00 f0 00 f0 00 f0 00 f0 01 68 01"
+                    " 68 01 68 01 68 00 00 02 d0 02 d0 00 00 00 00 00"
+                    " 00 05 a0 00 00 00 00 00 00 00 00 88 a6 00 88 02"
+                    " 00 08 00 00 00 00 00 02"
+                " 00 03 00 0c"
+                    " 5e 72 fc 50 5e 74 4d d0 5e 75 9f 50"
+                " 00 04 00 01"
+                    " 00"
+                " 00 08 00 02"
+                    " 04 05"
+                " 00 09 00 3b"
+                    " 1d 00 05 01 04 02 06 03 0b 04 0f 05 10 06 11 07"
+                    " 08 08 09 09 07 0a 00 0b 00 0c 00 0d 00 0e 00 0f"
+                    " 00 10 00 11 00 12 00 13 00 14 00 15 00 16 00 17"
+                    " 00 18 00 19 00 fd 06 fe 04 ff 00"
+                " 00 06 00 d5"
+                    " 35"
+                        " 00 01 00 00   00 02 00 00   00 03 00 00   00 04 00 00   00 29 00 00   00 2a 00 00   00 05 00 00   00 07 00 00"
+                        " 01 00 00 08   00 09 00 00   01 00 00 08   00 f0 00 00   01 00 00 08   00 31 00 00   00 33 00 00   01 00 00 08"
+                        " 00 73 00 07   00 81 00 07   01 00 00 08   00 82 00 07   01 00 00 08   03 e9 00 00   03 ea 00 00   03 eb 00 00"
+                        " 03 ec 00 00   03 ef 00 00   04 e8 00 08   03 f1 00 00   04 e8 00 08   07 d1 00 00   07 d2 00 00   07 d3 00 00"
+                        " 07 d4 00 00   07 d7 00 00   08 d0 00 08   07 d9 00 00   08 d0 00 08   0b b9 00 00   0b ba 00 00   0b bb 00 00"
+                        " 0b bc 00 00   0b bf 00 00   0c b8 00 08   0b c1 00 00   0c b8 00 08   0f a1 00 00   0f a2 00 00   0f a3 00 00"
+                        " 0f a4 00 00   0f a7 00 00   10 a0 00 08   0f a9 00 00   10 a0 00 08"
+                " 00 0e 00 01"
+                    " 0f"
+                " 00 07 00 01"
+                    " 00"
+                " 00 05 00 29"
+                    " 00 00 0e 10 00 00 54 60 08 00 01 00 00 00 02 00"
+                    " 00 00 03 00 00 00 04 00 00 00 29 00 00 00 2a 00"
+                    " 00 00 31 00 00 00 73 00 07"
+                " 00 0d 00 1a"
+                    " 04 01 00 01 01 05 00 00 02 00 05 00 00 05 00 05"
+                    " 00 00 73 00 05 00 00 00 00 3a"
+                " 00 0f 00 01"
+                    " 01");
+    }
+    if( rfnId.manufacturer == "ITRN" && rfnId.model == "C2SX-SD" )
+    {
+        return asBytes(
+            "1e 00 0f"
+                " 00 0b 00 12"
+                    " 04 07 e6 01 0f 3c 02 01 06 00 01 f4 00 10 80 00"
+                    " 01 c0"
+                " 00 0b 00 12"
+                    " 04 07 e7 01 0f 3c 02 01 06 00 01 e8 48 10 80 00"
+                    " 01 c0"
+                " 00 0c 00 07"
+                    " 01 00 23 00 19 0f 03"
+                " 00 01 00 01"
+                    " 01"
+                " 00 02 00 38"
+                    " 02 00 64 00 f0 00 f0 00 f0 00 f0 00 f0 01 68 01"
+                    " 68 01 68 01 68 00 00 02 d0 02 d0 00 00 00 00 00"
+                    " 00 05 a0 00 00 00 00 00 00 00 00 88 a6 00 88 02"
+                    " 00 08 00 00 00 00 00 02"
+                " 00 03 00 0c"
+                    " 00 00 00 00 00 00 00 00 00 00 00 00"
+                " 00 04 00 01"
+                    " 20"
+                " 00 08 00 02"
+                    " 04 05"
+                " 00 09 00 3b"
+                    " 1d 00 05 01 04 02 06 03 0b 04 0f 05 10 06 11 07"
+                    " 08 08 09 09 07 0a 00 0b 00 0c 00 0d 00 0e 00 0f"
+                    " 00 10 00 11 00 12 00 13 00 14 00 15 00 16 00 17"
+                    " 00 18 00 19 00 fd 05 fe 08 ff 01"
+                " 00 06 00 c5"
+                    " 31"
+                        " 00 01 00 00   00 02 00 00   00 03 00 00   00 04 00 00   00 29 00 00   00 2a 00 00   00 05 00 00   00 07 00 00"
+                        " 01 00 00 08   00 09 00 00   01 00 00 08   00 f0 00 00   01 00 00 08   00 31 00 00   00 33 00 00   01 00 00 08"
+                        " 00 73 00 07   03 e9 00 00   03 ea 00 00   03 eb 00 00   03 ec 00 00   03 ef 00 00   04 e8 00 08   03 f1 00 00"
+                        " 04 e8 00 08   07 d1 00 00   07 d2 00 00   07 d3 00 00   07 d4 00 00   07 d7 00 00   08 d0 00 08   07 d9 00 00"
+                        " 08 d0 00 08   0b b9 00 00   0b ba 00 00   0b bb 00 00   0b bc 00 00   0b bf 00 00   0c b8 00 08   0b c1 00 00"
+                        " 0c b8 00 08   0f a1 00 00   0f a2 00 00   0f a3 00 00   0f a4 00 00   0f a7 00 00   10 a0 00 08   0f a9 00 00"
+                        " 10 a0 00 08"
+                " 00 0e 00 01"
+                    " 0f"
+                " 00 07 00 02"
+                    " 01 00"
+                " 00 05 00 2d"
+                    " 00 00 0e 10 00 00 54 60 09 00 01 00 00 00 02 00"
+                    " 00 00 03 00 00 00 04 00 00 00 29 00 00 00 2a 00"
+                    " 00 00 05 00 00 00 31 00 00 00 73 00 07"
+                " 00 0d 00 1a"
+                    " 04 00 00 01 00 1e 00 00 02 00 1e 00 00 05 00 1e"
+                    " 00 00 73 00 1e 00 00 00 00 03"
+                " 00 0f 00 01"
+                    " 01");
+    }
+    return std::nullopt;
+}
+
+
 auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>;
 
 void processChannelManagerPost(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& post_request, const Messaging::Rfn::E2eDataRequestMsg& originalRequest)
 {
-    if( ! post_request.payload.empty() )
+    if( post_request.payload.empty() )
     {
-        switch( post_request.payload[0] )
+        doBadRequest(e2eReplySender, post_request, originalRequest);
+        return;
+    }
+
+    switch( post_request.payload[0] )
+    {
+        default:
         {
-            default:
+            doBadRequest(e2eReplySender, post_request, originalRequest);
+            return;
+        }
+        case 0x90:
+        {
+            if( const auto pathSize = ParseSetMeterProgram(post_request.payload, originalRequest.rfnIdentifier) )
             {
-                doBadRequest(e2eReplySender, post_request, originalRequest);
-                return;
-            }
-            case 0x90:
-            {
-                if( const auto pathSize = ParseSetMeterProgram(post_request.payload, originalRequest.rfnIdentifier) )
+                const auto [path, size] = *pathSize;
+
+                auto itr = meterProgrammingRequests.find(originalRequest.rfnIdentifier);
+
+                if( itr != meterProgrammingRequests.end() )
                 {
-                    const auto [path, size] = *pathSize;
-
-                    auto itr = meterProgrammingRequests.find(originalRequest.rfnIdentifier);
-
-                    if( itr != meterProgrammingRequests.end() )
+                    if( itr->second.path == path )
                     {
-                        if( itr->second.path == path )
-                        {
-                            CTILOG_INFO(dout, "Received duplicate path request, ignoring" << FormattedList::of(
-                                "Device", originalRequest.rfnIdentifier,
-                                "Path", path));
-
-                            return;
-                        }
-
-                        CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
+                        CTILOG_INFO(dout, "Received duplicate path request, ignoring" << FormattedList::of(
                             "Device", originalRequest.rfnIdentifier,
-                            "Existing path", itr->second.path,
-                            "New path", path));
+                            "Path", path));
 
-                        itr->second.path = path;
-                        itr->second.initialToken = post_request.token;
+                        return;
                     }
 
-                    e2edt_request_packet newRequest;
+                    CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
+                        "Device", originalRequest.rfnIdentifier,
+                        "Existing path", itr->second.path,
+                        "New path", path));
 
-                    newRequest.id = idGenerator();
-                    newRequest.confirmable = true;
-                    newRequest.method = Protocols::Coap::RequestMethod::Get;
-                    newRequest.path = path;
-                    newRequest.token = idGenerator();
-
-                    itr->second.currentToken = newRequest.token;
-
-                    e2eRequestSender(originalRequest, newRequest);
-
-                    return;
+                    itr->second.path = path;
+                    itr->second.initialToken = post_request.token;
                 }
+
+                e2edt_request_packet newRequest;
+
+                newRequest.id = idGenerator();
+                newRequest.confirmable = true;
+                newRequest.method = Protocols::Coap::RequestMethod::Get;
+                newRequest.path = path;
+                newRequest.token = idGenerator();
+
+                itr->second.currentToken = newRequest.token;
+
+                e2eRequestSender(originalRequest, newRequest);
+
+                return;
             }
         }
     }
