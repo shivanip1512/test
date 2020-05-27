@@ -5,18 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class PointLimit extends DBPersistent {
+public class PointLimit extends DBPersistent implements DBPersistentConverter<PointLimit> {
     
-    private Integer pointID = null;
-    private Integer limitNumber = 1;
-    private Double highLimit = 0.0;
-    private Double lowLimit = 0.0;
-    private Integer limitDuration = 0;
+    @JsonIgnore
+    private Integer pointID;
+    private Integer limitNumber;
+    private Double highLimit;
+    private Double lowLimit;
+    private Integer limitDuration;
 
     public static final String CONSTRAINT_COLUMNS[] = { "POINTID", "LimitNumber" };
 
@@ -162,6 +165,34 @@ public class PointLimit extends DBPersistent {
         Object constraintValues[] = { getPointID(), getLimitNumber() };
 
         update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
+    }
+
+    @Override
+    public void buildModel(PointLimit pointLimit) {
+        setLimitNumber(pointLimit.getLimitNumber());
+        setLimitDuration(pointLimit.getLimitDuration());
+        setLowLimit(pointLimit.getLowLimit());
+        setHighLimit(pointLimit.getHighLimit());
+    }
+
+    @Override
+    public void buildDBPersistent(PointLimit pointLimit) {
+
+        if (getLimitNumber() != null) {
+            pointLimit.setLimitNumber(getLimitNumber());
+        }
+
+        if (getLimitDuration() != null) {
+            pointLimit.setLimitDuration(getLimitDuration());
+        }
+
+        if (getLowLimit() != null) {
+            pointLimit.setLowLimit(getLowLimit());
+        }
+
+        if (getHighLimit() != null) {
+            pointLimit.setHighLimit(getHighLimit());
+        }
     }
     
 }

@@ -495,9 +495,11 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         PointType ptType = PointType.getForString(pointModel.getPointBase().getPoint().getPointType());
         PointBaseModel pointBaseModel = PointBaseModelFactory.createPointBaseModel(ptType);
-        pointBaseModel.buildModel(pointModel.getPointBase());
 
-        pointBaseModel.setStaleData(pointModel.getStaleData());
+        if (pointBaseModel != null) {
+            pointBaseModel.buildModel(pointModel.getPointBase());
+            pointBaseModel.setStaleData(pointModel.getStaleData());
+        }
 
         return pointBaseModel;
     }

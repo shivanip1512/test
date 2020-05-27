@@ -137,8 +137,9 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         if (getTimingGroup() != null) {
             pt.setLogicalGroup(getTimingGroup());
         }
-
-        pt.setAlarmsDisabled(getAlarmsDisabled());
+        if (getAlarmsDisabled() != null) {
+            pt.setAlarmsDisabled(getAlarmsDisabled());
+        }
 
     }
 

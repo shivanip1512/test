@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDBPersistent;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class DBPersistent implements Serializable {
 
@@ -73,6 +74,7 @@ public abstract class DBPersistent implements Serializable {
 
     }
 
+    @JsonIgnore
     public Connection getDbConnection() {
         return getDB().getDbConnection();
     }

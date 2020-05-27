@@ -19,7 +19,7 @@ public class PointValidationUtil extends ValidationUtils {
 
     private static final String baseKey = "yukon.web.modules.tools.point.error";
 
-    public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOperationOrNewPointCreation) {
+    public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOrCreate) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
         YukonValidationUtils.checkExceedsMaxLength(errors, fieldName, pointModel.getPointName(), 60);
         if (!PaoUtils.isValidPaoName(pointModel.getPointName())) {
@@ -35,7 +35,7 @@ public class PointValidationUtil extends ValidationUtils {
                  *  2. If the current operation is point edit and there exists any other point (other than the current 
                  *  one) with the same name attached to the PAO, we should not proceed with the operation.
                  */
-                if (isCopyOperationOrNewPointCreation || (pointOnPao.getPointID() != pointModel.getPointId())) {
+                if (isCopyOrCreate || (pointOnPao.getPointID() != pointModel.getPointId())) {
                     errors.rejectValue(fieldName, "yukon.web.error.nameConflict");
                 }
             }
@@ -43,7 +43,7 @@ public class PointValidationUtil extends ValidationUtils {
     }
 
     public void validatePointOffset(LitePointModel pointModel, String fieldName, Errors errors,
-            boolean isCopyOperationOrNewPointCreation) {
+            boolean isCopyOrCreate) {
 
         if (pointModel.isPhysicalOffset()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
@@ -63,7 +63,7 @@ public class PointValidationUtil extends ValidationUtils {
                      *  2. If the current operation is point edit and there exists any other point (other than the current 
                      *  one) with the same name attached to the PAO, we should not proceed with the operation.
                      */
-                    if (isCopyOperationOrNewPointCreation || (pointOnPao.getPointID() != pointModel.getPointId())) {
+                    if (isCopyOrCreate || (pointOnPao.getPointID() != pointModel.getPointId())) {
                         List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());
                         errors.rejectValue(fieldName, baseKey + ".pointOffset", arguments.toArray(),
                             "Invalid point offset");
