@@ -1,12 +1,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="infrastructureWarnings" smartNotificationsEvent="INFRASTRUCTURE_WARNING">
+    <div class="js-page-additional-actions dn">
+        <cti:url value="/notifications/events/infrastructureWarnings" var="recentNotificationDetail"/>
+        <cm:dropdownOption key="yukon.web.modules.smartNotifications.notificationDetail" icon="icon-calendar-view-month" href="${recentNotificationDetail}"/>
+    </div>
 
     <cti:msgScope paths="widgets.infrastructureWarnings">
-    
+
         <div class="column-12-12">
             <div class="column one">
                 <c:set var="fromDetailPage" value="true"/>
