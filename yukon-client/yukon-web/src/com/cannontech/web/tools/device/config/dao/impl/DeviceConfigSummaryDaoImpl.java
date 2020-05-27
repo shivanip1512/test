@@ -157,13 +157,13 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
         if (!CollectionUtils.isEmpty(filter.getConfigurationIds())) {
             sql.append("AND scdm.DeviceConfigurationId").in(filter.getConfigurationIds());
         }
-        if (filter.getSelection() == StateSelection.ALL) {
-            sql.append("AND (CurrentState").in_k(filter.getSelection().getStates());
+        if (filter.getStateSelection() == StateSelection.ALL) {
+            sql.append("AND (CurrentState").in_k(filter.getStateSelection().getStates());
             sql.append("OR LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS).append(")");
-        } else if (filter.getSelection() == StateSelection.IN_PROGRESS) {
+        } else if (filter.getStateSelection() == StateSelection.IN_PROGRESS) {
             sql.append("AND LastActionStatus").eq_k(LastActionStatus.IN_PROGRESS);
         } else {
-            sql.append("AND CurrentState").in_k(filter.getSelection().getStates());
+            sql.append("AND CurrentState").in_k(filter.getStateSelection().getStates());
         }
         return sql;
     }
