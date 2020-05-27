@@ -57,7 +57,6 @@ yukon.widget.commChannel.info = (function () {
                 var physicalPortError = $("#physicalPortErrors").val();
                 if (physicalPortError) {
                     $("span[id='physicalPort.errors']").remove();
-                    $('.js-physical-port').removeClass("error");
                     $('.js-user-physical-port-value').removeClass("error");
                     $("#physicalPortErrors").val("");
                 }
