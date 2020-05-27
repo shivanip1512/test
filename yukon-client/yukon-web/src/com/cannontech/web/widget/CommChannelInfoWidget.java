@@ -116,14 +116,6 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) {
 
         try {
-            if (commChannel instanceof LocalSharedPortDetail) {
-                String physicalPort = ((LocalSharedPortDetail) commChannel).getPhysicalPort();
-                if (PhysicalPort.getByDbString(physicalPort.substring(0, physicalPort.length() - 1)) == PhysicalPort.OTHER) {
-                    ((LocalSharedPortDetail) commChannel).setPhysicalPort(physicalPort.substring(6));
-                } else {
-                    ((LocalSharedPortDetail) commChannel).setPhysicalPort(physicalPort.substring(0, physicalPort.length() - 1));
-                }
-            }
             commChannelValidator.validate(commChannel, result);
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -185,6 +177,8 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("otherPhysicalPort", PhysicalPort.OTHER.getPhysicalPort());
             if (PhysicalPort.getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
                 model.addAttribute("isPhyicalPortUserDefined", true);
+            } else {
+                model.addAttribute("portValue", ((LocalSharedPortDetail) commChannel).getPhysicalPort());
             }
         }
     }

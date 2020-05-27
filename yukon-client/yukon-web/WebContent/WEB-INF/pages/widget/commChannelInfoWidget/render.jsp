@@ -46,19 +46,25 @@
                             <c:if test="${isPhysicalPortSupported}">
                                 <tags:nameValue2 nameKey=".physicalPort" rowClass="js-physical-port-row">
                                     <cti:displayForPageEditModes modes="VIEW">
-                                        ${commChannel.physicalPort}
+                                        ${fn:escapeXml(commChannel.physicalPort)}
                                     </cti:displayForPageEditModes>
                                     <cti:displayForPageEditModes modes="EDIT">
+                                        <input type="hidden" id="otherPhysicalPortValue" value="${otherPhysicalPort}">
                                         <c:set var="physicalPortError">
                                             <form:errors path="physicalPort"/>
                                         </c:set>
                                         <c:if test="${not empty physicalPortError}">
-                                            <input type=hidden id="physicalPortErrors" value="true">
+                                            <input type="hidden" id="physicalPortErrors" value="true">
                                         </c:if>
-                                        <c:if var="isUserDefined" test="${isPhyicalPortUserDefined || physicalPortError}">
-                                            <input type=hidden id="otherPhysicalPort" value="${otherPhysicalPort}">
-                                        </c:if>
-                                        <tags:selectWithItems path="physicalPort" items="${physicalPortList}" inputClass="js-physical-port"/>
+                                        <c:choose>
+                                            <c:when test="${isPhyicalPortUserDefined || physicalPortError}">
+                                                <input type="hidden" id="userPhysicalPort" value="${otherPhysicalPort}">
+                                            </c:when>
+                                            <c:otherwise>
+                                                <input type="hidden" id="portValue" value="${portValue}"> 
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <tags:selectWithItems path="webPhysicalPort" items="${physicalPortList}" inputClass="js-physical-port"/>
                                         <tags:input path="physicalPort" maxlength="8" inputClass="js-user-physical-port-value dn"/>
                                     </cti:displayForPageEditModes>
                                 </tags:nameValue2>

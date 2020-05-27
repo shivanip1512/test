@@ -17,28 +17,28 @@ yukon.widget.commChannel.info = (function () {
         if ($(".js-physical-port").is(":visible")) {
             var physicalPortError = $("#physicalPortErrors").val();
             if (physicalPortError) {
-                var otherPhysicalPort = $("#otherPhysicalPort").val();
+                var otherPhysicalPort = $("#userPhysicalPort").val();
                 $(".js-physical-port").val(otherPhysicalPort);
                 $('.js-user-physical-port-value').removeClass('dn');
-                $('.js-physical-port-row').find('br').eq(0).remove();
-                $('.js-physical-port-row').find('span:first').remove();
+                $('.js-physical-port-row').find("span[id='physicalPort.errors']").css({'margin-left':'80px'});
             } else {
                 var physicalPort = $('.js-physical-port option:selected').val();
-                var phyicalPortField = physicalPort === 'Other';
+                var phyicalPortField = physicalPort === $("#otherPhysicalPortValue").val();
                 $('.js-user-physical-port-value').toggleClass('dn', !phyicalPortField);
-                $('.js-user-physical-port-value').val("");
-                var userValue = $('.js-user-physical-port-value').val();
-                $("input[name='physicalPort']").val(userValue);
+                if (phyicalPortField) {
+                    $('.js-user-physical-port-value').val("");
+                } else {
+                    $("input[name='physicalPort']").val(physicalPort);
+                }
             }
         } else {
-            var dialog = $(event.target),
-                commChannelForm = dialog.find('#commChannel-info-form'),
-                physicalPortElement = commChannelForm.find('.js-user-physical-port-value').val(),
-                isPhysicalPortOther = $("#otherPhysicalPort").val();
+            var isPhysicalPortOther = $("#userPhysicalPort").val();
             if (!$.isEmptyObject(isPhysicalPortOther)) {
-                var otherPhysicalPort = $("#otherPhysicalPort").val();
+                var otherPhysicalPort = $("#userPhysicalPort").val();
                 $(".js-physical-port").val(otherPhysicalPort);
                 $('.js-user-physical-port-value').removeClass('dn');
+            } else {
+                $(".js-physical-port").val($("#portValue").val());
             }
         }
     };

@@ -1,9 +1,8 @@
 package com.cannontech.common.device.port;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum PhysicalPort implements DatabaseRepresentationSource, DisplayableEnum {
+public enum PhysicalPort implements DisplayableEnum {
 
     COM_1("com1"),
     COM_2("com2"),
@@ -29,15 +28,6 @@ public enum PhysicalPort implements DatabaseRepresentationSource, DisplayableEnu
         return physicalPort;
     }
 
-    public static PhysicalPort getByDisplayName(String name) {
-        for (PhysicalPort value : PhysicalPort.values()) {
-            if (value.getPhysicalPort().equalsIgnoreCase(name)) {
-                return value;
-            }
-        }
-        return OTHER;
-    }
-
     public static PhysicalPort getByDbString(String dbString) {
         for (PhysicalPort value : PhysicalPort.values()) {
             if (value.getPhysicalPort().equalsIgnoreCase(dbString)) {
@@ -52,8 +42,4 @@ public enum PhysicalPort implements DatabaseRepresentationSource, DisplayableEnu
         return baseKey + name();
     }
 
-    @Override
-    public Object getDatabaseRepresentation() {
-        return this.physicalPort;
-    }
 }
