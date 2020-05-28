@@ -15,8 +15,6 @@ import javax.validation.ConstraintViolationException;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,6 +36,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.TypeNotSupportedExcpetion;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -97,7 +96,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     @ExceptionHandler({ LoadProgramProcessingException.class, MacroLoadGroupProcessingException.class,
-        HoneywellProcessingException.class, LMObjectDeletionFailureException.class })
+        HoneywellProcessingException.class, LMObjectDeletionFailureException.class , TypeNotSupportedExcpetion.class})
     public ResponseEntity<Object> hanldeProcessingException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
