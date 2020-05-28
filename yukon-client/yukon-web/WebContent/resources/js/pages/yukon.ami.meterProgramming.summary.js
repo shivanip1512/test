@@ -3,6 +3,7 @@ yukon.namespace('yukon.ami.meterProgramming.summary');
  * Module for the Meter Programming Summary pages
  * @module yukon.ami.meterProgramming.summary
  * @requires JQUERY
+ * @requires YUKON_UPDATER
  * @requires yukon
  */
 yukon.ami.meterProgramming.summary = (function () {
@@ -131,7 +132,25 @@ yukon.ami.meterProgramming.summary = (function () {
 
                 _initialized = true;
 
-            }
+            },
+            
+            refreshCheck: function (deviceId) {
+                return function (data) {
+                    if (data.isInProgress == 'false') {
+                        //refresh row
+                        $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
+                        .done(function (rowData) {
+                            var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
+                            deviceRow.html(rowData);
+                            //stop data updaters
+                            var idMap = {isInProgress : "METER_PROGRAMMING/" + deviceId + "/IS_IN_PROGRESS"};
+                            yukon.dataUpdater.unRegisterCallback(idMap);
+                            var idMap = {completedCount : "METER_PROGRAMMING/" + deviceId + "/PROGRESS"};
+                            yukon.dataUpdater.unRegisterCallback(idMap);
+                        });
+                    }
+                }
+            },
 
     };
 
