@@ -42,7 +42,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDao;
-import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
+import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -126,7 +126,7 @@ public class ConfigWidget extends WidgetControllerBase {
             if (deviceSupported) {
                 mav.addObject("showMeterProgramming", true);
                 try {
-                    MeterProgramWidgetDisplay program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
+                    MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(deviceId, userContext);
                     mav.addObject("isInsufficentFirmware", program.getProgramInfo().getSource().isOldFirmware());
                     mav.addObject("meterProgram", program);
                 } catch (NotFoundException e) {

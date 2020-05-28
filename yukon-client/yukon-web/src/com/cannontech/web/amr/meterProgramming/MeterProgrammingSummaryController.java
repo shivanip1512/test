@@ -337,5 +337,12 @@ public class MeterProgrammingSummaryController {
         }
         return json;
     }
+    
+    @GetMapping("{id}/refreshDeviceRow")
+    public String refreshDeviceRow(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
+        MeterProgramSummaryDetail detail = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(id, userContext);
+        model.addAttribute("result", detail);
+        return "meterProgramming/summaryResultRow.jsp";
+    }
 
 }
