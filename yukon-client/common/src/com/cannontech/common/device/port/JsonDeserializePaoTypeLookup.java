@@ -3,7 +3,7 @@ package com.cannontech.common.device.port;
 import java.io.IOException;
 
 import com.cannontech.common.device.model.PaoModelFactory;
-import com.cannontech.common.exception.TypeNotSupportedExcpetion;
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.NotFoundException;
@@ -27,7 +27,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     private IDatabaseCache serverDatabaseCache = YukonSpringHook.getBean(IDatabaseCache.class);
 
     @Override
-    public YukonPao deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException, TypeNotSupportedExcpetion {
+    public YukonPao deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException, TypeNotSupportedException {
         TreeNode node = parser.readValueAsTree();
         if (node == null) {
             throw new NotFoundException("request is not found in correct format");
@@ -36,9 +36,12 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         PaoType paoType;
 
         if (id == null) {
-            // Create Case
             paoType = getPaoTypeFromJson(node);
         } else {
+            try {
+                getPaoTypeFromJson(node);
+            } catch (NotFoundException e) {
+            }
             // Update case
             paoType = getPaoTypeFromCache(id);
         }
@@ -50,14 +53,16 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
      * @throws TypeNotSupportedExcpetion when invalid PaoType is provided in JSON,
      * this exception is handled by ApiExceptionHandler which will convert it into a global error.
      */
-    private PaoType getPaoTypeFromJson(TreeNode node) throws TypeNotSupportedExcpetion {
+    private PaoType getPaoTypeFromJson(TreeNode node) throws TypeNotSupportedException {
         TreeNode type = node.get("type");
+        String PoaTypeString = null;
         if (type != null) {
             try {
-                return PaoType.valueOf(type.toString().replace("\"", ""));
+                PoaTypeString = type.toString().replace("\"", "");
+                return PaoType.valueOf(PoaTypeString);
             } catch (IllegalArgumentException e) {
                 // throw exception for invalid paoType
-                throw new TypeNotSupportedExcpetion("type is not valid.");
+                throw new TypeNotSupportedException(PoaTypeString + " type is not valid.");
             }
         } else {
             throw new NotFoundException("type is not found in the request.");
@@ -89,7 +94,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
             return pao;
         } else {
             // throw exception for not supported paoType
-            throw new TypeNotSupportedExcpetion("type is not valid.");
+            throw new TypeNotSupportedException(paoType.name() + " type is not supported.");
 
         }
     }
