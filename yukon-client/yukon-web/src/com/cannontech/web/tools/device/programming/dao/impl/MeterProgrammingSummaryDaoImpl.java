@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,7 +13,6 @@ import java.util.stream.Stream;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -39,7 +37,6 @@ import com.cannontech.web.tools.device.programming.dao.MeterProgrammingSummaryDa
 import com.cannontech.web.tools.device.programming.model.MeterProgramInfo;
 import com.cannontech.web.tools.device.programming.model.MeterProgramStatistics;
 import com.cannontech.web.tools.device.programming.model.MeterProgramSummaryDetail;
-import com.cannontech.web.tools.device.programming.model.MeterProgramWidgetDisplay;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter;
 import com.cannontech.web.tools.device.programming.model.MeterProgrammingSummaryFilter.DisplayableStatus;
 import com.google.common.collect.Lists;
@@ -52,41 +49,6 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DeviceGroupService deviceGroupService;
-
-    private static final YukonRowMapper<MeterProgramWidgetDisplay> configurationRowMapper = rs -> {
-        MeterProgramWidgetDisplay row = new MeterProgramWidgetDisplay();
-        MeterProgramSource source = MeterProgramSource.getByPrefix(rs.getString("Source"));
-        MeterProgramInfo programInfo = new MeterProgramInfo();
-
-        programInfo.setSource(source);
-
-        String programGuid = rs.getStringSafe("ProgramGuid");
-        String reportedGuid = rs.getStringSafe("ReportedGuid");
-        String name = rs.getStringSafe("Name");
-
-        if (source.isYukon() && programGuid != null && reportedGuid != null && programGuid.equals(reportedGuid) && name != null) {
-            programInfo.setName(name);
-            programInfo.setGuid(reportedGuid);
-        }
-
-        if (source.isNotYukon()) {
-            try {
-                UUID guid = UUID.fromString(reportedGuid);
-                if (guid.version() == 1) {
-                    //The timestamp to be displayed in the widget for the Optical, etc GUIDs is from 
-                    //the GUID, and not related to LastUpdated (which could be the timestamp of a subsequent failure attempt).
-                    row.setTimestamp(new Instant(guid.timestamp()));
-                }
-            } catch (Exception e) {
-                log.error("Unable to parse time for none-Yukon guid:" + reportedGuid);
-            }
-        }
-
-        row.setDeviceId(rs.getInt("DeviceId"));
-        row.setProgramInfo(programInfo);
-        //log.debug("Created {} ", row);
-        return row;
-    };
     
     private static final YukonRowMapper<MeterProgramStatistics> statisticsMapper = rs -> {
         MeterProgramStatistics row = new MeterProgramStatistics();
@@ -130,13 +92,21 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     };
 
     @Override
-    public MeterProgramWidgetDisplay getProgramConfigurationByDeviceId(int deviceId, YukonUserContext context) {
+    public MeterProgramSummaryDetail getProgramConfigurationByDeviceId(int deviceId, YukonUserContext context) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT program.Guid as ProgramGuid, status.ReportedGuid as ReportedGuid, program.Name, status.Source, status.deviceId");
-        sql.append("FROM  MeterProgram program FULL JOIN MeterProgramStatus status ON program.Guid = status.reportedGuid");
-        sql.append("WHERE status.DeviceID").eq(deviceId);
+        sql.append("SELECT mps.ReportedGuid as ReportedGuid, mpReported.Name as ReportedProgramName, "
+                   + " mpAssigned.Guid as AssignedGuid, mpAssigned.Name as AssignedProgramName, "
+                   + " PaoName as DeviceName, Type, MeterNumber, LastUpdate, mps.Source, mps.Status, mps.DeviceId");
+        sql.append("FROM MeterProgramStatus mps");
+        sql.append("LEFT JOIN MeterProgramAssignment mpa ON mps.DeviceId = mpa.DeviceId");
+        sql.append("LEFT JOIN MeterProgram mpReported ON mpReported.Guid = mps.ReportedGuid");
+        sql.append("LEFT JOIN MeterProgram mpAssigned ON mpAssigned.Guid = mpa.Guid");
+        sql.append("JOIN YukonPAObject ypo ON mps.DeviceId = ypo.PAObjectID");
+        sql.append("LEFT JOIN DeviceMeterGroup dmg ON mps.DeviceId = dmg.DeviceId");
+        sql.append("WHERE mps.DeviceID").eq(deviceId);
+
         try {
-            MeterProgramWidgetDisplay program = jdbcTemplate.queryForObject(sql, configurationRowMapper);
+            MeterProgramSummaryDetail program = jdbcTemplate.queryForObject(sql, programSummaryDetail);
             populateProgramNameForUnknownPrograms(context, program.getProgramInfo());
             return program;
         } catch (EmptyResultDataAccessException e) {
