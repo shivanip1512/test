@@ -18,8 +18,9 @@ public class YukonValidationHelper {
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
         if (StringUtils.hasText(paoName)) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
-            if (!PaoUtils.isValidPaoName(paoName)) {
+            String paoNameWithoutSpace = paoName.trim();
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
+            if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
                 errors.rejectValue("name", key + "paoName.containsIllegalChars");
             }
 
@@ -28,7 +29,7 @@ public class YukonValidationHelper {
                 PaoType paoType = (type == null && paoId != null) ? serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(paoId)).getPaoType() : type;
                 Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
                                                                          .stream()
-                                                                         .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoName) 
+                                                                         .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoNameWithoutSpace) 
                                                                                   && pao.getPaoType().getPaoClass() == paoType.getPaoClass()
                                                                                   && pao.getPaoType().getPaoCategory() == paoType.getPaoCategory())
                                                                          .findFirst();

@@ -2720,7 +2720,7 @@ void CtiLMControlArea::restore(Cti::RowReader &rdr)
     }
     else
     {
-        figureNextCheckTime(CtiTime().seconds());
+        figureNextCheckTime(CtiTime());
         setNewPointDataReceivedFlag(FALSE);
         setUpdatedFlag(TRUE);//should always be sent to clients if it is newly added!
         setControlAreaState(CtiLMControlArea::InactiveState);

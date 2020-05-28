@@ -259,10 +259,6 @@
     </point>
     
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <point offset="1" type="Status">
-        <name>Control Status</name>
-        <stategroup value="TrueFalse"/>
-    </point>
     <point offset="3" type="Status">
         <name>Relay 1 Relay State</name>
         <archive interval="ZERO" type="ON_UPDATE"/>
