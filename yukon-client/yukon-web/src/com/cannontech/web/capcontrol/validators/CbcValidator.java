@@ -52,7 +52,7 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         if (cbc.getPaoType().isTcpPortEligible() && 
             dbCache.getAllPaosMap().get(cbc.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
             YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", cbc.getIpAddress());
-            YukonValidationUtils.validatePort(errors, "port", cbc.getPort());
+            YukonValidationUtils.validatePort(errors, "port", cbc.getPort(), "yukon.web.error.port.required");
         }
       
     }
