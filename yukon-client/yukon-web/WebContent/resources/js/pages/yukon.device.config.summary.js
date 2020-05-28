@@ -19,6 +19,8 @@ yukon.deviceConfig.summary = (function () {
             
             if (_initialized) return;
             
+            $('#selectedConfigurations').chosen({width: "300px"});
+            
             $(document).on('click', '.js-device-action', function () {   
                 var deviceId = $(this).data('deviceId'),
                     action = $(this).data('action');

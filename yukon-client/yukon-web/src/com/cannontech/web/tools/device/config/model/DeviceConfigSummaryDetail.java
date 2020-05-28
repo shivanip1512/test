@@ -70,15 +70,11 @@ public class DeviceConfigSummaryDetail {
         this.deviceConfig = deviceConfig;
     }
 
-    public boolean isDisplayRead() {
+    public boolean isDisplayUpload() {
         return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
 
-    public boolean isDisplaySend() {
-        return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
-    }
-
-    public boolean isDisplayVerify() {
+    public boolean isDisplayValidate() {
         return status != LastActionStatus.IN_PROGRESS && deviceConfig != null;
     }
     
@@ -88,6 +84,14 @@ public class DeviceConfigSummaryDetail {
     
     public boolean needValidation() {
         return StateSelection.NEEDS_VALIDATION.getStates().contains(state);
+    }
+    
+    public boolean isDisplayOutOfSyncPopup() {
+        return status != LastActionStatus.IN_PROGRESS && state == ConfigState.OUT_OF_SYNC;
+    }
+    
+    public boolean isDisplayFailurePopup() {
+        return status == LastActionStatus.FAILURE;
     }
 
     public Integer getErrorCode() {

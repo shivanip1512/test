@@ -12,7 +12,7 @@ public class DeviceConfigSummaryFilter {
     private List<DeviceGroup> groups;
     private List<Integer> configurationIds;
     private boolean displayUnassigned;
-    private StateSelection selection;
+    private StateSelection stateSelection;
 
     public List<DeviceGroup> getGroups() {
         return groups;
@@ -38,12 +38,12 @@ public class DeviceConfigSummaryFilter {
         this.displayUnassigned = displayUnassigned;
     }
 
-    public StateSelection getSelection() {
-        return selection;
+    public StateSelection getStateSelection() {
+        return stateSelection;
     }
 
-    public void setSelection(StateSelection selection) {
-        this.selection = selection;
+    public void setStateSelection(StateSelection stateSelection) {
+        this.stateSelection = stateSelection;
     }
 
     @Override
