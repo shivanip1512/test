@@ -12,8 +12,10 @@
 <%@ attribute name="pieJSONData" required="true" type="java.util.Map" %>
 <%@ attribute name="showDetails" required="true" type="java.lang.Boolean" %>
 <%@ attribute name="showDownload" type="java.lang.Boolean" %>
+<%@ attribute name="allowPing" type="java.lang.Boolean" %>
 
 <cti:default var="showDownload" value="${true}"/>
+<cti:default var="allowPing" value="${true}" />
 
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 
@@ -86,14 +88,16 @@
                     <cm:dropdownOption label="All" href="${assetId}/aa/download/all"/>
                 </cm:dropdown>
             </c:if>
-            <c:choose>
-                <c:when test="${unavailableSize > maxPingableDevices}">
-                    <cti:button id="noPingButton" nameKey="noPingDevices" disabled="true" icon="icon-ping"/>
-                </c:when>
-                <c:when test="${unavailableSize > 0}">
-                    <cti:button id="pingButton" nameKey="pingDevices" busy="true" icon="icon-ping"/>
-                </c:when>
-            </c:choose>
+            <c:if test="${allowPing}">
+                <c:choose>
+                    <c:when test="${unavailableSize > maxPingableDevices}">
+                        <cti:button id="noPingButton" nameKey="noPingDevices" disabled="true" icon="icon-ping"/>
+                    </c:when>
+                    <c:when test="${unavailableSize > 0}">
+                        <cti:button id="pingButton" nameKey="pingDevices" busy="true" icon="icon-ping"/>
+                    </c:when>
+                </c:choose>
+            </c:if>
             <span id="pingResults" style="display:none">
                 <tags:updateableProgressBar 
                     countKey="ASSET_AVAILABILITY_READ/${assetId}/SUCCESS_COUNT"

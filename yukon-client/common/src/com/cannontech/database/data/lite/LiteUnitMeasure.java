@@ -1,8 +1,9 @@
 package com.cannontech.database.data.lite;
 
 /**
- * This type was created in VisualAge.
+ * @deprecated Use UnitOfMeasure instead of this, and prefer the i18ned name keys to the hard-coded values.
  */
+@Deprecated(since="7.4")
 public class LiteUnitMeasure extends LiteBase
 {
 	private String unitMeasureName = null;
@@ -48,14 +49,14 @@ public int getUomID() {
  * @param newValue java.lang.Integer
  */
 public void setUnitMeasureCalcType(int newValue) {
-	this.unitMeasureCalcType = newValue;
+	unitMeasureCalcType = newValue;
 }
 /**
  * This method was created in VisualAge.
  * @param newValue java.lang.String
  */
 public void setUnitMeasureName(String newValue) {
-	this.unitMeasureName = newValue;
+	unitMeasureName = newValue;
 }
 /**
  * Insert the method's description here.
@@ -70,6 +71,7 @@ public void setUomID(int newUomID)
  * This method was created in VisualAge.
  * @return java.lang.String
  */
+@Override
 public String toString() {
 	return getLongName();
 }

@@ -129,6 +129,8 @@ public:
     int operator==(const CtiLMProgramBase& right) const;
     int operator!=(const CtiLMProgramBase& right) const;
 
+    virtual std::size_t getMemoryConsumption() const;
+
     // Static Members
 
     // Possible control types

@@ -22,6 +22,8 @@ struct HoneywellCycleGear : SmartGearBase,
 
     double calculateLoadReduction( double groupCapacity ) const;
 
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+
     // Custom Gear settings
 
     bool isRampInOut() const;

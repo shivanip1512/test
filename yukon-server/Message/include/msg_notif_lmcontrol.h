@@ -37,6 +37,9 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 
+    std::size_t getFixedSize() const override    { return sizeof( *this ); }
+    std::size_t getVariableSize() const override;
+
 public:
     std::vector<int> _notif_group_ids;
     int _notif_type;

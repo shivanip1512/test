@@ -54,12 +54,11 @@ import com.cannontech.common.pao.service.PaoSelectionService;
 import com.cannontech.common.pao.service.impl.MockPaoSelectionServiceImpl;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.MockRawPointHistoryDaoImpl;
-import com.cannontech.core.dao.MockUnitMeasureDaoImpl;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -104,7 +103,6 @@ public class ExporterReportGeneratorServiceImplTest {
         ReflectionTestUtils.setField(exporterReportGeneratorService, "paoSelectionService", paoSelectionService);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "messageSourceResolver", messageSourceResolver);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rawPointHistoryDao", rawPointHistoryDao);
-        ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", new MockUnitMeasureDaoImpl());
     }
 
     private final static DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(-5, 0);
@@ -189,9 +187,8 @@ public class ExporterReportGeneratorServiceImplTest {
 
         // Unit of Measure Test 
         YukonMeter meter = meterDao.getForMeterNumber("Meter Number 1");
-        Table<Integer, PointIdentifier, LiteUnitMeasure>  unitMeasureLookup = HashBasedTable.create();
-        unitMeasureLookup.put(meter.getPaoIdentifier().getPaoId(), new PointIdentifier(PointType.Analog, 0),
-            new LiteUnitMeasure(0, "kWH", 1, "kWH"));
+        Table<Integer, PointIdentifier, UnitOfMeasure>  unitMeasureLookup = HashBasedTable.create();
+        unitMeasureLookup.put(meter.getPaoIdentifier().getPaoId(), new PointIdentifier(PointType.Analog, 0), UnitOfMeasure.KWH);
         ExportField exportFieldUnitOfMeasure = getExportField(0, FieldType.UNIT_OF_MEASURE, earliestUsageAttribute, AttributeField.UNIT_OF_MEASURE, null);
         String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, null, USAGE, pointValueQualityHolder, userContextOne, tzFormat, unitMeasureLookup, now);
         

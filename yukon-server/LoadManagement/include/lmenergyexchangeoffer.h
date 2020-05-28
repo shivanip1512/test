@@ -43,6 +43,8 @@ DECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer );
     int operator==(const CtiLMEnergyExchangeOffer& right) const;
     int operator!=(const CtiLMEnergyExchangeOffer& right) const;
 
+    std::size_t getMemoryConsumption() const;
+
     // Static Members
 
     // Possible run statuses

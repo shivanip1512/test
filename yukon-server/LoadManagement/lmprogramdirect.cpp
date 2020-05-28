@@ -1526,7 +1526,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(CtiTime currentTime, CtiMulti
             else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MasterCycleMethod) )  //NOTE: add ramp in logic
             {
                 ResetGroups();
-                StartMasterCycle(CtiTime().seconds(), currentGearObject);
+                StartMasterCycle(CtiTime(), currentGearObject);
             }
             else if( ciStringEqual(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
             {
@@ -4768,7 +4768,7 @@ BOOL CtiLMProgramDirect::handleManualControl(CtiTime currentTime, CtiMultiMsg* m
             // been made.
 
             // Gear constraints are only not checked in the starttimed function now.
-            if( getConstraintOverride() || con_checker.checkGroupConstraints(getCurrentGearNumber(), getDirectStartTime().seconds(), getDirectStopTime().seconds()) )
+            if( getConstraintOverride() || con_checker.checkGroupConstraints(getCurrentGearNumber(), getDirectStartTime(), getDirectStopTime()) )
             {
                 // are any of our master programs already running?  if so we can't start MASTERSLAVE - this is alreadya  constraint checked in executor
                 returnBoolean = TRUE;
@@ -5041,7 +5041,7 @@ bool CtiLMProgramDirect::startTimedProgram(CtiTime currentTime, long secondsFrom
 
     CtiTime startTime = currentTime;
     CtiTime endTime = controlWindow->getAvailableStopTime(); // This is likely wrong, not changing during refactor.
-    if( !getConstraintOverride() && !con_checker.checkAutomaticProgramConstraints(startTime.seconds(), endTime.seconds()) )
+    if( !getConstraintOverride() && !con_checker.checkAutomaticProgramConstraints(startTime, endTime) )
     {
         if( !_announced_program_constraint_violation )
         {
@@ -6373,6 +6373,46 @@ void CtiLMProgramDirect::setPendingGroupsInactive()
             group->setGroupControlState( CtiLMGroupBase::InactiveState );
         }
     }
+}
+
+std::size_t CtiLMProgramDirect::getMemoryConsumption() const
+{
+    // the fixed memeory amount
+    std::size_t sz = sizeof( *this );
+
+    // the base class allocated amount
+    sz +=   CtiLMProgramBase::getMemoryConsumption();
+
+    // this class allocations
+    sz +=   dynamic_sizeof( _message_subject )
+        +   dynamic_sizeof( _message_header )
+        +   dynamic_sizeof( _message_footer )
+        +   dynamic_sizeof( _additionalinfo )
+        +   dynamic_sizeof( _last_user )
+        +   dynamic_sizeof( _change_reason )
+        +   dynamic_sizeof( _origin );
+
+    sz += _lmprogramdirectgears.capacity() * sizeof( CtiLMProgramDirectGear* );
+    for ( const auto & gear : _lmprogramdirectgears )
+    {
+        sz += calculateMemoryConsumption( gear );
+    }
+
+    sz += _lmprogramdirectgroups.capacity() * sizeof( CtiLMGroupVec::value_type );
+    for ( const auto & group : _lmprogramdirectgroups )
+    {
+        sz += calculateMemoryConsumption( group.get() );
+    }
+
+    // these are just hierarchy designations - don't include their memory consumption here.
+    // These are std::set<>, we are a little short on the memory consumption by the underlying node info.
+    sz += _master_programs.size() * sizeof( CtiLMProgramDirectSPtr );
+    sz += _subordinate_programs.size() * sizeof( CtiLMProgramDirectSPtr );
+
+    // elements stored by value
+    sz += _notificationgroupids.capacity() * sizeof( int );
+
+    return sz;
 }
 
 // Static Members

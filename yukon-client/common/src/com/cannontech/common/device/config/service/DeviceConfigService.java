@@ -13,6 +13,8 @@ import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.porter.message.Request;
+import com.cannontech.message.porter.message.Return;
 import com.cannontech.user.YukonUserContext;
 
 public interface DeviceConfigService {
@@ -45,5 +47,14 @@ public interface DeviceConfigService {
             throws InvalidDeviceTypeException;
 
     void unassignConfig(SimpleDevice device, LiteYukonUser user) throws InvalidDeviceTypeException;
-    
+
+    /**
+     * Updates status to "In Progress", used by Commander
+     */
+    void processCommandRequest(List<Request> commandRequests);
+
+    /**
+     * Updates status based on return value from Porter, used by Commander
+     */
+    void processCommandReturn(Return response);
 }

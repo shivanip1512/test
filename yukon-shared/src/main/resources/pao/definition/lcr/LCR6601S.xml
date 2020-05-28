@@ -10,7 +10,6 @@
     <pointInfos>
         <pointInfo name="Average Voltage" init="true" attributes="AVERAGE_VOLTAGE"/>
         <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
-        <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
         <pointInfo name="Minimum Voltage" init="true" attributes="MINIMUM_VOLTAGE"/>
         <pointInfo name="Maximum Voltage" init="true" attributes="MAXIMUM_VOLTAGE"/>
         

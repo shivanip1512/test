@@ -20,6 +20,9 @@ public:
     virtual CtiRequestMsg* createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const { return 0;}
     virtual CtiRequestMsg* createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const { return 0; }
 
+    std::size_t getFixedSize() const override   { return sizeof( *this ); }
+    std::size_t getVariableSize() const override;
+
 private:
 
     std::vector< CtiLMGroupBase* > _children;

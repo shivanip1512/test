@@ -83,9 +83,13 @@ public:
 
    std::string getTrackingId() const;
 
-   virtual std::string toString() const override;
+   std::string toString() const override;
 
    bool isValid() override;
+
+   std::size_t getFixedSize() const override    { return sizeof( *this ); }
+   std::size_t getVariableSize() const override;
+
    static unsigned int getInstanceCount() { return _instanceCount; }
 };
 

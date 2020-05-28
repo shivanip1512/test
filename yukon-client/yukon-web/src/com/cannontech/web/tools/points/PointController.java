@@ -73,6 +73,7 @@ import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.data.point.SystemPoint;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
@@ -122,7 +123,7 @@ public class PointController {
     
     private static final String baseKey = "yukon.web.modules.tools.point";
 
-    private final Validator validator = new SimpleValidator<PointBackingBean>(PointBackingBean.class) {
+    private final Validator validator = new SimpleValidator<>(PointBackingBean.class) {
         @Override
         protected void doValidation(PointBackingBean bean, Errors errors) {
             if (bean.getValue() != null) {
@@ -199,7 +200,7 @@ public class PointController {
     public @ResponseBody Map<String, Object> getNextValidPointOffset(@RequestParam("paoId") int paoId,
             @RequestParam("pointType") String pointType) {
         int pointOffset = PointOffsetUtils.getValidPointOffset(paoId, PointType.getForString(pointType));
-        Map<String, Object> json = new HashMap<String, Object>();
+        Map<String, Object> json = new HashMap<>();
         json.put("nextValidPointOffset", pointOffset);
         return json;
     }
@@ -292,7 +293,7 @@ public class PointController {
         model.addAttribute("fdrInterfaceTypes", interfaceTypes);
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());
-        model.addAttribute("unitMeasures", unitMeasureDao.getLiteUnitMeasures());
+        model.addAttribute("unitMeasures", UnitOfMeasure.allValidValues());
         model.addAttribute("decimalPlaces", ImmutableList.of(0, 1, 2, 3, 4, 5, 6, 7, 8));
         model.addAttribute("meterDials", ImmutableList.of(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         model.addAttribute("stateGroups", stateGroupDao.getAllStateGroups());

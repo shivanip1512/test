@@ -180,7 +180,7 @@
                                         <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6"/>
                                     </td> 
                                     <td class="vam">
-                                        <i:inline key=".custom"/><tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize"/>
+                                        <i:inline key=".custom"/><tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize vam"/>
                                     </td>
                                     </tr>
                                     </table>
@@ -346,7 +346,7 @@
                                         <tags:selectWithItems id="commMedium" path="capbankAdditionalInfo.commMedium" 
                                         items="${communicationMediumList}" itemValue="displayName"/>
                                         <tags:input id="customCommMedium" path="capbankAdditionalInfo.commMediumCustom" inputClass="dn" maxlength="20"/>
-                                        <i:inline key=".custom"/><input id="customMediumCheckbox" type="checkbox" class="js-custom-medium" <c:if test="${capbank.capbankAdditionalInfo.customCommMedium}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
+                                        <i:inline key=".custom"/><input id="customMediumCheckbox" type="checkbox" class="js-custom-medium vam" <c:if test="${capbank.capbankAdditionalInfo.customCommMedium}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.commStrength">
                                         <tags:input path="capbankAdditionalInfo.commStrengh" />

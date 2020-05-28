@@ -66,12 +66,23 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
     }
 
     private void validateTimingField(Errors errors, PortTiming timing) {
-        YukonValidationUtils.checkIfFieldRequired("timing.preTxWait", errors, timing.getPreTxWait(), "Pre Tx Wait");
-        YukonValidationUtils.checkIfFieldRequired("timing.rtsToTxWait", errors, timing.getRtsToTxWait(), "RTS To Tx Wait");
-        YukonValidationUtils.checkIfFieldRequired("timing.postTxWait", errors, timing.getPostTxWait(), "Post Tx Wait");
-        YukonValidationUtils.checkIfFieldRequired("timing.receiveDataWait", errors, timing.getReceiveDataWait(),
-                "Receive Data Wait");
-        YukonValidationUtils.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(), "Additional Time Out");
+        if (!errors.hasFieldErrors("timing.preTxWait")) {
+            YukonValidationUtils.checkIfFieldRequired("timing.preTxWait", errors, timing.getPreTxWait(), "Pre Tx Wait");
+        }
+        if (!errors.hasFieldErrors("timing.rtsToTxWait")) {
+            YukonValidationUtils.checkIfFieldRequired("timing.rtsToTxWait", errors, timing.getRtsToTxWait(), "RTS To Tx Wait");
+        }
+        if (!errors.hasFieldErrors("timing.postTxWait")) {
+            YukonValidationUtils.checkIfFieldRequired("timing.postTxWait", errors, timing.getPostTxWait(), "Post Tx Wait");
+        }
+        if (!errors.hasFieldErrors("timing.receiveDataWait")) {
+            YukonValidationUtils.checkIfFieldRequired("timing.receiveDataWait", errors, timing.getReceiveDataWait(),
+                    "Receive Data Wait");
+        }
+        if (!errors.hasFieldErrors("timing.extraTimeOut")) {
+            YukonValidationUtils.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(),
+                    "Additional Time Out");
+        }
         PortValidatorHelper.validatePortTimingFields(errors, timing);
     }
 
