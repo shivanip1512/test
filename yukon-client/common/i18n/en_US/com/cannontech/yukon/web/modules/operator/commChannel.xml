@@ -68,7 +68,6 @@
     <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_7">com7</entry>
     <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_8">com8</entry>
     <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_50">com50</entry>
-    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_89">com89</entry>
-    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_90">com90</entry>
+    <entry key="yukon.web.modules.operator.commChannel.physicalPort.COM_99">com99</entry>
     <entry key="yukon.web.modules.operator.commChannel.physicalPort.OTHER">Other</entry>
 </properties>

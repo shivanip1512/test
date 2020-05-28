@@ -13,8 +13,7 @@ public enum PhysicalPort implements DisplayableEnum {
     COM_7("com7"),
     COM_8("com8"),
     COM_50("com50"),
-    COM_89("com89"),
-    COM_90("com90"),
+    COM_99("com99"),
     OTHER("Other");
 
     private String baseKey = "yukon.web.modules.operator.commChannel.physicalPort.";
