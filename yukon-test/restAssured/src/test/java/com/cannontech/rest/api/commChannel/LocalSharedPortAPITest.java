@@ -93,8 +93,7 @@ public class LocalSharedPortAPITest {
 
     /**
      * Test case to validate LocalSharedPort comm channel cannot be created with Baud Rate filed as null and gets valid error
-     * message
-     * in response
+     * message in response
      */
     @Test
     public void localSharedPortCommChannel_05_BaudRateCannotBeNull() {
@@ -113,8 +112,7 @@ public class LocalSharedPortAPITest {
 
     /**
      * Test case to validate LocalSharedPort comm channel cannot be created with blank value in physical port field and gets valid
-     * error message
-     * in response
+     * error message in response
      */
     @Test
     public void localSharedPortCommChannel_06_PhysicalPortCannotBeBlank() {
@@ -134,8 +132,7 @@ public class LocalSharedPortAPITest {
 
     /**
      * Test case to validate LocalSharedPort comm channel cannot be created as Pysical port field exceeds maximum length of 8 and
-     * gets valid error
-     * message in response
+     * gets valid error message in response
      */
     @Test
     public void localSharedPortCommChannel_07_PhysicalPortMaxLength() {
@@ -154,8 +151,7 @@ public class LocalSharedPortAPITest {
 
     /**
      * Test case to validate LocalSharedPort comm channel cannot be created as as Timing fields Exceed Max Value and gets valid
-     * error
-     * message in response
+     * error message in response
      */
     @Test
     public void localSharedPortCommChannel_08_TimingExceedMaxValue() {
@@ -189,8 +185,7 @@ public class LocalSharedPortAPITest {
 
     /**
      * Test case to validate LocalSharedPort comm channel cannot be created as as Timing fields Exceed Min Value and gets valid
-     * error
-     * message in response
+     * error message in response
      */
     @Test
     public void localSharedPortCommChannel_09_TimingBlelowMinValue() {
