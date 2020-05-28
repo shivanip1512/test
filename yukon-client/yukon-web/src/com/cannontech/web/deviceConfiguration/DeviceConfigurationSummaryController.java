@@ -113,7 +113,7 @@ public class DeviceConfigurationSummaryController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllConfigurationsContainingMeters();
+        List<LightDeviceConfiguration> configurations = deviceConfigurationDao.getAllConfigsWithDeviceConfigStateEntry();
         model.addAttribute("configurations", configurations);
         for (DetailSortBy column : DetailSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -204,7 +204,7 @@ public class DeviceConfigurationSummaryController {
             }
             //Include any assigned
             if (filter.getConfigurationIds().contains(DEVICE_CONFIG_ASSIGNED_TO_ANY)) {
-                filter.setConfigurationIds(deviceConfigurationDao.getAllConfigurationsContainingMeters()
+                filter.setConfigurationIds(deviceConfigurationDao.getAllConfigsWithDeviceConfigStateEntry()
                         .stream()
                         .map(config -> config.getConfigurationId())
                         .collect(Collectors.toList()));

@@ -19,6 +19,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -206,7 +207,9 @@ public class DeviceConfigSummaryDaoImpl implements DeviceConfigSummaryDao {
     }
     
     private List<PaoType> getSupportedPaoTypes() {
-        return paoDefinitionDao.getPaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION).stream().map(
-            t -> t.getType()).filter(type -> type.isMeter()).collect(Collectors.toList());
+        return paoDefinitionDao.getPaosThatSupportTag(PaoTag.DEVICE_CONFIGURATION).stream()
+                .map(PaoDefinition::getType)
+                .filter(PaoType::isMeter)
+                .collect(Collectors.toList());
     }
 }
