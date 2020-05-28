@@ -1275,26 +1275,25 @@ bool CtiLMGroupConstraintChecker::checkDurationConstraint(LONG current_duration,
     return true;
 }
 
-bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds)
+bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG proposed_gear, CtiTime proposed_stop)
 {
     bool ret_val = true;
     CtiLMProgramDirectGear* currentGearObject = _lm_program.getCurrentGearObject();
 
-    if( proposed_stop_seconds > _lm_program.getDirectStopTime().seconds() )
+    if( proposed_stop > _lm_program.getDirectStopTime() )
     {
         CtiTime currentStopTime = _lm_program.getDirectStopTime();
-        CtiTime proposedStop    = CtiTime(proposed_stop_seconds);
 
         string result = "Gear change does not support extending the stop time. Current stop time: ";
         result += currentStopTime.asString();
         result += " Requested stop time: ";
-        result += proposedStop.asString();
+        result += proposed_stop.asString();
         result += " You cannot override this constraint error.";
         _results.push_back(result);
 
         _constraintViolations.push_back(ConstraintViolation(ConstraintViolation::CV_TT_CannotExtendStopTime,
                                                             currentStopTime,
-                                                            proposedStop));
+                                                            proposed_stop));
 
         ret_val = false;
     }

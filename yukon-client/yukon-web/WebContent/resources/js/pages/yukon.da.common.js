@@ -254,6 +254,10 @@ yukon.da.common = (function () {
 
                 mod.showComments(paoId, paoName);
             });
+            
+            $(document).on("click", ".js-save-comment", function () {
+                yukon.da.comments.addComment();
+            });
         },
         
         /** 

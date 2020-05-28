@@ -66,8 +66,6 @@
 
 #define LM_DEBUG_EXTENDED          0x10000000
 
-extern CtiTime gInvalidCtiTime;
-extern ULONG gInvalidCtiTimeSeconds;
+extern const CtiTime gInvalidCtiTime;
+extern const CtiTime gEndOfCtiTime;
 
-extern CtiTime gEndOfCtiTime;
-extern ULONG gEndOfCtiTimeSeconds;
