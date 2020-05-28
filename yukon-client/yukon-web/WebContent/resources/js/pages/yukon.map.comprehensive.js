@@ -275,10 +275,14 @@ yukon.map.comprehensive = (function () {
                     }
                 }
                 var cog = $(target).closest('.js-cog-menu'),
-                noteIcon = $(target).closest('.js-view-all-notes');
+                    noteIcon = $(target).closest('.js-view-all-notes');
                 if (cog.exists() && !noteIcon.exists()) {
                     $('#js-popup-note-create').show();
                 }
+            });
+            
+            $(document).on('dialogopen', '#js-pao-notes-popup', function() {
+            	$('#device-info').hide();
             });
             
             /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */
