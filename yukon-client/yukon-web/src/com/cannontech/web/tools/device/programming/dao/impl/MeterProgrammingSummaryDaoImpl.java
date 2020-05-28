@@ -98,9 +98,9 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
                    + " mpAssigned.Guid as AssignedGuid, mpAssigned.Name as AssignedProgramName, "
                    + " PaoName as DeviceName, Type, MeterNumber, LastUpdate, mps.Source, mps.Status, mps.DeviceId");
         sql.append("FROM MeterProgramStatus mps");
-        sql.append("FULL JOIN MeterProgramAssignment mpa ON mps.DeviceId = mpa.DeviceId");
-        sql.append("FULL JOIN MeterProgram mpReported ON mpReported.Guid = mps.ReportedGuid");
-        sql.append("FULL JOIN MeterProgram mpAssigned ON mpAssigned.Guid = mpa.Guid");
+        sql.append("LEFT JOIN MeterProgramAssignment mpa ON mps.DeviceId = mpa.DeviceId");
+        sql.append("LEFT JOIN MeterProgram mpReported ON mpReported.Guid = mps.ReportedGuid");
+        sql.append("LEFT JOIN MeterProgram mpAssigned ON mpAssigned.Guid = mpa.Guid");
         sql.append("JOIN YukonPAObject ypo ON mps.DeviceId = ypo.PAObjectID");
         sql.append("LEFT JOIN DeviceMeterGroup dmg ON mps.DeviceId = dmg.DeviceId");
         sql.append("WHERE mps.DeviceID").eq(deviceId);

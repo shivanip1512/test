@@ -22,7 +22,7 @@
         <c:if test="${result.displayProgressBar()}">
             <tags:updateableProgressBar totalCount="100" countKey="METER_PROGRAMMING/${result.device.id}/PROGRESS" hideCount="true"/>
             <cti:dataUpdaterCallback function="yukon.ami.meterProgramming.summary.refreshCheck(${result.device.id})" 
-                progressComplete="METER_PROGRAMMING/${result.device.id}/IS_PROGRESS_COMPLETE"/>
+                isInProgress="METER_PROGRAMMING/${result.device.id}/IS_IN_PROGRESS"/>
         </c:if>
     </td>
     <td><cti:formatDate type="BOTH" value="${result.lastUpdate}"/></td>

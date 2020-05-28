@@ -136,14 +136,14 @@ yukon.ami.meterProgramming.summary = (function () {
             
             refreshCheck: function (deviceId) {
                 return function (data) {
-                    if (data.progressComplete == 'true') {
+                    if (data.isInProgress == 'false') {
                         //refresh row
                         $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
                         .done(function (rowData) {
                             var deviceRow = $('#summary-table').find('tr[data-device-id=' + deviceId + ']');
                             deviceRow.html(rowData);
                             //stop data updaters
-                            var idMap = {progressComplete : "METER_PROGRAMMING/" + deviceId + "/IS_PROGRESS_COMPLETE"};
+                            var idMap = {isInProgress : "METER_PROGRAMMING/" + deviceId + "/IS_IN_PROGRESS"};
                             yukon.dataUpdater.unRegisterCallback(idMap);
                             var idMap = {completedCount : "METER_PROGRAMMING/" + deviceId + "/PROGRESS"};
                             yukon.dataUpdater.unRegisterCallback(idMap);
