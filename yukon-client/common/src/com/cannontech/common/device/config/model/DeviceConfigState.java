@@ -13,9 +13,9 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao.LastAction
 public class DeviceConfigState implements Serializable{
     private static final long serialVersionUID = 1L;
     private int deviceId;
-    private ConfigState state;
-    private LastAction action;
-    private LastActionStatus status;
+    private ConfigState currentState;
+    private LastAction lastAction;
+    private LastActionStatus lastActionStatus;
     private Instant actionStart;
     private Instant actionEnd;
     private Integer creId;
@@ -23,9 +23,9 @@ public class DeviceConfigState implements Serializable{
     public DeviceConfigState(int deviceId, ConfigState state, LastAction action, LastActionStatus status, Instant actionStart,
             Instant actionEnd, Integer creId) {
         this.setDeviceId(deviceId);
-        this.setState(state);
-        this.setAction(action);
-        this.setStatus(status);
+        this.setCurrentState(state);
+        this.setLastAction(action);
+        this.setLastActionStatus(status);
         this.setActionStart(actionStart);
         this.setActionEnd(actionEnd);
         this.setCreId(creId);
@@ -37,30 +37,6 @@ public class DeviceConfigState implements Serializable{
 
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public ConfigState getState() {
-        return state;
-    }
-
-    public void setState(ConfigState state) {
-        this.state = state;
-    }
-
-    public LastAction getAction() {
-        return action;
-    }
-
-    public void setAction(LastAction action) {
-        this.action = action;
-    }
-
-    public LastActionStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(LastActionStatus status) {
-        this.status = status;
     }
 
     public Instant getActionStart() {
@@ -85,6 +61,30 @@ public class DeviceConfigState implements Serializable{
 
     public void setCreId(Integer creId) {
         this.creId = creId;
+    }
+
+    public LastAction getLastAction() {
+        return lastAction;
+    }
+
+    public void setLastAction(LastAction lastAction) {
+        this.lastAction = lastAction;
+    }
+
+    public ConfigState getCurrentState() {
+        return currentState;
+    }
+
+    public LastActionStatus getLastActionStatus() {
+        return lastActionStatus;
+    }
+
+    public void setLastActionStatus(LastActionStatus lastActionStatus) {
+        this.lastActionStatus = lastActionStatus;
+    }
+
+    public void setCurrentState(ConfigState currentState) {
+        this.currentState = currentState;
     }
 
     @Override

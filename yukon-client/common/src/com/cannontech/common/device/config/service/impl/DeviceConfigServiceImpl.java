@@ -527,8 +527,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return devices.stream()
                 .filter(device -> {
                     DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
-                    return currentState != null && currentState.getStatus() != IN_PROGRESS
-                            && Lists.newArrayList(states).contains(currentState.getState());
+                    return currentState != null && currentState.getLastActionStatus() != IN_PROGRESS
+                            && Lists.newArrayList(states).contains(currentState.getCurrentState());
                 })
                 .map(device -> new DeviceConfigState(device.getDeviceId(), newState, action, SUCCESS, startTime, stopTime, null))
                 .collect(Collectors.toList());
@@ -547,8 +547,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         return devices.stream()
                 .filter(device -> {
                     DeviceConfigState currentState = deviceToState.get(device.getDeviceId());
-                    return currentState != null && currentState.getStatus() != IN_PROGRESS
-                            && states.contains(currentState.getState());
+                    return currentState != null && currentState.getLastActionStatus() != IN_PROGRESS
+                            && states.contains(currentState.getCurrentState());
                 })
                 .collect(Collectors.toList());
     }
@@ -697,8 +697,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
                     LastAction action = LastAction.getByRequestType(requestType);
                     DeviceConfigState existingState = deviceToState.get(deviceId);
                     if (existingState != null) {
-                        existingState.setAction(action);
-                        existingState.setStatus(IN_PROGRESS);
+                        existingState.setLastAction(action);
+                        existingState.setLastActionStatus(IN_PROGRESS);
                         existingState.setActionStart(startTime);
                         existingState.setActionEnd(null);
                         existingState.setCreId(creId);
@@ -737,17 +737,17 @@ public class DeviceConfigServiceImpl implements DeviceConfigService, CollectionA
         DeviceConfigState newState = (DeviceConfigState) SerializationUtils.clone(currentState);
         newState.setActionEnd(Instant.now());
         if (error == null) {
-            newState.setStatus(SUCCESS);
+            newState.setLastActionStatus(SUCCESS);
             if (device.getDeviceType().isPlc() && requestType == DeviceRequestType.GROUP_DEVICE_CONFIG_SEND) {
-                newState.setState(UNCONFIRMED);
+                newState.setCurrentState(UNCONFIRMED);
             } else {
-                newState.setState(IN_SYNC);
+                newState.setCurrentState(IN_SYNC);
             }
         } else if (error == DeviceError.CONFIG_NOT_CURRENT) {
-            newState.setStatus(SUCCESS);
-            newState.setState(OUT_OF_SYNC);
+            newState.setLastActionStatus(SUCCESS);
+            newState.setCurrentState(OUT_OF_SYNC);
         } else {
-            newState.setStatus(FAILURE);
+            newState.setLastActionStatus(FAILURE);
         }
         return newState;
     }

@@ -418,5 +418,5 @@ public interface DeviceConfigurationDao {
     /**
      * Returns configurations for devices that have an entry in DeviceConfigState table
      */
-    List<LightDeviceConfiguration> getAllConfigurationsContainingMeters();
+    List<LightDeviceConfiguration> getAllConfigsWithDeviceConfigStateEntry();
 }
