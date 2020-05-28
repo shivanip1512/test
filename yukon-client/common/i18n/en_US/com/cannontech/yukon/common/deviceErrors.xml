@@ -1284,6 +1284,14 @@
     <entry key="yukon.web.error.code.334.description">There is no Meter Program assigned to this device in Yukon.</entry>
     <entry key="yukon.web.error.code.334.troubleshooting">No troubleshooting is available for this error.</entry>
 
+    <entry key="yukon.web.error.code.335.porter">Invalid meter program.</entry>
+    <entry key="yukon.web.error.code.335.description">The Meter Program assigned to this device in Yukon is invalid.</entry>
+    <entry key="yukon.web.error.code.335.troubleshooting">Choose a different Meter Program to send to this device.</entry>
+
+    <entry key="yukon.web.error.code.336.porter">Meter program not found.</entry>
+    <entry key="yukon.web.error.code.336.description">The Meter Program assigned to this device in Yukon cannot be found.</entry>
+    <entry key="yukon.web.error.code.336.troubleshooting">Choose a different Meter Program to send to this device.</entry>
+
     <entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
     <entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
         currently associated with this device in Yukon.</entry>
