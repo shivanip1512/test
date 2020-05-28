@@ -33,7 +33,7 @@ public class PointApiCreationValidator<T extends PointBaseModel<?>> extends Simp
             ScalarPointModel<?> scalarPointModel = (ScalarPointModel<?>) pointBase;
             YukonValidationUtils.checkIfFieldRequired("pointUnit", errors, scalarPointModel.getPointUnit(), "pointUnit");
             if (!errors.hasFieldErrors("pointUnit")) {
-                YukonValidationUtils.checkIfFieldRequired("pointUnit.uomId", errors, scalarPointModel.getPointUnit().getUomId(), "pointUnit.uomId");
+                YukonValidationUtils.checkIfFieldRequired("pointUnit.uomID", errors, scalarPointModel.getPointUnit().getUomID(), "pointUnit.uomId");
             }
         }
 

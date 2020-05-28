@@ -46,7 +46,7 @@ public class PointBaseModelFactory {
                                                            baseModel.getPaoId(),
                                                            baseModel.getPointId(),
                                                            baseModel.getPointOffset(),
-                                                           analogPointModel.getPointUnit().getUomId(),
+                                                           analogPointModel.getPointUnit().getUomID(),
                                                            -1);
                 break;
             case CalcAnalog:

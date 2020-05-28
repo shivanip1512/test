@@ -102,7 +102,11 @@ public class ScalarPoint extends PointBase {
 
     public PointUnit getPointUnit() {
         if (pointUnit == null) {
-            pointUnit = new PointUnit();
+            pointUnit = new PointUnit(getPoint().getPointID(), 
+                                      UnitOfMeasure.KWH.getId(),
+                                      PointUnit.DEFAULT_DECIMAL_PLACES ,
+                                      CtiUtilities.INVALID_MAX_DOUBLE,
+                                      CtiUtilities.INVALID_MIN_DOUBLE, 0);
         }
         return pointUnit;
     }

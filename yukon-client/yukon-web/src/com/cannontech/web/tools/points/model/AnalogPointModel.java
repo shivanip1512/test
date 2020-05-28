@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.points.model;
 
 import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.db.point.PointAnalog;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 

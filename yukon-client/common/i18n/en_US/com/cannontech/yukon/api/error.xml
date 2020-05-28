@@ -8,6 +8,5 @@
 <entry key="yukon.web.api.error.udpPort.invalidHexLength">Encryption Key must be 16 bytes long (32 hex values).</entry>
 <entry key="yukon.web.api.error.udpPort.invalidSocketNumber">Socket number must be 1025 when port type is not shared.</entry>
 
-<entry key="yukon.web.api.error.paoId.doesNotExist">Pao Id does not exist.</entry>
-<entry key="yukon.web.api.error.uomId.doesNotExist">Uom Id does not exist.</entry>
+<entry key="yukon.web.api.error.doesNotExist">{0} does not exist.</entry>
 </properties>
