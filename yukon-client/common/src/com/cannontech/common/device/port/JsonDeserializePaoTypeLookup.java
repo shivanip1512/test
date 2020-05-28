@@ -27,10 +27,10 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     private IDatabaseCache serverDatabaseCache = YukonSpringHook.getBean(IDatabaseCache.class);
 
     @Override
-    public YukonPao deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public YukonPao deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException, TypeNotSupportedExcpetion {
         TreeNode node = parser.readValueAsTree();
         if (node == null) {
-            throw new NotFoundException("request is not valid");
+            throw new NotFoundException("request is not found in correct format");
         }
         String id = ServletUtils.getPathVariable("id");
         PaoType paoType;
@@ -50,7 +50,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
      * @throws TypeNotSupportedExcpetion when invalid PaoType is provided in JSON,
      * this exception is handled by ApiExceptionHandler which will convert it into a global error.
      */
-    private PaoType getPaoTypeFromJson(TreeNode node) {
+    private PaoType getPaoTypeFromJson(TreeNode node) throws TypeNotSupportedExcpetion {
         TreeNode type = node.get("type");
         if (type != null) {
             try {
