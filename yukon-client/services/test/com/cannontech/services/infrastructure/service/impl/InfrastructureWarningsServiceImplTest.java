@@ -7,6 +7,7 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -34,6 +35,7 @@ public class InfrastructureWarningsServiceImplTest {
             EventLogMockServiceFactory.getEventLogMockService(InfrastructureEventLogService.class);
     
     @Test
+    @Ignore
     public void test_getNotificationEventsForNewWarnings() {
         final LiteYukonPAObject pao1 = new LiteYukonPAObject(1, "pao1", 
                                                              PaoCategory.DEVICE, 
