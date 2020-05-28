@@ -2,13 +2,15 @@ package unit.cayenta;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
@@ -86,12 +88,18 @@ class MockSimpleHttpPostService implements SimpleHttpPostService {
 		return response;
 	}
 	
-	private String getStringFromExampleFile(String path) throws IOException {
-		
-		Resource requestSchemaResource = new ClassPathResource(path, this.getClass());
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(requestSchemaResource.getInputStream(), writer);
-		String text = writer.toString();
-		return text;
-	}
+    private String getStringFromExampleFile(String path) throws IOException {
+        String directory = System.getProperty("user.dir");
+        if (!directory.contains("yukon-web")) {
+            String clientDir = directory.substring(0, directory.lastIndexOf("\\") + 1);
+            directory = clientDir + "yukon-web";
+        }
+        File xmlFile = new File(directory + File.separator + "test" + File.separator + path);
+        try (InputStream stream = new FileInputStream(xmlFile)) {
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(stream, writer);
+            String text = writer.toString();
+            return text;
+        }
+    }
 }

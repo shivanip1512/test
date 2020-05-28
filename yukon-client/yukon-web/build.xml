@@ -131,7 +131,8 @@
     <target name="runUnitTests" description="Run all unit tests, stop on failure" depends="compileUnitTests">
         <antcall target="executeTests">
             <param name="halt" value="no" />
-            <param name="testDir" value="test/build" />
+            <param name="srcdir" value="test"/>
+            <param name="destdir" value="test/build" />
         </antcall>
     </target>
 
@@ -171,9 +172,10 @@
         <mkdir dir="${test.results.dir}" />
 
         <!-- Run all tests (currently looks for all classes whose name ends with 'Test') -->
-        <junit printsummary="yes" haltonerror="${halt}" haltonfailure="${halt}">
+        <junit printsummary="on" haltonerror="${halt}" haltonfailure="${halt}" fork="yes" forkmode="perBatch">
             <classpath id="junit.class.path">
-                <dirset dir="test" />
+                <pathelement location="${srcdir}"/>
+                <pathelement location="${destdir}"/>
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
                     <exclude name="**/WebContent/**" />
@@ -181,7 +183,7 @@
             </classpath>
             <formatter type="xml" />
             <batchtest fork="yes" todir="${test.results.dir}">
-                <fileset dir="${testDir}">
+                <fileset dir="${destdir}">
                     <include name="**/*Test.class" />
                 </fileset>
             </batchtest>
