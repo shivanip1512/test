@@ -185,14 +185,14 @@ void E2eSimulator::delayProcessing(float delay, const E2eDataRequestMsg requestM
 
 void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
 {
-    const auto requestSender = [this](const E2eDataRequestMsg &requestMsg, const e2edt_request_packet& request) {
+    const auto requestSender = [this, &requestMsg](const e2edt_request_packet& request) {
         if( auto serializedE2eRequest = buildE2eDtRequest(request);
             ! serializedE2eRequest.empty() )
         {
             sendE2eDataIndication(requestMsg, serializedE2eRequest);
         }
     };
-    const auto replySender = [this](const E2eDataRequestMsg &requestMsg, const e2edt_reply_packet& reply) {
+    const auto replySender = [this, &requestMsg](const e2edt_reply_packet& reply) {
         if( auto serializedE2eReply = buildE2eDtReply(reply);
             ! serializedE2eReply.empty() )
         {
@@ -228,11 +228,11 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
 
             if( isRfDa(requestMsg.rfnIdentifier) )
             {
-                RfDa::processRequest({ replySender }, *e2edtRequest, requestMsg);
+                RfDa::processRequest({ replySender }, *e2edtRequest, requestMsg.rfnIdentifier, requestMsg.applicationServiceId);
             }
             else
             {
-                RfnMeter::processRequest({ requestSender }, { replySender }, *e2edtRequest, requestMsg);
+                RfnMeter::processRequest({ requestSender }, { replySender }, *e2edtRequest, requestMsg.rfnIdentifier, requestMsg.applicationServiceId);
             }
         }
         else if( auto e2edtReply = dynamic_cast<const e2edt_reply_packet*>(msgPtr.get()) )
@@ -243,7 +243,7 @@ void E2eSimulator::processE2eDtRequest(const E2eDataRequestMsg requestMsg)
             }
             else
             {
-                RfnMeter::processReply({ requestSender }, *e2edtReply, requestMsg);
+                RfnMeter::processReply({ requestSender }, *e2edtReply, requestMsg.rfnIdentifier, requestMsg.applicationServiceId);
             }
         }
         else
