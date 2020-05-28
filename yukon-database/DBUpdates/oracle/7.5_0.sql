@@ -444,7 +444,7 @@ FROM YukonPAObject y
     LEFT JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
     --  Select commands sent to the devices, if any
-    LEFT JOIN (
+    JOIN (
         SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime FROM
             CommandRequestExec cre 
                 JOIN CommandRequestExecResult crer
@@ -461,21 +461,23 @@ FROM YukonPAObject y
     --  Only include metering types - do not include RTUs, CBCs, regulators, etc
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
     AND dcdm.DeviceConfigurationId IS NULL
-    AND latest_action.maxCompleteTime IS NOT NULL
-    
-UNION
+)
+ORDER BY LastActionEnd ASC;
 
+INSERT INTO DeviceConfigState (PaObjectId, CurrentState, LastAction, LastActionStatus, LastActionStart, LastActionEnd, CommandRequestExecId)
+(
 SELECT distinct PaObjectId, 'UNREAD', 'ASSIGN', 'SUCCESS', CURRENT_TIMESTAMP AS LastActionStart, CURRENT_TIMESTAMP AS LastActionEnd, NULL
 FROM YukonPAObject y 
     --  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices
     JOIN DeviceConfigurationDeviceMap dcdm ON y.paobjectid=dcdm.deviceid
     --  Select commands sent to the devices, if any
-    LEFT JOIN CommandRequestExecRequest crerq ON y.PAObjectID=crerq.DeviceId
-    LEFT JOIN CommandRequestExec cre ON crerq.CommandRequestExecId=cre.CommandRequestExecId
+    LEFT JOIN CommandRequestExecResult crer ON y.PAObjectID=crer.DeviceId
+    LEFT JOIN CommandRequestExec cre ON crer.CommandRequestExecId=cre.CommandRequestExecId 
+        AND cre.CommandRequestExecType IN ('GROUP_DEVICE_CONFIG_VERIFY','GROUP_DEVICE_CONFIG_SEND','GROUP_DEVICE_CONFIG_READ')
     --  Only include metering types - do not include RTUs, CBCs, regulators, etc
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
-    AND (cre.CommandRequestExecType IS NULL OR cre.CommandRequestExecType IN ('GROUP_DEVICE_CONFIG_VERIFY','GROUP_DEVICE_CONFIG_SEND','GROUP_DEVICE_CONFIG_READ'))
     AND cre.CommandRequestExecId IS NULL
+    AND y.PAObjectID NOT IN (SElECT PAObjectID FROM DeviceConfigState)
 )
 ORDER BY LastActionEnd ASC;
 
