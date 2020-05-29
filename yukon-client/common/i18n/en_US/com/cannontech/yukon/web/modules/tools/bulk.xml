@@ -207,7 +207,7 @@
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.noteText">
     <![CDATA[
         Select an existing meter program to assign to the selected devices or upload a new meter program. 
-        This command instructs the device(s) to begin requesting the full C&I meter program from Yukon.  This â€œinstructâ€� command will complete quickly, but the program upload will take minutes or hours.
+        This command instructs the device(s) to begin requesting the full C&I meter program from Yukon.  This "instruct" command will complete quickly, but the program upload will take minutes or hours.
         To view the progress of the upload, please see the <a href="{0}" target="_blank">Meter Programming Summary</a> page.
     ]]></entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.meterProgramType">Meter Program Type</entry>
