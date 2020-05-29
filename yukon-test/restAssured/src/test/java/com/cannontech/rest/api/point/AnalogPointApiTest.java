@@ -8,6 +8,8 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
+import com.cannontech.rest.api.common.model.MockAnalogControlType;
+import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.cannontech.rest.api.common.model.MockPointType;
 import com.cannontech.rest.api.point.helper.PointHelper;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
@@ -23,7 +25,7 @@ public class AnalogPointApiTest {
 
     @BeforeClass
     public void setUp() {
-        analogPoint = (MockPointBase) PointHelper.buildPoint(MockPointType.Analog);
+        analogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
     }
 
     @Test
@@ -49,13 +51,28 @@ public class AnalogPointApiTest {
         MockAnalogPoint analogPointDetail = getResponse.as(MockAnalogPoint.class);
 
         assertTrue("poaId Should be : " + analogPoint.getPaoId(), analogPoint.getPaoId().equals(analogPointDetail.getPaoId()));
-        assertTrue("Name Should be : " + analogPoint.getPointName(), analogPoint.getPointName().equals(analogPointDetail.getPointName()));
-        assertTrue("Point Type Should be : " + analogPoint.getPointType(), analogPoint.getPointType().equals(analogPointDetail.getPointType()));
-        assertTrue("Point Offset Should be : " + analogPoint.getPointOffset(), analogPoint.getPointOffset().equals(analogPointDetail.getPointOffset()));
+        assertTrue("Name Should be : " + analogPoint.getPointName(),
+                analogPoint.getPointName().equals(analogPointDetail.getPointName()));
+        assertTrue("Point Type Should be : " + analogPoint.getPointType(),
+                analogPoint.getPointType().equals(analogPointDetail.getPointType()));
+        assertTrue("Point Offset Should be : " + analogPoint.getPointOffset(),
+                analogPoint.getPointOffset().equals(analogPointDetail.getPointOffset()));
+
+        assertTrue("Archive Type Should be : " + analogPointDetail.getArchiveType(),
+                analogPointDetail.getArchiveType().equals(analogPointDetail.getArchiveType()));
+        assertTrue("Timing Group Should be : " + analogPointDetail.getTimingGroup(),
+                analogPointDetail.getTimingGroup().equals(analogPointDetail.getTimingGroup()));
+        assertTrue("Update Style Should be : " + analogPointDetail.getStaleData().getUpdateStyle(),
+                analogPointDetail.getStaleData().getUpdateStyle().equals(analogPointDetail.getStaleData().getUpdateStyle()));
+        assertTrue("State Group Id Should be : " + analogPointDetail.getStateGroupId(),
+                analogPointDetail.getStateGroupId().equals(analogPointDetail.getStateGroupId()));
+        assertTrue("Control Type Should be : " + analogPointDetail.getPointAnalogControl().getControlType(), analogPointDetail
+                .getPointAnalogControl().getControlType().equals(analogPointDetail.getPointAnalogControl().getControlType()));
     }
 
     /**
-     * Test case to validate Analog Point cannot be created as name with null and gets valid error message in response
+     * Test case to validate Analog Point cannot be created as name with null and gets valid error message
+     * in response
      */
     @Test
     public void analogPoint_03_NameCannotBeNull() {
@@ -71,8 +88,8 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created with name having more than 60 characters and validates valid error
-     * message in response
+     * Test case to validate Analog Point cannot be created with name having more than 60 characters and
+     * validates valid error message in response
      */
     @Test
     public void analogPoint_04_NameGreaterThanMaxLength() {
@@ -105,10 +122,11 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created with Invalid Pao Id and gets valid error message in response
+     * Test case to validate Analog Point cannot be created with Invalid Pao Id and gets valid error message
+     * in response
      */
     @Test
-    public void analogPoint_05_InvalidPaoId() {
+    public void analogPoint_06_InvalidPaoId() {
         MockPointBase mockPointBase = (MockPointBase) PointHelper.buildPoint(MockPointType.Analog);
 
         mockPointBase.setPaoId(99999999);
@@ -121,10 +139,11 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created with Invalid Uom Id and gets valid error message in response
+     * Test case to validate Analog Point cannot be created with Invalid Uom Id and gets valid error message
+     * in response
      */
     @Test
-    public void analogPoint_06_InvalidUomId() {
+    public void analogPoint_07_InvalidUomId() {
         MockPointBase mockPointBase = (MockPointBase) PointHelper.buildPoint(MockPointType.Analog);
 
         MockPointUnit pointUnit = MockPointUnit.builder().uomId(100).build();
@@ -138,11 +157,11 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created with name having special characters and validates valid error message
-     * in response
+     * Test case to validate Analog Point cannot be cannot be created with name having special characters and validates
+     * valid error message in response
      */
     @Test
-    public void analogPoint_07_NameWithSpecialChars() {
+    public void analogPoint_08_NameWithSpecialChars() {
         MockPointBase mockPointBase = (MockPointBase) PointHelper.buildPoint(MockPointType.Analog);
 
         mockPointBase.setPointName("Test,//Test");
@@ -157,11 +176,11 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be cannot be created from null value of point offset and validates valid error
-     * message in response
+     * Test case to validate Analog Point cannot be cannot be created with name having special characters and validates
+     * valid error message in response
      */
     @Test
-    public void analogPoint_07_NullPointOffset() {
+    public void analogPoint_09_NullPointOffset() {
         MockPointBase mockPointBase = (MockPointBase) PointHelper.buildPoint(MockPointType.Analog);
 
         mockPointBase.setPointOffset(null);
@@ -171,6 +190,117 @@ public class AnalogPointApiTest {
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "pointOffset", "pointOffset is required."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Update Style and validates
+     * valid error message in response
+     */
+    @Test
+    public void analogPoint_10_InvalidUpdateStyle() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getStaleData().setUpdateStyle(3);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "staleData.updateStyle", "Update Style must be 0 or 1."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Archive Interval
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_11_InvalidArchiveInterval() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.setArchiveType(MockPointArchiveType.ON_CHANGE);
+        mockAnalogPoint.setArchiveInterval(60);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "archiveInterval",
+                        "Archive Interval must be 0 when Archive Data type is None, On Change, or On Update."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Decimal Places
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_12_InvalidDecimalPlaces() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getPointUnit().setDecimalPlaces(12);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "pointUnit.decimalPlaces", "Must be between 0 and 10."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid State Id
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_13_InvalidStateId() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.setStateGroupId(500);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "stateGroupId", "State Group Id 500 does not exist."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Control Offset
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_14_InvalidControlOffset() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getPointAnalogControl().setControlType(MockAnalogControlType.NONE);
+        mockAnalogPoint.getPointAnalogControl().setControlOffset(76);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "pointAnalogControl.controlOffset",
+                        "Control Offset must be 0 when Control Type is None."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Control Inhibited
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_15_InvalidControlInhibited() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getPointAnalogControl().setControlType(MockAnalogControlType.NONE);
+        mockAnalogPoint.getPointAnalogControl().setControlInhibited(true);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "pointAnalogControl.controlInhibited",
+                        "Control Inhibited must be false when Control type is None."),
                 "Expected code in response is not correct");
     }
 }
