@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Comm channel Suite">
+    <test name="Comm channel Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.commChannel.TcpPortApiTest" />
+            <class name="com.cannontech.rest.api.commChannel.TcpTerminalServerApiTest" />
+            <class name="com.cannontech.rest.api.commChannel.UdpTerminalServerApiTest" />
+            <class name="com.cannontech.rest.api.commChannel.LocalSharedPortApiTest" />
+        </classes>
+    </test>
+</suite>
