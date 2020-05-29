@@ -49,7 +49,7 @@
                                         ${fn:escapeXml(commChannel.physicalPort)}
                                     </cti:displayForPageEditModes>
                                     <cti:displayForPageEditModes modes="EDIT">
-                                        <input type="hidden" id="otherPhysicalPortValue" value="${otherPhysicalPort}">
+                                        <input type="hidden" id="otherPhysicalPortEnumValue" value="${otherPhysicalPort}">
                                         <c:set var="physicalPortError">
                                             <form:errors path="physicalPort"/>
                                         </c:set>
@@ -58,14 +58,14 @@
                                         </c:if>
                                         <c:choose>
                                             <c:when test="${isPhyicalPortUserDefined || physicalPortError}">
-                                                <input type="hidden" id="userPhysicalPort" value="${otherPhysicalPort}">
+                                                <input type="hidden" id="portEnumValue" value="${otherPhysicalPort}">
                                             </c:when>
                                             <c:otherwise>
                                                 <input type="hidden" id="portValue" value="${portValue}"> 
                                             </c:otherwise>
                                         </c:choose>
                                         <tags:selectWithItems path="webPhysicalPort" items="${physicalPortList}" inputClass="js-physical-port"/>
-                                        <tags:input path="physicalPort" maxlength="8" inputClass="js-user-physical-port-value dn"/>
+                                        <tags:input path="physicalPort" maxlength="8" size="12" inputClass="js-user-physical-port-value dn"/>
                                     </cti:displayForPageEditModes>
                                 </tags:nameValue2>
                             </c:if>
