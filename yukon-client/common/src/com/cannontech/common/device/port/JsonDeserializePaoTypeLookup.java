@@ -37,12 +37,12 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         PaoType paoType;
 
         if (id == null) {
-            paoType = getPaoTypeFromJson(node);
+            paoType = getPaoTypeFromJson(type);
         } else {
             // Update case
             // if type field is present in request, Validate type.
             if (type != null) {
-                getPaoTypeFromJson(node);
+                getPaoTypeFromJson(type);
             }
             paoType = getPaoTypeFromCache(id);
         }
@@ -54,16 +54,15 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
      * @throws TypeNotSupportedExcpetion when invalid PaoType is provided in JSON,
      * this exception is handled by ApiExceptionHandler which will convert it into a global error.
      */
-    private PaoType getPaoTypeFromJson(TreeNode node) throws TypeNotSupportedException {
-        TreeNode type = node.get("type");
-        String poaTypeString = null;
+    private PaoType getPaoTypeFromJson(TreeNode type) throws TypeNotSupportedException {
+        String paoTypeString = null;
         if (type != null) {
             try {
-                poaTypeString = type.toString().replace("\"", "");
-                return PaoType.valueOf(poaTypeString);
+                paoTypeString = type.toString().replace("\"", "");
+                return PaoType.valueOf(paoTypeString);
             } catch (IllegalArgumentException e) {
                 // throw exception for invalid paoType
-                throw new TypeNotSupportedException(poaTypeString + " type is not valid.");
+                throw new TypeNotSupportedException(paoTypeString + " type is not valid.");
             }
         } else {
             throw new NotFoundException("type is not found in the request.");
@@ -77,7 +76,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     private PaoType getPaoTypeFromCache(String id) {
         LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(id));
         if (pao == null) {
-            throw new NotFoundException("id, passed in the URL, does not found.");
+            throw new NotFoundException("paoid "+id+" not found.") ;
         }
         return pao.getPaoType();
 
