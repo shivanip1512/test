@@ -80,7 +80,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
             List<PointLimit> pointLimits = scalarPointModel.getLimits();
             if (pointLimits.size() > 2) {
-                errors.rejectValue("limits", baseKey + ".pointLimit.maxLength");
+                errors.rejectValue("limits", baseKey + ".pointLimit.invalidSize");
             } else {
                 if (CollectionUtils.isNotEmpty(pointLimits)) {
                     int limitNumber = 0;
@@ -173,11 +173,9 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         }
 
         if (target.getStateGroupId() != null) {
-            List<LiteStateGroup> stateGroupList = stateGroupDao.getAllStateGroups();
-            Optional<LiteStateGroup> liteState = stateGroupList.stream().filter(
-                    state -> state.getLiteID() == target.getStateGroupId()).findFirst();
-            if (liteState.isEmpty()) {
-                errors.rejectValue("stateGroupId", baseKey + ".invalid.stateGroupId");
+            LiteStateGroup liteStateGroup = stateGroupDao.findStateGroup(target.getStateGroupId());
+            if (liteStateGroup == null) {
+                errors.rejectValue("stateGroupId", baseKey + ".invalid.stateGroupId", new Object[] { target.getStateGroupId() }, "");
             }
         }
 
