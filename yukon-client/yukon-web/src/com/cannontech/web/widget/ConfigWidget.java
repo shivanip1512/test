@@ -27,7 +27,6 @@ import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -267,12 +266,5 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         return "configWidget/render.jsp";
     }
     
-    @GetMapping("outOfSyncPopup")
-    public String outOfSyncPopup(ModelMap model, int deviceId, YukonUserContext userContext) {
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        VerifyResult verifyResult = deviceConfigService.verifyConfig(device, userContext.getYukonUser());
-        model.addAttribute("verifyResult", verifyResult);
-        return "../deviceConfiguration/summary/outOfSync.jsp";
-    }
 }
 

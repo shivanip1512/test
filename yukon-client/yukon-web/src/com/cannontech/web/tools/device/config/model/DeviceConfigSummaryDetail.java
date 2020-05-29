@@ -87,7 +87,7 @@ public class DeviceConfigSummaryDetail {
     }
     
     public boolean isDisplayOutOfSyncPopup() {
-        return status != LastActionStatus.IN_PROGRESS && state == ConfigState.OUT_OF_SYNC;
+        return status != LastActionStatus.IN_PROGRESS && needsUpload();
     }
     
     public boolean isDisplayFailurePopup() {

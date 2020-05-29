@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao.ConfigState;
+import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
@@ -140,8 +142,15 @@ public class DeviceConfigurationSummaryController {
     @GetMapping("{id}/outOfSync")
     public String outOfSync(ModelMap model, YukonUserContext context, @PathVariable int id) {
         SimpleDevice device = deviceDao.getYukonDevice(id);
-        VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
-        model.put("verifyResult", result);
+        DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(id);
+        if (configState.getCurrentState() == ConfigState.OUT_OF_SYNC) {
+            VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
+            model.put("verifyResult", result);
+        } else {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+            model.put("needsUploadMessage", accessor.getMessage(baseKey + "needsUploadMessage"));
+        }
+
         return "summary/outOfSync.jsp";
     }
     
