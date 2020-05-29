@@ -33,16 +33,17 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
             throw new NotFoundException("request is not found in correct format");
         }
         String id = ServletUtils.getPathVariable("id");
+        TreeNode type = node.get("type");
         PaoType paoType;
 
         if (id == null) {
             paoType = getPaoTypeFromJson(node);
         } else {
-            try {
-                getPaoTypeFromJson(node);
-            } catch (NotFoundException e) {
-            }
             // Update case
+            // if type field is present in request, Validate type.
+            if (type != null) {
+                getPaoTypeFromJson(node);
+            }
             paoType = getPaoTypeFromCache(id);
         }
         return (YukonPao) parser.getCodec().treeToValue(node, getYukonPaoFromModelFactory(paoType).getClass());
@@ -55,14 +56,14 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
      */
     private PaoType getPaoTypeFromJson(TreeNode node) throws TypeNotSupportedException {
         TreeNode type = node.get("type");
-        String PoaTypeString = null;
+        String poaTypeString = null;
         if (type != null) {
             try {
-                PoaTypeString = type.toString().replace("\"", "");
-                return PaoType.valueOf(PoaTypeString);
+                poaTypeString = type.toString().replace("\"", "");
+                return PaoType.valueOf(poaTypeString);
             } catch (IllegalArgumentException e) {
                 // throw exception for invalid paoType
-                throw new TypeNotSupportedException(PoaTypeString + " type is not valid.");
+                throw new TypeNotSupportedException(poaTypeString + " type is not valid.");
             }
         } else {
             throw new NotFoundException("type is not found in the request.");
@@ -76,7 +77,7 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
     private PaoType getPaoTypeFromCache(String id) {
         LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(id));
         if (pao == null) {
-            throw new NotFoundException("id not found.");
+            throw new NotFoundException("id, passed in the URL, does not found.");
         }
         return pao.getPaoType();
 
