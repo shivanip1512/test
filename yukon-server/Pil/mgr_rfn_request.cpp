@@ -8,6 +8,7 @@
 #include "dev_rfn.h"
 #include "cmd_rfn_ConfigNotification.h"
 #include "cmd_rfn_MeterProgramming.h"
+#include "meter_programming_prefixes.h"
 #include "rfn_statistics.h"
 #include "std_helper.h"
 #include "mgr_device.h"
@@ -163,6 +164,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
 void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::string& guid, const size_t totalSent)
 {
+    constexpr auto YukonPrefix = static_cast<char>(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
     double progress = MeterProgramming::gMeterProgrammingManager->calculateMeterProgrammingProgress(rfnDevice.getRfnIdentifier(), guid, totalSent);
 
     rfnDevice.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress, progress);
@@ -174,7 +176,7 @@ void updateMeterProgrammingProgress(Devices::RfnDevice& rfnDevice, const std::st
 
     sendMeterProgramStatusUpdate({
             rfnDevice.getRfnIdentifier(),
-            guid,
+            YukonPrefix + guid,
             programmingStatus,
             ClientErrors::None,
             std::chrono::system_clock::now() });

@@ -377,6 +377,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\config_device.h" />
     <ClInclude Include="include\da_lp_deviceconfig.h" />
     <ClInclude Include="include\id_dcdll.h" />
+    <ClInclude Include="include\meter_programming_prefixes.h" />
     <ClInclude Include="include\mgr_behavior.h" />
     <ClInclude Include="include\mgr_config.h" />
     <ClInclude Include="include\mgr_meter_programming.h" />

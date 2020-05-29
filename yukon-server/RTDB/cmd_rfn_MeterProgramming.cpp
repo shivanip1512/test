@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "cmd_rfn_MeterProgramming.h"
+#include "meter_programming_prefixes.h"
 #include "std_helper.h"
 #include "cmd_rfn_helper.h"
 #include "cmd_rfn_Individual.h"
@@ -8,6 +9,7 @@
 namespace Cti::Devices::Commands {
 
     using Logging::Vector::Hex::operator<<;
+    using Prefix = MeterProgramming::GuidPrefixes;
 
     namespace
     {
@@ -55,13 +57,18 @@ namespace Cti::Devices::Commands {
             {  42,  { ClientErrors::CatastrophicFailure,            "Catastrophic Failure, Full Reprogram Required" } }
         };
 
-        static const std::map<unsigned char, std::string> validGuidPrefixes
+        static const std::map<Prefix, std::string> validGuidPrefixes
         {
-            {   'R',    "Yukon programmed"                      },
-            {   'P',    "Optically programmed"                  },
-            {   'N',    "Unknown program"                       },
-            {   'U',    "Unprogrammed"                          },
-            {   'X',    "Insufficient meter hardware/firmware"  }
+            {   Prefix::YukonProgrammed,      
+                        "Yukon programmed"                      },
+            {   Prefix::OpticallyProgrammed,    
+                        "Optically programmed"                  },
+            {   Prefix::UnknownProgram,    
+                        "Unknown program"                       },
+            {   Prefix::Unprogrammed,    
+                        "Unprogrammed"                          },
+            {   Prefix::InsufficientMeterHardwareFirmware,    
+                        "Insufficient meter hardware/firmware"  }
         };
     }
 
@@ -141,7 +148,7 @@ namespace Cti::Devices::Commands {
             using namespace std::string_literals;
 
             std::string guidPrefix =
-                Cti::mapFindOrDefault( validGuidPrefixes, _meterConfigurationID[0],
+                Cti::mapFindOrDefault(validGuidPrefixes, Prefix { _meterConfigurationID[0] },
                                        "Unmapped Prefix '"s + _meterConfigurationID[0] + "'"s );
 
             description += "\nSource: " + guidPrefix 
