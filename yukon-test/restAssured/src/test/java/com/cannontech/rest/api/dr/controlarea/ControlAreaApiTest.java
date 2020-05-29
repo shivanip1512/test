@@ -196,14 +196,7 @@ public class ControlAreaApiTest {
      */
     @Test
     public void controlArea_06_CreateWithProgramAndTrigger(ITestContext context) {
-        loadProgram_Create();
-        //renaming load program to avoid duplicacy
-        String ldPgmNm = "EcobeePrgm";
-        loadProgram.setName(ldPgmNm);
-
-        ExtractableResponse<?> responseLP = ApiCallHelper.post("updateLoadProgram", loadProgram, loadProgram.getProgramId().toString());
-        assertTrue(responseLP.statusCode() == 200, "Status code should be 200");
-
+        createLoadProgram();
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", controlArea);
@@ -506,14 +499,6 @@ public class ControlAreaApiTest {
 
     @Test(dependsOnMethods = "controlArea_21_DeleteCntAreaWithProgramAssigned")
     public void controlArea_22_UpdateCntAreaByUnassigningProgram(ITestContext context) {
-        loadProgram_Create();      
-        //re-naming load program to avoid duplicacy
-        String ldPgmNm = "EcobeePrgmUpdate";
-        loadProgram.setName(ldPgmNm);
-
-        ExtractableResponse<?> responseLP = ApiCallHelper.post("updateLoadProgram", loadProgram, loadProgram.getProgramId().toString());
-        assertTrue(responseLP.statusCode() == 200, "Status code should be 200");
-        
        //control area creation
         MockControlArea control_Area = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
@@ -545,14 +530,6 @@ public class ControlAreaApiTest {
     
     @Test(dependsOnMethods = "controlArea_22_UpdateCntAreaByUnassigningProgram")
     public void controlArea_23_UpdateCntAreaUnassignProgramNegativeValidation(ITestContext context) {
-        loadProgram_Create();
-        //re-naming load program to avoid duplicacy      
-        String ldPgmNm = "EcobeePrgmUpdateValidation";
-        loadProgram.setName(ldPgmNm);
-
-        ExtractableResponse<?> responseLP = ApiCallHelper.post("updateLoadProgram", loadProgram, loadProgram.getProgramId().toString());
-        assertTrue(responseLP.statusCode() == 200, "Status code should be 200");
-        
         //control area creation
         MockControlArea control_Area = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
@@ -619,7 +596,7 @@ public class ControlAreaApiTest {
     /**
      * Method to create load program as we need to pass load program in request of Control Area.
      */
-    public void loadProgram_Create() {
+    private void createLoadProgram() {
 
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         loadGroups.add(LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_ECOBEE));
