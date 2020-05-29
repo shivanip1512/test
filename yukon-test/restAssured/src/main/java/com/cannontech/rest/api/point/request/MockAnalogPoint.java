@@ -2,6 +2,7 @@ package com.cannontech.rest.api.point.request;
 
 import java.util.List;
 
+import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -19,13 +20,13 @@ public class MockAnalogPoint extends MockPointBase {
     private Integer pointId;
     private Integer stateGroupId;
     private Boolean enable;
-    private String archiveType;
+    private MockPointArchiveType archiveType;
     private Integer archiveInterval;
     private String timingGroup;
     private Boolean alarmsDisabled;
     private MockStaleData staleData;
-    private List<Integer> limits;
+    private List<MockPointLimit> limits;
     private MockPointAnalog pointAnalog;
     private MockPointAnalogControl pointAnalogControl;
-    
+
 }

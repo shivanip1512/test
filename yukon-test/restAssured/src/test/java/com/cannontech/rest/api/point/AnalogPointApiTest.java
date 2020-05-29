@@ -55,8 +55,7 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created as name with null and gets valid error message
-     * in response
+     * Test case to validate Analog Point cannot be created as name with null and gets valid error message in response
      */
     @Test
     public void analogPoint_03_NameCannotBeNull() {
@@ -72,8 +71,8 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created with name having more than 60 characters and
-     * validates valid error message in response
+     * Test case to validate Analog Point cannot be created with name having more than 60 characters and validates valid error
+     * message in response
      */
     @Test
     public void analogPoint_04_NameGreaterThanMaxLength() {
@@ -106,8 +105,7 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created with Invalid Pao Id and gets valid error message
-     * in response
+     * Test case to validate Analog Point cannot be created with Invalid Pao Id and gets valid error message in response
      */
     @Test
     public void analogPoint_05_InvalidPaoId() {
@@ -123,8 +121,7 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be created with Invalid Uom Id and gets valid error message
-     * in response
+     * Test case to validate Analog Point cannot be created with Invalid Uom Id and gets valid error message in response
      */
     @Test
     public void analogPoint_06_InvalidUomId() {
@@ -141,8 +138,8 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be cannot be created with name having special characters and validates
-     * valid error message in response
+     * Test case to validate Analog Point cannot be created with name having special characters and validates valid error message
+     * in response
      */
     @Test
     public void analogPoint_07_NameWithSpecialChars() {
@@ -160,8 +157,8 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be cannot be created with name having special characters and validates
-     * valid error message in response
+     * Test case to validate Analog Point cannot be cannot be created from null value of point offset valid error message in
+     * response
      */
     @Test
     public void analogPoint_07_NullPointOffset() {
