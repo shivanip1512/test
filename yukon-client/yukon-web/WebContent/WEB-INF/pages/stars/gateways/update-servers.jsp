@@ -67,6 +67,12 @@
                                 <form:password path="list[${idx}].updateServerLogin.password" cssClass="M0 ${clazz} right"
                                     placeholder="${phPassword}" showPassword="true" size="12" data-toggle-group="toggle-update-server-${idx}"/>
                             </spring:bind>
+                            <spring:bind path="list[${idx}].updateServerLogin.username">
+                                <c:if test="${status.error}"><br><form:errors path="list[${idx}].updateServerLogin.username" cssClass="error" /></c:if>
+                            </spring:bind>
+                            <spring:bind path="list[${idx}].updateServerLogin.password">
+                                <c:if test="${status.error}"><br><form:errors path="list[${idx}].updateServerLogin.password" cssClass="error" /></c:if>
+                            </spring:bind>
                         </div>
                     </td>
                 </tr>
