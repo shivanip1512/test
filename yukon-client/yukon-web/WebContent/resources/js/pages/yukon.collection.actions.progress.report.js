@@ -167,7 +167,7 @@ yukon.collection.actions.progress.report = (function () {
             if (data.status == 'COMPLETE' || data.status == 'CANCELLED') {
                 clearTimeout(_updateTimeout);
                 if (data.stopTime) {
-                    var timeText = moment(data.stopTime).tz(yg.timezone).format(yg.formats.date.both);
+                    var timeText = moment(data.stopTime.millis).tz(yg.timezone).format(yg.formats.date.both);
                     $('.js-stop-time').text(timeText);
                 }
                 $('.js-set-routes').removeAttr('disabled');
