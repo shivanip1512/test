@@ -14,7 +14,7 @@ public class PointHelper {
 
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
-        String name = ApiUtils.buildFriendlyNameForPoint(pointType, "POINT", " Test Point");
+        String name = ApiUtils.buildFriendlyName(MockPointType.Analog, "", "PointTest");
         MockPointUnit pointUnit = MockPointUnit.builder().uomId(uomId).build();
         switch (pointType) {
         case Analog:

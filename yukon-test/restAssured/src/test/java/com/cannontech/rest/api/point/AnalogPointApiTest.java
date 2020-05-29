@@ -48,7 +48,7 @@ public class AnalogPointApiTest {
 
         MockAnalogPoint analogPointDetail = getResponse.as(MockAnalogPoint.class);
 
-        assertTrue("poaId Should be : " + analogPoint.getPaoId(), analogPoint.getPaoId().equals(analogPointDetail.getPaoId()));
+        assertTrue("paoId Should be : " + analogPoint.getPaoId(), analogPoint.getPaoId().equals(analogPointDetail.getPaoId()));
         assertTrue("Name Should be : " + analogPoint.getPointName(), analogPoint.getPointName().equals(analogPointDetail.getPointName()));
         assertTrue("Point Type Should be : " + analogPoint.getPointType(), analogPoint.getPointType().equals(analogPointDetail.getPointType()));
         assertTrue("Point Offset Should be : " + analogPoint.getPointOffset(), analogPoint.getPointOffset().equals(analogPointDetail.getPointOffset()));
