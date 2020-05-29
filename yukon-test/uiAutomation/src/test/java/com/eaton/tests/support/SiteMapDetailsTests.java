@@ -26,7 +26,7 @@ public class SiteMapDetailsTests extends SeleniumTestSetup {
         siteMapPage = new SiteMapPage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.GENERAL_TESTS, "" })
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
