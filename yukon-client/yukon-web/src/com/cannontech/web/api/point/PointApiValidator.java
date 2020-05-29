@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.StateGroupDao;
@@ -162,7 +163,10 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.ON_TIMER || target.getArchiveType() == PointArchiveType.ON_TIMER_OR_UPDATE)) {
             if (target.getArchiveInterval() != null) {
-                YukonValidationUtils.checkRange(errors, "archiveInterval", target.getArchiveInterval(), 1, 43200, true);
+                TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
+                if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
+                    errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
+                }
             }
         }
 

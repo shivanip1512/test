@@ -9,6 +9,7 @@
 <entry key="yukon.web.api.error.udpPort.invalidSocketNumber">Socket number must be 1025 when port type is not shared.</entry>
 
 <entry key="yukon.web.api.error.doesNotExist">{0} does not exist.</entry>
+<entry key="yukon.web.api.error.invalid">Invalid {0} value.</entry>
 <entry key="yukon.web.api.error.pointLimit.invalidSize">Maximum number of 2 limits exceeded.</entry>
 <entry key="yukon.web.api.error.invalid.stateGroupId">State Group Id {0} does not exist.</entry>
 <entry key="yukon.web.api.error.staleData.updateStyle">Update Style must be 0 or 1.</entry>
