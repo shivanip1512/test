@@ -50,6 +50,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -72,7 +73,7 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private ScheduledExecutorService executor = null;
     private RequestReplyTemplateImpl<RfnMeterDemandResetReply> qrTemplate;
@@ -237,8 +238,8 @@ public class DemandResetRfnServiceImpl implements DemandResetStrategyService, Po
     @PostConstruct
     public void initialize() {
         String configurationName = "RFN_METER_DEMAND_RESET";
-        qrTemplate = new RequestReplyTemplateImpl<>(configurationName, configurationSource, jmsTemplate,
-                JmsApiDirectory.RFN_METER_DEMAND_RESET);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DEMAND_RESET);
+        qrTemplate = new RequestReplyTemplateImpl<>(configurationName, configurationSource, jmsTemplate);
         verificationTimeout = configurationSource.getDuration(configurationName
             + "_VALIDATION_TIMEOUT", Duration.standardHours(26));
     }

@@ -17,6 +17,7 @@ import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.watchdog.base.YukonServices;
@@ -34,14 +35,14 @@ public class NetworkManagerWatcher extends ServiceStatusWatchdogImpl {
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private WatchdogWatcherService watcherService;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private RequestReplyTemplate<GatewayDataResponse> requestTemplate;
 
     @PostConstruct
     public void initialize() {
-        requestTemplate = new RequestReplyTemplateImpl<>("RF_GATEWAY_DATA", configurationSource, jmsTemplate,
-                JmsApiDirectory.RF_GATEWAY_DATA, true);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA);
+        requestTemplate = new RequestReplyTemplateImpl<>("RF_GATEWAY_DATA", configurationSource, jmsTemplate, true);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
             if (richPointData.getPointValue().getPointQuality().isInvalid()) {
                 log.debug("monitor {} discarded point data {} because point quality is invalid", monitor,
                     richPointData.getPointValue());
-                trackingLogger.rejectId(richPointData);
+                trackingLogger.rejectId(monitor.getName(), richPointData);
             }
             return;
         }
@@ -73,7 +73,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
         if (Boolean.TRUE.equals(isValidDeviceForMonitor)) {
             deviceDataMonitorCalculationService.updateViolationsGroupBasedOnNewPointData(monitor, richPointData);
-            trackingLogger.acceptId(richPointData);
+            trackingLogger.acceptId(monitor.getName(), richPointData);
         }
     }
 }

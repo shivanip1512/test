@@ -370,10 +370,10 @@ END -->
 
 struct test_MeterProgrammingManager : Cti::MeterProgramming::MeterProgrammingManager
 {
-    RawProgram loadRawProgram(const std::string guid) override
+    Cti::ErrorOr<RawProgram> loadRawProgram(const std::string guid) override
     {
-        return { { testProgram.begin(), testProgram.end() }, 
-                 { testPassword.begin(), testPassword.end() } };
+        return RawProgram { { testProgram.begin(), testProgram.end() }, 
+                            { testPassword.begin(), testPassword.end() } };
     }
 };
 
@@ -381,9 +381,11 @@ BOOST_AUTO_TEST_CASE(test_getProgram)
 {
     test_MeterProgrammingManager mgr;
 
-    const auto buf = mgr.getProgram("not-really-a-guid");
+	const auto buf = mgr.getProgram("not-really-a-guid");
 
-    BOOST_CHECK_EQUAL(buf.size(), 1744);
+    BOOST_REQUIRE(buf);
+
+    BOOST_CHECK_EQUAL(buf->size(), 1744);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

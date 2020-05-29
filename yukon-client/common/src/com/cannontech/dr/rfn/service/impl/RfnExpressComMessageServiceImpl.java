@@ -48,7 +48,6 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     @Autowired private RawExpressComCommandBuilder commandBuilder;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    @Autowired private YukonJmsTemplate jmsTemplate;
     private final static Logger log = YukonLogManager.getLogger(RfnExpressComMessageServiceImpl.class);
 
     private YukonJmsTemplate rfnExpresscomUnicastBulkJmsTemplate;
@@ -187,12 +186,12 @@ public class RfnExpressComMessageServiceImpl implements RfnExpressComMessageServ
     @PostConstruct
     public void initialize() {
         rfnExpresscomUnicastBulkJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_BULK);
-        rfnExpresscomBroadcastJmsTemplate= jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_BROADCAST);
+        rfnExpresscomBroadcastJmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_EXPRESSCOM_BROADCAST);
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
                 JmsApiDirectory.RFN_EXPRESSCOM_UNICAST_WITH_DATA, JmsApiDirectory.RFN_EXPRESSCOM_UNICAST);
-        unicastWithDataTemplate = new RequestReplyReplyTemplate<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate,
-                requestQueue);
-        unicastTemplate = new RequestReplyTemplateImpl<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate, requestQueue);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(requestQueue);
+        unicastWithDataTemplate = new RequestReplyReplyTemplate<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate);
+        unicastTemplate = new RequestReplyTemplateImpl<>("RFN_XCOMM_REQUEST", configurationSource, jmsTemplate);
     }
     
     /**

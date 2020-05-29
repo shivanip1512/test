@@ -42,9 +42,8 @@ public class ScalarPointModel<T extends ScalarPoint> extends PointBaseModel<T> {
 
     @Override
     public void buildDBPersistent(T point) {
-        if (getPointUnit() != null) {
-            getPointUnit().buildDBPersistent(point.getPointUnit());
-        }
+
+        getPointUnit().buildDBPersistent(point.getPointUnit());
 
         if (CollectionUtils.isNotEmpty(getLimits())) {
             getLimits().forEach(pointLimitModel -> {

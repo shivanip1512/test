@@ -1087,17 +1087,24 @@ void LoadScannableDevices(void *ptr)
         ReloadStateNames();
     }
 
-    if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
+    // We DON'T have a DBChange message -OR- we DO and its for a DEVICE, ROUTE or PORT
+    if ( pChg == NULL
+         || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE)
+         || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE)
+         || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT) )
     {
         try
         {
             start = start.now();
 
-            if(pChg)
+            // We DO have a DBChange for either a DEVICE or ROUTE
+            if ( pChg
+                 && (  (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE)
+                    || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) ) )
             {
                 ScannerDeviceManager.refreshDeviceByID(pChg->getId(), pChg->getCategory(), pChg->getObjectType());
             }
-            else
+            else    // we DON'T have a DBChange -OR- we DO and its for a PORT
             {
                 ScannerDeviceManager.refreshAllDevices();
             }

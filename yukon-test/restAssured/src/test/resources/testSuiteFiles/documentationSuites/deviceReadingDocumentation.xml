@@ -4,7 +4,7 @@
 <suite name="Devicen Readings Documentation Suite" preserve-order="true">
     <test name="Device Readings Documentation Test" >
         <classes>
-           <class name = "com.cannontech.rest.api.documentation.devicereading.DeviceReadingsApiControllerTest" />
+           <class name = "com.cannontech.rest.api.documentation.devicereading.DeviceReadingsApiDoc" />
         </classes>
     </test>
 </suite>

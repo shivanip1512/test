@@ -25,6 +25,7 @@ import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.dr.ecobee.EcobeeAuthenticationException;
 import com.cannontech.dr.ecobee.EcobeeCommunicationException;
@@ -38,15 +39,16 @@ public class EcobeeRestProxyFactory {
 
     @Autowired private ConfigurationSource configSource;
     @Autowired private GlobalSettingDao settingDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private final RestTemplate proxiedTemplate;
     private RequestReplyTemplate<EcobeeAuthTokenResponse> ecobeeAuthTokenRequestTemplate;
     
     @PostConstruct
     public void init() {
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.ECOBEE_AUTH_TOKEN);
         ecobeeAuthTokenRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.ECOBEE_AUTH_TOKEN.getName(),
-                configSource, jmsTemplate, JmsApiDirectory.ECOBEE_AUTH_TOKEN);
+                configSource, jmsTemplate);
     }
     
     public EcobeeRestProxyFactory(RestTemplate proxiedTemplate) {

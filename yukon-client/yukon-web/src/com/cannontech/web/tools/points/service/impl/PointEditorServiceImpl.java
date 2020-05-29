@@ -468,7 +468,7 @@ public class PointEditorServiceImpl implements PointEditorService {
 
     @Override
     public int create(PointBaseModel pointBaseModel) {
-        PointBase pointBase = PointBaseModelFactory.createPointBase(pointBaseModel);
+        PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
 
         PointModel pointModel = new PointModel();
@@ -477,7 +477,7 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         if (pointBaseModel.getStaleData() != null) {
             StaleData staleData = pointBaseModel.getStaleData();
-            if (!(staleData.getTime() == 5 && staleData.getUpdateStyle() == 1)) {
+            if (!(staleData.getTime() != null  || staleData.getUpdateStyle() != null)) {
                 staleData.setEnabled(true);
             }
             pointModel.setStaleData(pointBaseModel.getStaleData());
@@ -494,7 +494,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         PointModel<?> pointModel = getModelForId(pointId);
 
         PointType ptType = PointType.getForString(pointModel.getPointBase().getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointBaseModelFactory.createPointBaseModel(ptType);
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
 
         if (pointBaseModel != null) {
             pointBaseModel.buildModel(pointModel.getPointBase());

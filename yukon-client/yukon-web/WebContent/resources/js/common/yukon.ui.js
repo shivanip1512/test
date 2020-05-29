@@ -1235,6 +1235,9 @@ yukon.ui = (function () {
             if (action === 'hide') {
                 inputs.each(function (idx, input) {
                     $(input).toggleClass('dn', !enable);
+                    if ($(input).next("span.js-units").exists()) {
+                        $(input).next("span.js-units").toggleClass('dn', !enable);
+                    }
                 });
             } else if (action === 'invisible') {
                 inputs.each(function (idx, input) {
