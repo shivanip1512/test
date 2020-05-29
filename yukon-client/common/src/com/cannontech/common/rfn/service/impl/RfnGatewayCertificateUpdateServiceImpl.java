@@ -34,6 +34,7 @@ import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 
 public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertificateUpdateService {
@@ -45,14 +46,14 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
     @Autowired private RfnGatewayService gatewayService;
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private RequestReplyTemplate<RfnGatewayUpgradeRequestAck> qrTemplate;
 
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplateImpl<RfnGatewayUpgradeRequestAck>(configName, configurationSource, jmsTemplate,
-                JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_CERTIFICATE_UPDATE);
+        qrTemplate = new RequestReplyTemplateImpl<RfnGatewayUpgradeRequestAck>(configName, configurationSource, jmsTemplate);
     }
 
     @Override

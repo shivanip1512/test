@@ -10,27 +10,22 @@ import javax.jms.ObjectMessage;
 import javax.jms.Session;
 import javax.jms.TemporaryQueue;
 
-import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.util.jms.api.JmsApi;
 
 public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Serializable>
     extends RequestReplyTemplateBase<JmsReplyReplyHandler<R1, R2>> {
     
-	private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
-    
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi, boolean isInternalMessage) {
-        super(configurationName, configurationSource, jmsTemplate, jmsApi, isInternalMessage);
+            YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
+        super(configurationName, configurationSource, jmsTemplate, isInternalMessage);
     }
 
     public RequestReplyReplyTemplate(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi) {
-        super(configurationName, configurationSource, jmsTemplate, jmsApi, false);
+            YukonJmsTemplate jmsTemplate) {
+        super(configurationName, configurationSource, jmsTemplate, false);
     }
 
     @Override
@@ -39,8 +34,9 @@ public class RequestReplyReplyTemplate<R1 extends Serializable, R2 extends Seria
         final Duration reply2Timeout = configurationSource.getDuration(configurationName + "_REPLY2_TIMEOUT", Duration.standardMinutes(10));
 
         DynamicDestinationResolver resolver = new DynamicDestinationResolver();
-        MessageProducer producer = session.createProducer(resolver.resolveDestinationName(session, requestQueueName, pubSubDomain));
-        
+        MessageProducer producer = session.createProducer(
+                resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain()));
+
         TemporaryQueue replyQueue = session.createTemporaryQueue();
         MessageConsumer replyConsumer = session.createConsumer(replyQueue);
         

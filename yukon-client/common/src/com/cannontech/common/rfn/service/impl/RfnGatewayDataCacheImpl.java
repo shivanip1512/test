@@ -29,6 +29,7 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.google.common.cache.AbstractLoadingCache;
 import com.google.common.cache.LoadingCache;
@@ -42,7 +43,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     private Executor executor;
 
     @Autowired private NmSyncServiceImpl nmSyncService;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     //Created in post-construct
     private RequestReplyTemplate<GatewayDataResponse> requestTemplate;
@@ -58,8 +59,9 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     
     @PostConstruct
     public void init() {
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_DATA);
         requestTemplate = new RequestReplyTemplateImpl<>(gatewayDataRequestCparm, configurationSource, jmsTemplate,
-                JmsApiDirectory.RF_GATEWAY_DATA, true);
+                 true);
     }
     
     @Override

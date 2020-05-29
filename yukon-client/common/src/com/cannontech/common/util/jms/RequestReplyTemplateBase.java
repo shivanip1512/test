@@ -15,7 +15,6 @@ import org.springframework.jms.core.SessionCallback;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.util.ExceptionHelper;
-import com.cannontech.common.util.jms.api.JmsApi;
 
 public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected static final Logger log = YukonLogManager.getLogger(RequestReplyTemplateBase.class);
@@ -25,8 +24,6 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
     protected YukonJmsTemplate jmsTemplate;
     protected ExecutorService readRequestThreadPool;
     protected String configurationName;
-    protected String requestQueueName;
-    protected boolean pubSubDomain = false;   // Queue (not a Topic)
     protected boolean internalMessage = false;
     
     /**
@@ -35,12 +32,10 @@ public abstract class RequestReplyTemplateBase<T extends JmsBaseReplyHandler> {
      *        log.
      */
     public RequestReplyTemplateBase(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi, boolean isInternalMessage) {
+            YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
         this.configurationName = configurationName;
         this.configurationSource = configurationSource;
         this.jmsTemplate = jmsTemplate;
-        this.requestQueueName = jmsApi.getQueueName();
-        this.pubSubDomain = jmsApi.isTopic();
         this.internalMessage = isInternalMessage;
         
         int queueSize = configurationSource.getInteger("REQUEST_REPLY_WORKER_QUEUE_SIZE", 50);

@@ -14,18 +14,17 @@ import org.joda.time.Duration;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.util.jms.api.JmsApi;
 
 public class RequestReplyTemplateImpl<R extends Serializable> extends RequestReplyTemplateBase<JmsReplyHandler<R>> implements RequestReplyTemplate<R> {
 
     public RequestReplyTemplateImpl(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi, boolean isInternalMessage) {
-        super(configurationName, configurationSource, jmsTemplate, jmsApi, isInternalMessage);
+            YukonJmsTemplate jmsTemplate, boolean isInternalMessage) {
+        super(configurationName, configurationSource, jmsTemplate, isInternalMessage);
     }
     
     public RequestReplyTemplateImpl(String configurationName, ConfigurationSource configurationSource,
-            YukonJmsTemplate jmsTemplate, JmsApi<?, ?, ?> jmsApi) {
-        super(configurationName, configurationSource, jmsTemplate, jmsApi, false);
+            YukonJmsTemplate jmsTemplate) {
+        super(configurationName, configurationSource, jmsTemplate, false);
     }
 
     @Override
@@ -35,9 +34,9 @@ public class RequestReplyTemplateImpl<R extends Serializable> extends RequestRep
                 configurationSource.getDuration(configurationName + "_REPLY_TIMEOUT", Duration.standardMinutes(1));
 
         DynamicDestinationResolver resolver = new DynamicDestinationResolver();
-        MessageProducer producer =
-                session.createProducer(resolver.resolveDestinationName(session, requestQueueName, pubSubDomain));
-        
+        MessageProducer producer = session.createProducer(
+                resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain()));
+
         TemporaryQueue replyQueue = session.createTemporaryQueue();
         MessageConsumer replyConsumer = session.createConsumer(replyQueue);
         
