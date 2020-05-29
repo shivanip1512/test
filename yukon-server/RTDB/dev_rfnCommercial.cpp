@@ -3,6 +3,7 @@
 #include "dev_rfnCommercial.h"
 #include "mgr_meter_programming.h"
 #include "cmd_rfn_MeterProgramming.h"
+#include "meter_programming_prefixes.h"
 #include "MeterProgramStatusArchiveRequestMsg.h"
 
 #include "error.h"
@@ -18,6 +19,8 @@ namespace
 
 YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnIndividualCommandList &rfnRequests)
 {
+    constexpr auto YukonPrefix = static_cast<char>(Cti::MeterProgramming::GuidPrefixes::YukonProgrammed);
+
     if( containsString(parse.getCommandStr(), " freezeday reset") )
     {
         rfnRequests.push_back(std::make_unique<Commands::RfnDemandFreezeConfigurationCommand>(0));
@@ -35,7 +38,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
 
             sendMeterProgramStatusUpdate({
                     getRfnIdentifier(),
-                    guid,
+                    YukonPrefix + guid,
                     ProgrammingStatus::Canceled,
                     ClientErrors::None,
                     std::chrono::system_clock::now() });
@@ -78,7 +81,7 @@ YukonError_t RfnCommercialDevice::executePutConfig(CtiRequestMsg *pReq, CtiComma
 
             sendMeterProgramStatusUpdate({
                     getRfnIdentifier(),
-                    guid,
+                    YukonPrefix + guid,
                     ProgrammingStatus::Failed,
                     programSize.error(),
                     std::chrono::system_clock::now() });
