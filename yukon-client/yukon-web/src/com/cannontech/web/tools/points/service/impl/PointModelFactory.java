@@ -7,14 +7,21 @@ import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 
-public class PointBaseModelFactory {
+/**
+ * The purpose of this class is to create PointBaseModel and Populating default PointBase object based on mandatory
+ * fields for different point type.
+ */
+public class PointModelFactory {
 
-    public final static PointBaseModel<? extends PointBase> createPointBaseModel(PointType pointType) {
+    /**
+     * Create PointBaseModel based on point Type.
+     */
+    public final static PointBaseModel<? extends PointBase> getModel(PointType pointType) {
 
-        PointBaseModel<? extends PointBase> baseModel = null;
+        PointBaseModel<? extends PointBase> pointModel = null;
         switch (pointType) {
             case Analog:
-                baseModel = new AnalogPointModel();
+                pointModel = new AnalogPointModel();
                 break;
             case CalcAnalog:
                 break;
@@ -33,10 +40,14 @@ public class PointBaseModelFactory {
 
         }
 
-        return baseModel;
+        return pointModel;
     }
 
-    public final static PointBase createPointBase(PointBaseModel baseModel) {
+    /**
+     * Populating default PointBase object based on mandatory fields present in PointBaseModel for different point
+     * types.
+     */
+    public final static PointBase createPoint(PointBaseModel baseModel) {
 
         PointBase pointBase = null;
         switch (baseModel.getPointType()) {

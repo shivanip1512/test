@@ -35,12 +35,11 @@ public class AnalogPointModel extends ScalarPointModel<AnalogPoint> {
 
     @Override
     public void buildDBPersistent(AnalogPoint point) {
-        if (getPointAnalog() != null) {
-            getPointAnalog().buildDBPersistent(point.getPointAnalog());
-        }
-        if (getPointAnalogControl() != null) {
-            getPointAnalogControl().buildDBPersistent(point.getPointAnalogControl());
-        }
+
+        getPointAnalog().buildDBPersistent(point.getPointAnalog());
+
+        getPointAnalogControl().buildDBPersistent(point.getPointAnalogControl());
+
         super.buildDBPersistent(point);
     }
 
