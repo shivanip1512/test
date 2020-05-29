@@ -125,7 +125,9 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
             pt.setStateGroupID(getStateGroupId());
         }
 
-        pt.setServiceFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
+        if (getEnable() != null) {
+            pt.setServiceFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
+        }
 
         if (getArchiveType() != null) {
             pt.setArchiveType(getArchiveType());
