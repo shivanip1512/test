@@ -157,8 +157,8 @@ public class AnalogPointApiTest {
     }
 
     /**
-     * Test case to validate Analog Point cannot be cannot be created from null value of point offset valid error message in
-     * response
+     * Test case to validate Analog Point cannot be cannot be created from null value of point offset and validates valid error
+     * message in response
      */
     @Test
     public void analogPoint_07_NullPointOffset() {
