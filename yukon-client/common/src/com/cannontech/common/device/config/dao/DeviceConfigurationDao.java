@@ -18,6 +18,7 @@ import com.cannontech.common.device.config.model.jaxb.Category;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.dao.NotFoundException;
@@ -27,15 +28,25 @@ import com.cannontech.core.dao.NotFoundException;
  */
 public interface DeviceConfigurationDao {
 
-    enum LastActionStatus {
-        SUCCESS, FAILURE, IN_PROGRESS, NA
+    enum LastActionStatus implements DisplayableEnum {
+        SUCCESS, FAILURE, IN_PROGRESS;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.tools.configs.summary.statusType." + name();
+        }
     }
 
-    enum ConfigState {
+    enum ConfigState implements DisplayableEnum {
         UNKNOWN, UNREAD, IN_SYNC, OUT_OF_SYNC, UNCONFIRMED, UNASSIGNED;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.tools.configs.summary.configState." + name();
+        }
     }
 
-    enum LastAction {
+    enum LastAction implements DisplayableEnum{
         SEND(DeviceRequestType.GROUP_DEVICE_CONFIG_SEND),
         READ(DeviceRequestType.GROUP_DEVICE_CONFIG_READ),
         VERIFY(DeviceRequestType.GROUP_DEVICE_CONFIG_VERIFY),
@@ -62,6 +73,11 @@ public interface DeviceConfigurationDao {
 
         public DeviceRequestType getRequestType() {
             return requestType;
+        }
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.tools.configs.summary.actionType." + name();
         }
     }
     
@@ -398,4 +414,9 @@ public interface DeviceConfigurationDao {
      * Marks in progress devices as failed
      */
     void failInProgressDevices(List<Integer> deviceIds);
+
+    /**
+     * Returns configurations for devices that have an entry in DeviceConfigState table
+     */
+    List<LightDeviceConfiguration> getAllConfigsWithDeviceConfigStateEntry();
 }

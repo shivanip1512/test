@@ -185,7 +185,7 @@ public class DeviceConfigServiceImplTest {
         Set<DeviceConfigState> newStates = ReflectionTestUtils.<Set<DeviceConfigState>>invokeMethod(impl, methodName, List.of(device), statesInDatabase, Instant.now(), Instant.now());
         ConfigState newState = null;
         if(!newStates.isEmpty()) {
-            newState = Iterables.getOnlyElement(newStates).getState();
+            newState = Iterables.getOnlyElement(newStates).getCurrentState();
         }
         assertEquals(newState, stateAfterChange);
     } 
@@ -200,11 +200,11 @@ public class DeviceConfigServiceImplTest {
         DeviceConfigState newState = (DeviceConfigState) method.invoke(impl, requestType, error, device, statesInDatabase.get(device.getDeviceId()));
         if(stateAfterChange == null) {
             // no change from the state in the database
-            assertEquals(newState.getState(), statesInDatabase.get(device.getDeviceId()).getState());
+            assertEquals(newState.getCurrentState(), statesInDatabase.get(device.getDeviceId()).getCurrentState());
         } else {
-            assertEquals(newState.getState(), stateAfterChange);   
+            assertEquals(newState.getCurrentState(), stateAfterChange);   
         }
-        assertEquals(newState.getStatus(), statusAfterChange);
+        assertEquals(newState.getLastActionStatus(), statusAfterChange);
     }
 }
 

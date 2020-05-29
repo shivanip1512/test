@@ -1240,6 +1240,22 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         return verifiableConfigurations;
     }
     
+    @Override
+    public List<LightDeviceConfiguration> getAllConfigsWithDeviceConfigStateEntry() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT DC.DeviceConfigurationId, DC.Name, DC.Description");
+        sql.append("FROM DeviceConfiguration DC");
+        sql.append("   JOIN DeviceConfigurationDeviceMap DCDM ON DCDM.DeviceConfigurationId = DC.DeviceConfigurationID");
+        sql.append("   JOIN DeviceConfigState DCS ON DCS.PAObjectID = DCDM.DeviceID");
+        sql.append("ORDER BY DC.Name");
+        return jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            int configurationId = rs.getInt("DeviceConfigurationId");
+            String name = rs.getString("Name");
+            String description = rs.getString("Description");
+            return new LightDeviceConfiguration(configurationId, name, description);
+        });
+    }
+
     private Multimap<LightDeviceConfiguration, String> getDeviceConfigToCategoryMap(SqlStatementBuilder sql){
         Multimap<LightDeviceConfiguration, String> deviceConfigToCategoryMap = ArrayListMultimap.create();
 
@@ -1278,9 +1294,9 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     }
 
     private void addDeviceConfigStateParams(DeviceConfigState state, SqlParameterSink params) {
-        params.addValue("CurrentState", state.getState());
-        params.addValue("LastAction", state.getAction());
-        params.addValue("LastActionStatus", state.getStatus());
+        params.addValue("CurrentState", state.getCurrentState());
+        params.addValue("LastAction", state.getLastAction());
+        params.addValue("LastActionStatus", state.getLastActionStatus());
         params.addValue("LastActionStart", state.getActionStart());
         params.addValue("LastActionEnd", state.getActionEnd());
         params.addValue("CommandRequestExecId", state.getCreId());
@@ -1298,7 +1314,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                 "CommandRequestExecId");
         updater.deleteBeforeInsertByColumn("PaObjectId");
         List<List<Object>> values = states.stream().map(value -> {
-            List<Object> row = Lists.newArrayList(value.getDeviceId(), value.getState(), value.getAction(), value.getStatus(),
+            List<Object> row = Lists.newArrayList(value.getDeviceId(), value.getCurrentState(), value.getLastAction(), value.getLastActionStatus(),
                     value.getActionStart(), value.getActionEnd(), value.getCreId());
             return row;
         }).collect(Collectors.toList());

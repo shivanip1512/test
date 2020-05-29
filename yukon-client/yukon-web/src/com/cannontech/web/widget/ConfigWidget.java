@@ -27,7 +27,6 @@ import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfigState;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
-import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -146,7 +145,6 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         Map<String, Object> jsonResponse = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId); 
-        final String summaryKey = "yukon.web.modules.tools.configs.summary.status.";
         boolean isInProgress = false;
         boolean isInSync = false;
         boolean notConfigured = false;
@@ -155,26 +153,26 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         String statusText = null;
                         
         if (configState == null
-                || (configState.getState() == ConfigState.UNASSIGNED || configState.getState() == ConfigState.UNKNOWN)) {
+                || (configState.getCurrentState() == ConfigState.UNASSIGNED || configState.getCurrentState() == ConfigState.UNKNOWN)) {
             // "Current Configuration: None" should display. No Status row, no Actions row, but with the Change Configuration row
             // still below.
             notConfigured = true;
-        } else if (configState.getStatus() == LastActionStatus.IN_PROGRESS) {
-            statusText = accessor.getMessage(summaryKey + "IN_PROGRESS");
+        } else if (configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
+            statusText = accessor.getMessage(configState.getLastActionStatus());
             isInProgress = true;
             // disable buttons
             // display status "In Progress" -  we can end up in this state for a short while
-        } else if (configState.getState() == ConfigState.IN_SYNC) {
+        } else if (configState.getCurrentState() == ConfigState.IN_SYNC) {
             // display status "in sync"
-            statusText = accessor.getMessage(summaryKey + "IN_SYNC");
+            statusText = accessor.getMessage(configState.getCurrentState());
             isInSync = true;
-        } else if (configState.getState() == ConfigState.OUT_OF_SYNC || configState.getState() == ConfigState.UNREAD) {
+        } else if (configState.getCurrentState() == ConfigState.OUT_OF_SYNC || configState.getCurrentState() == ConfigState.UNREAD) {
             // display status "needs upload"
-            statusText = accessor.getMessage(summaryKey + "NEEDS_UPLOAD");
+            statusText = accessor.getMessage(configState.getCurrentState());
             isOutOfSync = true;
-        } else if (configState.getState() == ConfigState.UNCONFIRMED) {
+        } else if (configState.getCurrentState() == ConfigState.UNCONFIRMED) {
             // display status "needs validation"
-            statusText = accessor.getMessage(summaryKey + "NEEDS_VALIDATION");
+            statusText = accessor.getMessage(configState.getCurrentState());
         }
         
         jsonResponse.put("statusText", statusText);
@@ -195,7 +193,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState currentConfigState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
-        if (currentConfigState != null && currentConfigState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (currentConfigState != null &&  currentConfigState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
             jsonResponse.put("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             if (configuration > -1) {
@@ -203,7 +201,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
                 DeviceConfigState configState = deviceConfigService.assignConfigToDevice(device, deviceConfig,
                         userContext.getYukonUser());
                 
-                if (configState != null && configState.getState() == ConfigState.OUT_OF_SYNC) {
+                if (configState != null && configState.getCurrentState() == ConfigState.OUT_OF_SYNC) {
                     //check for upload permission
                     if (rolePropertyDao.checkProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser())) {
                         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(device.getDeviceId());
@@ -226,7 +224,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
     public String removeConfig(ModelMap model, int deviceId, YukonUserContext userContext) throws InvalidDeviceTypeException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
-        if (configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
@@ -242,7 +240,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
-        if (configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
             model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             executor.submit(() -> deviceConfigService.sendConfig(device, userContext.getYukonUser()));
@@ -258,7 +256,7 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(deviceId);
-        if (configState != null && configState.getStatus() == LastActionStatus.IN_PROGRESS) {
+        if (configState != null && configState.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
             model.addAttribute("errorMessage", accessor.getMessage(baseKey + "actionInProgress"));
         } else {
             executor.submit(() -> deviceConfigService.readConfig(device, userContext.getYukonUser()));
@@ -268,12 +266,5 @@ public class ConfigWidget extends AdvancedWidgetControllerBase {
         return "configWidget/render.jsp";
     }
     
-    @GetMapping("outOfSyncPopup")
-    public String outOfSyncPopup(ModelMap model, int deviceId, YukonUserContext userContext) {
-        SimpleDevice device = deviceDao.getYukonDevice(deviceId);
-        VerifyResult verifyResult = deviceConfigService.verifyConfig(device, userContext.getYukonUser());
-        model.addAttribute("verifyResult", verifyResult);
-        return "../deviceConfiguration/summary/outOfSync.jsp";
-    }
 }
 
