@@ -23,6 +23,8 @@
 #include <tuple>
 #include <time.h>
 
+using ASIDs = Cti::Messaging::Rfn::ApplicationServiceIdentifiers;
+
 namespace Cti::Simulator {
 
 namespace {
@@ -177,6 +179,7 @@ NodeInfo getNodeInfo(const RfnIdentifier& rfnId)
     return mapFindOrCompute(nodeInfo, rfnId, NodeInfo::of);
 }
 
+
 void doBadRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request)
 {
     e2edt_reply_packet reply{};
@@ -192,10 +195,8 @@ void processChannelManagerPost(const E2eRequestSender e2eRequestSender, const E2
 void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier);
 void doHubMeterRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier);
 
-void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier, const Messaging::Rfn::ApplicationServiceIdentifiers applicationServiceId)
+void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
 {
-    using ASIDs = Messaging::Rfn::ApplicationServiceIdentifiers;
-
     switch( request.method )
     {
         default:
@@ -253,7 +254,7 @@ void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2e
 
 Bytes GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId);
 
-void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt_reply_packet& reply, const RfnIdentifier rfnIdentifier, const Messaging::Rfn::ApplicationServiceIdentifiers applicationServiceIdentifier)
+void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt_reply_packet& reply, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceIdentifier)
 {
     auto itr = meterProgrammingRequests.find(rfnIdentifier);
 
@@ -388,6 +389,8 @@ void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eR
     e2eReplySender(reply);
 }
 
+Bytes processAggregateRequests(const Bytes& request, const RfnIdentifier rfnIdentifier);
+
 void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier)
 {
     if( request.payload.empty() )
@@ -405,18 +408,79 @@ void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_reque
             doBadRequest(e2eReplySender, request);
             return;
         }
-/*        case 0x01:
+        case 0x01:
         {
-            reply.payload = // parse aggregate message payload
+            reply.payload = processAggregateRequests(request.payload, rfnIdentifier);
             reply.token = request.token;
             reply.status = Protocols::Coap::ResponseCode::Content;
             break;
-        }*/
+        }
     }
 
     reply.id = request.id;
 
     e2eReplySender(reply);
+}
+
+Bytes processAggregateRequests(const Bytes& request, const RfnIdentifier rfnIdentifier)
+{
+    constexpr auto HeaderLength = 1 + 2 + 2;  //  ASID + contextId + length
+
+    auto itr = request.begin() + 1;  //  skip the start command
+    const auto request_end = request.end();
+
+    if( itr >= request_end )
+    {
+        CTILOG_WARN(dout, "No payload while processing aggregate message for " << rfnIdentifier);
+        return {};
+    }
+
+    const auto count = *itr++;
+
+    Bytes result;
+
+    for( auto index = 1; itr + HeaderLength < request_end; ++index )
+    {
+        const uint16_t contextId = *itr++ << 8 
+                                 | *itr++;
+        const auto applicationServiceId = ASIDs{ *itr++ };
+        
+        const auto payloadLength = *itr++ << 8
+                                 | *itr++;
+
+        if( itr + payloadLength >= request_end )
+        {
+            CTILOG_WARN(dout, "Ran out of bytes while processing aggregate message for " << rfnIdentifier << FormattedList::of(
+                "Position", itr - request.begin(),
+                "Total bytes", request.size(),
+                "Expected bytes", payloadLength,
+                "Remaining bytes", request_end - itr,
+                "Request count", count,
+                "Request index", index));
+
+            return {};
+        }
+
+        Bytes payload { itr, itr + payloadLength };
+
+        Bytes reply;
+
+        const auto handleReply = [&reply](const e2edt_reply_packet& reply_packet) {
+            reply = reply_packet.payload;
+        };
+
+        switch( applicationServiceId )
+        {
+            //  Handle each ASID, ideally by calling the same handlers as processRequest RequestMethod::Get does...
+            //    ...  but that will require a shim for the ReplySender to call handleReply() above instead of an e2eReplySender
+            //  Most cases just return a buffer or a BadRequest, and just echo the id and token.
+            //    The refactor is doable, just not this commit.
+        }
+        
+        itr += payloadLength;
+    }
+
+    return {};
 }
 
 auto GetConfigNotification(const Bytes& request, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
