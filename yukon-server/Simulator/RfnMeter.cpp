@@ -23,6 +23,9 @@
 #include <tuple>
 #include <time.h>
 
+using ASIDs = Cti::Messaging::Rfn::ApplicationServiceIdentifiers;
+namespace Coap = Cti::Protocols::Coap;
+
 namespace Cti::Simulator {
 
 namespace {
@@ -177,49 +180,88 @@ NodeInfo getNodeInfo(const RfnIdentifier& rfnId)
     return mapFindOrCompute(nodeInfo, rfnId, NodeInfo::of);
 }
 
-void doBadRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& originalRequest)
+
+using PayloadOrStatus = std::variant<Bytes, Coap::ResponseCode>;
+using ReplySender = std::function<void(PayloadOrStatus)>;
+using DelayedReplySender = std::function<void(Bytes)>;
+
+void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier);
+void processChannelManagerPost(const E2eRequestSender e2eRequestSender, const ReplySender e2eReplySender, const e2edt_request_packet& post_request, const RfnIdentifier rfnIdentifier);
+void doBulkMessageRequest(const ReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier);
+void doHubMeterRequest(const ReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier);
+
+void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceId)
 {
-    e2edt_reply_packet reply{};
+    const auto sendReply = [&request, e2eReplySender](const PayloadOrStatus payloadOrStatus) {
+        e2edt_reply_packet reply;
 
-    reply.token = request.token;
-    reply.status = Protocols::Coap::ResponseCode::BadRequest;
+        reply.id = request.id;
 
-    e2eReplySender(originalRequest, reply);
-}
+        if( auto rc = std::get_if<Coap::ResponseCode>(&payloadOrStatus) )
+        {
+            if( reply.status = *rc;
+                reply.status != Coap::ResponseCode::EmptyMessage )
+            {
+                reply.token = request.token;
+            }
+        }
+        else
+        {
+            reply.status = Protocols::Coap::ResponseCode::Content;
+            reply.token = request.token;
+            reply.payload = std::get<Bytes>(payloadOrStatus);
+        }
 
-void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
-void processChannelManagerPost(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& post_request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
-void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg);
+        e2eReplySender(reply);
+    };
 
-void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& requestMsg)
-{
-    using ASIDs = Messaging::Rfn::ApplicationServiceIdentifiers;
+    const auto sendDelayedReply = [token=request.token, e2eRequestSender](const Bytes payload) {
+        e2edt_request_packet delayedReply;
+
+        delayedReply.id = idGenerator();
+        delayedReply.method = Protocols::Coap::RequestMethod::Post;
+        delayedReply.token = token;
+        delayedReply.confirmable = false;
+        delayedReply.payload = payload;
+
+        //  Delay the actual data reply by 4 seconds (arbitrary)
+        std::thread([e2eRequestSender](e2edt_request_packet delayedReply) {
+            Sleep(4000);
+
+            e2eRequestSender(delayedReply);
+        }, delayedReply).detach();
+    };
 
     switch( request.method )
     {
         default:
         {
-            CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
+            CTILOG_INFO(dout, "Received unknown method (" << static_cast<int>(request.method) << ") for rfnIdentifier " << rfnIdentifier);
             return;
         }
         case Protocols::Coap::RequestMethod::Get:
         {
-            switch( const auto asid = requestMsg.applicationServiceId )
+            switch( applicationServiceId )
             {
                 default:
                 {
-                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
-                    doBadRequest(e2eReplySender, request, requestMsg);
+                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(applicationServiceId) << ") for rfnIdentifier " << rfnIdentifier);
+                    sendReply(Coap::ResponseCode::BadRequest);
                     return;
                 }
                 case ASIDs::BulkMessageHandler:
                 {
-                    doBulkMessageRequest(e2eReplySender, request, requestMsg);
+                    doBulkMessageRequest(sendReply, request, rfnIdentifier);
                     return;
                 }
                 case ASIDs::ChannelManager:
                 {
-                    doChannelManagerRequest(e2eRequestSender, e2eReplySender, request, requestMsg);
+                    doChannelManagerRequest(sendReply, sendDelayedReply, request, rfnIdentifier);
+                    return;
+                }
+                case ASIDs::HubMeterCommandSet:
+                {
+                    doHubMeterRequest(sendReply, request, rfnIdentifier);
                     return;
                 }
             }
@@ -227,18 +269,17 @@ void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2e
         case Protocols::Coap::RequestMethod::Post:
         {
             //  The only POST we process at present is the Set Meter Configuration request, which results in a GET request back to Yukon.
-            switch( const auto asid = requestMsg.applicationServiceId; 
-                    asid )
+            switch( applicationServiceId )
             {
                 default:
                 {
-                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(asid) << ") for rfnIdentifier " << requestMsg.rfnIdentifier);
-                    doBadRequest(e2eReplySender, request, requestMsg);
+                    CTILOG_WARN(dout, "Received unhandled ASID (" << static_cast<int>(applicationServiceId) << ") for rfnIdentifier " << rfnIdentifier);
+                    sendReply(Coap::ResponseCode::BadRequest);
                     return;
                 }
                 case ASIDs::ChannelManager:
                 {
-                    processChannelManagerPost(e2eRequestSender, e2eReplySender, request, requestMsg);
+                    processChannelManagerPost(e2eRequestSender, sendReply, request, rfnIdentifier);
                     return;
                 }
             }
@@ -248,13 +289,13 @@ void RfnMeter::processRequest(const E2eRequestSender e2eRequestSender, const E2e
 
 Bytes GetMeterProgrammingConfiguration(const RfnIdentifier & rfnId);
 
-void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt_reply_packet& reply, const Messaging::Rfn::E2eDataRequestMsg& originalRequest)
+void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt_reply_packet& reply, const RfnIdentifier rfnIdentifier, const ASIDs applicationServiceIdentifier)
 {
-    auto itr = meterProgrammingRequests.find(originalRequest.rfnIdentifier);
+    const auto itr = meterProgrammingRequests.find(rfnIdentifier);
 
     if( itr == meterProgrammingRequests.end() )
     {
-        CTILOG_WARN(dout, "No active meter programming request for " << originalRequest.rfnIdentifier);
+        CTILOG_WARN(dout, "No active meter programming request for " << rfnIdentifier);
         return;
     }
 
@@ -293,7 +334,7 @@ void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt
 
         programmingRequest.currentToken = newRequest.token;
 
-        e2eRequestSender(originalRequest, newRequest);
+        e2eRequestSender(newRequest);
 
         return;
     }
@@ -304,7 +345,7 @@ void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt
         static_cast<std::string::size_type>(
             programmingRequest.path.find_last_of('/') + 1U));
 
-    getNodeInfo(originalRequest.rfnIdentifier).setConfigurationId(GuidPrefix::Yukon, guid);
+    getNodeInfo(rfnIdentifier).setConfigurationId(GuidPrefix::Yukon, guid);
 
     e2edt_request_packet newRequest;
 
@@ -316,76 +357,143 @@ void RfnMeter::processReply(const E2eRequestSender e2eRequestSender, const e2edt
 
     meterProgrammingRequests.erase(itr);
 
-    newRequest.payload = GetMeterProgrammingConfiguration(originalRequest.rfnIdentifier);
+    newRequest.payload = GetMeterProgrammingConfiguration(rfnIdentifier);
 
-    e2eRequestSender(originalRequest, newRequest);
+    e2eRequestSender(newRequest);
 }
 
 Bytes DataStreamingRead (const Bytes& request, const RfnIdentifier & rfnId);
 Bytes DataStreamingWrite(const Bytes& request, const RfnIdentifier & rfnId);
 
-void doChannelManagerRequest(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& originalRequest)
+void doChannelManagerRequest(const ReplySender sendReply, const DelayedReplySender sendDelayedReply, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier)
 {
     if( request.payload.empty() )
     {
+        sendReply(Coap::ResponseCode::BadRequest);
         return;
     }
-
-    e2edt_reply_packet reply {};
 
     switch( request.payload[0] )
     {
         default:
         {
-            doBadRequest(e2eReplySender, request, originalRequest);
+            sendReply(Coap::ResponseCode::BadRequest);
             return;
         }
         case 0x84:
         {
-            reply.payload = DataStreamingRead(request.payload, originalRequest.rfnIdentifier);
-            reply.token = request.token;
-            reply.status = Protocols::Coap::ResponseCode::Content;
-            break;
+            sendReply(DataStreamingRead(request.payload, rfnIdentifier));
+            return;
         }
         case 0x86:
         {
-            reply.payload = DataStreamingWrite(request.payload, originalRequest.rfnIdentifier);
-            reply.token = request.token;
-            reply.status = Protocols::Coap::ResponseCode::Content;
-            break;
+            sendReply(DataStreamingWrite(request.payload, rfnIdentifier));
+            return;
         }
         case 0x91:
         {
-            reply.status = Protocols::Coap::ResponseCode::EmptyMessage;
-
-            //  Delay the actual data reply by 4 seconds (arbitrary)
-            std::thread([e2eRequestSender, originalRequest, token=request.token]() {
-                Sleep(4000);
-                
-                e2edt_request_packet delayedRequest;
-
-                delayedRequest.id = idGenerator();
-                delayedRequest.method = Protocols::Coap::RequestMethod::Post;
-                delayedRequest.token = token;
-                delayedRequest.confirmable = false;
-                delayedRequest.payload = GetMeterProgrammingConfiguration(originalRequest.rfnIdentifier);
-
-                e2eRequestSender(originalRequest, delayedRequest);
-            }).detach();
-
-            break;
+            //  Send an empty ack for the ID
+            sendReply(Protocols::Coap::ResponseCode::EmptyMessage);
+            //  then send a separate data response for the token
+            sendDelayedReply(GetMeterProgrammingConfiguration(rfnIdentifier));
+            return;
         }
     }
-
-    reply.id = request.id;
-
-    e2eReplySender(originalRequest, reply);
 }
 
-void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_request_packet& request, const Messaging::Rfn::E2eDataRequestMsg& originalRequest)
+Bytes processAggregateRequests(const Bytes& request, const RfnIdentifier rfnIdentifier);
+
+void doBulkMessageRequest(const ReplySender sendReply, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier)
 {
     if( request.payload.empty() )
     {
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    switch( request.payload[0] )
+    {
+        default:
+        {
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x01:
+        {
+            sendReply(processAggregateRequests(request.payload, rfnIdentifier));
+            return;
+        }
+    }
+}
+
+Bytes processAggregateRequests(const Bytes& request, const RfnIdentifier rfnIdentifier)
+{
+    constexpr auto HeaderLength = 1 + 2 + 2;  //  ASID + contextId + length
+
+    auto itr = request.begin() + 1;  //  skip the start command
+    const auto request_end = request.end();
+
+    if( itr >= request_end )
+    {
+        CTILOG_WARN(dout, "No payload while processing aggregate message for " << rfnIdentifier);
+        return {};
+    }
+
+    const auto count = *itr++;
+
+    Bytes result;
+
+    for( auto index = 1; itr + HeaderLength < request_end; ++index )
+    {
+        const uint16_t contextId = *itr++ << 8 
+                                 | *itr++;
+        const auto applicationServiceId = ASIDs{ *itr++ };
+        
+        const auto payloadLength = *itr++ << 8
+                                 | *itr++;
+
+        if( itr + payloadLength >= request_end )
+        {
+            CTILOG_WARN(dout, "Ran out of bytes while processing aggregate message for " << rfnIdentifier << FormattedList::of(
+                "Position", itr - request.begin(),
+                "Total bytes", request.size(),
+                "Expected bytes", payloadLength,
+                "Remaining bytes", request_end - itr,
+                "Request count", count,
+                "Request index", index));
+
+            return {};
+        }
+
+        Bytes payload { itr, itr + payloadLength };
+
+        Bytes reply;
+
+        const auto handleReply = [&reply](const e2edt_reply_packet& reply_packet) {
+            reply = reply_packet.payload;
+        };
+
+        switch( applicationServiceId )
+        {
+            //  Handle each ASID, ideally by calling the same handlers as processRequest RequestMethod::Get does...
+            //    ...  but that will require a shim for the ReplySender to call handleReply() above instead of an e2eReplySender
+            //  Most cases just return a buffer or a BadRequest, and just echo the id and token.
+            //    The refactor is doable, just not this commit.
+        }
+        
+        itr += payloadLength;
+    }
+
+    return {};
+}
+
+auto GetConfigNotification(const Bytes& request, const RfnIdentifier& rfnId) -> std::optional<Bytes>;
+
+void doHubMeterRequest(const ReplySender sendReply, const e2edt_request_packet& request, const RfnIdentifier rfnIdentifier)
+{
+    if( request.payload.empty() )
+    {
+        sendReply(Coap::ResponseCode::BadRequest);
         return;
     }
 
@@ -395,78 +503,215 @@ void doBulkMessageRequest(const E2eReplySender e2eReplySender, const e2edt_reque
     {
         default:
         {
-            doBadRequest(e2eReplySender, request, originalRequest);
+            sendReply(Coap::ResponseCode::BadRequest);
             return;
         }
-/*        case 0x1d:
+        case 0x1d:
         {
-            reply.payload = DataStreamingRead(request.payload, requestMsg.rfnIdentifier);
-            reply.token = request.token;
-            reply.status = Protocols::Coap::ResponseCode::Content;
-            break;
-        }*/
+            if( auto payload = GetConfigNotification(request.payload, rfnIdentifier) )
+            {
+                sendReply(*payload);
+            }
+            else
+            {
+                sendReply(Coap::ResponseCode::BadRequest);
+            }
+            return;
+        }
+    }
+}
+
+Bytes asBytes(const char* hex_string)
+{
+    Bytes result;
+
+    for( auto pos = hex_string; *pos; )
+    {
+        if( std::isalnum(*pos) )
+        {
+            char* end;
+            result.push_back(strtoul(pos, &end, 16));
+            pos = end;
+        }
+        else
+        {
+            pos++;
+        }
     }
 
-    reply.id = request.id;
-
-    e2eReplySender(originalRequest, reply);
+    return result;
 }
+
+auto GetConfigNotification(const Bytes& request, const RfnIdentifier& rfnId) -> std::optional<Bytes>
+{
+    if( rfnId.manufacturer == "ITRN" && rfnId.model == "C2SX" )
+    {
+        return asBytes(
+            "1e 00 0f"
+                " 00 0b 00 12"
+                    " 04 07 e6 01 0f 3c 02 01 06 00 01 f4 00 10 80 00"
+                    " 01 c0"
+                " 00 0b 00 12"
+                    " 04 07 e7 01 0f 3c 02 01 06 00 01 e8 48 10 80 00"
+                    " 01 c0"
+                " 00 0c 00 07"
+                    " 01 00 23 00 19 0f 03"
+                " 00 01 00 01"
+                    " 01"
+                " 00 02 00 38"
+                    " 02 00 64 00 f0 00 f0 00 f0 00 f0 00 f0 01 68 01"
+                    " 68 01 68 01 68 00 00 02 d0 02 d0 00 00 00 00 00"
+                    " 00 05 a0 00 00 00 00 00 00 00 00 88 a6 00 88 02"
+                    " 00 08 00 00 00 00 00 02"
+                " 00 03 00 0c"
+                    " 5e 72 fc 50 5e 74 4d d0 5e 75 9f 50"
+                " 00 04 00 01"
+                    " 00"
+                " 00 08 00 02"
+                    " 04 05"
+                " 00 09 00 3b"
+                    " 1d 00 05 01 04 02 06 03 0b 04 0f 05 10 06 11 07"
+                    " 08 08 09 09 07 0a 00 0b 00 0c 00 0d 00 0e 00 0f"
+                    " 00 10 00 11 00 12 00 13 00 14 00 15 00 16 00 17"
+                    " 00 18 00 19 00 fd 06 fe 04 ff 00"
+                " 00 06 00 d5"
+                    " 35"
+                        " 00 01 00 00   00 02 00 00   00 03 00 00   00 04 00 00   00 29 00 00   00 2a 00 00   00 05 00 00   00 07 00 00"
+                        " 01 00 00 08   00 09 00 00   01 00 00 08   00 f0 00 00   01 00 00 08   00 31 00 00   00 33 00 00   01 00 00 08"
+                        " 00 73 00 07   00 81 00 07   01 00 00 08   00 82 00 07   01 00 00 08   03 e9 00 00   03 ea 00 00   03 eb 00 00"
+                        " 03 ec 00 00   03 ef 00 00   04 e8 00 08   03 f1 00 00   04 e8 00 08   07 d1 00 00   07 d2 00 00   07 d3 00 00"
+                        " 07 d4 00 00   07 d7 00 00   08 d0 00 08   07 d9 00 00   08 d0 00 08   0b b9 00 00   0b ba 00 00   0b bb 00 00"
+                        " 0b bc 00 00   0b bf 00 00   0c b8 00 08   0b c1 00 00   0c b8 00 08   0f a1 00 00   0f a2 00 00   0f a3 00 00"
+                        " 0f a4 00 00   0f a7 00 00   10 a0 00 08   0f a9 00 00   10 a0 00 08"
+                " 00 0e 00 01"
+                    " 0f"
+                " 00 07 00 01"
+                    " 00"
+                " 00 05 00 29"
+                    " 00 00 0e 10 00 00 54 60 08 00 01 00 00 00 02 00"
+                    " 00 00 03 00 00 00 04 00 00 00 29 00 00 00 2a 00"
+                    " 00 00 31 00 00 00 73 00 07"
+                " 00 0d 00 1a"
+                    " 04 01 00 01 01 05 00 00 02 00 05 00 00 05 00 05"
+                    " 00 00 73 00 05 00 00 00 00 3a"
+                " 00 0f 00 01"
+                    " 01");
+    }
+    if( rfnId.manufacturer == "ITRN" && rfnId.model == "C2SX-SD" )
+    {
+        return asBytes(
+            "1e 00 0f"
+                " 00 0b 00 12"
+                    " 04 07 e6 01 0f 3c 02 01 06 00 01 f4 00 10 80 00"
+                    " 01 c0"
+                " 00 0b 00 12"
+                    " 04 07 e7 01 0f 3c 02 01 06 00 01 e8 48 10 80 00"
+                    " 01 c0"
+                " 00 0c 00 07"
+                    " 01 00 23 00 19 0f 03"
+                " 00 01 00 01"
+                    " 01"
+                " 00 02 00 38"
+                    " 02 00 64 00 f0 00 f0 00 f0 00 f0 00 f0 01 68 01"
+                    " 68 01 68 01 68 00 00 02 d0 02 d0 00 00 00 00 00"
+                    " 00 05 a0 00 00 00 00 00 00 00 00 88 a6 00 88 02"
+                    " 00 08 00 00 00 00 00 02"
+                " 00 03 00 0c"
+                    " 00 00 00 00 00 00 00 00 00 00 00 00"
+                " 00 04 00 01"
+                    " 20"
+                " 00 08 00 02"
+                    " 04 05"
+                " 00 09 00 3b"
+                    " 1d 00 05 01 04 02 06 03 0b 04 0f 05 10 06 11 07"
+                    " 08 08 09 09 07 0a 00 0b 00 0c 00 0d 00 0e 00 0f"
+                    " 00 10 00 11 00 12 00 13 00 14 00 15 00 16 00 17"
+                    " 00 18 00 19 00 fd 05 fe 08 ff 01"
+                " 00 06 00 c5"
+                    " 31"
+                        " 00 01 00 00   00 02 00 00   00 03 00 00   00 04 00 00   00 29 00 00   00 2a 00 00   00 05 00 00   00 07 00 00"
+                        " 01 00 00 08   00 09 00 00   01 00 00 08   00 f0 00 00   01 00 00 08   00 31 00 00   00 33 00 00   01 00 00 08"
+                        " 00 73 00 07   03 e9 00 00   03 ea 00 00   03 eb 00 00   03 ec 00 00   03 ef 00 00   04 e8 00 08   03 f1 00 00"
+                        " 04 e8 00 08   07 d1 00 00   07 d2 00 00   07 d3 00 00   07 d4 00 00   07 d7 00 00   08 d0 00 08   07 d9 00 00"
+                        " 08 d0 00 08   0b b9 00 00   0b ba 00 00   0b bb 00 00   0b bc 00 00   0b bf 00 00   0c b8 00 08   0b c1 00 00"
+                        " 0c b8 00 08   0f a1 00 00   0f a2 00 00   0f a3 00 00   0f a4 00 00   0f a7 00 00   10 a0 00 08   0f a9 00 00"
+                        " 10 a0 00 08"
+                " 00 0e 00 01"
+                    " 0f"
+                " 00 07 00 02"
+                    " 01 00"
+                " 00 05 00 2d"
+                    " 00 00 0e 10 00 00 54 60 09 00 01 00 00 00 02 00"
+                    " 00 00 03 00 00 00 04 00 00 00 29 00 00 00 2a 00"
+                    " 00 00 05 00 00 00 31 00 00 00 73 00 07"
+                " 00 0d 00 1a"
+                    " 04 00 00 01 00 1e 00 00 02 00 1e 00 00 05 00 1e"
+                    " 00 00 73 00 1e 00 00 00 00 03"
+                " 00 0f 00 01"
+                    " 01");
+    }
+    return std::nullopt;
+}
+
 
 auto ParseSetMeterProgram(const Bytes& request, const RfnIdentifier & rfnId) -> std::optional<std::tuple<std::string, unsigned>>;
 
-void processChannelManagerPost(const E2eRequestSender e2eRequestSender, const E2eReplySender e2eReplySender, const e2edt_request_packet& post_request, const Messaging::Rfn::E2eDataRequestMsg& originalRequest)
+void processChannelManagerPost(const E2eRequestSender e2eRequestSender, const ReplySender sendReply, const e2edt_request_packet& post_request, const RfnIdentifier rfnIdentifier)
 {
-    if( ! post_request.payload.empty() )
+    if( post_request.payload.empty() )
     {
-        switch( post_request.payload[0] )
+        sendReply(Coap::ResponseCode::BadRequest);
+        return;
+    }
+
+    switch( post_request.payload[0] )
+    {
+        default:
         {
-            default:
+            sendReply(Coap::ResponseCode::BadRequest);
+            return;
+        }
+        case 0x90:
+        {
+            if( const auto pathSize = ParseSetMeterProgram(post_request.payload, rfnIdentifier) )
             {
-                doBadRequest(e2eReplySender, post_request, originalRequest);
-                return;
-            }
-            case 0x90:
-            {
-                if( const auto pathSize = ParseSetMeterProgram(post_request.payload, originalRequest.rfnIdentifier) )
+                const auto [path, size] = *pathSize;
+
+                auto itr = meterProgrammingRequests.find(rfnIdentifier);
+
+                if( itr != meterProgrammingRequests.end() )
                 {
-                    const auto [path, size] = *pathSize;
-
-                    auto itr = meterProgrammingRequests.find(originalRequest.rfnIdentifier);
-
-                    if( itr != meterProgrammingRequests.end() )
+                    if( itr->second.path == path )
                     {
-                        if( itr->second.path == path )
-                        {
-                            CTILOG_INFO(dout, "Received duplicate path request, ignoring" << FormattedList::of(
-                                "Device", originalRequest.rfnIdentifier,
-                                "Path", path));
+                        CTILOG_INFO(dout, "Received duplicate path request, ignoring" << FormattedList::of(
+                            "Device", rfnIdentifier,
+                            "Path", path));
 
-                            return;
-                        }
-
-                        CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
-                            "Device", originalRequest.rfnIdentifier,
-                            "Existing path", itr->second.path,
-                            "New path", path));
-
-                        itr->second.path = path;
-                        itr->second.initialToken = post_request.token;
+                        return;
                     }
 
-                    e2edt_request_packet newRequest;
+                    CTILOG_INFO(dout, "Replacing existing meter programming request" << FormattedList::of(
+                        "Device", rfnIdentifier,
+                        "Existing path", itr->second.path,
+                        "New path", path));
 
-                    newRequest.id = idGenerator();
-                    newRequest.confirmable = true;
-                    newRequest.method = Protocols::Coap::RequestMethod::Get;
-                    newRequest.path = path;
-                    newRequest.token = idGenerator();
-
-                    itr->second.currentToken = newRequest.token;
-
-                    e2eRequestSender(originalRequest, newRequest);
-
-                    return;
+                    itr->second.path = path;
+                    itr->second.initialToken = post_request.token;
                 }
+
+                e2edt_request_packet newRequest;
+
+                newRequest.id = idGenerator();
+                newRequest.confirmable = true;
+                newRequest.method = Protocols::Coap::RequestMethod::Get;
+                newRequest.path = path;
+                newRequest.token = idGenerator();
+
+                itr->second.currentToken = newRequest.token;
+
+                e2eRequestSender(newRequest);
+
+                return;
             }
         }
     }
