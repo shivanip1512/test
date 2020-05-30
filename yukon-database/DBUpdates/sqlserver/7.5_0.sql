@@ -476,12 +476,10 @@ FROM YukonPAObject y
     --  Only include metering types - do not include RTUs, CBCs, regulators, etc
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
     AND dcdm.DeviceConfigurationId IS NULL
-)
-ORDER BY LastActionEnd ASC;
 
-INSERT INTO DeviceConfigState (PaObjectId, CurrentState, LastAction, LastActionStatus, LastActionStart, LastActionEnd, CommandRequestExecId)
-(
-SELECT distinct PaObjectId, 'UNREAD', 'ASSIGN', 'SUCCESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL
+UNION
+
+SELECT PaObjectId, 'UNREAD', 'ASSIGN', 'SUCCESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL
 FROM YukonPAObject y 
     --  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices
     JOIN DeviceConfigurationDeviceMap dcdm ON y.paobjectid=dcdm.deviceid
@@ -491,10 +489,9 @@ FROM YukonPAObject y
         AND cre.CommandRequestExecType IN ('GROUP_DEVICE_CONFIG_VERIFY','GROUP_DEVICE_CONFIG_SEND','GROUP_DEVICE_CONFIG_READ')
     --  Only include metering types - do not include RTUs, CBCs, regulators, etc
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
-    AND cre.CommandRequestExecId IS NULL
-    AND y.PAObjectID NOT IN (SElECT PAObjectID FROM DeviceConfigState)
-)
-ORDER BY LastActionEnd ASC;
+GROUP BY PaObjectId
+HAVING COUNT(cre.commandrequestexectype) = 0
+);
 
 INSERT INTO DBUpdates VALUES ('YUK-20252', '7.5.0', GETDATE());
 /* @end YUK-20252 */
