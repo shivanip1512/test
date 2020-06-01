@@ -132,6 +132,7 @@
     <entry key="yukon.web.modules.operator.gateways.username.required">Username is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.password.required">Password is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.url.required">Server URL is required when not using defaults.</entry>
+    <entry key="yukon.web.modules.operator.gateways.updateserver.password.required">Password is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.username.required">Username is required when not using defaults.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.port.required">Port is required.</entry>
