@@ -59,12 +59,12 @@
                             <i:inline key=".updateServer.auth"/>
                             <spring:bind path="list[${idx}].updateServerLogin.username">
                                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                                <form:input path="list[${idx}].updateServerLogin.username" cssClass="M0 left ${clazz}" 
+                                <form:input path="list[${idx}].updateServerLogin.username" cssClass="M0 ${clazz}" 
                                     placeholder="${phUsername}" size="12" data-toggle-group="toggle-update-server-${idx}"/>
                             </spring:bind>
                             <spring:bind path="list[${idx}].updateServerLogin.password">
                                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                                <form:password path="list[${idx}].updateServerLogin.password" cssClass="M0 ${clazz} right"
+                                <form:password path="list[${idx}].updateServerLogin.password" cssClass="M0 ${clazz}"
                                     placeholder="${phPassword}" showPassword="true" size="12" data-toggle-group="toggle-update-server-${idx}"/>
                             </spring:bind>
                             <spring:bind path="list[${idx}].updateServerLogin.username">
