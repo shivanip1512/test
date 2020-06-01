@@ -1,5 +1,6 @@
 package com.cannontech.dr.itron;
 
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.math.LongMath;
 
 /**
  * This enum maps events to the event IDs that will display in the data log, the attribute each event is associated
@@ -79,6 +81,7 @@ public enum ItronDataEventType {
     private static final ImmutableSet<ItronDataEventType> incrementalTypes;
     private static final ImmutableSet<ItronDataEventType> voltageTypes;
     private static final ImmutableSet<ItronDataEventType> controlEventTypes;
+    private static final ImmutableSet<ItronDataEventType> relayNumberedTypes;
         
     static {
         incrementalTypes = ImmutableSet.of(
@@ -92,6 +95,15 @@ public enum ItronDataEventType {
                                        MAX_VOLTAGE_TIME);
         controlEventTypes = ImmutableSet.of(
                                             EVENT_SUPERSEDED);
+        
+        relayNumberedTypes = ImmutableSet.of(
+                                             LOAD_ON,
+                                             LOAD_OFF,
+                                             SHED_START,
+                                             SHED_END,
+                                             CALL_FOR_COOL_ON,
+                                             CALL_FOR_COOL_OFF);
+                
     }
     
     private static Map<Long, ItronDataEventType> itronEventTypeFromHexMap = new HashMap<>();
@@ -138,6 +150,10 @@ public enum ItronDataEventType {
         return controlEventTypes.contains(this);
     }
     
+    public boolean isRelayNumberedType() {
+        return relayNumberedTypes.contains(this);
+    }
+    
     /**
      * 
      * @param byteArray - this is a byte array that has been converted from a 5 byte hex string.
@@ -160,23 +176,36 @@ public enum ItronDataEventType {
     }
     
     /**
-     * This is currently used to get relay numbered attributes.
-     * @throws IllegalArgumentException if no appropriate attribute can be found.
+     * Get the attribute for this event. If this is a relay-numbered type, use the relay number in the payload to
+     * determine the attribute.
+     * @throws IllegalArgumentException if relay number in payload is invalid or no appropriate attribute can be found.
      */
     public BuiltInAttribute getAttribute(byte[] byteArray) throws IllegalArgumentException {
-        long relayNumber = decode(byteArray);
-        switch (this) {
-        case LOAD_ON:
-        case LOAD_OFF:
-            return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_RELAY_STATE");
-        case SHED_START:
-        case SHED_END:
-            return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_SHED_STATUS");
-        case CALL_FOR_COOL_ON:
-        case CALL_FOR_COOL_OFF:
-            return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_CALL_FOR_COOL");
-        default:
+        // For non-relay-numbered-types, just use the attribute specified in the enum declaration
+        if (!isRelayNumberedType()) {
             return attribute;
+        }
+        
+        // For relay-numbered types, relay number comes back as a bit mask in the first byte.
+        // Example: 08 00 00 00 00 = 00001000 ... = Relay 4
+        byte firstByte = byteArray[0];
+        int relayNumber = LongMath.log2(firstByte, RoundingMode.UNNECESSARY) + 1; //ArithmeticException if rounding required
+        if (relayNumber < 1 || relayNumber > 4) {
+            throw new IllegalArgumentException("Invalid relay number in payload: " + relayNumber);
+        }
+        
+        switch (this) {
+            case LOAD_ON:
+            case LOAD_OFF:
+                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_RELAY_STATE");
+            case SHED_START:
+            case SHED_END:
+                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_SHED_STATUS");
+            case CALL_FOR_COOL_ON:
+            case CALL_FOR_COOL_OFF:
+                return BuiltInAttribute.valueOf("RELAY_" + relayNumber + "_CALL_FOR_COOL");
+            default:
+                return attribute;
         }
     }
     
