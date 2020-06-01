@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
 import com.cannontech.rest.api.commChannel.request.MockBaudRate;
+import com.cannontech.rest.api.commChannel.request.MockPortTiming;
 import com.cannontech.rest.api.commChannel.request.MockSharedPortType;
 import com.cannontech.rest.api.commChannel.request.MockUDPPortDetails;
 import com.cannontech.rest.api.common.ApiCallHelper;
@@ -238,11 +239,11 @@ public class UdpTerminalServerApiTest {
     }
 
     /**
-     * Test case to validate UDP Terminal Server comm channel cannot be created with KeyInHex Invalid Format and gets valid error
+     * Test case to validate UDP Terminal Server comm channel cannot be created with KeyInHex as empty and gets valid error
      * message in response
      */
     @Test
-    public void udpTerminalServer_11_KeyInHexInvalidFormat() {
+    public void udpTerminalServer_11_KeyInHexEmpty() {
         MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
                 .buildCommChannel(MockPaoType.UDPPORT);
 
@@ -254,6 +255,174 @@ public class UdpTerminalServerApiTest {
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "keyInHex",
                         "Encryption Key must be in Hex format and 16 bytes long (32 hex values)."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate UDP Terminal Server comm channel cannot be created with KeyInHex invalid character (Valid hex
+     * characters includes 0-9 and A-F) and gets valid error message in response
+     */
+    @Test
+    public void udpTerminalServer_12_KeyInHexInvalidHexChar() {
+        MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
+                .buildCommChannel(MockPaoType.UDPPORT);
+
+        mockUdpTerminal.setKeyInHex("1313666666abcdef1111222233abcdeG");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockUdpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "keyInHex",
+                        "Encryption Key must be in Hex format and 16 bytes long (32 hex values)."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate UDP Terminal Server comm channel cannot be created with KeyInHex less than 16 bytes
+     * and gets valid error message in response
+     */
+    @Test
+    public void udpTerminalServer_13_KeyInHexLessThan16Bytes() {
+        MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
+                .buildCommChannel(MockPaoType.UDPPORT);
+
+        mockUdpTerminal.setKeyInHex("abcdef1313666666abcdef111122223");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockUdpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "keyInHex",
+                        "Encryption Key must be 16 bytes long (32 hex values)."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate UDP Terminal Server comm channel cannot be created with KeyInHex greater than 16 bytes
+     * and gets valid error message in response
+     */
+    @Test
+    public void udpTerminalServer_14_KeyInHexGreaterThan16Bytes() {
+        MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
+                .buildCommChannel(MockPaoType.UDPPORT);
+
+        mockUdpTerminal.setKeyInHex("abcdef1313666666abcdef11112222345");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockUdpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "keyInHex",
+                        "Encryption Key must be 16 bytes long (32 hex values)."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate UDP Terminal Server comm channel cannot be created with SharedSocketNum exceeds Max Range
+     * (1-65535) and gets valid error message in response
+     */
+    @Test
+    public void udpTerminalServer_15_SharedSocNumExceedsMaxRange() {
+        MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
+                .buildCommChannel(MockPaoType.UDPPORT);
+
+        mockUdpTerminal.getSharing().setSharedSocketNumber(65536);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockUdpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "sharing.sharedSocketNumber",
+                        "Must be between 1 and 65,535."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate UDP Terminal Server comm channel cannot be created with SharedSocketNum exceeds Min Range (1-65535)
+     * and gets valid error message in response
+     */
+    @Test
+    public void udpTerminalServer_16_SharedSocNumExceedsMinRange() {
+        MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
+                .buildCommChannel(MockPaoType.UDPPORT);
+
+        mockUdpTerminal.getSharing().setSharedSocketNumber(0);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockUdpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "sharing.sharedSocketNumber",
+                        "Must be between 1 and 65,535."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate UDP Terminal Server comm channel cannot be created as as Timing fields Exceed Max Value and gets
+     * valid error message in response
+     */
+    @Test
+    public void udpTerminalServer__17_TimingExceedMaxValue() {
+        MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
+                .buildCommChannel(MockPaoType.UDPPORT);
+
+        MockPortTiming timingValues = MockPortTiming.builder()
+                .preTxWait(10000001)
+                .rtsToTxWait(10000001)
+                .postTxWait(10000001)
+                .receiveDataWait(1001)
+                .extraTimeOut(1000)
+                .build();
+
+        mockUdpTerminal.setTiming(timingValues);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockUdpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate UDP Terminal Server comm channel cannot be created as as Timing fields Exceed Min Value and gets
+     * valid error message in response
+     */
+    @Test
+    public void udpTerminalServer__18_TimingBlelowMinValue() {
+        MockUDPPortDetails mockUdpTerminal = (MockUDPPortDetails) CommChannelHelper
+                .buildCommChannel(MockPaoType.UDPPORT);
+
+        MockPortTiming timingValues = MockPortTiming.builder()
+                .preTxWait(-1)
+                .rtsToTxWait(-1)
+                .postTxWait(-1)
+                .receiveDataWait(-1)
+                .extraTimeOut(-1)
+                .build();
+
+        mockUdpTerminal.setTiming(timingValues);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockUdpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
                 "Expected code in response is not correct");
     }
 }
