@@ -19,7 +19,7 @@ import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
-
+@Deprecated
 public class PointModel<T extends PointBase> {
 
     private T pointBase;
