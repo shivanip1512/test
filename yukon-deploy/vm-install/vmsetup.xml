@@ -6,6 +6,8 @@
 
     <property environment="env"/>
 
+    <property file="yukon-client/build/build.properties"/>
+    <property file="yukon-build/build_version.properties"/>
     <property name="vmware-cmd"  value="vmware-cmd.pl"/>
     <property name="vmware-dir"  value="C:\Program Files (x86)\VMware\VMware vSphere CLI\bin\"/>
     
@@ -15,11 +17,14 @@
     <property name="resource_pool" value="${env.VM_RESOURCE_POOL}" if:set="env.VM_RESOURCE_POOL"/>
     <property name="host_username" value="${env.VM_HOST_USERNAME}" />
     <property name="host_password" value="${env.VM_HOST_PASSWORD}" />
+    <property name="vm_host_prefix" value="${env.VM_HOST_NAME_PREFIX}" />
     <property name="guest_username" value="${env.VM_GUEST_USERNAME}" if:set="env.VM_GUEST_USERNAME"/>
     <property name="guest_username" value="Administrator"/> <!-- This is set if not done above -->
     <property name="guest_userid" value="${env.VM_GUEST_USERID}" if:set="env.VM_GUEST_USERID"/>
+    <property name="guest_userid" value="${vm_host_prefix}${version.major}${version.minor}+${guest_username}" if:set="env.VM_HOST_NAME_PREFIX"/>
     <property name="guest_password" value="${env.VM_GUEST_PASSWORD}" if:set="env.VM_GUEST_PASSWORD"/>
     <property name="guest_password" value="cti123" if:set="env.VM_GUEST_PASSWORD"/>
+    <property name="guest_address" value="${vm_host_prefix}${version.major}${version.minor}.${vmdomain}" if:set="env.VM_HOST_NAME_PREFIX"/>
     <property name="guest_address" value="${env.VM_GUEST_ADDRESS}" /> 
     <property name="config_file_path" value="${env.VM_CONFIG_FILE_PATH}" />
     
@@ -738,14 +743,12 @@
     </target>
     
     <target name="remote_upgrade_powershell" depends="find_guestid">
-        <property name="db.type" value="${env.DATABASE_TYPE}"/>
-        
       
         <sshexec host="${guest_address}"
                             trust="true"
                             username="${guest_userid}"
                             password="${guest_password}"
-                            command="powershell c:/YukonUpgrade.ps1 -databaseType ${db.type}"/>
+                            command="powershell c:/YukonUpgrade.ps1"/>
     </target>
     <target name="remote_upgrade_restApi_powershell" depends="find_guestid">
         <sshexec host="${guest_address}"
