@@ -291,7 +291,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Transactional
     public UUID saveMeterProgram(MeterProgram program) {
         UUID uuid = meterProgrammingDao.saveMeterProgram(program);
-        if(!isValidProgramFile()) {
+        if(!isValidProgramFile(uuid)) {
             meterProgrammingDao.deleteMeterProgram(uuid);
             BadConfigurationException error = new BadConfigurationException("Program file is invalid");
             log.error(error);
@@ -402,7 +402,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
      * Sends request to porter to validate the the program file is valid.
      * Returns false if the program is invalid.
      */
-    private boolean isValidProgramFile() {
+    private boolean isValidProgramFile(UUID uuid) {
         return true;
     }
 
