@@ -18,7 +18,7 @@ import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
 
-public class LocalSharedPortAPITest {
+public class LocalSharedPortApiTest {
     MockLocalSharedPortDetail localSharedPortDetail = null;
     MockLocalSharedPortDetail localSharedPortForNegTest = null;
 
