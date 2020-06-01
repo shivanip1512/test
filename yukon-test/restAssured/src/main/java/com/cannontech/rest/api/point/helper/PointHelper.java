@@ -7,6 +7,7 @@ import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.ApiUtils;
 import com.cannontech.rest.api.common.model.MockAnalogControlType;
 import com.cannontech.rest.api.common.model.MockPointArchiveType;
+import com.cannontech.rest.api.common.model.MockPointLogicalGroups;
 import com.cannontech.rest.api.common.model.MockPointType;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
 import com.cannontech.rest.api.point.request.MockPointAnalog;
@@ -25,8 +26,9 @@ public class PointHelper {
 
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
-        String name = ApiUtils.buildFriendlyNameForPoint(pointType, "POINT", " Test Point");
-       
+
+        String name = ApiUtils.buildFriendlyName(MockPointType.Analog, "", "PointTest");
+
         switch (pointType) {
         case Analog:
             List<MockPointLimit> pointLimit = new ArrayList<>();
@@ -37,8 +39,7 @@ public class PointHelper {
                     .pointType(pointType.name())
                     .pointOffset(pointOffset)
                     .pointUnit(buildPointUnit())
-
-                    .timingGroup("SOE")
+                    .timingGroup(MockPointLogicalGroups.SOE)
                     .archiveType(MockPointArchiveType.ON_TIMER)
                     .alarmsDisabled(false)
                     .stateGroupId(stateGroupId)

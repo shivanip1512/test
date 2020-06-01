@@ -8,7 +8,7 @@ import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockLMDto;
 import com.cannontech.rest.api.common.model.MockLMPaoDto;
 import com.cannontech.rest.api.common.model.MockPaoType;
-import com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupSetupApiControllerTest;
+import com.cannontech.rest.api.documentation.macroloadgroup.MacroLoadGroupApiDoc;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupBase;
 import com.cannontech.rest.api.loadgroup.request.MockLoadGroupCopy;
 import com.cannontech.rest.api.loadgroup.request.MockMacroLoadGroup;
@@ -22,7 +22,7 @@ public class MacroLoadGroupHelper {
     public static MockMacroLoadGroup createMacroLoadGroup(String groupName, List<MockLMPaoDto> assignedLoadGroups) {
         MockMacroLoadGroup macroLoadGroup = buildMacroLoadGroup(groupName, assignedLoadGroups);
         ExtractableResponse<?> createResponse = ApiCallHelper.post("saveMacroLoadGroup", macroLoadGroup);
-        Integer macroGroupId = createResponse.path(MacroLoadGroupSetupApiControllerTest.CONTEXT_MACRO_GROUP_ID);
+        Integer macroGroupId = createResponse.path(MacroLoadGroupApiDoc.CONTEXT_MACRO_GROUP_ID);
         log.info("macroGroupId:" + macroGroupId);
         log.info("Name:" + createResponse.path("name"));
         assertTrue("Status code should be 200", createResponse.statusCode() == 200);
@@ -35,7 +35,7 @@ public class MacroLoadGroupHelper {
             List<MockLMPaoDto> assignedLoadGroupsUpdated) {
         MockMacroLoadGroup macroLoadGroup = buildMacroLoadGroup(updatedName, assignedLoadGroupsUpdated);
         ExtractableResponse<?> updateResponse = ApiCallHelper.post("updateMacroLoadGroup", macroLoadGroup, loadGroupIDtoUpdate);
-        Integer macroGroupId = updateResponse.path(MacroLoadGroupSetupApiControllerTest.CONTEXT_MACRO_GROUP_ID);
+        Integer macroGroupId = updateResponse.path(MacroLoadGroupApiDoc.CONTEXT_MACRO_GROUP_ID);
         assertTrue("Status code should be 200", updateResponse.statusCode() == 200);
         assertTrue("Macro Group Id(paoId) should not be Null", macroGroupId != null);
         assertTrue("Updated Macro Load group Id(paoId) should be same ", Integer.parseInt(loadGroupIDtoUpdate) == macroGroupId);
@@ -56,7 +56,7 @@ public class MacroLoadGroupHelper {
         MockLoadGroupCopy macroloadGroupCopy = MockLoadGroupCopy.builder().name(newMacroLoadGroupName).build();
         ExtractableResponse<?> copyResponse = ApiCallHelper.post("copyMacroLoadGroup", macroloadGroupCopy,
                 macroLoadGroupIdToBeCopied);
-        Integer copiedMacroLoadGroupId = copyResponse.path(MacroLoadGroupSetupApiControllerTest.CONTEXT_MACRO_GROUP_ID);
+        Integer copiedMacroLoadGroupId = copyResponse.path(MacroLoadGroupApiDoc.CONTEXT_MACRO_GROUP_ID);
         assertTrue("Status code should be 200", copyResponse.statusCode() == 200);
         assertTrue("Macro Load Group Id(paoId) should not be Null", copiedMacroLoadGroupId != null);
         assertTrue("Copied Macro Load group Id(paoId) should be differect ",

@@ -56,9 +56,9 @@
                                     </div>
                                 </div>
                                 <div id="js-edit-note-${noteId}" class="dn">
-                                    <textarea id="js-edit-note-textarea-${noteId}" rows="3" style="resize: none;" 
+                                    <textarea id="js-edit-note-textarea-${noteId}" rows="3"
                                               maxlength="${noteTextAreaMaxLength}" value="${recentNote.paoNote.noteText}"
-                                              placeholder="${noteTextPlaceholder}" class="tadw"></textarea>
+                                              placeholder="${noteTextPlaceholder}" class="tadw rn"></textarea>
                                 </div>
                             </div>
                             <div class="column two nogutter js-note-actions cv" style="right: 0;">

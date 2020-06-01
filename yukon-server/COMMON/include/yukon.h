@@ -421,7 +421,9 @@ struct ClientErrors
         VerificationFailed,
         WriteKeyFailed,
         CatastrophicFailure,
-        NoMeterProgramAssigned
+        NoMeterProgramAssigned,
+        InvalidMeterProgram,
+        MeterProgramNotFound,
     };
 };
 

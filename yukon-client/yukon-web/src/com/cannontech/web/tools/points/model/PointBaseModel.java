@@ -5,6 +5,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.service.impl.JsonDeserializePointTypeLookup;
@@ -22,16 +23,16 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
     private Boolean enable;
     private PointArchiveType archiveType;
     private Integer archiveInterval;
-    private String timingGroup;
+    private PointLogicalGroups timingGroup;
     private Boolean alarmsDisabled;
 
     private StaleData staleData;
 
-    public String getTimingGroup() {
+    public PointLogicalGroups getTimingGroup() {
         return timingGroup;
     }
 
-    public void setTimingGroup(String timingGroup) {
+    public void setTimingGroup(PointLogicalGroups timingGroup) {
         this.timingGroup = timingGroup;
     }
 
@@ -98,7 +99,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         setEnable(pt.getServiceFlag() == 'N' ? true : false );
         setArchiveType(pt.getArchiveType());
         setArchiveInterval(pt.getArchiveInterval());
-        setTimingGroup(pt.getLogicalGroup());
+        setTimingGroup(PointLogicalGroups.getLogicalGroupValue(pt.getLogicalGroup()));
         setAlarmsDisabled(pt.isAlarmsDisabled());
     }
 
@@ -124,7 +125,9 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
             pt.setStateGroupID(getStateGroupId());
         }
 
-        pt.setServiceFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
+        if (getEnable() != null) {
+            pt.setServiceFlag(BooleanUtils.isFalse(getEnable()) ? 'Y' : 'N');
+        }
 
         if (getArchiveType() != null) {
             pt.setArchiveType(getArchiveType());
@@ -135,7 +138,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         }
 
         if (getTimingGroup() != null) {
-            pt.setLogicalGroup(getTimingGroup());
+            pt.setLogicalGroup(getTimingGroup().getDbValue());
         }
         if (getAlarmsDisabled() != null) {
             pt.setAlarmsDisabled(getAlarmsDisabled());

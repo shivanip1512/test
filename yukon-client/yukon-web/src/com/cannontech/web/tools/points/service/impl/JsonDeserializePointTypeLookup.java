@@ -2,6 +2,7 @@ package com.cannontech.web.tools.points.service.impl;
 
 import java.io.IOException;
 
+import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointType;
@@ -24,26 +25,68 @@ public class JsonDeserializePointTypeLookup extends StdDeserializer<LitePointMod
     private PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 
     @Override
-    public LitePointModel deserialize(JsonParser parser, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+    public LitePointModel deserialize(JsonParser parser, DeserializationContext ctxt) throws IOException, JsonProcessingException, TypeNotSupportedException {
         TreeNode node = parser.readValueAsTree();
-        // Catch the update case here.
+        if (node == null) {
+            throw new NotFoundException("request is not found in correct format");
+        }
         String id = ServletUtils.getPathVariable("id");
-        PointType pointType = null;
+        PointType pointType;
+        TreeNode typeTreeNode = node.get("pointType");
         if (id == null) {
-            // Create case. We should expect "type" field in the request.
-            TreeNode type = node.get("pointType");
-            if (type != null) {
-                pointType = PointType.valueOf(type.toString().replace("\"", ""));
-            } else {
-                throw new NotFoundException("pointType is not found in the request.");
+            // Create Case
+            pointType = getPointTypeFromJson(typeTreeNode);
+        } else {
+            // Update case
+            // if pointType field is present in request, Validate pointType.
+            if (typeTreeNode != null) {
+                getPointTypeFromJson(typeTreeNode);
+            }
+            pointType = getPointTypeFromDb(id);
+        }
+        return (LitePointModel) parser.getCodec().treeToValue(node, getPointFromModelFactory(pointType).getClass());
+    }
+
+    /**
+     * Retrieves PointType from type field provided in JSON.
+     * @throws TypeNotSupportedException when invalid PointType is provided in JSON,
+     * this exception is handled by ApiExceptionHandler which will convert it into a global error.
+     */
+    private PointType getPointTypeFromJson(TreeNode pointType) throws TypeNotSupportedException {
+        String pointTypeString = null;
+        if (pointType != null) {
+            try {
+                pointTypeString = pointType.toString().replace("\"", "");
+                return PointType.valueOf(pointTypeString);
+            } catch (IllegalArgumentException e) {
+                // throw exception for invalid pointType
+                throw new TypeNotSupportedException(pointTypeString + " pointType is not valid.");
             }
         } else {
-            // Update case.
-            pointType = pointDao.getLitePoint(Integer.valueOf(id)).getPointTypeEnum();
+            throw new NotFoundException("PointType is not found in the request.");
         }
 
-        Class<?> clazz = PointBaseModelFactory.createPointBaseModel(pointType).getClass();
-        return (LitePointModel) parser.getCodec().treeToValue(node, clazz);
+    }
+
+    /**
+     * Retrieves PointType from database based on pointId provided.
+     */
+    private PointType getPointTypeFromDb(String id) {
+        PointType pointType = pointDao.getLitePoint(Integer.valueOf(id)).getPointTypeEnum();
+        return pointType;
+
+    }
+
+    /**
+     * Retrieves LitePointModel from model factory.
+     */
+    private LitePointModel getPointFromModelFactory(PointType pointType) {
+        LitePointModel litePointModel = PointModelFactory.getModel(pointType);
+        if (litePointModel != null) {
+            return litePointModel;
+        } else {
+            // throw exception for not supported pointType
+            throw new TypeNotSupportedException(pointType + " type is not supported.");
+        }
     }
 }

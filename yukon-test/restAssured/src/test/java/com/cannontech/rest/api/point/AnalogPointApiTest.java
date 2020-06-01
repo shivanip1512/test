@@ -68,6 +68,7 @@ public class AnalogPointApiTest {
                 analogPointDetail.getStateGroupId().equals(analogPointDetail.getStateGroupId()));
         assertTrue("Control Type Should be : " + analogPointDetail.getPointAnalogControl().getControlType(), analogPointDetail
                 .getPointAnalogControl().getControlType().equals(analogPointDetail.getPointAnalogControl().getControlType()));
+
     }
 
     /**

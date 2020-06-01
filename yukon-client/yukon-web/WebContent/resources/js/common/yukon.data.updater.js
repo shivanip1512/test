@@ -273,6 +273,22 @@ yukon.dataUpdater = (function () {
             });
         },
         
+        unRegisterCallback: function (identifierMap) {
+            for (var i = 0; i < _callbackRegistrations.length; i++) {
+                var reg = _callbackRegistrations[i],
+                    allMatch = true;
+                $.each(identifierMap, function (key, val) {
+                    if (reg.identifierMap[key] != val) {
+                        allMatch = false;
+                    }
+                });
+                if (allMatch) {
+                    _callbackRegistrations.splice(i, 1);
+                    return;
+                }
+            }
+        },
+        
         /**
          * Register a callback that will only fire if the response contains a 'boolean' property 
          * whose value is 'true' or true. Once fired the callback will never be fired again.

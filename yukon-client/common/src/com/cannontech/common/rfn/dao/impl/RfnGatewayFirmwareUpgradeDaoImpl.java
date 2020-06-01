@@ -37,6 +37,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
@@ -59,7 +60,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ConfigurationSource configSource;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private GatewayFirmwareUpdateSummaryRowMapper summaryRowMapper = new GatewayFirmwareUpdateSummaryRowMapper();
     private GatewayFirmwareUpdateResultRowMapper resultRowMapper = new GatewayFirmwareUpdateResultRowMapper();
@@ -67,8 +68,9 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
     
     @PostConstruct
     public void init() {
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION);
         rfnUpdateServerAvailableVersionTemplate = new RequestReplyTemplateImpl<>(rfnUpdateServerAvailableVersionRequestCparm,
-                configSource, jmsTemplate, JmsApiDirectory.RF_UPDATE_SERVER_AVAILABLE_VERSION, true);
+                configSource, jmsTemplate, true);
     }
     
     @Override

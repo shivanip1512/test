@@ -62,10 +62,10 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         if (target instanceof ScalarPointModel) {
             ScalarPointModel<?> scalarPointModel = (ScalarPointModel<?>) target;
 
-            if (scalarPointModel.getPointUnit() != null && scalarPointModel.getPointUnit().getUomID() != null) {
+            if (scalarPointModel.getPointUnit() != null && scalarPointModel.getPointUnit().getUomId() != null) {
                 List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
                 List<Integer> uomIds = unitMeasures.stream().map(unit -> unit.getId()).collect(Collectors.toList());
-                if (!uomIds.contains(scalarPointModel.getPointUnit().getUomID())) {
+                if (!uomIds.contains(scalarPointModel.getPointUnit().getUomId())) {
                     errors.rejectValue("pointUnit.uomID", "yukon.web.api.error.doesNotExist",  new Object[] { "Uom Id" }, "");
                 }
             }

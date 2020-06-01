@@ -22,6 +22,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -46,7 +47,7 @@ public class RfnMeterDisconnectService {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     
     /**
      * Attempts to send a disconnect request for a RFN meter.  Will use a separate thread to make the request.
@@ -173,8 +174,8 @@ public class RfnMeterDisconnectService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<>(cparm, configurationSource, jmsTemplate,
-                JmsApiDirectory.RFN_METER_DISCONNECT);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_DISCONNECT);
+        rrrTemplate = new RequestReplyReplyTemplate<>(cparm, configurationSource, jmsTemplate);
     }
     
 }

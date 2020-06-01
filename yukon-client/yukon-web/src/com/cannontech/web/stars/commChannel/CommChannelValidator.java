@@ -87,7 +87,7 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
     }
 
     private void validatePort(Errors errors, Integer portNumber, String ipAddress, String portIdString, PaoType portType) {
-        YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(portNumber));
+        YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(portNumber), "yukon.web.error.portNumber.required");
         Integer existingPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
         PortValidatorHelper.validateUniquePortAndIpAddress(errors, portNumber, ipAddress, existingPortId, portIdString, portType);
     }

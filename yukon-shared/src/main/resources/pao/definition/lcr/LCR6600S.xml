@@ -9,7 +9,6 @@
     </tags>
     <pointInfos>
         <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
-        <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
 
         <pointInfo name="Relay 1 Call for Cool" init="true" attributes="RELAY_1_CALL_FOR_COOL"/>
         <pointInfo name="Relay 1 Relay State" attributes="RELAY_1_RELAY_STATE"/>

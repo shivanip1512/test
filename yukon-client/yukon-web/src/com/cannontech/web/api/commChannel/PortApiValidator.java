@@ -35,7 +35,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
         
         // Validate if type is changed during update.
         String paoId = ServletUtils.getPathVariable("id");
-        if (paoId != null) {
+        if (paoId != null && port.getType() != null) {
             yukonValidationHelper.checkIfPaoTypeChanged(errors, port.getType(), Integer.valueOf(paoId));
         }
 
@@ -65,7 +65,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
             PortValidatorHelper.validateCarrierDetectWait(errors, detailBase.getCarrierDetectWaitInMilliseconds());
 
             if (detailBase.getPortNumber() != null) {
-                YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(detailBase.getPortNumber()));
+                YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(detailBase.getPortNumber()), "yukon.web.error.portNumber.required");
             }
         }
 

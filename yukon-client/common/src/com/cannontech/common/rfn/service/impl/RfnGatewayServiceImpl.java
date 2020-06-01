@@ -66,6 +66,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
@@ -105,7 +106,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
     @Autowired private AsyncDynamicDataSource dataSource;
     @Autowired private AttributeService attributeService;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     // Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
@@ -140,20 +141,23 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public void init() {
         JmsApi<?, ?, ?> gatewayUpdateRequestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
                 JmsApiDirectory.RF_GATEWAY_CREATE, JmsApiDirectory.RF_GATEWAY_EDIT, JmsApiDirectory.RF_GATEWAY_DELETE);
-        updateRequestTemplate = new RequestReplyTemplateImpl<>(gatewayUpdateRequestCparm, configSource, jmsTemplate,
-                gatewayUpdateRequestQueue);
+        YukonJmsTemplate gatewayUpdateRequestJmsTemplate = jmsTemplateFactory.createTemplate(gatewayUpdateRequestQueue);
+        updateRequestTemplate = new RequestReplyTemplateImpl<>(gatewayUpdateRequestCparm, configSource,
+                gatewayUpdateRequestJmsTemplate);
 
         JmsApi<?, ?, ?> gatewayActionRequestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(
                 JmsApiDirectory.RF_GATEWAY_SCHEDULE_DELETE, JmsApiDirectory.RF_GATEWAY_COLLECTION,
                 JmsApiDirectory.RF_GATEWAY_CONNECT, JmsApiDirectory.RF_GATEWAY_SCHEDULE_REQUEST,
                 JmsApiDirectory.RF_GATEWAY_CONNECTION_TEST);
+        YukonJmsTemplate gatewayActionRequestJmsTemplate = jmsTemplateFactory.createTemplate(gatewayActionRequestQueue);
+        actionRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource,
+                gatewayActionRequestJmsTemplate);
+        connectionTestRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource,
+                gatewayActionRequestJmsTemplate);
 
-        actionRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource, jmsTemplate,
-                gatewayActionRequestQueue);
-        connectionTestRequestTemplate = new RequestReplyTemplateImpl<>(gatewayActionRequestCparm, configSource, jmsTemplate,
-                gatewayActionRequestQueue);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RF_GATEWAY_SET_CONFIG);
         configRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.RF_GATEWAY_SET_CONFIG.getName(),
-                configSource, jmsTemplate, JmsApiDirectory.RF_GATEWAY_SET_CONFIG);
+                configSource, jmsTemplate);
     }
     
     @Override
