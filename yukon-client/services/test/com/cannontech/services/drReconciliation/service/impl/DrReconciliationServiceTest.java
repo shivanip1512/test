@@ -580,14 +580,14 @@ public class DrReconciliationServiceTest {
 
     @Test
     public void test_compareExpectedServiceStatusWithReportedLcrs() {
-        Map<Integer, List<Integer>> lcrsToSendCommand = new HashMap<>(2);
-        List<Integer> inServiceExppectedLcrs = new ArrayList<>(4);
+        Map<Integer, Set<Integer>> lcrsToSendCommand = new HashMap<>(2);
+        Set<Integer> inServiceExppectedLcrs = new HashSet<>(4);
         inServiceExppectedLcrs.add(1);
         inServiceExppectedLcrs.add(2);
         inServiceExppectedLcrs.add(3);
         inServiceExppectedLcrs.add(4);
 
-        List<Integer> outOfServiceExppectedLcrs = new ArrayList<>(3);
+        Set<Integer> outOfServiceExppectedLcrs = new HashSet<>(3);
         outOfServiceExppectedLcrs.add(5);
         outOfServiceExppectedLcrs.add(6);
         outOfServiceExppectedLcrs.add(7);

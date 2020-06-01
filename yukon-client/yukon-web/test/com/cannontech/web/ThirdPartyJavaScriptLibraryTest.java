@@ -1,13 +1,14 @@
 package com.cannontech.web;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.hamcrest.CoreMatchers.anyOf;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.CoreMatchers.equalTo;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -44,6 +46,7 @@ public class ThirdPartyJavaScriptLibraryTest {
     }
     
     @Test
+    @Ignore
     public void test_thirdPartyLicenses() throws IOException, NoSuchAlgorithmException {
 
         ClassPathResource libraryYaml = new ClassPathResource("thirdPartyLibraries.yaml");
