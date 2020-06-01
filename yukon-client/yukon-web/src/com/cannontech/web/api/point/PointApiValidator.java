@@ -1,7 +1,6 @@
 package com.cannontech.web.api.point;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -18,15 +17,15 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.UnitOfMeasure;
-import com.cannontech.database.db.point.PointAnalog;
-import com.cannontech.database.db.point.PointLimit;
-import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.LitePointModel;
+import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointLimitModel;
+import com.cannontech.web.tools.points.model.PointUnit;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 import com.cannontech.web.tools.points.validators.PointValidationUtil;
 import com.cannontech.yukon.IDatabaseCache;
@@ -64,11 +63,11 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
 
             LitePointModel litePointModel = new LitePointModel(target.getPointName(),
-                                                               pointId,
-                                                               physicalOffset,
-                                                               target.getPointOffset(),
-                                                               target.getPointType(), 
-                                                               target.getPaoId());
+                                                                     pointId,
+                                                                     physicalOffset,
+                                                                     target.getPointOffset(),
+                                                                     target.getPointType(),
+                                                                     target.getPaoId());
 
             boolean isCreationOperation = pointId == null ? true : false;
 
@@ -79,7 +78,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         if (target instanceof ScalarPointModel) {
             ScalarPointModel<?> scalarPointModel = (ScalarPointModel<?>) target;
 
-            List<PointLimit> pointLimits = scalarPointModel.getLimits();
+            List<PointLimitModel> pointLimits = scalarPointModel.getLimits();
             if (pointLimits.size() > 2) {
                 errors.rejectValue("limits", baseKey + ".pointLimit.invalidSize");
             } else {
@@ -87,7 +86,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     int limitNumber = 0;
                     for (int i = 0; i < scalarPointModel.getLimits().size(); i++) {
                         errors.pushNestedPath("limits[" + i + "]");
-                        PointLimit pointLimit = pointLimits.get(i);
+                        PointLimitModel pointLimit = pointLimits.get(i);
                         if (pointLimit != null) {
                             if ((pointLimit.getHighLimit() != null && pointLimit.getLowLimit() != null) && pointLimit.getHighLimit() < pointLimit.getLowLimit()) {
                                 errors.rejectValue("lowLimit", "yukon.web.modules.tools.point.error.limits");
@@ -123,16 +122,17 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     }
                 }
             }
-            
+
             PointUnit pointUnit = scalarPointModel.getPointUnit();
             if (pointUnit != null) {
-                if (pointUnit.getUomID() != null) {
+                if (pointUnit.getUomId() != null) {
                     List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
                     List<Integer> uomIds = unitMeasures.stream().map(unit -> unit.getId()).collect(Collectors.toList());
-                    if (!uomIds.contains(scalarPointModel.getPointUnit().getUomID())) {
+                    if (!uomIds.contains(scalarPointModel.getPointUnit().getUomId())) {
                         errors.rejectValue("pointUnit.uomID", "yukon.web.api.error.doesNotExist", new Object[] { "Uom Id" }, "");
                     }
                 }
+
                 Double highReasonabilityLimit = pointUnit.getHighReasonabilityLimit();
                 Double lowReasonabilityLimit = pointUnit.getLowReasonabilityLimit();
 
@@ -160,7 +160,6 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 }
             }
         }
-
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.ON_TIMER || target.getArchiveType() == PointArchiveType.ON_TIMER_OR_UPDATE)) {
             if (target.getArchiveInterval() != null) {
                 TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
@@ -170,7 +169,8 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
         }
 
-        if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
+        if (target.getArchiveType() != null
+                && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
             if (target.getArchiveInterval() != null && target.getArchiveInterval() != 0) {
                 errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveInterval");
             }
@@ -217,8 +217,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             if (pointAnalogControl != null) {
                 if (pointAnalogControl.getControlType() != null) {
 
-                    if (pointAnalogControl.getControlType() == AnalogControlType.NORMAL
-                            && pointAnalogControl.getControlOffset() != null) {
+                    if (pointAnalogControl.getControlType() == AnalogControlType.NORMAL && pointAnalogControl.getControlOffset() != null) {
                         YukonValidationUtils.checkRange(errors, "pointAnalogControl.controlOffset", pointAnalogControl.getControlOffset(), -99999999, 99999999, false);
                     }
 

@@ -1,0 +1,73 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="DR Suite">
+	<test name="Load Group Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.dr.loadgroup.ItronLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.MeterDisconnectLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.EmetconLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.ExpresscomLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.DigiSepLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.EcobeeLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.HoneywellLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.VersacomLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.PointLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.MCTLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.RippleLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.RFNExpresscomLoadGroupApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadgroup.NestLoadGroupApiTest" />
+        </classes>
+
+	</test>
+		<test name="Macro Load Group Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.dr.macroloadgroup.MacroLoadGroupApiTest" />
+        </classes>
+	</test>
+	
+	<test name="Load Program Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.dr.loadprogram.HoneywellProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.EcobeeProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.DirectProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.SepProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.ItronProgramApiTest" />
+            <class name="com.cannontech.rest.api.dr.loadprogram.MeterDisconnectProgramApiTest" />
+            
+              <!-- Gear Test -->
+            <class name="com.cannontech.rest.api.dr.gears.BeatThePeakGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.EcobeeCycleGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.EcobeeSetpointGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.HoneywellControlGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.HoneywellSetpointGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.ItronCycleGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.NoControlGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.RotationGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.SepCycleGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.SepTemperatureOffsetGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.SimpleThermostatRampingGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.SmartCycleGearApiTest" /> 
+            <class name="com.cannontech.rest.api.dr.gears.TimeRefreshGearApiTest" /> 
+        </classes>
+    </test>
+    
+    <test name="Control Scenario Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.dr.controlScenario.ControlScenarioApiTest" />
+        </classes>
+    </test>
+    
+    <test name="Control Area Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.dr.controlarea.ControlAreaApiTest" />
+        </classes>
+    </test>
+    
+    <test name="Program Constraint Test">
+        <classes>       
+            <class name="com.cannontech.rest.api.dr.programconstraint.ProgramConstraintApiTest" />
+        </classes>
+    </test>
+ 
+</suite>

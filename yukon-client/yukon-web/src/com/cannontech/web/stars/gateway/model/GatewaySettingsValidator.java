@@ -62,7 +62,7 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         if (!settings.isUseDefaultPort()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "port", baseKey + "port.required");
             if (!errors.hasFieldErrors("port")) {
-                YukonValidationUtils.validatePort(errors, "port", settings.getPort().toString());
+                YukonValidationUtils.validatePort(errors, "port", settings.getPort().toString(), "yukon.web.error.port.required");
             }
         }
         

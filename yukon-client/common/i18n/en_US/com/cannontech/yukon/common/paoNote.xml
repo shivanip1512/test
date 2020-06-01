@@ -22,6 +22,7 @@
     <entry key="yukon.web.common.paoNotesSearch.noDeviceGroupSelected">Please select at least one device group.</entry>
     
     <entry key="yukon.web.common.paoNotesSearch.noResults">No results found.</entry>
+    <entry key="yukon.web.common.paoNotesSearch.createNote">Create Note</entry>
     <entry key="yukon.web.common.paoNotesSearch.viewAllNotes">View All Notes</entry>
     <entry key="yukon.web.common.paoNotesSearch.mapDevices">Map Devices</entry>
     <entry key="yukon.web.common.paoNotesSearch.readAttribute">Read Attribute</entry>

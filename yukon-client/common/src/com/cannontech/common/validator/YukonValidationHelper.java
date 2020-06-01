@@ -18,8 +18,9 @@ public class YukonValidationHelper {
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
         if (StringUtils.hasText(paoName)) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoName, 60);
-            if (!PaoUtils.isValidPaoName(paoName)) {
+            String paoNameWithoutSpace = paoName.trim();
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
+            if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
                 errors.rejectValue("name", key + "paoName.containsIllegalChars");
             }
 
@@ -28,7 +29,7 @@ public class YukonValidationHelper {
                 PaoType paoType = (type == null && paoId != null) ? serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(paoId)).getPaoType() : type;
                 Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
                                                                          .stream()
-                                                                         .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoName) 
+                                                                         .filter(pao -> pao.getPaoName().equalsIgnoreCase(paoNameWithoutSpace) 
                                                                                   && pao.getPaoType().getPaoClass() == paoType.getPaoClass()
                                                                                   && pao.getPaoType().getPaoCategory() == paoType.getPaoCategory())
                                                                          .findFirst();
@@ -46,11 +47,12 @@ public class YukonValidationHelper {
 
     /**
      * Check if paoType is matched with the poaObject present in the cache for paoId.
-    */
+     */
     public void checkIfPaoTypeChanged(Errors errors, PaoType paoType, int paoId) {
         LiteYukonPAObject litePao = serverDatabaseCache.getAllPaosMap().get(paoId);
         if (litePao != null && litePao.getPaoType() != paoType) {
-            errors.rejectValue("type", key + "paoTypeMismatch", new Object[] { paoType, litePao.getPaoType(), paoId }, "");
+            errors.rejectValue("type", key + "paoTypeMismatch",
+                    new Object[] { paoType, litePao.getPaoType(), String.valueOf(paoId) }, "");
         }
     }
 }

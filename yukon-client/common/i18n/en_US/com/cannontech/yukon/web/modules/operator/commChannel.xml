@@ -42,7 +42,6 @@
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_4800">4800</entry>
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_9600">9600</entry>
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_14400">14400</entry>
-    <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_28800">28800</entry>
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_38400">38400</entry>
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_57600">57600</entry>
     <entry key="yukon.web.modules.operator.commChannel.baudRate.BAUD_115200">115200</entry>

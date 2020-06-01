@@ -1,7 +1,6 @@
 package com.cannontech.web.tools.points.model;
 
 import com.cannontech.database.data.point.AnalogPoint;
-import com.cannontech.database.db.point.PointAnalog;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -35,12 +34,11 @@ public class AnalogPointModel extends ScalarPointModel<AnalogPoint> {
 
     @Override
     public void buildDBPersistent(AnalogPoint point) {
-        if (getPointAnalog() != null) {
-            getPointAnalog().buildDBPersistent(point.getPointAnalog());
-        }
-        if (getPointAnalogControl() != null) {
-            getPointAnalogControl().buildDBPersistent(point.getPointAnalogControl());
-        }
+
+        getPointAnalog().buildDBPersistent(point.getPointAnalog());
+
+        getPointAnalogControl().buildDBPersistent(point.getPointAnalogControl());
+
         super.buildDBPersistent(point);
     }
 

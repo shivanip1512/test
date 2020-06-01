@@ -64,35 +64,61 @@
                     <c:when test="${not empty commChannel}">
                         <c:if test="${isAdditionalConfigSupported}">
                             <tags:sectionContainer2 nameKey="general">
-                                <tags:nameValueContainer2>
+                                <tags:nameValueContainer2 tableClass="js-general-tbl">
                                     <tags:nameValue2 nameKey=".protocolWrap">
                                         <tags:radio path="protocolWrap" value="IDLC" classes="left yes ML0" key="yukon.web.modules.operator.commChannel.protocolWrap.IDLC"/>
                                         <tags:radio path="protocolWrap" value="None" classes="right yes" key="yukon.web.modules.operator.commChannel.protocolWrap.NONE"/>
                                     </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".carrierDetectWait">
-                                        <!--  TODO - Change the UI Component -->
-                                        <c:choose>
-                                            <c:when test="${commChannel.carrierDetectWaitInMilliseconds > 0}">
-                                                ${commChannel.carrierDetectWaitInMilliseconds}
-                                                <i:inline key="yukon.common.units.ms"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span><i:inline key="yukon.common.no"/></span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </tags:nameValue2>
-                                    <c:if test="${isEncyptionSupported}">
-                                        <tags:nameValue2 nameKey=".encyptionKey">
-                                            <!--  TODO - Change the UI Component -->
+                                    <cti:displayForPageEditModes modes="EDIT">
+                                        <c:set var="carrierDetectWaitError">
+                                            <form:errors path="carrierDetectWaitInMilliseconds"/>
+                                        </c:set>
+                                        <c:set var="carrierDetectWaitEnabled" value="${commChannel.carrierDetectWaitInMilliseconds > 0 || not empty carrierDetectWaitError}"/>
+                                        <tags:nameValue2 nameKey=".carrierDetectWait" rowClass="js-carrier-detect-wait">
+                                            <tags:switchButton name="carrierDetectWait" toggleGroup="carrierDetectWait" toggleAction="hide"
+                                                               onNameKey=".yes.label" offNameKey=".no.label" checked="${carrierDetectWaitEnabled}"
+                                                               classes="js-carrier-detect-wait-switch"/>
+                                            <tags:input inputClass="js-carrierDetectWait" units="${milliseconds}" path="carrierDetectWaitInMilliseconds" toggleGroup="carrierDetectWait"/>
+                                        </tags:nameValue2>
+                                    </cti:displayForPageEditModes>
+                                    <cti:displayForPageEditModes modes="VIEW">
+                                        <tags:nameValue2 nameKey=".carrierDetectWait">
                                             <c:choose>
-                                                <c:when test="${not empty commChannel.keyInHex}">
-                                                    ${commChannel.keyInHex}
+                                                <c:when test="${commChannel.carrierDetectWaitInMilliseconds > 0}">
+                                                    ${commChannel.carrierDetectWaitInMilliseconds}
+                                                    <i:inline key="yukon.common.units.ms"/>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <span><i:inline key="yukon.common.no"/></span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </tags:nameValue2>
+                                    </cti:displayForPageEditModes>
+                                    <c:if test="${isEncyptionSupported}">
+                                        <cti:displayForPageEditModes modes="EDIT">
+                                            <c:set var="encryptionKeyError">
+                                                <form:errors path="keyInHex"/>
+                                            </c:set>
+                                            <c:set var="encryptionKeyEnabled" value="${not empty commChannel.keyInHex || not empty encryptionKeyError}"/>
+                                            <tags:nameValue2 nameKey=".encyptionKey">
+                                                <tags:switchButton name="encyptionKey" toggleGroup="encyptionKey" toggleAction="hide"
+                                                                   onNameKey=".yes.label" offNameKey=".no.label" checked="${encryptionKeyEnabled}"
+                                                                   classes="js-encryption-key-switch"/>
+                                                <tags:input inputClass="js-encryptionKey" path="keyInHex" toggleGroup="encyptionKey"/>
+                                            </tags:nameValue2>
+                                        </cti:displayForPageEditModes>
+                                        <cti:displayForPageEditModes modes="VIEW">
+                                            <tags:nameValue2 nameKey=".encyptionKey">
+                                                <c:choose>
+                                                    <c:when test="${not empty commChannel.keyInHex}">
+                                                        ${commChannel.keyInHex}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span><i:inline key="yukon.common.no"/></span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </tags:nameValue2>
+                                        </cti:displayForPageEditModes>
                                     </c:if>
                                 </tags:nameValueContainer2>
                             </tags:sectionContainer2>
@@ -156,10 +182,10 @@
         <div class="dn" 
              id="js-edit-comm-channel-popup" 
              data-title="${editPopupTitle}" 
-             data-dialog 
+             data-dialog
              data-ok-text="${saveText}" 
-             data-width="500"
-             data-height="400"
+             data-width="550"
+             data-height="450"
              data-event="yukon:assets:commChannel:save" 
              data-url="${editUrl}"/>
         </div>

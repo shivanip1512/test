@@ -2,27 +2,23 @@ package com.cannontech.database.db.point;
 
 import java.sql.SQLException;
 
-import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class PointUnit extends DBPersistent implements DBPersistentConverter<PointUnit> {
+public class PointUnit extends DBPersistent {
     
     public static final int DEFAULT_DECIMAL_PLACES = 3;
     public static final int ZERO_DECIMAL_PLACE = 0;
     public static final int ONE_DECIMAL_PLACE = 1;
     public static final int DEFAULT_METER_DIALS = 0;
 
-    @JsonIgnore
-    private Integer pointID;
-    @JsonProperty("uomId")
-    private Integer uomID;
-    private Integer decimalPlaces;
-    private Double highReasonabilityLimit;
-    private Double lowReasonabilityLimit;
-    private Integer meterDials;
+    private Integer pointID = null;
+    private Integer uomID = UnitOfMeasure.KWH.getId();
+    private Integer decimalPlaces = DEFAULT_DECIMAL_PLACES;
+    private Double highReasonabilityLimit = CtiUtilities.INVALID_MAX_DOUBLE;
+    private Double lowReasonabilityLimit = CtiUtilities.INVALID_MIN_DOUBLE;
+    private Integer meterDials = new Integer(0);
 
     public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
     public static final String SETTER_COLUMNS[] = { 
@@ -110,7 +106,6 @@ public class PointUnit extends DBPersistent implements DBPersistentConverter<Poi
         lowReasonabilityLimit = newLowReasonabilityLimit;
     }
     
-    @JsonIgnore
     public boolean isHighReasonabilityValid() {
         return highReasonabilityLimit < CtiUtilities.INVALID_MAX_DOUBLE;
     }
@@ -118,7 +113,6 @@ public class PointUnit extends DBPersistent implements DBPersistentConverter<Poi
         if (!valid) highReasonabilityLimit = CtiUtilities.INVALID_MAX_DOUBLE;
     }
     
-    @JsonIgnore
     public boolean isLowReasonabilityValid() {
         return lowReasonabilityLimit > CtiUtilities.INVALID_MIN_DOUBLE;
     }
@@ -149,35 +143,6 @@ public class PointUnit extends DBPersistent implements DBPersistentConverter<Poi
 
     public void setMeterDials(Integer decimalDigits) {
         this.meterDials = decimalDigits;
-    }
-
-
-    @Override
-    public void buildModel(PointUnit pointUnit) {
-      setUomID(pointUnit.getUomID());
-      setMeterDials(pointUnit.getMeterDials());
-      setHighReasonabilityLimit(pointUnit.getHighReasonabilityLimit());
-      setLowReasonabilityLimit(pointUnit.getLowReasonabilityLimit());
-      setDecimalPlaces(pointUnit.getDecimalPlaces());
-    }
-
-    @Override
-    public void buildDBPersistent(PointUnit pointUnit) {
-        if (getUomID() != null) {
-            pointUnit.setUomID(getUomID());
-        }
-        if (getDecimalPlaces() != null) {
-            pointUnit.setDecimalPlaces(getDecimalPlaces());
-        }
-        if (getMeterDials() != null) {
-            pointUnit.setMeterDials(getMeterDials());
-        }
-        if (getHighReasonabilityLimit() != null) {
-            pointUnit.setHighReasonabilityLimit(getHighReasonabilityLimit());
-        }
-        if (getLowReasonabilityLimit() != null) {
-            pointUnit.setLowReasonabilityLimit(getLowReasonabilityLimit());
-        }
     }
 
 }

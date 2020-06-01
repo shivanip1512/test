@@ -22,6 +22,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.JmsReplyReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyReplyTemplate;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -31,7 +32,7 @@ public class RfnMeterReadService {
     
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnChannelDataConverter rfnChannelDataConverter;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
     private final static Logger log = YukonLogManager.getLogger(RfnMeterReadService.class);
 
     private RequestReplyReplyTemplate<RfnMeterReadReply, RfnMeterReadDataReply> rrrTemplate;
@@ -143,8 +144,8 @@ public class RfnMeterReadService {
     
     @PostConstruct
     public void initialize() {
-        rrrTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, jmsTemplate,
-                JmsApiDirectory.RFN_METER_READ);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.RFN_METER_READ);
+        rrrTemplate = new RequestReplyReplyTemplate<>("RFN_METER_READ", configurationSource, jmsTemplate);
     }
     
 }

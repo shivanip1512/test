@@ -50,6 +50,28 @@ yukon.widget.commChannel.info = (function () {
                 }
             });
 
+            $(document).on('change', '.js-carrier-detect-wait-switch', function (event) {
+                var isCarrierDetectSelected = $(event.target).prop('checked'),
+                    container = $(this).closest(".js-general-tbl");
+                if (isCarrierDetectSelected) {
+                    container.find(".js-carrierDetectWait").val("1");
+                } else {
+                    container.find(".js-carrierDetectWait").val("0");
+                    $('.js-carrierDetectWait').removeClass("error");
+                    $("span[id='carrierDetectWaitInMilliseconds.errors']").remove();
+                }
+            });
+
+            $(document).on('change', '.js-encryption-key-switch', function (event) {
+                var isEncryptionKeySelected = $(event.target).prop('checked'),
+                    container = $(this).closest(".js-general-tbl");
+                if (!isEncryptionKeySelected) {
+                    container.find(".js-encryptionKey").val("");
+                    $('.js-encryptionKey').removeClass("error");
+                    $("span[id='keyInHex.errors']").remove();
+                }
+            });
+
             _initialized = true;
         }
  

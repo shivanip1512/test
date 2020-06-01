@@ -17,7 +17,6 @@ import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.jms.support.destination.DynamicDestinationResolver;
 
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.util.jms.api.JmsApi;
 
 /**
  * This template will create destination queue for the replies.
@@ -32,8 +31,8 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
      *        log.
      */
     public RequestTemplateImpl(String configurationName, ConfigurationSource configurationSource, YukonJmsTemplate jmsTemplate,
-            JmsApi<?, ?, ?> jmsApi, boolean isInternalMessage) {
-        super(configurationName, configurationSource, jmsTemplate, jmsApi, isInternalMessage);
+           boolean isInternalMessage) {
+        super(configurationName, configurationSource, jmsTemplate, isInternalMessage);
     }
 
     @Override
@@ -46,6 +45,8 @@ public class RequestTemplateImpl<R extends Serializable> extends RequestReplyTem
         DestinationResolver destinationResolver = new DynamicDestinationResolver();
         try {
             final String correlationId = UUID.randomUUID().toString();
+            final String requestQueueName = jmsTemplate.getDefaultDestinationName();
+            final boolean pubSubDomain = jmsTemplate.isPubSubDomain();
             final Destination requestQueue =
                 destinationResolver.resolveDestinationName(session, requestQueueName + ".Request", pubSubDomain);
             final Destination replyQueue =
