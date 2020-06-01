@@ -51,7 +51,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
             if (liteYukonPAObject == null) {
-                errors.rejectValue("paoId", "yukon.web.api.error.doesNotExist");
+                errors.rejectValue("paoId", "yukon.web.api.error.doesNotExist", new Object[] { target.getPaoId() }, "");
             }
 
             if (!errors.hasFieldErrors("paoId") && target.getPointName() != null && target.getPointOffset() != null) {
@@ -166,6 +166,8 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
                     errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
                 }
+            } else {
+                errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveTimeInterval", new Object[] { "Archive Interval" }, "");
             }
         }
 
