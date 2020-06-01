@@ -54,15 +54,16 @@ $global:SERVICES_STOPPED = $True
 
 # Adding only those services to ServicesToRestart list if they are set start automatically or currently running #
 foreach($ServiceGroup in $YukonServiceGroups)
-{   
-    [System.Collections.ArrayList]$ServicesToRest = @()
+{
+    [System.Collections.ArrayList]$ActiveServicesFromThisGroup = @()
+    
     foreach($YukonService in $ServiceGroup)
     {
 	    $ServiceStartMode = (Get-WmiObject Win32_Service -filter "Name='$YukonService'").StartMode
 
         If($ServiceStartMode -eq "Auto")
         {
-            [void]$ServicesToRest.Add($YukonService)
+            [void]$ActiveServicesFromThisGroup.Add($YukonService)
         }
         elseIf(Get-Service $YukonService -ErrorAction SilentlyContinue)
         {
@@ -70,15 +71,20 @@ foreach($ServiceGroup in $YukonServiceGroups)
         
             If($Service.Status -eq $RUNNING)
             {
-               [void]$ServicesToRest.Add($ServicesToRest)
+               [void]$ActiveServicesFromThisGroup.Add($YukonService)
             }
         }
     }
-	[void]$ServicesToRestart.Add($ServicesToRest)
+    
+    [void]$ServicesToRestart.Add($ActiveServicesFromThisGroup)
 }
 
 Write-Host "Services configured for automatic start or currently running: `r`n" 
-foreach($Services in $ServicesToRestart){foreach($Service in $Services){Write-Host $Service}}
+foreach($Services in $ServicesToRestart) {
+    foreach($Service in $Services) {
+        Write-Host $Service
+    }
+}
 Write-Host "-------------------------------------------" 
 
 <#
