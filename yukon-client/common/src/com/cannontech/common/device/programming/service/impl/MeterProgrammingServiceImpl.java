@@ -293,7 +293,9 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         UUID uuid = meterProgrammingDao.saveMeterProgram(program);
         if(!isValidProgramFile()) {
             meterProgrammingDao.deleteMeterProgram(uuid);
-            throw new BadConfigurationException("Program is invalid");
+            BadConfigurationException error = new BadConfigurationException("Program file is invalid");
+            log.error(error);
+            throw error;
         }
         return uuid;
     }
