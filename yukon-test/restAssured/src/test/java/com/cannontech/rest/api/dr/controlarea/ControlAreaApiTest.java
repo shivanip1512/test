@@ -19,7 +19,9 @@ import com.cannontech.rest.api.controlArea.request.MockControlArea;
 import com.cannontech.rest.api.controlArea.request.MockControlAreaTrigger;
 import com.cannontech.rest.api.controlArea.request.MockControlAreaTriggerType;
 import com.cannontech.rest.api.controlArea.request.MockDailyDefaultState;
+import com.cannontech.rest.api.controlScenario.request.MockControlScenario;
 import com.cannontech.rest.api.dr.helper.ControlAreaHelper;
+import com.cannontech.rest.api.dr.helper.ControlScenarioHelper;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 import com.cannontech.rest.api.dr.helper.LoadProgramSetupHelper;
 import com.cannontech.rest.api.dr.helper.ProgramConstraintHelper;
@@ -93,7 +95,7 @@ public class ControlAreaApiTest {
         assertTrue(getResponse.statusCode() == 200, "Status code should be 200");
 
         MockControlArea controlAreaGetResponse = getResponse.as(MockControlArea.class);
-        context.setAttribute("controlArea_Name", controlAreaGetResponse.getName());
+        context.setAttribute("controlAreaTest_Name", controlAreaGetResponse.getName());
 
         MockControlArea controlArea = (MockControlArea) context.getAttribute("expectedControlArea");
 
@@ -194,15 +196,15 @@ public class ControlAreaApiTest {
      */
     @Test
     public void controlArea_06_CreateWithProgramAndTrigger(ITestContext context) {
-        loadProgram_Create();
+        createLoadProgram();
         MockControlArea controlArea = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
                 loadProgram.getProgramId());
         ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", controlArea);
         Integer controlAreaId = response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);
         assertTrue(response.statusCode() == 200, "Status code should be 200");
         assertTrue(controlAreaId != null, "Control Area Id should not be Null");
-        context.setAttribute("controlAreaName", controlArea.getName());
-        context.setAttribute("controlAreaId", controlAreaId);
+        context.setAttribute("contArea_Name", controlArea.getName());
+        context.setAttribute("contArea_Id", controlAreaId);
     }
 
     /**
@@ -478,6 +480,104 @@ public class ControlAreaApiTest {
     }
 
     /**
+   * This test case deletes Control Area created in controlArea_06_CreateWithProgramAndTrigger
+   */
+    
+    @Test(dependsOnMethods = "controlArea_06_CreateWithProgramAndTrigger")
+    public void controlArea_21_DeleteCntAreaWithProgramAssigned(ITestContext context) {
+    
+        MockLMDto deleteObject = MockLMDto.builder().name(context.getAttribute("contArea_Name").toString()).build();
+        Log.info("Delete Control Area is : " + deleteObject);
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
+                deleteObject,context.getAttribute("contArea_Id").toString());
+        assertTrue(deleteAreaResponse.statusCode() == 200, "Status code should be 200");
+    } 
+
+    /**
+     * This test case updates control area by un-assigning load program
+     */
+
+    @Test(dependsOnMethods = "controlArea_21_DeleteCntAreaWithProgramAssigned")
+    public void controlArea_22_UpdateCntAreaByUnassigningProgram(ITestContext context) {
+       //control area creation
+        MockControlArea control_Area = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
+                loadProgram.getProgramId());
+   
+        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", control_Area);
+        context.setAttribute("controlAreaId", response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
+        assertTrue(response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID) != null, "Control Area Id should not be Null");
+        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        
+        //update control area by unassigned Load Program
+        control_Area.setProgramAssignment(null);
+        ExtractableResponse<?> updatedResponse = ApiCallHelper.post("updateControlArea",
+                control_Area, context.getAttribute("controlAreaId").toString());
+        Integer controlAreaId = updatedResponse.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID);   
+        assertTrue(updatedResponse.statusCode() == 200, "Status code should be 200");
+        context.setAttribute("controlAreaName", control_Area.getName());
+        context.setAttribute("controlAreaId", controlAreaId);
+     
+        // Get request to validate load program is removed
+        ExtractableResponse<?> getRemovedLoadProgramResponse = ApiCallHelper.get("getControlArea",
+                context.getAttribute("controlAreaId").toString());
+        MockControlArea controlAreaGetResponse = getRemovedLoadProgramResponse.as(MockControlArea.class);
+        assertTrue(controlAreaGetResponse.getProgramAssignment() == null, "ProgramAssignment value Should be : null");
+    }
+
+    /**
+     * Negative validation when Control Area is updated by un-assigning a program that is also added in scenario
+     */
+    
+    @Test(dependsOnMethods = "controlArea_22_UpdateCntAreaByUnassigningProgram")
+    public void controlArea_23_UpdateCntAreaUnassignProgramNegativeValidation(ITestContext context) {
+        //control area creation
+        MockControlArea control_Area = ControlAreaHelper.buildControlArea(MockControlAreaTriggerType.THRESHOLD_POINT,
+                loadProgram.getProgramId());
+        
+        String name = "controlAreaUpdateValidation";
+        control_Area.setName(name);
+        context.setAttribute("controlArea_Name", name);
+        ExtractableResponse<?> response = ApiCallHelper.post("saveControlArea", control_Area);
+        context.setAttribute("controlArea_Id", response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID));
+       
+        assertTrue(response.statusCode() == 200, "Status code should be 200");
+        assertTrue(response.path(ControlAreaHelper.CONTEXT_CONTROLAREA_ID) != null, "Control Area Id should not be Null");
+
+        //control scenario creation
+        MockControlScenario controlScenario = ControlScenarioHelper.buildControlScenario(loadProgram);
+        ExtractableResponse<?> responseCS = ApiCallHelper.post("saveControlScenario", controlScenario);
+
+        assertTrue(responseCS.statusCode() == 200, "Status code should be 200");
+
+        //update controlarea by unassigned Load Program
+        control_Area.setProgramAssignment(null);
+        ExtractableResponse<?> updatedResponseCA = ApiCallHelper.post("updateControlArea",
+                control_Area, context.getAttribute("controlArea_Id").toString());
+        assertTrue(updatedResponseCA.statusCode() == 400, "Status code should be 400"); 
+        
+        assertTrue(ValidationHelper.validateErrorMessage(updatedResponseCA, 
+                "A program on this control area is assigned to a scenario. Program must be removed from scenario before it can be removed from a control area."),
+                "Expected message should be - Validation error");
+    }
+
+    /**
+     * Negative validation when user tries to delete Control Area with a program assigned; that is also added in scenario
+     */
+    
+    @Test(dependsOnMethods = "controlArea_23_UpdateCntAreaUnassignProgramNegativeValidation")
+    public void controlArea_24_DeleteCntAreaWithProgramNegativeValidation(ITestContext context) {
+    
+     MockLMDto deleteObject = MockLMDto.builder().name(context.getAttribute("controlArea_Name").toString()).build();
+        Log.info("Delete Control Area is : " + deleteObject);
+        ExtractableResponse<?> deleteAreaResponse = ApiCallHelper.delete("deleteControlArea",
+                deleteObject,context.getAttribute("controlArea_Id").toString());
+        assertTrue(deleteAreaResponse.statusCode() == 400, "Status code should be 400");
+        assertTrue(ValidationHelper.validateErrorMessage(deleteAreaResponse, 
+                "A program on this control area is assigned to a scenario. Program must be removed from scenario before it can be removed from a control area."),
+                "Expected message should be - Validation error");
+    }
+
+    /**
      * This function build Mock Control Area to be used for creation of Control Area with default values
      */
     public MockControlArea buildControlArea(String controlAreaName) {
@@ -496,7 +596,7 @@ public class ControlAreaApiTest {
     /**
      * Method to create load program as we need to pass load program in request of Control Area.
      */
-    public void loadProgram_Create() {
+    private void createLoadProgram() {
 
         List<MockLoadGroupBase> loadGroups = new ArrayList<>();
         loadGroups.add(LoadGroupHelper.createLoadGroup(MockPaoType.LM_GROUP_ECOBEE));
