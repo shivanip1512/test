@@ -53,26 +53,26 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             if (liteYukonPAObject == null) {
                 errors.rejectValue("paoId", "yukon.web.api.error.paoId.doesNotExist");
             }
-        }
 
-        if (!errors.hasFieldErrors("paoId") && target.getPointName() != null && target.getPointOffset() != null) {
-            boolean physicalOffset = target.getPointOffset() > 0 ? true : false;
-            Integer pointId = null;
-            if (ServletUtils.getPathVariable("id") != null) {
-                pointId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+            if (!errors.hasFieldErrors("paoId") && target.getPointName() != null && target.getPointOffset() != null) {
+                boolean physicalOffset = target.getPointOffset() > 0 ? true : false;
+                Integer pointId = null;
+                if (ServletUtils.getPathVariable("id") != null) {
+                    pointId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+                }
+
+                LitePointModel litePointModel = new LitePointModel(target.getPointName(),
+                                                                   pointId,
+                                                                   physicalOffset,
+                                                                   target.getPointOffset(),
+                                                                   target.getPointType(),
+                                                                   target.getPaoId());
+
+                boolean isCreationOperation = pointId == null ? true : false;
+
+                pointValidationUtil.validatePointName(litePointModel, "pointName", errors, isCreationOperation);
+                pointValidationUtil.validatePointOffset(litePointModel, "pointOffset", errors, isCreationOperation);
             }
-
-            LitePointModel litePointModel = new LitePointModel(target.getPointName(),
-                                                                     pointId,
-                                                                     physicalOffset,
-                                                                     target.getPointOffset(),
-                                                                     target.getPointType(),
-                                                                     target.getPaoId());
-
-            boolean isCreationOperation = pointId == null ? true : false;
-
-            pointValidationUtil.validatePointName(litePointModel, "pointName", errors, isCreationOperation);
-            pointValidationUtil.validatePointOffset(litePointModel, "pointOffset", errors, isCreationOperation);
         }
 
         if (target instanceof ScalarPointModel) {
@@ -129,7 +129,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
                     List<Integer> uomIds = unitMeasures.stream().map(unit -> unit.getId()).collect(Collectors.toList());
                     if (!uomIds.contains(scalarPointModel.getPointUnit().getUomId())) {
-                        errors.rejectValue("pointUnit.uomID", "yukon.web.api.error.doesNotExist", new Object[] { "Uom Id" }, "");
+                        errors.rejectValue("pointUnit.uomId", "yukon.web.api.error.doesNotExist", new Object[] { "Uom Id" }, "");
                     }
                 }
 
