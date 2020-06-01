@@ -45,7 +45,7 @@ public class AnalogPoint extends ScalarPoint {
 
     public PointAnalog getPointAnalog() {
         if (pointAnalog == null) {
-            pointAnalog = new PointAnalog(getPoint().getPointID(), -1.0, 1.0, 0.0);
+            pointAnalog = new PointAnalog();
         }
         return pointAnalog;
     }

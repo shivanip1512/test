@@ -9,6 +9,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.editor.point.AlarmTableEntry;
+import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointModel;
@@ -25,7 +27,7 @@ public interface PointEditorService {
      * 
      * @return the id of the point
      */
-    int save(PointModel model, LiteYukonUser liteYukonUser);
+    int save(PointBase base, StaleData staleData, List<AlarmTableEntry> alarmTableEntries, LiteYukonUser liteYukonUser);
 
     /**
      * @param interfaceType

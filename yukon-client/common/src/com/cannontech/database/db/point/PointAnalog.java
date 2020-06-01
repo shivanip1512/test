@@ -2,16 +2,13 @@ package com.cannontech.database.db.point;
 
 import java.sql.SQLException;
 
-import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.database.db.DBPersistent;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class PointAnalog extends DBPersistent implements DBPersistentConverter<PointAnalog> {
-    @JsonIgnore
-    private Integer pointID;
-    private Double deadband;
-    private Double multiplier;
-    private Double dataOffset;
+public class PointAnalog extends DBPersistent {
+    private Integer pointID = null;
+    private Double deadband = -1.0;
+    private Double multiplier = 1.0;
+    private Double dataOffset = 0.0;
 
     public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
 
@@ -21,14 +18,6 @@ public class PointAnalog extends DBPersistent implements DBPersistentConverter<P
 
     public PointAnalog() {
         super();
-    }
-
-    public PointAnalog(Integer pointID, Double deadband, Double multiplier, Double dataOffset) {
-        super();
-        setPointID(pointID);
-        setDeadband(deadband);
-        setMultiplier(multiplier);
-        setDataOffset(dataOffset);
     }
 
     @Override
@@ -101,27 +90,4 @@ public class PointAnalog extends DBPersistent implements DBPersistentConverter<P
 
         update(PointAnalog.TABLE_NAME, VALUE_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
     }
-
-    @Override
-    public void buildModel(PointAnalog pointAnalog) {
-        setDataOffset(pointAnalog.getDataOffset());
-        setDeadband(pointAnalog.getDeadband());
-        setMultiplier(pointAnalog.getMultiplier());
-
-    }
-
-    @Override
-    public void buildDBPersistent(PointAnalog pointAnalog) {
-        if (getDataOffset() != null) {
-            pointAnalog.setDataOffset(getDataOffset());
-        }
-        if (getDeadband() != null) {
-            pointAnalog.setDeadband(getDeadband());
-        }
-        if (getMultiplier() != null) {
-            pointAnalog.setMultiplier(getMultiplier());
-        }
-
-    }
-
 }

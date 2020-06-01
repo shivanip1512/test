@@ -8,24 +8,24 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.database.db.point.PointLimit;
-import com.cannontech.database.db.point.PointUnit;
+import com.cannontech.web.tools.points.model.PointUnit;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 @JsonDeserialize(using = JsonDeserializer.None.class)
 public class ScalarPointModel<T extends ScalarPoint> extends PointBaseModel<T> {
 
-    private List<PointLimit> limits;
+    private List<PointLimitModel> limits;
     private PointUnit pointUnit;
 
-    public List<PointLimit> getLimits() {
+    public List<PointLimitModel> getLimits() {
         if (limits == null) {
-            limits = new ArrayList<PointLimit>();
+            limits = new ArrayList<PointLimitModel>();
         }
         return limits;
     }
 
-    public void setLimits(List<PointLimit> limits) {
+    public void setLimits(List<PointLimitModel> limits) {
         this.limits = limits;
     }
 
@@ -62,7 +62,7 @@ public class ScalarPointModel<T extends ScalarPoint> extends PointBaseModel<T> {
         getPointUnit().buildModel(point.getPointUnit());
 
         point.getPointLimitsMap().values().forEach(pointLimit -> {
-            PointLimit pointLimitModel = new PointLimit();
+            PointLimitModel pointLimitModel = new PointLimitModel();
             pointLimitModel.buildModel(pointLimit);
             getLimits().add(pointLimitModel);
         });
