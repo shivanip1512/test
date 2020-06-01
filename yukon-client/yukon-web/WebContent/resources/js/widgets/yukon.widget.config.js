@@ -103,11 +103,8 @@ yukon.widget.config = (function () {
                 var popup = $('.js-out-of-sync-popup'),
                     title = popup.data('title'),
                     widgetContainer = $('.js-config-widget'),
-                    widgetId = widgetContainer.closest('.widgetWrapper').attr('id'),
-                    widgetId = widgetId.substring(widgetId.indexOf("_") + 1),
-                    widget = yukon.widgets[widgetId],
                     deviceId = widgetContainer.data('device-id');
-                popup.load(yukon.url('/widget/' + widget.shortName + '/outOfSyncPopup?deviceId=' + deviceId), function () {
+                popup.load(yukon.url('/deviceConfiguration/summary/' + deviceId + '/outOfSync'), function () {
                     popup.dialog({
                         title: title,
                         width: 550

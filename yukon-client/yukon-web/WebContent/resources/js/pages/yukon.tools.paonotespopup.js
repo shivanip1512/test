@@ -157,7 +157,7 @@ yukon.tools.paonotespopup = (function () {
                     if ($("#gateways-table").exists()) {
                         $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').addClass('dn');
                     } else {
-                        $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').remove();
+                        $('.js-view-all-notes').filter('[data-pao-id="' + paoId + '"]').hide();
                     }
                 }
             });

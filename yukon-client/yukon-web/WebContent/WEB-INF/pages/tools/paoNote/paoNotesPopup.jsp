@@ -64,7 +64,7 @@
                                         <div id="js-popup-note-content-${noteId}" class="wspr">${fn:escapeXml(paoNoteSearchResult.paoNote.noteText)}</div>
                                     </div>
                                     <div id="js-edit-popup-note-${noteId}" class="dn">
-                                        <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="resize: none; width:100%" 
+                                        <textarea id="js-edit-popup-note-textarea-${noteId}" rows="3" style="width:100%" class="rn"
                                             maxlength="${noteTextAreaMaxLength}" value="${paoNoteSearchResult.paoNote.noteText}"></textarea>
                                     </div>
                                 </td>

@@ -101,7 +101,6 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
-    @Autowired private YukonJmsTemplate jmsTemplate;
 
     private YukonJmsTemplate networkTreeUpdateRequestJmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NetworkTreeServiceImpl.class);
@@ -359,8 +358,9 @@ public class NetworkTreeServiceImpl implements NetworkTreeService, MessageListen
 
     @Autowired
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
         deviceDataRequestTemplate = new RequestReplyTemplateImpl<>(JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION.getName(),
-                configSource, jmsTemplate, JmsApiDirectory.DYNAMIC_RFN_DEVICE_DATA_COLLECTION);
+                configSource, jmsTemplate);
     }
 
     @Override

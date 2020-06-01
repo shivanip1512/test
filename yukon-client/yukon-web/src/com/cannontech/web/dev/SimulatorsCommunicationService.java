@@ -12,6 +12,7 @@ import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
@@ -23,7 +24,7 @@ public class SimulatorsCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(SimulatorsCommunicationService.class);
     private static final String simulatorRequestCparm = "SIMULATOR_REQUEST";
     @Autowired private ConfigurationSource configSource;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     @SuppressWarnings("rawtypes") private RequestReplyTemplate requestTemplate;
     
@@ -31,8 +32,8 @@ public class SimulatorsCommunicationService {
     
     @PostConstruct
     public void init() {
-        requestTemplate = new RequestReplyTemplateImpl<>(simulatorRequestCparm, configSource, jmsTemplate,
-                JmsApiDirectory.SIMULATORS, true);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(JmsApiDirectory.SIMULATORS);
+        requestTemplate = new RequestReplyTemplateImpl<>(simulatorRequestCparm, configSource, jmsTemplate, true);
     }
     
     @SuppressWarnings("unchecked")

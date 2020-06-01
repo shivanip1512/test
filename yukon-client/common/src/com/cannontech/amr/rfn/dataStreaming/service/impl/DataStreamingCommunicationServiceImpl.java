@@ -48,6 +48,7 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.common.util.jms.YukonJmsTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApi;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.common.util.jms.api.JmsApiDirectoryHelper;
@@ -66,7 +67,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private RequestReplyTemplate<DeviceDataStreamingConfigResponse> configRequestTemplate;
     private RequestReplyTemplate<GatewayDataStreamingInfoResponse> gatewayInfoRequestTemplate;
@@ -76,9 +77,9 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     public void init() {
         JmsApi<?, ?, ?> requestQueue = JmsApiDirectoryHelper.requireMatchingQueueNames(JmsApiDirectory.DATA_STREAMING_CONFIG,
                 JmsApiDirectory.GATEWAY_DATA_STREAMING_INFO);
-        configRequestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, configSource, jmsTemplate, requestQueue);
-        gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource, jmsTemplate,
-                requestQueue);
+        YukonJmsTemplate jmsTemplate = jmsTemplateFactory.createTemplate(requestQueue);
+        configRequestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, configSource, jmsTemplate);
+        gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource, jmsTemplate);
         isDataStreamingEnabled = configSource.isLicenseEnabled(MasterConfigLicenseKey.RF_DATA_STREAMING_ENABLED);
     }
    

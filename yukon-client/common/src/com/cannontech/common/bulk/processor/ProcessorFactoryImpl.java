@@ -32,7 +32,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 DeviceConfigState state = deviceToState.get(device.getDeviceId());
-                if(state != null && state.getStatus() == LastActionStatus.IN_PROGRESS) {
+                if(state != null && state.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
                     MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
                     throw new ProcessingException(accessor.getMessage("yukon.web.widgets.configWidget.actionInProgress"));
                 }
@@ -54,7 +54,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 DeviceConfigState state = deviceToState.get(device.getDeviceId());
-                if(state != null && state.getStatus() == LastActionStatus.IN_PROGRESS) {
+                if(state != null && state.getLastActionStatus() == LastActionStatus.IN_PROGRESS) {
                     throw new ProcessingException("Cannot unassign while config action is in progress.");
                 }
                 try {

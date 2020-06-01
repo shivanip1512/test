@@ -285,7 +285,9 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("The configuration file contains a Write Key TLV, but the node is unable to write the key.")
     ("If there is an outage or node resets while writing to the meter, the meter may be left in a state where the node is unable to configure it.")
     ("No meter program assigned.")
-    .repeat(15, UnknownErrorHelper(335));
+    ("Invalid meter program.")
+    ("Meter program not found.")
+    .repeat(13, UnknownErrorHelper(337));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {

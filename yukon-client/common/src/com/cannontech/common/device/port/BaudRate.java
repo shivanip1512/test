@@ -16,7 +16,6 @@ public enum BaudRate implements DisplayableEnum {
     BAUD_4800(4800),
     BAUD_9600(9600),
     BAUD_14400(14400),
-    BAUD_28800(28000),
     BAUD_38400(38400),
     BAUD_57600(57600),
     BAUD_115200(115200);

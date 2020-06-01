@@ -90,7 +90,7 @@ public class LocalSharedPortApiTest {
 
         Log.startTestCase("localSharedPortCommChannel_04_Delete");
     }
-
+    
     /**
      * Test case to validate LocalSharedPort comm channel cannot be created with Baud Rate filed as null and gets valid error
      * message in response

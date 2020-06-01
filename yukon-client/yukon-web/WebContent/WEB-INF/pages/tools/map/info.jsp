@@ -25,6 +25,10 @@
                         <cm:dropdownOption key=".viewPrimaryRoute" classes="js-device-route" data-device-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
                     </c:if>
                 </c:if>
+                <li class="divider"></li>
+                <c:if test="${!hasNotes}">
+                   <cm:dropdownOption key="yukon.web.common.paoNotesSearch.createNote" id="js-popup-note-create" classes="js-view-all-notes" data-pao-id="${pao.paoIdentifier.paoId}" showIcon="false"></cm:dropdownOption>
+                </c:if>
                 <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
                     <cm:dropdownOption id="remove-pin" data-device-id="${pao.paoIdentifier.paoId}" key=".deleteCoordinates.delete" data-popup="#confirm-delete" showIcon="false"/>
                 </cti:checkRolesAndProperties>

@@ -124,11 +124,11 @@ public class StatusPointMonitorProcessorFactory extends MonitorProcessorFactoryB
         
         return richPointData -> {
             if (!isMonitoredData(statusPointMonitor, richPointData)) {
-                trackingLogger.rejectId(richPointData);
+                trackingLogger.rejectId(statusPointMonitor.getName(), richPointData);
                 return;
             }
             
-            trackingLogger.acceptId(richPointData);
+            trackingLogger.acceptId(statusPointMonitor.getName(), richPointData);
 
             PointValueHolder nextValue = richPointData.getPointValue();
             PointValueHolder previousValue = null; // store this outside the loop because it is valid for every processor 

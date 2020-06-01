@@ -85,7 +85,7 @@
     </c:otherwise>
 </c:choose>
 <c:if test="${pageScope.units != null}">
-&nbsp;${pageScope.units}
+    <span class="js-units">&nbsp;${pageScope.units}</span>
 </c:if>
 <c:if test="${status.error}">
     <c:if test="${!displayValidationToRight}">

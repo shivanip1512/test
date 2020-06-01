@@ -4,10 +4,10 @@
 <suite name="Comm Channel Documentation Suite" preserve-order="true">
     <test name="Comm Channel Documentation Test" >
         <classes>
-          <class name = "com.cannontech.rest.api.documentation.commChannel.TcpPortApiDocumentationTest" />
-          <class name = "com.cannontech.rest.api.documentation.commChannel.TcpTerminalServerApiDocumentationTest" />
-          <class name = "com.cannontech.rest.api.documentation.commChannel.UDPTerminalServerApiDocumentationTest" /> 
-          <class name = "com.cannontech.rest.api.documentation.commChannel.LocalSharedPortApiDocumentationTest" />
+          <class name = "com.cannontech.rest.api.documentation.commChannel.TcpPortApiDoc" />
+          <class name = "com.cannontech.rest.api.documentation.commChannel.TcpTerminalServerApiDoc" />
+          <class name = "com.cannontech.rest.api.documentation.commChannel.UdpTerminalServerApiDoc" /> 
+          <class name = "com.cannontech.rest.api.documentation.commChannel.LocalSharedPortApiDoc" />
         </classes>
     </test>
 </suite>

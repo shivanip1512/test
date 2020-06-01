@@ -64,8 +64,17 @@ public abstract class LoadGroupApiDocBase extends DocumentationBase {
     @Override
     protected Get buildGetFields() {
         List<FieldDescriptor> responseFields = getFieldDescriptors();
-        String typeId = getMockPaoType().name() + ".id";
-        responseFields.add(0,fieldWithPath(typeId).type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
+        String paoType = getMockPaoType().name();
+        responseFields.add(0,
+                fieldWithPath(paoType + ".id").type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
+        if (getMockPaoType() == MockPaoType.LM_GROUP_POINT) {
+            responseFields.add(7, fieldWithPath(paoType + ".deviceUsage.name").type(JsonFieldType.STRING).optional()
+                    .description("Control device usage name."));
+            responseFields.add(9, fieldWithPath(paoType + ".pointUsage.name").type(JsonFieldType.STRING).optional()
+                    .description("Point name of available control device."));
+            responseFields.add(11, fieldWithPath(paoType + ".startControlRawState.stateText").type(JsonFieldType.STRING)
+                    .optional().description("Control start state name of available control Point."));
+        }
         String url = ApiCallHelper.getProperty("getloadgroup") + getLoadGroupId();
         return new DocumentationFields.Get(responseFields, url);
     }
