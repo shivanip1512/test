@@ -51,7 +51,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
             if (liteYukonPAObject == null) {
-                errors.rejectValue("paoId", "yukon.web.api.error.paoId.doesNotExist");
+                errors.rejectValue("paoId", "yukon.web.api.error.doesNotExist");
             }
 
             if (!errors.hasFieldErrors("paoId") && target.getPointName() != null && target.getPointOffset() != null) {
