@@ -143,7 +143,7 @@ public class DeviceConfigurationSummaryController {
     public String outOfSync(ModelMap model, YukonUserContext context, @PathVariable int id) {
         SimpleDevice device = deviceDao.getYukonDevice(id);
         DeviceConfigState configState = deviceConfigurationDao.getDeviceConfigStateByDeviceId(id);
-        if (configState.getCurrentState() == ConfigState.OUT_OF_SYNC) {
+        if (configState != null && configState.getCurrentState() == ConfigState.OUT_OF_SYNC) {
             VerifyResult result = deviceConfigService.verifyConfig(device, context.getYukonUser());
             model.put("verifyResult", result);
         } else {
