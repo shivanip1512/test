@@ -3,8 +3,6 @@ package com.cannontech.common.device.port;
 import com.cannontech.database.data.port.LocalSharedPortBase;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -12,7 +10,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonPropertyOrder({ "id", "name", "type", "baudRate", "enable", "physicalPort", "carrierDetectWaitInMilliseconds",
         "protocolWrap", "timing", "sharing" })
 @JsonDeserialize(using = JsonDeserializer.None.class)
-@JsonInclude(Include.NON_NULL)
 public class LocalSharedPortDetail extends PortBase<LocalSharedPortBase> {
 
     private Integer carrierDetectWaitInMilliseconds;
