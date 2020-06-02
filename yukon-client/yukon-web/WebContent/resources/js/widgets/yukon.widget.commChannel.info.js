@@ -11,38 +11,62 @@ yukon.widget.commChannel.info = (function () {
     'use strict';
  
     /**
-     * Shows physical port field based on the drop down value selected
+     * Shows user entered physical port field based on the drop down value selected
      */
-    var updatePhysicalPort = function (event) {
-        if ($(".js-physical-port").is(":visible")) {
+    var togglePhysicalPort = function () {
+        if ($('.js-physical-port').is(":visible")) {
+            var selectedPort = $('.js-physical-port option:selected').val(),
+                otherEnumValue = $('#otherPhysicalPortEnumValue').val(),
+                isOtherSelected = selectedPort === otherEnumValue;
+            $('.js-user-physical-port-value').toggleClass('dn', !isOtherSelected);
             var physicalPortError = $("#physicalPortErrors").val();
             if (physicalPortError) {
-                var otherPhysicalPort = $("#portEnumValue").val();
-                $(".js-physical-port").val(otherPhysicalPort);
-                $('.js-user-physical-port-value').removeClass('dn');
-                $('.js-physical-port-row').find("span[id='physicalPort.errors']").css({'margin-left':'80px'});
-            } else {
-                var physicalPort = $('.js-physical-port option:selected').val();
-                var phyicalPortField = physicalPort === $("#otherPhysicalPortEnumValue").val();
-                $('.js-user-physical-port-value').toggleClass('dn', !phyicalPortField);
-                if (phyicalPortField) {
-                    if ($("span[class='error']").length === 0) {
-                        $('.js-user-physical-port-value').val("");
-                    }
-                } else {
-                    $("input[name='physicalPort']").val(physicalPort);
-                }
-            }
-        } else {
-            var isPhysicalPortOther = $("#portEnumValue").val();
-            if (!$.isEmptyObject(isPhysicalPortOther)) {
-                var otherPhysicalPort = $("#portEnumValue").val();
-                $(".js-physical-port").val(otherPhysicalPort);
-                $('.js-user-physical-port-value').removeClass('dn');
-            } else {
-                $(".js-physical-port").val($("#portValue").val());
+                var physicalPortRow = $('.js-physical-port-row'),
+                    portError = physicalPortRow.find("span[id='physicalPort.errors']");
+                portError.toggleClass('dn', !isOtherSelected);
             }
         }
+    };
+    
+    /**
+     * Provides physical port error formatting
+     */
+    var formatPhysicalPortErrors = function () {
+        var physicalPort = $('.js-physical-port');
+        if (physicalPort.exists()) {
+            var physicalPortError = $("#physicalPortErrors").val();
+            if (physicalPortError) {
+                var physicalPortRow = $('.js-physical-port-row'),
+                    firstPortError = physicalPortRow.find("span[id='physicalPort.errors']").first();
+                //remove second validation error and line break
+                firstPortError.prev('br').remove();
+                firstPortError.remove();
+                physicalPort.removeClass("error");
+                physicalPortRow.find("span[id='physicalPort.errors']").css({'margin-left':'80px'});
+            }
+        }
+    };
+    
+    /**
+     * Provides initial physical port other selection
+     */
+    var loadPhysicalPort = function () {
+        var physicalPort = $('.js-physical-port');
+        if (physicalPort.exists()) {
+            var isOtherSelected = $('#isOtherSelected').val(),
+                otherEnumValue = $('#otherPhysicalPortEnumValue').val(),
+                userEnteredPhysicalPort = $('.js-user-physical-port-value');
+            if (isOtherSelected) {
+                physicalPort.val(otherEnumValue);
+                userEnteredPhysicalPort.toggleClass('dn', !isOtherSelected);
+            }
+            var physicalPortError = $("#physicalPortErrors").val();
+            if (!physicalPortError && !isOtherSelected) {
+                userEnteredPhysicalPort.val("");
+            }
+
+        }
+
     };
 
     var
@@ -56,13 +80,7 @@ yukon.widget.commChannel.info = (function () {
             if (_initialized) return;
 
             $(document).on('change', '.js-physical-port', function (event) {
-                var physicalPortError = $("#physicalPortErrors").val();
-                if (physicalPortError) {
-                    $("span[id='physicalPort.errors']").remove();
-                    $('.js-user-physical-port-value').removeClass("error");
-                    $("#physicalPortErrors").val("");
-                }
-                updatePhysicalPort(event);
+                togglePhysicalPort();
             });
 
             $(document).on("yukon:assets:commChannel:save", function(event) {
@@ -72,7 +90,30 @@ yukon.widget.commChannel.info = (function () {
                     errorMessage = popup.find('.user-message'),
                     errorMessageFound = errorMessage.is(":visible"),
                     globalError = popup.find('.js-global-error'),
-                    globalErrorFound = globalError.is(":visible");
+                    globalErrorFound = globalError.is(":visible"),
+                    userPortEntered = popup.find('.js-user-physical-port-value').is(':visible'),
+                    carrierDetectWait = popup.find('.js-carrier-detect-wait-switch'),
+                    encryptionKey = popup.find('.js-encryption-key-switch');
+
+                popup.find('.js-physical-port').prop('disabled', userPortEntered);
+                popup.find('.js-user-physical-port-value').prop('disabled', !userPortEntered);
+
+
+               if (carrierDetectWait.is(':visible')) {
+                    var carrierDetectWaitRow = carrierDetectWait.closest('tr'),
+                        isCarrierChecked = carrierDetectWaitRow.find('.switch-btn-checkbox').prop('checked');
+                    if (!isCarrierChecked) {
+                        popup.find(".js-carrierDetectWait").val("0");
+                    }
+               }
+
+               if (encryptionKey.is(':visible')) {
+                   var encryptionKeyRow = encryptionKey.closest('tr'),
+                       isEncryptionKeyChecked = encryptionKeyRow.find('.switch-btn-checkbox').prop('checked');
+                   if (!isEncryptionKeyChecked) {
+                       popup.find(".js-encryptionKey").val("");
+                   }
+               }
 
                 if (!errorMessageFound || globalErrorFound) {
                     yukon.ui.blockPage();
@@ -87,7 +128,11 @@ yukon.widget.commChannel.info = (function () {
                     }).fail(function (xhr, status, error){
                         popup.html(xhr.responseText);
                         yukon.ui.initContent(popup);
-                        updatePhysicalPort(event);
+                        loadPhysicalPort();
+                        formatPhysicalPortErrors();
+                        $('.js-carrier-detect-wait').find("span[id='carrierDetectWaitInMilliseconds.errors']").css({'margin-left':'80px'});
+                        $('.js-encryption-key').find("span[id='keyInHex.errors']").css({'margin-left':'80px'});
+                        $('.js-encryption-key').find("span[id='keyInHex.errors']").addClass("dib");
                         yukon.ui.highlightErrorTabs();
                         yukon.ui.unblockPage();
                     });
@@ -101,11 +146,14 @@ yukon.widget.commChannel.info = (function () {
                 var isCarrierDetectSelected = $(event.target).prop('checked'),
                     container = $(this).closest(".js-general-tbl");
                 if (isCarrierDetectSelected) {
-                    container.find(".js-carrierDetectWait").val("1");
+                    var findPreviousCarrierDetectValue = container.find(".js-carrierDetectWait").val();
+                    if (findPreviousCarrierDetectValue === '0') {
+                        container.find(".js-carrierDetectWait").val("1");
+                    }
+                    $("span[id='carrierDetectWaitInMilliseconds.errors']").removeClass('dn');
+                    $('.js-carrier-detect-wait').find("span[id='carrierDetectWaitInMilliseconds.errors']").css({'margin-left':'80px'});
                 } else {
-                    container.find(".js-carrierDetectWait").val("0");
-                    $('.js-carrierDetectWait').removeClass("error");
-                    $("span[id='carrierDetectWaitInMilliseconds.errors']").remove();
+                    $("span[id='carrierDetectWaitInMilliseconds.errors']").addClass('dn');
                 }
             });
 
@@ -113,14 +161,16 @@ yukon.widget.commChannel.info = (function () {
                 var isEncryptionKeySelected = $(event.target).prop('checked'),
                     container = $(this).closest(".js-general-tbl");
                 if (!isEncryptionKeySelected) {
-                    container.find(".js-encryptionKey").val("");
-                    $('.js-encryptionKey').removeClass("error");
-                    $("span[id='keyInHex.errors']").remove();
+                    $("span[id='keyInHex.errors']").addClass('dn');
+                } else {
+                    $("span[id='keyInHex.errors']").removeClass('dn');
+                    $('.js-encryption-key').find("span[id='keyInHex.errors']").css({'margin-left':'80px'});
                 }
             });
 
             $(document).on("yukon:assets:commChannel:load", function(event) {
-                updatePhysicalPort(event);
+                loadPhysicalPort();
+                formatPhysicalPortErrors();
             });
 
             _initialized = true;

@@ -3,6 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="yukon.web.modules.operator.commChannelInfoWidget">
@@ -58,13 +59,13 @@
                                         </c:if>
                                         <c:choose>
                                             <c:when test="${isPhyicalPortUserDefined || physicalPortError}">
-                                                <input type="hidden" id="portEnumValue" value="${otherPhysicalPort}">
+                                                <input type="hidden" id="isOtherSelected" value="true">
                                             </c:when>
                                             <c:otherwise>
                                                 <input type="hidden" id="portValue" value="${portValue}"> 
                                             </c:otherwise>
                                         </c:choose>
-                                        <tags:selectWithItems path="webPhysicalPort" items="${physicalPortList}" inputClass="js-physical-port"/>
+                                        <tags:selectWithItems path="physicalPort" items="${physicalPortList}" inputClass="js-physical-port"/>
                                         <tags:input path="physicalPort" maxlength="8" size="12" inputClass="js-user-physical-port-value dn"/>
                                     </cti:displayForPageEditModes>
                                 </tags:nameValue2>
@@ -130,14 +131,16 @@
                                                 <tags:switchButton name="encyptionKey" toggleGroup="encyptionKey" toggleAction="hide"
                                                                    onNameKey=".yes.label" offNameKey=".no.label" checked="${encryptionKeyEnabled}"
                                                                    classes="js-encryption-key-switch"/>
-                                                <tags:input inputClass="js-encryptionKey" path="keyInHex" toggleGroup="encyptionKey"/>
+                                                <tags:input inputClass="js-encryptionKey" path="keyInHex" toggleGroup="encyptionKey" maxlength="32"/>
                                             </tags:nameValue2>
                                         </cti:displayForPageEditModes>
                                         <cti:displayForPageEditModes modes="VIEW">
                                             <tags:nameValue2 nameKey=".encyptionKey">
                                                 <c:choose>
                                                     <c:when test="${not empty commChannel.keyInHex}">
-                                                        ${commChannel.keyInHex}
+                                                        <span class="w300 wrbw dib">
+                                                            ${commChannel.keyInHex}
+                                                        </span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span><i:inline key="yukon.common.no"/></span>

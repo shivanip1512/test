@@ -3,10 +3,9 @@ package com.cannontech.common.device.port;
 import com.cannontech.database.data.port.LocalSharedPortBase;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.database.db.port.PortSettings;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -22,18 +21,6 @@ public class LocalSharedPortDetail extends PortBase<LocalSharedPortBase> {
     private PortTiming timing;
     private PortSharing sharing;
     private String physicalPort;
-
-    // Only for UI purpose
-    @JsonIgnore
-    private String webPhysicalPort;
-
-    public String getWebPhysicalPort() {
-        return webPhysicalPort;
-    }
-
-    public void setWebPhysicalPort(String webPhysicalPort) {
-        this.webPhysicalPort = webPhysicalPort;
-    }
 
     public String getPhysicalPort() {
         return physicalPort;
