@@ -20,11 +20,7 @@ public class PointValidationUtil extends ValidationUtils {
     private static final String baseKey = "yukon.web.modules.tools.point.error";
 
     public void validatePointName(LitePointModel pointModel, String fieldName, Errors errors, boolean isCopyOrCreate) {
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
-        YukonValidationUtils.checkExceedsMaxLength(errors, fieldName, pointModel.getPointName(), 60);
-        if (!PaoUtils.isValidPaoName(pointModel.getPointName())) {
-            errors.rejectValue(fieldName, "yukon.web.error.paoName.containsIllegalChars");
-        }
+        validateName(fieldName, errors, pointModel.getPointName());
         List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(pointModel.getPaoId());
 
         for (LitePoint pointOnPao : pointsOnPao) {
@@ -39,6 +35,15 @@ public class PointValidationUtil extends ValidationUtils {
                     errors.rejectValue(fieldName, "yukon.web.error.nameConflict");
                 }
             }
+        }
+    }
+
+    public void validateName(String fieldName, Errors errors, String pointName) {
+
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, fieldName, "yukon.web.error.isBlank");
+        YukonValidationUtils.checkExceedsMaxLength(errors, fieldName, pointName, 60);
+        if (!PaoUtils.isValidPaoName(pointName)) {
+            errors.rejectValue(fieldName, "yukon.web.error.paoName.containsIllegalChars");
         }
     }
 

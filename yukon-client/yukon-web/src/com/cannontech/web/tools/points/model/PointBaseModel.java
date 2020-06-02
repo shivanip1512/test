@@ -92,9 +92,6 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         setPointType(pt.getPointTypeEnum());
         setPointName(pt.getPointName());
         setPointOffset(pt.getPointOffset());
-        if (pt.getPointOffset() > 0) {
-            setPhysicalOffset(true);
-        }
         setStateGroupId(pt.getStateGroupID());
         setEnable(pt.getServiceFlag() == 'N' ? true : false );
         setArchiveType(pt.getArchiveType());
@@ -144,6 +141,11 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
             pt.setAlarmsDisabled(getAlarmsDisabled());
         }
 
+    }
+
+    @Override
+    public boolean isPhysicalOffset() {
+        return getPointOffset() > 0;
     }
 
 }
