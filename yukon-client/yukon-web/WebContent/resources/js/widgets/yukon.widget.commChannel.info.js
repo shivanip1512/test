@@ -99,21 +99,21 @@ yukon.widget.commChannel.info = (function () {
                 popup.find('.js-user-physical-port-value').prop('disabled', !userPortEntered);
 
 
-               if (carrierDetectWait.is(':visible')) {
+                if (carrierDetectWait.is(':visible')) {
                     var carrierDetectWaitRow = carrierDetectWait.closest('tr'),
                         isCarrierChecked = carrierDetectWaitRow.find('.switch-btn-checkbox').prop('checked');
                     if (!isCarrierChecked) {
                         popup.find(".js-carrierDetectWait").val("0");
                     }
-               }
+                }
 
-               if (encryptionKey.is(':visible')) {
-                   var encryptionKeyRow = encryptionKey.closest('tr'),
-                       isEncryptionKeyChecked = encryptionKeyRow.find('.switch-btn-checkbox').prop('checked');
-                   if (!isEncryptionKeyChecked) {
-                       popup.find(".js-encryptionKey").val("");
-                   }
-               }
+                if (encryptionKey.is(':visible')) {
+                    var encryptionKeyRow = encryptionKey.closest('tr'),
+                        isEncryptionKeyChecked = encryptionKeyRow.find('.switch-btn-checkbox').prop('checked');
+                    if (!isEncryptionKeyChecked) {
+                        popup.find(".js-encryptionKey").val("");
+                    }
+                }
 
                 if (!errorMessageFound || globalErrorFound) {
                     yukon.ui.blockPage();
