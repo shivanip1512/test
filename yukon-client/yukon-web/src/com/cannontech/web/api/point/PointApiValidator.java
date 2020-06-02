@@ -60,7 +60,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
                 boolean isCreationOperation = target.getPointId() == null ? true : false;
 
-                if (target.getPointName() != null) {
+                if (!errors.hasFieldErrors("pointName") && target.getPointName() != null) {
                     pointValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
                 }
 
