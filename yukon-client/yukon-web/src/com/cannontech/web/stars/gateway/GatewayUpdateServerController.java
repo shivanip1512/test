@@ -135,7 +135,6 @@ public class GatewayUpdateServerController {
         defaultAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
         defaultAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
 
-        // ADD IN VALIDATION<> CHECK SERVER, USERNAME, PASSWORD
         List<GatewayUpdateModel> updateServerInfos = allSettings.getList();
         
         GatewaySettings settings = new GatewaySettings();
