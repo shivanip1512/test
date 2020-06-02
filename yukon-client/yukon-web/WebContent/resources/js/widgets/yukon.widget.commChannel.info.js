@@ -170,7 +170,6 @@ yukon.widget.commChannel.info = (function () {
 
             $(document).on("yukon:assets:commChannel:load", function(event) {
                 loadPhysicalPort();
-                formatPhysicalPortErrors();
             });
 
             _initialized = true;
