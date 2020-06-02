@@ -27,6 +27,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
     private Boolean alarmsDisabled;
 
     private StaleData staleData;
+    private PointAlarming alarming;
 
     public PointLogicalGroups getTimingGroup() {
         return timingGroup;
@@ -82,6 +83,17 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
     public void setAlarmsDisabled(Boolean alarmsDisabled) {
         this.alarmsDisabled = alarmsDisabled;
+    }
+
+    public PointAlarming getAlarming() {
+        if (alarming == null) {
+            alarming = new PointAlarming();
+        }
+        return alarming;
+    }
+
+    public void setAlarming(PointAlarming alarming) {
+        this.alarming = alarming;
     }
 
     @Override
