@@ -5,14 +5,14 @@ import com.cannontech.database.db.DBPersistent;
 
 public interface DBPersistentConverter<T extends DBPersistent> {
     /**
-     * Build model object from the passed db persistent port.
+     * Build model object from the passed db persistent .
      */
-    public void buildModel(T port);
+    public void buildModel(T object);
 
     /**
-     * Builds db persistent object for a port.
+     * Builds db persistent object for a object.
      */
-    public void buildDBPersistent(T port);
+    public void buildDBPersistent(T object);
 
     /**
      * Build model from liteYukonPAObject.

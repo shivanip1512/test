@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -185,5 +186,14 @@ public class StateGroupDaoImpl implements StateGroupDao {
                         .findFirst()
                         .get()
                         .getStateText();
+    }
+
+    @Override
+    public LiteStateGroup findStateGroup(int stateGroupId) {
+        try {
+            return getStateGroup(stateGroupId);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
     }
 }

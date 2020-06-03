@@ -19,7 +19,11 @@ import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
-
+/**
+ * @deprecated This is used by the original MVC point editor. Use the REST API point editor and associated objects instead.
+ * @see PointBaseModel
+ */
+@Deprecated(since="7.5")
 public class PointModel<T extends PointBase> {
 
     private T pointBase;
