@@ -480,6 +480,22 @@ public class PointEditorServiceImpl implements PointEditorService {
         return pointBase.getPoint().getPointID();
     }
 
+    @Override
+    public int update(int pointId, PointBaseModel pointBaseModel) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        pointBaseModel.buildDBPersistent(pointBase);
+        StaleData staleData = null;
+
+        if (pointBaseModel.getStaleData() != null) {
+            staleData = StaleData.of(pointBaseModel.getStaleData());
+        }
+        List<AlarmTableEntry> alarmTableEntries = new ArrayList<>(); // TODO support Alarming in another story
+
+        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+
+        return pointBase.getPoint().getPointID();
+    }
 
     @Override
     public PointBaseModel<? extends PointBase> retrieve(int pointId) {
