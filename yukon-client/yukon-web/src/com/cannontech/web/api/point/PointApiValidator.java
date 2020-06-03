@@ -154,6 +154,48 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         }
 
     }
+    
+    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors) {
+        if (pointAlarming != null) {
+            // Validate notificationGroupId.
+            Integer notificationGroupId = pointAlarming.getNotificationGroupId();
+            if (pointAlarming.getNotificationGroupId() != null) {
+                Optional<LiteNotificationGroup> existingNotifGroup = serverDatabaseCache
+                        .getAllContactNotificationGroups().stream()
+                        .filter(e -> e.getNotificationGroupID() == notificationGroupId)
+                        .findFirst();
+                if (existingNotifGroup == null) {
+                    errors.rejectValue("alarming.notificationGroupId", "yukon.web.api.error.doesNotExist", new Object[] { "Notification GroupId" }, "");
+                }
+            }
+            
+            // Validate alarmTableList
+            List<AlarmTableEntry> alarmList = pointAlarming.getAlarmTableList();
+            if (alarmList != null) {
+                List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
+                if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
+                    alarmStates = AlarmState.getOtherAlarmStates();
+                }
+                for(int i = 0; i < alarmList.size(); i++) {
+                    AlarmTableEntry entry = alarmList.get(i);
+                    YukonValidationUtils.checkIfFieldRequired("alarming.alarmTableList[" + i + "].condition", errors, entry.getCondition(), "Condition");
+                    if (!errors.hasFieldErrors("alarming.alarmTableList[" + i + "].condition") && !alarmStates.contains(entry.getCondition())) {
+                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                    }
+                    YukonValidationUtils.checkIfFieldRequired("alarming.alarmTableList[" + i + "].category", errors, entry.getCategory(), "Catagory");
+                    if (!errors.hasFieldErrors("alarming.alarmTableList[" + i + "].category")) {
+                        Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories().stream()
+                                                                       .filter(e -> e.getCategoryName().equals(entry.getCategory()))
+                                                                       .findFirst();
+                        if (catagory.isEmpty()) {
+                            errors.rejectValue("alarming.alarmTableList[" + i + "].category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
+                        }
+                    }
+                    YukonValidationUtils.checkIfFieldRequired("alarming.alarmTableList[" + i + "].notify", errors, entry.getNotify(), "Notify");
+                }
+            }
+        }
+    }
 
     private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors) {
         if (pointAlarming != null) {
