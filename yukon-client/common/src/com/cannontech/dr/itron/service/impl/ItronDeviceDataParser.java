@@ -218,7 +218,7 @@ public class ItronDeviceDataParser {
             BuiltInAttribute attribute = null;
             try {
                 attribute = event.getAttribute(decodedData);
-            } catch (IllegalArgumentException e) {
+            } catch (Exception e) {
                 log.warn("No attribute matches {} with data {}. Ignoring.", event, Arrays.toString(decodedData));
                 return pointValues;
             }

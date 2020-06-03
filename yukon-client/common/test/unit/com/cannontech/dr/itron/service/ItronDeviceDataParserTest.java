@@ -55,9 +55,21 @@ public class ItronDeviceDataParserTest {
     
     @Test
     public void validateRowParsingForRelayNumberFinding() {
-        String[] rowData = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (3)  data(0300000000)");
-        Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_3_SHED_STATUS, rowData);
+        String[] rowData = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (0) data(0100000000)");
+        Collection<PointData> data = parseRow(BuiltInAttribute.RELAY_1_SHED_STATUS, rowData);
         assertOnlyEntryEquals(data, 1);
+        
+        String[] rowData2 = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (1) data(0200000000)");
+        Collection<PointData> data2 = parseRow(BuiltInAttribute.RELAY_2_SHED_STATUS, rowData2);
+        assertOnlyEntryEquals(data2, 1);
+        
+        String[] rowData3 = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (2) data(0400000000)");
+        Collection<PointData> data3 = parseRow(BuiltInAttribute.RELAY_3_SHED_STATUS, rowData3);
+        assertOnlyEntryEquals(data3, 1);
+        
+        String[] rowData4 = rowData("type: 1, log event ID: 24 (0x18) - Relay Open, payload: Physical Relay (3) data(0800000000)");
+        Collection<PointData> data4 = parseRow(BuiltInAttribute.RELAY_4_SHED_STATUS, rowData4);
+        assertOnlyEntryEquals(data4, 1);
     }
     
     @Test
