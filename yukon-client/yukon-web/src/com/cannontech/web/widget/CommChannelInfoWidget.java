@@ -28,6 +28,7 @@ import org.springframework.web.client.RestClientException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.LocalSharedPortDetail;
+import com.cannontech.common.device.port.PhysicalPort;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
@@ -167,6 +168,18 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         }
         if (commChannel instanceof LocalSharedPortDetail) {
             model.addAttribute("isAdditionalConfigSupported", true);
+            model.addAttribute("isPhysicalPortSupported", true);
+            List<String> physicalPortList = new ArrayList<>();
+            for (PhysicalPort value : PhysicalPort.values()) {
+                physicalPortList.add(value.getPhysicalPort());
+            }
+            model.addAttribute("physicalPortList", physicalPortList);
+            model.addAttribute("otherPhysicalPort", PhysicalPort.OTHER.getPhysicalPort());
+            if (PhysicalPort.getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
+                model.addAttribute("isPhysicalPortUserDefined", true);
+            } else {
+                model.addAttribute("portValue", ((LocalSharedPortDetail) commChannel).getPhysicalPort());
+            }
         }
     }
 
