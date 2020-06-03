@@ -56,14 +56,9 @@
                                         <c:if test="${not empty physicalPortError}">
                                             <input type="hidden" id="physicalPortErrors" value="true">
                                         </c:if>
-                                        <c:choose>
-                                            <c:when test="${isPhyicalPortUserDefined || physicalPortError}">
-                                                <input type="hidden" id="isOtherSelected" value="true">
-                                            </c:when>
-                                            <c:otherwise>
-                                                <input type="hidden" id="portValue" value="${portValue}"> 
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <c:if test="${isPhysicalPortUserDefined || physicalPortError}">
+                                            <input type="hidden" id="isOtherSelected" value="true">
+                                        </c:if>
                                         <tags:selectWithItems path="physicalPort" items="${physicalPortList}" inputClass="js-physical-port"/>
                                         <tags:input path="physicalPort" maxlength="8" size="12" inputClass="js-user-physical-port-value dn"/>
                                     </cti:displayForPageEditModes>
@@ -126,15 +121,15 @@
                                                 <form:errors path="keyInHex"/>
                                             </c:set>
                                             <c:set var="encryptionKeyEnabled" value="${not empty commChannel.keyInHex || not empty encryptionKeyError}"/>
-                                            <tags:nameValue2 nameKey=".encyptionKey">
-                                                <tags:switchButton name="encyptionKey" toggleGroup="encyptionKey" toggleAction="hide"
+                                            <tags:nameValue2 nameKey=".encryptionKey" rowClass="js-encryption-key">
+                                                <tags:switchButton name="encryptionKey" toggleGroup="encryptionKey" toggleAction="hide"
                                                                    onNameKey=".yes.label" offNameKey=".no.label" checked="${encryptionKeyEnabled}"
                                                                    classes="js-encryption-key-switch"/>
-                                                <tags:input inputClass="js-encryptionKey" path="keyInHex" toggleGroup="encyptionKey" maxlength="32"/>
+                                                <tags:input inputClass="js-encryptionKey" path="keyInHex" toggleGroup="encryptionKey" maxlength="32"/>
                                             </tags:nameValue2>
                                         </cti:displayForPageEditModes>
                                         <cti:displayForPageEditModes modes="VIEW">
-                                            <tags:nameValue2 nameKey=".encyptionKey">
+                                            <tags:nameValue2 nameKey=".encryptionKey">
                                                 <c:choose>
                                                     <c:when test="${not empty commChannel.keyInHex}">
                                                         <span class="w300 wrbw dib">

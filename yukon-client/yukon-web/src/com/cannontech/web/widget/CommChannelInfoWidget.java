@@ -176,7 +176,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("physicalPortList", physicalPortList);
             model.addAttribute("otherPhysicalPort", PhysicalPort.OTHER.getPhysicalPort());
             if (PhysicalPort.getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
-                model.addAttribute("isPhyicalPortUserDefined", true);
+                model.addAttribute("isPhysicalPortUserDefined", true);
             } else {
                 model.addAttribute("portValue", ((LocalSharedPortDetail) commChannel).getPhysicalPort());
             }

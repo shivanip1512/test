@@ -131,8 +131,9 @@ yukon.widget.commChannel.info = (function () {
                         loadPhysicalPort();
                         formatPhysicalPortErrors();
                         $('.js-carrier-detect-wait').find("span[id='carrierDetectWaitInMilliseconds.errors']").css({'margin-left':'80px'});
-                        $('.js-encryption-key').find("span[id='keyInHex.errors']").css({'margin-left':'80px'});
-                        $('.js-encryption-key').find("span[id='keyInHex.errors']").addClass("dib");
+                        var encryptionKeyErrorContainer = $('.js-encryption-key').find("span[id='keyInHex.errors']");
+                        encryptionKeyErrorContainer.css({'margin-left':'80px'});
+                        encryptionKeyErrorContainer.addClass("dib");
                         yukon.ui.highlightErrorTabs();
                         yukon.ui.unblockPage();
                     });
@@ -144,27 +145,28 @@ yukon.widget.commChannel.info = (function () {
 
             $(document).on('change', '.js-carrier-detect-wait-switch', function (event) {
                 var isCarrierDetectSelected = $(event.target).prop('checked'),
-                    container = $(this).closest(".js-general-tbl");
+                    container = $(this).closest(".js-general-tbl"),
+                    carrierDetectErrorSpan = $("span[id='carrierDetectWaitInMilliseconds.errors']");
                 if (isCarrierDetectSelected) {
                     var findPreviousCarrierDetectValue = container.find(".js-carrierDetectWait").val();
                     if (findPreviousCarrierDetectValue === '0') {
                         container.find(".js-carrierDetectWait").val("1");
                     }
-                    $("span[id='carrierDetectWaitInMilliseconds.errors']").removeClass('dn');
-                    $('.js-carrier-detect-wait').find("span[id='carrierDetectWaitInMilliseconds.errors']").css({'margin-left':'80px'});
+                    carrierDetectErrorSpan.removeClass('dn');
+                    $('.js-carrier-detect-wait').find(carrierDetectErrorSpan).css({'margin-left':'80px'});
                 } else {
-                    $("span[id='carrierDetectWaitInMilliseconds.errors']").addClass('dn');
+                    carrierDetectErrorSpan.addClass('dn');
                 }
             });
 
             $(document).on('change', '.js-encryption-key-switch', function (event) {
                 var isEncryptionKeySelected = $(event.target).prop('checked'),
-                    container = $(this).closest(".js-general-tbl");
+                    encryptionKeyErrorSpan = $("span[id='keyInHex.errors']");
                 if (!isEncryptionKeySelected) {
-                    $("span[id='keyInHex.errors']").addClass('dn');
+                    encryptionKeyErrorSpan.addClass('dn');
                 } else {
-                    $("span[id='keyInHex.errors']").removeClass('dn');
-                    $('.js-encryption-key').find("span[id='keyInHex.errors']").css({'margin-left':'80px'});
+                    encryptionKeyErrorSpan.removeClass('dn');
+                    $('.js-encryption-key').find(encryptionKeyErrorSpan).css({'margin-left':'80px'});
                 }
             });
 
