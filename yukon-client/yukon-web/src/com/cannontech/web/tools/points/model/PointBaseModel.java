@@ -110,6 +110,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         setArchiveInterval(pt.getArchiveInterval());
         setTimingGroup(PointLogicalGroups.getLogicalGroupValue(pt.getLogicalGroup()));
         setAlarmsDisabled(pt.isAlarmsDisabled());
+        getAlarming().buildModel(point.getPointAlarming());
     }
 
     @Override
@@ -153,6 +154,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
             pt.setAlarmsDisabled(getAlarmsDisabled());
         }
 
+        getAlarming().buildDBPersistent(point.getPointAlarming());
     }
 
     @Override

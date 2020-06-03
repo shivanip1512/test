@@ -476,19 +476,6 @@ public class PointEditorServiceImpl implements PointEditorService {
         if (pointBaseModel.getStaleData() != null) {
              staleData = StaleData.of(pointBaseModel.getStaleData());
         }
-
-        if (pointBaseModel.getAlarming() != null) {
-            if (pointBaseModel.getAlarming().getNotificationGroupId() != null) {
-                pointBase.getPointAlarming().setNotificationGroupID(pointBaseModel.getAlarming().getNotificationGroupId());
-            }
-            if (pointBaseModel.getAlarming().getNotifyOnAck() != null) {
-                pointBase.getPointAlarming().setNotifyOnAck(pointBaseModel.getAlarming().getNotifyOnAck());
-            }
-            if (pointBaseModel.getAlarming().getNotifyOnClear() != null) {
-                pointBase.getPointAlarming().setNotifyOnClear(pointBaseModel.getAlarming().getNotifyOnClear());
-            }
-        }
-
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(),
                                                                                                 pointBaseModel.getPointType());
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
@@ -541,16 +528,8 @@ public class PointEditorServiceImpl implements PointEditorService {
         if (pointBaseModel != null) {
             pointBaseModel.buildModel(base);
             pointBaseModel.setStaleData(staleData);
-            setPointAlarming(base, pointBaseModel);
+            pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(base));
         }
         return pointBaseModel;
-    }
-
-    private void setPointAlarming(PointBase base, PointBaseModel<?> baseModel) {
-        PointAlarming pointAlarming = base.getPointAlarming();
-        baseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(base));
-        baseModel.getAlarming().setNotificationGroupId(pointAlarming.getNotificationGroupID());
-        baseModel.getAlarming().setNotifyOnAck(pointAlarming.isNotifyOnAck());
-        baseModel.getAlarming().setNotifyOnClear(pointAlarming.isNotifyOnClear());
     }
 }
