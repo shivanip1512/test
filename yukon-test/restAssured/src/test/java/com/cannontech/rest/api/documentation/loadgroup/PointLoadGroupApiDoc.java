@@ -7,7 +7,11 @@ import java.util.List;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.testng.annotations.Test;
+
+import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockPaoType;
+import com.cannontech.rest.api.documentation.DocumentationFields;
+import com.cannontech.rest.api.documentation.DocumentationFields.Get;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
 
 public class PointLoadGroupApiDoc extends LoadGroupApiDocBase {
@@ -69,5 +73,22 @@ public class PointLoadGroupApiDoc extends LoadGroupApiDocBase {
     @Override
     protected String getLoadGroupId() {
         return paoId;
+    }
+
+    @Override
+    protected Get buildGetFields() {
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        String paoType = getMockPaoType().name();
+        responseFields.add(0,
+                fieldWithPath(paoType + ".id").type(JsonFieldType.NUMBER).description(LoadGroupHelper.CONTEXT_GROUP_ID_DESC));
+        responseFields.add(7, fieldWithPath(paoType + ".deviceUsage.name").type(JsonFieldType.STRING).optional()
+                .description("Control device usage name."));
+        responseFields.add(9, fieldWithPath(paoType + ".pointUsage.name").type(JsonFieldType.STRING).optional()
+                .description("Point name of available control device."));
+        responseFields.add(11, fieldWithPath(paoType + ".startControlRawState.stateText").type(JsonFieldType.STRING)
+                .optional().description("Control start state name of available control Point."));
+
+        String url = ApiCallHelper.getProperty("getloadgroup") + getLoadGroupId();
+        return new DocumentationFields.Get(responseFields, url);
     }
 }
