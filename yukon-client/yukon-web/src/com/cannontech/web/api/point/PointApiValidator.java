@@ -175,13 +175,17 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             if (alarmList != null && CollectionUtils.isNotEmpty(alarmList)) {
                 List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
                 if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
-                    alarmStates = AlarmState.getOtherAlarmStates();
+                    alarmStates = AlarmState.getStatusAlarmStates();
                 }
 
                 for(int i = 0; i < alarmList.size(); i++) {
                     AlarmTableEntry entry = alarmList.get(i);
                     if (entry.getCondition()!= null && !alarmStates.contains(entry.getCondition())) {
                         errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                    }
+
+                    if (entry.getCondition() == null && entry.getCategory() != null && entry.getNotify() != null) {
+                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
                     }
 
                     if(entry.getCategory() != null) {

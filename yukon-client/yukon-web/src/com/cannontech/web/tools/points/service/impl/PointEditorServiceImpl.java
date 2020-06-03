@@ -22,6 +22,7 @@ import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
@@ -476,6 +477,18 @@ public class PointEditorServiceImpl implements PointEditorService {
              staleData = StaleData.of(pointBaseModel.getStaleData());
         }
 
+        if (pointBaseModel.getAlarming() != null) {
+            if (pointBaseModel.getAlarming().getNotificationGroupId() != null) {
+                pointBase.getPointAlarming().setNotificationGroupID(pointBaseModel.getAlarming().getNotificationGroupId());
+            }
+            if (pointBaseModel.getAlarming().getNotifyOnAck() != null) {
+                pointBase.getPointAlarming().setNotifyOnAck(pointBaseModel.getAlarming().getNotifyOnAck());
+            }
+            if (pointBaseModel.getAlarming().getNotifyOnClear() != null) {
+                pointBase.getPointAlarming().setNotifyOnClear(pointBaseModel.getAlarming().getNotifyOnClear());
+            }
+        }
+
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(),
                                                                                                 pointBaseModel.getPointType());
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
@@ -507,7 +520,7 @@ public class PointEditorServiceImpl implements PointEditorService {
      */
     private AlarmTableEntry setDefaultsForAlarmEntry(AlarmTableEntry entry) {
         if(entry.getCategory() == null) {
-            entry.setCategory("(none)");
+            entry.setCategory(CtiUtilities.STRING_NONE);
         }
 
         if(entry.getNotify() == null) {
