@@ -1322,6 +1322,9 @@
                     <page name="rtuDetail.CREATE" type="BASIC"/>
                 </pages>
             </page>
+            <page name="virtualDevices.list" type="BASIC">
+                <link>/stars/virtualDevices</link>
+            </page>
             <page name="scheduledDataImportList" type="BASIC" hideSearch="true">
                 <link>/stars/scheduledDataImport/list</link>
                 <pages>
