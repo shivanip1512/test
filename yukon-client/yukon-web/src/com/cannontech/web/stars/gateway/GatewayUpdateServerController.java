@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,6 +28,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.model.GatewayFirmwareVersion;
+import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateModel;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -34,6 +36,7 @@ import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.LazyList;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -122,7 +125,8 @@ public class GatewayUpdateServerController {
         ModelMap model,
         HttpServletResponse resp,
         @ModelAttribute("allSettings") GatewayUpdateModelList allSettings,
-        YukonUserContext userContext ) {
+        YukonUserContext userContext,
+        BindingResult result) {
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
 
@@ -131,9 +135,36 @@ public class GatewayUpdateServerController {
         defaultAuth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
         defaultAuth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
 
-        try {
-            List<GatewayUpdateModel> updateServerInfos = allSettings.getList();
+        List<GatewayUpdateModel> updateServerInfos = allSettings.getList();
+        
+        GatewaySettings settings = new GatewaySettings();
 
+        int z = 0;
+        for (GatewayUpdateModel updateServerInfo : updateServerInfos) {
+            settings.setUpdateServerUrl("stuff");
+            settings.setUpdateServerLogin(updateServerInfo.getUpdateServerLogin());
+
+            if (settings.isUseDefaultUpdateServer()) {
+                // Default settings will be used, no need to validate other fields
+            } else {
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(result, "list[" + z + "].updateServerUrl",
+                        baseKey + "updateserver.url.required");
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(result, "list[" + z + "].updateServerLogin.username",
+                        baseKey + "updateserver.username.required");
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(result, "list[" + z + "].updateServerLogin.password",
+                        baseKey + "updateserver.password.required");
+            }
+            z++;
+        }
+        
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.CREATE);
+            return "gateways/update-servers.jsp";
+        }
+        
+        try {
             List<RfnGateway> gateways = new ArrayList<>();
 
             for (GatewayUpdateModel updateServerInfo : updateServerInfos) {
