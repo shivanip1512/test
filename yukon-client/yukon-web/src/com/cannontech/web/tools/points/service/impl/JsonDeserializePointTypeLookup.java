@@ -30,10 +30,11 @@ public class JsonDeserializePointTypeLookup extends StdDeserializer<LitePointMod
         if (node == null) {
             throw new NotFoundException("request is not found in correct format");
         }
-        String id = ServletUtils.getPathVariable("id");
+        String idStr = ServletUtils.getPathVariable("id");
+        Integer id = null;
         PointType pointType;
         TreeNode typeTreeNode = node.get("pointType");
-        if (id == null) {
+        if (idStr == null) {
             // Create Case
             pointType = getPointTypeFromJson(typeTreeNode);
         } else {
@@ -42,9 +43,10 @@ public class JsonDeserializePointTypeLookup extends StdDeserializer<LitePointMod
             if (typeTreeNode != null) {
                 getPointTypeFromJson(typeTreeNode);
             }
-            pointType = getPointTypeFromDb(id);
+            id = Integer.valueOf(idStr);
+            pointType = getPointTypeFromDb(idStr);
         }
-        return (LitePointModel) parser.getCodec().treeToValue(node, getPointFromModelFactory(pointType).getClass());
+        return (LitePointModel) parser.getCodec().treeToValue(node, getPointFromModelFactory(pointType, id).getClass());
     }
 
     /**
@@ -80,9 +82,10 @@ public class JsonDeserializePointTypeLookup extends StdDeserializer<LitePointMod
     /**
      * Retrieves LitePointModel from model factory.
      */
-    private LitePointModel getPointFromModelFactory(PointType pointType) {
+    private LitePointModel getPointFromModelFactory(PointType pointType, Integer id) {
         LitePointModel litePointModel = PointModelFactory.getModel(pointType);
         if (litePointModel != null) {
+            litePointModel.setPointId(id);
             return litePointModel;
         } else {
             // throw exception for not supported pointType

@@ -471,19 +471,49 @@ public class PointEditorServiceImpl implements PointEditorService {
     public int create(PointBaseModel pointBaseModel) {
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
-
+        StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
-            StaleData staleData = pointBaseModel.getStaleData();
-            if (!(staleData.getTime() != null  || staleData.getUpdateStyle() != null)) {
-                staleData.setEnabled(true);
-            }
+             staleData = StaleData.of(pointBaseModel.getStaleData());
         }
 
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(),
-                                                                                                pointBaseModel.getPointType()) ;
-        save(pointBase, pointBaseModel.getStaleData(), alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
-
+                                                                                                pointBaseModel.getPointType());
+        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        //TODO FDR 
         return pointBase.getPoint().getPointID();
+    }
+
+    private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
+        List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
+
+        List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
+        if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
+            alarmStates = AlarmState.getStatusAlarmStates();
+        }
+
+        // Iterate over all alarm state entries to maintain order and set default values if category and notify are null. 
+        for (AlarmState alarmState : alarmStates) {
+            AlarmTableEntry entry = entries.stream()
+                                           .filter(e -> e.getCondition() == alarmState)
+                                           .findFirst()
+                                           .orElse(new AlarmTableEntry(alarmState));
+            orderedAlarmTableEntries.add(setDefaultsForAlarmEntry(entry));
+        }
+        return orderedAlarmTableEntries;
+    }
+
+    /**
+     * Set default values for AlarmTableEntry if category or notify are null. 
+     */
+    private AlarmTableEntry setDefaultsForAlarmEntry(AlarmTableEntry entry) {
+        if(entry.getCategory() == null) {
+            entry.setCategory("(none)");
+        }
+
+        if(entry.getNotify() == null) {
+            entry.setNotify(AlarmNotificationTypes.NONE);
+        }
+        return entry;
     }
 
     @Override
@@ -503,27 +533,11 @@ public class PointEditorServiceImpl implements PointEditorService {
         return pointBaseModel;
     }
 
-    private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
-        List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
-        Map<AlarmState, AlarmTableEntry> alarmEntryMap = entries.stream().collect(Collectors.toMap(entry -> entry.getCondition(), entry -> entry));
-        List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
-        if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
-            alarmStates = AlarmState.getStatusAlarmStates();
-        }
-        for (AlarmState alarmState : alarmStates) {
-            AlarmTableEntry entry = alarmEntryMap.get(alarmState) != null ? alarmEntryMap.get(alarmState)
-                                                                          : AlarmTableEntry.getDefaultAlarmTableEntry(alarmState);
-            orderedAlarmTableEntries.add(entry);
-        }
-        return orderedAlarmTableEntries;
-    }
-
     private void setPointAlarming(PointBase base, PointBaseModel<?> baseModel) {
         PointAlarming pointAlarming = base.getPointAlarming();
         baseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(base));
         baseModel.getAlarming().setNotificationGroupId(pointAlarming.getNotificationGroupID());
         baseModel.getAlarming().setNotifyOnAck(pointAlarming.isNotifyOnAck());
         baseModel.getAlarming().setNotifyOnClear(pointAlarming.isNotifyOnClear());
-    } 
-
+    }
 }

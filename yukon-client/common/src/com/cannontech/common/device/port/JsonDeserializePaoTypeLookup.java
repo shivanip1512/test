@@ -2,6 +2,7 @@ package com.cannontech.common.device.port;
 
 import java.io.IOException;
 
+import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.exception.TypeNotSupportedException;
 import com.cannontech.common.pao.PaoType;
@@ -32,11 +33,12 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
         if (node == null) {
             throw new NotFoundException("request is not found in correct format");
         }
-        String id = ServletUtils.getPathVariable("id");
+        String idStr = ServletUtils.getPathVariable("id");
+        Integer id = null;
         TreeNode type = node.get("type");
         PaoType paoType;
 
-        if (id == null) {
+        if (idStr == null) {
             paoType = getPaoTypeFromJson(type);
         } else {
             // Update case
@@ -44,9 +46,10 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
             if (type != null) {
                 getPaoTypeFromJson(type);
             }
-            paoType = getPaoTypeFromCache(id);
+            id = Integer.valueOf(idStr);
+            paoType = getPaoTypeFromCache(idStr);
         }
-        return (YukonPao) parser.getCodec().treeToValue(node, getYukonPaoFromModelFactory(paoType).getClass());
+        return (YukonPao) parser.getCodec().treeToValue(node, getYukonPaoFromModelFactory(paoType, id).getClass());
     }
 
     /**
@@ -88,9 +91,10 @@ public class JsonDeserializePaoTypeLookup extends StdDeserializer<YukonPao> {
      * that PaoType is not present in PaoModelFactory, this exception is handled by
      * ApiExceptionHandler which will convert it a into global error.
      */
-    private YukonPao getYukonPaoFromModelFactory(PaoType paoType) {
+    private YukonPao getYukonPaoFromModelFactory(PaoType paoType, Integer id) {
         YukonPao pao = PaoModelFactory.getModel(paoType);
         if (pao != null) {
+            ((DeviceBaseModel) pao).setId(id);
             return pao;
         } else {
             // throw exception for not supported paoType

@@ -9,7 +9,9 @@ import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class StaleData {
     
@@ -43,8 +45,8 @@ public class StaleData {
     }
     
     //private SelectItem[] updateStyles = null;
-    private Integer updateStyle = 0;
-    private Integer time = 5;
+    private Integer updateStyle;
+    private Integer time;
     @JsonIgnore
     private boolean enabled = false;
     private PointBase point = null;
@@ -52,7 +54,16 @@ public class StaleData {
     public static final int TIME_PROPERTY = 1;
     public static final int UPDATE_PROPERTY = 2;
 
-    public StaleData() {}
+    public StaleData() {
+        this.updateStyle = 0;
+        this.time = 5;
+    }
+
+    @JsonCreator
+    public StaleData(@JsonProperty("updateStyle") Integer updateStyle, @JsonProperty ("time") Integer time) {
+        this.updateStyle = updateStyle;
+        this.time = time;
+    }
     
     public StaleData(PointBase point) {
         this.point = point;
@@ -133,4 +144,19 @@ public class StaleData {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     } 
+    
+    public static StaleData of(StaleData stateDataModel) {
+        StaleData staleData = new StaleData(); // populate default values
+        if (stateDataModel.getTime() != null) {
+            staleData.setTime(stateDataModel.getTime());
+        }
+        if (stateDataModel.getUpdateStyle() != null) {
+            staleData.setUpdateStyle(stateDataModel.getUpdateStyle());
+        }
+        if (stateDataModel.getTime() != null || stateDataModel.getUpdateStyle() != null) {
+            staleData.setEnabled(true);
+        }
+
+        return staleData;
+    }
 }

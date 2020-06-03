@@ -22,12 +22,11 @@ import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.AlarmState;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
-import com.cannontech.web.tools.points.model.LitePointModel;
+import com.cannontech.web.tools.points.model.PointAlarming;
 import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
 import com.cannontech.web.tools.points.model.PointBaseModel;
@@ -55,142 +54,236 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
     @Override
     protected void doValidation(T target, Errors errors) {
-
         PointType pointType = target.getPointType();
+        if (target.getPointName() != null) {
+            pointValidationUtil.validateName("pointName", errors, target.getPointName());
+        }
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
             if (liteYukonPAObject == null) {
-                errors.rejectValue("paoId", "yukon.web.api.error.paoId.doesNotExist");
-            }
-        }
-
-        if (!errors.hasFieldErrors("paoId") && target.getPointName() != null && target.getPointOffset() != null) {
-            boolean physicalOffset = target.getPointOffset() > 0 ? true : false;
-            Integer pointId = null;
-            if (ServletUtils.getPathVariable("id") != null) {
-                pointId = Integer.valueOf(ServletUtils.getPathVariable("id"));
+                errors.rejectValue("paoId", "yukon.web.api.error.doesNotExist", new Object[] { target.getPaoId() }, "");
             }
 
-            LitePointModel litePointModel = new LitePointModel(target.getPointName(),
-                                                                     pointId,
-                                                                     physicalOffset,
-                                                                     target.getPointOffset(),
-                                                                     target.getPointType(),
-                                                                     target.getPaoId());
+            if (!errors.hasFieldErrors("paoId")) {
 
-            boolean isCreationOperation = pointId == null ? true : false;
+                boolean isCreationOperation = target.getPointId() == null ? true : false;
 
-            pointValidationUtil.validatePointName(litePointModel, "pointName", errors, isCreationOperation);
-            pointValidationUtil.validatePointOffset(litePointModel, "pointOffset", errors, isCreationOperation);
+                if (!errors.hasFieldErrors("pointName") && target.getPointName() != null) {
+                    pointValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
+                }
+
+                if (target.getPointOffset() != null) {
+                    pointValidationUtil.validatePointOffset(target, "pointOffset", errors, isCreationOperation);
+                }
+            }
         }
 
         if (target instanceof ScalarPointModel) {
-            ScalarPointModel<?> scalarPointModel = (ScalarPointModel<?>) target;
+            validateScalarPointModel(target, errors);
+        }
 
-            List<PointLimitModel> pointLimits = scalarPointModel.getLimits();
-            if (pointLimits.size() > 2) {
-                errors.rejectValue("limits", baseKey + ".pointLimit.invalidSize");
-            } else {
-                if (CollectionUtils.isNotEmpty(pointLimits)) {
-                    int limitNumber = 0;
-                    for (int i = 0; i < scalarPointModel.getLimits().size(); i++) {
-                        errors.pushNestedPath("limits[" + i + "]");
-                        PointLimitModel pointLimit = pointLimits.get(i);
-                        if (pointLimit != null) {
-                            if ((pointLimit.getHighLimit() != null && pointLimit.getLowLimit() != null) && pointLimit.getHighLimit() < pointLimit.getLowLimit()) {
-                                errors.rejectValue("lowLimit", "yukon.web.modules.tools.point.error.limits");
-                            }
+        validateArchiveSettings(target, errors);
+        validateStateGroupId(target, errors);
+        validateStaleDataSettings(target, errors);
+        validateAlarming(target.getAlarming(), pointType, errors);
+        if (target instanceof AnalogPointModel) {
+            validateAnalogPointModel(target, errors);
+        }
 
-                            YukonValidationUtils.checkIfFieldRequired("limitNumber", errors, pointLimit.getLimitNumber(), "limitNumber");
-                            if (!errors.hasFieldErrors("limitNumber")) {
+    }
 
-                                if (!(pointLimit.getLimitNumber() == 1 || pointLimit.getLimitNumber() == 2)) {
-                                    errors.rejectValue("limitNumber", baseKey + ".invalid.limitNumber");
-                                }
+    /**
+     * Validate ScalarPoint Fields.
+     */
 
-                                if (!errors.hasFieldErrors("limitNumber")) {
-                                    if (limitNumber == pointLimit.getLimitNumber()) {
-                                        errors.rejectValue("limitNumber", baseKey + ".duplicateLimitNumbers");
-                                    }
-                                }
-                                limitNumber = pointLimit.getLimitNumber();
-                            }
+    private void validateScalarPointModel(T target, Errors errors) {
 
-                            if (pointLimit.getHighLimit() != null) {
-                                YukonValidationUtils.checkRange(errors, "highLimit", pointLimit.getHighLimit(), -99999999.0, 99999999.0, false);
-                            }
+        ScalarPointModel<?> scalarPointModel = (ScalarPointModel<?>) target;
+        validatePointLimit(scalarPointModel, errors);
+        validatePointUnit(scalarPointModel.getPointUnit(), errors);
+    }
 
-                            if (pointLimit.getLowLimit() != null) {
-                                YukonValidationUtils.checkRange(errors, "lowLimit", pointLimit.getLowLimit(), -99999999.0, 99999999.0, false);
-                            }
-                            if (pointLimit.getLimitDuration() != null) {
-                                YukonValidationUtils.checkRange(errors, "limitDuration", pointLimit.getLimitDuration(), 0, 99999999, false);
-                            }
+    /**
+     * Validate PointLimit Fields.
+     */
+
+    private void validatePointLimit(ScalarPointModel<?> scalarPointModel, Errors errors) {
+        List<PointLimitModel> pointLimits = scalarPointModel.getLimits();
+        if (pointLimits.size() > 2) {
+            errors.rejectValue("limits", baseKey + ".pointLimit.invalidSize");
+        } else {
+            if (CollectionUtils.isNotEmpty(pointLimits)) {
+                int limitNumber = 0;
+                for (int i = 0; i < scalarPointModel.getLimits().size(); i++) {
+                    errors.pushNestedPath("limits[" + i + "]");
+                    PointLimitModel pointLimit = pointLimits.get(i);
+                    if (pointLimit != null) {
+                        if ((pointLimit.getHighLimit() != null && pointLimit.getLowLimit() != null) && pointLimit.getHighLimit() < pointLimit.getLowLimit()) {
+                            errors.rejectValue("lowLimit", "yukon.web.modules.tools.point.error.limits");
                         }
-                        errors.popNestedPath();
+
+                        YukonValidationUtils.checkIfFieldRequired("limitNumber", errors, pointLimit.getLimitNumber(), "limitNumber");
+                        if (!errors.hasFieldErrors("limitNumber")) {
+
+                            if (!(pointLimit.getLimitNumber() == 1 || pointLimit.getLimitNumber() == 2)) {
+                                errors.rejectValue("limitNumber", baseKey + ".invalid.limitNumber");
+                            }
+
+                            if (!errors.hasFieldErrors("limitNumber")) {
+                                if (limitNumber == pointLimit.getLimitNumber()) {
+                                    errors.rejectValue("limitNumber", baseKey + ".duplicateLimitNumbers");
+                                }
+                            }
+                            limitNumber = pointLimit.getLimitNumber();
+                        }
+
+                        if (pointLimit.getHighLimit() != null) {
+                            YukonValidationUtils.checkRange(errors, "highLimit", pointLimit.getHighLimit(), -99999999.0, 99999999.0, false);
+                        }
+
+                        if (pointLimit.getLowLimit() != null) {
+                            YukonValidationUtils.checkRange(errors, "lowLimit", pointLimit.getLowLimit(), -99999999.0, 99999999.0, false);
+                        }
+                        if (pointLimit.getLimitDuration() != null) {
+                            YukonValidationUtils.checkRange(errors, "limitDuration", pointLimit.getLimitDuration(), 0, 99999999, false);
+                        }
                     }
-                }
-            }
-
-            PointUnit pointUnit = scalarPointModel.getPointUnit();
-            if (pointUnit != null) {
-                if (pointUnit.getUomId() != null) {
-                    List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
-                    List<Integer> uomIds = unitMeasures.stream().map(unit -> unit.getId()).collect(Collectors.toList());
-                    if (!uomIds.contains(scalarPointModel.getPointUnit().getUomId())) {
-                        errors.rejectValue("pointUnit.uomID", "yukon.web.api.error.doesNotExist", new Object[] { "Uom Id" }, "");
-                    }
-                }
-
-                Double highReasonabilityLimit = pointUnit.getHighReasonabilityLimit();
-                Double lowReasonabilityLimit = pointUnit.getLowReasonabilityLimit();
-
-                if (highReasonabilityLimit != null && lowReasonabilityLimit != null) {
-                    if (highReasonabilityLimit < lowReasonabilityLimit) {
-                        YukonValidationUtils.rejectValues(errors, "yukon.web.modules.tools.point.error.reasonability", "pointUnit.lowReasonabilityLimit");
-                    }
-                }
-
-                if (highReasonabilityLimit != null && highReasonabilityLimit != CtiUtilities.INVALID_MAX_DOUBLE) {
-                    YukonValidationUtils.checkRange(errors, "pointUnit.highReasonabilityLimit", highReasonabilityLimit, -999999.999999, 999999.999999, true);
-                }
-
-                if (lowReasonabilityLimit != null && lowReasonabilityLimit != CtiUtilities.INVALID_MIN_DOUBLE) {
-                    YukonValidationUtils.checkRange(errors, "pointUnit.lowReasonabilityLimit", lowReasonabilityLimit, -999999.999999, 999999.999999, true);
-
-                }
-
-                if (pointUnit.getDecimalPlaces() != null) {
-                    YukonValidationUtils.checkRange(errors, "pointUnit.decimalPlaces", pointUnit.getDecimalPlaces(), 0, 10, true);
-                }
-
-                if (pointUnit.getMeterDials() != null) {
-                    YukonValidationUtils.checkRange(errors, "pointUnit.meterDials", pointUnit.getMeterDials(), 0, 10, true);
+                    errors.popNestedPath();
                 }
             }
         }
+
+    }
+
+    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors) {
+        if (pointAlarming != null) {
+            // Validate notificationGroupId.
+            Integer notificationGroupId = pointAlarming.getNotificationGroupId();
+            if (notificationGroupId != null) {
+                Optional<LiteNotificationGroup> existingNotifGroup = serverDatabaseCache
+                                                                        .getAllContactNotificationGroups()
+                                                                        .stream()
+                                                                        .filter(e -> e.getNotificationGroupID() == notificationGroupId)
+                                                                        .findFirst();
+                if (existingNotifGroup.isEmpty()) {
+                    errors.rejectValue("alarming.notificationGroupId", "yukon.web.api.error.doesNotExist", new Object[] { "Notification GroupId" }, "");
+                }
+            }
+            
+            // Validate alarmTableList
+            List<AlarmTableEntry> alarmList = pointAlarming.getAlarmTableList();
+            if (alarmList != null && CollectionUtils.isNotEmpty(alarmList)) {
+                List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
+                if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
+                    alarmStates = AlarmState.getOtherAlarmStates();
+                }
+
+                for(int i = 0; i < alarmList.size(); i++) {
+                    AlarmTableEntry entry = alarmList.get(i);
+                    if (entry.getCondition()!= null && !alarmStates.contains(entry.getCondition())) {
+                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                    }
+
+                    if(entry.getCategory() != null) {
+                        Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories()
+                                                                          .stream()
+                                                                          .filter(e -> e.getCategoryName().equals(entry.getCategory()))
+                                                                          .findFirst();
+                       if (catagory.isEmpty()) {
+                           errors.rejectValue("alarming.alarmTableList[" + i + "].category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
+                       }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Validate PointUnit Fields.
+     */
+
+    private void validatePointUnit(PointUnit pointUnit, Errors errors) {
+
+        if (pointUnit != null) {
+            if (pointUnit.getUomId() != null) {
+                List<UnitOfMeasure> unitMeasures = UnitOfMeasure.allValidValues();
+                List<Integer> uomIds = unitMeasures.stream().map(unit -> unit.getId()).collect(Collectors.toList());
+                if (!uomIds.contains(pointUnit.getUomId())) {
+                    errors.rejectValue("pointUnit.uomId", "yukon.web.api.error.doesNotExist", new Object[] { "Uom Id" }, "");
+                }
+            }
+
+            Double highReasonabilityLimit = pointUnit.getHighReasonabilityLimit();
+            Double lowReasonabilityLimit = pointUnit.getLowReasonabilityLimit();
+
+            if (highReasonabilityLimit != null && lowReasonabilityLimit != null) {
+                if (highReasonabilityLimit < lowReasonabilityLimit) {
+                    YukonValidationUtils.rejectValues(errors, "yukon.web.modules.tools.point.error.reasonability", "pointUnit.lowReasonabilityLimit");
+                }
+            }
+
+            if (highReasonabilityLimit != null && highReasonabilityLimit != CtiUtilities.INVALID_MAX_DOUBLE) {
+                YukonValidationUtils.checkRange(errors, "pointUnit.highReasonabilityLimit", highReasonabilityLimit, -999999.999999, 999999.999999, true);
+            }
+
+            if (lowReasonabilityLimit != null && lowReasonabilityLimit != CtiUtilities.INVALID_MIN_DOUBLE) {
+                YukonValidationUtils.checkRange(errors, "pointUnit.lowReasonabilityLimit", lowReasonabilityLimit, -999999.999999, 999999.999999, true);
+
+            }
+
+            if (pointUnit.getDecimalPlaces() != null) {
+                YukonValidationUtils.checkRange(errors, "pointUnit.decimalPlaces", pointUnit.getDecimalPlaces(), 0, 10, true);
+            }
+
+            if (pointUnit.getMeterDials() != null) {
+                YukonValidationUtils.checkRange(errors, "pointUnit.meterDials", pointUnit.getMeterDials(), 0, 10, true);
+            }
+        }
+
+    }
+
+    /**
+     * Validate ArchiveSettings Fields.
+     */
+
+    private void validateArchiveSettings(T target, Errors errors) {
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.ON_TIMER || target.getArchiveType() == PointArchiveType.ON_TIMER_OR_UPDATE)) {
             if (target.getArchiveInterval() != null) {
                 TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
                 if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
                     errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
                 }
+            } else {
+                errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveTimeInterval", new Object[] { "Archive Interval" }, "");
             }
         }
 
-        if (target.getArchiveType() != null
-                && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
+        if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
             if (target.getArchiveInterval() != null && target.getArchiveInterval() != 0) {
                 errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveInterval");
             }
         }
+    }
 
+    /**
+     * Validate State GroupId Fields.
+     */
+
+    private void validateStateGroupId(T target, Errors errors) {
         if (target.getStateGroupId() != null) {
             LiteStateGroup liteStateGroup = stateGroupDao.findStateGroup(target.getStateGroupId());
             if (liteStateGroup == null) {
                 errors.rejectValue("stateGroupId", baseKey + ".invalid.stateGroupId", new Object[] { target.getStateGroupId() }, "");
             }
         }
+
+    }
+
+    /**
+     * Validate Stale Data Fields.
+     */
+
+    private void validateStaleDataSettings(T target, Errors errors) {
 
         StaleData staleData = target.getStaleData();
         if (staleData != null) {
@@ -203,83 +296,65 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 }
             }
         }
+    }
 
-        if (target instanceof AnalogPointModel) {
-            AnalogPointModel analogPointModel = (AnalogPointModel) target;
-            PointAnalog pointAnalog = analogPointModel.getPointAnalog();
-            if (pointAnalog != null) {
+    /**
+     * Validate Analog Point Fields.
+     */
 
-                if (pointAnalog.getDeadband() != null) {
-                    YukonValidationUtils.checkRange(errors, "pointAnalog.deadband", pointAnalog.getDeadband(), -1.0, 99999999.0, false);
+    private void validateAnalogPointModel(T target, Errors errors) {
+        AnalogPointModel analogPointModel = (AnalogPointModel) target;
+
+        validatePointAnalog(analogPointModel.getPointAnalog(), errors);
+        validatePointAnalogControl(analogPointModel.getPointAnalogControl(), errors);
+    }
+
+    /**
+     * Validate Point Analog Control Fields.
+     */
+    private void validatePointAnalogControl(PointAnalogControl pointAnalogControl, Errors errors) {
+        if (pointAnalogControl != null) {
+            if (pointAnalogControl.getControlType() != null) {
+
+                if (pointAnalogControl.getControlType() == AnalogControlType.NORMAL && pointAnalogControl.getControlOffset() != null) {
+                    YukonValidationUtils.checkRange(errors,
+                                                    "pointAnalogControl.controlOffset",
+                                                    pointAnalogControl.getControlOffset(),
+                                                    -99999999,
+                                                    99999999,
+                                                    false);
                 }
 
-                if (pointAnalog.getMultiplier() != null) {
-                    YukonValidationUtils.checkRange(errors, "pointAnalog.multiplier", pointAnalog.getMultiplier(), -99999999.0, 99999999.0, false);
-                }
-
-                if (pointAnalog.getDataOffset() != null) {
-                    YukonValidationUtils.checkRange(errors, "pointAnalog.dataOffset", pointAnalog.getDataOffset(), -99999999.0, 99999999.0, false);
-                }
-            }
-
-            PointAnalogControl pointAnalogControl = analogPointModel.getPointAnalogControl();
-            if (pointAnalogControl != null) {
-                if (pointAnalogControl.getControlType() != null) {
-
-                    if (pointAnalogControl.getControlType() == AnalogControlType.NORMAL && pointAnalogControl.getControlOffset() != null) {
-                        YukonValidationUtils.checkRange(errors, "pointAnalogControl.controlOffset", pointAnalogControl.getControlOffset(), -99999999, 99999999, false);
+                if (pointAnalogControl.getControlType() == AnalogControlType.NONE) {
+                    if (pointAnalogControl.getControlOffset() != null && pointAnalogControl.getControlOffset() != 0) {
+                        errors.rejectValue("pointAnalogControl.controlOffset", baseKey + ".invalid.controlOffset");
                     }
 
-                    if (pointAnalogControl.getControlType() == AnalogControlType.NONE) {
-                        if (pointAnalogControl.getControlOffset() != null && pointAnalogControl.getControlOffset() != 0) {
-                            errors.rejectValue("pointAnalogControl.controlOffset", baseKey + ".invalid.controlOffset");
-                        }
-
-                        if (pointAnalogControl.getControlInhibited() != null && pointAnalogControl.getControlInhibited().equals(true)) {
-                            errors.rejectValue("pointAnalogControl.controlInhibited", baseKey + ".invalid.controlInhibited");
-                        }
+                    if (pointAnalogControl.getControlInhibited() != null && pointAnalogControl.getControlInhibited().equals(true)) {
+                        errors.rejectValue("pointAnalogControl.controlInhibited", baseKey + ".invalid.controlInhibited");
                     }
                 }
             }
         }
+    }
 
-        if (target.getAlarming() != null) {
-            // Validate notificationGroupId.
-            Integer notificationGroupId = target.getAlarming().getNotificationGroupId();
-            if (target.getAlarming().getNotificationGroupId() != null) {
-                Optional<LiteNotificationGroup> existingNotifGroup = serverDatabaseCache
-                        .getAllContactNotificationGroups().stream()
-                        .filter(e -> e.getNotificationGroupID() == notificationGroupId)
-                        .findFirst();
-                if (existingNotifGroup == null) {
-                    errors.rejectValue("alarming.notificationGroupId", "yukon.web.api.error.doesNotExist", new Object[] { "Notification GroupId" }, "");
-                }
+    /**
+     * Validate Point Analog Fields.
+     */
+    private void validatePointAnalog(PointAnalog pointAnalog, Errors errors) {
+
+        if (pointAnalog != null) {
+
+            if (pointAnalog.getDeadband() != null) {
+                YukonValidationUtils.checkRange(errors, "pointAnalog.deadband", pointAnalog.getDeadband(), -1.0, 99999999.0, false);
             }
-            
-            // Validate alarmTableList
-            List<AlarmTableEntry> alarmList = target.getAlarming().getAlarmTableList();
-            if (alarmList != null) {
-                List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
-                if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
-                    alarmStates = AlarmState.getOtherAlarmStates();
-                }
-                for(int i = 0; i < alarmList.size(); i++) {
-                    AlarmTableEntry entry = alarmList.get(i);
-                    YukonValidationUtils.checkIfFieldRequired("alarming.alarmTableList[" + i + "].condition", errors, entry.getCondition(), "Condition");
-                    if (!errors.hasFieldErrors("alarming.alarmTableList[" + i + "].condition") && !alarmStates.contains(entry.getCondition())) {
-                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
-                    }
-                    YukonValidationUtils.checkIfFieldRequired("alarming.alarmTableList[" + i + "].category", errors, entry.getCategory(), "Catagory");
-                    if (!errors.hasFieldErrors("alarming.alarmTableList[" + i + "].category")) {
-                        Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories().stream()
-                                                                       .filter(e -> e.getCategoryName().equals(entry.getCategory()))
-                                                                       .findFirst();
-                        if (catagory.isEmpty()) {
-                            errors.rejectValue("alarming.alarmTableList[" + i + "].category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
-                        }
-                    }
-                    YukonValidationUtils.checkIfFieldRequired("alarming.alarmTableList[" + i + "].notify", errors, entry.getNotify(), "Notify");
-                }
+
+            if (pointAnalog.getMultiplier() != null) {
+                YukonValidationUtils.checkRange(errors, "pointAnalog.multiplier", pointAnalog.getMultiplier(), -99999999.0, 99999999.0, false);
+            }
+
+            if (pointAnalog.getDataOffset() != null) {
+                YukonValidationUtils.checkRange(errors, "pointAnalog.dataOffset", pointAnalog.getDataOffset(), -99999999.0, 99999999.0, false);
             }
         }
     }

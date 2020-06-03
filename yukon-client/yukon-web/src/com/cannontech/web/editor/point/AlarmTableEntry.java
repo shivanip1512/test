@@ -9,6 +9,12 @@ public class AlarmTableEntry {
     private String category ;
     private AlarmNotificationTypes notify ;
 
+    public AlarmTableEntry() {}
+
+    public AlarmTableEntry(AlarmState condition) {
+        this.condition = condition;
+    }
+
     public AlarmState getCondition() {
         return condition;
     }
@@ -31,14 +37,6 @@ public class AlarmTableEntry {
 
     public void setCategory(String string) {
         category = string;
-    }
-    
-    public static AlarmTableEntry getDefaultAlarmTableEntry(AlarmState condition) {
-        AlarmTableEntry alarmEntry = new AlarmTableEntry();
-        alarmEntry.setCondition(condition);
-        alarmEntry.setCategory("(none)");
-        alarmEntry.setNotify(AlarmNotificationTypes.NONE);
-        return alarmEntry;
     }
 
 }
