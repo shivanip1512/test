@@ -471,20 +471,18 @@ public class PointEditorServiceImpl implements PointEditorService {
     public int create(PointBaseModel pointBaseModel) {
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
-
+        StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
-            StaleData staleData = pointBaseModel.getStaleData();
-            if (!(staleData.getTime() != null  || staleData.getUpdateStyle() != null)) {
-                staleData.setEnabled(true);
-            }
+             staleData = StaleData.of(pointBaseModel.getStaleData());
         }
 
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(),
-                                                                                                pointBaseModel.getPointType()) ;
-        save(pointBase, pointBaseModel.getStaleData(), alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
-
+                                                                                                pointBaseModel.getPointType());
+        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        //TODO FDR 
         return pointBase.getPoint().getPointID();
     }
+
 
     @Override
     public PointBaseModel<? extends PointBase> retrieve(int pointId) {

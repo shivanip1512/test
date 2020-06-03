@@ -114,8 +114,6 @@ public interface PointEditorService {
 
     /**
      * Attempts to delete the point with the given id.
-     * @return 
-     * 
      * @throws AttachedException if the point has attachments that prevent it from being deleted
      */
     void delete(int id, YukonUserContext userContext) throws AttachedException;
