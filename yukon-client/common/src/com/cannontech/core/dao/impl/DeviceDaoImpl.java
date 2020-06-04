@@ -48,8 +48,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.stars.util.StarsInvalidArgumentException;
-import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -173,18 +171,19 @@ public final class DeviceDaoImpl implements DeviceDao {
     
     @Override
     public Map<Integer, String> getDeviceMacAddresses(Collection<Integer> deviceIds) {
-        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlFragmentGenerator<Integer> sqlFragmentGenerator = (generator) -> {
+        
+        SqlFragmentGenerator<Integer> sqlFragmentGenerator = (List<Integer> subList) -> {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT DeviceId, MacAddress");
             sql.append("FROM DeviceMacAddress");
-            sql.append("WHERE DeviceId").in(deviceIds);
+            sql.append("WHERE DeviceId").in(subList);
             return sql;
         };
+        
         Map<Integer, String> result = new HashMap<>();
-        chunkingSqlTemplate.query(sqlFragmentGenerator, deviceIds, (YukonResultSet rs) -> { {
-                result.put(rs.getInt("DeviceId"), rs.getString("macAddress"));
-            }
+        ChunkingSqlTemplate chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+        chunkingSqlTemplate.query(sqlFragmentGenerator, deviceIds, (YukonResultSet rs) -> {
+            result.put(rs.getInt("DeviceId"), rs.getString("macAddress"));
         });
         return result;
     }
