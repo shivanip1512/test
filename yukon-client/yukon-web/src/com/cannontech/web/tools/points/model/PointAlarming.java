@@ -6,7 +6,7 @@ import java.util.List;
 import com.cannontech.common.device.port.DBPersistentConverter;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 
-public class PointAlarming implements DBPersistentConverter<com.cannontech.database.db.point.PointAlarming>{
+public class PointAlarming implements DBPersistentConverter<com.cannontech.database.db.point.PointAlarming> {
 
     private Integer notificationGroupId;
     private Boolean notifyOnAck;
