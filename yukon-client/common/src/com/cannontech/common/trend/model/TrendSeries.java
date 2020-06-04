@@ -2,11 +2,11 @@ package com.cannontech.common.trend.model;
 
 import org.joda.time.LocalDate;
 
-public class TrendSeriesDefinition {
+public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
     private String label;
-    private String color;
+    private Color color;
     private TrendAxis axis;
     private Double multiplier;
     private RenderType style;
@@ -36,11 +36,11 @@ public class TrendSeriesDefinition {
         this.label = label;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 
-    public void setColor(String color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 
