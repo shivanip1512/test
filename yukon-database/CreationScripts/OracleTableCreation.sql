@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/16/2020 3:04:55 PM                         */
+/* Created on:     6/4/2020 12:32:07 AM                         */
 /*==============================================================*/
 
 
@@ -3197,6 +3197,9 @@ INSERT INTO DeviceGroup VALUES (53, 'Load Programs', 51, 'NOEDIT_NOMOD', 'LOAD_P
 INSERT INTO DeviceGroup VALUES (54, 'All RFG Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFG_METERS', '18-JUN-2018', 'ALL_RFG_METERS');
 INSERT INTO DeviceGroup VALUES (55, 'CIS DeviceClass', 1, 'NOEDIT_MOD', 'STATIC', '08-JAN-2018', 'CIS_DEVICECLASS');
 INSERT INTO DeviceGroup VALUES (56, 'Meter Programming', 15, 'NOEDIT_NOMOD', 'METERS_METER_PROGRAMMING', '08-NOV-2019', 'METER_PROGRAMMING');
+INSERT INTO DeviceGroup VALUES (57, 'Service', 0, 'NOEDIT_NOMOD', 'STATIC', '04-JUN-2020', 'SERVICE');
+INSERT INTO DeviceGroup VALUES (58, 'Active RF Electric Meters', 57, 'NOEDIT_MOD', 'COMPOSED', '04-JUN-2020', 'SERVICE_ACTIVE_RF_ELECTRIC_METERS');
+INSERT INTO DeviceGroup VALUES (59, 'Active RFW Meters', 57, 'NOEDIT_MOD', 'COMPOSED', '04-JUN-2020', 'SERVICE_ACTIVE_RFW_METERS');
 
 alter table DeviceGroup
    add constraint AK_DeviceGroup_ParentDG_GrpNam unique (GroupName, ParentDeviceGroupId);
@@ -3211,6 +3214,9 @@ create table DeviceGroupComposed  (
    constraint PK_DevGroupComp primary key (DeviceGroupComposedId)
 );
 
+INSERT INTO DeviceGroupComposed VALUES (1, 58, 'UNION');
+INSERT INTO DeviceGroupComposed VALUES (31, 59, 'UNION');
+
 /*==============================================================*/
 /* Table: DeviceGroupComposedGroup                              */
 /*==============================================================*/
@@ -3221,6 +3227,13 @@ create table DeviceGroupComposedGroup  (
    IsNot                CHAR(1)                         not null,
    constraint PK_DevGroupCompGroup primary key (DeviceGroupComposedGroupId)
 );
+
+INSERT INTO DeviceGroupComposedGroup VALUES (2, 1, '/System/Meters/All Meters/All RFN Meters/All RF Electric Meters', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (3, 1, '/Meters/Billing', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (4, 1, '/System/Meters/Disabled', 'Y');
+INSERT INTO DeviceGroupComposedGroup VALUES (32, 31, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (33, 31, '/Meters/Billing', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (34, 31, '/System/Meters/Disabled', 'Y');
 
 /*==============================================================*/
 /* Table: DeviceMCT400Series                                    */
@@ -6102,6 +6115,7 @@ create table JOBSCHEDULEDREPEATING  (
    CronString           VARCHAR2(100)                   not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
+
 
 INSERT INTO JobScheduledRepeating VALUES (-2, '0 0 6 ? * *');
 INSERT INTO JobScheduledRepeating VALUES (-1, '0 15 0 ? * *'); 
