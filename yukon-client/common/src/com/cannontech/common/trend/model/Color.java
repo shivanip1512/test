@@ -18,6 +18,7 @@ public enum Color implements DisplayableEnum {
     YELLOW(Colors.YELLOW_ID);
 
     private int colorId;
+    private String baseKey = "yukon.web.modules.tools.trend.color.";
 
     private Color(int id) {
         this.colorId = id;
@@ -25,7 +26,7 @@ public enum Color implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return null;
+        return baseKey + name();
     }
 
     public String getHexValue() {

@@ -190,9 +190,13 @@
         <link>/search</link>
       </page>
       <page name="commander" type="BASIC"/>
-      <page name="trends" type="BASIC"/>
-      <page name="trend" type="DETAIL">
-        <labelArgument>${trendName}</labelArgument>
+      <page name="trends" type="BASIC">
+        <pages>
+            <page name="trend" type="DETAIL">
+                <labelArgument>${trendName}</labelArgument>
+             </page>
+             <page name="trend.CREATE" type="BASIC"/>
+        </pages>
       </page>
       <page name="tdc.home" type="BASIC">
         <link>/tools/data-viewer</link>

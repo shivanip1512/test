@@ -2,6 +2,9 @@ package com.cannontech.common.trend.model;
 
 import org.joda.time.LocalDate;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
@@ -68,6 +71,8 @@ public class TrendSeries {
         this.style = style;
     }
 
+    @JsonSerialize(using=TrendDateSerializer.class)
+    @JsonDeserialize(using=TrendDateDeserializer.class)
     public LocalDate getDate() {
         return date;
     }
