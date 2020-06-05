@@ -26,7 +26,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.widgets.service.PorterQueueCountsWidgetService;
 import com.cannontech.web.tools.trends.TrendUtils;
-import com.cannontech.web.tools.trends.data.TrendType.GraphType;
 import com.cannontech.web.tools.trends.data.error.GraphDataError;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.google.common.collect.ImmutableMap;
