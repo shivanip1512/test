@@ -27,6 +27,7 @@ public enum MasterConfigBoolean {
     MAINTENANCE_DUPLICATE_POINT_DATA_NOLOCK_REQUIRED,
     MAP_DEVICES_DEV_MODE,  //If true, use Dev Key for Mapping, If false, use Prod key.  If key is not found, check for DEVELOPMENT_MODE OR DISABLE_ANALYTICS.  If either are true, use Dev Key otherwise Prod key
     MSP_ENABLE_ALTGROUP_EXTENSION, // YUK-10787
+    MSP_ENABLE_ENROLLMENT, //YUK-22291
     MSP_ENABLE_SUBSTATIONNAME_EXTENSION, // YUK-10787
     MSP_EXACT_SEARCH_PAONAME, // YUK-12369
     MULTISPEAK_DISABLED,
