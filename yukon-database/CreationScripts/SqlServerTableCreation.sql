@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/4/2020 12:31:01 AM                         */
+/* Created on:     6/5/2020 7:56:32 AM                          */
 /*==============================================================*/
 
 
@@ -3430,7 +3430,7 @@ create table DeviceGroupComposed (
 go
 
 INSERT INTO DeviceGroupComposed VALUES (1, 58, 'UNION');
-INSERT INTO DeviceGroupComposed VALUES (31, 59, 'UNION');
+INSERT INTO DeviceGroupComposed VALUES (2, 59, 'UNION');
 
 /*==============================================================*/
 /* Table: DeviceGroupComposedGroup                              */
@@ -3444,12 +3444,12 @@ create table DeviceGroupComposedGroup (
 )
 go
 
-INSERT INTO DeviceGroupComposedGroup VALUES (2, 1, '/System/Meters/All Meters/All RFN Meters/All RF Electric Meters', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (3, 1, '/Meters/Billing', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (4, 1, '/System/Meters/Disabled', 'Y');
-INSERT INTO DeviceGroupComposedGroup VALUES (32, 31, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (33, 31, '/Meters/Billing', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (34, 31, '/System/Meters/Disabled', 'Y');
+INSERT INTO DeviceGroupComposedGroup VALUES (1, 1, '/System/Meters/All Meters/All RFN Meters/All RF Electric Meters', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (2, 1, '/Meters/Billing', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (3, 1, '/System/Meters/Disabled', 'Y');
+INSERT INTO DeviceGroupComposedGroup VALUES (4, 31, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (5, 31, '/Meters/Billing', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (6, 31, '/System/Meters/Disabled', 'Y');
 
 /*==============================================================*/
 /* Table: DeviceMCT400Series                                    */
