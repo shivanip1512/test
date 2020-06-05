@@ -10,6 +10,8 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.google.common.collect.ImmutableList;
 
@@ -78,4 +80,29 @@ public class PointValidationUtil extends ValidationUtils {
         }
     }
 
+    /**
+     * Check if pointType is matched with the pointObject retrieved.
+     */
+    public void checkIfPointTypeChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
+        if (!isCreationOperation && litePointModel.getPointId() != null) {
+            PointBase pointBase = pointDao.get(litePointModel.getPointId());
+            if (litePointModel.getPointType() != null && litePointModel.getPointType() != PointType.getForString(pointBase.getPoint().getPointType())) {
+                errors.rejectValue("pointType", "yukon.web.api.error.pointTypeMismatch",
+                        new Object[] { litePointModel.getPointType(), pointBase.getPoint().getPointType(), litePointModel.getPointId() }, "");
+            }
+        }
+    }
+
+    /**
+     * Check if paoId is matched with the pointObject retrieved.
+     */
+    public void checkIfPaoIdChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
+        if (!isCreationOperation && litePointModel.getPointId() != null) {
+            PointBase pointBase = pointDao.get(litePointModel.getPointId());
+            if (litePointModel.getPaoId() != null && !litePointModel.getPaoId().equals(pointBase.getPoint().getPaoID())) {
+                errors.rejectValue("paoId", "yukon.web.api.error.paoIdMismatch",
+                        new Object[] { litePointModel.getPaoId(), pointBase.getPoint().getPaoID() }, "");
+            }
+        }
+    }
 }

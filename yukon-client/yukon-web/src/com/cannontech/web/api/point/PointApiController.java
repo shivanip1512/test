@@ -49,7 +49,6 @@ public class PointApiController {
 
     @PostMapping("/point/update/{id}")
     public ResponseEntity<Object> update(@Valid @RequestBody PointBaseModel<?> pointBase, @PathVariable("id") int id) {
-        pointEditorService.update(id, pointBase);
         return new ResponseEntity<>(pointEditorService.update(id, pointBase), HttpStatus.OK);
     }
 

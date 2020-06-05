@@ -466,35 +466,36 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public int create(PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel) {
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
         StaleData staleData = null;
-        if (pointBaseModel.getStaleData() != null) {
-             staleData = StaleData.of(pointBaseModel.getStaleData());
-        }
-        List<AlarmTableEntry> alarmTableEntries = new ArrayList<>();  //TODO support Alarming in another story
-
-        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
-        //TODO FDR 
-        return pointBase.getPoint().getPointID();
-    }
-
-    @Override
-    public int update(int pointId, PointBaseModel pointBaseModel) {
-
-        PointBase pointBase = pointDao.get(pointId);
-        pointBaseModel.buildDBPersistent(pointBase);
-        StaleData staleData = null;
-
         if (pointBaseModel.getStaleData() != null) {
             staleData = StaleData.of(pointBaseModel.getStaleData());
         }
         List<AlarmTableEntry> alarmTableEntries = new ArrayList<>(); // TODO support Alarming in another story
 
-        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        int pointId = save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
 
-        return pointBase.getPoint().getPointID();
+        // TODO FDR
+        return retrieve(pointId);
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        pointBaseModel.buildDBPersistent(pointBase);
+
+        StaleData staleData = null;
+        if (pointBaseModel.getStaleData() != null) {
+            staleData = StaleData.of(pointBaseModel.getStaleData());
+        }
+        List<AlarmTableEntry> alarmTableEntries = new ArrayList<>(); // TODO support Alarming in another story
+
+        int createdPointId = save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+
+        return retrieve(createdPointId);
     }
 
     @Override
