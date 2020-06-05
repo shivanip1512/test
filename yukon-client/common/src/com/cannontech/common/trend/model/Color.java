@@ -1,15 +1,15 @@
 package com.cannontech.common.trend.model;
 
-import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.gui.util.Colors;
+import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
+public enum Color implements DisplayableEnum {
 
     BLACK(Colors.BLACK_ID),
     BLUE(Colors.BLUE_ID),
     CYAN(Colors.CYAN_ID),
-    GRAY(Colors.GRAY_ID),
+    // Color picker require it to be "GREY" instead of "GRAY".
+    GREY(Colors.GRAY_ID),
     GREEN(Colors.GREEN_ID),
     MAGENTA(Colors.MAGENTA_ID),
     ORANGE(Colors.ORANGE_ID),
@@ -26,11 +26,6 @@ public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
     @Override
     public String getFormatKey() {
         return null;
-    }
-
-    @Override
-    public Object getDatabaseRepresentation() {
-        return colorId;
     }
 
     public String getHexValue() {

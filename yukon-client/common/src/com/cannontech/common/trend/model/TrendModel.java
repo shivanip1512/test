@@ -5,7 +5,7 @@ import java.util.List;
 public class TrendModel {
     private Integer trendId;
     private String name;
-    private List<TrendSeries> trendSeriesDefinition;
+    private List<TrendSeries> trendSeries;
 
     public Integer getTrendId() {
         return trendId;
@@ -23,12 +23,12 @@ public class TrendModel {
         this.name = name;
     }
 
-    public List<TrendSeries> getTrendSeriesDefinition() {
-        return trendSeriesDefinition;
+    public List<TrendSeries> getTrendSeries() {
+        return trendSeries;
     }
 
-    public void setTrendSeriesDefinition(List<TrendSeries> trendSeriesDefinition) {
-        this.trendSeriesDefinition = trendSeriesDefinition;
+    public void setTrendSeries(List<TrendSeries> trendSeries) {
+        this.trendSeries = trendSeries;
     }
 
 }
