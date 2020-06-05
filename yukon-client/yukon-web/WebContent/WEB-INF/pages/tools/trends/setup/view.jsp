@@ -85,6 +85,5 @@
         </form:form>
     </cti:msgScope>
     <cti:includeScript link="/resources/js/pages/yukon.tools.trend.setup.js" />
-    <cti:includeScript link="YUKON_TIME_FORMATTER" />
     <dt:pickerIncludes />
 </cti:standardPage>

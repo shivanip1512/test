@@ -40,7 +40,7 @@
                 </span>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".label" nameClass="vam">
-                <tags:input path="label" maxlength="40" inputClass="js-point-label-input mw300" />
+                <tags:input path="label" maxlength="40" inputClass="js-point-label-input w300" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".color" nameClass="vam">
                 <input type="hidden" class="js-color-input" name="color" value="${trendSeries.color}"/>
