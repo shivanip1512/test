@@ -24,7 +24,7 @@ public class TrendServiceImpl implements TrendService {
                                                .stream()
                                                .filter(group -> group.getLiteID() == trendId)
                                                .findFirst()
-                                               .orElseThrow(() -> new NotFoundException("Trend Id  not found"));
+                                               .orElseThrow(() -> new NotFoundException("Trend Id not found"));
         GraphDefinition trend = (GraphDefinition) LiteFactory.createDBPersistent(liteTrend);
         dbPersistentDao.performDBChange(trend, TransactionType.DELETE);
         return trend.getGraphDefinition().getGraphDefinitionID();
