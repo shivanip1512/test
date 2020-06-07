@@ -35,7 +35,7 @@ public class PortValidatorHelper {
     public static void validatePortSharingFields(Errors errors, PortSharing sharing) {
         if (sharing.getSharedPortType() != null && sharing.getSharedPortType() != SharedPortType.NONE) {
             YukonValidationUtils.validatePort(errors, "sharing.sharedSocketNumber",
-                    String.valueOf(sharing.getSharedSocketNumber()), "yukon.web.error.socketNumber.required");
+                    String.valueOf(sharing.getSharedSocketNumber()), "Socket Number" );
         }
 
         if (sharing.getSharedSocketNumber() != null) {
@@ -100,14 +100,14 @@ public class PortValidatorHelper {
     /**
      * Validate Physical Port
      */
-    public static void validatePhysicalPort(Errors errors, String physicalPort) {
-        if (!org.springframework.util.StringUtils.hasText(physicalPort)) {
-            errors.rejectValue("physicalPort", "yukon.web.error.fieldrequired", new Object[] { "Physical Port" }, "");
+    public static void validatePhysicalPort(Errors errors, String fieldName) {
+        if (!org.springframework.util.StringUtils.hasText(fieldName)) {
+            errors.rejectValue("physicalPort", "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
         }
         if (!errors.hasFieldErrors("physicalPort")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", physicalPort, 8);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", fieldName, 8);
         }
-    }
+     }
 
     /**
      * Validate Encryption Key

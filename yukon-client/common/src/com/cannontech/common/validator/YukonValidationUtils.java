@@ -300,15 +300,26 @@ public class YukonValidationUtils extends ValidationUtils {
        }
    }
     
-    public static void validatePort(Errors errors, String field, String fieldValue, String errorMsg) {
-        rejectIfEmptyOrWhitespace(errors, field, errorMsg);
-        if (!errors.hasFieldErrors(field)) {
-            try {
-                 Integer portID = Integer.valueOf(fieldValue);
-                 checkRange(errors, field, portID, 1, 65535, true);
-            } catch (Exception e) {
-                errors.rejectValue(field, "yukon.web.error.invalidPort");
+    public static void validatePort(Errors errors, String field, String fieldValue, String fieldName) {
+        // rejectIfEmptyOrWhitespace(errors, field, errorMsg);
+        if (!StringUtils.isBlank(fieldValue)) {
+
+            if (!errors.hasFieldErrors(field)) {
+                try {
+                    Integer portID = Integer.valueOf(fieldValue);
+                    if (portID < 1 || portID > 65535) {
+                        errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange",
+                                new Object[] { fieldName, 1, 65535 }, "");
+                    }
+                    // checkRange(errors, field, portID, 1, 65535, true);
+                } catch (Exception e) {
+                    errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange", new Object[] { fieldName, 1, 65535 },
+                            "");
+                }
             }
+        } else {
+
+            errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange", new Object[] { fieldName, 1, 65535 }, "");
         }
     }
     
@@ -333,6 +344,20 @@ public class YukonValidationUtils extends ValidationUtils {
         if (fieldValue == null) {
             errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
         }
+    }
+    
+    /**
+     * FieldValue must be not empty.
+     * @param field - model object name
+     * @param fieldValue - value of field
+     * @param messageArg - field name text for error message
+     */
+    public static boolean checkIsEmpty(Errors errors, String field, String fieldValue, String messageArg) {
+        if (StringUtils.isEmpty(fieldValue)) {
+            errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { messageArg }, "");
+            return true;
+        }
+        return false;
     }
 }
 
