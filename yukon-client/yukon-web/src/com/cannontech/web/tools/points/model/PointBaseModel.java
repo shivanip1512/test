@@ -27,6 +27,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
     private Boolean alarmsDisabled;
 
     private StaleData staleData;
+    private PointAlarming alarming;
 
     public PointLogicalGroups getTimingGroup() {
         return timingGroup;
@@ -84,6 +85,17 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         this.alarmsDisabled = alarmsDisabled;
     }
 
+    public PointAlarming getAlarming() {
+        if (alarming == null) {
+            alarming = new PointAlarming();
+        }
+        return alarming;
+    }
+
+    public void setAlarming(PointAlarming alarming) {
+        this.alarming = alarming;
+    }
+
     @Override
     public void buildModel(T point) {
         Point pt = point.getPoint();
@@ -98,6 +110,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         setArchiveInterval(pt.getArchiveInterval());
         setTimingGroup(PointLogicalGroups.getLogicalGroupValue(pt.getLogicalGroup()));
         setAlarmsDisabled(pt.isAlarmsDisabled());
+        getAlarming().buildModel(point.getPointAlarming());
     }
 
     @Override
@@ -141,6 +154,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
             pt.setAlarmsDisabled(getAlarmsDisabled());
         }
 
+        getAlarming().buildDBPersistent(point.getPointAlarming());
     }
 
     @Override
