@@ -1,14 +1,17 @@
 package com.cannontech.web.api.point;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
@@ -23,9 +26,9 @@ import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.database.db.notification.NotificationGroup;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
-import com.cannontech.web.tools.points.model.AlarmState;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointAlarming;
 import com.cannontech.web.tools.points.model.PointAnalog;
@@ -86,7 +89,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         validateArchiveSettings(target, errors);
         validateStateGroupId(target, errors);
         validateStaleDataSettings(target, errors);
-        validateAlarming(target.getAlarming(), pointType, errors);
+        validateAlarming(target.getAlarming(), pointType, errors, target.getStateGroupId());
         if (target instanceof AnalogPointModel) {
             validateAnalogPointModel(target, errors);
         }
@@ -156,11 +159,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
     }
 
-    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors) {
+    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors, Integer stateGroupID) {
         if (pointAlarming != null) {
             // Validate notificationGroupId.
             Integer notificationGroupId = pointAlarming.getNotificationGroupId();
-            boolean isNullOrDefault = notificationGroupId == null || notificationGroupId == 1;
+            boolean isNullOrDefault = notificationGroupId == null || 
+                                          notificationGroupId == NotificationGroup.NONE_NOTIFICATIONGROUP_ID;
             if (!isNullOrDefault) {
                 Optional<LiteNotificationGroup> existingNotifGroup = serverDatabaseCache
                                                                         .getAllContactNotificationGroups()
@@ -175,12 +179,18 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             // Validate alarmTableList
             List<AlarmTableEntry> alarmList = pointAlarming.getAlarmTableList();
             if (alarmList != null && CollectionUtils.isNotEmpty(alarmList)) {
-                List<AlarmState> alarmStates = AlarmState.getCommonAlarmStates();
+                List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
                 if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
-                    alarmStates = AlarmState.getStatusAlarmStates();
+                    alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
+                    // Add all state present in the State Group
+                    List<String> stateNames = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
+                                                                                       .stream()
+                                                                                       .map(e -> e.getStateText())
+                                                                                       .collect(Collectors.toList());
+                    alarmStates.addAll(stateNames);
                 }
 
-                List<AlarmState> alarmStateEntries = new ArrayList<>();
+                List<String> alarmStateEntries = new ArrayList<>();
                 for (int i = 0; i < alarmList.size(); i++) {
                     errors.pushNestedPath("alarming.alarmTableList[" + i + "]");
                     AlarmTableEntry entry = alarmList.get(i);
@@ -189,7 +199,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     }
                     if (!errors.hasFieldErrors("condition") && entry.getCondition()!= null 
                             && alarmStateEntries.contains(entry.getCondition())) {
-                        errors.rejectValue("condition", "yukon.web.api.error.duplicateValue", new Object[] { "Condition" }, "");
+                        errors.rejectValue("condition", "yukon.web.api.error.field.uniqueError", new Object[] { "Condition", entry.getCondition()}, "");
                     }
                     if (entry.getCondition() == null && entry.getCategory() != null && entry.getNotify() != null) {
                         errors.rejectValue("condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
