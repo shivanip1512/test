@@ -496,7 +496,7 @@ public class PointEditorServiceImpl implements PointEditorService {
             staleData = StaleData.of(pointBaseModel.getStaleData());
         }
         
-        List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
+        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
         //TODO FDR 
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
@@ -556,4 +556,27 @@ public class PointEditorServiceImpl implements PointEditorService {
         pointBaseModel.setStaleData(staleData);
         pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(pointBase));
     }
+    
+
+     /**
+     * Update existing alarm table entries with new Entries.
+     * 
+     */
+    private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
+        Map<AlarmState, AlarmTableEntry> newEntryMap = newEntries.stream()
+                                                                 .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
+        // Update existing AlarmTableEntry based on the new entries.
+        for (AlarmTableEntry entry : existingEntries) {
+            if (newEntryMap.get(entry.getCondition()) != null) {
+                if (newEntryMap.get(entry.getCondition()).getCategory() != null) {
+                    entry.setCategory(newEntryMap.get(entry.getCondition()).getCategory());
+                }
+                if (newEntryMap.get(entry.getCondition()).getNotify() != null) {
+                    entry.setNotify(newEntryMap.get(entry.getCondition()).getNotify());
+                }
+            }
+        }
+        return existingEntries;
+    }
+
 }
