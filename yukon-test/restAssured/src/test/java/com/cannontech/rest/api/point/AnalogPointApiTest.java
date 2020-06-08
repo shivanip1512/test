@@ -304,4 +304,6 @@ public class AnalogPointApiTest {
                         "Control Inhibited must be false when Control type is None."),
                 "Expected code in response is not correct");
     }
+    
+   
 }
