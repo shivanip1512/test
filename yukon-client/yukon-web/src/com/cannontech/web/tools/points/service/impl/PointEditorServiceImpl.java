@@ -486,7 +486,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
         List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
 
-        List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
+        List<AlarmState> alarmStates = AlarmState.getCommonAlarmStates();
         if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
             alarmStates = AlarmState.getStatusAlarmStates();
         }

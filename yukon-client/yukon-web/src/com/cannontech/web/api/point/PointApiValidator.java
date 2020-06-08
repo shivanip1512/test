@@ -1,5 +1,6 @@
 package com.cannontech.web.api.point;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -159,7 +160,8 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         if (pointAlarming != null) {
             // Validate notificationGroupId.
             Integer notificationGroupId = pointAlarming.getNotificationGroupId();
-            if (notificationGroupId != null) {
+            boolean isNullOrDefault = notificationGroupId == null || notificationGroupId == 1;
+            if (!isNullOrDefault) {
                 Optional<LiteNotificationGroup> existingNotifGroup = serverDatabaseCache
                                                                         .getAllContactNotificationGroups()
                                                                         .stream()
@@ -173,30 +175,40 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             // Validate alarmTableList
             List<AlarmTableEntry> alarmList = pointAlarming.getAlarmTableList();
             if (alarmList != null && CollectionUtils.isNotEmpty(alarmList)) {
-                List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
+                List<AlarmState> alarmStates = AlarmState.getCommonAlarmStates();
                 if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
                     alarmStates = AlarmState.getStatusAlarmStates();
                 }
 
-                for(int i = 0; i < alarmList.size(); i++) {
+                List<AlarmState> alarmStateEntries = new ArrayList<>();
+                for (int i = 0; i < alarmList.size(); i++) {
+                    errors.pushNestedPath("alarming.alarmTableList[" + i + "]");
                     AlarmTableEntry entry = alarmList.get(i);
                     if (entry.getCondition()!= null && !alarmStates.contains(entry.getCondition())) {
-                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                        errors.rejectValue("condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
                     }
-
+                    if (!errors.hasFieldErrors("condition") && entry.getCondition()!= null 
+                            && alarmStateEntries.contains(entry.getCondition())) {
+                        errors.rejectValue("condition", "yukon.web.api.error.duplicateValue", new Object[] { "Condition" }, "");
+                    }
                     if (entry.getCondition() == null && entry.getCategory() != null && entry.getNotify() != null) {
-                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
+                        errors.rejectValue("condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
                     }
 
-                    if(entry.getCategory() != null) {
+                    if (entry.getCategory() != null) {
                         Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories()
                                                                           .stream()
                                                                           .filter(e -> e.getCategoryName().equals(entry.getCategory()))
                                                                           .findFirst();
                        if (catagory.isEmpty()) {
-                           errors.rejectValue("alarming.alarmTableList[" + i + "].category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
+                           errors.rejectValue("category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
                        }
                     }
+
+                    if (entry.getCondition()!= null) {
+                        alarmStateEntries.add(entry.getCondition());
+                    }
+                    errors.popNestedPath();
                 }
             }
         }

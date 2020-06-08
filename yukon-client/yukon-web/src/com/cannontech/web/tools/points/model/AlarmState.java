@@ -50,10 +50,10 @@ public enum AlarmState {
     }
     
     private final static ImmutableList<AlarmState> statusAlarmStates;
-    private final static ImmutableList<AlarmState> otherAlarmStates;
+    private final static ImmutableList<AlarmState> commonAlarmStates;
 
     static {
-        otherAlarmStates = ImmutableList.of(NON_UPDATED,
+        commonAlarmStates = ImmutableList.of(NON_UPDATED,
                 RATE_OF_CHANGE,
                 LIMIT_SET_1,
                 LIMIT_SET_2,
@@ -75,8 +75,8 @@ public enum AlarmState {
         return statusAlarmStates;
     }
 
-    public static ImmutableList<AlarmState> getOtherAlarmStates() {
-        return otherAlarmStates;
+    public static ImmutableList<AlarmState> getCommonAlarmStates() {
+        return commonAlarmStates;
     }
 
     public static AlarmState getAlarmStateValue(String value) {
