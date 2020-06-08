@@ -42,7 +42,7 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
         if (commChannel instanceof TerminalServerPortDetailBase) {
             TerminalServerPortDetailBase<?> terminalServerPortDetail = (TerminalServerPortDetailBase<?>) commChannel;
 
-            validateCarrierDetectWait(errors, terminalServerPortDetail.getCarrierDetectWaitInMilliseconds());
+            PortValidatorHelper.validateCarrierDetectWait(errors, terminalServerPortDetail.getCarrierDetectWaitInMilliseconds());
             validateTimingField(errors, terminalServerPortDetail.getTiming());
             PortValidatorHelper.validatePortSharingFields(errors, terminalServerPortDetail.getSharing());
 
@@ -59,7 +59,8 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
         if (commChannel instanceof LocalSharedPortDetail) {
             PortValidatorHelper.validatePhysicalPort(errors, ((LocalSharedPortDetail) commChannel).getPhysicalPort());
-            validateCarrierDetectWait(errors, ((LocalSharedPortDetail) commChannel).getCarrierDetectWaitInMilliseconds());
+            PortValidatorHelper.validateCarrierDetectWait(errors,
+                    ((LocalSharedPortDetail) commChannel).getCarrierDetectWaitInMilliseconds());
             validateTimingField(errors, ((LocalSharedPortDetail) commChannel).getTiming());
             PortValidatorHelper.validatePortSharingFields(errors, ((LocalSharedPortDetail) commChannel).getSharing());
         }
@@ -67,34 +68,30 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
     private void validateTimingField(Errors errors, PortTiming timing) {
         if (!errors.hasFieldErrors("timing.preTxWait")) {
-            YukonValidationUtils.checkIfFieldRequired("timing.preTxWait", errors, timing.getPreTxWait(), "Pre Tx Wait");
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.preTxWait", timing.getPreTxWait(), 0, 10000000,
+                    "Pre Tx Wait", true);
         }
         if (!errors.hasFieldErrors("timing.rtsToTxWait")) {
-            YukonValidationUtils.checkIfFieldRequired("timing.rtsToTxWait", errors, timing.getRtsToTxWait(), "RTS To Tx Wait");
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.rtsToTxWait", timing.getRtsToTxWait(), 0,
+                    10000000, "RTS To Tx Wait", true);
         }
         if (!errors.hasFieldErrors("timing.postTxWait")) {
-            YukonValidationUtils.checkIfFieldRequired("timing.postTxWait", errors, timing.getPostTxWait(), "Post Tx Wait");
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.postTxWait", timing.getPostTxWait(), 0, 10000000,
+                    "Post Tx Wait", true);
         }
         if (!errors.hasFieldErrors("timing.receiveDataWait")) {
-            YukonValidationUtils.checkIfFieldRequired("timing.receiveDataWait", errors, timing.getReceiveDataWait(),
-                    "Receive Data Wait");
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.receiveDataWait", timing.getReceiveDataWait(), 0,
+                    1000, "Receive Data Wait", true);
         }
         if (!errors.hasFieldErrors("timing.extraTimeOut")) {
-            YukonValidationUtils.checkIfFieldRequired("timing.extraTimeOut", errors, timing.getExtraTimeOut(),
-                    "Additional Time Out");
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.extraTimeOut", timing.getExtraTimeOut(), 0, 999,
+                    "Additional Time Out", true);
         }
-        PortValidatorHelper.validatePortTimingFields(errors, timing);
     }
 
     private void validatePort(Errors errors, Integer portNumber, String ipAddress, String portIdString, PaoType portType) {
         YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(portNumber), "Port Number");
         Integer existingPortId = portDao.findUniquePortTerminalServer(ipAddress, portNumber);
         PortValidatorHelper.validateUniquePortAndIpAddress(errors, portNumber, ipAddress, existingPortId, portIdString, portType);
-    }
-
-    private void validateCarrierDetectWait(Errors errors, Integer carrierDetectWaitInMilliseconds) {
-        if (carrierDetectWaitInMilliseconds != null) {
-            YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", carrierDetectWaitInMilliseconds, 0, 9999, false);
-        }
     }
 }

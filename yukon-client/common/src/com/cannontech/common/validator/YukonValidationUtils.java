@@ -357,25 +357,21 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         return false;
     }
-    
-   /** 
-  
-    * @param errors
-    * @param field
-    * @param fieldValue
-    * @param min
-    * @param max
-    * @param required
-    */
-   /* public static  checkIfFieldRequiredAndInRange (Errors errors, String field, String fieldValue, T min, T max, boolean required){
-        if (required) { 
-            //add code for check if field required 
+   
+    public static <T extends Comparable<T>> void checkIfFieldRequiredAndInRange(Errors errors, String field, T fieldValue, T min,
+            T max, String fieldName, boolean required) {
+
+        if (fieldValue == null) {
+            if (required) {
+                errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange", new Object[] { fieldName, min, max }, "");
+            }
+            return;
         }
-            // add code for check range 
-            //validation message is - {0} between {1} and {2} is required. 
+        if (fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0) {
+            errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange", new Object[] { fieldName, min, max }, "");
         }
-        */
-        
+    }
+
 }
 
 
