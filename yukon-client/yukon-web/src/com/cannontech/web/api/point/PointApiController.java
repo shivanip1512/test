@@ -9,11 +9,13 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,29 +39,29 @@ public class PointApiController {
     @Autowired private PointApiValidator<? extends PointBaseModel<?>> pointApiValidator;
     @Autowired private YukonUserContextResolver contextResolver;
 
-    @PostMapping("/point/create")
+    @PostMapping("/points")
     public ResponseEntity<Object> create(@Valid @RequestBody PointBaseModel<?> pointBase, HttpServletRequest request) {
         return new ResponseEntity<>(pointEditorService.create(pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
-    @GetMapping("/point/{id}")
+    @GetMapping(value = "/points/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> retrieve(@PathVariable int id) {
         return new ResponseEntity<>(pointEditorService.retrieve(id), HttpStatus.OK);
     }
 
-    @PostMapping("/point/update/{id}")
+    @PatchMapping("/points/{id}")
     public ResponseEntity<Object> update(@Valid @RequestBody PointBaseModel<?> pointBase, @PathVariable("id") int id, HttpServletRequest request) {
         return new ResponseEntity<>(pointEditorService.update(id, pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
-    @DeleteMapping("/point/delete/{id}")
+    @DeleteMapping("/points/{id}")
     public ResponseEntity<Object> delete(@PathVariable int id, HttpServletRequest request) throws AttachedException {
         YukonUserContext userContext = getYukonUserContext(request);
         //TODO pointEditorService.delete(id, userContext)
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
-    @GetMapping("/device/{paoId}/points")
+    @GetMapping("/devices/{paoId}/points")
     public ResponseEntity<Object> getPoints(@PathVariable int paoId) {
         List<PointInfo> pointInfos = new ArrayList<>();
         //TODO

@@ -11,7 +11,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
@@ -57,7 +56,6 @@ import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
-@Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PointEditorServiceImpl implements PointEditorService {
     
