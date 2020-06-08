@@ -1490,4 +1490,6 @@
     
     <bean class="com.cannontech.web.api.point.PointApiCreationValidator"/>
     <bean class="com.cannontech.web.api.point.PointApiValidator"/>
+
+    <bean class="com.cannontech.web.api.trend.TrendValidator"/>
 </beans>
