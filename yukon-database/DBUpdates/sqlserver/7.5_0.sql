@@ -276,10 +276,10 @@ SELECT
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
 FROM YukonPAObject y 
-    --  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices
+    /*  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices  */
     JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
-    --  Select commands sent to the devices, if any
+    /*  Select commands sent to the devices, if any  */
     LEFT JOIN (
         SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime FROM
             CommandRequestExec cre 
@@ -325,7 +325,7 @@ FROM YukonPAObject y
             AND crer.DeviceId=successful_verify.DeviceId
     JOIN CommandRequestExec cre
         ON cre.CommandRequestExecId=crer.CommandRequestExecId
-    --  Only include metering types - do not include RTUs, CBCs, regulators, etc
+    /*  Only include metering types - do not include RTUs, CBCs, regulators, etc  */
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
     AND (latest_send.maxCompleteTime IS NULL OR successful_verify.maxCompleteTime > latest_send.maxCompleteTime)
     AND (latest_read.maxCompleteTime IS NULL OR successful_verify.maxCompleteTime > latest_read.maxCompleteTime)
@@ -342,10 +342,10 @@ SELECT
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
 FROM YukonPAObject y 
-    --  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices
+    /*  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices  */
     JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
-    --  Select commands sent to the devices, if any
+    /*  Select commands sent to the devices, if any  */
     LEFT JOIN (
         SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime FROM
             CommandRequestExec cre 
@@ -391,7 +391,7 @@ FROM YukonPAObject y
             AND crer.DeviceId=failed_verify.DeviceId
     JOIN CommandRequestExec cre
         ON cre.CommandRequestExecId=crer.CommandRequestExecId
-    --  Only include metering types - do not include RTUs, CBCs, regulators, etc
+    /*  Only include metering types - do not include RTUs, CBCs, regulators, etc  */
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
     AND (latest_send.maxCompleteTime IS NULL OR failed_verify.maxCompleteTime > latest_send.maxCompleteTime)
     AND (latest_read.maxCompleteTime IS NULL OR failed_verify.maxCompleteTime > latest_read.maxCompleteTime)
@@ -409,10 +409,10 @@ SELECT
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
 FROM YukonPAObject y 
-    --  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices
+    /*  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices  */
     JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
-    --  Select commands sent to the devices, if any
+    /*  Select commands sent to the devices, if any  */
     JOIN (
         SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime FROM
             CommandRequestExec cre 
@@ -437,7 +437,7 @@ FROM YukonPAObject y
             AND crer.DeviceId=latest_send_or_read.DeviceId
     JOIN CommandRequestExec cre
         ON cre.CommandRequestExecId=crer.CommandRequestExecId
-    --  Only include metering types - do not include RTUs, CBCs, regulators, etc
+    /*  Only include metering types - do not include RTUs, CBCs, regulators, etc  */
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
     AND (latest_verify.maxCompleteTime IS NULL OR latest_send_or_read.maxCompleteTime > latest_verify.maxCompleteTime)
 
@@ -455,10 +455,10 @@ SELECT
     crer.CompleteTime AS LastActionEnd, 
     cre.CommandRequestExecId AS CommandRequestExecId
 FROM YukonPAObject y 
-    --  Limits to only devices that have no config
+    /*  Limits to only devices that have no config  */
     LEFT JOIN DeviceConfigurationDeviceMap dcdm 
         ON y.paobjectid=dcdm.deviceid
-    --  Select commands sent to the devices, if any
+    /*  Select commands sent to the devices, if any  */
     JOIN (
         SELECT DeviceId, MAX(CompleteTime) AS maxCompleteTime FROM
             CommandRequestExec cre 
@@ -473,7 +473,7 @@ FROM YukonPAObject y
             AND crer.DeviceId=latest_action.DeviceId
     JOIN CommandRequestExec cre
         ON cre.CommandRequestExecId=crer.CommandRequestExecId
-    --  Only include metering types - do not include RTUs, CBCs, regulators, etc
+    /*  Only include metering types - do not include RTUs, CBCs, regulators, etc  */
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
     AND dcdm.DeviceConfigurationId IS NULL
 
@@ -481,13 +481,13 @@ UNION
 
 SELECT PaObjectId, 'UNREAD', 'ASSIGN', 'SUCCESS', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL
 FROM YukonPAObject y 
-    --  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices
+    /*  Limits to only devices that have been assigned to a config, which is only meters and DNP/CBC devices  */
     JOIN DeviceConfigurationDeviceMap dcdm ON y.paobjectid=dcdm.deviceid
-    --  Select commands sent to the devices, if any
+    /*  Select commands sent to the devices, if any  */
     LEFT JOIN CommandRequestExecResult crer ON y.PAObjectID=crer.DeviceId
     LEFT JOIN CommandRequestExec cre ON crer.CommandRequestExecId=cre.CommandRequestExecId 
         AND cre.CommandRequestExecType IN ('GROUP_DEVICE_CONFIG_VERIFY','GROUP_DEVICE_CONFIG_SEND','GROUP_DEVICE_CONFIG_READ')
-    --  Only include metering types - do not include RTUs, CBCs, regulators, etc
+    /*  Only include metering types - do not include RTUs, CBCs, regulators, etc  */
 WHERE (y.type LIKE 'MCT%' OR y.type LIKE 'RF%' OR y.type LIKE 'WRL%')
 GROUP BY PaObjectId
 HAVING COUNT(cre.commandrequestexectype) = 0
