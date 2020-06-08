@@ -301,24 +301,22 @@ public class YukonValidationUtils extends ValidationUtils {
    }
     
     public static void validatePort(Errors errors, String field, String fieldValue, String fieldName) {
-        // rejectIfEmptyOrWhitespace(errors, field, errorMsg);
+        boolean isError = false;
         if (!StringUtils.isBlank(fieldValue)) {
-
             if (!errors.hasFieldErrors(field)) {
                 try {
                     Integer portID = Integer.valueOf(fieldValue);
                     if (portID < 1 || portID > 65535) {
-                        errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange",
-                                new Object[] { fieldName, 1, 65535 }, "");
+                        isError = true;
                     }
-                    // checkRange(errors, field, portID, 1, 65535, true);
                 } catch (Exception e) {
-                    errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange", new Object[] { fieldName, 1, 65535 },
-                            "");
+                    isError = true;
                 }
             }
         } else {
-
+            isError = true;
+        }
+        if (isError) {
             errors.rejectValue(field, "yukon.web.error.fieldRequiredAndOutOfRange", new Object[] { fieldName, 1, 65535 }, "");
         }
     }
@@ -359,6 +357,25 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         return false;
     }
+    
+   /** 
+  
+    * @param errors
+    * @param field
+    * @param fieldValue
+    * @param min
+    * @param max
+    * @param required
+    */
+   /* public static  checkIfFieldRequiredAndInRange (Errors errors, String field, String fieldValue, T min, T max, boolean required){
+        if (required) { 
+            //add code for check if field required 
+        }
+            // add code for check range 
+            //validation message is - {0} between {1} and {2} is required. 
+        }
+        */
+        
 }
 
 
