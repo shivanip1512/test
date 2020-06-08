@@ -38,8 +38,8 @@ public class PointApiController {
     @Autowired private YukonUserContextResolver contextResolver;
 
     @PostMapping("/point/create")
-    public ResponseEntity<Object> create(@Valid @RequestBody PointBaseModel<?> pointBase) {
-        return new ResponseEntity<>(pointEditorService.create(pointBase), HttpStatus.OK);
+    public ResponseEntity<Object> create(@Valid @RequestBody PointBaseModel<?> pointBase, HttpServletRequest request) {
+        return new ResponseEntity<>(pointEditorService.create(pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
     @GetMapping("/point/{id}")
@@ -48,14 +48,13 @@ public class PointApiController {
     }
 
     @PostMapping("/point/update/{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PointBaseModel<?> pointBase, @PathVariable("id") int id) {
-        return new ResponseEntity<>(pointEditorService.update(id, pointBase), HttpStatus.OK);
+    public ResponseEntity<Object> update(@Valid @RequestBody PointBaseModel<?> pointBase, @PathVariable("id") int id, HttpServletRequest request) {
+        return new ResponseEntity<>(pointEditorService.update(id, pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
     @DeleteMapping("/point/delete/{id}")
     public ResponseEntity<Object> delete(@PathVariable int id, HttpServletRequest request) throws AttachedException {
-        LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
-        YukonUserContext userContext = contextResolver.resolveContext(user, request);
+        YukonUserContext userContext = getYukonUserContext(request);
         //TODO pointEditorService.delete(id, userContext)
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
@@ -75,6 +74,15 @@ public class PointApiController {
         if (pointId == null) {
             binder.addValidators(pointApiCreationValidator);
         }
+    }
+
+    /**
+     * Get YukonUserContext from request
+     */
+    private YukonUserContext getYukonUserContext(HttpServletRequest request) {
+        LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
+        YukonUserContext userContext = contextResolver.resolveContext(user, request);
+        return userContext;
     }
 
 }

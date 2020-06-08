@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -15,16 +16,19 @@ import org.springframework.stereotype.Service;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.api.token.ApiRequestContext;
+import com.cannontech.common.bulk.service.FdrTranslationManagerService;
 import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
@@ -66,6 +70,8 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PointEventLogService eventLog;
     @Autowired private IDatabaseCache cache;
+    @Autowired private FdrTranslationDao translationDao;
+    @Autowired private FdrTranslationManagerService fdrService;
 
     protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
 
@@ -469,24 +475,27 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel, YukonUserContext userContext) {
+
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
         StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
             staleData = StaleData.of(pointBaseModel.getStaleData());
         }
-        
+    
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
-        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        save(pointBase, staleData, alarmTableEntries, userContext.getYukonUser());
 
-        // TODO FDR
+        MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
+        addFdrTranslations(pointBase, pointBaseModel.getFdrList(), messageAccessor);
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
+
     }
 
     @Override
-    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel, YukonUserContext userContext) {
 
         PointBase pointBase = pointDao.get(pointId);
         pointBaseModel.buildDBPersistent(pointBase);
@@ -495,10 +504,17 @@ public class PointEditorServiceImpl implements PointEditorService {
         if (pointBaseModel.getStaleData() != null) {
             staleData = StaleData.of(pointBaseModel.getStaleData());
         }
-        
+
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
-        //TODO FDR 
+
+        List<FdrTranslation> fdrTranslations = pointBaseModel.getFdrList();
+        if (fdrTranslations != null) {
+            MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
+            removeFdrTranslations(pointId, messageAccessor);
+            addFdrTranslations(pointBase, fdrTranslations, messageAccessor);
+        }
+
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
     }
@@ -536,6 +552,34 @@ public class PointEditorServiceImpl implements PointEditorService {
         return entry;
     }
 
+    /**
+     * Iterate through fdrTranslations to set pointId, fdrTranslationString (append POINTTYPE in Translation) and Parameter Map and
+     * Add FDR Translations
+     */
+    private void addFdrTranslations(PointBase pointBase, List<FdrTranslation> fdrTranslations, MessageSourceAccessor messageAccessor) {
+        if (CollectionUtils.isNotEmpty(fdrTranslations)) {
+            for (FdrTranslation fdrTranslation : fdrTranslations) {
+                String fdrTranslationString = fdrTranslation.getTranslation() + ";POINTTYPE:" + pointBase.getPoint().getPointTypeEnum().toString() + ";";
+                fdrTranslation.setTranslation(fdrTranslationString);
+                fdrTranslation.setPointId(pointBase.getPoint().getPointID());
+                fdrTranslation.setParameterMap();
+                fdrService.addFdrTranslation(fdrTranslation, messageAccessor);
+            }
+        }
+    }
+
+    /**
+     * Retrieve list of FdrTranslation based on pointId and Remove FDR Translations.
+     */
+    private void removeFdrTranslations(int pointId, MessageSourceAccessor messageAccessor) {
+        List<FdrTranslation> translations = translationDao.getByPointId(pointId);
+        if (CollectionUtils.isNotEmpty(translations)) {
+            for (FdrTranslation translation : translations) {
+                fdrService.removeFdrTranslation(translation, messageAccessor);
+            }
+        }
+    }
+
     @Override
     public PointBaseModel<? extends PointBase> retrieve(int pointId) {
 
@@ -555,5 +599,10 @@ public class PointEditorServiceImpl implements PointEditorService {
         pointBaseModel.buildModel(pointBase);
         pointBaseModel.setStaleData(staleData);
         pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(pointBase));
+
+        List<FdrTranslation> fdrList = translationDao.getByPointId(pointBase.getPoint().getPointID());
+        if (CollectionUtils.isNotEmpty(fdrList)) {
+            pointBaseModel.setFdrList(fdrList);
+        }
     }
 }

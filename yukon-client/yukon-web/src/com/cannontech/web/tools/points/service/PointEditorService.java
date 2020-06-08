@@ -147,12 +147,12 @@ public interface PointEditorService {
     /**
      * Create the Point.
      */
-    PointBaseModel<? extends PointBase> create(PointBaseModel<? extends PointBase> point);
+    PointBaseModel<? extends PointBase> create(PointBaseModel<? extends PointBase> point, YukonUserContext userContext);
 
     /**
      * Update the Point.
      */
-    PointBaseModel<? extends PointBase> update(int portId, PointBaseModel<? extends PointBase> point);
+    PointBaseModel<? extends PointBase> update(int portId, PointBaseModel<? extends PointBase> point, YukonUserContext userContext);
 
     /**
      * Retrieve Point for passed pointId.

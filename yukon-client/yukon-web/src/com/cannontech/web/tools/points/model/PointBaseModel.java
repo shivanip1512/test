@@ -1,8 +1,11 @@
 package com.cannontech.web.tools.points.model;
 
+import java.util.List;
+
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
@@ -28,6 +31,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
     private StaleData staleData;
     private PointAlarming alarming;
+    private List <FdrTranslation> fdrList;
 
     public PointLogicalGroups getTimingGroup() {
         return timingGroup;
@@ -67,6 +71,14 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
     public void setStaleData(StaleData staleData) {
         this.staleData = staleData;
+    }
+
+    public List<FdrTranslation> getFdrList() {
+        return fdrList;
+    }
+
+    public void setFdrList(List<FdrTranslation> fdrList) {
+        this.fdrList = fdrList;
     }
 
     public Boolean getEnable() {

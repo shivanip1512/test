@@ -3,21 +3,24 @@ package com.cannontech.common.fdr;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /** 
  * Base Translation class. Extend for new interfaces to create specific calls instead of the
  * generic getParameters(String).
  */
 
 public class FdrTranslation {
-
+    @JsonIgnore
 	private int pointId;
 	private FdrDirection direction;
 	private FdrInterfaceType fdrInterfaceType;
 	private String translation;
 	
+    @JsonIgnore
 	protected Map<String,String> parameterMap;
-	
-	public FdrTranslation() {
+
+    public FdrTranslation() {
 		parameterMap = new HashMap<String,String>();
 	}
 	
@@ -49,6 +52,7 @@ public class FdrTranslation {
 	 * This getter is hiding the complexity of what to put in the Destination column in the database.
 	 * It requires fdrInterfaceType and paramaterMap to be not null and populated.
 	 */
+    @JsonIgnore
 	public String getDestination() {
 	    if (fdrInterfaceType.isDestinationInOptions()) {
 	        FdrInterfaceOption destinationOption = fdrInterfaceType.getDestinationOption();	        
@@ -73,6 +77,22 @@ public class FdrTranslation {
 	
 	public Map<String, String> getParameterMap() {
         return parameterMap;
+    }
+
+    /**
+     *  Split translation and build parameter map based on it.
+     */
+    public void setParameterMap() {
+        if (translation != null) {
+            String[] parameters = translation.split(";");
+
+            for (String paramSet : parameters) {
+                int splitSpot = paramSet.indexOf(":");
+                if (splitSpot != -1) {
+                    parameterMap.put(paramSet.substring(0, splitSpot), paramSet.substring(splitSpot + 1));
+                }
+            }
+        }
     }
 
     @Override

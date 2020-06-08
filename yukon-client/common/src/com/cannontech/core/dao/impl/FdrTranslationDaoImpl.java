@@ -81,7 +81,18 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
         
         return jdbcTemplate.queryForObject(sql, mapper);
     }
-    
+
+    @Override
+    public List<FdrTranslation> getByPointId(int pointId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PointId, DirectionType, InterfaceType, Translation");
+        sql.append("FROM FdrTranslation");
+        sql.append("WHERE PointId").eq(pointId);
+
+        return jdbcTemplate.query(sql, mapper);
+    }
+
     public List<FdrTranslation> getByPaobjectIdAndType(int paoId, FdrInterfaceType type) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
