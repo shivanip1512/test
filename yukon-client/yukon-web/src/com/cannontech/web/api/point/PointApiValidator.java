@@ -1,6 +1,7 @@
 package com.cannontech.web.api.point;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -11,14 +12,21 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.tools.points.model.AlarmState;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
+import com.cannontech.web.tools.points.model.PointAlarming;
 import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
 import com.cannontech.web.tools.points.model.PointBaseModel;
@@ -32,6 +40,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Autowired private PointValidationUtil pointValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private AlarmCatDao alarmCatDao;
     private static final String baseKey = "yukon.web.api.error";
 
     @SuppressWarnings("unchecked")
@@ -45,13 +54,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
     @Override
     protected void doValidation(T target, Errors errors) {
-
+        PointType pointType = target.getPointType();
         boolean isCreationOperation = target.getPointId() == null ? true : false;
         
         if (target.getPointName() != null) {
             pointValidationUtil.validateName("pointName", errors, target.getPointName());
         }
-
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
             if (liteYukonPAObject == null) {
@@ -85,7 +93,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         validateArchiveSettings(target, errors);
         validateStateGroupId(target, errors);
         validateStaleDataSettings(target, errors);
-
+        validateAlarming(target.getAlarming(), pointType, errors);
         if (target instanceof AnalogPointModel) {
             validateAnalogPointModel(target, errors);
         }
@@ -153,6 +161,53 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
         }
 
+    }
+
+    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors) {
+        if (pointAlarming != null) {
+            // Validate notificationGroupId.
+            Integer notificationGroupId = pointAlarming.getNotificationGroupId();
+            if (notificationGroupId != null) {
+                Optional<LiteNotificationGroup> existingNotifGroup = serverDatabaseCache
+                                                                        .getAllContactNotificationGroups()
+                                                                        .stream()
+                                                                        .filter(e -> e.getNotificationGroupID() == notificationGroupId)
+                                                                        .findFirst();
+                if (existingNotifGroup.isEmpty()) {
+                    errors.rejectValue("alarming.notificationGroupId", "yukon.web.api.error.doesNotExist", new Object[] { "Notification GroupId" }, "");
+                }
+            }
+            
+            // Validate alarmTableList
+            List<AlarmTableEntry> alarmList = pointAlarming.getAlarmTableList();
+            if (alarmList != null && CollectionUtils.isNotEmpty(alarmList)) {
+                List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
+                if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
+                    alarmStates = AlarmState.getStatusAlarmStates();
+                }
+
+                for(int i = 0; i < alarmList.size(); i++) {
+                    AlarmTableEntry entry = alarmList.get(i);
+                    if (entry.getCondition()!= null && !alarmStates.contains(entry.getCondition())) {
+                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                    }
+
+                    if (entry.getCondition() == null && entry.getCategory() != null && entry.getNotify() != null) {
+                        errors.rejectValue("alarming.alarmTableList[" + i + "].condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
+                    }
+
+                    if(entry.getCategory() != null) {
+                        Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories()
+                                                                          .stream()
+                                                                          .filter(e -> e.getCategoryName().equals(entry.getCategory()))
+                                                                          .findFirst();
+                       if (catagory.isEmpty()) {
+                           errors.rejectValue("alarming.alarmTableList[" + i + "].category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
+                       }
+                    }
+                }
+            }
+        }
     }
 
     /**

@@ -1,4 +1,4 @@
-package com.cannontech.web.tools.trends.data;
+package com.cannontech.common.trend.model;
 
 import java.util.Set;
 import com.google.common.collect.BiMap;
