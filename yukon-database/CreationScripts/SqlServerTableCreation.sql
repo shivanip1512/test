@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/5/2020 7:56:32 AM                          */
+/* Created on:     6/8/2020 8:41:28 AM                          */
 /*==============================================================*/
 
 
@@ -3447,9 +3447,9 @@ go
 INSERT INTO DeviceGroupComposedGroup VALUES (1, 1, '/System/Meters/All Meters/All RFN Meters/All RF Electric Meters', 'N');
 INSERT INTO DeviceGroupComposedGroup VALUES (2, 1, '/Meters/Billing', 'N');
 INSERT INTO DeviceGroupComposedGroup VALUES (3, 1, '/System/Meters/Disabled', 'Y');
-INSERT INTO DeviceGroupComposedGroup VALUES (4, 31, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (5, 31, '/Meters/Billing', 'N');
-INSERT INTO DeviceGroupComposedGroup VALUES (6, 31, '/System/Meters/Disabled', 'Y');
+INSERT INTO DeviceGroupComposedGroup VALUES (4, 2, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (5, 2, '/Meters/Billing', 'N');
+INSERT INTO DeviceGroupComposedGroup VALUES (6, 2, '/System/Meters/Disabled', 'Y');
 
 /*==============================================================*/
 /* Table: DeviceMCT400Series                                    */

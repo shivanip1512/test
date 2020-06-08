@@ -315,7 +315,7 @@ BEGIN
         v_MaxComposedId := 0;
     END IF;
     IF v_MaxComposedGroupId IS NULL THEN
-        v_MaxComposedGroupId := 1;
+        v_MaxComposedGroupId := 0;
     END IF;
 
     INSERT INTO DeviceGroupComposed VALUES (v_MaxComposedId + 1, v_MaxDeviceGroupId + 2, 'UNION');

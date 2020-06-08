@@ -328,7 +328,7 @@ BEGIN
     END 
     IF @v_MaxComposedGroupId IS NULL
     BEGIN
-        SET @v_MaxComposedGroupId = 1
+        SET @v_MaxComposedGroupId = 0
     END
 
     INSERT INTO DeviceGroupComposed VALUES (@v_MaxComposedId + 1, @v_MaxDeviceGroupId + 2, 'UNION')
