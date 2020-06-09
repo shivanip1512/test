@@ -400,7 +400,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public void delete(int id, YukonUserContext userContext) throws AttachedException {
+    public int delete(int id, YukonUserContext userContext) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
         if (!attachmentStatus.isDeletable()) {
             throw new AttachedException(attachmentStatus);
@@ -420,6 +420,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
+        return point.getPoint().getPointID();
     }
 
     @Override
@@ -516,6 +517,21 @@ public class PointEditorServiceImpl implements PointEditorService {
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
     }
+    
+    @Override
+    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        StaleData staleData = getStaleData(pointId);
+
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
+
+        if (pointBaseModel != null) {
+            buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        }
+        return pointBaseModel;
+    }
 
     private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
         List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
@@ -567,6 +583,27 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     /**
+    * Update existing alarm table entries with new Entries.
+    * 
+    */
+   private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
+       Map<AlarmState, AlarmTableEntry> newEntryMap = newEntries.stream()
+                                                                .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
+       // Update existing AlarmTableEntry based on the new entries.
+       for (AlarmTableEntry entry : existingEntries) {
+           if (newEntryMap.get(entry.getCondition()) != null) {
+               if (newEntryMap.get(entry.getCondition()).getCategory() != null) {
+                   entry.setCategory(newEntryMap.get(entry.getCondition()).getCategory());
+               }
+               if (newEntryMap.get(entry.getCondition()).getNotify() != null) {
+                   entry.setNotify(newEntryMap.get(entry.getCondition()).getNotify());
+               }
+           }
+       }
+       return existingEntries;
+   }
+
+    /**
      * Retrieve list of FdrTranslation based on pointId and Remove FDR Translations.
      */
     private void removeFdrTranslations(int pointId, MessageSourceAccessor messageAccessor) {
@@ -576,21 +613,6 @@ public class PointEditorServiceImpl implements PointEditorService {
                 fdrService.removeFdrTranslation(translation, messageAccessor);
             }
         }
-    }
-
-    @Override
-    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
-
-        PointBase pointBase = pointDao.get(pointId);
-        StaleData staleData = getStaleData(pointId);
-
-        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
-
-        if (pointBaseModel != null) {
-            buildPointBaseModel(pointBase, pointBaseModel, staleData);
-        }
-        return pointBaseModel;
     }
 
     private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {
@@ -603,27 +625,6 @@ public class PointEditorServiceImpl implements PointEditorService {
             pointBaseModel.setFdrList(fdrList);
         }
     }
-    
 
-     /**
-     * Update existing alarm table entries with new Entries.
-     * 
-     */
-    private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
-        Map<AlarmState, AlarmTableEntry> newEntryMap = newEntries.stream()
-                                                                 .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
-        // Update existing AlarmTableEntry based on the new entries.
-        for (AlarmTableEntry entry : existingEntries) {
-            if (newEntryMap.get(entry.getCondition()) != null) {
-                if (newEntryMap.get(entry.getCondition()).getCategory() != null) {
-                    entry.setCategory(newEntryMap.get(entry.getCondition()).getCategory());
-                }
-                if (newEntryMap.get(entry.getCondition()).getNotify() != null) {
-                    entry.setNotify(newEntryMap.get(entry.getCondition()).getNotify());
-                }
-            }
-        }
-        return existingEntries;
-    }
 
 }

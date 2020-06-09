@@ -56,6 +56,7 @@ import com.cannontech.web.api.errorHandler.model.ApiError;
 import com.cannontech.web.api.errorHandler.model.ApiFieldError;
 import com.cannontech.web.api.errorHandler.model.ApiGlobalError;
 import com.cannontech.web.api.token.AuthenticationException;
+import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ControllerAdvice(annotations = RestController.class)
@@ -104,6 +105,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logApiException(request, ex, uniqueKey);
 
         final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), uniqueKey);
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+    
+    @ExceptionHandler({AttachedException.class})
+    public ResponseEntity<Object> hanldeAttachedExceptionException(final AttachedException ex, final WebRequest request) {
+
+        String uniqueKey = CtiUtilities.getYKUniqueKey();
+        logApiException(request, ex, uniqueKey);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        String reason = messageSourceAccessor.getMessage(ex.getStatus());
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), reason, uniqueKey);
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
