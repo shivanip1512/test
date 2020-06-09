@@ -9,7 +9,7 @@ public class WaterReadRateDataProcessor extends ReadRateDataProcessor {
 
     @Override
     public String getDeviceGroupName() {
-        return "/System/Meters/All Meters/All RFN Meters/All RFW Meters";
+        return "/Service/Active RFW Meters";
     }
 
     @Override

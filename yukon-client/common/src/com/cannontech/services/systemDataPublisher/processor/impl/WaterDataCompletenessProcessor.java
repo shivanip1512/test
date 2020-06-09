@@ -9,7 +9,7 @@ public class WaterDataCompletenessProcessor extends DataCompletenessProcessor {
 
     @Override
     public String getDeviceGroupName() {
-        return "/System/Meters/All Meters/All RFN Meters/All RFW Meters";
+        return "/Service/Active RFW Meters";
     }
 
     @Override
