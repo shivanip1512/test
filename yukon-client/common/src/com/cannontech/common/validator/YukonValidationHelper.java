@@ -17,14 +17,18 @@ public class YukonValidationHelper {
     private final static String key = "yukon.web.error.";
 
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
+        validatePaoName(paoName, type, errors, fieldName, paoId, "name");
+    }
+    
+    public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId, String path) {
         if (StringUtils.hasText(paoName)) {
             String paoNameWithoutSpace = paoName.trim();
-            YukonValidationUtils.checkExceedsMaxLength(errors, "name", paoNameWithoutSpace, 60);
+            YukonValidationUtils.checkExceedsMaxLength(errors, path, paoNameWithoutSpace, 60);
             if (!PaoUtils.isValidPaoName(paoNameWithoutSpace)) {
-                errors.rejectValue("name", key + "paoName.containsIllegalChars");
+                errors.rejectValue(path, key + "paoName.containsIllegalChars");
             }
 
-            if (!errors.hasFieldErrors("name")) {
+            if (!errors.hasFieldErrors(path)) {
                 // Check if pao name already exists for paoClass and paoCategory
                 PaoType paoType = (type == null && paoId != null) ? serverDatabaseCache.getAllPaosMap().get(Integer.valueOf(paoId)).getPaoType() : type;
                 Optional<LiteYukonPAObject> litePao = serverDatabaseCache.getAllYukonPAObjects()
@@ -36,12 +40,12 @@ public class YukonValidationHelper {
 
                 if (!litePao.isEmpty()) {
                     if (paoId == null || (litePao.get().getLiteID() != Integer.valueOf(paoId))) {
-                        errors.rejectValue("name", key + "nameConflict", new Object[] { fieldName }, "");
+                        errors.rejectValue(path, key + "nameConflict", new Object[] { fieldName }, "");
                     }
                 }
             }
         } else {
-            errors.rejectValue("name", key + "fieldrequired", new Object[] { "Name" }, "");
+            errors.rejectValue(path, key + "fieldrequired", new Object[] { "Name" }, "");
         }
     }
 
