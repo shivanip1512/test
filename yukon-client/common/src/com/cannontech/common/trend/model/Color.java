@@ -2,10 +2,11 @@ package com.cannontech.common.trend.model;
 
 import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum Color implements DisplayableEnum {
+public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
 
     BLACK(Colors.BLACK_ID),
     BLUE(Colors.BLUE_ID),
@@ -34,10 +35,6 @@ public enum Color implements DisplayableEnum {
         this.colorId = id;
     }
 
-    public int getColorId() {
-        return colorId;
-    }
-
     public static Color getColor(int colorId) {
         return lookupById.get(colorId);
     }
@@ -49,6 +46,11 @@ public enum Color implements DisplayableEnum {
 
     public String getHexValue() {
         return Colors.colorPaletteToWeb(colorId);
+    }
+
+    @Override
+    public Object getDatabaseRepresentation() {
+        return colorId;
     }
 
 }
