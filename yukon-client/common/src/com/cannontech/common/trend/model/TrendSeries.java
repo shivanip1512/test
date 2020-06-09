@@ -1,10 +1,13 @@
 package com.cannontech.common.trend.model;
 
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonInclude(Include.NON_NULL)
 public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
@@ -13,7 +16,7 @@ public class TrendSeries {
     private TrendAxis axis;
     private Double multiplier;
     private RenderType style;
-    private LocalDate date;
+    private DateTime date;
 
     public TrendType.GraphType getType() {
         return type;
@@ -73,11 +76,11 @@ public class TrendSeries {
 
     @JsonSerialize(using=TrendDateSerializer.class)
     @JsonDeserialize(using=TrendDateDeserializer.class)
-    public LocalDate getDate() {
+    public DateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(DateTime date) {
         this.date = date;
     }
 

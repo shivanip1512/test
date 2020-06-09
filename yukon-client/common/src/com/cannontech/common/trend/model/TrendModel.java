@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
+import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.db.graph.GDSTypes;
@@ -55,13 +57,27 @@ public class TrendModel {
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());
-                graphSeries.setColor(series.getColor() == null ? Color.BLUE.getColorId() : (int) series.getColor().getColorId());
+                graphSeries.setColor(series.getColor() == null ? (int) Color.BLUE.getDatabaseRepresentation()
+                        : (int) series.getColor().getDatabaseRepresentation());
                 graphSeries.setType(series.getType() == null ? GDSTypes.BASIC_GRAPH_TYPE
-                        : GDSTypesFuncs.getTypeInt(TrendType.getStringValue(series.getType())));
+                        : GDSTypesFuncs.getTypeInt(series.getType().getStringType()));
                 graphSeries.setMultiplier(series.getMultiplier() == null ? 1 : series.getMultiplier());
                 graphSeries.setRenderer(series.getStyle() == null ? RenderType.LINE.getId() : series.getStyle().getId());
-                // TODO
-                graphSeries.setMoreData(series.getDate() == null ? CtiUtilities.STRING_NONE : series.getDate().toString());
+                if (series.getType() != null
+                        && (series.getType() == GraphType.PEAK_TYPE || series.getType() == GraphType.DATE_TYPE)) {
+                    if (series.getType() == GraphType.PEAK_TYPE) {
+                        // Set to this months start date.
+                        DateTime date = new DateTime(DateTimeZone.UTC);
+                        DateTime startOfMonth = date.dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
+                        graphSeries.setMoreData(String.valueOf(startOfMonth.getMillis()));
+                    } else {
+                        graphSeries
+                                .setMoreData(series.getDate() == null ? CtiUtilities.STRING_NONE
+                                        : String.valueOf(series.getDate().getMillis()));
+                    }
+                } else {
+                    graphSeries.setMoreData(CtiUtilities.STRING_NONE);
+                }
                 graphDataSeries.add(graphSeries);
             }
         }
@@ -71,7 +87,7 @@ public class TrendModel {
     public void buildModel(GraphDefinition graph) {
         setName(graph.getGraphDefinition().getName());
         setTrendId(graph.getGraphDefinition().getGraphDefinitionID());
-        
+
         ArrayList<TrendSeries> trendSeries = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(graph.getGraphDataSeries())) {
             ArrayList<GraphDataSeries> graphSeries = graph.getGraphDataSeries();
@@ -79,9 +95,8 @@ public class TrendModel {
                 TrendSeries trend = new TrendSeries();
                 trend.setAxis(TrendAxis.getAxis(data.getAxis()));
                 trend.setColor(Color.getColor(data.getColor()));
-                // TODO
                 if (!data.getMoreData().equals(CtiUtilities.STRING_NONE)) {
-                    trend.setDate(new LocalDate(Long.valueOf(data.getMoreData())));
+                    trend.setDate(new DateTime(Long.valueOf(data.getMoreData())));
                 }
                 trend.setLabel(data.getLabel());
                 trend.setMultiplier(data.getMultiplier());

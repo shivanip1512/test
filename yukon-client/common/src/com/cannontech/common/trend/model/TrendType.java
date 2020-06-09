@@ -3,13 +3,27 @@ package com.cannontech.common.trend.model;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 public class TrendType {
 
     public static enum GraphType implements DisplayableEnum {
-        BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE;
+        BASIC_TYPE(GDSTypes.BASIC_GRAPH_TYPE_STRING),
+        USAGE_TYPE(GDSTypes.USAGE_TYPE_STRING),
+        PEAK_TYPE(GDSTypes.PEAK_GRAPH_TYPE_STRING),
+        YESTERDAY_TYPE(GDSTypes.YESTERDAY_GRAPH_TYPE_STRING),
+        MARKER_TYPE(GDSTypes.MARKER_TYPE_STRING),
+        DATE_TYPE(GDSTypes.DATE_TYPE_STRING);
+
+        private String stringType;
+
+        GraphType(String stringType) {
+            this.stringType = stringType;
+        }
+        
+        public String getStringType() {
+            return stringType;
+        }
+        
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.tools.trends.data.trendType.graphType." + name();
@@ -19,19 +33,6 @@ public class TrendType {
     private final GraphType graphType;
     private final boolean isGraphType;
     private final boolean isPrimaryType;
-
-    private final static ImmutableMap<GraphType, String> lookupString;
-    static {
-        Builder<GraphType, String> lookup = ImmutableMap.builder();
-        lookup.put(GraphType.BASIC_TYPE, GDSTypes.BASIC_GRAPH_TYPE_STRING);
-        lookup.put(GraphType.USAGE_TYPE, GDSTypes.USAGE_TYPE_STRING);
-        lookup.put(GraphType.PEAK_TYPE, GDSTypes.PEAK_TYPE_STRING);
-        lookup.put(GraphType.YESTERDAY_TYPE, GDSTypes.YESTERDAY_TYPE_STRING);
-        lookup.put(GraphType.MARKER_TYPE, GDSTypes.MARKER_TYPE_STRING);
-        lookup.put(GraphType.DATE_TYPE, GDSTypes.DATE_TYPE_STRING);
-        
-        lookupString = lookup.build();
-    }
     
     /**
      * TrendType is the higher level scope for a trend graph. It provides the primitive graph state
@@ -80,9 +81,6 @@ public class TrendType {
         return new TrendType(GraphType.BASIC_TYPE, isGraphType, isPrimaryType);
     }
     
-    public static String getStringValue(GraphType type) {
-        return lookupString.get(type);
-    }
     /**
      * getGraphType gets the encapsulated graph type for the trend item. 
      * the datastore for the specific trend item.   
