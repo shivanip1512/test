@@ -139,7 +139,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 model.clear();
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", commChannel.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.save.success", commChannel.getName()));
                 return null;
             }
 
@@ -148,7 +148,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             return "commChannelInfoWidget/render.jsp";
         } catch (RestClientException e) {
             log.error("Error updating comm Channel: {}. Error: {}", commChannel.getName(), e.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "saveError", commChannel.getName(), e.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.save.error", commChannel.getName(), e.getMessage()));
             return "commChannelInfoWidget/render.jsp";
         }
         return null;
@@ -177,8 +177,6 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("otherPhysicalPort", PhysicalPort.OTHER.getPhysicalPort());
             if (PhysicalPort.getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
                 model.addAttribute("isPhysicalPortUserDefined", true);
-            } else {
-                model.addAttribute("portValue", ((LocalSharedPortDetail) commChannel).getPhysicalPort());
             }
         }
     }

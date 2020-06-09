@@ -239,7 +239,7 @@ public class LoadProgramSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> programIdMap = (HashMap<String, Integer>) response.getBody();
                 int programId = programIdMap.get("programId");
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", loadProgram.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.save.success", loadProgram.getName()));
                 gearCache.invalidateAll(selectedGearsIds);
                 gearErrorCache.invalidateAll(selectedGearsIds);
                 return "redirect:/dr/setup/loadProgram/" + programId;
@@ -251,7 +251,7 @@ public class LoadProgramSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating load program: {}. Error: {}", loadProgram.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadProgram.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.save.error", loadProgram.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -267,7 +267,7 @@ public class LoadProgramSetupController {
             ResponseEntity<? extends Object> response = deleteProgram(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -276,7 +276,7 @@ public class LoadProgramSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting load program: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;

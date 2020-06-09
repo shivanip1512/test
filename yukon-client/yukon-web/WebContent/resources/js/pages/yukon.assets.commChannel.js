@@ -23,6 +23,41 @@ yukon.assets.commChannel = (function () {
                 yukon.ui.blockPage();
                 $('#delete-commChannel-form').submit();
             });
+
+            $(document).on('change', '#js-comm-channel-type', function (event) {
+                var type = $('#js-comm-channel-type').val(); 
+                yukon.ui.block($('js-commChannel-container'));
+                var name = $('#js-comm-channel-name').val();
+                $.ajax({
+                    url: yukon.url('/stars/device/commChannel/create/' + type),
+                    type: 'get',
+                    data: {name: name}
+                }).done(function(data) {
+                     $('#commChannel').html(data);
+                     yukon.ui.unblock($('js-commChannel-container'));
+               });
+            });
+
+            $(document).on("yukon:assets:commChannel:create", function(event) {
+                var dialog = $(event.target),
+                    form = dialog.find('.commChannel-create-form'),
+                    popup = $('#js-create-comm-channel-popup');
+
+                $.ajax({
+                    type: "POST",
+                    url: yukon.url("/stars/device/commChannel/save"),
+                    data: form.serialize()
+                }).done(function (data) {
+                    window.location.href = yukon.url('/stars/device/commChannel/' + data.id);
+                    dialog.dialog('close');
+                    dialog.empty();
+                }).fail(function (xhr, status, error){
+                    popup.html(xhr.responseText);
+                    yukon.ui.initContent(popup);
+                    yukon.ui.unblockPage();
+                });
+            });
+
             _initialized = true;
         }
  

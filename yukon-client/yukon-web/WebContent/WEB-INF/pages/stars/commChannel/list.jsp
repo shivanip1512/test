@@ -7,11 +7,10 @@
 
 <cti:standardPage module="operator" page="commChannel">
     <!-- Actions dropdown -->
-    <!-- TODO : Replace the create url with create url -->
     <div id="page-actions" class="dn">
-        <cti:url var="createUrl" value="/stars/device/commChannel/list" />
-        <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" 
-                           id="create-option" href="${createUrl}"/>
+        <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
+        <cti:url var="createUrl" value="/stars/device/commChannel/create" />
+        <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" classes="js-create-comm-channel" data-popup="#js-create-comm-channel-popup"/>
     </div>
 
     <c:choose>
@@ -50,4 +49,16 @@
             <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
         </c:otherwise>
     </c:choose>
+
+    <cti:msg2 var="saveText" key="components.button.save.label"/>
+    <div id="js-create-comm-channel-popup" 
+         class="dn"
+         data-title="${popupTitle}"
+         data-dialog
+         data-ok-text="${saveText}" 
+         data-width="500"
+         data-height="300"
+         data-event="yukon:assets:commChannel:create" 
+         data-url="${createUrl}"/>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.commChannel.js"/>
 </cti:standardPage>
