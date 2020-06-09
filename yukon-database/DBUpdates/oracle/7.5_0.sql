@@ -300,9 +300,9 @@ INSERT INTO DBUpdates VALUES ('YUK-22110', '7.5.0', SYSDATE);
 /* @start YUK-22234 */
 /* @start-block */
 DECLARE
-    v_MaxDeviceGroupId NUMERIC;
-    v_MaxComposedId NUMERIC;
-    v_MaxComposedGroupId NUMERIC;
+    v_MaxDeviceGroupId NUMBER;
+    v_MaxComposedId NUMBER;
+    v_MaxComposedGroupId NUMBER;
 BEGIN
     SELECT MAX(DeviceGroupId) INTO v_MaxDeviceGroupId FROM DeviceGroup WHERE DeviceGroupId < 100;
     INSERT INTO DeviceGroup VALUES (v_MaxDeviceGroupId + 1, 'Service', 0, 'NOEDIT_NOMOD', 'STATIC', SYSDATE, 'SERVICE');
