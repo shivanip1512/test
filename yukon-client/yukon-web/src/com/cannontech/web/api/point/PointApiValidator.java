@@ -182,12 +182,14 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
                     alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
                     // Add all state present in the State Group
-                    // TODO : Case for stateGroupID = null need to handle for Status type.
-                    List<String> stateNames = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
-                                                                                       .stream()
-                                                                                       .map(e -> e.getStateText())
-                                                                                       .collect(Collectors.toList());
-                    alarmStates.addAll(stateNames);
+                    // TODO : Case for stateGroupID = null need to handle for Status point type.
+                    if (stateGroupID != null) {
+                        List<String> stateNames = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
+                                                                                           .stream()
+                                                                                           .map(e -> e.getStateText())
+                                                                                           .collect(Collectors.toList());
+                        alarmStates.addAll(stateNames);
+                    }
                 }
 
                 List<String> alarmStateEntries = new ArrayList<>();
