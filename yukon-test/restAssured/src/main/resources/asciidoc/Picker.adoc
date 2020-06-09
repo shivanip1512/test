@@ -3,29 +3,29 @@
 
 ==== Search Picker by type
 *Request JSON* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byType/http-request.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byType/http-request.adoc[]
 *Response Parameter* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byType/response-fields.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byType/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byType/http-response.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byType/http-response.adoc[]
 
 ==== Search Picker by Id
 *Request Parameter* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/request-fields.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byId/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/http-request.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byId/http-request.adoc[]
 *Response Parameter* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/response-fields.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byId/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byId/http-response.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byId/http-response.adoc[]
 
 ==== Search Picker by Query String
 *Request Parameter* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byQuery/request-fields.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byQuery/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byQuery/http-request.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byQuery/http-request.adoc[]
 *Response Parameter* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byQuery/response-fields.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byQuery/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/PickerApiControllerTest/Test_Picker_Search_byQuery/http-response.adoc[]
+include::{snippets}/PickerApiDoc/Test_Picker_Search_byQuery/http-response.adoc[]
 

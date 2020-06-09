@@ -3,64 +3,64 @@
 
 ==== Control Area with Threshold Point Trigger
 *Request Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/request-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/http-request.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/response-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Create/http-response.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Create/http-response.adoc[]
 
 ==== Control Area with Threshold Trigger
 *Request Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdTrigger_Create/request-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdTrigger_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdTrigger_Create/http-request.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdTrigger_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdTrigger_Create/response-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdTrigger_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdTrigger_Create/http-response.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdTrigger_Create/http-response.adoc[]
 
 ==== Control Area with Status Trigger
 *Request Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_StatusTrigger_Create/request-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_StatusTrigger_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_StatusTrigger_Create/http-request.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_StatusTrigger_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_StatusTrigger_Create/response-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_StatusTrigger_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_StatusTrigger_Create/http-response.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_StatusTrigger_Create/http-response.adoc[]
 
 === Retrieve
 
 ==== Control Area with Threshold Point Trigger
 *Request URL* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Get/http-request.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Get/response-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Get/http-response.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Get/http-response.adoc[]
 
 === Update
 
 ==== Control Area with Threshold Point Trigger
 *Request Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Update/request-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Update/http-request.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Update/response-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Update/http-response.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Update/http-response.adoc[]
 
 === Delete
 
 ==== Control Area with Threshold Point Trigger
 *Request Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Delete/request-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Delete/http-request.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Delete/response-fields.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlAreaSetupApiControllerTest/Test_ControlArea_ThresholdPointTrigger_Delete/http-response.adoc[]
+include::{snippets}/ControlAreaApiDoc/Test_ControlArea_ThresholdPointTrigger_Delete/http-response.adoc[]
