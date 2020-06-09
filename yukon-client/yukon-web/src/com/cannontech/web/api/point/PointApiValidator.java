@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -183,6 +182,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
                     alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
                     // Add all state present in the State Group
+                    // TODO : Case for stateGroupID = null need to handle for Status type.
                     List<String> stateNames = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
                                                                                        .stream()
                                                                                        .map(e -> e.getStateText())
