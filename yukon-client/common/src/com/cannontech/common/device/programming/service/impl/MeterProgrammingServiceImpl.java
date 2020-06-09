@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,7 @@ import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
+import com.cannontech.common.device.programming.service.MeterProgramValidationService;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
@@ -77,6 +79,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Autowired private IDatabaseCache dbCache;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableFactory;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
+    @Autowired private MeterProgramValidationService meterProgramValidationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
 
     private final static String baseKey = "yukon.web.modules.amr.meterProgramming.";
@@ -289,7 +292,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
     @Override
     @Transactional
-    public UUID saveMeterProgram(MeterProgram program) {
+    public UUID saveMeterProgram(MeterProgram program) throws InterruptedException, ExecutionException, TimeoutException {
         UUID uuid = meterProgrammingDao.saveMeterProgram(program);
         if(!isValidProgramFile(uuid)) {
             meterProgrammingDao.deleteMeterProgram(uuid);
@@ -401,9 +404,12 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     /**
      * Sends request to porter to validate the the program file is valid.
      * Returns false if the program is invalid.
+     * @throws TimeoutException 
+     * @throws ExecutionException 
+     * @throws InterruptedException 
      */
-    private boolean isValidProgramFile(UUID uuid) {
-        return true;
+    private boolean isValidProgramFile(UUID uuid) throws InterruptedException, ExecutionException, TimeoutException {
+        return meterProgramValidationService.isMeterProgramValid(uuid);
     }
 
     @PostConstruct

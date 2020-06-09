@@ -1,6 +1,8 @@
 package com.cannontech.common.device.programming.service;
 
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -43,8 +45,11 @@ public interface MeterProgrammingService {
     /**
      * Saves program
      * @return UUID created
-     * @throw DuplicateException - if description is used by another program
-     * @throw BadConfigurationException - if the program file is invalid (validated by porter)
+     * @throws TimeoutException - if the validation call to Porter times out
+     * @throws ExecutionException - if the validation call to Porter fails
+     * @throws InterruptedException - if the validation call to Porter is interrupted 
+     * @throws DuplicateException - if description is used by another program
+     * @throws BadConfigurationException - if the program file is invalid (validated by porter)
      */
-    UUID saveMeterProgram(MeterProgram program);
+    UUID saveMeterProgram(MeterProgram program) throws InterruptedException, ExecutionException, TimeoutException;
 }

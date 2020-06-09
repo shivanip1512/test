@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -127,11 +129,15 @@ public class MeterProgrammingController {
             try {
                 UUID guid = meterProgrammingService.saveMeterProgram(program);
                 program.setGuid(guid);
-            } catch (DuplicateException e) {
+            } catch (@SuppressWarnings("unused") DuplicateException e) {
                 model.addAttribute("errorMsg", accessor.getMessage(baseKey + "duplicateName"));
                 return errorView(response, model, deviceCollection);
-            } catch (BadConfigurationException e) {
+            } catch (@SuppressWarnings("unused") BadConfigurationException e) {
                 model.addAttribute("errorMsg", accessor.getMessage(baseKey + "invalidProgram"));
+                return errorView(response, model, deviceCollection);
+            } catch (InterruptedException|ExecutionException|TimeoutException e) {
+                log.catching(e);
+                model.addAttribute("errorMsg", accessor.getMessage(baseKey + "validationFailed"));
                 return errorView(response, model, deviceCollection);
             }
         } else {
