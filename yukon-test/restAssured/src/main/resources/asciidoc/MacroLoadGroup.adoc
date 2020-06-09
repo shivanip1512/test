@@ -3,55 +3,55 @@
 
 ==== Macro LoadGroup Create
 *Request Properties* :
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/request-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Create/request-fields.adoc[]
 *Request JSON* :
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/http-request.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Create/http-request.adoc[]
 *Response Properties* :
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/response-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Create/response-fields.adoc[]
 *Response JSON* :
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Create/http-response.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Create/http-response.adoc[]
 
 === Retrieve
 
 ==== Macro LaodGroup Retrieve
 *Request URL* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/http-request.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/response-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Get/http-response.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Get/http-response.adoc[]
 
 === Update
 
 ==== Macro LoadGroup Update
 *Request Properties* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/request-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/http-request.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/response-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Update/http-response.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Update/http-response.adoc[]
 
 === Copy
 ==== Macro LoadGroup Copy
 *Request Properties* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Copy/request-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Copy/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Copy/http-request.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Copy/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Copy/response-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Copy/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Copy/http-response.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Copy/http-response.adoc[]
 
 === Delete
 
 ==== Macro LoadGroup Delete
 *Request Properties* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/request-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/http-request.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/response-fields.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MacroLoadGroupSetupApiControllerTest/Test_MacroLoadGroup_Delete/http-response.adoc[]
+include::{snippets}/MacroLoadGroupApiDoc/Test_MacroLoadGroup_Delete/http-response.adoc[]
