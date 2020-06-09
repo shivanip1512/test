@@ -53,6 +53,7 @@ import com.cannontech.common.device.programming.service.MeterProgramValidationSe
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.exception.ServiceCommunicationFailedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -250,7 +251,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
         CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
         meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
-        archiveProgramStatus(supportedDevices, guid);
+        setProgramStatusToInitiating(supportedDevices);
         execute(context, command, result, supportedDevices, execCallback);
         return result.getCacheKey();
     }
@@ -258,7 +259,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     /**
      * Sends status update message to SM to update MeterProgramStatus table
      */
-    private void archiveProgramStatus(List<SimpleDevice> supportedDevices, UUID guid) {
+    private void setProgramStatusToInitiating(List<SimpleDevice> supportedDevices) {
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(supportedDevices);
         supportedDevices.forEach(device -> {
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
@@ -292,9 +293,9 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
     @Override
     @Transactional
-    public UUID saveMeterProgram(MeterProgram program) throws InterruptedException, ExecutionException, TimeoutException {
+    public UUID saveMeterProgram(MeterProgram program) throws ServiceCommunicationFailedException {
         UUID uuid = meterProgrammingDao.saveMeterProgram(program);
-        if(!isValidProgramFile(uuid)) {
+        if(!meterProgramValidationService.isMeterProgramValid(uuid)) {
             meterProgrammingDao.deleteMeterProgram(uuid);
             BadConfigurationException error = new BadConfigurationException("Program file is invalid");
             log.error(error);
@@ -401,17 +402,6 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         }
     }
     
-    /**
-     * Sends request to porter to validate the the program file is valid.
-     * Returns false if the program is invalid.
-     * @throws TimeoutException 
-     * @throws ExecutionException 
-     * @throws InterruptedException 
-     */
-    private boolean isValidProgramFile(UUID uuid) throws InterruptedException, ExecutionException, TimeoutException {
-        return meterProgramValidationService.isMeterProgramValid(uuid);
-    }
-
     @PostConstruct
     public void initialize() {
         thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),

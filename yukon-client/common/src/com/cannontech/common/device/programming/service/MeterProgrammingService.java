@@ -1,13 +1,11 @@
 package com.cannontech.common.device.programming.service;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
+import com.cannontech.common.exception.ServiceCommunicationFailedException;
 import com.cannontech.user.YukonUserContext;
 
 public interface MeterProgrammingService {
@@ -45,11 +43,9 @@ public interface MeterProgrammingService {
     /**
      * Saves program
      * @return UUID created
-     * @throws TimeoutException - if the validation call to Porter times out
-     * @throws ExecutionException - if the validation call to Porter fails
-     * @throws InterruptedException - if the validation call to Porter is interrupted 
+     * @throws ServiceCommunicationFailedException - if the validation call to Porter fails 
      * @throws DuplicateException - if description is used by another program
      * @throws BadConfigurationException - if the program file is invalid (validated by porter)
      */
-    UUID saveMeterProgram(MeterProgram program) throws InterruptedException, ExecutionException, TimeoutException;
+    UUID saveMeterProgram(MeterProgram program) throws ServiceCommunicationFailedException;
 }

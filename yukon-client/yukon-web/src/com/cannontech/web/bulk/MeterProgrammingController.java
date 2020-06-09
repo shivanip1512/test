@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -35,6 +33,7 @@ import com.cannontech.common.device.programming.dao.MeterProgrammingDao;
 import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.exception.ServiceCommunicationFailedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -135,7 +134,7 @@ public class MeterProgrammingController {
             } catch (@SuppressWarnings("unused") BadConfigurationException e) {
                 model.addAttribute("errorMsg", accessor.getMessage(baseKey + "invalidProgram"));
                 return errorView(response, model, deviceCollection);
-            } catch (InterruptedException|ExecutionException|TimeoutException e) {
+            } catch (ServiceCommunicationFailedException e) {
                 log.catching(e);
                 model.addAttribute("errorMsg", accessor.getMessage(baseKey + "validationFailed"));
                 return errorView(response, model, deviceCollection);

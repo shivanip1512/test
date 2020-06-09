@@ -1,9 +1,14 @@
 package com.cannontech.common.device.programming.service;
 
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
+
+import com.cannontech.common.exception.ServiceCommunicationFailedException;
 
 public interface MeterProgramValidationService {
-    boolean isMeterProgramValid(UUID guid) throws InterruptedException, ExecutionException, TimeoutException;
+    /**
+     * @param guid
+     * @return whether the program with the specified GUID is valid
+     * @throws ServiceCommunicationFailedException if the call to Porter fails 
+     */
+    boolean isMeterProgramValid(UUID guid) throws ServiceCommunicationFailedException;
 }

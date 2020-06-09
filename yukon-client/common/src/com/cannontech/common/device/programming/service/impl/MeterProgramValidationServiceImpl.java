@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.programming.service.MeterProgramValidationService;
+import com.cannontech.common.exception.ServiceCommunicationFailedException;
 import com.cannontech.common.util.jms.ThriftRequestReplyTemplate;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
 import com.cannontech.message.porter.message.MeterProgramValidationResponse;
@@ -34,7 +35,7 @@ public class MeterProgramValidationServiceImpl implements MeterProgramValidation
     }
     
     @Override
-    public boolean isMeterProgramValid(UUID guid) throws InterruptedException, ExecutionException, TimeoutException {
+    public boolean isMeterProgramValid(UUID guid) throws ServiceCommunicationFailedException {
         var requestMsg = new MeterProgramValidationRequest(guid);
         
         var f = new CompletableFuture<MeterProgramValidationResponse>();
@@ -43,10 +44,16 @@ public class MeterProgramValidationServiceImpl implements MeterProgramValidation
         
         thriftMessenger.send(requestMsg, f);
 
-        var responseMsg = f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
-        
-        log.debug("Received info from Porter: {}", responseMsg);
-        
-        return responseMsg.isValid();
+        try {
+            var responseMsg = f.get(DEFAULT_TIMEOUT_MINUTES, TimeUnit.MINUTES);
+
+            log.debug("Received info from Porter: {}", responseMsg);
+            
+            return responseMsg.isValid();
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.catching(e);
+            
+            throw new ServiceCommunicationFailedException(e);
+        }
     }
 }
