@@ -1,8 +1,5 @@
 package com.cannontech.web.widget;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -16,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,15 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.port.BaudRate;
 import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PhysicalPort;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.TcpSharedPortDetail;
-import com.cannontech.common.device.port.TerminalServerPortDetailBase;
-import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -44,6 +35,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.stars.commChannel.CommChannelSetupHelper;
 import com.cannontech.web.stars.commChannel.CommChannelValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
@@ -57,8 +49,8 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private CommChannelValidator<? extends PortBase<?>> commChannelValidator;
+    @Autowired private CommChannelSetupHelper commChanelSetupHelper;
     private static final Logger log = YukonLogManager.getLogger(CommChannelInfoWidget.class);
-    private static final String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
 
     @Autowired
     public CommChannelInfoWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput) {
@@ -95,7 +87,13 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 PortBase commChannel = (PortBase) response.getBody();
                 commChannel.setId(id);
                 model.addAttribute("commChannel", commChannel);
-                setupCommChannelFields(commChannel, model);
+                commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+                if (commChannel instanceof LocalSharedPortDetail) {
+                    if (PhysicalPort
+                            .getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
+                        model.addAttribute("isPhysicalPortUserDefined", true);
+                    }
+                }
             }
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());
@@ -119,8 +117,14 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             commChannelValidator.validate(commChannel, result);
             if (result.hasErrors()) {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                setupCommChannelFields(commChannel, model);
-                setupGlobalError(result, model, userContext, commChannel.getType());
+                commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+                if (commChannel instanceof LocalSharedPortDetail) {
+                    if (PhysicalPort
+                            .getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
+                        model.addAttribute("isPhysicalPortUserDefined", true);
+                    }
+                }
+                commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
                 return "commChannelInfoWidget/render.jsp";
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
@@ -131,8 +135,14 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 result = helper.populateBindingError(result, error, response);
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                    setupCommChannelFields(commChannel, model);
-                    setupGlobalError(result, model, userContext, commChannel.getType());
+                    commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+                    if (commChannel instanceof LocalSharedPortDetail) {
+                        if (PhysicalPort
+                                .getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
+                            model.addAttribute("isPhysicalPortUserDefined", true);
+                        }
+                    }
+                    commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
                     return "commChannelInfoWidget/render.jsp";
                 }
             }
@@ -152,48 +162,5 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             return "commChannelInfoWidget/render.jsp";
         }
         return null;
-    }
-
-    private void setupCommChannelFields(PortBase commChannel, ModelMap model) {
-        model.addAttribute("baudRateList", BaudRate.values());
-        if (commChannel instanceof TerminalServerPortDetailBase) {
-            model.addAttribute("isAdditionalConfigSupported", true);
-            model.addAttribute("isPortNumberSupported", true);
-            if (commChannel instanceof UdpPortDetail) {
-                model.addAttribute("isEncyptionSupported", true);
-            }
-            if (commChannel instanceof TcpSharedPortDetail) {
-                model.addAttribute("isIpAddressSupported", true);
-            }
-        }
-        if (commChannel instanceof LocalSharedPortDetail) {
-            model.addAttribute("isAdditionalConfigSupported", true);
-            model.addAttribute("isPhysicalPortSupported", true);
-            List<String> physicalPortList = new ArrayList<>();
-            for (PhysicalPort value : PhysicalPort.values()) {
-                physicalPortList.add(value.getPhysicalPort());
-            }
-            model.addAttribute("physicalPortList", physicalPortList);
-            model.addAttribute("otherPhysicalPort", PhysicalPort.OTHER.getPhysicalPort());
-            if (PhysicalPort.getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
-                model.addAttribute("isPhysicalPortUserDefined", true);
-            }
-        }
-    }
-
-    private void setupGlobalError(BindingResult result, ModelMap model, YukonUserContext userContext, PaoType commChannelType) {
-        if (result.hasGlobalErrors()) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            List<ObjectError> globalError = result.getGlobalErrors();
-            List<String> uniqueErrorMsg = new ArrayList<>();
-            for (ObjectError objectError : globalError) {
-                uniqueErrorMsg.add(accessor.getMessage(objectError.getCode(), objectError.getArguments()));
-            }
-            if (PaoType.TSERVER_SHARED == commChannelType) {
-                result.rejectValue("ipAddress", "yukon.common.blank");
-            }
-            result.rejectValue("portNumber", "yukon.common.blank");
-            model.addAttribute("uniqueErrorMsg", uniqueErrorMsg);
-        }
     }
 }

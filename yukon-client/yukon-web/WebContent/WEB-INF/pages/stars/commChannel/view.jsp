@@ -49,7 +49,7 @@
          data-dialog
          data-ok-text="${saveText}" 
          data-width="500"
-         data-height="300"
+         data-height="400"
          data-event="yukon:assets:commChannel:create" 
          data-url="${createUrl}"/>
     <cti:includeScript link="/resources/js/pages/yukon.assets.commChannel.js"/>

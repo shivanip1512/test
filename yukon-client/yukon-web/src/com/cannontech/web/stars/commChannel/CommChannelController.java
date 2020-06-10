@@ -36,12 +36,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
 import com.cannontech.common.device.model.PaoModelFactory;
 import com.cannontech.common.device.port.BaudRate;
-import com.cannontech.common.device.port.LocalSharedPortDetail;
-import com.cannontech.common.device.port.PhysicalPort;
 import com.cannontech.common.device.port.PortBase;
-import com.cannontech.common.device.port.TcpSharedPortDetail;
-import com.cannontech.common.device.port.TerminalServerPortDetailBase;
-import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -72,6 +67,7 @@ public class CommChannelController {
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private CommChannelValidator<? extends PortBase<?>> commChannelValidator;
+    @Autowired private CommChannelSetupHelper commChanelSetupHelper;
     @Autowired private ServerDatabaseCache dbCache;
     private static final List<PaoType> commChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED)
                                                                 .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
@@ -156,12 +152,15 @@ public class CommChannelController {
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         PortBase commChannel = new PortBase();
+        if (model.containsAttribute("commChannel")) {
+            commChannel = (PortBase) model.get("commChannel");
+            if (commChannel.getType() != null) {
+                commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+            }
+        }
         model.addAttribute("baudRateList", BaudRate.values());
         commChannel.setType(PaoType.TCPPORT);
-        commChannel.setBaudRate(BaudRate.BAUD_1200);
-        commChannel.setEnable(true);
-        model.addAttribute("commChannel", commChannel);
-        model.addAttribute("commChannelTypes", commChannelTypes);
+        setupDefaultFieldValue(commChannel, model);
         return "/commChannel/create.jsp";
     }
 
@@ -176,30 +175,8 @@ public class CommChannelController {
             commChannel.setName(name);
             commChannel.setType(PaoType.valueOf(type));
         }
-        if (commChannel instanceof TerminalServerPortDetailBase) {
-            model.addAttribute("isAdditionalConfigSupported", true);
-            model.addAttribute("isPortNumberSupported", true);
-            if (commChannel instanceof UdpPortDetail) {
-                model.addAttribute("isEncyptionSupported", true);
-            }
-            if (commChannel instanceof TcpSharedPortDetail) {
-                model.addAttribute("isIpAddressSupported", true);
-            }
-        }
-        if (commChannel instanceof LocalSharedPortDetail) {
-            model.addAttribute("isAdditionalConfigSupported", true);
-            model.addAttribute("isPhysicalPortSupported", true);
-            List<String> physicalPortList = new ArrayList<>();
-            for (PhysicalPort value : PhysicalPort.values()) {
-                physicalPortList.add(value.getPhysicalPort());
-            }
-            model.addAttribute("physicalPortList", physicalPortList);
-            model.addAttribute("otherPhysicalPort", PhysicalPort.OTHER.getPhysicalPort());
-        }
-        model.addAttribute("baudRateList", BaudRate.values());
-        model.addAttribute("commChannel", commChannel);
-        model.addAttribute("commChannelTypes", commChannelTypes);
-        model.addAttribute("selectedCommType", type);
+        commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+        setupDefaultFieldValue(commChannel, model);
         return "/commChannel/create.jsp";
     }
 
@@ -209,9 +186,7 @@ public class CommChannelController {
         try {
             commChannelValidator.validate(commChannel, result);
             if (result.hasErrors()) {
-                resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                model.addAttribute("commChannelTypes", commChannelTypes);
-                model.addAttribute("baudRateList", BaudRate.values());
+                setupErrorFields(resp, commChannel, model, userContext, result);
                 return "/commChannel/create.jsp";
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelCreateUrl);
@@ -222,9 +197,7 @@ public class CommChannelController {
                 BindException error = new BindException(commChannel, "commChannel");
                 result = helper.populateBindingError(result, error, response);
                 if (result.hasErrors()) {
-                    resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                    model.addAttribute("commChannelTypes", commChannelTypes);
-                    model.addAttribute("baudRateList", BaudRate.values());
+                    setupErrorFields(resp, commChannel, model, userContext, result);
                     return "/commChannel/create.jsp";
                 }
             }
@@ -306,5 +279,22 @@ public class CommChannelController {
             deviceBaseModelList = (List<DeviceBaseModel>) response.getBody();
         }
         return deviceBaseModelList;
+    }
+
+    private void setupErrorFields(HttpServletResponse resp, PortBase commChannel, ModelMap model, YukonUserContext userContext,
+            BindingResult result) {
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+        commChanelSetupHelper.setupPhysicalPort(commChannel, model);
+        commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
+        model.addAttribute("commChannel", commChannel);
+        model.addAttribute("commChannelTypes", commChannelTypes);
+    }
+
+    private void setupDefaultFieldValue(PortBase commChannel, ModelMap model) {
+        commChannel.setBaudRate(BaudRate.BAUD_1200);
+        commChannel.setEnable(true);
+        model.addAttribute("commChannel", commChannel);
+        model.addAttribute("commChannelTypes", commChannelTypes);
     }
 }

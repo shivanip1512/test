@@ -177,5 +177,6 @@
              data-url="${editUrl}"/>
         </div>
     </cti:displayForPageEditModes>
+    <cti:includeScript link="/resources/js/common/yukon.comm.channel.js"/>
     <cti:includeScript link="/resources/js/widgets/yukon.widget.commChannel.info.js"/>
 </cti:msgScope>

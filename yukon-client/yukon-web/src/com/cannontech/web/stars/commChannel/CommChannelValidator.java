@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.commChannel;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -36,15 +37,19 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
         yukonValidationHelper.validatePaoName(commChannel.getName(), commChannel.getType(), errors, "Name", paoId);
         if (commChannel instanceof TcpPortDetail) {
-            validateTimingField(errors, ((TcpPortDetail) commChannel).getTiming());
+            if (StringUtils.isNotEmpty(paoId)) {
+                validateTimingField(errors, ((TcpPortDetail) commChannel).getTiming());
+            }
         }
 
         if (commChannel instanceof TerminalServerPortDetailBase) {
             TerminalServerPortDetailBase<?> terminalServerPortDetail = (TerminalServerPortDetailBase<?>) commChannel;
 
-            PortValidatorHelper.validateCarrierDetectWait(errors, terminalServerPortDetail.getCarrierDetectWaitInMilliseconds());
-            validateTimingField(errors, terminalServerPortDetail.getTiming());
-            PortValidatorHelper.validatePortSharingFields(errors, terminalServerPortDetail.getSharing());
+            if (StringUtils.isNotEmpty(paoId)) {
+                PortValidatorHelper.validateCarrierDetectWait(errors, terminalServerPortDetail.getCarrierDetectWaitInMilliseconds());
+                validateTimingField(errors, terminalServerPortDetail.getTiming());
+                PortValidatorHelper.validatePortSharingFields(errors, terminalServerPortDetail.getSharing());
+            }
 
             if (commChannel instanceof TcpSharedPortDetail) {
                 PortValidatorHelper.validateIPAddress(errors, ((TcpSharedPortDetail) commChannel).getIpAddress(), true);
@@ -59,10 +64,12 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
         if (commChannel instanceof LocalSharedPortDetail) {
             PortValidatorHelper.validatePhysicalPort(errors, ((LocalSharedPortDetail) commChannel).getPhysicalPort());
-            PortValidatorHelper.validateCarrierDetectWait(errors,
-                    ((LocalSharedPortDetail) commChannel).getCarrierDetectWaitInMilliseconds());
-            validateTimingField(errors, ((LocalSharedPortDetail) commChannel).getTiming());
-            PortValidatorHelper.validatePortSharingFields(errors, ((LocalSharedPortDetail) commChannel).getSharing());
+            if (StringUtils.isNotEmpty(paoId)) {
+                PortValidatorHelper.validateCarrierDetectWait(errors,
+                        ((LocalSharedPortDetail) commChannel).getCarrierDetectWaitInMilliseconds());
+                validateTimingField(errors, ((LocalSharedPortDetail) commChannel).getTiming());
+                PortValidatorHelper.validatePortSharingFields(errors, ((LocalSharedPortDetail) commChannel).getSharing());
+            }
         }
     }
 
