@@ -9,9 +9,9 @@
 Function Unzip-Artifact () {
     Write-Host "Unzip Artifact - Start"
     # Unzip the yukon artifact file to get the required binaries.
-    Expand-Archive -Path "yukon-build\dist\yukon*.zip" -DestinationPath "yukon-artifact"
+    Expand-Archive -Path "yukon-build\dist\yukon*.zip" -DestinationPath "yukon-artifact" -Force
     # Unzip the pdb and other binaries so that the same can be sent to symbols store.
-    Expand-Archive -Path "yukon-artifact\YukonInstall\*.zip" -DestinationPath "yukon-server"
+    Expand-Archive -Path "yukon-artifact\YukonInstall\*.zip" -DestinationPath "yukon-server" -Force
     Write-Host "Unzip Artifact - Completed"
 }
 
@@ -27,7 +27,7 @@ Function Store-Symbols () {
     Write-Host "Connect to Symbol store drive"
     net use p: \\pspl0003.eaton.ad.etn.com\Public /user:eaton\psplsoftwarebuild 13aq4xHAB
     Write-Host "Send Symbols to the drive"
-    ../go.bat init
+    yukon-build\go.bat init
     Write-Host "Disconnect Symbol store drive"
     net use p: /delete
     Write-Host "Symbols are saved to drive"
@@ -44,7 +44,7 @@ Function Store-Symbols () {
 #>
 Function Remove-Files () {
     # Remove yukon-server.zip file from yukon artifact.
-    $zip = Get-ChildItem ..\dist -Filter *.zip
+    $zip = Get-ChildItem yukon-build\dist -Filter *.zip
     add-type -AssemblyName 'System.IO.Compression.filesystem'
     
     # Remove the zip file which consist of pdb and other file as they are not needed for release artifact.
@@ -67,5 +67,5 @@ Function Remove-Files () {
     Artifact-Binaries
 #>
 Function Artifact-Binaries () {
-    Copy-Item -Filter *.zip -Path "..\..\yukon-artifact\YukonInstall\" -Destination '..\dist'
+    Copy-Item -Path "yukon-artifact\YukonInstall\*.zip" -Destination 'yukon-build\dist'
 }
