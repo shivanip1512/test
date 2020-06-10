@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.port.LocalSharedPortDetail;
-import com.cannontech.common.device.port.PhysicalPort;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -88,12 +86,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 commChannel.setId(id);
                 model.addAttribute("commChannel", commChannel);
                 commChanelSetupHelper.setupCommChannelFields(commChannel, model);
-                if (commChannel instanceof LocalSharedPortDetail) {
-                    if (PhysicalPort
-                            .getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
-                        model.addAttribute("isPhysicalPortUserDefined", true);
-                    }
-                }
+                commChanelSetupHelper.setupPhysicalPort(commChannel, model);
             }
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());
@@ -116,15 +109,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         try {
             commChannelValidator.validate(commChannel, result);
             if (result.hasErrors()) {
-                resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                commChanelSetupHelper.setupCommChannelFields(commChannel, model);
-                if (commChannel instanceof LocalSharedPortDetail) {
-                    if (PhysicalPort
-                            .getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
-                        model.addAttribute("isPhysicalPortUserDefined", true);
-                    }
-                }
-                commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
+                setupErrorFields(resp, commChannel, model, result, userContext);
                 return "commChannelInfoWidget/render.jsp";
             }
             String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
@@ -134,15 +119,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 BindException error = new BindException(commChannel, "commChannel");
                 result = helper.populateBindingError(result, error, response);
                 if (result.hasErrors()) {
-                    resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                    commChanelSetupHelper.setupCommChannelFields(commChannel, model);
-                    if (commChannel instanceof LocalSharedPortDetail) {
-                        if (PhysicalPort
-                                .getByDbString(((LocalSharedPortDetail) commChannel).getPhysicalPort()) == PhysicalPort.OTHER) {
-                            model.addAttribute("isPhysicalPortUserDefined", true);
-                        }
-                    }
-                    commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
+                    setupErrorFields(resp, commChannel, model, result, userContext);
                     return "commChannelInfoWidget/render.jsp";
                 }
             }
@@ -162,5 +139,13 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
             return "commChannelInfoWidget/render.jsp";
         }
         return null;
+    }
+
+    private void setupErrorFields(HttpServletResponse resp, PortBase commChannel, ModelMap model, BindingResult result,
+            YukonUserContext userContext) {
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+        commChanelSetupHelper.setupPhysicalPort(commChannel, model);
+        commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
     }
 }

@@ -33,7 +33,7 @@ yukon.assets.commChannel = (function () {
                     globalError = popup.find('.js-global-error'),
                     globalErrorFound = globalError.is(":visible");
 
-                if (globalErrorFound){
+                if (globalErrorFound) {
                     globalError.remove();
                 }
 
