@@ -47,7 +47,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.tools.dataExporter.DataExporterFormatController;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,9 +54,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRole({ YukonRole.TRENDING, YukonRole.CI_CURTAILMENT })
+@CheckRole(YukonRole.TRENDING)
 @RequestMapping("/trend")
-public class TrendSetupController {
+public class TrendEditorController {
 
     @Autowired private PointDao pointDao;
     @Autowired private IDatabaseCache cache;
@@ -66,10 +65,10 @@ public class TrendSetupController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
 
     private static final String baseKey = "yukon.web.modules.tools.trend.";
-    private final static Logger log = YukonLogManager.getLogger(DataExporterFormatController.class);
+    private static final Logger log = YukonLogManager.getLogger(TrendEditorController.class);
 
     @GetMapping("/create")
-    public String trends(ModelMap model) {
+    public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendModel trendModel = new TrendModel();
         model.addAttribute("trendModel", trendModel);
@@ -132,7 +131,6 @@ public class TrendSetupController {
     public String addPoint(ModelMap model, YukonUserContext userContext, HttpServletResponse response,
             @ModelAttribute("trendSeries") TrendSeries trendSeries)
             throws JsonGenerationException, JsonMappingException, IOException {
-
         // TODO: Validator code will be added as a part of YUK-22229
         // Validate the data...
 

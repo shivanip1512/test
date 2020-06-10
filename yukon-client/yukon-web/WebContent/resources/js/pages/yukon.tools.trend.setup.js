@@ -13,9 +13,10 @@ yukon.tools.trend.setup = (function() {
     var _initialized = false,
     
     _initColorPicker = function (dialog) {
-        var colorArray = dialog.find(".js-color-item").map(function(){return $(this).val();}).get(),
-        colorArrayLength = colorArray.length,
-        firstRowOfColors = colorArray.splice(0, colorArrayLength/2);
+        var colorArray = dialog.find(".js-color-item").map(function () {return $(this).val();}).get(),
+               colorArrayLength = colorArray.length,
+               firstRowOfColors = colorArray.splice(0, colorArrayLength/2);
+        
         dialog.find(".js-color-picker").spectrum({
             showPaletteOnly: true,
             showPalette:true,

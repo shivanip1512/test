@@ -33,7 +33,8 @@ var yg = {
             full_hm: 'MM/DD/YYYY HH:mm zz',
             long_date_time: 'MMM DD hh:mm:ss A',
             long_date_time_hm: 'MMM DD hh:mm A',
-            both_with_ampm: 'MM/DD/YYYY hh:mm:ss A'
+            both_with_ampm: 'MM/DD/YYYY hh:mm:ss A',
+
         },
         phone: <cti:msg2 key="yukon.common.phoneNumberFormatting.formats"/>
     },
