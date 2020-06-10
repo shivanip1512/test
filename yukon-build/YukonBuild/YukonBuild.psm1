@@ -9,9 +9,9 @@
 Function Unzip-Artifact () {
     Write-Host "Unzip Artifact - Start"
     # Unzip the yukon artifact file to get the required binaries.
-    Expand-Archive -Path "dist\yukon*.zip" -DestinationPath "..\yukon-artifact"
+    Expand-Archive -Path "yukon-build\dist\yukon*.zip" -DestinationPath "yukon-artifact"
     # Unzip the pdb and other binaries so that the same can be sent to symbols store.
-    Expand-Archive -Path "..\yukon-artifact\YukonInstall\*.zip" -DestinationPath "..\yukon-server"
+    Expand-Archive -Path "yukon-artifact\YukonInstall\*.zip" -DestinationPath "yukon-server"
     Write-Host "Unzip Artifact - Completed"
 }
 
