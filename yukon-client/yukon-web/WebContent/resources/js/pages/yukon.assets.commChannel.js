@@ -33,7 +33,7 @@ yukon.assets.commChannel = (function () {
                     globalError = popup.find('.js-global-error'),
                     globalErrorFound = globalError.is(":visible");
 
-                if (globalErrorFound){
+                if (globalErrorFound) {
                     globalError.remove();
                 }
 
@@ -70,7 +70,11 @@ yukon.assets.commChannel = (function () {
                         url: yukon.url("/stars/device/commChannel/save"),
                         data: form.serialize()
                     }).done(function (data) {
-                        window.location.href = yukon.url('/stars/device/commChannel/' + data.id);
+                        if (typeof data.id !== 'undefined') {
+                            window.location.href = yukon.url('/stars/device/commChannel/' + data.id);
+                        } else {
+                            window.location.href = window.location.href;
+                        }
                         dialog.dialog('close');
                         dialog.empty();
                     }).fail(function (xhr, status, error){

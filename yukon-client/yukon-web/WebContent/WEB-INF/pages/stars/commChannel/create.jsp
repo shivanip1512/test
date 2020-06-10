@@ -20,7 +20,7 @@
                 <tags:input id="js-comm-channel-name" path="name" maxlength="60" inputClass="w300 wrbw dib"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".type">
-                <tags:selectWithItems items="${commChannelTypes}" id="js-comm-channel-type" path="type"/>
+                <tags:selectWithItems items="${webSupportedCommChannelTypes}" id="js-comm-channel-type" path="type"/>
             </tags:nameValue2>
             <div id="js-commChannel-container">
                 <%@ include file="../../widget/commChannelInfoWidget/configuration.jsp" %>

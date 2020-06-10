@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
@@ -69,7 +68,7 @@ public class CommChannelController {
     @Autowired private CommChannelValidator<? extends PortBase<?>> commChannelValidator;
     @Autowired private CommChannelSetupHelper commChanelSetupHelper;
     @Autowired private ServerDatabaseCache dbCache;
-    private static final List<PaoType> commChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED)
+    private static final List<PaoType> webSupportedCommChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED)
                                                                 .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
                                                                 .collect(Collectors.toList());
 
@@ -182,7 +181,7 @@ public class CommChannelController {
 
     @PostMapping("/save")
     public String save(@ModelAttribute("commChannel") PortBase commChannel, BindingResult result, YukonUserContext userContext,
-            FlashScope flash, RedirectAttributes redirectAttributes, HttpServletRequest request, HttpServletResponse resp, ModelMap model) throws IOException {
+            FlashScope flash, HttpServletRequest request, HttpServletResponse resp, ModelMap model) throws IOException {
         try {
             commChannelValidator.validate(commChannel, result);
             if (result.hasErrors()) {
@@ -214,11 +213,11 @@ public class CommChannelController {
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "/commChannel/create.jsp";
+            return null;
         } catch (RestClientException ex) {
             log.error("Error creating comm channel: {}. Error: {}", commChannel.getName(), ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", commChannel.getName(), ex.getMessage()));
-            return "/commChannel/create.jsp";
+            return null;
         }
         return null;
     }
@@ -288,13 +287,13 @@ public class CommChannelController {
         commChanelSetupHelper.setupPhysicalPort(commChannel, model);
         commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
         model.addAttribute("commChannel", commChannel);
-        model.addAttribute("commChannelTypes", commChannelTypes);
+        model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
     }
 
     private void setupDefaultFieldValue(PortBase commChannel, ModelMap model) {
         commChannel.setBaudRate(BaudRate.BAUD_1200);
         commChannel.setEnable(true);
         model.addAttribute("commChannel", commChannel);
-        model.addAttribute("commChannelTypes", commChannelTypes);
+        model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
     }
 }
