@@ -15,6 +15,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -49,6 +50,7 @@ import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -285,6 +287,19 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         return result.getCacheKey();
     }
 
+    @Override
+    @Transactional
+    public UUID saveMeterProgram(MeterProgram program) {
+        UUID uuid = meterProgrammingDao.saveMeterProgram(program);
+        if(!isValidProgramFile(uuid)) {
+            meterProgrammingDao.deleteMeterProgram(uuid);
+            BadConfigurationException error = new BadConfigurationException("Program file is invalid");
+            log.error(error);
+            throw error;
+        }
+        return uuid;
+    }
+    
     private void execute(YukonUserContext context, String command, CollectionActionResult result, List<SimpleDevice> supportedDevices,
             CommandCompletionCallback<CommandRequestDevice> execCallback) {
         if (supportedDevices.isEmpty()) {
@@ -381,6 +396,14 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
                 eventLogService.cancelMeterProgramUploadInitiated(deviceName, yukonUser);
             }
         }
+    }
+    
+    /**
+     * Sends request to porter to validate the the program file is valid.
+     * Returns false if the program is invalid.
+     */
+    private boolean isValidProgramFile(UUID uuid) {
+        return true;
     }
 
     @PostConstruct

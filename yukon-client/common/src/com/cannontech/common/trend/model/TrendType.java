@@ -1,4 +1,4 @@
-package com.cannontech.web.tools.trends.data;
+package com.cannontech.common.trend.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
