@@ -135,7 +135,7 @@ public class CommChannelController {
             ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.delete.success", portName));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", portName));
                 return "redirect:" + "/stars/device/commChannel/list";
             }
 
@@ -146,7 +146,7 @@ public class CommChannelController {
         } catch (RestClientException ex) {
             String portName = dbCache.getAllPaosMap().get(id).getPaoName();
             log.error("Error deleting comm Channel: {}. Error: {}", portName, ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.delete.error", portName, ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", portName, ex.getMessage()));
             return "redirect:" + "/stars/device/commChannel/" + id;
         }
         return "redirect:" + "/stars/device/commChannel/list";
@@ -235,7 +235,7 @@ public class CommChannelController {
                 json.put("id", savedCommChannel.get("id"));
                 resp.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.save.success", commChannel.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", commChannel.getName()));
                 return null;
             }
         } catch (ApiCommunicationException e) {
@@ -244,7 +244,7 @@ public class CommChannelController {
             return "/commChannel/create.jsp";
         } catch (RestClientException ex) {
             log.error("Error creating comm channel: {}. Error: {}", commChannel.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.save.error", commChannel.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", commChannel.getName(), ex.getMessage()));
             return "/commChannel/create.jsp";
         }
         return null;

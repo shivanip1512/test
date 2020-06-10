@@ -25,7 +25,7 @@ yukon.assets.commChannel = (function () {
             });
 
             $(document).on('change', '#js-comm-channel-type', function (event) {
-                var type = $('#js-comm-channel-type').val(); 
+                var type = $(this).val(); 
                 yukon.ui.block($('js-commChannel-container'));
                 var name = $('#js-comm-channel-name').val();
                 $.ajax({
@@ -33,7 +33,7 @@ yukon.assets.commChannel = (function () {
                     type: 'get',
                     data: {name: name}
                 }).done(function(data) {
-                     $('#commChannel').html(data);
+                     $('.commChannel-create-form').html(data);
                      yukon.ui.unblock($('js-commChannel-container'));
                });
             });

@@ -10,7 +10,7 @@
     <div id="page-actions" class="dn">
         <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
         <cti:url var="createUrl" value="/stars/device/commChannel/create" />
-        <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" classes="js-create-comm-channel" data-popup="#js-create-comm-channel-popup"/>
+        <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-comm-channel-popup"/>
     </div>
 
     <c:choose>

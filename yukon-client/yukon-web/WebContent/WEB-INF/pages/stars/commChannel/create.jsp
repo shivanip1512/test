@@ -14,7 +14,7 @@
             <tags:nameValue2 nameKey=".type">
                 <tags:selectWithItems items="${commChannelTypes}" id="js-comm-channel-type" path="type"/>
             </tags:nameValue2>
-            <div id='js-commChannel-container' class='noswitchtype'>
+            <div id="js-commChannel-container">
                 <%@ include file="../../widget/commChannelInfoWidget/configuration.jsp" %>
             </div>
         </tags:nameValueContainer2>
