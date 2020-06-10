@@ -4,9 +4,9 @@
 .DESCRIPTION 
     Unzip the Yukon Artifact to get the required binaries. These binaries will be sent to symbols store.
 .EXAMPLE
-    Unzip-Artifact
+    Expand-Artifact
 #>
-Function Unzip-Artifact () {
+Function Expand-Artifact () {
     Write-Host "Unzip Artifact - Start"
     # Unzip the yukon artifact file to get the required binaries.
     Expand-Archive -Path "yukon-build\dist\yukon*.zip" -DestinationPath "yukon-artifact" -Force
@@ -27,7 +27,7 @@ Function Store-Symbols () {
     Write-Host "Connect to Symbol store drive"
     net use p: \\pspl0003.eaton.ad.etn.com\Public /user:eaton\psplsoftwarebuild 13aq4xHAB
     Write-Host "Send Symbols to the drive"
-    yukon-build\go.bat init
+    yukon-build\go.bat init symstore
     Write-Host "Disconnect Symbol store drive"
     net use p: /delete
     Write-Host "Symbols are saved to drive"
@@ -44,7 +44,7 @@ Function Store-Symbols () {
 #>
 Function Remove-Files () {
     # Remove yukon-server.zip file from yukon artifact.
-    $zip = Get-ChildItem yukon-build\dist -Filter *.zip
+    $zip = Get-ChildItem yukon-build\dist -Filter yukon*.zip
     add-type -AssemblyName 'System.IO.Compression.filesystem'
     
     # Remove the zip file which consist of pdb and other file as they are not needed for release artifact.
