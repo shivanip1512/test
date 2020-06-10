@@ -93,7 +93,6 @@ public enum RenderType implements DisplayableEnum {
         return webSupportedTypes;
     }
     
-    //TODO: I have added i18n keys only for webSupportedTypes. What about the others??
     @Override
     public String getFormatKey() {
         return baseKey + name();

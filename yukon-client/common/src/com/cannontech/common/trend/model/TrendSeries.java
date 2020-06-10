@@ -71,8 +71,8 @@ public class TrendSeries {
         this.style = style;
     }
 
-    @JsonSerialize(using=TrendDateSerializer.class)
-    @JsonDeserialize(using=TrendDateDeserializer.class)
+    @JsonSerialize(using=DateSerializer.class)
+    @JsonDeserialize(using=DateDeserializer.class)
     public LocalDate getDate() {
         return date;
     }

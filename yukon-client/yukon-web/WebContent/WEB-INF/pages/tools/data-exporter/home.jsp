@@ -177,4 +177,5 @@
     </div>
 
     <cti:includeScript link="/resources/js/pages/yukon.tools.data.exporter.js"/>
+    <dt:pickerIncludes/>
 </cti:standardPage>

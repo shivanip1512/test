@@ -75,5 +75,5 @@
    <entry key="yukon.web.modules.tools.trend.color.PINK">Pink</entry>
    <entry key="yukon.web.modules.tools.trend.color.RED">Red</entry>
    <entry key="yukon.web.modules.tools.trend.color.YELLOW">Yellow</entry>
-    <entry key="yukon.web.modules.tools.trend.create.success">{0} created successfully.</entry>
+   <entry key="yukon.web.modules.tools.trend.create.success">{0} created successfully.</entry>
 </properties>

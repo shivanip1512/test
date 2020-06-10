@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class TrendDateDeserializer extends JsonDeserializer<LocalDate> {
+public class DateDeserializer extends JsonDeserializer<LocalDate> {
 
     private static final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC();
 
