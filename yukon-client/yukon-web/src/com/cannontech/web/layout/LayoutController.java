@@ -54,6 +54,7 @@ import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebUtilityService;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 
@@ -386,8 +387,12 @@ public class LayoutController {
     public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
         if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("YUKON_BUILD_NUMBER")) {
-            return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/"
-                + buildInfo.get("JENKINS_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
+            if (Strings.isNullOrEmpty(buildInfo.get("JENKINS_ID"))) {
+                return "<a href=\"" + buildInfo.get("BUILD_URL") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
+            } else {
+                return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/"
+                        + buildInfo.get("JENKINS_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
+            }
         }
         return "undefined";
     }
