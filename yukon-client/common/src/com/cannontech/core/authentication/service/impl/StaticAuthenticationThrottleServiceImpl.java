@@ -29,14 +29,17 @@ public class StaticAuthenticationThrottleServiceImpl implements AuthenticationTh
         LiteYukonUser attemptedLoginUser = yukonUserDao.findUserByUsername(username);
         PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(attemptedLoginUser);
 
-        /*
-         * AuthenticationThrottle authThrottle = authThrottleMap.getIfPresent(username); if (authThrottle != null &&
-         * authThrottle.isLockedOut()) { throw new
-         * AuthenticationThrottleException(authThrottle.getThrottleDurationSeconds()); } else { if (authThrottle ==
-         * null) { authThrottle = new AuthenticationThrottle(passwordPolicy.getLockoutDuration(),
-         * passwordPolicy.getLockoutThreshold()); authThrottleMap.put(username, authThrottle); } else {
-         * authThrottle.updateAuthLockout(); } }
-         */
+        AuthenticationThrottle authThrottle = authThrottleMap.getIfPresent(username);
+        if (authThrottle != null && authThrottle.isLockedOut()) {
+            throw new AuthenticationThrottleException(authThrottle.getThrottleDurationSeconds());
+        } else {
+            if (authThrottle == null) {
+                authThrottle = new AuthenticationThrottle(passwordPolicy.getLockoutDuration(), passwordPolicy.getLockoutThreshold());
+                authThrottleMap.put(username, authThrottle);
+            } else {
+                authThrottle.updateAuthLockout();
+            }
+        }
     }
 
     @Override
