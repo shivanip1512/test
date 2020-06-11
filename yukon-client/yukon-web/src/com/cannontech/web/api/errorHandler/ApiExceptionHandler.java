@@ -99,7 +99,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     
     @ExceptionHandler({ LoadProgramProcessingException.class, MacroLoadGroupProcessingException.class,
         HoneywellProcessingException.class, LMObjectDeletionFailureException.class , TypeNotSupportedException.class, ProcessingException.class})
-    public ResponseEntity<Object> hanldeProcessingException(final Exception ex, final WebRequest request) {
+    public ResponseEntity<Object> handleProcessingException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
@@ -109,7 +109,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     @ExceptionHandler({AttachedException.class})
-    public ResponseEntity<Object> hanldeAttachedExceptionException(final AttachedException ex, final WebRequest request) {
+    public ResponseEntity<Object> handleBadRequestException(final AttachedException ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
         logApiException(request, ex, uniqueKey);
