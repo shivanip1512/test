@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @RequiredArgsConstructor
 
 public class MockAlarmTableEntry {
-    private MockAlarmState condition ;
+    private String condition ;
     private String category ;
     private MockAlarmNotificationTypes notify ;
 }

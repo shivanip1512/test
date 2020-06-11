@@ -9,7 +9,10 @@ import com.cannontech.rest.api.common.model.MockAnalogControlType;
 import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.cannontech.rest.api.common.model.MockPointLogicalGroups;
 import com.cannontech.rest.api.common.model.MockPointType;
+import com.cannontech.rest.api.point.request.MockAlarmNotificationTypes;
+import com.cannontech.rest.api.point.request.MockAlarmTableEntry;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
+import com.cannontech.rest.api.point.request.MockPointAlarming;
 import com.cannontech.rest.api.point.request.MockPointAnalog;
 import com.cannontech.rest.api.point.request.MockPointAnalogControl;
 import com.cannontech.rest.api.point.request.MockPointBase;
@@ -33,6 +36,7 @@ public class PointHelper {
         case Analog:
             List<MockPointLimit> pointLimit = new ArrayList<>();
             pointLimit.add(buildPointLimit());
+            
             point = MockAnalogPoint.builder()
                     .paoId(paoId)
                     .pointName(name)
@@ -49,6 +53,7 @@ public class PointHelper {
                     .pointAnalogControl(buildPointAnalogControl())
                     .staleData(buildStaleData())
                     .limits(pointLimit)
+                    .alarming(buildPointAlarming())
                     .build();
             break;
         default:
@@ -98,4 +103,26 @@ public class PointHelper {
                 .limitDuration(2)
                 .build();
     }
+    
+   
+    private static MockPointAlarming buildPointAlarming() {
+        List<MockAlarmTableEntry> alarmTableEntry = new ArrayList<>();
+        alarmTableEntry.add(buildAlarmTableEntry());
+        return MockPointAlarming.builder()
+                .notificationGroupId(Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID")))
+                .notifyOnAck(true)
+                .notifyOnClear(false)
+                .alarmTableList(alarmTableEntry)
+                .build();
+    }
+    
+    private static MockAlarmTableEntry buildAlarmTableEntry() {
+        return MockAlarmTableEntry.builder()
+                .category("(none)")
+                .condition("Rate Of Change")
+                .notify(MockAlarmNotificationTypes.EXCLUDE_NOTIFY)
+                .build();
+    }
+    
+   
 }
