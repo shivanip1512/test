@@ -2,6 +2,7 @@ package com.cannontech.web.tools.points.model;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
@@ -167,6 +168,14 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         }
 
         getAlarming().buildDBPersistent(point.getPointAlarming());
+
+        if(CollectionUtils.isNotEmpty(getFdrList())) {
+            for(FdrTranslation fdrTranslation: getFdrList()) {
+                fdrTranslation.setPointId(getPointId());
+                fdrTranslation.setParameterMap();
+                fdrTranslation.setTranslation(fdrTranslation.getTranslationString(getPointType()));
+            }
+        }
     }
 
     @Override

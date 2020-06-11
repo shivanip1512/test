@@ -68,6 +68,10 @@ public class FdrTranslation {
 		return translation;
 	}
 
+    public String getTranslationString(PointType pointType) {
+        return translation + ";POINTTYPE:" + pointType.toString() + ";";
+    }
+
 	public void setTranslation(String translation) {
 		this.translation = translation;
 	}
@@ -94,19 +98,6 @@ public class FdrTranslation {
                 }
             }
         }
-    }
-    
-    public static FdrTranslation of(FdrTranslation fdrTranslation, Integer pointId, PointType pointType) {
-        FdrTranslation fdrTranslationEntry = new FdrTranslation();
-        String fdrTranslationString = fdrTranslation.getTranslation() + ";POINTTYPE:" + pointType.toString() + ";";
-        fdrTranslationEntry.setTranslation(fdrTranslationString);
-
-        fdrTranslationEntry.setPointId(pointId);
-        fdrTranslationEntry.setParameterMap();
-        fdrTranslationEntry.setInterfaceType(fdrTranslation.getFdrInterfaceType());
-        fdrTranslationEntry.setDirection(fdrTranslation.getDirection());
-
-        return fdrTranslationEntry;
     }
 
     @Override
