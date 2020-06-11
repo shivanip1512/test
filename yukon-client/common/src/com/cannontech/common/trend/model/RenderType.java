@@ -5,9 +5,10 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableBiMap.Builder;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.database.db.graph.GraphRenderers;
 
-public enum RenderType {
+public enum RenderType implements DisplayableEnum {
     LINE(GraphRenderers.LINE),
     LINE_SHAPES(GraphRenderers.LINE_SHAPES),
     LINE_AREA(GraphRenderers.LINE_AREA),
@@ -25,7 +26,9 @@ public enum RenderType {
     private final static Set<RenderType> bars = ImmutableSet.of(BAR, BAR_3D);
     private final static BiMap<Integer, RenderType> idMap;
     private final static Builder<Integer, RenderType> b = new ImmutableBiMap.Builder<>();
+    private final static Set<RenderType> webSupportedTypes = ImmutableSet.of(LINE, STEP, BAR);
     private int id;
+    private String baseKey = "yukon.web.modules.tools.trend.style.";
     /**
      * pre-step to instantiation. 
      */
@@ -85,5 +88,13 @@ public enum RenderType {
      */
     public static RenderType getForId(int id) {
         return idMap.get(id);
+    }
+    public static Object getWebSupportedTypes() {
+        return webSupportedTypes;
+    }
+    
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }

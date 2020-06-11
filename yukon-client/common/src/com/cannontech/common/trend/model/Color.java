@@ -21,6 +21,7 @@ public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
     YELLOW(Colors.YELLOW_ID);
 
     private int colorId;
+    private String baseKey = "yukon.web.modules.tools.trend.color.";
 
     private final static ImmutableMap<Integer, Color> lookupById;
     static {
@@ -41,7 +42,7 @@ public enum Color implements DatabaseRepresentationSource, DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return null;
+        return baseKey + name();
     }
 
     public String getHexValue() {
