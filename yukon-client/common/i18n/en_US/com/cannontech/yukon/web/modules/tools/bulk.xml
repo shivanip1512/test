@@ -221,6 +221,7 @@
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.duplicateName">There is already a program with the entered name. Please enter a unique name.</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.invalidFileSize">The meter programming file must be not be blank and must be no larger than 1 MiB (1048576 bytes).</entry>
     <entry key="yukon.web.modules.tools.bulk.meterProgramming.invalidProgram">The meter program file was invalid.  Please verify the file is of the proper format and try again.</entry>
+    <entry key="yukon.web.modules.tools.bulk.meterProgramming.validationFailed">The meter program file could not be validated due to an internal system error.</entry>
     
     <!-- DATA STREAMING CONFIGURATION-->
     <!-- ******************************************************************************************************************** -->
