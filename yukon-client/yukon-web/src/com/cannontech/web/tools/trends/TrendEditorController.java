@@ -8,12 +8,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -46,6 +50,8 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.tools.trends.validator.TrendEditorValidator;
+import com.cannontech.web.tools.trends.validator.TrendSeriesValidator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -62,6 +68,8 @@ public class TrendEditorController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private TrendEditorValidator trendEditorValidator;
+    @Autowired private TrendSeriesValidator trendSeriesValidator;
 
     private static final String baseKey = "yukon.web.modules.tools.trend.";
     private static final Logger log = YukonLogManager.getLogger(TrendEditorController.class);
@@ -70,6 +78,11 @@ public class TrendEditorController {
     public String create(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendModel trendModel = new TrendModel();
+        if (model.containsKey("trendModel")) {
+            trendModel = (TrendModel) model.get("trendModel");
+        } else {
+            trendModel = new TrendModel();
+        }
         model.addAttribute("trendModel", trendModel);
         return "trends/setup/view.jsp";
     }
@@ -106,19 +119,25 @@ public class TrendEditorController {
 
     @PostMapping("/save")
     public String save(ModelMap model, YukonUserContext userContext,
-            @ModelAttribute("trendDefinition") TrendModel trendModel, FlashScope flashScope) {
-        // TODO: Add Validations
+            @ModelAttribute("trendDefinition") TrendModel trendModel, BindingResult result, RedirectAttributes redirectAttributes,
+            FlashScope flashScope) {
+        trendEditorValidator.validate(trendModel, result);
+        if (result.hasErrors()) {
+            return bindAndForward(trendModel, result, redirectAttributes);
+        }
 
         // TODO: To be removed later
         log.info("Trend Name : " + trendModel.getName());
-        for (TrendSeries trendSeries : trendModel.getTrendSeries()) {
-            log.info("Point Id:" + trendSeries.getPointId());
-            log.info("Label:" + trendSeries.getLabel());
-            log.info("Color:" + trendSeries.getColor());
-            log.info("Axis:" + trendSeries.getAxis());
-            log.info("Type:" + trendSeries.getType());
-            log.info("Multipler:" + trendSeries.getMultiplier());
-            log.info("Style:" + trendSeries.getStyle());
+        if (CollectionUtils.isNotEmpty(trendModel.getTrendSeries())) {
+            for (TrendSeries trendSeries : trendModel.getTrendSeries()) {
+                log.info("Point Id:" + trendSeries.getPointId());
+                log.info("Label:" + trendSeries.getLabel());
+                log.info("Color:" + trendSeries.getColor());
+                log.info("Axis:" + trendSeries.getAxis());
+                log.info("Type:" + trendSeries.getType());
+                log.info("Multipler:" + trendSeries.getMultiplier());
+                log.info("Style:" + trendSeries.getStyle());
+            }
         }
 
         // TODO: Add create or update condition check here...
@@ -128,17 +147,23 @@ public class TrendEditorController {
 
     @PostMapping("/addPoint")
     public String addPoint(ModelMap model, YukonUserContext userContext, HttpServletResponse response,
-            @ModelAttribute("trendSeries") TrendSeries trendSeries)
+            @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, FlashScope flashScope)
             throws JsonGenerationException, JsonMappingException, IOException {
-        // TODO: Validator code will be added as a part of YUK-22229
-        // Validate the data...
+        trendSeriesValidator.validate(trendSeries, result);
+        LitePoint litePoint = pointDao.getLitePoint(trendSeries.getPointId());
+        LiteYukonPAObject yukonPao = cache.getAllPaosMap().get(litePoint.getPaobjectID());
+        if (result.hasErrors()) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            setPointPopupModel(model);
+            model.addAttribute("deviceName", yukonPao.getPaoName());
+            model.addAttribute("isDateTypeSelected", trendSeries.getType() == TrendType.GraphType.DATE_TYPE);
+            return "trends/setup/pointSetupPopup.jsp";
+        }
 
         model.clear();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         json.put("trendSeries", trendSeries);
-        LitePoint litePoint = pointDao.getLitePoint(trendSeries.getPointId());
-        LiteYukonPAObject yukonPao = cache.getAllPaosMap().get(litePoint.getPaobjectID());
         json.put("pointName", litePoint.getPointName());
         json.put("deviceName", yukonPao.getPaoName());
         json.put("color", accessor.getMessage(trendSeries.getColor().getFormatKey()));
@@ -204,5 +229,14 @@ public class TrendEditorController {
                 }
             }
         });
+    }
+
+    private String bindAndForward(TrendModel trendModel, BindingResult result, RedirectAttributes attrs) {
+        attrs.addFlashAttribute("trendModel", trendModel);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.trendModel", result);
+        if (trendModel.getTrendId() == null) {
+            return "redirect:create";
+        }
+        return "redirect:" + trendModel.getTrendId() + "/edit";
     }
 }

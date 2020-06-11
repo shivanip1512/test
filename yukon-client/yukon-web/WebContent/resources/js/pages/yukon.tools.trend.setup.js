@@ -77,6 +77,10 @@ yukon.tools.trend.setup = (function() {
                     success: function(data, status, xhr, $form) {
                         $("#js-add-point-dialog").dialog('close');
                         _addRowToPointSetupTable(data);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#js-add-point-dialog').html(xhr.responseText);
+                        _initPointSetupPopup($('#js-add-point-dialog'));
                     }
                 });
             });
@@ -134,9 +138,15 @@ yukon.tools.trend.setup = (function() {
                         $(".js-edit-point-dialog").dialog('close');
                         $(event.target).remove();
                         _addRowToPointSetupTable(data);
+                    },
+                    error: function(xhr, status, error, $form) {
+                        $(".js-edit-point-dialog").html(xhr.responseText);
+                        _initPointSetupPopup($(".js-edit-point-dialog"));
                     }
                 });
             });
+            
+            yukon.ui.highlightErrorTabs();
             
             _initialized = true;
         }

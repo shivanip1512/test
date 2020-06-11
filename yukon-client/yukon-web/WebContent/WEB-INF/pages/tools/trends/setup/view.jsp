@@ -1,6 +1,8 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
@@ -59,6 +61,43 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <c:if test="${fn:length(trendModel.trendSeries) > 0}">
+                                    <c:forEach var="trendSeries" items="${trendModel.trendSeries}" varStatus="status">
+                                        <tr>
+                                            <td class="js-device-name wbba">
+                                                <cti:toJson object="${trendSeries}" var="seriesJson"/>
+                                                <input type="hidden" name="trendSeries[${status.index}]" class="js-row-data" value="${seriesJson}"/>
+                                                <span><cti:deviceNameFromPointId pointId="${trendSeries.pointId}"/></span>
+                                            </td>
+                                            <td class="js-point-name wbba">
+                                                <cti:pointName pointId="${trendSeries.pointId}"/>
+                                            </td>
+                                            <td class="js-label wbba">
+                                                ${fn:escapeXml(trendSeries.label)}
+                                            </td>
+                                            <td class="js-color">
+                                                <div class="small-rectangle dib" style="background-color: ${trendSeries.color}"></div>
+                                                <span><i:inline key="${trendSeries.color}"/></span>
+                                            </td>
+                                            <td class="js-axis">
+                                                <i:inline key="${trendSeries.axis}" />
+                                            </td>
+                                            <td class="js-type">
+                                                <i:inline key="${trendSeries.type}" />
+                                            </td>
+                                            <td class="js-multiplier">${trendSeries.multiplier}</td>
+                                            <td class="js-style">
+                                                <i:inline key="${trendSeries.style}" />
+                                            </td>
+                                            <td class="js-actions">
+                                                <div class="button-group">
+                                                    <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit-point" />
+                                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove-point" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </c:if>
                             </tbody>
                         </table>
                         <div class="action-area">

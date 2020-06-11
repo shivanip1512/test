@@ -17,7 +17,6 @@
     <form:form class="js-point-setup-form" modelAttribute="trendSeries" method="POST" action="${addPointUrl}">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey="yukon.common.point" nameClass="vam">
-                <tags:hidden path="pointId" id="js-point-id-${uniqueId}" />
                 <tags:pickerDialog id="trendPointPicker_${uniqueId}"
                                                  type="pointPicker"
                                                  destinationFieldId="js-point-id-${uniqueId}"
@@ -26,6 +25,7 @@
                                                  endEvent="yukon:trend:setup:pointSelection:complete"
                                                  allowEmptySelection="false"
                                                  initialId="${trendSeries.pointId}" />
+                <tags:hidden path="pointId" id="js-point-id-${uniqueId}" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.device" nameClass="vam">
                 <span class="js-device-name-span dib mw300 wbba">
