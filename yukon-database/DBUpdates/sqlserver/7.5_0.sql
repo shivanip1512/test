@@ -542,8 +542,43 @@ DELETE FROM Point WHERE POINTID IN (
     WHERE POINTTYPE = 'Status' AND PointOffset IN (1)
     AND YP.Type IN ('LCR-6600S', 'LCR-6601S'));
 
-INSERT INTO DBUpdates VALUES ('YUK-22110', '7.4.2', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-22110', '7.5.0', GETDATE());
 /* @end YUK-22110 */
+
+/* @start YUK-22234 */
+/* @start-block */
+BEGIN
+    DECLARE @v_MaxDeviceGroupId NUMERIC = (SELECT MAX(DeviceGroupId) FROM DeviceGroup WHERE DeviceGroupId < 100)
+    INSERT INTO DeviceGroup VALUES (@v_MaxDeviceGroupId + 1, 'Service', 0, 'NOEDIT_NOMOD', 'STATIC', GETDATE(), 'SERVICE')
+    INSERT INTO DeviceGroup VALUES (@v_MaxDeviceGroupId + 2, 'Active RF Electric Meters', @v_MaxDeviceGroupId + 1, 'NOEDIT_MOD', 'COMPOSED', GETDATE(), 'SERVICE_ACTIVE_RF_ELECTRIC_METERS')
+    INSERT INTO DeviceGroup VALUES (@v_MaxDeviceGroupId + 3, 'Active RFW Meters', @v_MaxDeviceGroupId + 1, 'NOEDIT_MOD', 'COMPOSED', GETDATE(), 'SERVICE_ACTIVE_RFW_METERS')
+
+    DECLARE @v_MaxComposedId NUMERIC = (SELECT MAX(DeviceGroupComposedId) FROM DeviceGroupComposed)
+    DECLARE @v_MaxComposedGroupId NUMERIC = (SELECT MAX(DeviceGroupComposedGroupId) FROM DeviceGroupComposedGroup)
+    IF @v_MaxComposedId IS NULL
+    BEGIN
+        SET @v_MaxComposedId = 0
+    END 
+    IF @v_MaxComposedGroupId IS NULL
+    BEGIN
+        SET @v_MaxComposedGroupId = 0
+    END
+
+    INSERT INTO DeviceGroupComposed VALUES (@v_MaxComposedId + 1, @v_MaxDeviceGroupId + 2, 'UNION')
+    INSERT INTO DeviceGroupComposed VALUES (@v_MaxComposedId + 2, @v_MaxDeviceGroupId + 3, 'UNION')
+
+    INSERT INTO DeviceGroupComposedGroup VALUES (@v_MaxComposedGroupId + 1, @v_MaxComposedId + 1, '/System/Meters/All Meters/All RFN Meters/All RF Electric Meters', 'N')
+    INSERT INTO DeviceGroupComposedGroup VALUES (@v_MaxComposedGroupId + 2, @v_MaxComposedId + 1, '/Meters/Billing', 'N')
+    INSERT INTO DeviceGroupComposedGroup VALUES (@v_MaxComposedGroupId + 3, @v_MaxComposedId + 1, '/System/Meters/Disabled', 'Y')
+    INSERT INTO DeviceGroupComposedGroup VALUES (@v_MaxComposedGroupId + 4, @v_MaxComposedId + 2, '/System/Meters/All Meters/All RFN Meters/All RFW Meters', 'N')
+    INSERT INTO DeviceGroupComposedGroup VALUES (@v_MaxComposedGroupId + 5, @v_MaxComposedId + 2, '/Meters/Billing', 'N')
+    INSERT INTO DeviceGroupComposedGroup VALUES (@v_MaxComposedGroupId + 6, @v_MaxComposedId + 2, '/System/Meters/Disabled', 'Y')
+END;
+GO
+/* @end-block */
+
+INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', GETDATE());
+/* @end YUK-22234 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

@@ -55,6 +55,8 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Override
     protected void doValidation(T target, Errors errors) {
         PointType pointType = target.getPointType();
+        boolean isCreationOperation = target.getPointId() == null ? true : false;
+        
         if (target.getPointName() != null) {
             pointValidationUtil.validateName("pointName", errors, target.getPointName());
         }
@@ -65,8 +67,10 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
 
             if (!errors.hasFieldErrors("paoId")) {
-
-                boolean isCreationOperation = target.getPointId() == null ? true : false;
+                pointValidationUtil.checkIfPaoIdChanged(errors,target, isCreationOperation);
+            }
+            
+            if (!errors.hasFieldErrors("paoId")) {
 
                 if (!errors.hasFieldErrors("pointName") && target.getPointName() != null) {
                     pointValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
@@ -78,6 +82,10 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
         }
 
+        if(!errors.hasFieldErrors("pointType") && target.getPointType() != null) {
+            pointValidationUtil.checkIfPointTypeChanged(errors, target, isCreationOperation);
+        }
+        
         if (target instanceof ScalarPointModel) {
             validateScalarPointModel(target, errors);
         }
