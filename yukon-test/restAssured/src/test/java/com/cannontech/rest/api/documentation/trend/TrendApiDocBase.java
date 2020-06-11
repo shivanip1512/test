@@ -54,7 +54,8 @@ public abstract class TrendApiDocBase extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
-        return null;
+        String url = ApiCallHelper.getProperty("deleteTrend") + getTrendId();
+        return new DocumentationFields.Delete(url);
     }
 
     private List<FieldDescriptor> getFieldDescriptors() {

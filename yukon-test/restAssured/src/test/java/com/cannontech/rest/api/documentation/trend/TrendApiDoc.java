@@ -15,4 +15,10 @@ public class TrendApiDoc extends TrendApiDocBase {
     protected String getTrendId() {
         return trendId;
     }
+
+    @Test
+    public void Test_Trend_01_Delete() {
+        deleteDoc();
+    }
 }
+

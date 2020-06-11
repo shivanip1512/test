@@ -8,3 +8,10 @@ include::{snippets}/TrendApiDoc/Test_Trend_01_Create/http-request.adoc[]
 include::{snippets}/TrendApiDoc/Test_Trend_01_Create/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/TrendApiDoc/Test_Trend_01_Create/http-response.adoc[]
+
+=== Delete
+
+*Request* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Delete/http-request.adoc[]
+*Response* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Delete/http-response.adoc[]
