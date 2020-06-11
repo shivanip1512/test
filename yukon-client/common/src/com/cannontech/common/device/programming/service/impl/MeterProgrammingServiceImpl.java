@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -47,8 +49,11 @@ import com.cannontech.common.device.programming.model.MeterProgram;
 import com.cannontech.common.device.programming.model.MeterProgramCommandResult;
 import com.cannontech.common.device.programming.model.MeterProgramStatus;
 import com.cannontech.common.device.programming.model.ProgrammingStatus;
+import com.cannontech.common.device.programming.service.MeterProgramValidationService;
 import com.cannontech.common.device.programming.service.MeterProgrammingService;
 import com.cannontech.common.events.loggers.MeterProgrammingEventLogService;
+import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.exception.ServiceCommunicationFailedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -75,6 +80,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Autowired private IDatabaseCache dbCache;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableFactory;
     @Autowired private MeterProgrammingDao meterProgrammingDao;
+    @Autowired private MeterProgramValidationService meterProgramValidationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
 
     private final static String baseKey = "yukon.web.modules.amr.meterProgramming.";
@@ -245,7 +251,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
 
         CommandCompletionCallback<CommandRequestDevice> execCallback = getExecutionCallback(context, result);
         meterProgrammingDao.assignDevicesToProgram(guid, supportedDevices);
-        archiveProgramStatus(supportedDevices, guid);
+        setProgramStatusToInitiating(supportedDevices);
         execute(context, command, result, supportedDevices, execCallback);
         return result.getCacheKey();
     }
@@ -253,7 +259,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     /**
      * Sends status update message to SM to update MeterProgramStatus table
      */
-    private void archiveProgramStatus(List<SimpleDevice> supportedDevices, UUID guid) {
+    private void setProgramStatusToInitiating(List<SimpleDevice> supportedDevices) {
         Map<? extends YukonPao, RfnIdentifier> meterIdentifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(supportedDevices);
         supportedDevices.forEach(device -> {
             MeterProgramStatusArchiveRequest request = new MeterProgramStatusArchiveRequest();
@@ -285,6 +291,19 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         return result.getCacheKey();
     }
 
+    @Override
+    @Transactional
+    public UUID saveMeterProgram(MeterProgram program) throws ServiceCommunicationFailedException {
+        UUID uuid = meterProgrammingDao.saveMeterProgram(program);
+        if(!meterProgramValidationService.isMeterProgramValid(uuid)) {
+            meterProgrammingDao.deleteMeterProgram(uuid);
+            BadConfigurationException error = new BadConfigurationException("Program file is invalid");
+            log.error(error);
+            throw error;
+        }
+        return uuid;
+    }
+    
     private void execute(YukonUserContext context, String command, CollectionActionResult result, List<SimpleDevice> supportedDevices,
             CommandCompletionCallback<CommandRequestDevice> execCallback) {
         if (supportedDevices.isEmpty()) {
@@ -382,7 +401,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
             }
         }
     }
-
+    
     @PostConstruct
     public void initialize() {
         thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),

@@ -272,6 +272,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/scheduledDataImport</value>
                 <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/root</value>
+                <value>classpath:com/cannontech/yukon/web/modules/tools/trends</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/bulk</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/collectionActions</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/configs</value>

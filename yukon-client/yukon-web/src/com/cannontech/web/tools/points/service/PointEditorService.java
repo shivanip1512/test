@@ -147,7 +147,12 @@ public interface PointEditorService {
     /**
      * Create the Point.
      */
-    int create(PointBaseModel<? extends PointBase> point);
+    PointBaseModel<? extends PointBase> create(PointBaseModel<? extends PointBase> point);
+
+    /**
+     * Update the Point.
+     */
+    PointBaseModel<? extends PointBase> update(int portId, PointBaseModel<? extends PointBase> point);
 
     /**
      * Retrieve Point for passed pointId.

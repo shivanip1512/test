@@ -469,18 +469,38 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public int create(PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel) {
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
         StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
-             staleData = StaleData.of(pointBaseModel.getStaleData());
+            staleData = StaleData.of(pointBaseModel.getStaleData());
         }
-        List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(),
-                                                                                                pointBaseModel.getPointType());
+        
+        List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
+        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+
+        // TODO FDR
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        pointBaseModel.buildDBPersistent(pointBase);
+
+        StaleData staleData = null;
+        if (pointBaseModel.getStaleData() != null) {
+            staleData = StaleData.of(pointBaseModel.getStaleData());
+        }
+        
+        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
         //TODO FDR 
-        return pointBase.getPoint().getPointID();
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
     }
 
     private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
@@ -519,17 +539,44 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Override
     public PointBaseModel<? extends PointBase> retrieve(int pointId) {
 
-        PointBase base = pointDao.get(pointId);
+        PointBase pointBase = pointDao.get(pointId);
         StaleData staleData = getStaleData(pointId);
 
-        PointType ptType = PointType.getForString(base.getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
 
         if (pointBaseModel != null) {
-            pointBaseModel.buildModel(base);
-            pointBaseModel.setStaleData(staleData);
-            pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(base));
+            buildPointBaseModel(pointBase, pointBaseModel, staleData);
         }
         return pointBaseModel;
     }
+
+    private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {
+        pointBaseModel.buildModel(pointBase);
+        pointBaseModel.setStaleData(staleData);
+        pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(pointBase));
+    }
+    
+
+     /**
+     * Update existing alarm table entries with new Entries.
+     * 
+     */
+    private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
+        Map<AlarmState, AlarmTableEntry> newEntryMap = newEntries.stream()
+                                                                 .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
+        // Update existing AlarmTableEntry based on the new entries.
+        for (AlarmTableEntry entry : existingEntries) {
+            if (newEntryMap.get(entry.getCondition()) != null) {
+                if (newEntryMap.get(entry.getCondition()).getCategory() != null) {
+                    entry.setCategory(newEntryMap.get(entry.getCondition()).getCategory());
+                }
+                if (newEntryMap.get(entry.getCondition()).getNotify() != null) {
+                    entry.setNotify(newEntryMap.get(entry.getCondition()).getNotify());
+                }
+            }
+        }
+        return existingEntries;
+    }
+
 }
