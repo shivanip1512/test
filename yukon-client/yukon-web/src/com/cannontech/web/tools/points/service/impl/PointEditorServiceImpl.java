@@ -23,11 +23,14 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.TypeRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -35,6 +38,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
@@ -63,6 +67,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private PointDao pointDao;
     @Autowired private PointPropertyValueDao pointPropertyValueDao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PointEventLogService eventLog;
     @Autowired private IDatabaseCache cache;
@@ -106,7 +111,9 @@ public class PointEditorServiceImpl implements PointEditorService {
             pointName = messageAccessor.getMessage("yukon.common.point.new.duplicate", duplicateNumber);
         }
 
-        PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false);
+        int pointOffset = findNextCalcPointOffsetsForPao(paoId, pointType);
+
+        PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false, pointOffset);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         
         eventLog.pointCreated(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
@@ -579,4 +586,53 @@ public class PointEditorServiceImpl implements PointEditorService {
         return existingEntries;
     }
 
+    /**
+     * This method returns the first available pointOffset for custom CalcAnalog or CalcStatus points
+     * 
+     * @param paoId - PaoId for the point
+     * @param pointType - PointTypes id constant
+     * @return - Next available pointOffset for CalcAnalog or CalcStatus point
+     *           The values will be 100+ with no gaps in the sequence for that point type
+     */
+    private int findNextCalcPointOffsetsForPao(int paoId, int pointType) {
+        SqlStatementBuilder sqlMin = new SqlStatementBuilder();
+        SqlStatementBuilder sqlMiddle = new SqlStatementBuilder();
+
+        String calcType;
+        if (pointType == PointTypes.CALCULATED_POINT) {
+            calcType = "'CalcAnalog'";
+        } else {
+            calcType = "'CalcStatus'";
+        }
+
+        // To find the lowest offset
+        sqlMin.append("SELECT MIN(PointOffset)");
+        sqlMin.append("FROM POINT");
+        sqlMin.append("WHERE PAObjectID = " + paoId);
+        sqlMin.append("AND PointType = " + calcType);
+        sqlMin.append("AND PointOffset >= 100");
+
+        // This will find a missing value in a sequence
+        sqlMiddle.append("SELECT MIN(PointOffset)");
+        sqlMiddle.append("FROM POINT p");
+        sqlMiddle.append("WHERE p.PAObjectID = " + paoId);
+        sqlMiddle.append("AND p.PointType = " + calcType);
+        sqlMiddle.append("AND PointOffset >= 100");
+        sqlMiddle.append("AND NOT EXISTS");
+            sqlMiddle.append("(SELECT NULL");
+            sqlMiddle.append("FROM POINT pt");
+            sqlMiddle.append("WHERE pt.PointOffset = p.PointOffset + 1");
+            sqlMiddle.append("AND pt.PointType = " + calcType + ")");
+
+        Integer minPointOffset = jdbcTemplate.query(sqlMin, TypeRowMapper.INTEGER).get(0);
+        Integer missingPointOffset = jdbcTemplate.query(sqlMiddle, TypeRowMapper.INTEGER).get(0);
+
+        Integer pointOffset = 100;
+        if (minPointOffset == 100) {
+            pointOffset = missingPointOffset + 1;
+        }
+
+        return pointOffset;
+    }
+    
 }

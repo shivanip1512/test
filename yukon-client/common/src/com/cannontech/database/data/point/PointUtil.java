@@ -38,7 +38,7 @@ public class PointUtil {
     private static PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
     private static PointDao pointDao = YukonSpringHook.getBean(PointDao.class);
 
-    public static PointBase createPoint(int type, String name, Integer paoId, boolean disabled) throws PersistenceException {
+    public static PointBase createPoint(int type, String name, Integer paoId, boolean disabled, int pointOffset) throws PersistenceException {
         MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
         PointBase point = null;
 
@@ -95,11 +95,11 @@ public class PointUtil {
 
         case PointTypes.CALCULATED_POINT:
             YukonPao yukonPao = paoDao.getYukonPao(paoId);
-            point = PointFactory.createCalculatedPoint(yukonPao.getPaoIdentifier(), name, StateGroupUtils.STATEGROUP_ANALOG);
+            point = PointFactory.createCalculatedPoint(yukonPao.getPaoIdentifier(), name, StateGroupUtils.STATEGROUP_ANALOG, pointOffset);
             break;
 
         case PointTypes.CALCULATED_STATUS_POINT:
-            point = PointFactory.createCalcStatusPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG);
+            point = PointFactory.createCalcStatusPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG, pointOffset);
             break;
 
         default:

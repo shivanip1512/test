@@ -57,7 +57,8 @@ public class CalcAnalogPointBuilder extends ScalarPointBuilder {
                                                                                      decimalPlaces, 
                                                                                      archiveType, 
                                                                                      archiveInterval, 
-                                                                                     null);
+                                                                                     null,
+                                                                                     0);
         
         point.setCalcComponents(calculation.copyComponentsAndInsertPointId(pointId));
         point.getCalcBase().setUpdateType(updateType.getDatabaseRepresentation());
