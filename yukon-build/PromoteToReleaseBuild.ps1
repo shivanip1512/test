@@ -1,4 +1,4 @@
-# Unzip the yukon artifact file to get the required binaries.
+# Promote the CI (Continuous Integration ) build as release build.
 
 function Test-Admin {
   $currentUser = New-Object Security.Principal.WindowsPrincipal $([Security.Principal.WindowsIdentity]::GetCurrent())
