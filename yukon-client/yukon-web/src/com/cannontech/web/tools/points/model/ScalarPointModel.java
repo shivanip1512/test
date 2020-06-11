@@ -60,7 +60,7 @@ public class ScalarPointModel<T extends ScalarPoint> extends PointBaseModel<T> {
     @Override
     public void buildModel(T point) {
         getPointUnit().buildModel(point.getPointUnit());
-
+        getLimits().clear();
         point.getPointLimitsMap().values().forEach(pointLimit -> {
             PointLimitModel pointLimitModel = new PointLimitModel();
             pointLimitModel.buildModel(pointLimit);
