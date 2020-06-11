@@ -21,6 +21,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -47,6 +49,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -61,10 +64,12 @@ import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     private static final Logger log = YukonLogManager.getLogger(RawPointHistoryDaoImpl.class);
@@ -74,6 +79,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
+    @Autowired private DeviceGroupService deviceGroupService;
     
     YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
         new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
@@ -1187,4 +1193,65 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
         return Maps.transformValues(limitedStuff.asMap(), Iterables::getOnlyElement);
     }
+    /**
+     * This method generates device group SQL where clause
+     */
+    private SqlFragmentSource getDeviceGroupSql(DeviceGroup deviceGroup) {
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(deviceGroup), "pao.PaObjectId");
+        return groupSqlWhereClause;
+    }
+
+    @Override
+    public List<Integer> getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange,
+            ImmutableSet<PaoType> allPaoTypes) {
+
+        ImmutableSet<PaoType> rfnTypes530S4 = ImmutableSet.of(
+                PaoType.RFN530S4EAX,
+                PaoType.RFN530S4EAXR,
+                PaoType.RFN530S4ERX,
+                PaoType.RFN530S4ERXR);
+
+        List<Integer> records = new ArrayList<Integer>();
+        if (allPaoTypes.containsAll(rfnTypes530S4)) {
+            records = getDataCompletenessData(deviceGroup, dateRange, rfnTypes530S4, 3);
+        }
+        ImmutableSet<PaoType> paoTypes = ImmutableSet.copyOf(Sets.difference(allPaoTypes, rfnTypes530S4));
+        List<Integer> finalRecords = getDataCompletenessData(deviceGroup, dateRange, paoTypes, 1);
+        if (records.size() != 0)
+            finalRecords.addAll(records);
+        return finalRecords;
+    }
+    /**
+     * This method returns the list of counts of devices which are reported usage data every hour within 
+     * the date Range for particular PAO types and point offset.  
+     */
+    private List<Integer> getDataCompletenessData(DeviceGroup deviceGroup, Range<Date> dateRange,
+            ImmutableSet<PaoType> paoTypesList, int pointOffset) {
+
+        SqlFragmentSource groupSqlWhereClause = getDeviceGroupSql(deviceGroup);
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        String timeStampFormat = "AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS";
+        if (databaseVendor.isOracle()) {
+            timeStampFormat = "AND TO_CHAR(TimeStamp, 'mm:ss') = '00:00')";
+        }
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) AS Actual FROM (");
+        sql.append("    SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, TimeStamp, Value, Quality");
+        sql.append("    FROM RawPointHistory rph");
+        sql.append("    JOIN Point p ON rph.PointId = p.PointId");
+        sql.append("    AND PointType").eq_k(PointType.Analog);
+        sql.append("    AND PointOffset").eq(pointOffset);
+        appendTimeStampClause(sql, dateRange.translate(CtiUtilities.INSTANT_FROM_DATE));
+        sql.append(timeStampFormat);
+        sql.append("    distinctRph");
+        sql.append("JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId");
+        sql.append("WHERE").appendFragment(groupSqlWhereClause);
+        sql.append("AND pao.Type").in_k(paoTypesList);
+        sql.append("GROUP BY PaoName, Type, DisableFlag, PointName");
+        List<Integer> finalRecords = yukonTemplate.query(sql, TypeRowMapper.INTEGER);
+        return finalRecords;
+    }
+
 }
