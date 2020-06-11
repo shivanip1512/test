@@ -10,8 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -84,7 +83,7 @@ public class TrendEditorController {
         trendSeries.setAxis(TrendAxis.LEFT);
         trendSeries.setType(TrendType.GraphType.BASIC_TYPE);
         trendSeries.setMultiplier(1d);
-        trendSeries.setDate(LocalDate.now());
+        trendSeries.setDate(DateTime.now());
         trendSeries.setColor(Color.BLUE);
         
         model.addAttribute("trendSeries", trendSeries);
@@ -158,7 +157,7 @@ public class TrendEditorController {
         model.addAttribute("styles", RenderType.getWebSupportedTypes());
         model.addAttribute("graphTypes", TrendType.GraphType.values());
         model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
-        model.addAttribute("now", LocalDate.now());
+        model.addAttribute("now", DateTime.now());
         model.addAttribute("graphTypeDateEnumValue", TrendType.GraphType.DATE_TYPE);
         model.addAttribute("colors", Color.values());
     }
@@ -171,9 +170,9 @@ public class TrendEditorController {
         binder.registerCustomEditor(RenderType.class, new EnumPropertyEditor<>(RenderType.class));
         binder.registerCustomEditor(Color.class, new EnumPropertyEditor<>(Color.class));
 
-        PropertyEditor localTimeEditor = datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.ERROR);
+        PropertyEditor dateTimeEditor = datePropertyEditorFactory.getDateTimePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.ERROR);
         
-        binder.registerCustomEditor(LocalTime.class, localTimeEditor);
+        binder.registerCustomEditor(DateTime.class, dateTimeEditor);
         binder.registerCustomEditor(TrendSeries.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String trendSeriesString) throws IllegalArgumentException {
