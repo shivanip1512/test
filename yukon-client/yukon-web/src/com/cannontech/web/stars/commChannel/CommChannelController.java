@@ -69,8 +69,8 @@ public class CommChannelController {
     @Autowired private CommChannelSetupHelper commChanelSetupHelper;
     @Autowired private ServerDatabaseCache dbCache;
     private static final List<PaoType> webSupportedCommChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED)
-                                                                .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
-                                                                .collect(Collectors.toList());
+                                                                            .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
+                                                                            .collect(Collectors.toList());
 
     @GetMapping("/list")
     public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash,
