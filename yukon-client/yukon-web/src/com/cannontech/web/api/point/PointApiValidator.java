@@ -184,11 +184,11 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                     // Add all state present in the State Group
                     // TODO : Case for stateGroupID = null need to handle for Status point type.
                     if (stateGroupID != null) {
-                        List<String> stateNames = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
-                                                                                           .stream()
-                                                                                           .map(e -> e.getStateText())
-                                                                                           .collect(Collectors.toList());
-                        alarmStates.addAll(stateNames);
+                        List<String> rawStates = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
+                                                                                          .stream()
+                                                                                          .map(e -> String.valueOf(e.getLiteID()))
+                                                                                          .collect(Collectors.toList());
+                        alarmStates.addAll(rawStates);
                     }
                 }
 
