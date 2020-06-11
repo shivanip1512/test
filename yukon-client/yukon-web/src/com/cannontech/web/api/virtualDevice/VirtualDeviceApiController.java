@@ -17,11 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.virtualDevice.VirtualDeviceApiValidator;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @RequestMapping("/device/virtualDevices")
+@CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.VIEW)
 public class VirtualDeviceApiController {
 
     @Autowired private VirtualDeviceService virtualDeviceService;
@@ -29,6 +33,7 @@ public class VirtualDeviceApiController {
     @Autowired private VirtualDeviceApiValidator virtualDeviceApiValidator;
 
     @PostMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceModel virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.OK);
     }
@@ -39,6 +44,7 @@ public class VirtualDeviceApiController {
     }
 
     @PatchMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody VirtualDeviceModel virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.update(id, virtualDevice), HttpStatus.OK);
     }
