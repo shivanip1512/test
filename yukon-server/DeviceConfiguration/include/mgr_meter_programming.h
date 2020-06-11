@@ -16,6 +16,8 @@ class IM_EX_CONFIG MeterProgrammingManager
 public:
     using Bytes = std::vector<unsigned char>;
 
+    YukonError_t isProgramValid(const std::string guid);
+
     ErrorOr<Bytes> getProgram(const std::string guid);
 
     std::string getAssignedGuid(RfnIdentifier rfnIdentifier);
