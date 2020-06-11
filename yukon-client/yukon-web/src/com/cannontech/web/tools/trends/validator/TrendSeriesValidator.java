@@ -36,6 +36,7 @@ public class TrendSeriesValidator extends SimpleValidator<TrendSeries> {
                     new Object[] { accessor.getMessage("yukon.common.point") }, "Point is required.");
         }
 
+        //TODO: This code will be removed after, and a method from YukonValidationUtils will be added YUK-22272 is merged in master. 
         String label = StringUtils.trim(trendSeries.getLabel());
         if (StringUtils.isBlank(label)) {
             errors.rejectValue("label", mandatoryFieldMsgKey,

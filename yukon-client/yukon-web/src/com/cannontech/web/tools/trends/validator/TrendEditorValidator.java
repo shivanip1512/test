@@ -31,19 +31,15 @@ public class TrendEditorValidator extends SimpleValidator<TrendModel> {
     @Override
     protected void doValidation(TrendModel trendModel, Errors errors) {
 
-        // TODO: check if this is correct??
+        //TODO: This code will be removed after, and a method from YukonValidationUtils will be added YUK-22272 is merged in master. 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
         String nameI18nText = accessor.getMessage("yukon.common.name");
-
-        // 1. Mandatory field.
         String trendName = StringUtils.trim(trendModel.getName());
         if (StringUtils.isBlank(trendName)) {
             errors.rejectValue("name", "yukon.web.error.fieldrequired", new Object[] { nameI18nText }, "Name is required.");
         }
 
         // 2. Should not contain illegal chars
-        // TODO: We could also use PaoUtils.isValidPaoName() here.. That could be misleading since trend is not a PAO. Confirm
-        // this.
         if (!errors.hasErrors() && !StringUtils.containsNone(trendName, PaoUtils.ILLEGAL_NAME_CHARS)) {
             errors.rejectValue("name", baseKey + ".trend.field.error.containsIllegalChars",
                     new Object[] { nameI18nText, String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS) },
