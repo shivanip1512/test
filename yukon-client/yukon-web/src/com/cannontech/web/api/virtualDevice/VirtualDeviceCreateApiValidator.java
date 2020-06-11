@@ -3,24 +3,19 @@ package com.cannontech.web.api.virtualDevice;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.device.virtualDevice.VirtualDeviceBase;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 @Service
-public class VirtualDeviceCreateApiValidator <T extends VirtualDeviceBase<?>> extends SimpleValidator<T> {
+public class VirtualDeviceCreateApiValidator extends SimpleValidator<VirtualDeviceModel> {
 
-    @SuppressWarnings("unchecked")
     public VirtualDeviceCreateApiValidator() {
-        super((Class<T>) VirtualDeviceBase.class);
-    }
-
-    public VirtualDeviceCreateApiValidator(Class<T> objectType) {
-        super(objectType);
+        super(VirtualDeviceModel.class);
     }
 
     @Override
-    protected void doValidation(T virtualDevice, Errors errors) {
+    protected void doValidation(VirtualDeviceModel virtualDevice, Errors errors) {
         YukonValidationUtils.checkIfFieldRequired("name", errors, virtualDevice.getName(), "Name");
     }
 }

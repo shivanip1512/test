@@ -3,7 +3,7 @@ package com.cannontech.common.device.virtualDevice.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cannontech.common.device.virtualDevice.VirtualDeviceBase;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -18,7 +18,7 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     @Autowired private IDatabaseCache dbCache;
 
     @Override
-    public VirtualDeviceBase create(VirtualDeviceBase virtualDeviceBase) {
+    public VirtualDeviceModel create(VirtualDeviceModel virtualDeviceBase) {
         VirtualDevice virtualDevice = new VirtualDevice();
         virtualDeviceBase.buildDBPersistent(virtualDevice);
         dBPersistentDao.performDBChange(virtualDevice, TransactionType.INSERT);
@@ -28,19 +28,19 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
     }
 
     @Override
-    public VirtualDeviceBase retrieve(int virtualDeviceId) {
+    public VirtualDeviceModel retrieve(int virtualDeviceId) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
         if (pao == null) {
             throw new NotFoundException("Virtual device ID not found");
         }
         VirtualDevice virtualDevice = (VirtualDevice) dBPersistentDao.retrieveDBPersistent(pao);
-        VirtualDeviceBase virtualDeviceBase = new VirtualDeviceBase();
+        VirtualDeviceModel virtualDeviceBase = new VirtualDeviceModel();
         virtualDeviceBase.buildModel(virtualDevice);
         return virtualDeviceBase;
     }
 
     @Override
-    public VirtualDeviceBase update(int virtualDeviceId, VirtualDeviceBase virtualDevice) {
+    public VirtualDeviceModel update(int virtualDeviceId, VirtualDeviceModel virtualDevice) {
         LiteYukonPAObject pao = dbCache.getAllPaosMap().get(virtualDeviceId);
         if (pao == null) {
             throw new NotFoundException("ID not found " + virtualDeviceId);

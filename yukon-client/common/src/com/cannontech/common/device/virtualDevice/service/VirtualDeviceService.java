@@ -1,10 +1,10 @@
 package com.cannontech.common.device.virtualDevice.service;
 
-import com.cannontech.common.device.virtualDevice.VirtualDeviceBase;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 
 public interface VirtualDeviceService {
 
-    VirtualDeviceBase create(VirtualDeviceBase virtualDevice);
-    VirtualDeviceBase retrieve(int virtualDeviceId);
-    VirtualDeviceBase update(int virtualDeviceId, VirtualDeviceBase virtualDevice);
+    VirtualDeviceModel create(VirtualDeviceModel virtualDevice);
+    VirtualDeviceModel retrieve(int virtualDeviceId);
+    VirtualDeviceModel update(int virtualDeviceId, VirtualDeviceModel virtualDevice);
 }

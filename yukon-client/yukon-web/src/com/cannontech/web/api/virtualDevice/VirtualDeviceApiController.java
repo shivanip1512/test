@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cannontech.common.device.virtualDevice.VirtualDeviceBase;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.device.virtualDevice.service.VirtualDeviceService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.virtualDevice.VirtualDeviceApiValidator;
@@ -25,11 +25,11 @@ import com.cannontech.web.api.virtualDevice.VirtualDeviceApiValidator;
 public class VirtualDeviceApiController {
 
     @Autowired private VirtualDeviceService virtualDeviceService;
-    @Autowired private VirtualDeviceCreateApiValidator<? extends VirtualDeviceBase<?>> virtualDeviceCreateApiValidator;
-    @Autowired private VirtualDeviceApiValidator<? extends VirtualDeviceBase<?>> virtualDeviceApiValidator;
+    @Autowired private VirtualDeviceCreateApiValidator virtualDeviceCreateApiValidator;
+    @Autowired private VirtualDeviceApiValidator virtualDeviceApiValidator;
 
     @PostMapping("/create")
-    public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceBase<?> virtualDevice) {
+    public ResponseEntity<Object> create(@Valid @RequestBody VirtualDeviceModel virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.OK);
     }
 
@@ -39,7 +39,7 @@ public class VirtualDeviceApiController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody VirtualDeviceBase<?> virtualDevice) {
+    public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody VirtualDeviceModel virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.update(id, virtualDevice), HttpStatus.OK);
     }
 

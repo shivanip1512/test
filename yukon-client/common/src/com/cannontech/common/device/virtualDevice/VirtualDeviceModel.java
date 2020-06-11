@@ -13,10 +13,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 @JsonIgnoreProperties(value= {"id"}, allowGetters=true, ignoreUnknown=true)
 @JsonInclude(Include.NON_NULL)
 @JsonDeserialize
-public class VirtualDeviceBase<T extends VirtualDevice> extends DeviceBaseModel implements DBPersistentConverter<T> {
+public class VirtualDeviceModel extends DeviceBaseModel implements DBPersistentConverter<VirtualDevice> {
 
     @Override
-    public void buildModel(T virtualDevice) {
+    public void buildModel(VirtualDevice virtualDevice) {
         setId(virtualDevice.getPAObjectID());
         setName(virtualDevice.getPAOName());
         setEnable(virtualDevice.getPAODisableFlag() == 'N' ? true : false);
@@ -24,7 +24,7 @@ public class VirtualDeviceBase<T extends VirtualDevice> extends DeviceBaseModel 
     }
 
     @Override
-    public void buildDBPersistent(T virtualDevice) {
+    public void buildDBPersistent(VirtualDevice virtualDevice) {
         if (getId() != null) {
             virtualDevice.setDeviceID(getId());
         }
