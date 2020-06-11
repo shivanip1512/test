@@ -1487,6 +1487,8 @@
     <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
     <bean class="com.cannontech.common.validator.YukonValidationHelper"/>
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
+
+    <bean class="com.cannontech.common.device.virtualDevice.service.impl.VirtualDeviceServiceImpl"/>
     
     <bean class="com.cannontech.web.api.point.PointApiCreationValidator"/>
     <bean class="com.cannontech.web.api.point.PointApiValidator"/>
