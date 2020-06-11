@@ -1,33 +1,42 @@
 package com.cannontech.web.editor.point;
 
+import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
+import com.cannontech.web.tools.points.model.AlarmState;
+
 public class AlarmTableEntry {
 
-    private String condition = null;
-    private String generate = null;
-    private String excludeNotify = null;
+    private AlarmState condition ;
+    private String category ;
+    private AlarmNotificationTypes notify ;
 
-    public String getCondition() {
+    public AlarmTableEntry() {}
+
+    public AlarmTableEntry(AlarmState condition) {
+        this.condition = condition;
+    }
+
+    public AlarmState getCondition() {
         return condition;
     }
 
-    public String getExcludeNotify() {
-        return excludeNotify;
+    public AlarmNotificationTypes getNotify() {
+        return notify;
     }
 
-    public String getGenerate() {
-        return generate;
+    public String getCategory() {
+        return category;
     }
 
-    public void setCondition(String string) {
+    public void setCondition(AlarmState string) {
         condition = string;
     }
 
-    public void setExcludeNotify(String string) {
-        excludeNotify = string;
+    public void setNotify(AlarmNotificationTypes string) {
+        notify = string;
     }
 
-    public void setGenerate(String string) {
-        generate = string;
+    public void setCategory(String string) {
+        category = string;
     }
 
 }
