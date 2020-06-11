@@ -51,7 +51,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
     private static final String baseKey = "yukon.web.api.error";
-    public static final int maxDataProperties = 5;
+    public static final int maxFdrInterfaceTranslations = 5;
 
     @SuppressWarnings("unchecked")
     public PointApiValidator() {
@@ -395,36 +395,31 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 FdrTranslation fdrTranslation = fdrList.get(i);
 
                 FdrInterfaceType fdrInterfaceType = fdrTranslation.getFdrInterfaceType();
-                FdrDirection fdrDirection = fdrTranslation.getDirection();
-                String translation = fdrTranslation.getTranslation();
 
                 if (fdrInterfaceType == null) {
                     errors.rejectValue("fdrInterfaceType", "yukon.web.error.fieldrequired", new Object[] { "Interface" }, "");
                 }
 
-                if (fdrDirection == null) {
-                    errors.rejectValue("direction", "yukon.web.error.fieldrequired", new Object[] { "Direction" }, "");
-                }
-
-                if (translation == null) {
-                    errors.rejectValue("translation", "yukon.web.error.fieldrequired", new Object[] { "Translation" }, "");
-                }
-
                 if (!errors.hasFieldErrors("fdrInterfaceType")) {
-                    if (!errors.hasFieldErrors("direction")) {
-                        List<FdrDirection> supportedDirections = fdrInterfaceType.getSupportedDirectionsList();
-                        if (!supportedDirections.contains(fdrDirection)) {
-                            errors.rejectValue("direction", baseKey + ".fdr.unsupportedDirection", new Object[] { fdrDirection, fdrInterfaceType }, "");
-                        }
-                    }
-                    if (!errors.hasFieldErrors("translation")) {
-                        String[] parameters = translation.split(";");
-                        Map<FdrInterfaceOption, String> parameterMap = new HashMap<>();
+                    FdrDirection fdrDirection = fdrTranslation.getDirection();
+                    List<FdrDirection> supportedDirections = fdrInterfaceType.getSupportedDirectionsList();
+                    String supportedDirectionsInString  = supportedDirections.stream().map(direction -> direction.name()).collect(Collectors.joining(", "));
 
-                        if (parameterMap.size() > maxDataProperties) {
-                            errors.reject(baseKey + ".fdr.invalidTranslationPropertyCount", new Object[] { maxDataProperties }, "");
+                    if (fdrDirection == null || !supportedDirections.contains(fdrDirection)) {
+                        errors.rejectValue("direction", baseKey + ".fdr.supportedDirection", new Object[] { supportedDirectionsInString, fdrInterfaceType }, "");
+                    }
+
+                    Map<FdrInterfaceOption, String> parameterMap = new HashMap<>();
+                    List<FdrInterfaceOption> supportedOptions = fdrInterfaceType.getInterfaceOptionsList();
+                    String translation = fdrTranslation.getTranslation();
+
+                    if (translation != null) {
+                        String[] parameters = translation.split(";");
+
+
+                        if (parameterMap.size() > maxFdrInterfaceTranslations) {
+                            errors.reject(baseKey + ".fdr.invalidTranslationPropertyCount", new Object[] { maxFdrInterfaceTranslations }, "");
                         }
-                        List<FdrInterfaceOption> supportedOptions = fdrInterfaceType.getInterfaceOptionsList();
 
                         for (String paramSet : parameters) {
                             int splitSpot = paramSet.indexOf(":");
@@ -466,25 +461,26 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
                             }
                         }
-
-                        String missedFdrInterfaceOptions = supportedOptions.stream()
-                                                                           .filter(option -> !(parameterMap.keySet().contains(option)))
-                                                                           .map(option -> option.getOptionLabel())
-                                                                           .collect(Collectors.joining(", "));
-
-                        if (StringUtils.isNotBlank(missedFdrInterfaceOptions)) {
-                            errors.rejectValue("translation",
-                                               baseKey + ".fdr.missingTranslationProperty",
-                                               new Object[] { missedFdrInterfaceOptions, fdrInterfaceType },
-                                               "");
-                        }
-
                     }
+                    String missedFdrInterfaceOptions = supportedOptions.stream()
+                                                                       .filter(option -> !(parameterMap.keySet().contains(option)))
+                                                                       .map(option -> option.getOptionLabel())
+                                                                       .collect(Collectors.joining(", "));
+
+                    if (StringUtils.isNotBlank(missedFdrInterfaceOptions)) {
+                        errors.rejectValue("translation",
+                                           baseKey + ".fdr.missingTranslationProperty",
+                                           new Object[] { missedFdrInterfaceOptions, fdrInterfaceType },
+                                           "");
+                    }
+
                 }
-                errors.popNestedPath();
             }
 
+                errors.popNestedPath();
+            }
+    
         }
-    }
+    
 
 }

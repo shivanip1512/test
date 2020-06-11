@@ -3,6 +3,7 @@ package com.cannontech.common.fdr;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cannontech.database.data.point.PointType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /** 
@@ -93,6 +94,19 @@ public class FdrTranslation {
                 }
             }
         }
+    }
+    
+    public static FdrTranslation of(FdrTranslation fdrTranslation, Integer pointId, PointType pointType) {
+        FdrTranslation fdrTranslationEntry = new FdrTranslation();
+        String fdrTranslationString = fdrTranslation.getTranslation() + ";POINTTYPE:" + pointType.toString() + ";";
+        fdrTranslationEntry.setTranslation(fdrTranslationString);
+
+        fdrTranslationEntry.setPointId(pointId);
+        fdrTranslationEntry.setParameterMap();
+        fdrTranslationEntry.setInterfaceType(fdrTranslation.getFdrInterfaceType());
+        fdrTranslationEntry.setDirection(fdrTranslation.getDirection());
+
+        return fdrTranslationEntry;
     }
 
     @Override

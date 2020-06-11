@@ -22,7 +22,7 @@
 <entry key="yukon.web.api.error.pointTypeMismatch">Point Type {0} does not match existing type {1} for id: {2}.</entry>
 <entry key="yukon.web.api.error.paoIdMismatch">PaoId {0} does not match existing paoId {1}.</entry>
 
-<entry key="yukon.web.api.error.fdr.unsupportedDirection">{0} Direction is not supported by the {1} Interface.</entry>
+<entry key="yukon.web.api.error.fdr.supportedDirection">{0} Directions are supported by the {1} Interface.</entry>
 <entry key="yukon.web.api.error.fdr.invalidTranslationPropertyCount">Maximum allowed Translation property is {0}.</entry>
 <entry key="yukon.web.api.error.fdr.duplicateTranslationProperty">Duplicate Translation property {0} for Interface {1}.</entry>
 <entry key="yukon.web.api.error.fdr.inValidTranslationPropertyInterface">Translation property {0} is not valid for Interface {1}.</entry>

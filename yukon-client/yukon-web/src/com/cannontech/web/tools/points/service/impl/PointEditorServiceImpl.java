@@ -557,11 +557,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     private void addFdrTranslations(PointBase pointBase, List<FdrTranslation> fdrTranslations, MessageSourceAccessor messageAccessor) {
         if (CollectionUtils.isNotEmpty(fdrTranslations)) {
             for (FdrTranslation fdrTranslation : fdrTranslations) {
-                String fdrTranslationString = fdrTranslation.getTranslation() + ";POINTTYPE:" + pointBase.getPoint().getPointTypeEnum().toString() + ";";
-                fdrTranslation.setTranslation(fdrTranslationString);
-                fdrTranslation.setPointId(pointBase.getPoint().getPointID());
-                fdrTranslation.setParameterMap();
-                fdrService.addFdrTranslation(fdrTranslation, messageAccessor);
+                fdrService.addFdrTranslation(FdrTranslation.of(fdrTranslation, pointBase.getPoint().getPointID(), pointBase.getPoint().getPointTypeEnum()), messageAccessor);
             }
         }
     }
