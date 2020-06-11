@@ -171,7 +171,6 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
         if(CollectionUtils.isNotEmpty(getFdrList())) {
             for(FdrTranslation fdrTranslation: getFdrList()) {
-                fdrTranslation.setPointId(getPointId());
                 fdrTranslation.setParameterMap();
                 fdrTranslation.setTranslation(fdrTranslation.getTranslationString(getPointType()));
             }
