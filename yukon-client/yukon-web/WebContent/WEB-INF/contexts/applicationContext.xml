@@ -1491,4 +1491,5 @@
     <bean class="com.cannontech.web.api.point.PointApiCreationValidator"/>
     <bean class="com.cannontech.web.api.point.PointApiValidator"/>
     <bean class="com.cannontech.web.tools.points.service.impl.PointEditorServiceImpl"/>
+    <bean class="com.cannontech.common.trend.service.impl.TrendServiceImpl"/>
 </beans>

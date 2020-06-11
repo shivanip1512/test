@@ -2,6 +2,7 @@ package com.cannontech.common.events.loggers;
 
 import org.joda.time.Instant;
 
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.pao.PaoType;
@@ -86,7 +87,9 @@ public interface MeteringEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category="amr.meters")
     public void meterEdited(@Arg(ArgEnum.deviceName) String deviceName,
                             @Arg(ArgEnum.meterNumber) String meterNumber,
-                            @Arg(ArgEnum.username) String username);
+                            @Arg(ArgEnum.username) String username, 
+                            @Arg(ArgEnum.meterDescription) YukonMeter originalMeter, 
+                            @Arg(ArgEnum.meterDescription) YukonMeter updatedMeter);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category="amr.meters")
     public void meterDeleted(@Arg(ArgEnum.deviceName) String deviceName,
