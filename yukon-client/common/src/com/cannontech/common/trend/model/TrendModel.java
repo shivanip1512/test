@@ -47,8 +47,9 @@ public class TrendModel {
      * Create DBPersistent object to insert
      */
     public void buildDBPersistent(GraphDefinition graph) {
-        com.cannontech.database.db.graph.GraphDefinition graphDefinition = graph.getGraphDefinition();
-        graphDefinition.setName(getName());
+        if (getName() != null) {
+            graph.getGraphDefinition().setName(getName());
+        }
         ArrayList<GraphDataSeries> graphDataSeries = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
@@ -81,7 +82,9 @@ public class TrendModel {
                 graphDataSeries.add(graphSeries);
             }
         }
-        graph.setGraphDataSeries(graphDataSeries);
+        if (!graphDataSeries.isEmpty()) {
+            graph.setGraphDataSeries(graphDataSeries);
+        }
     }
 
     public void buildModel(GraphDefinition graph) {

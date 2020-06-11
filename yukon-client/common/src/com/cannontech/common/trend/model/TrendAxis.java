@@ -1,39 +1,14 @@
 package com.cannontech.common.trend.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 public enum TrendAxis implements DisplayableEnum {
-    LEFT('L'),
-    RIGHT('R');
+    LEFT, RIGHT;
 
-    private Character abbreviation;
-
-    private final static ImmutableMap<Character, TrendAxis> lookupAbbreviation;
-    static {
-        Builder<Character, TrendAxis> dbBuilder = ImmutableMap.builder();
-        for (TrendAxis axis : values()) {
-            dbBuilder.put(axis.abbreviation, axis);
-        }
-        lookupAbbreviation = dbBuilder.build();
-    }
-
-    TrendAxis(Character abbreviation) {
-        this.abbreviation = abbreviation;
-    }
-
-    public Character getAbbreviation() {
-        return abbreviation;
-    }
-
-    public static TrendAxis getAxis(Character abbreviation) {
-        return lookupAbbreviation.get(abbreviation);
-    }
+    private String baseKey = "yukon.web.modules.tools.trend.axis.";
 
     @Override
     public String getFormatKey() {
-        return null;
+        return baseKey + name();
     }
-
 }
