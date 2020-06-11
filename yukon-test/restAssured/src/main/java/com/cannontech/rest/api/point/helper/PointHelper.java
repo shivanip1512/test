@@ -26,6 +26,7 @@ public class PointHelper {
     public final static Integer pointOffset = Integer.valueOf(ApiCallHelper.getProperty("pointOffset"));
     public final static Integer uomId = Integer.valueOf(ApiCallHelper.getProperty("uomId"));
     public final static Integer stateGroupId = Integer.valueOf(ApiCallHelper.getProperty("stateGroupId"));
+    public final static Integer notificationId = Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID"));
 
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
@@ -103,13 +104,12 @@ public class PointHelper {
                 .limitDuration(2)
                 .build();
     }
-    
-   
+  
     private static MockPointAlarming buildPointAlarming() {
         List<MockAlarmTableEntry> alarmTableEntry = new ArrayList<>();
         alarmTableEntry.add(buildAlarmTableEntry());
         return MockPointAlarming.builder()
-                .notificationGroupId(Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID")))
+                .notificationGroupId(notificationId)
                 .notifyOnAck(true)
                 .notifyOnClear(false)
                 .alarmTableList(alarmTableEntry)
@@ -123,6 +123,4 @@ public class PointHelper {
                 .notify(MockAlarmNotificationTypes.EXCLUDE_NOTIFY)
                 .build();
     }
-    
-   
 }
