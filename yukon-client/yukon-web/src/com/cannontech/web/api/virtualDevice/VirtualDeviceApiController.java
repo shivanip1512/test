@@ -21,7 +21,7 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.virtualDevice.VirtualDeviceApiValidator;
 
 @RestController
-@RequestMapping("/device/virtualDevice")
+@RequestMapping("/device/virtualDevices")
 public class VirtualDeviceApiController {
 
     @Autowired private VirtualDeviceService virtualDeviceService;
@@ -33,9 +33,9 @@ public class VirtualDeviceApiController {
         return new ResponseEntity<>(virtualDeviceService.create(virtualDevice), HttpStatus.OK);
     }
 
-    @GetMapping("/{virtualDeviceId}")
-    public ResponseEntity<Object> retrieve(@PathVariable int virtualDeviceId) {
-        return new ResponseEntity<>(virtualDeviceService.retrieve(virtualDeviceId), HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> retrieve(@PathVariable int id) {
+        return new ResponseEntity<>(virtualDeviceService.retrieve(id), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")

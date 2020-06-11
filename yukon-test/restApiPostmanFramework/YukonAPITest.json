@@ -2994,14 +2994,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevice/{device-id}",
+							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
 								"device",
-								"virtualDevice",
+								"virtualDevices",
 								"{device-id}"
 							]
 						}
@@ -3026,14 +3026,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevice/create",
+							"raw": "{{api-url}}/api/device/virtualDevices/create",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
 								"device",
-								"virtualDevice",
+								"virtualDevices",
 								"create"
 							]
 						}
@@ -3055,14 +3055,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/virtualDevice/{device-id}",
+							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
 								"device",
-								"virtualDevice",
+								"virtualDevices",
 								"{device-id}"
 							]
 						}
@@ -3146,31 +3146,31 @@
 	],
 	"variable": [
 		{
-			"id": "b2c75241-1bf1-4fa8-a456-228b5bee3bfc",
+			"id": "af69e4b6-09c7-4b7e-86e7-4effeaa16fa8",
 			"key": "api-url",
 			"value": "http://pspl-sw-night.eatoneaseng.net:8080",
 			"type": "string"
 		},
 		{
-			"id": "7e40dcef-651b-4a7d-b21d-3da942e9bf7b",
+			"id": "2c9c7d3f-c8d6-4218-be6c-53d27f6dac4b",
 			"key": "username",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "b33d5425-acc3-4c2b-ae9b-ae804d1a32c7",
+			"id": "3b05b1ca-420a-4986-9f5e-c1c332c54879",
 			"key": "password",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "096a8a2a-433d-4aa8-9c3f-21da49f5f06a",
+			"id": "0b237ade-fd73-4350-8169-c63414ad322c",
 			"key": "currentAccessToken",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "fe6ff35f-b0ac-451f-b79e-5e909fb32945",
+			"id": "72bb9bd6-e059-4c35-870a-89ed40c1fbe9",
 			"key": "accessTokenExpiry",
 			"value": "",
 			"type": "string"
