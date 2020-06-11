@@ -1,0 +1,10 @@
+=== Create
+
+*Request Properties* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Create/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Create/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Create/response-fields.adoc[]
+*Response JSON* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Create/http-response.adoc[]
