@@ -479,7 +479,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         pointBaseModel.buildDBPersistent(pointBase);
         StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
-            staleData = pointBaseModel.getStaleData().buildModel(new StaleData());
+            staleData = pointBaseModel.getStaleData().overwriteWith(new StaleData());
         }
     
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
@@ -500,7 +500,7 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         StaleData staleData = getStaleData(pointId);
         if (pointBaseModel.getStaleData() != null) {
-            staleData = pointBaseModel.getStaleData().buildModel(staleData);
+            staleData = pointBaseModel.getStaleData().overwriteWith(staleData);
         }
 
         List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());

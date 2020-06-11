@@ -1,10 +1,10 @@
-package com.cannontech.common.device.port;
+package com.cannontech.common.model;
 
 public interface ModelBuilder <T> {
     
     /**
      * Build model object .
      */
-    public T buildModel(T object);
+    public T overwriteWith(T object);
 
 }

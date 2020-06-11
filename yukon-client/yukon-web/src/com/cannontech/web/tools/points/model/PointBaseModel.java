@@ -169,8 +169,8 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
         getAlarming().buildDBPersistent(point.getPointAlarming());
 
-        if(CollectionUtils.isNotEmpty(getFdrList())) {
-            for(FdrTranslation fdrTranslation: getFdrList()) {
+        if (CollectionUtils.isNotEmpty(getFdrList())) {
+            for (FdrTranslation fdrTranslation : getFdrList()) {
                 fdrTranslation.setParameterMap();
                 fdrTranslation.setTranslation(fdrTranslation.getTranslationString(getPointType()));
             }

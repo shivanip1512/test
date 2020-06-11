@@ -3,7 +3,6 @@ package com.cannontech.web.editor.point;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.port.ModelBuilder;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
@@ -14,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class StaleData implements ModelBuilder<StaleData>{
+public class StaleData {
     
     public static enum UpdateStyle implements DisplayableEnum, DatabaseRepresentationSource {
         ALWAYS(0),
@@ -145,8 +144,8 @@ public class StaleData implements ModelBuilder<StaleData>{
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     } 
-    
-    public StaleData buildModel(StaleData staleData) {
+
+    public StaleData overwriteWith(StaleData staleData) {
         if (getTime() != null) {
             staleData.setTime(getTime());
         }
