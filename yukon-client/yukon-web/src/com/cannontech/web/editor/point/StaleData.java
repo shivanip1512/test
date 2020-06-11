@@ -3,6 +3,7 @@ package com.cannontech.web.editor.point;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.port.ModelBuilder;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class StaleData {
+public class StaleData implements ModelBuilder<StaleData>{
     
     public static enum UpdateStyle implements DisplayableEnum, DatabaseRepresentationSource {
         ALWAYS(0),
@@ -145,15 +146,14 @@ public class StaleData {
         this.enabled = enabled;
     } 
     
-    public static StaleData of(StaleData stateDataModel) {
-        StaleData staleData = new StaleData(); // populate default values
-        if (stateDataModel.getTime() != null) {
-            staleData.setTime(stateDataModel.getTime());
+    public StaleData buildModel(StaleData staleData) {
+        if (getTime() != null) {
+            staleData.setTime(getTime());
         }
-        if (stateDataModel.getUpdateStyle() != null) {
-            staleData.setUpdateStyle(stateDataModel.getUpdateStyle());
+        if (getUpdateStyle() != null) {
+            staleData.setUpdateStyle(getUpdateStyle());
         }
-        if (stateDataModel.getTime() != null || stateDataModel.getUpdateStyle() != null) {
+        if (getTime() != null || getUpdateStyle() != null) {
             staleData.setEnabled(true);
         }
 
