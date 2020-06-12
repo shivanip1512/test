@@ -49,7 +49,6 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -60,6 +59,7 @@ import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessHolder;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -1203,37 +1203,38 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     @Override
-    public List<Integer> getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange,
+    public DataCompletenessHolder getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange,
             ImmutableSet<PaoType> allPaoTypes) {
-     // These 4 RFN electric meters belongs to RFN530S4 family which have Usage attribute with point offset 3 
-     // while other RFN electric meters have offset 1
+        // These 4 RFN electric meters belongs to RFN530S4 family which have Usage attribute with point offset 3
+        // while other RFN electric meters have offset 1
         ImmutableSet<PaoType> rfnTypes530S4 = ImmutableSet.of(
                 PaoType.RFN530S4EAX,
                 PaoType.RFN530S4EAXR,
                 PaoType.RFN530S4ERX,
                 PaoType.RFN530S4ERXR);
-
-     // To deal with special kind for RFN530S4 types, we need to get its actual count with offset value 3 
-        List<Integer> records = new ArrayList<Integer>();
+        DataCompletenessHolder records = new DataCompletenessHolder();
+        // To deal with special kind for RFN530S4 types, we need to get its actual count with offset value 3
         if (allPaoTypes.containsAll(rfnTypes530S4)) {
-            records = getDataCompletenessData(deviceGroup, dateRange, rfnTypes530S4, 3);
+            records = getCountOfReadings(deviceGroup, dateRange, rfnTypes530S4, 3);
         }
-     // This gives paoTypes which do not have the set of Special RFN530S4 paotypes
+        // This gives paoTypes which do not have the set of Special RFN530S4 paotypes
         ImmutableSet<PaoType> paoTypes = ImmutableSet.copyOf(Sets.difference(allPaoTypes, rfnTypes530S4));
-     // This list will be passed to get its actual count with offset value 1
-        List<Integer> finalRecords = getDataCompletenessData(deviceGroup, dateRange, paoTypes, 1);
-        if (records.size() != 0)
-            finalRecords.addAll(records);
-        return finalRecords;
+        // This list will be passed to get its actual count with offset value 1
+        DataCompletenessHolder finalRecords = getCountOfReadings(deviceGroup, dateRange, paoTypes, 1);
+
+        DataCompletenessHolder finalData = new DataCompletenessHolder();
+        finalData.setPaoCount(records.getPaoCount() + finalRecords.getPaoCount());
+        finalData.setRecordCount(records.getRecordCount() + finalRecords.getRecordCount());
+        return finalData;
     }
     /**
      * TODO : This method will be improve by removing hard coded value of point offset, 
-     *        deal with Special RFN whose Offset = 3 and also remove additional SQL for RF meter types under YUK:22341
+     *        deal with Special RFN whose Offset = 3 and also remove additional SQL for RF meter types under YUK-22341
      * This method returns the list of counts of devices which are reported usage data every hour within 
      * the date Range for particular PAO types and point offset.  
      */
 
-    private List<Integer> getDataCompletenessData(DeviceGroup deviceGroup, Range<Date> dateRange,
+    private DataCompletenessHolder getCountOfReadings(DeviceGroup deviceGroup, Range<Date> dateRange,
             ImmutableSet<PaoType> paoTypesList, int pointOffset) {
 
         SqlFragmentSource groupSqlWhereClause = getDeviceGroupSql(deviceGroup);
@@ -1242,10 +1243,11 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         if (databaseVendor.isOracle()) {
             timeStampFormat = "AND TO_CHAR(TimeStamp, 'mm:ss') = '00:00')";
         }
-
+        final DataCompletenessHolder holder = new DataCompletenessHolder();
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) AS Actual FROM (");
-        sql.append("    SELECT DISTINCT p.PaObjectId, PointName, rph.PointId, TimeStamp, Value, Quality");
+        sql.append("SELECT COUNT(*) AS Actual,");
+        sql.append("COUNT(DISTINCT pao.PaobjectId) AS PaoCount FROM (");
+        sql.append("    SELECT DISTINCT p.PaObjectId, rph.PointId, TimeStamp, Value, Quality");
         sql.append("    FROM RawPointHistory rph");
         sql.append("    JOIN Point p ON rph.PointId = p.PointId");
         sql.append("    AND PointType").eq_k(PointType.Analog);
@@ -1256,9 +1258,14 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sql.append("JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId");
         sql.append("WHERE").appendFragment(groupSqlWhereClause);
         sql.append("AND pao.Type").in_k(paoTypesList);
-        sql.append("GROUP BY PaoName, Type, DisableFlag, PointName");
-        List<Integer> finalRecords = yukonTemplate.query(sql, TypeRowMapper.INTEGER);
-        return finalRecords;
-    }
+        yukonTemplate.query(sql, new YukonRowCallbackHandler() {
 
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                holder.setRecordCount(rs.getInt("Actual"));
+                holder.setPaoCount(rs.getInt("PaoCount"));
+            }
+        });
+        return holder;
+    }
 }

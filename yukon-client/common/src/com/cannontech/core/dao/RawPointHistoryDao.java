@@ -22,6 +22,7 @@ import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessHolder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 
@@ -409,13 +410,13 @@ public interface RawPointHistoryDao {
             Set<PointQuality> excludeQualities);
 
     /**
-     * This method returns the list of records for devices reported every hour within the date range
+     * This method returns the object consisting of record count for each PAO (paoCount) for devices reported every hour within the date range
      * @param deviceGroup - Device group 
      * @param dateRange - range of days in which device reported every hour  
      * @param paoType - Set of PAO Types applicable for device Group
-     * @return List of Records
+     * @return DataCompletenessHolder
      */
 
-    public List<Integer> getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
+    public DataCompletenessHolder getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
 
 }
