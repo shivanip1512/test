@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.points.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
@@ -36,6 +38,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -198,8 +201,8 @@ public class PointEditorServiceImpl implements PointEditorService {
      */
     private void setupAlarmTableEntry(AlarmTableEntry entry, char gen, char category) {
         LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategory(category);
-        entry.setGenerate(liteAlarmCategory.getCategoryName());
-        entry.setExcludeNotify(PointAlarming.getExcludeNotifyString(gen));
+        entry.setCategory(liteAlarmCategory.getCategoryName());
+        entry.setNotify(AlarmNotificationTypes.getAnalogControlTypeValue(PointAlarming.getExcludeNotifyString(gen)));
     }
     
     @Override
@@ -265,8 +268,8 @@ public class PointEditorServiceImpl implements PointEditorService {
         String exclNotify = "";
 
         for (AlarmTableEntry entry : alarmTableEntries) {
-            alarmStates += (char) alarmCatDao.getAlarmCategoryId(entry.getGenerate());
-            exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
+            alarmStates += (char) alarmCatDao.getAlarmCategoryId(entry.getCategory());
+            exclNotify += PointAlarming.getExcludeNotifyChar(entry.getNotify().getDbString());
         }
 
         int numberAlarms = alarmTableEntries.size();
@@ -466,36 +469,114 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public int create(PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel) {
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
         StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
-             staleData = StaleData.of(pointBaseModel.getStaleData());
+            staleData = StaleData.of(pointBaseModel.getStaleData());
         }
-        List<AlarmTableEntry> alarmTableEntries = new ArrayList<>();  //TODO support Alarming in another story
-
+        
+        List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
-        //TODO FDR 
-        return pointBase.getPoint().getPointID();
+
+        // TODO FDR
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
     }
 
+    @Override
+    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        pointBaseModel.buildDBPersistent(pointBase);
+
+        StaleData staleData = null;
+        if (pointBaseModel.getStaleData() != null) {
+            staleData = StaleData.of(pointBaseModel.getStaleData());
+        }
+        
+        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());
+        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        //TODO FDR 
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
+    }
+
+    private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
+        List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
+
+        List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
+        if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
+            alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
+        }
+
+        // Iterate over all alarm state entries to maintain order and set default values if category and notify are null. 
+        for (String alarmState : alarmStates) {
+            AlarmTableEntry entry = entries.stream()
+                                           .filter(e -> e.getCondition().equals(alarmState))
+                                           .findFirst()
+                                           .orElse(new AlarmTableEntry(alarmState));
+            orderedAlarmTableEntries.add(setDefaultsForAlarmEntry(entry));
+        }
+        return orderedAlarmTableEntries;
+    }
+
+    /**
+     * Set default values for AlarmTableEntry if category or notify are null.
+     */
+    private AlarmTableEntry setDefaultsForAlarmEntry(AlarmTableEntry entry) {
+        if (entry.getCategory() == null) {
+            entry.setCategory(CtiUtilities.STRING_NONE);
+        }
+
+        if (entry.getNotify() == null) {
+            entry.setNotify(AlarmNotificationTypes.NONE);
+        }
+        return entry;
+    }
 
     @Override
     public PointBaseModel<? extends PointBase> retrieve(int pointId) {
 
-        PointBase base = pointDao.get(pointId);
+        PointBase pointBase = pointDao.get(pointId);
         StaleData staleData = getStaleData(pointId);
 
-        PointType ptType = PointType.getForString(base.getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
 
         if (pointBaseModel != null) {
-            pointBaseModel.buildModel(base);
-            pointBaseModel.setStaleData(staleData);
+            buildPointBaseModel(pointBase, pointBaseModel, staleData);
         }
-
         return pointBaseModel;
+    }
+
+    private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {
+        pointBaseModel.buildModel(pointBase);
+        pointBaseModel.setStaleData(staleData);
+        pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(pointBase));
+    }
+    
+
+     /**
+     * Update existing alarm table entries with new Entries.
+     * 
+     */
+    private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
+        Map<String, AlarmTableEntry> newEntryMap = newEntries.stream()
+                                                                 .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
+        // Update existing AlarmTableEntry based on the new entries.
+        for (AlarmTableEntry entry : existingEntries) {
+            if (newEntryMap.get(entry.getCondition()) != null) {
+                if (newEntryMap.get(entry.getCondition()).getCategory() != null) {
+                    entry.setCategory(newEntryMap.get(entry.getCondition()).getCategory());
+                }
+                if (newEntryMap.get(entry.getCondition()).getNotify() != null) {
+                    entry.setNotify(newEntryMap.get(entry.getCondition()).getNotify());
+                }
+            }
+        }
+        return existingEntries;
     }
 
 }

@@ -140,7 +140,7 @@ public class ProgramConstraintController {
                 HashMap<String, Integer> constraintIdMap = (HashMap<String, Integer>) response.getBody();
                 int constraintId = constraintIdMap.get("id");
                 flash.setConfirm(
-                    new YukonMessageSourceResolvable(baseKey + "save.success", programConstraint.getName()));
+                    new YukonMessageSourceResolvable("yukon.common.save.success", programConstraint.getName()));
                 return "redirect:/dr/setup/constraint/" + constraintId;
             }
 
@@ -150,7 +150,7 @@ public class ProgramConstraintController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating program constraint: {}. Error: {}", programConstraint.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", programConstraint.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", programConstraint.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -165,7 +165,7 @@ public class ProgramConstraintController {
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -174,7 +174,7 @@ public class ProgramConstraintController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting program constraint: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;

@@ -1,24 +1,35 @@
 package com.cannontech.web.api.point;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.cannontech.database.db.notification.NotificationGroup;
+import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
+import com.cannontech.web.tools.points.model.PointAlarming;
 import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
 import com.cannontech.web.tools.points.model.PointBaseModel;
@@ -32,6 +43,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Autowired private PointValidationUtil pointValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private AlarmCatDao alarmCatDao;
     private static final String baseKey = "yukon.web.api.error";
 
     @SuppressWarnings("unchecked")
@@ -45,11 +57,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
 
     @Override
     protected void doValidation(T target, Errors errors) {
-
+        PointType pointType = target.getPointType();
+        boolean isCreationOperation = target.getPointId() == null ? true : false;
+        
         if (target.getPointName() != null) {
             pointValidationUtil.validateName("pointName", errors, target.getPointName());
         }
-
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
             if (liteYukonPAObject == null) {
@@ -57,8 +70,10 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
 
             if (!errors.hasFieldErrors("paoId")) {
-
-                boolean isCreationOperation = target.getPointId() == null ? true : false;
+                pointValidationUtil.checkIfPaoIdChanged(errors,target, isCreationOperation);
+            }
+            
+            if (!errors.hasFieldErrors("paoId")) {
 
                 if (!errors.hasFieldErrors("pointName") && target.getPointName() != null) {
                     pointValidationUtil.validatePointName(target, "pointName", errors, isCreationOperation);
@@ -70,6 +85,10 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
         }
 
+        if(!errors.hasFieldErrors("pointType") && target.getPointType() != null) {
+            pointValidationUtil.checkIfPointTypeChanged(errors, target, isCreationOperation);
+        }
+        
         if (target instanceof ScalarPointModel) {
             validateScalarPointModel(target, errors);
         }
@@ -77,7 +96,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         validateArchiveSettings(target, errors);
         validateStateGroupId(target, errors);
         validateStaleDataSettings(target, errors);
-
+        validateAlarming(target.getAlarming(), pointType, errors, target.getStateGroupId());
         if (target instanceof AnalogPointModel) {
             validateAnalogPointModel(target, errors);
         }
@@ -145,6 +164,74 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
         }
 
+    }
+
+    private void validateAlarming(PointAlarming pointAlarming, PointType pointType, Errors errors, Integer stateGroupID) {
+        if (pointAlarming != null) {
+            // Validate notificationGroupId.
+            Integer notificationGroupId = pointAlarming.getNotificationGroupId();
+            boolean isNullOrDefault = notificationGroupId == null || 
+                                          notificationGroupId == NotificationGroup.NONE_NOTIFICATIONGROUP_ID;
+            if (!isNullOrDefault) {
+                Optional<LiteNotificationGroup> existingNotifGroup = serverDatabaseCache
+                                                                        .getAllContactNotificationGroups()
+                                                                        .stream()
+                                                                        .filter(e -> e.getNotificationGroupID() == notificationGroupId)
+                                                                        .findFirst();
+                if (existingNotifGroup.isEmpty()) {
+                    errors.rejectValue("alarming.notificationGroupId", "yukon.web.api.error.doesNotExist", new Object[] { "Notification GroupId" }, "");
+                }
+            }
+            
+            // Validate alarmTableList
+            List<AlarmTableEntry> alarmList = pointAlarming.getAlarmTableList();
+            if (alarmList != null && CollectionUtils.isNotEmpty(alarmList)) {
+                List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
+                if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
+                    alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
+                    // Add all state present in the State Group
+                    // TODO : Case for stateGroupID = null need to handle for Status point type.
+                    if (stateGroupID != null) {
+                        List<String> rawStates = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
+                                                                                          .stream()
+                                                                                          .map(e -> String.valueOf(e.getLiteID()))
+                                                                                          .collect(Collectors.toList());
+                        alarmStates.addAll(rawStates);
+                    }
+                }
+
+                List<String> alarmStateEntries = new ArrayList<>();
+                for (int i = 0; i < alarmList.size(); i++) {
+                    errors.pushNestedPath("alarming.alarmTableList[" + i + "]");
+                    AlarmTableEntry entry = alarmList.get(i);
+                    if (entry.getCondition()!= null && !alarmStates.contains(entry.getCondition())) {
+                        errors.rejectValue("condition", "yukon.web.api.error.invalid", new Object[] { "Condition" }, "");
+                    }
+                    if (!errors.hasFieldErrors("condition") && entry.getCondition()!= null 
+                            && alarmStateEntries.contains(entry.getCondition())) {
+                        errors.rejectValue("condition", "yukon.web.api.error.field.uniqueError", new Object[] { "Condition", entry.getCondition()}, "");
+                    }
+                    if (entry.getCondition() == null && entry.getCategory() != null && entry.getNotify() != null) {
+                        errors.rejectValue("condition", "yukon.web.error.fieldrequired", new Object[] { "Condition" }, "");
+                    }
+
+                    if (entry.getCategory() != null) {
+                        Optional<LiteAlarmCategory> catagory = alarmCatDao.getAlarmCategories()
+                                                                          .stream()
+                                                                          .filter(e -> e.getCategoryName().equals(entry.getCategory()))
+                                                                          .findFirst();
+                       if (catagory.isEmpty()) {
+                           errors.rejectValue("category", "yukon.web.api.error.invalid", new Object[] { "Category" }, "");
+                       }
+                    }
+
+                    if (entry.getCondition()!= null) {
+                        alarmStateEntries.add(entry.getCondition());
+                    }
+                    errors.popNestedPath();
+                }
+            }
+        }
     }
 
     /**

@@ -191,7 +191,7 @@ public class ControlAreaSetupController {
                 int controlAreaId = controlAreaIdMap.get("controlAreaId");
                 controlAreaTriggerCache.invalidateAll(triggerIds);
                 triggerErrorCache.invalidateAll(triggerIds);
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", controlArea.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", controlArea.getName()));
                 return "redirect:/dr/setup/controlArea/" + controlAreaId;
             }
 
@@ -201,7 +201,7 @@ public class ControlAreaSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating control area: {}. Error: {}", controlArea.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlArea.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", controlArea.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -217,7 +217,7 @@ public class ControlAreaSetupController {
             ResponseEntity<? extends Object> response = deleteControlArea(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -226,7 +226,7 @@ public class ControlAreaSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting control area: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;

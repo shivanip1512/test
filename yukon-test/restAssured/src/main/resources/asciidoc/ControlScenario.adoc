@@ -3,44 +3,44 @@
 
 ==== Control Scenario
 *Request Properties* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Create/request-fields.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Create/http-request.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Create/response-fields.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Create/http-response.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Create/http-response.adoc[]
 
 === Retrieve
 
 ==== Control Scenario
 *Request JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Get/http-request.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Get/response-fields.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Get/http-response.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Get/http-response.adoc[]
 
 === Update
 
 ==== Control Scenario
 *Request Properties* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/request-fields.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/http-request.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/response-fields.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Update/http-response.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Update/http-response.adoc[]
 
 === Delete
 
 ==== Control Scenario
 *Request Properties* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Delete/request-fields.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Delete/http-request.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Delete/response-fields.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ControlScenarioSetupApiControllerTest/Test_ControlScenario_Delete/http-response.adoc[]
+include::{snippets}/ControlScenarioApiDoc/Test_ControlScenario_Delete/http-response.adoc[]

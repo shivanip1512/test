@@ -1489,7 +1489,11 @@
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
 
     <bean class="com.cannontech.common.device.virtualDevice.service.impl.VirtualDeviceServiceImpl"/>
+
+    <bean class="com.cannontech.web.stars.commChannel.CommChannelSetupHelper"/>
     
     <bean class="com.cannontech.web.api.point.PointApiCreationValidator"/>
     <bean class="com.cannontech.web.api.point.PointApiValidator"/>
+
+    <bean class="com.cannontech.common.trend.service.impl.TrendServiceImpl"/>
 </beans>
