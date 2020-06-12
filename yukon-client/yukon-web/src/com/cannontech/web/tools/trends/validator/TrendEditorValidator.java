@@ -11,17 +11,17 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.core.dao.GraphDao;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Service
 public class TrendEditorValidator extends SimpleValidator<TrendModel> {
 
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private GraphDao graphDao;
-
+    @Autowired private IDatabaseCache cache;
+    
     private static final String baseKey = "yukon.web.modules.tools.trend";
 
     public TrendEditorValidator() {
@@ -46,15 +46,15 @@ public class TrendEditorValidator extends SimpleValidator<TrendModel> {
                     "Name cannot include any of the following characters: " + String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
         }
 
-        // 3. Max length is 60 chars.
-        if (!errors.hasErrors() && StringUtils.length(trendName) > 60) {
+        // 3. Max length is 40 chars.
+        if (!errors.hasErrors() && StringUtils.length(trendName) <= 40) {
             errors.rejectValue("name", baseKey + ".field.error.maxLengthExceeded",
                     new Object[] { nameI18nText, 60 }, "Name cannot exceed 60 characters.");
         }
 
         // 4. Name should be unique.
         if (!errors.hasErrors()) {
-            List<LiteGraphDefinition> graphDefs = graphDao.getGraphDefinitions();
+            List<LiteGraphDefinition> graphDefs = cache.getAllGraphDefinitions();
             for (LiteGraphDefinition liteGraphDefinition : graphDefs) {
                 if (StringUtils.equals(trendName, liteGraphDefinition.getName())) {
                     if (trendModel.getTrendId() == null || liteGraphDefinition.getLiteID() != trendModel.getTrendId()) {

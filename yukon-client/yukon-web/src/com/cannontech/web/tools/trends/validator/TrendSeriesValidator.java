@@ -10,6 +10,7 @@ import com.cannontech.common.trend.model.TrendSeries;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.trends.helper.TrendEditorHelper;
 
 @Service
 public class TrendSeriesValidator extends SimpleValidator<TrendSeries> {
@@ -19,9 +20,6 @@ public class TrendSeriesValidator extends SimpleValidator<TrendSeries> {
     private static final String baseKey = "yukon.web.modules.tools.trend";
     private static final String mandatoryFieldMsgKey = "yukon.web.error.fieldrequired";
     
-    /* The illegal characters for label are same as that in PaoUtils.ILLEGAL_NAME_CHARS. Expect / character. This character is allowed in label. */
-    public final static char[] ILLEGAL_LABEL_CHARS = { '\'', ',', '|', '"', '\\' };
-
     public TrendSeriesValidator() {
         super(TrendSeries.class);
     }
@@ -48,16 +46,20 @@ public class TrendSeriesValidator extends SimpleValidator<TrendSeries> {
                     new Object[] { accessor.getMessage(baseKey + ".label"), 40 }, "Label cannot exceed 40 characters.");
         }
 
-        if (!errors.hasFieldErrors("label") && !StringUtils.containsNone(label, ILLEGAL_LABEL_CHARS)) {
-            errors.rejectValue("label", baseKey + ".field.error.containsIllegalChars",
-                    new Object[] { accessor.getMessage(baseKey + ".label"),
-                            String.valueOf(ILLEGAL_LABEL_CHARS) },
-                    "Name cannot include any of the following characters: " + String.valueOf(ILLEGAL_LABEL_CHARS));
-        }
-        
         if (!errors.hasFieldErrors("multiplier") && trendSeries.getMultiplier() == null) {
             errors.rejectValue("multiplier", mandatoryFieldMsgKey,
                     new Object[] { accessor.getMessage(baseKey + ".multiplier") }, "Multiplier is required.");
         }
+        
+        if (TrendEditorHelper.isDateType(trendSeries.getType())) {
+            //TODO: This code will be removed after, and a method from YukonValidationUtils will be added YUK-22272 is merged in master. 
+            if (trendSeries.getDate() == null) {
+                errors.rejectValue("date", mandatoryFieldMsgKey,
+                        new Object[] { accessor.getMessage("yukon.common.date") }, "Date is required.");
+            } else if (trendSeries.getDate().isAfterNow()) {
+                errors.rejectValue("date", baseKey + ".date.error.futureDate", "Date cannot be future date.");
+            }
+        }
+        
     }
 }

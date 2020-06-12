@@ -4,6 +4,7 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +53,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.tools.trends.helper.TrendEditorHelper;
 import com.cannontech.web.tools.trends.validator.TrendEditorValidator;
 import com.cannontech.web.tools.trends.validator.TrendSeriesValidator;
 import com.cannontech.yukon.IDatabaseCache;
@@ -109,10 +111,13 @@ public class TrendEditorController {
     @GetMapping("/renderEditPointPopup")
     public String renderEditPointPopup(ModelMap model,
             @RequestParam("trendSeries") TrendSeries trendSeries) {
+        if (trendSeries.getDate() == null) {
+            trendSeries.setDate(DateTime.now());
+        }
         model.addAttribute("trendSeries", trendSeries);
         LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
         model.addAttribute("deviceName", yukonPao.getPaoName());
-        model.addAttribute("isDateTypeSelected", isDateType(trendSeries.getType()));
+        model.addAttribute("isDateTypeSelected", TrendEditorHelper.isDateType(trendSeries.getType()));
         setPointPopupModel(model);
         return "trends/setup/pointSetupPopup.jsp";
     }
@@ -162,7 +167,7 @@ public class TrendEditorController {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             setPointPopupModel(model);
             model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
-            model.addAttribute("isDateTypeSelected", isDateType(trendSeries.getType()));
+            model.addAttribute("isDateTypeSelected", TrendEditorHelper.isDateType(trendSeries.getType()));
             return "trends/setup/pointSetupPopup.jsp";
         }
 
@@ -176,7 +181,7 @@ public class TrendEditorController {
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
         json.put("graphType", accessor.getMessage(trendSeries.getType().getFormatKey()));
         json.put("style", accessor.getMessage(trendSeries.getStyle().getFormatKey()));
-        if (isDateType(trendSeries.getType())) {
+        if (TrendEditorHelper.isDateType(trendSeries.getType())) {
             json.put("dateStr", dateFormattingService.format(trendSeries.getDate(), DateFormatEnum.DATE, userContext));
         }
         response.setContentType("application/json");
@@ -185,11 +190,13 @@ public class TrendEditorController {
     }
 
     private void setPointPopupModel(ModelMap model) {
+        List<GraphType> graphTypes = Lists.newArrayList(GraphType.values());
+        graphTypes.remove(GraphType.MARKER_TYPE);
         model.addAttribute("styles", RenderType.getWebSupportedTypes());
-        model.addAttribute("graphTypes", TrendType.GraphType.values());
+        model.addAttribute("graphTypes", graphTypes);
         model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
         model.addAttribute("now", DateTime.now());
-        model.addAttribute("graphTypeDateEnumValue", TrendType.GraphType.DATE_TYPE);
+        model.addAttribute("graphTypeDateEnumValue", GraphType.DATE_TYPE);
         model.addAttribute("colors", Color.values());
     }
 
@@ -201,7 +208,7 @@ public class TrendEditorController {
         binder.registerCustomEditor(RenderType.class, new EnumPropertyEditor<>(RenderType.class));
         binder.registerCustomEditor(Color.class, new EnumPropertyEditor<>(Color.class));
 
-        PropertyEditor dateTimeEditor = datePropertyEditorFactory.getDateTimePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.ERROR);
+        PropertyEditor dateTimeEditor = datePropertyEditorFactory.getDateTimePropertyEditor(DateFormatEnum.DATE, userContext, BlankMode.NULL);
         
         binder.registerCustomEditor(DateTime.class, dateTimeEditor);
         binder.registerCustomEditor(TrendSeries.class, new PropertyEditorSupport() {
@@ -244,9 +251,5 @@ public class TrendEditorController {
             return "redirect:create";
         }
         return "redirect:" + trendModel.getTrendId() + "/edit";
-    }
-    
-    private boolean isDateType(GraphType type) {
-        return type == GraphType.DATE_TYPE;
     }
 }
