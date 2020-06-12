@@ -16,26 +16,31 @@ public class PortValidatorHelper {
 
     public static void validatePortTimingFields(Errors errors, PortTiming timing) {
         if (!errors.hasFieldErrors("timing.preTxWait")) {
-            YukonValidationUtils.checkRange(errors, "timing.preTxWait", timing.getPreTxWait(), 0, 10000000, false);
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.preTxWait", timing.getPreTxWait(), 0, 10000000,
+                    "Pre Tx Wait", false);
         }
         if (!errors.hasFieldErrors("timing.rtsToTxWait")) {
-            YukonValidationUtils.checkRange(errors, "timing.rtsToTxWait", timing.getRtsToTxWait(), 0, 10000000, false);
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.rtsToTxWait", timing.getRtsToTxWait(), 0,
+                    10000000, "RTS To Tx Wait", false);
         }
         if (!errors.hasFieldErrors("timing.postTxWait")) {
-            YukonValidationUtils.checkRange(errors, "timing.postTxWait", timing.getPostTxWait(), 0, 10000000, false);
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.postTxWait", timing.getPostTxWait(), 0, 10000000,
+                    "Post Tx Wait", false);
         }
         if (!errors.hasFieldErrors("timing.receiveDataWait")) {
-            YukonValidationUtils.checkRange(errors, "timing.receiveDataWait", timing.getReceiveDataWait(), 0, 1000, false);
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.receiveDataWait", timing.getReceiveDataWait(), 0,
+                    1000, "Receive Data Wait", false);
         }
         if (!errors.hasFieldErrors("timing.extraTimeOut")) {
-            YukonValidationUtils.checkRange(errors, "timing.extraTimeOut", timing.getExtraTimeOut(), 0, 999, false);
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "timing.extraTimeOut", timing.getExtraTimeOut(), 0, 999,
+                    "Additional Time Out", false);
         }
     }
     
     public static void validatePortSharingFields(Errors errors, PortSharing sharing) {
         if (sharing.getSharedPortType() != null && sharing.getSharedPortType() != SharedPortType.NONE) {
             YukonValidationUtils.validatePort(errors, "sharing.sharedSocketNumber",
-                    String.valueOf(sharing.getSharedSocketNumber()), "yukon.web.error.socketNumber.required");
+                    String.valueOf(sharing.getSharedSocketNumber()), "Socket Number" );
         }
 
         if (sharing.getSharedSocketNumber() != null) {
@@ -80,7 +85,7 @@ public class PortValidatorHelper {
         if (isIpAddressRequired) {
             YukonValidationUtils.checkIfFieldRequired("ipAddress", errors, ipAddress, "IP Address");
         } else {
-            YukonValidationUtils.checkIsBlank(errors, "ipAddress", ipAddress, false);
+            YukonValidationUtils.checkIsEmpty(errors, "ipAddress", ipAddress, "IP Address");
         }
         if (!errors.hasFieldErrors("ipAddress")) {
             YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", ipAddress);
@@ -92,20 +97,18 @@ public class PortValidatorHelper {
      */
     public static void validateCarrierDetectWait(Errors errors, Integer carrierDetectWaitInMilliseconds) {
         if (carrierDetectWaitInMilliseconds != null) {
-            YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", carrierDetectWaitInMilliseconds, 0, 9999,
-                    false);
+            YukonValidationUtils.checkIfFieldRequiredAndInRange(errors, "carrierDetectWaitInMilliseconds",
+                    carrierDetectWaitInMilliseconds, 0, 999, "Carrier Detect Wait", false);
         }
     }
 
     /**
      * Validate Physical Port
      */
-    public static void validatePhysicalPort(Errors errors, String physicalPort) {
-        if (!org.springframework.util.StringUtils.hasText(physicalPort)) {
-            errors.rejectValue("physicalPort", "yukon.web.error.fieldrequired", new Object[] { "Physical Port" }, "");
-        }
+    public static void validatePhysicalPort(Errors errors, String fieldName) {
+        YukonValidationUtils.checkIsEmpty(errors, "physicalPort", fieldName, "Physical Port");
         if (!errors.hasFieldErrors("physicalPort")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", physicalPort, 8);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", fieldName, 8);
         }
     }
 

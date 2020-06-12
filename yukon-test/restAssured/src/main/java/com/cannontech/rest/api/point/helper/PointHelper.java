@@ -9,7 +9,10 @@ import com.cannontech.rest.api.common.model.MockAnalogControlType;
 import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.cannontech.rest.api.common.model.MockPointLogicalGroups;
 import com.cannontech.rest.api.common.model.MockPointType;
+import com.cannontech.rest.api.point.request.MockAlarmNotificationTypes;
+import com.cannontech.rest.api.point.request.MockAlarmTableEntry;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
+import com.cannontech.rest.api.point.request.MockPointAlarming;
 import com.cannontech.rest.api.point.request.MockPointAnalog;
 import com.cannontech.rest.api.point.request.MockPointAnalogControl;
 import com.cannontech.rest.api.point.request.MockPointBase;
@@ -23,6 +26,7 @@ public class PointHelper {
     public final static Integer pointOffset = Integer.valueOf(ApiCallHelper.getProperty("pointOffset"));
     public final static Integer uomId = Integer.valueOf(ApiCallHelper.getProperty("uomId"));
     public final static Integer stateGroupId = Integer.valueOf(ApiCallHelper.getProperty("stateGroupId"));
+    public final static Integer notificationId = Integer.valueOf(ApiCallHelper.getProperty("notificationGrpID"));
 
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
@@ -33,6 +37,7 @@ public class PointHelper {
         case Analog:
             List<MockPointLimit> pointLimit = new ArrayList<>();
             pointLimit.add(buildPointLimit());
+            
             point = MockAnalogPoint.builder()
                     .paoId(paoId)
                     .pointName(name)
@@ -49,6 +54,7 @@ public class PointHelper {
                     .pointAnalogControl(buildPointAnalogControl())
                     .staleData(buildStaleData())
                     .limits(pointLimit)
+                    .alarming(buildPointAlarming())
                     .build();
             break;
         default:
@@ -96,6 +102,25 @@ public class PointHelper {
                 .highLimit(5.0)
                 .lowLimit(6.0)
                 .limitDuration(2)
+                .build();
+    }
+  
+    private static MockPointAlarming buildPointAlarming() {
+        List<MockAlarmTableEntry> alarmTableEntry = new ArrayList<>();
+        alarmTableEntry.add(buildAlarmTableEntry());
+        return MockPointAlarming.builder()
+                .notificationGroupId(notificationId)
+                .notifyOnAck(true)
+                .notifyOnClear(false)
+                .alarmTableList(alarmTableEntry)
+                .build();
+    }
+    
+    private static MockAlarmTableEntry buildAlarmTableEntry() {
+        return MockAlarmTableEntry.builder()
+                .category("(none)")
+                .condition("Rate Of Change")
+                .notify(MockAlarmNotificationTypes.EXCLUDE_NOTIFY)
                 .build();
     }
 }
