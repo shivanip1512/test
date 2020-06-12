@@ -398,7 +398,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public void delete(int id, YukonUserContext userContext) throws AttachedException {
+    public int delete(int id, YukonUserContext userContext) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
         if (!attachmentStatus.isDeletable()) {
             throw new AttachedException(attachmentStatus);
@@ -418,6 +418,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
+        return point.getPoint().getPointID();
     }
 
     @Override

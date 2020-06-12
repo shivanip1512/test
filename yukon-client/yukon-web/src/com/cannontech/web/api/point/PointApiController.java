@@ -56,9 +56,7 @@ public class PointApiController {
 
     @DeleteMapping("/points/{id}")
     public ResponseEntity<Object> delete(@PathVariable int id, HttpServletRequest request) throws AttachedException {
-        YukonUserContext userContext = getYukonUserContext(request);
-        //TODO pointEditorService.delete(id, userContext)
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.delete(id, getYukonUserContext(request)), HttpStatus.OK);
     }
 
     @GetMapping("/devices/{paoId}/points")
