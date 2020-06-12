@@ -504,13 +504,13 @@
                             </td>
                             <td>
                                 <%-- TODO this should take the liteID for the value rather than converting --%>
-                                <tags:selectWithItems path="alarmTableEntries[${status.index}].generate" 
+                                <tags:selectWithItems path="alarmTableEntries[${status.index}].category" 
                                     items="${alarmCategories}" itemValue="categoryName" itemLabel="categoryName" />
                             </td>
                             <td>
                                 <%-- TODO this should take the liteID for the value rather than converting --%>
-                                <tags:selectWithItems path="alarmTableEntries[${status.index}].excludeNotify" 
-                                    items="${alarmNotificationTypes}" itemValue="dbString" />
+                                <tags:selectWithItems path="alarmTableEntries[${status.index}].notify" 
+                                    items="${alarmNotificationTypes}"/>
                             </td>
                         </tr>
                         </c:forEach>

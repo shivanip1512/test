@@ -32,8 +32,7 @@ public class PortCreateApiValidator <T extends PortBase<?>> extends SimpleValida
 
         if (port instanceof TerminalServerPortDetailBase) {
             TerminalServerPortDetailBase<?> serverPortDetailBase = (TerminalServerPortDetailBase<?>) port;
-            YukonValidationUtils.checkIfFieldRequired("portNumber", errors, serverPortDetailBase.getPortNumber(), "Port");
-
+            YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(serverPortDetailBase.getPortNumber()), "Port Number");
             if (port instanceof TcpSharedPortDetail) {
                 TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
                 YukonValidationUtils.checkIfFieldRequired("ipAddress", errors, tcpSharedPortDetail.getIpAddress(), "IP Address");

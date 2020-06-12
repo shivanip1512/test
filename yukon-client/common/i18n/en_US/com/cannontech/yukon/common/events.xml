@@ -267,7 +267,7 @@
     <entry key="yukon.common.events.amr.schedules.tryCompleted.8">Commands Count</entry>
     
     <entry key="yukon.common.events.amr.meters.meterCreated">Meter {1} created with meter number={2}, serial or address={3}, type={4} by {5}.</entry>
-    <entry key="yukon.common.events.amr.meters.meterEdited">Meter {1} with meter number={2} updated by {3}.</entry>
+    <entry key="yukon.common.events.amr.meters.meterEdited">Meter {1} with meter number={2} updated by {3}. Original: {4}, Updated: {5}.</entry>
     <entry key="yukon.common.events.amr.meters.meterDeleted">Meter {1} with meter number={2} deleted by {3}.</entry>
     
     <!-- RFN -->

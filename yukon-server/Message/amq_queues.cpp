@@ -90,6 +90,9 @@ const IM_EX_MSG OutboundQueue
     {"com.eaton.eas.yukon.MeterProgramStatusArchiveRequest"};
 
 const IM_EX_MSG InboundQueue
+    InboundQueue::MeterProgramValidationRequest
+    { "com.eaton.eas.yukon.porter.meterProgramValidationRequest" };
+const IM_EX_MSG InboundQueue
     InboundQueue::NetworkManagerResponse
     {"com.eaton.eas.yukon.networkmanager.response"};
 const IM_EX_MSG InboundQueue
@@ -109,5 +112,3 @@ const IM_EX_MSG InboundQueue
     {"com.eaton.eas.yukon.porter.dynamicPaoInfoRequest"};
 
 }
-
-
