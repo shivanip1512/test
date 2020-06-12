@@ -45,13 +45,8 @@ public class TrendSeriesValidator extends SimpleValidator<TrendSeries> {
             errors.rejectValue("label", baseKey + ".field.error.maxLengthExceeded",
                     new Object[] { accessor.getMessage(baseKey + ".label"), 40 }, "Label cannot exceed 40 characters.");
         }
-
-        if (!errors.hasFieldErrors("multiplier") && trendSeries.getMultiplier() == null) {
-            errors.rejectValue("multiplier", mandatoryFieldMsgKey,
-                    new Object[] { accessor.getMessage(baseKey + ".multiplier") }, "Multiplier is required.");
-        }
         
-        if (TrendEditorHelper.isDateType(trendSeries.getType())) {
+        if (!errors.hasFieldErrors("date") && TrendEditorHelper.isDateType(trendSeries.getType())) {
             //TODO: This code will be removed after, and a method from YukonValidationUtils will be added YUK-22272 is merged in master. 
             if (trendSeries.getDate() == null) {
                 errors.rejectValue("date", mandatoryFieldMsgKey,

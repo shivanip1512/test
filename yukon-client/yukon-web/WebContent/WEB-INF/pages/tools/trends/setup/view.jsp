@@ -41,7 +41,7 @@
                     <tags:sectionContainer2 nameKey="general">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".name">
-                                <tags:input path="name" maxlength="60" autofocus="autofocus" inputClass="w300" />
+                                <tags:input path="name" maxlength="40" autofocus="autofocus" inputClass="w300" />
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </tags:sectionContainer2>

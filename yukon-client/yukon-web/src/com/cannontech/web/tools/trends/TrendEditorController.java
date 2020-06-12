@@ -94,14 +94,7 @@ public class TrendEditorController {
     public String renderAddPointPopup(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendSeries trendSeries = new TrendSeries();
-        /* Set Default Values */
-        trendSeries.setStyle(RenderType.LINE);
-        trendSeries.setAxis(TrendAxis.LEFT);
-        trendSeries.setType(TrendType.GraphType.BASIC_TYPE);
-        trendSeries.setMultiplier(1d);
-        trendSeries.setDate(DateTime.now());
-        trendSeries.setColor(Color.BLUE);
-        
+        setDefaultValues(trendSeries);
         model.addAttribute("trendSeries", trendSeries);
         model.addAttribute("graphTypeDateEnumValue", TrendType.GraphType.DATE_TYPE);
         setPointPopupModel(model);
@@ -111,9 +104,6 @@ public class TrendEditorController {
     @GetMapping("/renderEditPointPopup")
     public String renderEditPointPopup(ModelMap model,
             @RequestParam("trendSeries") TrendSeries trendSeries) {
-        if (trendSeries.getDate() == null) {
-            trendSeries.setDate(DateTime.now());
-        }
         model.addAttribute("trendSeries", trendSeries);
         LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
         model.addAttribute("deviceName", yukonPao.getPaoName());
@@ -172,6 +162,7 @@ public class TrendEditorController {
         }
 
         model.clear();
+        setDefaultValues(trendSeries);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         json.put("trendSeries", trendSeries);
@@ -251,5 +242,26 @@ public class TrendEditorController {
             return "redirect:create";
         }
         return "redirect:" + trendModel.getTrendId() + "/edit";
+    }
+    
+    private void setDefaultValues(TrendSeries trendSeries) {
+        if (trendSeries.getMultiplier() == null) {
+            trendSeries.setMultiplier(1d);
+        }
+        if (trendSeries.getDate() == null) {
+            trendSeries.setDate(DateTime.now());
+        }
+        if (trendSeries.getColor() == null) {
+            trendSeries.setColor(Color.BLUE);
+        }
+        if (trendSeries.getAxis() == null) {
+            trendSeries.setAxis(TrendAxis.LEFT);
+        }
+        if (trendSeries.getStyle() == null) {
+            trendSeries.setStyle(RenderType.LINE);
+        }
+        if (trendSeries.getType() == null) {
+            trendSeries.setType(GraphType.BASIC_TYPE);
+        }
     }
 }
