@@ -3,6 +3,9 @@ package com.cannontech.common.fdr;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cannontech.common.device.port.DBPersistentConverter;
+import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /** 
@@ -10,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * generic getParameters(String).
  */
 
-public class FdrTranslation {
+public class FdrTranslation implements DBPersistentConverter<FDRTranslation>{
     @JsonIgnore
 	private int pointId;
 	private FdrDirection direction;
@@ -67,6 +70,10 @@ public class FdrTranslation {
 		return translation;
 	}
 
+    public String getTranslationString(PointType pointType) {
+        return translation + ";POINTTYPE:" + pointType.toString() + ";";
+    }
+
 	public void setTranslation(String translation) {
 		this.translation = translation;
 	}
@@ -77,22 +84,6 @@ public class FdrTranslation {
 	
 	public Map<String, String> getParameterMap() {
         return parameterMap;
-    }
-
-    /**
-     *  Split translation and build parameter map based on it.
-     */
-    public void setParameterMap() {
-        if (translation != null) {
-            String[] parameters = translation.split(";");
-
-            for (String paramSet : parameters) {
-                int splitSpot = paramSet.indexOf(":");
-                if (splitSpot != -1) {
-                    parameterMap.put(paramSet.substring(0, splitSpot), paramSet.substring(splitSpot + 1));
-                }
-            }
-        }
     }
 
     @Override
@@ -137,4 +128,29 @@ public class FdrTranslation {
 			return false;
 		return true;
 	}
+
+    @Override
+    public void buildModel(FDRTranslation fdrTranslation) {
+        setDirection(FdrDirection.getEnum(fdrTranslation.getDirectionType()));
+        setTranslation(fdrTranslation.getTranslation());
+        setInterfaceType(FdrInterfaceType.valueOf(fdrTranslation.getInterfaceType()));
+    }
+
+    @Override
+    public void buildDBPersistent(FDRTranslation fdrTranslation) {
+
+        fdrTranslation.setDirectionType(getDirection().getValue());
+        fdrTranslation.setInterfaceType(getFdrInterfaceType().toString());
+
+        String temp = fdrTranslation.getTranslation().toLowerCase();
+
+        if (temp.contains("destination")) {
+            temp = FDRTranslation.getDestinationField(fdrTranslation.getTranslation());
+        } else {
+            temp = getFdrInterfaceType().toString().toUpperCase();
+        }
+
+        fdrTranslation.setDestination(temp);
+
+    }
 }

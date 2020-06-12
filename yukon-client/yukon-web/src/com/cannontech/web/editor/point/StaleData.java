@@ -144,16 +144,15 @@ public class StaleData {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     } 
-    
-    public static StaleData of(StaleData stateDataModel) {
-        StaleData staleData = new StaleData(); // populate default values
-        if (stateDataModel.getTime() != null) {
-            staleData.setTime(stateDataModel.getTime());
+
+    public StaleData overwriteWith(StaleData staleData) {
+        if (getTime() != null) {
+            staleData.setTime(getTime());
         }
-        if (stateDataModel.getUpdateStyle() != null) {
-            staleData.setUpdateStyle(stateDataModel.getUpdateStyle());
+        if (getUpdateStyle() != null) {
+            staleData.setUpdateStyle(getUpdateStyle());
         }
-        if (stateDataModel.getTime() != null || stateDataModel.getUpdateStyle() != null) {
+        if (getTime() != null || getUpdateStyle() != null) {
             staleData.setEnabled(true);
         }
 

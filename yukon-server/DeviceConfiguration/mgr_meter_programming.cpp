@@ -24,6 +24,25 @@ namespace {
     MeterProgrammingManager::Bytes globalBuffer;
 }
 
+YukonError_t MeterProgrammingManager::isProgramValid(const std::string guid)
+{
+    CTILOG_DEBUG(dout, guid);
+
+    if( std::lock_guard lg(programMux);
+        auto existingProgram = mapFindRef(_programs, guid) )
+    {
+        CTILOG_DEBUG(dout, "Program found, is valid" << FormattedList::of(
+            "GUID", guid,
+            "Program size", existingProgram->size()));
+
+        return ClientErrors::None;
+    }
+
+    CTILOG_DEBUG(dout, "Program not found, loading: " << guid);
+
+    return loadProgram(guid).error();  //  return any errors, or ClientErrors::None if the load went fine
+}
+
 auto MeterProgrammingManager::getProgram(const std::string guid) -> ErrorOr<Bytes>
 {
     CTILOG_DEBUG(dout, guid);

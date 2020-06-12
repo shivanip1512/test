@@ -18,12 +18,6 @@ public interface FdrTranslationDao {
 	public List<FdrTranslation> getByInterfaceTypeAndTranslation(FdrInterfaceType type, String translation);
 	
 	public List<FdrTranslation> getAllTranslations();
-
-    /**
-     * Retrieve list of FdrTranslation based on pointId.
-     */
-
-    List<FdrTranslation> getByPointId(int pointId);
 	
 	public boolean delete(FdrTranslation translation);
 }

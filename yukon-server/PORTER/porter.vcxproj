@@ -438,6 +438,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\encryption_noOp.h" />
     <ClInclude Include="include\id_pgdll.h" />
     <ClInclude Include="include\id_porter.h" />
+    <ClInclude Include="include\MeterProgramValidationMsg.h" />
     <ClInclude Include="include\mgr_port.h" />
     <ClInclude Include="include\PaoStatistics.h" />
     <ClInclude Include="include\PaoStatisticsRecord.h" />

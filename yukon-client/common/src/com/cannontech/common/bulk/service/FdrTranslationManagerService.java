@@ -3,7 +3,6 @@ package com.cannontech.common.bulk.service;
 import java.util.List;
 
 import com.cannontech.common.fdr.FdrTranslation;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.common.bulk.model.FdrImportFileInterfaceInfo;
 import com.cannontech.common.bulk.model.FdrInterfaceDisplayable;
@@ -37,14 +36,4 @@ public interface FdrTranslationManagerService {
      * Returns the resultId for this import operation.
      */
     public String startImport(List<String> headers, List<Integer> columnsToIgnore, List<String[]> fileLines, YukonUserContext userContext, String originalFileName);
-    
-    /**
-     * Add FDR Translation
-     */
-    public void addFdrTranslation(FdrTranslation translation, MessageSourceAccessor messageSourceAccessor);
-
-    /**
-     * Remove FDR Translation
-     */
-    public void removeFdrTranslation(FdrTranslation translation, MessageSourceAccessor messageSourceAccessor);
 }
