@@ -52,7 +52,6 @@
 
         <gitlogcount result="yukon-build-number"/>
 
-        <echo message="${env.BUILD_URL}, ${env.BUILD_ID}, ${bamboo.buildResultsUrl}, ${buildResultsUrl}" />
         <parallel>
             <jar jarfile="${yukon.lib}/common.jar" basedir="build/" manifest="resource/manifest.mf">
                 <manifest>
