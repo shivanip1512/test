@@ -7,14 +7,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -48,6 +51,10 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.api.ApiRequestHelper;
+import com.cannontech.web.api.ApiURL;
+import com.cannontech.web.api.validation.ApiCommunicationException;
+import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
@@ -75,8 +82,13 @@ public class TrendEditorController {
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private TrendEditorValidator trendEditorValidator;
     @Autowired private TrendSeriesValidator trendSeriesValidator;
+    @Autowired private ApiControllerHelper helper;
+    @Autowired private ApiRequestHelper apiRequestHelper;
 
     private static final String baseKey = "yukon.web.modules.tools.trend.";
+    private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
+    private static final String setupRedirectLink = "redirect:/tools/trends";
+    
     private static final Logger log = YukonLogManager.getLogger(TrendEditorController.class);
 
     @GetMapping("/create")
@@ -115,29 +127,40 @@ public class TrendEditorController {
     @PostMapping("/save")
     public String save(ModelMap model, YukonUserContext userContext,
             @ModelAttribute("trendDefinition") TrendModel trendModel, BindingResult result, RedirectAttributes redirectAttributes,
-            FlashScope flashScope) {
+            FlashScope flashScope, HttpServletRequest request) {
         trendEditorValidator.validate(trendModel, result);
         if (result.hasErrors()) {
             return bindAndForward(trendModel, result, redirectAttributes);
         }
 
-        // TODO: To be removed later
-        log.info("Trend Name : " + trendModel.getName());
-        if (CollectionUtils.isNotEmpty(trendModel.getTrendSeries())) {
-            for (TrendSeries trendSeries : trendModel.getTrendSeries()) {
-                log.info("Point Id:" + trendSeries.getPointId());
-                log.info("Label:" + trendSeries.getLabel());
-                log.info("Color:" + trendSeries.getColor());
-                log.info("Axis:" + trendSeries.getAxis());
-                log.info("Type:" + trendSeries.getType());
-                log.info("Multipler:" + trendSeries.getMultiplier());
-                log.info("Style:" + trendSeries.getStyle());
+        //Call REST API to create or update trend
+        try {
+            HttpMethod httpMethod = HttpMethod.POST;
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendCreateOrUpdateUrl);
+            if (trendModel.getTrendId() != null) {
+                httpMethod = HttpMethod.PATCH;
+                url = "/" + trendModel.getTrendId();
             }
-        }
+            
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, TrendModel.class,
+                trendModel);
 
-        // TODO: Add create or update condition check here...
-        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "create.success", trendModel.getName()));
-        return "redirect:/tools/trends";
+            if (response.getStatusCode() == HttpStatus.OK) {
+                TrendModel trend = (TrendModel) response.getBody();
+                flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", trendModel.getName()));
+                return "redirect:/tools/trends/" + trend.getTrendId();
+            }
+            
+        } catch (ApiCommunicationException e) {
+            log.error(e);
+            flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
+            return "redirect:" + setupRedirectLink;
+        } catch (RestClientException ex) {
+            log.error("Error saving trend: {}. Error: {}", trendModel.getName(), ex.getMessage());
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "save.error", trendModel.getName(), ex.getMessage()));
+            return "redirect:" + setupRedirectLink;
+        }
+        return null;
     }
 
     @PostMapping("/addPoint")
