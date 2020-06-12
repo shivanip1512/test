@@ -563,7 +563,7 @@ public class PointEditorServiceImpl implements PointEditorService {
      * 
      */
     private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
-        Map<AlarmState, AlarmTableEntry> newEntryMap = newEntries.stream()
+        Map<String, AlarmTableEntry> newEntryMap = newEntries.stream()
                                                                  .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
         // Update existing AlarmTableEntry based on the new entries.
         for (AlarmTableEntry entry : existingEntries) {
