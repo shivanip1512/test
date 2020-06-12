@@ -87,7 +87,7 @@ public class TrendEditorController {
 
     private static final String baseKey = "yukon.web.modules.tools.trend.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String setupRedirectLink = "redirect:/tools/trends";
+    private static final String redirectLink = "redirect:/tools/trends";
     
     private static final Logger log = YukonLogManager.getLogger(TrendEditorController.class);
 
@@ -133,7 +133,7 @@ public class TrendEditorController {
             return bindAndForward(trendModel, result, redirectAttributes);
         }
 
-        //Call REST API to create or update trend
+        // Call REST API to create or update trend
         try {
             HttpMethod httpMethod = HttpMethod.POST;
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendCreateOrUpdateUrl);
@@ -141,24 +141,25 @@ public class TrendEditorController {
                 httpMethod = HttpMethod.PATCH;
                 url = "/" + trendModel.getTrendId();
             }
-            
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, TrendModel.class,
-                trendModel);
+
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod,
+                    TrendModel.class,
+                    trendModel);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 TrendModel trend = (TrendModel) response.getBody();
                 flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", trendModel.getName()));
                 return "redirect:/tools/trends/" + trend.getTrendId();
             }
-            
+
         } catch (ApiCommunicationException e) {
             log.error(e);
             flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:" + setupRedirectLink;
+            return "redirect:" + redirectLink;
         } catch (RestClientException ex) {
             log.error("Error saving trend: {}. Error: {}", trendModel.getName(), ex.getMessage());
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + "save.error", trendModel.getName(), ex.getMessage()));
-            return "redirect:" + setupRedirectLink;
+            return "redirect:" + redirectLink;
         }
         return null;
     }
