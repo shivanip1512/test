@@ -355,6 +355,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public YukonPao findPort(String paoName) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public LiteYukonPAObject getLiteYukonPaoByPointId(int pointId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
     /**

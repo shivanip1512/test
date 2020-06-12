@@ -34,7 +34,9 @@ import com.cannontech.common.trend.model.TrendAxis;
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.trend.model.TrendSeries;
 import com.cannontech.common.trend.model.TrendType;
+import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
@@ -64,6 +66,7 @@ import com.google.common.collect.Lists;
 public class TrendEditorController {
 
     @Autowired private PointDao pointDao;
+    @Autowired private PaoDao paoDao;
     @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DateFormattingService dateFormattingService;
@@ -80,8 +83,6 @@ public class TrendEditorController {
         TrendModel trendModel = new TrendModel();
         if (model.containsKey("trendModel")) {
             trendModel = (TrendModel) model.get("trendModel");
-        } else {
-            trendModel = new TrendModel();
         }
         model.addAttribute("trendModel", trendModel);
         return "trends/setup/view.jsp";
@@ -109,10 +110,9 @@ public class TrendEditorController {
     public String renderEditPointPopup(ModelMap model,
             @RequestParam("trendSeries") TrendSeries trendSeries) {
         model.addAttribute("trendSeries", trendSeries);
-        LitePoint litePoint = pointDao.getLitePoint(trendSeries.getPointId());
-        LiteYukonPAObject yukonPao = cache.getAllPaosMap().get(litePoint.getPaobjectID());
+        LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
         model.addAttribute("deviceName", yukonPao.getPaoName());
-        model.addAttribute("isDateTypeSelected", trendSeries.getType() == TrendType.GraphType.DATE_TYPE);
+        model.addAttribute("isDateTypeSelected", isDateType(trendSeries.getType()));
         setPointPopupModel(model);
         return "trends/setup/pointSetupPopup.jsp";
     }
@@ -150,13 +150,19 @@ public class TrendEditorController {
             @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, FlashScope flashScope)
             throws JsonGenerationException, JsonMappingException, IOException {
         trendSeriesValidator.validate(trendSeries, result);
-        LitePoint litePoint = pointDao.getLitePoint(trendSeries.getPointId());
-        LiteYukonPAObject yukonPao = cache.getAllPaosMap().get(litePoint.getPaobjectID());
+        LitePoint litePoint = null;
+        LiteYukonPAObject yukonPao = null;
+        
+        if (trendSeries.getPointId() != null) {
+            litePoint = pointDao.getLitePoint(trendSeries.getPointId());
+            yukonPao = cache.getAllPaosMap().get(litePoint.getPaobjectID());
+        }
+        
         if (result.hasErrors()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             setPointPopupModel(model);
-            model.addAttribute("deviceName", yukonPao.getPaoName());
-            model.addAttribute("isDateTypeSelected", trendSeries.getType() == TrendType.GraphType.DATE_TYPE);
+            model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
+            model.addAttribute("isDateTypeSelected", isDateType(trendSeries.getType()));
             return "trends/setup/pointSetupPopup.jsp";
         }
 
@@ -170,7 +176,7 @@ public class TrendEditorController {
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
         json.put("graphType", accessor.getMessage(trendSeries.getType().getFormatKey()));
         json.put("style", accessor.getMessage(trendSeries.getStyle().getFormatKey()));
-        if (trendSeries.getType() == TrendType.GraphType.DATE_TYPE) {
+        if (isDateType(trendSeries.getType())) {
             json.put("dateStr", dateFormattingService.format(trendSeries.getDate(), DateFormatEnum.DATE, userContext));
         }
         response.setContentType("application/json");
@@ -238,5 +244,9 @@ public class TrendEditorController {
             return "redirect:create";
         }
         return "redirect:" + trendModel.getTrendId() + "/edit";
+    }
+    
+    private boolean isDateType(GraphType type) {
+        return type == GraphType.DATE_TYPE;
     }
 }

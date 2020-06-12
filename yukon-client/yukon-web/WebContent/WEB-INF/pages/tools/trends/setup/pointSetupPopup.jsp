@@ -53,7 +53,9 @@
                 <tags:selectWithItems items="${graphTypes}" path="type" inputClass="js-graph-type"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.date" rowClass="js-date-picker-row ${isDateTypeSelected ? '' : 'dn' }" nameClass="vam">
-                <dt:date path="date" value="${trendSeries.date}" maxDate="${now}" id="js-date-picker_${uniqueId}"/>
+                <div class="dib">
+                    <dt:date path="date" value="${trendSeries.date}" maxDate="${now}" id="js-date-picker_${uniqueId}" />
+                </div>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".axis" nameClass="vam">
                 <tags:radioButtonGroup items="${axes}" path="axis"/>
