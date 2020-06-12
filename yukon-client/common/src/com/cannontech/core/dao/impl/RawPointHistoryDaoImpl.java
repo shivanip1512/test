@@ -1205,27 +1205,34 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Override
     public List<Integer> getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange,
             ImmutableSet<PaoType> allPaoTypes) {
-
+     // These 4 RFN electric meters belongs to RFN530S4 family which have Usage attribute with point offset 3 
+     // while other RFN electric meters have offset 1
         ImmutableSet<PaoType> rfnTypes530S4 = ImmutableSet.of(
                 PaoType.RFN530S4EAX,
                 PaoType.RFN530S4EAXR,
                 PaoType.RFN530S4ERX,
                 PaoType.RFN530S4ERXR);
 
+     // To deal with special kind for RFN530S4 types, we need to get its actual count with offset value 3 
         List<Integer> records = new ArrayList<Integer>();
         if (allPaoTypes.containsAll(rfnTypes530S4)) {
             records = getDataCompletenessData(deviceGroup, dateRange, rfnTypes530S4, 3);
         }
+     // This gives paoTypes which do not have the set of Special RFN530S4 paotypes
         ImmutableSet<PaoType> paoTypes = ImmutableSet.copyOf(Sets.difference(allPaoTypes, rfnTypes530S4));
+     // This list will be passed to get its actual count with offset value 1
         List<Integer> finalRecords = getDataCompletenessData(deviceGroup, dateRange, paoTypes, 1);
         if (records.size() != 0)
             finalRecords.addAll(records);
         return finalRecords;
     }
     /**
+     * TODO : This method will be improve by removing hard coded value of point offset, 
+     *        deal with Special RFN whose Offset = 3 and also remove additional SQL for RF meter types under YUK:22341
      * This method returns the list of counts of devices which are reported usage data every hour within 
      * the date Range for particular PAO types and point offset.  
      */
+
     private List<Integer> getDataCompletenessData(DeviceGroup deviceGroup, Range<Date> dateRange,
             ImmutableSet<PaoType> paoTypesList, int pointOffset) {
 

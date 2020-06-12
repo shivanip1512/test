@@ -92,12 +92,12 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
     public double getDataCompleteness(String deviceGroupName, ImmutableSet<PaoType> paoType) {
         DeviceGroup deviceGroup = deviceGroupService.findGroupName(deviceGroupName);
         Date startDate = new Instant()
-                .minus(Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS) + 6))
+                .minus(Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS) + 7))
                 .toDate();
         Date stopDate = new Instant()
                 .minus(Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS)))
                 .toDate();
-        Range<Date> dateRange = new Range<Date>(startDate, true, stopDate, true);
+        Range<Date> dateRange = new Range<Date>(startDate, false, stopDate, true);
         List<Integer> records = rphDao.getDataCompletenessRecords(deviceGroup, dateRange, paoType);
         double dataCompleteness;
         if (records.isEmpty()) {

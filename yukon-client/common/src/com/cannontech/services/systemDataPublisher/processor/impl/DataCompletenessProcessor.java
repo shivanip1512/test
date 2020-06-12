@@ -32,6 +32,8 @@ public abstract class DataCompletenessProcessor extends YukonDataProcessor {
     }
 
     public abstract String getDeviceGroupName();
-
-    public abstract ImmutableSet<PaoType> getPaotype();
+    /**
+     *  This method returns the set of Pao types which belongs to the device group
+     */
+    protected abstract ImmutableSet<PaoType> getPaotype();
 }
