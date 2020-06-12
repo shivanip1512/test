@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
@@ -15,17 +14,14 @@ import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
-import com.cannontech.web.api.dr.setup.LMValidatorHelper;
+import com.cannontech.web.tools.points.validators.PointValidationUtil;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableSet;
 
 public class TrendValidator extends SimpleValidator<TrendModel> {
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private LMValidatorHelper helper;
+    @Autowired private PointValidationUtil pointValidationUtil;
 
     private final static String basekey = "yukon.web.error.";
-    private final static ImmutableSet<RenderType> supportedTypes = ImmutableSet.of(RenderType.LINE, RenderType.BAR,
-            RenderType.STEP);
 
     public TrendValidator() {
         super(TrendModel.class);
@@ -33,7 +29,7 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
 
     @Override
     protected void doValidation(TrendModel trend, Errors errors) {
-        YukonValidationUtils.checkIsBlank(errors, "name", trend.getName(), false);
+        YukonValidationUtils.checkIsEmpty(errors, "name", trend.getName(), "Trend Name");
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", trend.getName(), 40);
             Optional<LiteGraphDefinition> graphDefinition = dbCache.getAllGraphDefinitions().stream()
@@ -47,26 +43,29 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
                 TrendSeries trendSeries = trend.getTrendSeries().get(i);
                 errors.pushNestedPath("trendSeries[" + i + "]");
 
-                YukonValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), false);
+                YukonValidationUtils.checkIsEmpty(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), "Point ID");
                 if (!errors.hasFieldErrors("pointId")) {
-                    helper.validatePointId(errors, "pointId", trendSeries.getPointId());
+                    pointValidationUtil.validatePointId(errors, "pointId", trendSeries.getPointId());
                 }
 
-                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "label", trendSeries.getLabel(), false, 40);
+                YukonValidationUtils.checkIsEmpty(errors, "label", trendSeries.getLabel(), "Label");
+                if(!errors.hasFieldErrors("label")) {
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "label", trendSeries.getLabel(), 40);
+                }
 
                 if (trendSeries.getMultiplier() != null) {
                     YukonValidationUtils.checkIsValidDouble(errors, "multiplier", trendSeries.getMultiplier());
                 }
 
                 if (trendSeries.getStyle() != null) {
-                    if (!supportedTypes.contains(trendSeries.getStyle())) {
+                    if (!RenderType.getWebSupportedTypes().contains(trendSeries.getStyle())) {
                         errors.rejectValue("style", basekey + "notSupported", new Object[] { trendSeries.getStyle() },
                                 trendSeries.getStyle() + " is not supported");
                     }
                 }
                 if (trendSeries.getType() != null && trendSeries.getType() == GraphType.DATE_TYPE) {
-                    YukonValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), false);
-                    if (!errors.hasFieldErrors("date") && !trendSeries.getDate().isBefore(LocalDate.now())) {
+                    YukonValidationUtils.checkIsEmpty(errors, "date", Objects.toString(trendSeries.getDate(), null), "Date");
+                    if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
                         errors.rejectValue("date", basekey + "date.inThePast");
                     }
                 }
