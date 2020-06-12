@@ -22,8 +22,16 @@
                 <c:set var="offClasses" value="${autoUpdate ? 'no' : 'on no'}"/>
                 <cti:button nameKey="off" classes="${offClasses}"/>
             </div>
-    
-            <cm:dropdown type="button" icon="icon-download" key="yukon.web.components.button.export.label">
+            
+            <div id="page-actions" class="dn">
+                <cti:url value="/tools/trend/create" var="createUrl"/>
+                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="#"/>
+                <li class="divider">
+                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" href="#"/>
+                <li class="divider">
+                <cm:dropdownOption icon="icon-trend-up" key="yukon.web.modules.tools.trends.resetPeaks" href="#"/>
+                <li class="divider">
                 <cm:dropdownOption key=".printChart" icon="icon-printer" classes="js-print"/>
                 <li class="divider">
                 <cm:dropdownOption key=".downloadPng" icon="icon-picture" classes="js-dl-png"/>
@@ -31,7 +39,7 @@
                 <cm:dropdownOption key=".downloadPdf" icon="icon-page-white-acrobat" classes="js-dl-pdf"/>
                 <li class="divider">
                 <cm:dropdownOption key=".downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
-            </cm:dropdown>
+            </div>
         </c:if>
     </div>
     <hr>

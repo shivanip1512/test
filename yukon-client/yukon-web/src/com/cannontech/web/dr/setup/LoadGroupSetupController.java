@@ -195,7 +195,7 @@ public class LoadGroupSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> groupIdMap = (HashMap<String, Integer>) response.getBody();
                 int groupId = groupIdMap.get("groupId");
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", loadGroup.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", loadGroup.getName()));
                 return "redirect:/dr/setup/loadGroup/" + groupId;
             }
 
@@ -205,7 +205,7 @@ public class LoadGroupSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating load group: {}. Error: {}", loadGroup.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", loadGroup.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", loadGroup.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -221,7 +221,7 @@ public class LoadGroupSetupController {
             ResponseEntity<? extends Object> response = deleteGroup(userContext, request, url, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -230,7 +230,7 @@ public class LoadGroupSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting load group: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;

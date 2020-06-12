@@ -3,18 +3,35 @@ package com.cannontech.common.trend.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.trend.model.TrendModel;
+import com.cannontech.common.trend.service.TrendService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
-import com.cannontech.trend.setup.service.TrendService;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class TrendServiceImpl implements TrendService {
+
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
+
+    @Override
+    public TrendModel create(TrendModel trend) {
+        GraphDefinition graph = createTrend();
+        trend.buildDBPersistent(graph);
+        dbPersistentDao.performDBChange(graph, TransactionType.INSERT);
+        trend.buildModel(graph);
+        return trend;
+    }
+
+    private GraphDefinition createTrend() {
+        GraphDefinition graph = new GraphDefinition();
+        return graph;
+    }
+
 
     @Override
     @Transactional
@@ -29,4 +46,5 @@ public class TrendServiceImpl implements TrendService {
         dbPersistentDao.performDBChange(trend, TransactionType.DELETE);
         return trend.getGraphDefinition().getGraphDefinitionID();
     }
+
 }
