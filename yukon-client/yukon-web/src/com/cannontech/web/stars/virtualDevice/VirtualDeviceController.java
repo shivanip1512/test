@@ -118,15 +118,15 @@ public class VirtualDeviceController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
-            //String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceDeleteUrl + id);
+            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + id);
             String paoName = dbCache.getAllPaosMap().get(id).getPaoName();
 
-            //ResponseEntity<? extends Object> deleteResponse = deleteVirtualDevice(userContext, request, deleteUrl);
+            ResponseEntity<? extends Object> deleteResponse = deleteVirtualDevice(userContext, request, deleteUrl);
 
-           // if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-           //     flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", paoName));
-           //     return "redirect:" + "/stars/virtualDevices";
-            //}
+            if (deleteResponse.getStatusCode() == HttpStatus.OK) {
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", paoName));
+                return "redirect:" + "/stars/virtualDevices";
+            }
 
         } catch (ApiCommunicationException e) {
             log.error(e.getMessage());

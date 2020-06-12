@@ -92,16 +92,16 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
     private void retrieveVirtualDevice(YukonUserContext userContext, HttpServletRequest request, int id, ModelMap model) {
         try {
             //mock up data for now
-            LiteYukonPAObject virtualDevice = new LiteYukonPAObject(123, "VirtualDevice001", PaoType.VIRTUAL_SYSTEM, null, "Y");
-            model.addAttribute("virtualDevice", virtualDevice);
-/*            String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceViewUrl + id);
+            //LiteYukonPAObject virtualDevice = new LiteYukonPAObject(123, "VirtualDevice001", PaoType.VIRTUAL_SYSTEM, null, "Y");
+            //model.addAttribute("virtualDevice", virtualDevice);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + id);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.GET, LiteYukonPAObject.class);
             if (response.getStatusCode() == HttpStatus.OK) {
                 LiteYukonPAObject virtualDevice = (LiteYukonPAObject) response.getBody();
-                virtualDevice.setLiteID(id);
+                //virtualDevice.setLiteID(id);
                 model.addAttribute("virtualDevice", virtualDevice);
-            }*/
+            }
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -127,7 +127,8 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 return "virtualDeviceInfoWidget/render.jsp";
             }
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + deviceId);
+            //distinguish between create and update here to change url
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + deviceId);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.POST, Object.class, virtualDevice);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
