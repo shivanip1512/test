@@ -75,6 +75,11 @@ public class TrendApiDoc extends DocumentationBase {
         trendId = createDoc();
     }
 
+    @Test(dependsOnMethods = "Test_Trend_01_Create")
+    public void Test_Trend_01_Delete() {
+        deleteDoc();
+    }
+
     @Override
     protected Get buildGetFields() {
         return null;
@@ -101,12 +106,8 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Override
     protected Delete buildDeleteFields() {
-        return null;
-    }
-
-    @Test
-    public void Test_Trend_01_Delete() {
-        deleteDoc();
+        String url = ApiCallHelper.getProperty("deleteTrend") + trendId;
+        return new DocumentationFields.Delete(url);
     }
 }
 
