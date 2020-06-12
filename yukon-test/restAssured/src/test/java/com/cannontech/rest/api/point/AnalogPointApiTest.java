@@ -304,4 +304,85 @@ public class AnalogPointApiTest {
                         "Control Inhibited must be false when Control type is None."),
                 "Expected code in response is not correct");
     }
+    
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Condition Value
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_16_InvalidConditionValue() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().getAlarmTableList().get(0).setCondition("Test");
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "alarming.alarmTableList[0].condition",
+                        "Invalid Condition value."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid NotificationId
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_17_InvalidNotificationId() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().setNotificationGroupId(987898);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "alarming.notificationGroupId",
+                "Notification GroupId does not exist."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with Condition value as a Blank
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_18_ConditionBlank() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().getAlarmTableList().get(0).setCondition(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "alarming.alarmTableList[0].condition",
+                        "Condition is required."),
+                "Expected code in response is not correct");
+    }
+
+    
+    /**
+     * Test case to validate Analog Point cannot be created with Category Out Of Range
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_19_CategoryOutOfRange() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().getAlarmTableList().get(0).setCategory("Category 1222");
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "alarming.alarmTableList[0].category",
+                        "Invalid Category value."),
+                "Expected code in response is not correct");
+    }
+  
 }

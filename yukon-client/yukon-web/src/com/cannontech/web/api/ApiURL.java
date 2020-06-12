@@ -58,5 +58,6 @@ public class ApiURL {
     public static final String commChannelUpdateUrl = "/device/commChannel/update/";
     public static final String commChannelDeleteUrl = "/device/commChannel/delete/";
     public static final String commChannelDevicesAssignedUrl = "/device/commChannel/devicesAssigned/";
+    public static final String commChannelCreateUrl = "/device/commChannel/create";
 
 }

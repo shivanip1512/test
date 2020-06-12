@@ -149,7 +149,7 @@ public class ControlScenarioSetupController {
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -158,7 +158,7 @@ public class ControlScenarioSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting scenario: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;
@@ -193,7 +193,7 @@ public class ControlScenarioSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
                 int controlScenarioId = paoIdMap.get("paoId");
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", controlScenario.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", controlScenario.getName()));
                 return "redirect:/dr/setup/controlScenario/" + controlScenarioId;
             }
         } catch (ApiCommunicationException e) {
@@ -202,7 +202,7 @@ public class ControlScenarioSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating scenario: {}. Error: {}", controlScenario.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", controlScenario.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", controlScenario.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;

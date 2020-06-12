@@ -9,8 +9,11 @@ import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.commChannel.helper.CommChannelHelper;
 import com.cannontech.rest.api.commChannel.request.MockBaudRate;
+import com.cannontech.rest.api.commChannel.request.MockPortTiming;
 import com.cannontech.rest.api.commChannel.request.MockSharedPortType;
+import com.cannontech.rest.api.commChannel.request.MockTcpPortDetail;
 import com.cannontech.rest.api.commChannel.request.MockTcpSharedPortDetail;
+import com.cannontech.rest.api.commChannel.request.MockUDPPortDetails;
 import com.cannontech.rest.api.common.ApiCallHelper;
 import com.cannontech.rest.api.common.model.MockApiError;
 import com.cannontech.rest.api.common.model.MockPaoType;
@@ -249,6 +252,112 @@ public class TcpTerminalServerApiTest {
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
         assertTrue(ValidationHelper.validateFieldError(createResponse, "portNumber", "Port is required."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate TCP Terminal Server comm channel cannot be created with invalid IpAddress and gets valid error
+     * message in response
+     */
+    @Test
+    public void tcpTerminalServer_12_InvalidIpAddress() {
+        MockTcpSharedPortDetail mockTcpTerminal = (MockTcpSharedPortDetail) CommChannelHelper
+                .buildCommChannel(MockPaoType.TSERVER_SHARED);
+
+        mockTcpTerminal.setIpAddress("123#$%^^&");
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockTcpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "ipAddress", "Invalid IP/Host Name."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate TCP Terminal Server comm channel cannot be created with Port number max range 65,535 and gets valid
+     * error message in response
+     */
+    @Test
+    public void tcpTerminalServer_13_PortNumberRange() {
+        MockTcpSharedPortDetail mockTcpTerminal = (MockTcpSharedPortDetail) CommChannelHelper
+                .buildCommChannel(MockPaoType.TSERVER_SHARED);
+
+        mockTcpTerminal.setPortNumber(65536);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockTcpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "portNumber", "Must be between 1 and 65,535."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate TCP Terminal Server comm channel cannot be created as Timing fields Exceed Max Value and gets valid
+     * error message in response
+     */
+    @Test
+    public void tcpTerminalServer_14_TimingExceedMaxValue(ITestContext context) {
+        
+        MockTcpSharedPortDetail mockTcpTerminal = (MockTcpSharedPortDetail) CommChannelHelper
+                .buildCommChannel(MockPaoType.TSERVER_SHARED);
+
+        MockPortTiming timingValues = MockPortTiming.builder()
+        .preTxWait(10000001)
+        .rtsToTxWait(10000001)
+        .postTxWait(10000001)
+        .receiveDataWait(1001)
+        .extraTimeOut(1000)
+        .build();
+        
+        mockTcpTerminal.setTiming(timingValues);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockTcpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate TCP Terminal Server comm channel cannot be created as Timing fields Exceed Min Value and gets valid
+     * error message in response
+     */
+    @Test
+    public void tcpTerminalServer_15_TimingBelowMinValue(ITestContext context) {
+        
+        MockTcpSharedPortDetail mockTcpTerminal = (MockTcpSharedPortDetail) CommChannelHelper
+                .buildCommChannel(MockPaoType.TSERVER_SHARED);
+
+        MockPortTiming timingValues = MockPortTiming.builder()
+        .preTxWait(-1)
+        .rtsToTxWait(-1)
+        .postTxWait(-1)
+        .receiveDataWait(-1)
+        .extraTimeOut(-1)
+        .build();
+        
+        mockTcpTerminal.setTiming(timingValues);
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPort", mockTcpTerminal);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
+                "Expected code in response is not correct");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
                 "Expected code in response is not correct");
     }
 }

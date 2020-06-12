@@ -1,12 +1,17 @@
 package com.cannontech.web.stars.commChannel;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,23 +20,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.model.PaoModelFactory;
+import com.cannontech.common.device.port.BaudRate;
+import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.api.ApiRequestHelper;
 import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
@@ -49,7 +65,12 @@ public class CommChannelController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private CommChannelValidator<? extends PortBase<?>> commChannelValidator;
+    @Autowired private CommChannelSetupHelper commChanelSetupHelper;
     @Autowired private ServerDatabaseCache dbCache;
+    private static final List<PaoType> webSupportedCommChannelTypes = Stream.of(PaoType.TSERVER_SHARED, PaoType.TCPPORT, PaoType.UDPPORT, PaoType.LOCAL_SHARED)
+                                                                            .sorted((p1, p2) -> p1.getDbString().compareTo(p2.getDbString()))
+                                                                            .collect(Collectors.toList());
 
     @GetMapping("/list")
     public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash,
@@ -94,7 +115,6 @@ public class CommChannelController {
 
     @GetMapping("/{id}")
     public String view(@PathVariable int id, ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
-
         model.addAttribute("id", id);
         model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
         model.addAttribute("deviceNames", getDevicesNamesForPort(userContext, request, id));
@@ -110,7 +130,7 @@ public class CommChannelController {
             ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", portName));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", portName));
                 return "redirect:" + "/stars/device/commChannel/list";
             }
 
@@ -121,10 +141,85 @@ public class CommChannelController {
         } catch (RestClientException ex) {
             String portName = dbCache.getAllPaosMap().get(id).getPaoName();
             log.error("Error deleting comm Channel: {}. Error: {}", portName, ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", portName, ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", portName, ex.getMessage()));
             return "redirect:" + "/stars/device/commChannel/" + id;
         }
         return "redirect:" + "/stars/device/commChannel/list";
+    }
+
+    @GetMapping("/create")
+    public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        PortBase commChannel = new PortBase();
+        if (model.containsAttribute("commChannel")) {
+            commChannel = (PortBase) model.get("commChannel");
+            if (commChannel.getType() != null) {
+                commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+            }
+        }
+        model.addAttribute("baudRateList", BaudRate.values());
+        commChannel.setType(PaoType.TCPPORT);
+        setupDefaultFieldValue(commChannel, model);
+        return "/commChannel/create.jsp";
+    }
+
+    @GetMapping("/create/{type}")
+    public String create(ModelMap model, @PathVariable String type, @RequestParam String name,
+            YukonUserContext userContext, HttpServletRequest request) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        PortBase commChannel = (PortBase) PaoModelFactory.getModel(PaoType.valueOf(type));
+        if (model.containsAttribute("commChannel")) {
+            commChannel = (PortBase) model.get("commChannel");
+        } else {
+            commChannel.setName(name);
+            commChannel.setType(PaoType.valueOf(type));
+        }
+        commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+        setupDefaultFieldValue(commChannel, model);
+        return "/commChannel/create.jsp";
+    }
+
+    @PostMapping("/save")
+    public String save(@ModelAttribute("commChannel") PortBase commChannel, BindingResult result, YukonUserContext userContext,
+            FlashScope flash, HttpServletRequest request, HttpServletResponse resp, ModelMap model) throws IOException {
+        try {
+            commChannelValidator.validate(commChannel, result);
+            if (result.hasErrors()) {
+                setupErrorFields(resp, commChannel, model, userContext, result);
+                return "/commChannel/create.jsp";
+            }
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelCreateUrl);
+            ResponseEntity<? extends Object> response =
+                    apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, commChannel);
+
+            if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
+                BindException error = new BindException(commChannel, "commChannel");
+                result = helper.populateBindingError(result, error, response);
+                if (result.hasErrors()) {
+                    setupErrorFields(resp, commChannel, model, userContext, result);
+                    return "/commChannel/create.jsp";
+                }
+            }
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                HashMap<String, Integer> savedCommChannel = (HashMap<String, Integer>) response.getBody();
+                Map<String, Object> json = new HashMap<>();
+                json.put("id", savedCommChannel.get("id"));
+                resp.setContentType("application/json");
+                JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", commChannel.getName()));
+                return null;
+            }
+        } catch (ApiCommunicationException e) {
+            log.error(e.getMessage());
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return null;
+        } catch (RestClientException ex) {
+            log.error("Error creating comm channel: {}. Error: {}", commChannel.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", commChannel.getName(), ex.getMessage()));
+            return null;
+        }
+        return null;
     }
 
     public enum CommChannelSortBy implements DisplayableEnum {
@@ -183,5 +278,22 @@ public class CommChannelController {
             deviceBaseModelList = (List<DeviceBaseModel>) response.getBody();
         }
         return deviceBaseModelList;
+    }
+
+    private void setupErrorFields(HttpServletResponse resp, PortBase commChannel, ModelMap model, YukonUserContext userContext,
+            BindingResult result) {
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        commChanelSetupHelper.setupCommChannelFields(commChannel, model);
+        commChanelSetupHelper.setupPhysicalPort(commChannel, model);
+        commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
+        model.addAttribute("commChannel", commChannel);
+        model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
+    }
+
+    private void setupDefaultFieldValue(PortBase commChannel, ModelMap model) {
+        commChannel.setBaudRate(BaudRate.BAUD_1200);
+        commChannel.setEnable(true);
+        model.addAttribute("commChannel", commChannel);
+        model.addAttribute("webSupportedCommChannelTypes", webSupportedCommChannelTypes);
     }
 }

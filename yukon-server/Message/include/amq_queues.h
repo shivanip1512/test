@@ -47,6 +47,7 @@ class IM_EX_MSG InboundQueue
 public:
     std::string name;
 
+    static const InboundQueue MeterProgramValidationRequest;
     static const InboundQueue NetworkManagerResponse;
     static const InboundQueue NetworkManagerE2eDataConfirm;
     static const InboundQueue NetworkManagerE2eDataIndication;

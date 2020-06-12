@@ -265,9 +265,20 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 
                 //Attempt to perform add or remove operation
                 if(dataRow.getAction().equalsIgnoreCase(FdrImportAction.ADD.toString())) {
-                  addFdrTranslation(translation, messageSourceAccessor);
+                    try {
+                        fdrTranslationDao.add(translation);
+                        dbChangeManager.processDbChange(translation.getPointId(), DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DbChangeType.ADD);
+                    } catch(DataIntegrityViolationException e) {
+                        String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToInsert");
+                        throw new ProcessingException(error, "unableToInsert", e);
+                    }
                 } else if(dataRow.getAction().equalsIgnoreCase(FdrImportAction.REMOVE.toString())) {
-                    removeFdrTranslation(translation, messageSourceAccessor);
+                    boolean success = fdrTranslationDao.delete(translation);
+                    if(!success) {
+                        String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToRemove");
+                        throw new ProcessingException(error, "unableToRemove");
+                    }
+                    dbChangeManager.processDbChange(translation.getPointId(), DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DbChangeType.DELETE);
                 } else {
                     String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidAction");
                     throw new ProcessingException(error, "invalidAction");
@@ -277,30 +288,7 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
         
         return translationProcessor;
     }
-
-    @Override
-    public void addFdrTranslation(FdrTranslation translation, MessageSourceAccessor messageSourceAccessor) {
-        try {
-            fdrTranslationDao.add(translation);
-            dbChangeManager.processDbChange(translation.getPointId(), DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DbChangeType.ADD);
-        } catch (DataIntegrityViolationException e) {
-            String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToInsert");
-            throw new ProcessingException(error, "unableToInsert", e);
-        }
-
-    }
-
-    @Override
-    public void removeFdrTranslation(FdrTranslation translation, MessageSourceAccessor messageSourceAccessor) {
-        boolean success = fdrTranslationDao.delete(translation);
-        if (!success) {
-            String error = messageSourceAccessor.getMessage("yukon.exception.processingException.unableToRemove");
-            throw new ProcessingException(error, "unableToRemove");
-        }
-        dbChangeManager.processDbChange(translation.getPointId(), DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DbChangeType.DELETE);
-
-    }
-
+    
     @Resource(name="recentResultsCache")
     public void setBackgroundProcessRecentResultsCache(RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache) {
         this.bpRecentResultsCache = recentResultsCache;
@@ -335,4 +323,5 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
+    
 }

@@ -36,7 +36,6 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.exception.LMObjectDeletionFailureException;
 import com.cannontech.common.exception.LoadProgramProcessingException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -97,7 +96,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
     
     @ExceptionHandler({ LoadProgramProcessingException.class, MacroLoadGroupProcessingException.class,
-        HoneywellProcessingException.class, LMObjectDeletionFailureException.class , TypeNotSupportedException.class, ProcessingException.class})
+        HoneywellProcessingException.class, LMObjectDeletionFailureException.class , TypeNotSupportedException.class})
     public ResponseEntity<Object> hanldeProcessingException(final Exception ex, final WebRequest request) {
 
         String uniqueKey = CtiUtilities.getYKUniqueKey();
