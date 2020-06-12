@@ -47,7 +47,7 @@ public class TrendEditorValidator extends SimpleValidator<TrendModel> {
         }
 
         // 3. Max length is 40 chars.
-        if (!errors.hasErrors() && StringUtils.length(trendName) <= 40) {
+        if (!errors.hasErrors() && StringUtils.length(trendName) > 40) {
             errors.rejectValue("name", baseKey + ".field.error.maxLengthExceeded",
                     new Object[] { nameI18nText, 60 }, "Name cannot exceed 60 characters.");
         }
