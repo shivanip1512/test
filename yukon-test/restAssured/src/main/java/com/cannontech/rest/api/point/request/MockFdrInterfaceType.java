@@ -1,0 +1,32 @@
+package com.cannontech.rest.api.point.request;
+
+public enum MockFdrInterfaceType {
+    INET,
+    ACS,
+    VALMET,
+    CYGNET,
+    STEC,
+    RCCS,
+    TRISTATE,
+    RDEX,
+    SYSTEM,
+    DSM2IMPORT,
+    TELEGYR,
+    TEXTIMPORT,
+    TEXTEXPORT,
+   
+    LODESTAR_STD,
+    LODESTAR_ENH,
+    DSM2FILEIN,
+    XA21LM,
+    BEPC,
+    PI,
+    LIVEDATA,
+    ACSMULTI,
+    WABASH,
+    TRISTATESUB,
+    OPC,
+    MULTISPEAK_LM,
+    DNPSLAVE,
+    VALMETMULTI,
+}
