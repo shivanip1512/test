@@ -254,6 +254,9 @@
     <bean class="com.cannontech.common.device.programming.dao.impl.MeterProgrammingDaoImpl"/>
     
     <bean class="com.cannontech.common.device.programming.service.impl.MeterProgrammingServiceImpl"/>
+    <bean class="com.cannontech.common.device.programming.service.impl.MeterProgramValidationServiceImpl">
+      <constructor-arg name="queueName" value="com.eaton.eas.yukon.porter.meterProgramValidation"/>
+    </bean>
     
     <bean class="com.cannontech.common.device.port.dao.impl.PortDaoImpl"/>
 </beans>
