@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.points.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
-import com.cannontech.web.tools.points.model.AlarmState;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointModel;
@@ -175,7 +175,7 @@ public class PointEditorServiceImpl implements PointEditorService {
             AlarmTableEntry entry = new AlarmTableEntry();
             setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
 
-            entry.setCondition(AlarmState.getAlarmStateValue(alarm_cats[i]));
+            entry.setCondition(alarm_cats[i]);
             notifEntries.add(entry);
         }
 
@@ -189,7 +189,7 @@ public class PointEditorServiceImpl implements PointEditorService {
                 AlarmTableEntry entry = new AlarmTableEntry();
                 setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
 
-                entry.setCondition(AlarmState.valueOf(stateNames[j]));
+                entry.setCondition(stateNames[j]);
                 notifEntries.add(entry);
             }
         }
@@ -506,15 +506,15 @@ public class PointEditorServiceImpl implements PointEditorService {
     private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
         List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
 
-        List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
+        List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
         if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
-            alarmStates = AlarmState.getStatusAlarmStates();
+            alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
         }
 
         // Iterate over all alarm state entries to maintain order and set default values if category and notify are null. 
-        for (AlarmState alarmState : alarmStates) {
+        for (String alarmState : alarmStates) {
             AlarmTableEntry entry = entries.stream()
-                                           .filter(e -> e.getCondition() == alarmState)
+                                           .filter(e -> e.getCondition().equals(alarmState))
                                            .findFirst()
                                            .orElse(new AlarmTableEntry(alarmState));
             orderedAlarmTableEntries.add(setDefaultsForAlarmEntry(entry));
@@ -523,14 +523,14 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     /**
-     * Set default values for AlarmTableEntry if category or notify are null. 
+     * Set default values for AlarmTableEntry if category or notify are null.
      */
     private AlarmTableEntry setDefaultsForAlarmEntry(AlarmTableEntry entry) {
-        if(entry.getCategory() == null) {
+        if (entry.getCategory() == null) {
             entry.setCategory(CtiUtilities.STRING_NONE);
         }
 
-        if(entry.getNotify() == null) {
+        if (entry.getNotify() == null) {
             entry.setNotify(AlarmNotificationTypes.NONE);
         }
         return entry;
