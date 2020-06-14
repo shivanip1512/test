@@ -493,17 +493,6 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         PointBase pointBase = pointDao.get(pointId);
 
-        List<FdrTranslation> fdrTranslations = pointBaseModel.getFdrList();
-        if (fdrTranslations != null) {
-            Vector<FDRTranslation> fDRTranslations = FDRTranslation.getFDRTranslations(pointId);
-            if (CollectionUtils.isNotEmpty(fDRTranslations)) {
-                for (FDRTranslation fdrTranslation : fDRTranslations) {
-                    dBPersistentDao.performDBChange(fdrTranslation, TransactionType.DELETE);
-                }
-            }
-            pointBase.getPointFDRVector().clear();
-        }
-
         pointBaseModel.buildDBPersistent(pointBase);
 
         StaleData staleData = getStaleData(pointId);
