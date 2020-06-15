@@ -494,17 +494,6 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         PointBase pointBase = pointDao.get(pointId);
 
-        List<FdrTranslation> fdrTranslations = pointBaseModel.getFdrList();
-        if (fdrTranslations != null) {
-            Vector<FDRTranslation> fDRTranslations = FDRTranslation.getFDRTranslations(pointId);
-            if (CollectionUtils.isNotEmpty(fDRTranslations)) {
-                for (FDRTranslation fdrTranslation : fDRTranslations) {
-                    dBPersistentDao.performDBChange(fdrTranslation, TransactionType.DELETE);
-                }
-            }
-            pointBase.getPointFDRVector().clear();
-        }
-
         pointBaseModel.buildDBPersistent(pointBase);
 
         StaleData staleData = getStaleData(pointId);
@@ -516,6 +505,21 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        StaleData staleData = getStaleData(pointId);
+
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
+
+        if (pointBaseModel != null) {
+            buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        }
         return pointBaseModel;
     }
 
@@ -550,21 +554,6 @@ public class PointEditorServiceImpl implements PointEditorService {
             entry.setNotify(AlarmNotificationTypes.NONE);
         }
         return entry;
-    }
-
-    @Override
-    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
-
-        PointBase pointBase = pointDao.get(pointId);
-        StaleData staleData = getStaleData(pointId);
-
-        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
-
-        if (pointBaseModel != null) {
-            buildPointBaseModel(pointBase, pointBaseModel, staleData);
-        }
-        return pointBaseModel;
     }
 
     private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {

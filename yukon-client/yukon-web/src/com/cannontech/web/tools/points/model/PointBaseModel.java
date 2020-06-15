@@ -187,11 +187,17 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
         getAlarming().buildDBPersistent(point.getPointAlarming());
 
-        if (CollectionUtils.isNotEmpty(getFdrList())) {
+        if (getFdrList() != null) {
+            point.getPointFDRVector().clear();
             Vector<FDRTranslation> fdrTranslations = point.getPointFDRVector();
             for (FdrTranslation fdrTranslation : getFdrList()) {
+                // Creating new object FDRTranslation so that we can set modified translation and pointId
+                // PointBase provide already created objects but in the case list, pointBase return empty list of
+                // FDRTranslation so here create FDRTranslation object and set into List.
                 FDRTranslation newFdrTranslation = new FDRTranslation();
+                // modifying the translation string to include POINTTYPE=<pointtype> while creating point.
                 newFdrTranslation.setTranslation(fdrTranslation.getTranslationString(getPointType()));
+                // Set PointId 
                 newFdrTranslation.setPointID(getPointId());
                 fdrTranslation.buildDBPersistent(newFdrTranslation);
                 fdrTranslations.add(newFdrTranslation);
