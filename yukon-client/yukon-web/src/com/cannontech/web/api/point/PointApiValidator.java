@@ -2,15 +2,23 @@ package com.cannontech.web.api.point;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
+import com.cannontech.common.fdr.FdrDirection;
+import com.cannontech.common.fdr.FdrInterfaceOption;
+import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrOptionType;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
@@ -45,6 +53,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
     private static final String baseKey = "yukon.web.api.error";
+    public static final int maxFdrInterfaceTranslations = 5;
 
     @SuppressWarnings("unchecked")
     public PointApiValidator() {
@@ -101,6 +110,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             validateAnalogPointModel(target, errors);
         }
 
+        validateFdrTranslation(target.getFdrList(), errors);
     }
 
     /**
@@ -394,4 +404,105 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             }
         }
     }
+
+    /**
+     * Validate FdrTranslation Fields.
+     */
+
+    private void validateFdrTranslation(List<FdrTranslation> fdrList, Errors errors) {
+
+        if (CollectionUtils.isNotEmpty(fdrList)) {
+
+            for (int i = 0; i < fdrList.size(); i++) {
+                errors.pushNestedPath("fdrList[" + i + "]");
+                FdrTranslation fdrTranslation = fdrList.get(i);
+
+                FdrInterfaceType fdrInterfaceType = fdrTranslation.getFdrInterfaceType();
+
+                if (fdrInterfaceType == null) {
+                    errors.rejectValue("fdrInterfaceType", "yukon.web.error.fieldrequired", new Object[] { "Interface" }, "");
+                }
+
+                if (!errors.hasFieldErrors("fdrInterfaceType")) {
+                    FdrDirection fdrDirection = fdrTranslation.getDirection();
+                    List<FdrDirection> supportedDirections = fdrInterfaceType.getSupportedDirectionsList();
+                    String supportedDirectionsInString  = supportedDirections.stream().map(direction -> direction.name()).collect(Collectors.joining(", "));
+
+                    if (fdrDirection == null || !supportedDirections.contains(fdrDirection)) {
+                        errors.rejectValue("direction", baseKey + ".fdr.supportedDirection", new Object[] { supportedDirectionsInString, fdrInterfaceType }, "");
+                    }
+
+                    Map<FdrInterfaceOption, String> parameterMap = new HashMap<>();
+                    List<FdrInterfaceOption> supportedOptions = fdrInterfaceType.getInterfaceOptionsList();
+                    String translation = fdrTranslation.getTranslation();
+
+                    if (translation != null) {
+                        String[] parameters = translation.split(";");
+
+
+                        if (parameterMap.size() > maxFdrInterfaceTranslations) {
+                            errors.reject(baseKey + ".fdr.invalidTranslationPropertyCount", new Object[] { maxFdrInterfaceTranslations }, "");
+                        }
+
+                        for (String paramSet : parameters) {
+                            int splitSpot = paramSet.indexOf(":");
+                            if (splitSpot != -1) {
+                                String option = paramSet.substring(0, splitSpot);
+
+                                FdrInterfaceOption fdrInterfaceOption = supportedOptions.stream()
+                                                                                        .filter(interfaceOption -> interfaceOption.getOptionLabel()
+                                                                                                                                  .equals(option))
+                                                                                        .findFirst()
+                                                                                        .orElse(null);
+
+                                if (fdrInterfaceOption != null) {
+
+                                    String fieldValue = paramSet.substring(splitSpot + 1);
+                                    if (!(parameterMap.containsKey(fdrInterfaceOption))) {
+                                        parameterMap.put(fdrInterfaceOption, fieldValue);
+                                    } else {
+                                        errors.rejectValue("translation",
+                                                           baseKey + ".fdr.duplicateTranslationProperty",
+                                                           new Object[] { fdrInterfaceOption.getOptionLabel(), fdrInterfaceType },
+                                                           "");
+                                    }
+
+                                    FdrOptionType optionType = fdrInterfaceOption.getOptionType();
+
+                                    if (!(optionType == FdrOptionType.TEXT && fieldValue.equals(CtiUtilities.STRING_NONE)) && !(fdrInterfaceOption.isValid(fieldValue))) {
+                                        errors.rejectValue("translation",
+                                                           baseKey + ".fdr.invalidTranslationPropertyValue",
+                                                           new Object[] { fieldValue, fdrInterfaceOption.getOptionLabel(), fdrInterfaceType },
+                                                           "");
+                                    }
+                                } else {
+                                    errors.rejectValue("translation",
+                                                       baseKey + ".fdr.inValidTranslationPropertyInterface",
+                                                       new Object[] { option, fdrInterfaceType },
+                                                       "");
+                                }
+
+                            }
+                        }
+                    }
+                    String missedFdrInterfaceOptions = supportedOptions.stream()
+                                                                       .filter(option -> !(parameterMap.keySet().contains(option)))
+                                                                       .map(option -> option.getOptionLabel())
+                                                                       .collect(Collectors.joining(", "));
+
+                    if (StringUtils.isNotBlank(missedFdrInterfaceOptions)) {
+                        errors.rejectValue("translation",
+                                           baseKey + ".fdr.missingTranslationProperty",
+                                           new Object[] { missedFdrInterfaceOptions, fdrInterfaceType },
+                                           "");
+                    }
+
+                }
+                errors.popNestedPath();
+            }
+
+        }
+
+    }
+
 }

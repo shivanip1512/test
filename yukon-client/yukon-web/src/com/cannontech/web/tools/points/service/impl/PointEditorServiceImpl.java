@@ -5,13 +5,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
@@ -20,6 +21,7 @@ import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
@@ -39,6 +41,7 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -53,7 +56,6 @@ import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
-@Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PointEditorServiceImpl implements PointEditorService {
     
@@ -396,7 +398,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public void delete(int id, YukonUserContext userContext) throws AttachedException {
+    public int delete(int id, YukonUserContext userContext) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
         if (!attachmentStatus.isDeletable()) {
             throw new AttachedException(attachmentStatus);
@@ -416,6 +418,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
+        return point.getPoint().getPointID();
     }
 
     @Override
@@ -469,37 +472,54 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel, YukonUserContext userContext) {
+
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
         StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
-            staleData = StaleData.of(pointBaseModel.getStaleData());
+            staleData = pointBaseModel.getStaleData().overwriteWith(new StaleData());
         }
-        
+    
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
-        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        save(pointBase, staleData, alarmTableEntries, userContext.getYukonUser());
 
-        // TODO FDR
+        buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        return pointBaseModel;
+
+    }
+
+    @Override
+    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel, YukonUserContext userContext) {
+
+        PointBase pointBase = pointDao.get(pointId);
+
+        pointBaseModel.buildDBPersistent(pointBase);
+
+        StaleData staleData = getStaleData(pointId);
+        if (pointBaseModel.getStaleData() != null) {
+            staleData = pointBaseModel.getStaleData().overwriteWith(staleData);
+        }
+
+        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());
+
+        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
     }
 
     @Override
-    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
 
         PointBase pointBase = pointDao.get(pointId);
-        pointBaseModel.buildDBPersistent(pointBase);
+        StaleData staleData = getStaleData(pointId);
 
-        StaleData staleData = null;
-        if (pointBaseModel.getStaleData() != null) {
-            staleData = StaleData.of(pointBaseModel.getStaleData());
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
+
+        if (pointBaseModel != null) {
+            buildPointBaseModel(pointBase, pointBaseModel, staleData);
         }
-        
-        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());
-        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
-        //TODO FDR 
-        buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
     }
 
@@ -534,21 +554,6 @@ public class PointEditorServiceImpl implements PointEditorService {
             entry.setNotify(AlarmNotificationTypes.NONE);
         }
         return entry;
-    }
-
-    @Override
-    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
-
-        PointBase pointBase = pointDao.get(pointId);
-        StaleData staleData = getStaleData(pointId);
-
-        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
-
-        if (pointBaseModel != null) {
-            buildPointBaseModel(pointBase, pointBaseModel, staleData);
-        }
-        return pointBaseModel;
     }
 
     private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {

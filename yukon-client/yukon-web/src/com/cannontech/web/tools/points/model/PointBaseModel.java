@@ -1,12 +1,19 @@
 package com.cannontech.web.tools.points.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.db.point.Point;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.service.impl.JsonDeserializePointTypeLookup;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -28,6 +35,7 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
     private StaleData staleData;
     private PointAlarming alarming;
+    private List <FdrTranslation> fdrList;
 
     public PointLogicalGroups getTimingGroup() {
         return timingGroup;
@@ -67,6 +75,14 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
 
     public void setStaleData(StaleData staleData) {
         this.staleData = staleData;
+    }
+
+    public List<FdrTranslation> getFdrList() {
+        return fdrList;
+    }
+
+    public void setFdrList(List<FdrTranslation> fdrList) {
+        this.fdrList = fdrList;
     }
 
     public Boolean getEnable() {
@@ -111,6 +127,21 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         setTimingGroup(PointLogicalGroups.getLogicalGroupValue(pt.getLogicalGroup()));
         setAlarmsDisabled(pt.isAlarmsDisabled());
         getAlarming().buildModel(point.getPointAlarming());
+        
+        List<FdrTranslation> fdrList = new ArrayList<>();
+        for (FDRTranslation fdrTranslation : point.getPointFDRVector()) {
+            FdrTranslation newFdrTranslation = new FdrTranslation();
+            newFdrTranslation.buildModel(fdrTranslation);
+            fdrList.add(newFdrTranslation);
+        }
+
+        if (CollectionUtils.isNotEmpty(fdrList)) {
+            setFdrList(fdrList);
+        } else {
+            // In the case of empty list, Json message should not have fdrList fields.
+            setFdrList(null);
+        }
+
     }
 
     @Override
@@ -155,6 +186,23 @@ public class PointBaseModel<T extends PointBase> extends LitePointModel implemen
         }
 
         getAlarming().buildDBPersistent(point.getPointAlarming());
+
+        if (getFdrList() != null) {
+            point.getPointFDRVector().clear();
+            Vector<FDRTranslation> fdrTranslations = point.getPointFDRVector();
+            for (FdrTranslation fdrTranslation : getFdrList()) {
+                // Creating new object FDRTranslation so that we can set modified translation and pointId
+                // PointBase provide already created objects but in the case list, pointBase return empty list of
+                // FDRTranslation so here create FDRTranslation object and set into List.
+                FDRTranslation newFdrTranslation = new FDRTranslation();
+                // modifying the translation string to include POINTTYPE=<pointtype> while creating point.
+                newFdrTranslation.setTranslation(fdrTranslation.getTranslationString(getPointType()));
+                // Set PointId 
+                newFdrTranslation.setPointID(getPointId());
+                fdrTranslation.buildDBPersistent(newFdrTranslation);
+                fdrTranslations.add(newFdrTranslation);
+            }
+        }
     }
 
     @Override
