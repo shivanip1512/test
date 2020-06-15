@@ -43,7 +43,6 @@
     <entry key="yukon.web.error.port.required">Port is required.</entry>
     <entry key="yukon.web.error.portNumber.required">Port Number is required.</entry>
     <entry key="yukon.web.error.socketNumber.required">Socket Number is required.</entry>
-    <entry key="yukon.web.error.save">{0} could not be saved. Error: {1}.</entry>
 
     <entry key="yukon.web.error.noJs">For full functionality of this site it is necessary to enable JavaScript. Please contact your administrator to enable JavaScript in your web browser.</entry>
     
