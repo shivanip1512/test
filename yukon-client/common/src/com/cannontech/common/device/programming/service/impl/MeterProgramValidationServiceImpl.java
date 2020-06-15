@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,6 +15,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.programming.service.MeterProgramValidationService;
 import com.cannontech.common.exception.ServiceCommunicationFailedException;
 import com.cannontech.common.util.jms.ThriftRequestReplyTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
+import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.message.porter.message.MeterProgramValidationRequest;
 import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.messaging.serialization.thrift.serializer.porter.MeterProgramValidationRequestSerializer;
@@ -22,16 +26,18 @@ public class MeterProgramValidationServiceImpl implements MeterProgramValidation
 
     private static final Logger log = YukonLogManager.getLogger(MeterProgramValidationServiceImpl.class);
 
-    private static final MeterProgramValidationRequestSerializer serializer = new MeterProgramValidationRequestSerializer();
-    private static final MeterProgramValidationResponseSerializer deserializer = new MeterProgramValidationResponseSerializer();
-    
     private static final int DEFAULT_TIMEOUT_MINUTES = 1;
     
-    ThriftRequestReplyTemplate<MeterProgramValidationRequest, MeterProgramValidationResponse> thriftMessenger;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+
+    private ThriftRequestReplyTemplate<MeterProgramValidationRequest, MeterProgramValidationResponse> thriftMessenger;
     
-    @Autowired
-    MeterProgramValidationServiceImpl(String queueName) {
-        thriftMessenger = new ThriftRequestReplyTemplate<>(queueName, serializer, deserializer);
+    @PostConstruct
+    public void initialize() {
+        thriftMessenger = new ThriftRequestReplyTemplate<>(
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.METER_PROGRAM_VALIDATION),
+                new MeterProgramValidationRequestSerializer(),
+                new MeterProgramValidationResponseSerializer());
     }
     
     @Override

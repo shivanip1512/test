@@ -15,6 +15,7 @@ import static com.cannontech.common.util.jms.api.JmsApiCategory.WIDGET_REFRESH;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.NETWORK_MANAGER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_EIM;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_MESSAGE_BROKER;
+import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_PORTER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SERVICE_MANAGER;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_SIMULATORS;
 import static com.cannontech.common.util.jms.api.JmsCommunicatingService.YUKON_WATCHDOG;
@@ -117,6 +118,10 @@ import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastReply;
 import com.cannontech.dr.rfn.message.unicast.RfnExpressComUnicastRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRefreshRequest;
 import com.cannontech.infrastructure.model.InfrastructureWarningsRequest;
+import com.cannontech.message.porter.message.DynamicPaoInfoRequest;
+import com.cannontech.message.porter.message.DynamicPaoInfoResponse;
+import com.cannontech.message.porter.message.MeterProgramValidationRequest;
+import com.cannontech.message.porter.message.MeterProgramValidationResponse;
 import com.cannontech.services.configurationSettingMessage.model.ConfigurationSettings;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenRequest;
 import com.cannontech.services.ecobee.authToken.message.EcobeeAuthTokenResponse;
@@ -1140,6 +1145,32 @@ public final class JmsApiDirectory {
                   .sender(YUKON_SERVICE_MANAGER)
                   .receiver(YUKON_SERVICE_MANAGER)
                   .receiver(NETWORK_MANAGER)
+                  .build();
+
+    public static final JmsApi<DynamicPaoInfoRequest,?,DynamicPaoInfoResponse> PORTER_DYNAMIC_PAOINFO =
+            JmsApi.builder(DynamicPaoInfoRequest.class, DynamicPaoInfoResponse.class)
+                  .name("Porter Dynamic Pao Info")
+                  .description("Requests to Porter for Dynamic Pao Info, such as MCT load profile configuration")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.porter.dynamicPaoInfoRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(DynamicPaoInfoRequest.class)
+                  .responseMessage(DynamicPaoInfoResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_PORTER)
+                  .build();
+
+    public static final JmsApi<MeterProgramValidationRequest,?,MeterProgramValidationResponse> METER_PROGRAM_VALIDATION =
+            JmsApi.builder(MeterProgramValidationRequest.class, MeterProgramValidationResponse.class)
+                  .name("Meter Program Validation")
+                  .description("Requests to Porter to validate Meter Program entries")
+                  .communicationPattern(REQUEST_RESPONSE)
+                  .queue(new JmsQueue("com.eaton.eas.yukon.porter.meterProgramValidationRequest"))
+                  .responseQueue(JmsQueue.TEMP_QUEUE)
+                  .requestMessage(MeterProgramValidationRequest.class)
+                  .responseMessage(MeterProgramValidationResponse.class)
+                  .sender(YUKON_WEBSERVER)
+                  .receiver(YUKON_PORTER)
                   .build();
 
     /*
