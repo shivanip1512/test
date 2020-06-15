@@ -141,7 +141,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + virtualDevice.getId());
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, VirtualDeviceModel.class, virtualDevice);
             } else {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl);
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + "create");
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, VirtualDeviceModel.class, virtualDevice);
             }
 
