@@ -53,7 +53,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.tools.trends.helper.TrendEditorHelper;
 import com.cannontech.web.tools.trends.validator.TrendEditorValidator;
 import com.cannontech.web.tools.trends.validator.TrendSeriesValidator;
 import com.cannontech.yukon.IDatabaseCache;
@@ -94,7 +93,7 @@ public class TrendEditorController {
     public String renderAddPointPopup(ModelMap model) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendSeries trendSeries = new TrendSeries();
-        setDefaultValues(trendSeries);
+        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         model.addAttribute("graphTypeDateEnumValue", TrendType.GraphType.DATE_TYPE);
         setPointPopupModel(model);
@@ -107,7 +106,7 @@ public class TrendEditorController {
         model.addAttribute("trendSeries", trendSeries);
         LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
         model.addAttribute("deviceName", yukonPao.getPaoName());
-        model.addAttribute("isDateTypeSelected", TrendEditorHelper.isDateType(trendSeries.getType()));
+        model.addAttribute("isDateTypeSelected", trendSeries.getType().isDateType());
         setPointPopupModel(model);
         return "trends/setup/pointSetupPopup.jsp";
     }
@@ -125,13 +124,7 @@ public class TrendEditorController {
         log.info("Trend Name : " + trendModel.getName());
         if (CollectionUtils.isNotEmpty(trendModel.getTrendSeries())) {
             for (TrendSeries trendSeries : trendModel.getTrendSeries()) {
-                log.info("Point Id:" + trendSeries.getPointId());
-                log.info("Label:" + trendSeries.getLabel());
-                log.info("Color:" + trendSeries.getColor());
-                log.info("Axis:" + trendSeries.getAxis());
-                log.info("Type:" + trendSeries.getType());
-                log.info("Multipler:" + trendSeries.getMultiplier());
-                log.info("Style:" + trendSeries.getStyle());
+                log.info(trendSeries);
             }
         }
 
@@ -157,12 +150,12 @@ public class TrendEditorController {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             setPointPopupModel(model);
             model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
-            model.addAttribute("isDateTypeSelected", TrendEditorHelper.isDateType(trendSeries.getType()));
+            model.addAttribute("isDateTypeSelected", trendSeries.getType().isDateType());
             return "trends/setup/pointSetupPopup.jsp";
         }
 
         model.clear();
-        setDefaultValues(trendSeries);
+        trendSeries.applyDefaults();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         json.put("trendSeries", trendSeries);
@@ -172,7 +165,7 @@ public class TrendEditorController {
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
         json.put("graphType", accessor.getMessage(trendSeries.getType().getFormatKey()));
         json.put("style", accessor.getMessage(trendSeries.getStyle().getFormatKey()));
-        if (TrendEditorHelper.isDateType(trendSeries.getType())) {
+        if (trendSeries.getType().isDateType()) {
             json.put("dateStr", dateFormattingService.format(trendSeries.getDate(), DateFormatEnum.DATE, userContext));
         }
         response.setContentType("application/json");
@@ -242,26 +235,5 @@ public class TrendEditorController {
             return "redirect:create";
         }
         return "redirect:" + trendModel.getTrendId() + "/edit";
-    }
-    
-    private void setDefaultValues(TrendSeries trendSeries) {
-        if (trendSeries.getMultiplier() == null) {
-            trendSeries.setMultiplier(1d);
-        }
-        if (trendSeries.getDate() == null) {
-            trendSeries.setDate(DateTime.now());
-        }
-        if (trendSeries.getColor() == null) {
-            trendSeries.setColor(Color.BLUE);
-        }
-        if (trendSeries.getAxis() == null) {
-            trendSeries.setAxis(TrendAxis.LEFT);
-        }
-        if (trendSeries.getStyle() == null) {
-            trendSeries.setStyle(RenderType.LINE);
-        }
-        if (trendSeries.getType() == null) {
-            trendSeries.setType(GraphType.BASIC_TYPE);
-        }
     }
 }

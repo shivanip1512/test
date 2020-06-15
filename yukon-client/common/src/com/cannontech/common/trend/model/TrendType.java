@@ -28,6 +28,10 @@ public class TrendType {
         public String getFormatKey() {
             return "yukon.web.modules.tools.trends.data.trendType.graphType." + name();
         }
+        
+        public boolean isDateType() {
+            return this == DATE_TYPE;
+        }
     }
 
     private final GraphType graphType;

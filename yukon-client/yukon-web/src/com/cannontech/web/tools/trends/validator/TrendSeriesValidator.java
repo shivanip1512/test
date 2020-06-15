@@ -10,7 +10,6 @@ import com.cannontech.common.trend.model.TrendSeries;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.tools.trends.helper.TrendEditorHelper;
 
 @Service
 public class TrendSeriesValidator extends SimpleValidator<TrendSeries> {
@@ -46,13 +45,13 @@ public class TrendSeriesValidator extends SimpleValidator<TrendSeries> {
                     new Object[] { accessor.getMessage(baseKey + ".label"), 40 }, "Label cannot exceed 40 characters.");
         }
         
-        if (!errors.hasFieldErrors("date") && TrendEditorHelper.isDateType(trendSeries.getType())) {
+        if (!errors.hasFieldErrors("date") && trendSeries.getType().isDateType()) {
             //TODO: This code will be removed after, and a method from YukonValidationUtils will be added YUK-22272 is merged in master. 
             if (trendSeries.getDate() == null) {
                 errors.rejectValue("date", mandatoryFieldMsgKey,
                         new Object[] { accessor.getMessage("yukon.common.date") }, "Date is required.");
             } else if (trendSeries.getDate().isAfterNow()) {
-                errors.rejectValue("date", baseKey + ".date.error.futureDate", "Date cannot be future date.");
+                errors.rejectValue("date", "yukon.web.error.date.inThePast", "Date must be in the past.");
             }
         }
         
