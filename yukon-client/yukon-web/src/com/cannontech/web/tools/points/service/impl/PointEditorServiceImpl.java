@@ -507,6 +507,21 @@ public class PointEditorServiceImpl implements PointEditorService {
         return pointBaseModel;
     }
 
+    @Override
+    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
+
+        PointBase pointBase = pointDao.get(pointId);
+        StaleData staleData = getStaleData(pointId);
+
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
+
+        if (pointBaseModel != null) {
+            buildPointBaseModel(pointBase, pointBaseModel, staleData);
+        }
+        return pointBaseModel;
+    }
+
     private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
         List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
 
@@ -538,21 +553,6 @@ public class PointEditorServiceImpl implements PointEditorService {
             entry.setNotify(AlarmNotificationTypes.NONE);
         }
         return entry;
-    }
-
-    @Override
-    public PointBaseModel<? extends PointBase> retrieve(int pointId) {
-
-        PointBase pointBase = pointDao.get(pointId);
-        StaleData staleData = getStaleData(pointId);
-
-        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
-
-        if (pointBaseModel != null) {
-            buildPointBaseModel(pointBase, pointBaseModel, staleData);
-        }
-        return pointBaseModel;
     }
 
     private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {
