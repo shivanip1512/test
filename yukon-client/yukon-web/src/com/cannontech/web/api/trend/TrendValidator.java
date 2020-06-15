@@ -29,7 +29,7 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
 
     @Override
     protected void doValidation(TrendModel trend, Errors errors) {
-        YukonValidationUtils.checkIsEmpty(errors, "name", trend.getName(), "Trend Name");
+        //YukonValidationUtils.checkIsEmpty(errors, "name", trend.getName(), "Trend Name");
         if (!errors.hasFieldErrors("name")) {
             YukonValidationUtils.checkExceedsMaxLength(errors, "name", trend.getName(), 40);
             Optional<LiteGraphDefinition> graphDefinition = dbCache.getAllGraphDefinitions().stream()
@@ -43,12 +43,12 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
                 TrendSeries trendSeries = trend.getTrendSeries().get(i);
                 errors.pushNestedPath("trendSeries[" + i + "]");
 
-                YukonValidationUtils.checkIsEmpty(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), "Point ID");
+                //YukonValidationUtils.checkIsEmpty(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), "Point ID");
                 if (!errors.hasFieldErrors("pointId")) {
                     pointValidationUtil.validatePointId(errors, "pointId", trendSeries.getPointId());
                 }
 
-                YukonValidationUtils.checkIsEmpty(errors, "label", trendSeries.getLabel(), "Label");
+                //YukonValidationUtils.checkIsEmpty(errors, "label", trendSeries.getLabel(), "Label");
                 if(!errors.hasFieldErrors("label")) {
                     YukonValidationUtils.checkExceedsMaxLength(errors, "label", trendSeries.getLabel(), 40);
                 }
@@ -64,7 +64,7 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
                     }
                 }
                 if (trendSeries.getType() != null && trendSeries.getType() == GraphType.DATE_TYPE) {
-                    YukonValidationUtils.checkIsEmpty(errors, "date", Objects.toString(trendSeries.getDate(), null), "Date");
+                    //YukonValidationUtils.checkIsEmpty(errors, "date", Objects.toString(trendSeries.getDate(), null), "Date");
                     if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
                         errors.rejectValue("date", basekey + "date.inThePast");
                     }
