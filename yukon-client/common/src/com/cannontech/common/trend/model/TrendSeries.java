@@ -2,6 +2,7 @@ package com.cannontech.common.trend.model;
 
 import org.joda.time.DateTime;
 
+import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -80,5 +81,34 @@ public class TrendSeries {
     public void setDate(DateTime date) {
         this.date = date;
     }
-
+    
+    @Override
+    public String toString() {
+        return String.format("TrendSeries [graphType=%s, pointId=%s, label=%s, color=%s, axis=%s, multiplier=%s, style=%s, date=%s]",
+                type, pointId, label, color, axis, multiplier, style, date);
+    }
+    
+    /**
+     * Update the TrendSeries with default values when null.
+     */
+    public void applyDefaults() {
+        if (getMultiplier() == null) {
+            setMultiplier(1d);
+        }
+        if (getDate() == null) {
+            setDate(DateTime.now());
+        }
+        if (getColor() == null) {
+            setColor(Color.BLUE);
+        }
+        if (getAxis() == null) {
+            setAxis(TrendAxis.LEFT);
+        }
+        if (getStyle() == null) {
+            setStyle(RenderType.LINE);
+        }
+        if (getType() == null) {
+            setType(GraphType.BASIC_TYPE);
+        }
+    }
 }

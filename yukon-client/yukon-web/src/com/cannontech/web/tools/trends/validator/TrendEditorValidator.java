@@ -1,0 +1,68 @@
+package com.cannontech.web.tools.trends.validator;
+
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
+
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.common.trend.model.TrendModel;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
+
+@Service
+public class TrendEditorValidator extends SimpleValidator<TrendModel> {
+
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private IDatabaseCache cache;
+    
+    private static final String baseKey = "yukon.web.modules.tools.trend";
+
+    public TrendEditorValidator() {
+        super(TrendModel.class);
+    }
+
+    @Override
+    protected void doValidation(TrendModel trendModel, Errors errors) {
+
+        //TODO: This code will be removed after, and a method from YukonValidationUtils will be added YUK-22272 is merged in master. 
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
+        String nameI18nText = accessor.getMessage("yukon.common.name");
+        String trendName = StringUtils.trim(trendModel.getName());
+        if (StringUtils.isBlank(trendName)) {
+            errors.rejectValue("name", "yukon.web.error.fieldrequired", new Object[] { nameI18nText }, "Name is required.");
+        }
+
+        // 2. Should not contain illegal chars
+        if (!errors.hasErrors() && !StringUtils.containsNone(trendName, PaoUtils.ILLEGAL_NAME_CHARS)) {
+            errors.rejectValue("name", baseKey + ".trend.field.error.containsIllegalChars",
+                    new Object[] { nameI18nText, String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS) },
+                    "Name cannot include any of the following characters: " + String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
+        }
+
+        // 3. Max length is 40 chars.
+        if (!errors.hasErrors() && StringUtils.length(trendName) > 40) {
+            errors.rejectValue("name", baseKey + ".field.error.maxLengthExceeded",
+                    new Object[] { nameI18nText, 40 }, "Name cannot exceed 40 characters.");
+        }
+
+        // 4. Name should be unique.
+        if (!errors.hasErrors()) {
+            List<LiteGraphDefinition> graphDefs = cache.getAllGraphDefinitions();
+            for (LiteGraphDefinition liteGraphDefinition : graphDefs) {
+                if (StringUtils.equals(trendName, liteGraphDefinition.getName())) {
+                    if (trendModel.getTrendId() == null || liteGraphDefinition.getLiteID() != trendModel.getTrendId()) {
+                        errors.rejectValue("name", baseKey + ".name.error.notUnique");
+                    }
+                    break;
+                }
+            }
+        }
+    }
+}

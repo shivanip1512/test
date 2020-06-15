@@ -193,4 +193,9 @@ public interface PaoDao {
      * doesn't exist.
      */
     YukonPao findPort(String paoName);
+    
+    /**
+     * This method returns LiteYukonPAObject for the pointId passed as a parameter.
+     * */
+    LiteYukonPAObject getLiteYukonPaoByPointId(int pointId);
 }
