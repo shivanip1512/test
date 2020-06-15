@@ -1204,6 +1204,7 @@ public final class JmsApiDirectory {
                 ECOBEE_AUTH_TOKEN,
                 LM_ADDRESS_NOTIFICATION,
                 LOCATION,
+                PORTER_DYNAMIC_PAOINFO,
                 RFN_DEVICE_CREATION_ALERT,
                 SIMULATORS,
                 SYSTEM_DATA);
@@ -1221,7 +1222,8 @@ public final class JmsApiDirectory {
                 RFN_METER_DISCONNECT,
                 RFN_METER_READ,
                 RFN_METER_READ_ARCHIVE,
-                METER_PROGRAM_STATUS_ARCHIVE);
+                METER_PROGRAM_STATUS_ARCHIVE,
+                METER_PROGRAM_VALIDATION);
         
         addApis(jmsApis, RF_GATEWAY, 
                 RF_GATEWAY_ARCHIVE, 
