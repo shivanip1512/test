@@ -28,6 +28,7 @@ import com.cannontech.database.db.device.lm.LMProgram;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.api.dr.setup.LMValidatorHelper;
+import com.cannontech.web.tools.points.validators.PointValidationUtil;
 
 public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
 
@@ -35,6 +36,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
     public static final int MAX_TRIGGER_COUNT = 2;
     @Autowired private LMValidatorHelper lmValidatorHelper;
     @Autowired private PointDao pointdao;
+    @Autowired private PointValidationUtil pointValidationUtil;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private ControlAreaDao controlAreaDao;
 
@@ -92,7 +94,7 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                     lmValidatorHelper.checkIfFieldRequired("triggerType", errors, trigger.getTriggerType(), "Trigger Type");
                     lmValidatorHelper.checkIfFieldRequired("triggerPointId", errors, trigger.getTriggerPointId(), "Trigger Point Id");
                     if (!errors.hasFieldErrors("triggerPointId")) {
-                        lmValidatorHelper.validatePointId(errors, "triggerPointId", trigger.getTriggerPointId());
+                        pointValidationUtil.validatePointId(errors, "triggerPointId", trigger.getTriggerPointId());
                     }
 
                     if (!errors.hasFieldErrors("triggerType") && !errors.hasFieldErrors("triggerPointId")) {
@@ -114,13 +116,13 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                             YukonValidationUtils.checkRange(errors, "minRestoreOffset", trigger.getMinRestoreOffset(), -99999.9999, 99999.9999, false);
 
                             if (trigger.getPeakPointId() != null) {
-                                lmValidatorHelper.validatePointId(errors, "peakPointId", trigger.getPeakPointId());
+                                pointValidationUtil.validatePointId(errors, "peakPointId", trigger.getPeakPointId());
                             }
 
                             if ((trigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase( IlmDefines.TYPE_THRESHOLD_POINT)) {
                                 lmValidatorHelper.checkIfFieldRequired("thresholdPointId", errors, trigger.getThresholdPointId(), "Threshold Point Id");
                                 if (!errors.hasFieldErrors("thresholdPointId")) { 
-                                    lmValidatorHelper.validatePointId(errors, "thresholdPointId", trigger.getThresholdPointId());
+                                    pointValidationUtil.validatePointId(errors, "thresholdPointId", trigger.getThresholdPointId());
                                 }
                             } else {
                                 lmValidatorHelper.checkIfFieldRequired("threshold", errors, trigger.getThreshold(), "Threshold");

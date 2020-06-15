@@ -116,7 +116,7 @@ public interface PointEditorService {
      * Attempts to delete the point with the given id.
      * @throws AttachedException if the point has attachments that prevent it from being deleted
      */
-    void delete(int id, YukonUserContext userContext) throws AttachedException;
+    int delete(int id, YukonUserContext userContext) throws AttachedException;
 
     /**
      * Creates a new point with the specified parent id
@@ -147,12 +147,12 @@ public interface PointEditorService {
     /**
      * Create the Point.
      */
-    PointBaseModel<? extends PointBase> create(PointBaseModel<? extends PointBase> point);
+    PointBaseModel<? extends PointBase> create(PointBaseModel<? extends PointBase> point, YukonUserContext userContext);
 
     /**
      * Update the Point.
      */
-    PointBaseModel<? extends PointBase> update(int portId, PointBaseModel<? extends PointBase> point);
+    PointBaseModel<? extends PointBase> update(int portId, PointBaseModel<? extends PointBase> point, YukonUserContext userContext);
 
     /**
      * Retrieve Point for passed pointId.

@@ -75,5 +75,11 @@
    <entry key="yukon.web.modules.tools.trend.color.PINK">Pink</entry>
    <entry key="yukon.web.modules.tools.trend.color.RED">Red</entry>
    <entry key="yukon.web.modules.tools.trend.color.YELLOW">Yellow</entry>
-   <entry key="yukon.web.modules.tools.trend.create.success">{0} created successfully.</entry>
+   
+   <!-- Validation error messages -->
+   <!-- TODO: remove this entry below after using the common method from YUK-22272. -->
+   <entry key="yukon.web.modules.tools.trend.field.error.containsIllegalChars">{0} cannot include any of the following characters: {1}</entry>
+   <entry key="yukon.web.modules.tools.trend.field.error.maxLengthExceeded">{0} cannot exceed {1} characters.</entry>
+   <entry key="yukon.web.modules.tools.trend.name.error.notUnique">Name must be unique.</entry>
+   <entry key="yukon.web.modules.tools.trend.date.error.futureDate">Date cannot be future date.</entry>
 </properties>
