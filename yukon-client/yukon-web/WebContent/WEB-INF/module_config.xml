@@ -1331,7 +1331,7 @@
                 <pages>
                     <page name="virtualDevice.detail" type="DETAIL">
                         <link>/stars/virtualDevice/${id}</link>
-                        <labelArgument>${virtualDevice.paoName}</labelArgument>
+                        <labelArgument>${name}</labelArgument>
                     </page>
                 </pages>
             </page>

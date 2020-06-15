@@ -5,19 +5,18 @@
 
 <cti:msgScope paths="yukon.web.modules.operator.virtualDeviceInfoWidget">
     <tags:setFormEditMode mode="${mode}" />
+    <c:if test="${not empty errorMsg}"><tags:alertBox includeCloseButton="true">${errorMsg}</tags:alertBox></c:if>
     <form:form modelAttribute="virtualDevice" id="virtual-device-form">
         <cti:csrfToken />
-        <tags:hidden id="disableFlag" path="disableFlag"/>
-        <tags:hidden path="paoType"/>
-        <tags:hidden id="deviceId" path="liteID"/>
+        <tags:hidden path="type"/>
+        <tags:hidden path="id"/>
         
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".name">
-                <tags:input path="paoName" maxlength="60" inputClass="w300 wrbw dib"/>
+            <tags:nameValue2 nameKey="yukon.common.name">
+                <tags:input path="name" maxlength="60" inputClass="w300 wrbw dib"/>
             </tags:nameValue2>
-            <tags:nameValue2 nameKey=".status">
-                <tags:switchButton id="disableToggle" name="disableToggle" inverse="${true}" checked="${virtualDevice.disableFlag == 'Y'}"
-                    offNameKey=".disabled.label" onNameKey=".enabled.label" />
+            <tags:nameValue2 nameKey="yukon.common.status">
+                <tags:switchButton path="enable" offNameKey=".disabled.label" onNameKey=".enabled.label" />
             </tags:nameValue2>
         </tags:nameValueContainer2>
 
@@ -27,9 +26,9 @@
             <div class="action-area">
                 <cti:button icon="icon-pencil" nameKey="edit" data-popup="#js-edit-virtual-device-popup"/>
             </div>
-            <cti:url var="editUrl" value="/widget/virtualDeviceInfoWidget/${virtualDevice.liteID}/edit"/>
+            <cti:url var="editUrl" value="/widget/virtualDeviceInfoWidget/${virtualDevice.id}/edit"/>
             <cti:msg2 var="saveText" key="components.button.save.label"/>
-            <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.virtualDeviceInfoWidget.edit" argument="${virtualDevice.paoName}"/>
+            <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.virtualDeviceInfoWidget.edit" argument="${virtualDevice.name}"/>
             <div class="dn" 
                  id="js-edit-virtual-device-popup" 
                  data-title="${editPopupTitle}" 

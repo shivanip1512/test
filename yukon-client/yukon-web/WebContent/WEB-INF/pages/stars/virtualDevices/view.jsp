@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
@@ -5,6 +6,10 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="virtualDevice.detail">
+
+    <c:if test="${not empty userMessage}">
+        <tags:alertBox type="success" includeCloseButton="true">${userMessage}</tags:alertBox>
+    </c:if>
 
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">
@@ -24,22 +29,22 @@
         </cti:checkRolesAndProperties>
         <cti:url var="actionsUrl" value="/bulk/collectionActions">
             <cti:param name="collectionType" value="idList"/>
-            <cti:param name="idList.ids" value="${virtualDevice.liteID}"/>
+            <cti:param name="idList.ids" value="${id}"/>
         </cti:url>
         <cm:dropdownOption icon="icon-cog" href="${actionsUrl}" key=".otherActions"/>
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <li class="divider"/>
             <cm:dropdownOption key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="deleteVirtualDevice"
                                    icon="icon-cross" data-ok-event="yukon:virtualDevice:delete" />
-                <d:confirm on="#deleteVirtualDevice" nameKey="confirmDelete" argument="${virtualDevice.paoName}"/>
-                <cti:url var="deleteUrl" value="/stars/virtualDevice/${virtualDevice.liteID}/delete"/>
+                <d:confirm on="#deleteVirtualDevice" nameKey="confirmDelete" argument="${name}"/>
+                <cti:url var="deleteUrl" value="/stars/virtualDevice/${id}/delete"/>
                 <form:form id="delete-virtualDevice-form" action="${deleteUrl}" method="delete">
                     <cti:csrfToken/>
                 </form:form>
         </cti:checkRolesAndProperties>
     </div>
     
-    <tags:widgetContainer deviceId="${virtualDevice.liteID}" identify="false">
+    <tags:widgetContainer deviceId="${id}" identify="false">
         <div class="column-12-12 clearfix">
             <div class="one column">
                 <tags:widget bean="virtualDeviceInfoWidget" classes="js-virtual-device-info-widget"/>

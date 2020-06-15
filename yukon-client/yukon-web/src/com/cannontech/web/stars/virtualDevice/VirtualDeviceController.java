@@ -21,6 +21,7 @@ import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.DeviceBaseModel;
+import com.cannontech.common.device.virtualDevice.VirtualDeviceModel;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -32,7 +33,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -58,8 +58,6 @@ public class VirtualDeviceController {
 
     private static final Logger log = YukonLogManager.getLogger(VirtualDeviceController.class);
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
-    private static final String baseKey = "yukon.web.modules.operator.virtualDevice.";
-
     
     @GetMapping("virtualDevices")
     public String virtualDevices(ModelMap model, @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting, 
@@ -67,10 +65,10 @@ public class VirtualDeviceController {
                                  HttpServletRequest request, FlashScope flash) {
         try {
             //String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceListUrl);
-            //List<LiteYukonPAObject> commChannelList = getVirtualDeviceListResponse(userContext, request, url);
+            //List<VirtualDeviceModel> virtualDevices = getVirtualDeviceListResponse(userContext, request, url);
             
-            List<LiteYukonPAObject> virtualDevices = getMockVirtualDevices();
-            SearchResults<LiteYukonPAObject> searchResult = new SearchResults<>();
+            List<VirtualDeviceModel> virtualDevices = getMockVirtualDevices();
+            SearchResults<VirtualDeviceModel> searchResult = new SearchResults<>();
             int startIndex = paging.getStartIndex();
             int itemsPerPage = paging.getItemsPerPage();
             int endIndex = Math.min(startIndex + itemsPerPage, virtualDevices.size());
@@ -78,11 +76,11 @@ public class VirtualDeviceController {
             VirtualSortBy sortBy = VirtualSortBy.valueOf(sorting.getSort());
             Direction dir = sorting.getDirection();
     
-            List<LiteYukonPAObject>itemList = Lists.newArrayList(virtualDevices);
+            List<VirtualDeviceModel>itemList = Lists.newArrayList(virtualDevices);
             
-            Comparator<LiteYukonPAObject> comparator = (o1, o2) -> o1.getPaoName().compareTo(o2.getPaoName());
+            Comparator<VirtualDeviceModel> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
             if (sortBy == VirtualSortBy.status) {
-                comparator = (o1, o2) -> o1.getDisableFlag().compareTo(o2.getDisableFlag());
+                comparator = (o1, o2) -> o1.getEnable().compareTo(o2.getEnable());
             }
             if (sorting.getDirection() == Direction.desc) {
                 comparator = Collections.reverseOrder(comparator);
@@ -110,7 +108,8 @@ public class VirtualDeviceController {
     @GetMapping("virtualDevice/{id}")
     public String view(ModelMap model, @PathVariable int id) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        model.addAttribute("virtualDevice", getMockVirtualDevice());
+        model.addAttribute("id", id);
+        model.addAttribute("name", dbCache.getAllPaosMap().get(id).getPaoName());
         return "/virtualDevices/view.jsp";
     }
     
@@ -124,7 +123,7 @@ public class VirtualDeviceController {
             ResponseEntity<? extends Object> deleteResponse = deleteVirtualDevice(userContext, request, deleteUrl);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", paoName));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", paoName));
                 return "redirect:" + "/stars/virtualDevices";
             }
 
@@ -135,7 +134,7 @@ public class VirtualDeviceController {
         } catch (RestClientException ex) {
             String paoName = dbCache.getAllPaosMap().get(id).getPaoName();
             log.error("Error deleting virtual device: {}. Error: {}", paoName, ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", paoName, ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", paoName, ex.getMessage()));
             return "redirect:" + "/stars/virtualDevice/" + id;
         }
         return "redirect:" + "/stars/virtualDevices";
@@ -157,30 +156,47 @@ public class VirtualDeviceController {
     /**
      * Get the Virtual Devices from API
      */
-    private List<LiteYukonPAObject> getVirtualDeviceListResponse(YukonUserContext userContext, HttpServletRequest request, String url) {
-        List<LiteYukonPAObject> virtualDeviceList = new ArrayList<>();
+    private List<VirtualDeviceModel> getVirtualDeviceListResponse(YukonUserContext userContext, HttpServletRequest request, String url) {
+        List<VirtualDeviceModel> virtualDeviceList = new ArrayList<>();
 
         ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForList(userContext,
                                                                                     request,
                                                                                     url,
                                                                                     DeviceBaseModel.class,
                                                                                     HttpMethod.GET,
-                                                                                    LiteYukonPAObject.class);
+                                                                                    VirtualDeviceModel.class);
         if (response.getStatusCode() == HttpStatus.OK) {
-            virtualDeviceList = (List<LiteYukonPAObject>) response.getBody();
+            virtualDeviceList = (List<VirtualDeviceModel>) response.getBody();
         }
         return virtualDeviceList;
     }
     
-    private LiteYukonPAObject getMockVirtualDevice() {
-        return new LiteYukonPAObject(123, "VirtualDevice001", PaoType.VIRTUAL_SYSTEM, null, "Y");
-    }
-    
-    private List<LiteYukonPAObject> getMockVirtualDevices() {
-        List<LiteYukonPAObject> list = new ArrayList<>();
-        list.add(new LiteYukonPAObject(123, "VirtualDevice001", PaoType.VIRTUAL_SYSTEM, null, "Y"));
-        list.add(new LiteYukonPAObject(124, "VirtualDevice002", PaoType.VIRTUAL_SYSTEM, null, "N"));
-        list.add(new LiteYukonPAObject(125, "VirtualDevice003", PaoType.VIRTUAL_SYSTEM, null, "Y"));
+    private List<VirtualDeviceModel> getMockVirtualDevices() {
+        List<VirtualDeviceModel> list = new ArrayList<>();
+        VirtualDeviceModel d1 = new VirtualDeviceModel();
+        d1.setEnable(true);
+        d1.setId(123);
+        d1.setName("VirtualDevice001");
+        d1.setType(PaoType.VIRTUAL_SYSTEM);
+        list.add(d1);
+        VirtualDeviceModel d2 = new VirtualDeviceModel();
+        d2.setEnable(false);
+        d2.setId(124);
+        d2.setName("VirtualDevice002");
+        d2.setType(PaoType.VIRTUAL_SYSTEM);
+        list.add(d2);
+        VirtualDeviceModel d3 = new VirtualDeviceModel();
+        d3.setEnable(true);
+        d3.setId(125);
+        d3.setName("VirtualDevice003");
+        d3.setType(PaoType.VIRTUAL_SYSTEM);
+        list.add(d3);
+        VirtualDeviceModel d4 = new VirtualDeviceModel();
+        d4.setEnable(true);
+        d4.setId(126);
+        d4.setName("VirtualDevice004");
+        d4.setType(PaoType.VIRTUAL_SYSTEM);
+        list.add(d4);
         return list;
     }
     
@@ -191,7 +207,7 @@ public class VirtualDeviceController {
 
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.operator.virtualDevices.list." + name();
+            return "yukon.common." + name();
         }
     }
 }

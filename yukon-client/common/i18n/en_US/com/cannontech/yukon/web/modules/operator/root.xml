@@ -261,23 +261,14 @@
     <!-- Virtual Devices pages -->
     <entry key="yukon.web.modules.operator.virtualDevices.list.pageName">Virtual Devices</entry>
     <entry key="yukon.web.modules.operator.virtualDevices.list.create">Create Virtual Device</entry>
-    <entry key="yukon.web.modules.operator.virtualDevices.list.name">Name</entry>
-    <entry key="yukon.web.modules.operator.virtualDevices.list.status">Status</entry>
     
     <entry key="yukon.web.modules.operator.virtualDevice.detail.pageName">Virtual Device</entry>
     <entry key="yukon.web.modules.operator.virtualDevice.detail.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.virtualDevice.detail.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.operator.virtualDevice.detail.otherActions">Other Actions</entry>
     
-    <entry key="yukon.web.modules.operator.virtualDevice.delete.success">{0} deleted successfully.</entry>
-    <entry key="yukon.web.modules.operator.virtualDevice.delete.error">{0} could not be deleted. Error: {1}</entry>
-        
-    <entry key="yukon.web.modules.operator.virtualDeviceInfoWidget.name">Name</entry>
-    <entry key="yukon.web.modules.operator.virtualDeviceInfoWidget.status">Status</entry>
     <entry key="yukon.web.modules.operator.virtualDeviceInfoWidget.edit">Edit {0}</entry>
         
-    <entry key="yukon.web.modules.operator.virtualDeviceInfoWidget.saveError">{0} could not be saved. Error: {1}</entry>
     <entry key="yukon.web.modules.operator.virtualDeviceInfoWidget.retrieveError">Virtual Device could not be retrieved. Error: {0}</entry>
-    <entry key="yukon.web.modules.operator.virtualDeviceInfoWidget.save.success">{0} saved successfully.</entry>
     
 </properties>

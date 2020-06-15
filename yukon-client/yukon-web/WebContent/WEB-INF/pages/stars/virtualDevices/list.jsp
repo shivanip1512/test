@@ -36,11 +36,11 @@
             <tbody>
                 <c:forEach var="device" items="${virtualDevices.resultList}">
                     <tr>
-                        <cti:url var="detailUrl" value="/stars/virtualDevice/${device.liteID}"/>
-                        <td><a href="${detailUrl}">${fn:escapeXml(device.paoName)}</a></td>
+                        <cti:url var="detailUrl" value="/stars/virtualDevice/${device.id}"/>
+                        <td><a href="${detailUrl}">${fn:escapeXml(device.name)}</a></td>
                             <c:set var="cssClass" value="success" />
                             <cti:msg2 var="status" key="yukon.common.enabled"/>
-                            <c:if test="${device.disableFlag == 'Y'}">
+                            <c:if test="${!device.enable}">
                                 <c:set var="cssClass" value="error" />
                                 <cti:msg2 var="status" key="yukon.common.disabled"/>
                             </c:if>
