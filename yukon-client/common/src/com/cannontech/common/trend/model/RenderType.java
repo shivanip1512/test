@@ -89,7 +89,7 @@ public enum RenderType implements DisplayableEnum {
     public static RenderType getForId(int id) {
         return idMap.get(id);
     }
-    public static Object getWebSupportedTypes() {
+    public static Set<RenderType> getWebSupportedTypes() {
         return webSupportedTypes;
     }
     

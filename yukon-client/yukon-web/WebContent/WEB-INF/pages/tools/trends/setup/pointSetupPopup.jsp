@@ -17,7 +17,6 @@
     <form:form class="js-point-setup-form" modelAttribute="trendSeries" method="POST" action="${addPointUrl}">
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey="yukon.common.point" nameClass="vam">
-                <tags:hidden path="pointId" id="js-point-id-${uniqueId}" />
                 <tags:pickerDialog id="trendPointPicker_${uniqueId}"
                                                  type="pointPicker"
                                                  destinationFieldId="js-point-id-${uniqueId}"
@@ -26,6 +25,7 @@
                                                  endEvent="yukon:trend:setup:pointSelection:complete"
                                                  allowEmptySelection="false"
                                                  initialId="${trendSeries.pointId}" />
+                <tags:hidden path="pointId" id="js-point-id-${uniqueId}" />
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.device" nameClass="vam">
                 <span class="js-device-name-span dib mw300 wbba">
@@ -53,7 +53,9 @@
                 <tags:selectWithItems items="${graphTypes}" path="type" inputClass="js-graph-type"/>
             </tags:nameValue2>
             <tags:nameValue2 nameKey="yukon.common.date" rowClass="js-date-picker-row ${isDateTypeSelected ? '' : 'dn' }" nameClass="vam">
-                <dt:date path="date" value="${trendSeries.date}" maxDate="${now}" id="js-date-picker_${uniqueId}"/>
+                <div class="dib">
+                    <dt:date path="date" value="${trendSeries.date}" maxDate="${now}" id="js-date-picker_${uniqueId}" />
+                </div>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".axis" nameClass="vam">
                 <tags:radioButtonGroup items="${axes}" path="axis"/>
