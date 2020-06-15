@@ -27,7 +27,7 @@ import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.database.NetworkManagerJdbcTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.services.systemDataPublisher.dao.SystemDataPublisherDao;
-import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessHolder;
+import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessSummary;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -99,19 +99,15 @@ public class SystemDataPublisherDaoImpl implements SystemDataPublisherDao {
                 .minus(Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS)))
                 .toDate();
         Range<Date> dateRange = new Range<Date>(startDate, false, stopDate, true);
-        DataCompletenessHolder records = rphDao.getDataCompletenessRecords(deviceGroup, dateRange, paoType);
+        DataCompletenessSummary records = rphDao.getDataCompletenessRecords(deviceGroup, dateRange, paoType);
         double dataCompleteness;
         if (records.getPaoCount() == 0) {
             dataCompleteness = 0;
         } else {
-            if (records.getPaoCount() == 1)
-                dataCompleteness = records.getRecordCount();
-            else {
-                double actual = records.getRecordCount();
-                double expected = records.getPaoCount() * 168.00;
-                dataCompleteness = (actual / expected) * 100;
-                dataCompleteness = new BigDecimal(dataCompleteness).setScale(2, RoundingMode.HALF_UP).doubleValue();
-            }
+            double actual = records.getRecordCount();
+            double expected = records.getPaoCount() * 168.00;
+            dataCompleteness = (actual / expected) * 100;
+            dataCompleteness = new BigDecimal(dataCompleteness).setScale(2, RoundingMode.HALF_UP).doubleValue();
         }
         return dataCompleteness;
     }

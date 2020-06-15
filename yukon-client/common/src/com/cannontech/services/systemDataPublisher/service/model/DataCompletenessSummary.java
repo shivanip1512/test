@@ -1,6 +1,6 @@
 package com.cannontech.services.systemDataPublisher.service.model;
 
-public class DataCompletenessHolder {
+public class DataCompletenessSummary {
 
     private Integer recordCount = 0;
     private Integer paoCount = 0;
@@ -19,6 +19,11 @@ public class DataCompletenessHolder {
 
     public void setPaoCount(Integer paoCount) {
         this.paoCount = paoCount;
+    }
+
+    public void add(DataCompletenessSummary addData) {
+        setRecordCount(this.recordCount + addData.getRecordCount());
+        setPaoCount(this.paoCount + addData.getPaoCount());
     }
 
 }

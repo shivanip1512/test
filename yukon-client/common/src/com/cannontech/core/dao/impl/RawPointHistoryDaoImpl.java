@@ -59,7 +59,7 @@ import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessHolder;
+import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessSummary;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -1203,7 +1203,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     @Override
-    public DataCompletenessHolder getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange,
+    public DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange,
             ImmutableSet<PaoType> allPaoTypes) {
         // These 4 RFN electric meters belongs to RFN530S4 family which have Usage attribute with point offset 3
         // while other RFN electric meters have offset 1
@@ -1212,20 +1212,16 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 PaoType.RFN530S4EAXR,
                 PaoType.RFN530S4ERX,
                 PaoType.RFN530S4ERXR);
-        DataCompletenessHolder records = new DataCompletenessHolder();
+        DataCompletenessSummary records = new DataCompletenessSummary();
         // To deal with special kind for RFN530S4 types, we need to get its actual count with offset value 3
         if (allPaoTypes.containsAll(rfnTypes530S4)) {
-            records = getCountOfReadings(deviceGroup, dateRange, rfnTypes530S4, 3);
+            records.add(getCountOfReadings(deviceGroup, dateRange, rfnTypes530S4, 3));
         }
         // This gives paoTypes which do not have the set of Special RFN530S4 paotypes
         ImmutableSet<PaoType> paoTypes = ImmutableSet.copyOf(Sets.difference(allPaoTypes, rfnTypes530S4));
         // This list will be passed to get its actual count with offset value 1
-        DataCompletenessHolder finalRecords = getCountOfReadings(deviceGroup, dateRange, paoTypes, 1);
-
-        DataCompletenessHolder finalData = new DataCompletenessHolder();
-        finalData.setPaoCount(records.getPaoCount() + finalRecords.getPaoCount());
-        finalData.setRecordCount(records.getRecordCount() + finalRecords.getRecordCount());
-        return finalData;
+        records.add(getCountOfReadings(deviceGroup, dateRange, paoTypes, 1));
+        return records;
     }
     /**
      * TODO : This method will be improve by removing hard coded value of point offset, 
@@ -1234,7 +1230,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
      * the date Range for particular PAO types and point offset.  
      */
 
-    private DataCompletenessHolder getCountOfReadings(DeviceGroup deviceGroup, Range<Date> dateRange,
+    private DataCompletenessSummary getCountOfReadings(DeviceGroup deviceGroup, Range<Date> dateRange,
             ImmutableSet<PaoType> paoTypesList, int pointOffset) {
 
         SqlFragmentSource groupSqlWhereClause = getDeviceGroupSql(deviceGroup);
@@ -1243,7 +1239,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         if (databaseVendor.isOracle()) {
             timeStampFormat = "AND TO_CHAR(TimeStamp, 'mm:ss') = '00:00')";
         }
-        final DataCompletenessHolder holder = new DataCompletenessHolder();
+        final DataCompletenessSummary summary = new DataCompletenessSummary();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) AS Actual,");
         sql.append("COUNT(DISTINCT pao.PaobjectId) AS PaoCount FROM (");
@@ -1262,10 +1258,10 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                holder.setRecordCount(rs.getInt("Actual"));
-                holder.setPaoCount(rs.getInt("PaoCount"));
+                summary.setRecordCount(rs.getInt("Actual"));
+                summary.setPaoCount(rs.getInt("PaoCount"));
             }
         });
-        return holder;
+        return summary;
     }
 }
