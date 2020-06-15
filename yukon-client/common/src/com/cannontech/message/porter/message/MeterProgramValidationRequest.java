@@ -1,11 +1,12 @@
 package com.cannontech.message.porter.message;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class MeterProgramValidationRequest {
+public class MeterProgramValidationRequest implements Serializable {
     
     private UUID meterProgramGuid;
 
