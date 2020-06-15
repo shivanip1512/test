@@ -29,5 +29,6 @@ public class MockAnalogPoint extends MockPointBase {
     private List<MockPointLimit> limits;
     private MockPointAnalog pointAnalog;
     private MockPointAnalogControl pointAnalogControl;
-
+    private MockPointAlarming alarming;
+    private List<MockFdrTranslation> fdrList;
 }

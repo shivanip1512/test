@@ -11,7 +11,9 @@ import org.joda.time.Instant;
 import org.joda.time.LocalTime;
 
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
@@ -20,6 +22,8 @@ import com.cannontech.common.util.ReadableRange;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessSummary;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ListMultimap;
 
 /**
@@ -404,4 +408,15 @@ public interface RawPointHistoryDao {
     public Map<PaoIdentifier, PointValueQualityHolder> getMostRecentAttributeDataByValue(
             Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos, int value,
             Set<PointQuality> excludeQualities);
+
+    /**
+     * This method returns the object consisting of record count for each PAO (paoCount) for devices reported every hour within the date range
+     * @param deviceGroup - Device group 
+     * @param dateRange - range of days in which device reported every hour  
+     * @param paoType - Set of PAO Types applicable for device Group
+     * @return DataCompletenessSummary
+     */
+
+    public DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange, ImmutableSet<PaoType> paoType);
+
 }

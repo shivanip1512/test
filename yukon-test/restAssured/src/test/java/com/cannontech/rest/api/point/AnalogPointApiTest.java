@@ -13,6 +13,8 @@ import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.cannontech.rest.api.common.model.MockPointType;
 import com.cannontech.rest.api.point.helper.PointHelper;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
+import com.cannontech.rest.api.point.request.MockFdrDirection;
+import com.cannontech.rest.api.point.request.MockFdrInterfaceType;
 import com.cannontech.rest.api.point.request.MockPointBase;
 import com.cannontech.rest.api.point.request.MockPointUnit;
 import com.cannontech.rest.api.utilities.Log;
@@ -302,6 +304,165 @@ public class AnalogPointApiTest {
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "pointAnalogControl.controlInhibited",
                         "Control Inhibited must be false when Control type is None."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Condition Value
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_16_InvalidConditionValue() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().getAlarmTableList().get(0).setCondition("Test");
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "alarming.alarmTableList[0].condition",
+                        "Invalid Condition value."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with invalid NotificationId
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_17_InvalidNotificationId() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().setNotificationGroupId(987898);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "alarming.notificationGroupId",
+                "Notification GroupId does not exist."),
+                "Expected code in response is not correct");
+    }
+
+    /**
+     * Test case to validate Analog Point cannot be created with Condition value as a Blank
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_18_ConditionBlank() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().getAlarmTableList().get(0).setCondition(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "alarming.alarmTableList[0].condition",
+                        "Condition is required."),
+                "Expected code in response is not correct");
+    }
+
+    
+    /**
+     * Test case to validate Analog Point cannot be created with Category Out Of Range
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_19_CategoryOutOfRange() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getAlarming().getAlarmTableList().get(0).setCategory("Category 1222");
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "alarming.alarmTableList[0].category",
+                        "Invalid Category value."),
+                "Expected code in response is not correct");
+    }
+  
+    /**
+     * Test case to validate Analog Point cannot be created with missing Translation field
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_20_MissingTranslationField() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getFdrList().get(0).setTranslation(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "fdrList[0].translation",
+                        "Missing Translation property Category, Remote, Point for ACS Interface."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate Analog Point cannot be created with invalid Translation Property
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_21_InvalidTranslationProperty() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getFdrList().get(0).setFdrInterfaceType(MockFdrInterfaceType.ACSMULTI);
+        
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "fdrList[0].translation",
+                        "Missing Translation property Destination/Source for ACSMULTI Interface."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate Analog Point cannot be created with missing DirectionField
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_22_MissingDirectionField() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getFdrList().get(0).setDirection(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(
+                ValidationHelper.validateFieldError(createResponse, "fdrList[0].direction",
+                        "SEND, SEND_FOR_CONTROL, RECEIVE, RECEIVE_FOR_CONTROL Directions are supported by the ACS Interface."),
+                "Expected code in response is not correct");
+    }
+    
+    /**
+     * Test case to validate Analog Point cannot be created when Interface Type is missing
+     * and validates valid error message in response
+     */
+    @Test
+    public void analogPoint_23_MissingInterfaceType() {
+        MockAnalogPoint mockAnalogPoint = (MockAnalogPoint) PointHelper.buildPoint(MockPointType.Analog);
+
+        mockAnalogPoint.getFdrList().get(0).setFdrInterfaceType(null);
+
+        ExtractableResponse<?> createResponse = ApiCallHelper.post("createPoint", mockAnalogPoint);
+        assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
+        assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
+                "Expected message should be - Validation error");
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "fdrList[0].fdrInterfaceType",
+                        "Interface is required."),
                 "Expected code in response is not correct");
     }
 }

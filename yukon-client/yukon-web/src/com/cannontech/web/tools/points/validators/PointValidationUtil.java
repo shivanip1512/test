@@ -8,6 +8,7 @@ import org.springframework.validation.ValidationUtils;
 
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
@@ -103,6 +104,17 @@ public class PointValidationUtil extends ValidationUtils {
                 errors.rejectValue("paoId", "yukon.web.api.error.paoIdMismatch",
                         new Object[] { litePointModel.getPaoId(), pointBase.getPoint().getPaoID() }, "");
             }
+        }
+    }
+
+    /**
+     * Check if provided pointId is valid or not.
+     */
+    public void validatePointId(Errors errors, String field, Integer pointId) {
+        try {
+            pointDao.getLitePoint(pointId);
+        } catch (NotFoundException ex) {
+            errors.rejectValue(field, "yukon.web.modules.dr.setup.error.pointId.doesNotExist", new Object[] { field }, "");
         }
     }
 }

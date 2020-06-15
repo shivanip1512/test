@@ -1,16 +1,18 @@
 package com.cannontech.web.tools.points.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.IAlarmDefs;
@@ -19,6 +21,7 @@ import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
+import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
@@ -38,6 +41,7 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
+import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -45,7 +49,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
-import com.cannontech.web.tools.points.model.AlarmState;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.model.PointModel;
@@ -53,7 +56,6 @@ import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
-@Service
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class PointEditorServiceImpl implements PointEditorService {
     
@@ -175,7 +177,7 @@ public class PointEditorServiceImpl implements PointEditorService {
             AlarmTableEntry entry = new AlarmTableEntry();
             setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
 
-            entry.setCondition(AlarmState.getAlarmStateValue(alarm_cats[i]));
+            entry.setCondition(alarm_cats[i]);
             notifEntries.add(entry);
         }
 
@@ -189,7 +191,7 @@ public class PointEditorServiceImpl implements PointEditorService {
                 AlarmTableEntry entry = new AlarmTableEntry();
                 setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
 
-                entry.setCondition(AlarmState.valueOf(stateNames[j]));
+                entry.setCondition(stateNames[j]);
                 notifEntries.add(entry);
             }
         }
@@ -396,7 +398,7 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public void delete(int id, YukonUserContext userContext) throws AttachedException {
+    public int delete(int id, YukonUserContext userContext) throws AttachedException {
         AttachmentStatus attachmentStatus = getAttachmentStatus(id);
         if (!attachmentStatus.isDeletable()) {
             throw new AttachedException(attachmentStatus);
@@ -416,6 +418,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         eventLog.pointDeleted(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
             point.getPoint().getPointOffset(), userContext.getYukonUser());
+        return point.getPoint().getPointID();
     }
 
     @Override
@@ -469,71 +472,40 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
 
     @Override
-    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> create(PointBaseModel pointBaseModel, YukonUserContext userContext) {
+
         PointBase pointBase = PointModelFactory.createPoint(pointBaseModel);
         pointBaseModel.buildDBPersistent(pointBase);
         StaleData staleData = null;
         if (pointBaseModel.getStaleData() != null) {
-            staleData = StaleData.of(pointBaseModel.getStaleData());
+            staleData = pointBaseModel.getStaleData().overwriteWith(new StaleData());
         }
-        
+    
         List<AlarmTableEntry> alarmTableEntries = buildOrderedAlarmTable(pointBaseModel.getAlarming().getAlarmTableList(), pointBaseModel.getPointType());
-        save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
+        save(pointBase, staleData, alarmTableEntries, userContext.getYukonUser());
 
-        // TODO FDR
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
+
     }
 
     @Override
-    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel) {
+    public PointBaseModel<? extends PointBase> update(int pointId, PointBaseModel pointBaseModel, YukonUserContext userContext) {
 
         PointBase pointBase = pointDao.get(pointId);
+
         pointBaseModel.buildDBPersistent(pointBase);
 
-        StaleData staleData = null;
+        StaleData staleData = getStaleData(pointId);
         if (pointBaseModel.getStaleData() != null) {
-            staleData = StaleData.of(pointBaseModel.getStaleData());
+            staleData = pointBaseModel.getStaleData().overwriteWith(staleData);
         }
-        
+
         List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());
+
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
-        //TODO FDR 
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
         return pointBaseModel;
-    }
-
-    private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
-        List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
-
-        List<AlarmState> alarmStates = AlarmState.getOtherAlarmStates();
-        if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
-            alarmStates = AlarmState.getStatusAlarmStates();
-        }
-
-        // Iterate over all alarm state entries to maintain order and set default values if category and notify are null. 
-        for (AlarmState alarmState : alarmStates) {
-            AlarmTableEntry entry = entries.stream()
-                                           .filter(e -> e.getCondition() == alarmState)
-                                           .findFirst()
-                                           .orElse(new AlarmTableEntry(alarmState));
-            orderedAlarmTableEntries.add(setDefaultsForAlarmEntry(entry));
-        }
-        return orderedAlarmTableEntries;
-    }
-
-    /**
-     * Set default values for AlarmTableEntry if category or notify are null. 
-     */
-    private AlarmTableEntry setDefaultsForAlarmEntry(AlarmTableEntry entry) {
-        if(entry.getCategory() == null) {
-            entry.setCategory(CtiUtilities.STRING_NONE);
-        }
-
-        if(entry.getNotify() == null) {
-            entry.setNotify(AlarmNotificationTypes.NONE);
-        }
-        return entry;
     }
 
     @Override
@@ -551,6 +523,39 @@ public class PointEditorServiceImpl implements PointEditorService {
         return pointBaseModel;
     }
 
+    private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
+        List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
+
+        List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
+        if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
+            alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
+        }
+
+        // Iterate over all alarm state entries to maintain order and set default values if category and notify are null. 
+        for (String alarmState : alarmStates) {
+            AlarmTableEntry entry = entries.stream()
+                                           .filter(e -> e.getCondition().equals(alarmState))
+                                           .findFirst()
+                                           .orElse(new AlarmTableEntry(alarmState));
+            orderedAlarmTableEntries.add(setDefaultsForAlarmEntry(entry));
+        }
+        return orderedAlarmTableEntries;
+    }
+
+    /**
+     * Set default values for AlarmTableEntry if category or notify are null.
+     */
+    private AlarmTableEntry setDefaultsForAlarmEntry(AlarmTableEntry entry) {
+        if (entry.getCategory() == null) {
+            entry.setCategory(CtiUtilities.STRING_NONE);
+        }
+
+        if (entry.getNotify() == null) {
+            entry.setNotify(AlarmNotificationTypes.NONE);
+        }
+        return entry;
+    }
+
     private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {
         pointBaseModel.buildModel(pointBase);
         pointBaseModel.setStaleData(staleData);
@@ -563,7 +568,7 @@ public class PointEditorServiceImpl implements PointEditorService {
      * 
      */
     private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
-        Map<AlarmState, AlarmTableEntry> newEntryMap = newEntries.stream()
+        Map<String, AlarmTableEntry> newEntryMap = newEntries.stream()
                                                                  .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
         // Update existing AlarmTableEntry based on the new entries.
         for (AlarmTableEntry entry : existingEntries) {

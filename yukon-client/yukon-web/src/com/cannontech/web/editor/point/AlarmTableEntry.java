@@ -1,21 +1,20 @@
 package com.cannontech.web.editor.point;
 
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
-import com.cannontech.web.tools.points.model.AlarmState;
 
 public class AlarmTableEntry {
 
-    private AlarmState condition ;
+    private String condition ;
     private String category ;
     private AlarmNotificationTypes notify ;
 
     public AlarmTableEntry() {}
 
-    public AlarmTableEntry(AlarmState condition) {
+    public AlarmTableEntry(String condition) {
         this.condition = condition;
     }
 
-    public AlarmState getCondition() {
+    public String getCondition() {
         return condition;
     }
 
@@ -27,7 +26,7 @@ public class AlarmTableEntry {
         return category;
     }
 
-    public void setCondition(AlarmState string) {
+    public void setCondition(String string) {
         condition = string;
     }
 

@@ -65,7 +65,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
             PortValidatorHelper.validateCarrierDetectWait(errors, detailBase.getCarrierDetectWaitInMilliseconds());
 
             if (detailBase.getPortNumber() != null) {
-                YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(detailBase.getPortNumber()), "yukon.web.error.portNumber.required");
+                YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(detailBase.getPortNumber()), "Port Number");
             }
         }
 
