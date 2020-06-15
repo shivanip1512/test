@@ -61,6 +61,7 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
             .put(Status.VERIFICATION_FAILED, DeviceError.VERIFICATION_FAILED)
             .put(Status.WRITE_KEY_FAILED, DeviceError.WRITE_KEY_FAILED)
             .put(Status.CATASTROPHIC_FAILURE_FULL_REPROGRAM_REQUIRED, DeviceError.CATASTROPHIC_FAILURE)
+            .put(Status.PASSWORD_ERROR, DeviceError.METER_PROGRAM_PASSWORD_ERROR)
             .build();
 
     @Override

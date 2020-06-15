@@ -39,6 +39,7 @@ public class DetailedConfigurationStatusCode implements Serializable {
         VERIFICATION_FAILED((short) 40),
         WRITE_KEY_FAILED((short) 41),
         CATASTROPHIC_FAILURE_FULL_REPROGRAM_REQUIRED((short) 42),
+        PASSWORD_ERROR((short) 43),
         OTHER,
         ;
 
