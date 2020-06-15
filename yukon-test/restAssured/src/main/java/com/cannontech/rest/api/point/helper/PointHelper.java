@@ -12,6 +12,9 @@ import com.cannontech.rest.api.common.model.MockPointType;
 import com.cannontech.rest.api.point.request.MockAlarmNotificationTypes;
 import com.cannontech.rest.api.point.request.MockAlarmTableEntry;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
+import com.cannontech.rest.api.point.request.MockFdrDirection;
+import com.cannontech.rest.api.point.request.MockFdrInterfaceType;
+import com.cannontech.rest.api.point.request.MockFdrTranslation;
 import com.cannontech.rest.api.point.request.MockPointAlarming;
 import com.cannontech.rest.api.point.request.MockPointAnalog;
 import com.cannontech.rest.api.point.request.MockPointAnalogControl;
@@ -37,7 +40,9 @@ public class PointHelper {
         case Analog:
             List<MockPointLimit> pointLimit = new ArrayList<>();
             pointLimit.add(buildPointLimit());
+            List<MockFdrTranslation> fdrTranslation = new ArrayList<>();
             
+            fdrTranslation.add(buildFdrTranslation());
             point = MockAnalogPoint.builder()
                     .paoId(paoId)
                     .pointName(name)
@@ -55,6 +60,7 @@ public class PointHelper {
                     .staleData(buildStaleData())
                     .limits(pointLimit)
                     .alarming(buildPointAlarming())
+                    .fdrList(fdrTranslation)
                     .build();
             break;
         default:
@@ -121,6 +127,14 @@ public class PointHelper {
                 .category("(none)")
                 .condition("Rate Of Change")
                 .notify(MockAlarmNotificationTypes.EXCLUDE_NOTIFY)
+                .build();
+    }
+    
+    private static MockFdrTranslation buildFdrTranslation() {
+        return MockFdrTranslation.builder()
+                .direction(MockFdrDirection.RECEIVE)
+                .fdrInterfaceType(MockFdrInterfaceType.ACS)
+                .translation("Category:PSEUDO;Remote:;Point:;")
                 .build();
     }
 }
