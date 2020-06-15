@@ -85,7 +85,6 @@ public class TrendEditorController {
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
 
-    private static final String baseKey = "yukon.web.modules.tools.trend.";
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectLink = "redirect:/tools/trends";
     
@@ -148,7 +147,7 @@ public class TrendEditorController {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 TrendModel trend = (TrendModel) response.getBody();
-                flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", trendModel.getName()));
+                flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", trendModel.getName()));
                 return "redirect:/tools/trends/" + trend.getTrendId();
             }
 
@@ -158,7 +157,7 @@ public class TrendEditorController {
             return "redirect:" + redirectLink;
         } catch (RestClientException ex) {
             log.error("Error saving trend: {}. Error: {}", trendModel.getName(), ex.getMessage());
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + "save.error", trendModel.getName(), ex.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.save", trendModel.getName(), ex.getMessage()));
             return "redirect:" + redirectLink;
         }
         return null;
