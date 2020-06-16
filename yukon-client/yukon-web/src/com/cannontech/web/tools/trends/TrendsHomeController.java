@@ -13,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
@@ -47,6 +48,7 @@ public class TrendsHomeController {
             model.addAttribute("trendId", trends.get(0).getGraphDefinitionID());
             model.addAttribute("trendName", trends.get(0).getName());
             model.addAttribute("pageName", "trend");
+            addTrendModelToModelMap(model, trends.get(0));
         } else {
             model.addAttribute("pageName", "trends");
         }
@@ -74,6 +76,7 @@ public class TrendsHomeController {
             model.addAttribute("labels", TrendUtils.getLabels(userContext, messageResolver));
             
             model.addAttribute("autoUpdate", userPreferenceService.getDefaultTrendAutoUpdateSelection(userContext.getYukonUser()));
+            addTrendModelToModelMap(model, trend);
 
             return "trends/trends.jsp";
         }
@@ -104,5 +107,12 @@ public class TrendsHomeController {
         graph.encodeCSV(out);
         
         out.flush();
+    }
+    
+    private void addTrendModelToModelMap(ModelMap model, LiteGraphDefinition liteGraphDefinition) {
+        TrendModel trendModel = new TrendModel();
+        trendModel.setName(liteGraphDefinition.getName());
+        trendModel.setTrendId(liteGraphDefinition.getGraphDefinitionID());
+        model.addAttribute("trendModel", trendModel);
     }
 }
