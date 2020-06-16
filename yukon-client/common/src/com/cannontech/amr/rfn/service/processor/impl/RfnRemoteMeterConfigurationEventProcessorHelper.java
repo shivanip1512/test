@@ -6,6 +6,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode;
 import com.cannontech.amr.rfn.message.event.DetailedConfigurationStatusCode.Status;
@@ -21,6 +23,7 @@ import com.cannontech.common.device.programming.model.ProgrammingStatus;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.jms.ThriftRequestTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.database.db.point.stategroup.MeterProgramming;
 import com.cannontech.message.dispatch.message.PointData;
@@ -30,6 +33,8 @@ import com.google.common.collect.ImmutableMap;
 public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends RfnEventConditionDataProcessorHelper
         implements RfnArchiveRequestProcessor {
 
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
+    
     private static final Logger log = YukonLogManager
             .getLogger(RfnRemoteMeterConfigurationEventProcessorHelper.class);
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
@@ -119,7 +124,8 @@ public abstract class RfnRemoteMeterConfigurationEventProcessorHelper extends Rf
 
     @PostConstruct
     public void initialize() {
-        thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+        thriftMessenger = new ThriftRequestTemplate<>(
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE),
                 new MeterProgramStatusArchiveRequestSerializer());
     }
 }

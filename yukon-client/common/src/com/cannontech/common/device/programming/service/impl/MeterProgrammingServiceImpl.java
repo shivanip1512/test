@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
@@ -16,8 +15,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
@@ -58,6 +55,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.jms.ThriftRequestTemplate;
+import com.cannontech.common.util.jms.YukonJmsTemplateFactory;
 import com.cannontech.common.util.jms.api.JmsApiDirectory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -82,6 +80,7 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     @Autowired private MeterProgrammingDao meterProgrammingDao;
     @Autowired private MeterProgramValidationService meterProgramValidationService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
     private final static String baseKey = "yukon.web.modules.amr.meterProgramming.";
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
@@ -292,14 +291,17 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     }
 
     @Override
-    @Transactional
     public UUID saveMeterProgram(MeterProgram program) throws ServiceCommunicationFailedException {
         UUID uuid = meterProgrammingDao.saveMeterProgram(program);
-        if(!meterProgramValidationService.isMeterProgramValid(uuid)) {
+        //  Can't use @Transactional because Porter needs to read the row we just saved
+        try {
+            if(!meterProgramValidationService.isMeterProgramValid(uuid)) {
+                throw new BadConfigurationException("Program file is invalid");
+            }
+        } catch (Throwable t) {
+            log.catching(t);
             meterProgrammingDao.deleteMeterProgram(uuid);
-            BadConfigurationException error = new BadConfigurationException("Program file is invalid");
-            log.error(error);
-            throw error;
+            throw t;
         }
         return uuid;
     }
@@ -404,7 +406,8 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
     
     @PostConstruct
     public void initialize() {
-        thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+        thriftMessenger = new ThriftRequestTemplate<>(
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE),
                 new MeterProgramStatusArchiveRequestSerializer());
     }
 }

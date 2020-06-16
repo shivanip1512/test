@@ -52,7 +52,9 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private YukonJmsTemplateFactory jmsTemplateFactory;
 
+    //  The JMS template used to send the RfnStatusArchiveResponse
     private YukonJmsTemplate jmsTemplate;
+    //  The Thrift messenger to send any resulting MeterProgramStatus updates
     private ThriftRequestTemplate<MeterProgramStatusArchiveRequest> thriftMessenger;
     private Logger rfnCommsLog = YukonLogManager.getRfnLogger();
     /**
@@ -223,8 +225,12 @@ public class RfnStatusArchiveRequestListener implements RfnArchiveProcessor {
 
     @PostConstruct
     public void initialize() {
+        //  The JMS template used to respond to the RfnStatusArchiveRequest
         jmsTemplate = jmsTemplateFactory.createResponseTemplate(JmsApiDirectory.RFN_STATUS_ARCHIVE);
-        thriftMessenger = new ThriftRequestTemplate<>(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE.getQueue().getName(),
+
+        //  The Thrift template used to send any resulting MeterProgramStatus updates
+        thriftMessenger = new ThriftRequestTemplate<>(
+                jmsTemplateFactory.createTemplate(JmsApiDirectory.METER_PROGRAM_STATUS_ARCHIVE),
                 new MeterProgramStatusArchiveRequestSerializer());
     }
 }
