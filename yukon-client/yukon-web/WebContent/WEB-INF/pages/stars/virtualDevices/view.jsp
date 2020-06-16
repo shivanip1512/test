@@ -18,29 +18,23 @@
             <cti:url var="createUrl" value="/widget/virtualDeviceInfoWidget/create" />
             <cti:msg2 var="saveText" key="components.button.save.label"/>
             <cti:msg2 var="createPopupTitle" key="yukon.web.modules.operator.virtualDevices.list.create"/>
-            <div class="dn" 
-                 id="js-create-virtual-device-popup" 
-                 data-title="${createPopupTitle}" 
-                 data-dialog
-                 data-ok-text="${saveText}"
-                 data-event="yukon:virtualDevice:save" 
-                 data-url="${createUrl}"/>
-            </div>
+            <div class="dn" id="js-create-virtual-device-popup" data-title="${createPopupTitle}" data-dialog data-ok-text="${saveText}"
+                data-event="yukon:virtualDevice:save" data-url="${createUrl}" />
         </cti:checkRolesAndProperties>
         <cti:url var="actionsUrl" value="/bulk/collectionActions">
-            <cti:param name="collectionType" value="idList"/>
-            <cti:param name="idList.ids" value="${id}"/>
+            <cti:param name="collectionType" value="idList" />
+            <cti:param name="idList.ids" value="${id}" />
         </cti:url>
-        <cm:dropdownOption icon="icon-cog" href="${actionsUrl}" key=".otherActions"/>
+        <cm:dropdownOption icon="icon-cog" href="${actionsUrl}" key=".otherActions" />
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
-            <li class="divider"/>
+            <li class="divider" />
             <cm:dropdownOption key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="deleteVirtualDevice"
-                                   icon="icon-cross" data-ok-event="yukon:virtualDevice:delete" />
-                <d:confirm on="#deleteVirtualDevice" nameKey="confirmDelete" argument="${name}"/>
-                <cti:url var="deleteUrl" value="/stars/virtualDevice/${id}/delete"/>
-                <form:form id="delete-virtualDevice-form" action="${deleteUrl}" method="delete">
-                    <cti:csrfToken/>
-                </form:form>
+                        icon="icon-cross" data-ok-event="yukon:virtualDevice:delete" />
+            <d:confirm on="#deleteVirtualDevice" nameKey="confirmDelete" argument="${name}" />
+            <cti:url var="deleteUrl" value="/stars/virtualDevice/${id}/delete" />
+            <form:form id="delete-virtualDevice-form" action="${deleteUrl}" method="delete">
+                <cti:csrfToken />
+            </form:form>
         </cti:checkRolesAndProperties>
     </div>
     

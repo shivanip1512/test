@@ -142,7 +142,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.PATCH, VirtualDeviceModel.class, virtualDevice);
             } else {
                 String url = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + "create");
-                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, VirtualDeviceModel.class, virtualDevice);
+                response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, virtualDevice);
             }
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
@@ -159,8 +159,8 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 Map<String, Object> json = new HashMap<>();
                 if (virtualDevice.getId() == null) {
                     //device was created so we need id to redirect user to view page
-                    virtualDevice = (VirtualDeviceModel) response.getBody();
-                    json.put("id", virtualDevice.getId());
+                    HashMap<String, Integer> savedVirtualDevice = (HashMap<String, Integer>) response.getBody();
+                    json.put("id", savedVirtualDevice.get("id"));
                     flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", virtualDevice.getName()));
                 }
                 json.put("userMessage", accessor.getMessage("yukon.common.save.success", virtualDevice.getName()));

@@ -29,14 +29,8 @@
             <cti:url var="editUrl" value="/widget/virtualDeviceInfoWidget/${virtualDevice.id}/edit"/>
             <cti:msg2 var="saveText" key="components.button.save.label"/>
             <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.virtualDeviceInfoWidget.edit" argument="${virtualDevice.name}"/>
-            <div class="dn" 
-                 id="js-edit-virtual-device-popup" 
-                 data-title="${editPopupTitle}" 
-                 data-dialog
-                 data-ok-text="${saveText}"
-                 data-event="yukon:virtualDevice:save" 
-                 data-url="${editUrl}"/>
-            </div>
+            <div class="dn" id="js-edit-virtual-device-popup" data-title="${editPopupTitle}" data-dialog data-ok-text="${saveText}"
+                data-event="yukon:virtualDevice:save" data-url="${editUrl}" />
         </cti:checkRolesAndProperties>
     </cti:displayForPageEditModes>
     <cti:includeScript link="/resources/js/pages/yukon.assets.virtualDevice.js"/>

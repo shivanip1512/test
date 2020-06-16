@@ -13,14 +13,8 @@
             <cti:url var="createUrl" value="/widget/virtualDeviceInfoWidget/create" />
             <cti:msg2 var="saveText" key="components.button.save.label"/>
             <cti:msg2 var="createPopupTitle" key="yukon.web.modules.operator.virtualDevices.list.create"/>
-            <div class="dn" 
-                 id="js-create-virtual-device-popup" 
-                 data-title="${createPopupTitle}" 
-                 data-dialog
-                 data-ok-text="${saveText}"
-                 data-event="yukon:virtualDevice:save" 
-                 data-url="${createUrl}"/>
-            </div>
+            <div class="dn" id="js-create-virtual-device-popup" data-title="${createPopupTitle}" data-dialog data-ok-text="${saveText}"
+                data-event="yukon:virtualDevice:save" data-url="${createUrl}" />
         </div>
     </cti:checkRolesAndProperties>
     
