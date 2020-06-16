@@ -32,23 +32,26 @@ yukon.widget.commChannel.info = (function () {
                     errorMessageFound = errorMessage.is(":visible"),
                     globalError = popup.find('.js-global-error'),
                     globalErrorFound = globalError.is(":visible"),
-                    userPortEntered = popup.find('.js-user-physical-port-value').is(':visible'),
-                    carrierDetectWait = popup.find('.js-carrier-detect-wait-switch'),
-                    encryptionKey = popup.find('.js-encryption-key-switch');
+                    userPortField = popup.find('.js-user-physical-port-value'),
+                    userPortEntered = userPortField.exists() && !userPortField.hasClass('dn'),
+                    carrierDetectWaitField = popup.find('.js-carrier-detect-wait-switch'),
+                    carrierDetectWait = carrierDetectWaitField.exists() && !carrierDetectWaitField.hasClass('dn'),
+                    encryptionKeyField = popup.find('.js-encryption-key-switch'),
+                    encryptionKey = encryptionKeyField.exists() && !encryptionKeyField.hasClass('dn');
 
                 popup.find('.js-physical-port').prop('disabled', userPortEntered);
                 popup.find('.js-user-physical-port-value').prop('disabled', !userPortEntered);
 
-                if (carrierDetectWait.is(':visible')) {
-                    var carrierDetectWaitRow = carrierDetectWait.closest('tr'),
+                if (carrierDetectWait) {
+                    var carrierDetectWaitRow = carrierDetectWaitField.closest('tr'),
                         isCarrierChecked = carrierDetectWaitRow.find('.switch-btn-checkbox').prop('checked');
                     if (!isCarrierChecked) {
                         popup.find(".js-carrierDetectWait").val("0");
                     }
                 }
 
-                if (encryptionKey.is(':visible')) {
-                    var encryptionKeyRow = encryptionKey.closest('tr'),
+                if (encryptionKey) {
+                    var encryptionKeyRow = encryptionKeyField.closest('tr'),
                         isEncryptionKeyChecked = encryptionKeyRow.find('.switch-btn-checkbox').prop('checked');
                     if (!isEncryptionKeyChecked) {
                         popup.find(".js-encryptionKey").val("");
