@@ -1985,6 +1985,13 @@
         <troubleshooting>Choose a different Meter Program to send to this device.</troubleshooting>
     </error>
 
+    <error code="337" type="SYSTEM">
+        <category>Yukon System</category>
+        <porter>Meter program password not valid.</porter>
+        <description>The password provided for the Meter Program is not valid.</description>
+        <troubleshooting>Confirm the password to use with this device.</troubleshooting>
+    </error>
+
   <error code="1024" type="NONE">
         <category>Network Manager</category>
         <porter>No node in Network Manager.</porter>
