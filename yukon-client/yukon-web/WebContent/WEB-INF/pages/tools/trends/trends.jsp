@@ -37,7 +37,6 @@
                 <cti:url var="deleteUrl" value="/tools/trend/${trendModel.trendId}/delete"/>
                 <form:form id="js-delete-trend-form" action="${deleteUrl}" method="delete" modelAttribute="trendModel">
                     <tags:hidden path="name"/>
-                    <tags:hidden path="trendId"/>
                     <cti:csrfToken/>
                 </form:form>
                 <li class="divider">
