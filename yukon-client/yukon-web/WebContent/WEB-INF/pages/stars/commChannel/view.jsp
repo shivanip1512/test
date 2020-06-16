@@ -9,30 +9,34 @@
 <cti:standardPage module="operator" page="commChannelDetail">
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">
-        <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
-        <cti:url var="createUrl" value="/stars/device/commChannel/create" />
-        <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-comm-channel-popup"/>
-        <!-- Delete -->
-        <c:set var="toolTipMessage" value=""/>
-        <c:set var="disableFlag" value="false"/>
-        <c:if test="${not empty deviceNames}">
-            <c:set var="disableFlag" value="true"/>
-            <cti:list var="arguments">
-                <cti:item value="${fn:escapeXml(name)}"/>
-                <cti:item value="${deviceNames}"/>
-            </cti:list>
-            <cti:msg2 var="toolTipMessage" key="yukon.web.modules.operator.commChannel.delete.devicesAssigned.error" arguments="${arguments}"/>
-        </c:if>
-        <li class="divider"></li>
-        <cm:dropdownOption icon="icon-cross" title="${toolTipMessage}"  key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option" 
-            data-ok-event="yukon:commChannel:delete" disabled="${disableFlag}"/>
-        <c:if test="${empty deviceNames}">
-             <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${fn:escapeXml(name)}" />
-        </c:if>    
-        <cti:url var="deleteUrl" value="/stars/device/commChannel/delete/${id}"/>
-        <form:form id="delete-commChannel-form" action="${deleteUrl}" method="delete">
-             <cti:csrfToken/>
-        </form:form>
+         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE"> 
+            <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
+            <cti:url var="createUrl" value="/stars/device/commChannel/create" />
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-comm-channel-popup"/>
+         </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER"> 
+            <!-- Delete -->
+            <c:set var="toolTipMessage" value=""/>
+            <c:set var="disableFlag" value="false"/>
+            <c:if test="${not empty deviceNames}">
+                <c:set var="disableFlag" value="true"/>
+                <cti:list var="arguments">
+                    <cti:item value="${fn:escapeXml(name)}"/>
+                    <cti:item value="${deviceNames}"/>
+                </cti:list>
+                <cti:msg2 var="toolTipMessage" key="yukon.web.modules.operator.commChannel.delete.devicesAssigned.error" arguments="${arguments}"/>
+            </c:if>
+            <li class="divider"></li>
+            <cm:dropdownOption icon="icon-cross" title="${toolTipMessage}"  key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="js-delete-option"
+                               data-ok-event="yukon:commChannel:delete" disabled="${disableFlag}"/>
+            <c:if test="${empty deviceNames}">
+                <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${fn:escapeXml(name)}" />
+            </c:if>
+            <cti:url var="deleteUrl" value="/stars/device/commChannel/delete/${id}"/>
+            <form:form id="delete-commChannel-form" action="${deleteUrl}" method="delete">
+                <cti:csrfToken/>
+            </form:form>
+         </cti:checkRolesAndProperties> 
     </div>
     <tags:widgetContainer deviceId="${id}" identify="false">
         <div class="column-12-12 clearfix">
