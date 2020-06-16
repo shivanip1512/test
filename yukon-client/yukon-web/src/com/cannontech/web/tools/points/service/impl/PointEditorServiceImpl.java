@@ -111,7 +111,7 @@ public class PointEditorServiceImpl implements PointEditorService {
             pointName = messageAccessor.getMessage("yukon.common.point.new.duplicate", duplicateNumber);
         }
 
-        int pointOffset = findNextCalcPointOffsetsForPao(paoId, pointType);
+        int pointOffset = pointDao.getNextOffsetByPaoObjectIdAndPointType(paoId, PointType.getForId(pointType));
 
         PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false, pointOffset);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
@@ -586,53 +586,4 @@ public class PointEditorServiceImpl implements PointEditorService {
         return existingEntries;
     }
 
-    /**
-     * This method returns the first available pointOffset for custom CalcAnalog or CalcStatus points
-     * 
-     * @param paoId - PaoId for the point
-     * @param pointType - PointTypes id constant
-     * @return - Next available pointOffset for CalcAnalog or CalcStatus point
-     *           The values will be 100+ with no gaps in the sequence for that point type
-     */
-    private int findNextCalcPointOffsetsForPao(int paoId, int pointType) {
-        SqlStatementBuilder sqlMin = new SqlStatementBuilder();
-        SqlStatementBuilder sqlMiddle = new SqlStatementBuilder();
-
-        String calcType;
-        if (pointType == PointTypes.CALCULATED_POINT) {
-            calcType = "'CalcAnalog'";
-        } else {
-            calcType = "'CalcStatus'";
-        }
-
-        // To find the lowest offset
-        sqlMin.append("SELECT MIN(PointOffset)");
-        sqlMin.append("FROM POINT");
-        sqlMin.append("WHERE PAObjectID = " + paoId);
-        sqlMin.append("AND PointType = " + calcType);
-        sqlMin.append("AND PointOffset >= 100");
-
-        // This will find a missing value in a sequence
-        sqlMiddle.append("SELECT MIN(PointOffset)");
-        sqlMiddle.append("FROM POINT p");
-        sqlMiddle.append("WHERE p.PAObjectID = " + paoId);
-        sqlMiddle.append("AND p.PointType = " + calcType);
-        sqlMiddle.append("AND PointOffset >= 100");
-        sqlMiddle.append("AND NOT EXISTS");
-            sqlMiddle.append("(SELECT NULL");
-            sqlMiddle.append("FROM POINT pt");
-            sqlMiddle.append("WHERE pt.PointOffset = p.PointOffset + 1");
-            sqlMiddle.append("AND pt.PointType = " + calcType + ")");
-
-        Integer minPointOffset = jdbcTemplate.query(sqlMin, TypeRowMapper.INTEGER).get(0);
-        Integer missingPointOffset = jdbcTemplate.query(sqlMiddle, TypeRowMapper.INTEGER).get(0);
-
-        Integer pointOffset = 100;
-        if (minPointOffset == 100) {
-            pointOffset = missingPointOffset + 1;
-        }
-
-        return pointOffset;
-    }
-    
 }

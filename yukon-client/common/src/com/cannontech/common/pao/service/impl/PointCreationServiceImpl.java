@@ -127,7 +127,7 @@ public class PointCreationServiceImpl implements PointCreationService {
                                                        pointArchiveType,
                                                        pointArchiveInterval,
                                                        calcPoint,
-                                                       0);
+                                                       offset);
             
             break;
 

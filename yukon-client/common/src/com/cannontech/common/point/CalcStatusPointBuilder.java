@@ -74,6 +74,7 @@ public class CalcStatusPointBuilder extends PointBuilder {
         }
         
         CalcStatusPoint point = (CalcStatusPoint) PointFactory.createCalcStatusPoint(paoId, pointName, stateGroupId, 0);
+        // TODO YUK-22357 - Add importer support
         
         point.getPointStatus().setInitialState(initialStateId);
         
