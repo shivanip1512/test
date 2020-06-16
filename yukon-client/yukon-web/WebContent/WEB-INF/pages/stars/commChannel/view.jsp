@@ -9,11 +9,11 @@
 <cti:standardPage module="operator" page="commChannelDetail">
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">
-         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE"> 
+        <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE"> 
             <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
             <cti:url var="createUrl" value="/stars/device/commChannel/create" />
             <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-comm-channel-popup"/>
-         </cti:checkRolesAndProperties>
+        </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="OWNER"> 
             <!-- Delete -->
             <c:set var="toolTipMessage" value=""/>
@@ -34,9 +34,9 @@
             </c:if>
             <cti:url var="deleteUrl" value="/stars/device/commChannel/delete/${id}"/>
             <form:form id="delete-commChannel-form" action="${deleteUrl}" method="delete">
-                <cti:csrfToken/>
+               <cti:csrfToken/>
             </form:form>
-         </cti:checkRolesAndProperties> 
+        </cti:checkRolesAndProperties> 
     </div>
     <tags:widgetContainer deviceId="${id}" identify="false">
         <div class="column-12-12 clearfix">
