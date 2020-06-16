@@ -10,7 +10,9 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -29,6 +31,7 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
     @Autowired private DeviceDao deviceDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PaoDao paoDao;
+    @Autowired private YukonValidationHelper yukonValidationHelper;
 
     private static final String basekey = "yukon.web.modules.capcontrol.cbc.error";
 
@@ -49,13 +52,13 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
         if (cbc.isLogical()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "parentRtuId", basekey + ".parentRTURequired");
         }
-        if (cbc.getPaoType().isTcpPortEligible() && 
-            dbCache.getAllPaosMap().get(cbc.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
+        if (cbc.getPaoType().isTcpPortEligible() &&
+                dbCache.getAllPaosMap().get(cbc.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
             YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", cbc.getIpAddress());
-            YukonValidationUtils.validatePort(errors, "port", cbc.getPort(), "yukon.web.error.port.required");
+            YukonValidationUtils.validatePort(errors, "port",
+                    yukonValidationHelper.getMessage("yukon.web.modules.capcontrol.cbc.port"), cbc.getPort());
         }
-      
-    }
+   }
 
     private void validateName(CapControlCBC cbc, Errors errors) {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "yukon.web.error.isBlank");

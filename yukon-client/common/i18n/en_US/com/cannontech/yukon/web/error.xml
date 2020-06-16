@@ -27,7 +27,7 @@
     <entry key="yukon.web.error.isNotPositiveInt">Must be a positive whole number.</entry>
     <entry key="yukon.web.error.exceedsMaximumLength">Exceeds maximum length of {0}.</entry>
     <entry key="yukon.web.error.outOfRange">Must be between {0} and {1}.</entry>
-    <entry key="yukon.web.error.outOfRangeObject">Must be &gt;{0,choice,0#|1#=} {1} and &lt;{2,choice,0#|1#=} {3}.</entry>
+    <entry key="yukon.web.error.outOfRangeObject">{0} must be between {1} and {2}.</entry>
     <entry key="yukon.web.error.fieldErrorExists">Error found, check fields.</entry>
     <entry key="yukon.web.error.fieldErrorsExist">Errors found, check fields.</entry>
     <entry key="yukon.web.error.i18nKeyMissing">An internationalized key is missing: {0}</entry>
@@ -38,11 +38,7 @@
  	<entry key="yukon.web.error.invalidPort">Must be integer between 1 and 65535.</entry>
     <entry key="yukon.web.error.invalidStringLength">{0} must be of {1} character.</entry>
     <entry key="yukon.web.error.fieldrequired">{0} is required.</entry>
-    <entry key="yukon.web.error.fieldRequiredAndOutOfRange">{0} between {1} and {2} is required.</entry>
     <entry key="yukon.web.error.notSupported">{0} is not supported.</entry>
-    <entry key="yukon.web.error.port.required">Port is required.</entry>
-    <entry key="yukon.web.error.portNumber.required">Port Number is required.</entry>
-    <entry key="yukon.web.error.socketNumber.required">Socket Number is required.</entry>
 
     <entry key="yukon.web.error.noJs">For full functionality of this site it is necessary to enable JavaScript. Please contact your administrator to enable JavaScript in your web browser.</entry>
     
@@ -53,7 +49,7 @@
     <entry key="yukon.web.error.date.inThePast">Date must be in the past.</entry>
     <entry key="yukon.web.error.date.fromAfterTo">From date must be after To date.</entry>
     <entry key="yukon.web.error.date.dateDifference">Date and time selected must be at least 24 hours apart.</entry>
-    <entry key="yukon.web.error.paoName.containsIllegalChars">Cannot be blank or include any of the following characters: / \ , ' " |</entry>
+    <entry key="yukon.web.error.paoName.containsIllegalChars">Name must not contain any of the following characters: / \ , ' " |.</entry>
     <entry key="yukon.web.error.deviceGroupName.containsIllegalChars">Cannot be blank, longer than 60 characters, or include any of the following characters: / \</entry>
     <entry key="yukon.web.error.themes.isNotValidColor">Must be a valid color (HEX or RGB).</entry>
     <entry key="yukon.web.error.paoTypeMismatch">Type {0} does not match existing type {1} for id: {2}.</entry>
