@@ -40,7 +40,7 @@ yukon.widget.commChannel.info = (function () {
                     encryptionKey = encryptionKeyField.exists() && !encryptionKeyField.hasClass('dn');
 
                 popup.find('.js-physical-port').prop('disabled', userPortEntered);
-                popup.find('.js-user-physical-port-value').prop('disabled', !userPortEntered);
+                userPortField.prop('disabled', !userPortEntered);
 
                 if (carrierDetectWait) {
                     var carrierDetectWaitRow = carrierDetectWaitField.closest('tr'),
