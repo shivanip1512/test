@@ -136,7 +136,7 @@ yukon.ami.meterProgramming.summary = (function () {
             
             refreshCheck: function (deviceId) {
                 return function (data) {
-                    if (data.isInProgress == 'false' || data.isConfirming == 'false') {
+                    if (data.isInProgress === 'false' || data.isConfirming === 'false') {
                         //refresh row
                         $.ajax(yukon.url('/amr/meterProgramming/' + deviceId + '/refreshDeviceRow'))
                         .done(function (rowData) {
