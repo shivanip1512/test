@@ -40,6 +40,7 @@
     <entry key="yukon.web.modules.tools.trend.additionalOptions">Additional Options</entry>
     <entry key="yukon.web.modules.tools.trend.general.title">General</entry>
     <entry key="yukon.web.modules.tools.trend.pointSetup.title">Point Setup</entry>
+    <entry key="yukon.web.modules.tools.trend.markerSetup.title">Marker Setup</entry>
     <entry key="yukon.web.modules.tools.trend.pointName">Point Name</entry>
     <entry key="yukon.web.modules.tools.trend.label">Label</entry>
     <entry key="yukon.web.modules.tools.trend.color">Color</entry>
@@ -47,6 +48,7 @@
     <entry key="yukon.web.modules.tools.trend.multiplier">Multiplier</entry>
     <entry key="yukon.web.modules.tools.trend.style">Style</entry>
     <entry key="yukon.web.modules.tools.trend.addPoint">Add Point</entry>
+    <entry key="yukon.web.modules.tools.trend.addMarker">Add Marker</entry>
     <entry key="yukon.web.modules.tools.trend.point">Point</entry>
     <entry key="yukon.web.modules.tools.trend.axis.LEFT">Left</entry>
     <entry key="yukon.web.modules.tools.trend.axis.RIGHT">Right</entry>
@@ -63,6 +65,13 @@
     <entry key="yukon.web.modules.tools.trend.style.STEP_AREA">Step/Area/</entry>
     <entry key="yukon.web.modules.tools.trend.style.STEP_AREA_SHAPES">Step/Area/Shapes</entry>
      <entry key="yukon.web.modules.tools.trend.style.BAR_3D">Bar 3d</entry>
+     
+     <entry key="yukon.web.modules.tools.trend.markerValueHelp.title">Marker Value</entry>
+     <entry key="yukon.web.modules.tools.trend.markerValueHelpTxt">
+        <![CDATA[A marker will display a line across the entire trend at the value specified.
+            <br><br>
+            <b>Note:</b> A marker will only display when values exists for a point specified in point setup and the marker’s value is within the range of a point’s values.]]>
+     </entry>
     <!-- =============== RenderType enum unused keys end =======================  -->
     
    <entry key="yukon.web.modules.tools.trend.color.BLACK">Black</entry>

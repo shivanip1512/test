@@ -26,7 +26,6 @@ yukon.tools.trend.setup = (function() {
             ],
             preferredFormat: "name",
             move: function(color){
-                debugger;
                 dialog.find(".js-color-input").val(color.toName().toUpperCase());
             }
         });
@@ -56,6 +55,10 @@ yukon.tools.trend.setup = (function() {
         clonnedRow.find(".js-row-data").val(JSON.stringify(data.trendSeries));
         $('#js-point-setup-table').append(clonnedRow);
         yukon.ui.reindexInputs(clonnedRow.closest('table'));
+    },
+    
+    _addRowToMarkerSetupTable = function (data) {
+        console.log(data);
     },
 
     mod = {
@@ -142,6 +145,23 @@ yukon.tools.trend.setup = (function() {
                     error: function(xhr, status, error, $form) {
                         $(".js-edit-point-dialog").html(xhr.responseText);
                         _initPointSetupPopup($(".js-edit-point-dialog"));
+                    }
+                });
+            });
+            
+            $(document).on("yukon:trend:setup:markerPopupLoaded", function(event) {
+                _initColorPicker($(event.target));
+            });
+            
+            $(document).on("yukon:trend:setup:addMarker", function(event) {
+                $(event.target).find("#js-marker-setup-form").ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        $("#js-add-marker-dialog").dialog('close');
+                        _addRowToMarkerSetupTable(data);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#js-add-marker-dialog').html(xhr.responseText);
+                        _initColorPicker($('#js-add-point-dialog'));
                     }
                 });
             });

@@ -113,7 +113,30 @@
                 </cti:tab>
                 <cti:msg2 key=".additionalOptions" var="additionalOptionsTxt" />
                 <cti:tab title="${additionalOptionsTxt}">
-                    TODO: Will work on it in other YUK...
+                    <tags:sectionContainer2 nameKey="markerSetup">
+                        <table class="compact-results-table dashed with-form-controls" id="js-marker-setup-table">
+                            <thead>
+                                <tr>
+                                    <th><i:inline key=".label"/></th>
+                                    <th><i:inline key=".color"/></th>
+                                    <th><i:inline key=".axis"/></th>
+                                    <th><i:inline key=".valueTxt"/></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <div class="action-area">
+                            <cti:button nameKey="add" icon="icon-add" data-popup="#js-add-marker-dialog" />
+                            <cti:url value="/tools/trend/renderAddMarkerPopup" var="addMarkerUrl" />
+                            <div id="js-add-marker-dialog"
+                                    data-dialog data-title="<i:inline key=".addMarker" />"
+                                    data-url="${addMarkerUrl}"
+                                    data-event="yukon:trend:setup:addMarker"
+                                    data-load-event="yukon:trend:setup:markerPopupLoaded"></div>
+                        </div>
+                    </tags:sectionContainer2>
                 </cti:tab>
             </cti:tabs>
             <div class="page-action-area">

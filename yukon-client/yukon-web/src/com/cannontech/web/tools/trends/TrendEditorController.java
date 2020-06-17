@@ -110,6 +110,16 @@ public class TrendEditorController {
         setPointPopupModel(model);
         return "trends/setup/pointSetupPopup.jsp";
     }
+    
+    @GetMapping("/renderAddMarkerPopup")
+    public String renderAddMarkerPopup(ModelMap model) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        TrendSeries trendSeries = new TrendSeries();
+        trendSeries.applyDefaults();
+        model.addAttribute("trendSeries", trendSeries);
+        setPointPopupModel(model);
+        return "trends/setup/markerSetupPopup.jsp";
+    }
 
     @GetMapping("/renderEditPointPopup")
     public String renderEditPointPopup(ModelMap model,
@@ -202,6 +212,32 @@ public class TrendEditorController {
         return null;
     }
 
+    @PostMapping("/addMarker")
+    public String addMarker(ModelMap model, YukonUserContext userContext, HttpServletResponse response,
+            @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, FlashScope flashScope)
+            throws JsonGenerationException, JsonMappingException, IOException {
+        //TODO: Work on validations.
+//        trendSeriesValidator.validate(trendSeries, result);
+        
+/*        if (result.hasErrors()) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            setPointPopupModel(model);
+            model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
+            model.addAttribute("isDateTypeSelected", trendSeries.getType().isDateType());
+            return "trends/setup/pointSetupPopup.jsp";
+        }
+*/
+        model.clear();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<>();
+        json.put("trendSeries", trendSeries);
+        json.put("color", accessor.getMessage(trendSeries.getColor().getFormatKey()));
+        json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
+        response.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
+        return null;
+    }
+    
     private void setPointPopupModel(ModelMap model) {
         List<GraphType> graphTypes = Lists.newArrayList(GraphType.values());
         graphTypes.remove(GraphType.MARKER_TYPE);
