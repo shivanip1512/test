@@ -59,6 +59,10 @@ public class PortServiceImpl implements PortService {
         if (pao == null) {
             throw new NotFoundException("Port Id not found");
         }
+
+        if (!pao.getPaoType().isPort()) {
+            throw new NotFoundException("Invalid Port Id : " + portId);
+        }
         DirectPort directPort = (DirectPort) dbPersistentDao.retrieveDBPersistent(pao);
         PortBase portBase = (PortBase) PaoModelFactory.getModel(directPort.getPaoType());
         portBase.buildModel(directPort);
