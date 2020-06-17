@@ -34,7 +34,7 @@
                 <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
                                                       classes="js-hide-dropdown"/>
                 <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${trendModel.name}" />
-                <cti:url var="deleteUrl" value="/tools/trend/${trendModel.trendId}/delete"/>
+                <cti:url var="deleteUrl" value="/tools/trend/${trendId}/delete"/>
                 <form:form id="js-delete-trend-form" action="${deleteUrl}" method="delete" modelAttribute="trendModel">
                     <tags:hidden path="name"/>
                     <cti:csrfToken/>

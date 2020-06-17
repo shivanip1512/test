@@ -112,7 +112,6 @@ public class TrendsHomeController {
     private void addTrendModelToModelMap(ModelMap model, LiteGraphDefinition liteGraphDefinition) {
         TrendModel trendModel = new TrendModel();
         trendModel.setName(liteGraphDefinition.getName());
-        trendModel.setTrendId(liteGraphDefinition.getGraphDefinitionID());
         model.addAttribute("trendModel", trendModel);
     }
 }

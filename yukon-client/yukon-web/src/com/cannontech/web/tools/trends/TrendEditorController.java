@@ -208,10 +208,10 @@ public class TrendEditorController {
     public String delete(@PathVariable int id, @ModelAttribute TrendModel trendModel, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request) {
         try {
-            // Api call to delete macro load group
+            // Api call to delete trend
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" + id);
             ResponseEntity<? extends Object> response =
-                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, trendModel);
+                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, Integer.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", trendModel.getName()));
