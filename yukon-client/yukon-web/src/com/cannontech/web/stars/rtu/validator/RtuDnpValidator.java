@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rtu.model.RtuDnp;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.db.device.DeviceAddress;
@@ -25,7 +26,8 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
     @Autowired private DeviceDao deviceDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private RtuDnpValidationUtil rtuDnpValidationUtil; 
-
+    @Autowired private YukonValidationHelper yukonValidationHelper;
+   
     private static final String basekey = "yukon.web.modules.operator.rtuDetail.error";
 
     public RtuDnpValidator() {
@@ -40,7 +42,8 @@ public class RtuDnpValidator extends SimpleValidator<RtuDnp> {
         if (!errors.hasFieldErrors("deviceDirectCommSettings.portID")) {
             if (dbCache.getAllPaosMap().get(rtuDnp.getDeviceDirectCommSettings().getPortID()).getPaoType() == PaoType.TCPPORT) {
                 YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", rtuDnp.getIpAddress());
-                YukonValidationUtils.validatePort(errors, "port", rtuDnp.getPort(), "yukon.web.error.port.required");
+                YukonValidationUtils.validatePort(errors, "port",
+                        yukonValidationHelper.getMessage("yukon.web.modules.operator.rtuDetail.port"), rtuDnp.getPort());
             }
         }
     }

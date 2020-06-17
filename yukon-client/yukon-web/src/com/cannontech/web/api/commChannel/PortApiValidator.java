@@ -10,6 +10,7 @@ import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.device.port.UdpPortDetail;
 import com.cannontech.common.device.port.dao.PortDao;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.PortValidatorHelper;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationHelper;
@@ -20,6 +21,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
 
     @Autowired private PortDao portDao;
     @Autowired private YukonValidationHelper yukonValidationHelper;
+  
 
     @SuppressWarnings("unchecked")
     public PortApiValidator() {
@@ -59,13 +61,15 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
             }
 
             if (detailBase.getSharing() != null && detailBase.getSharing().getSharedSocketNumber() != null) {
-                PortValidatorHelper.validatePortSharingFields(errors, detailBase.getSharing());
+                PortValidatorHelper.validatePortSharingFields(errors, detailBase.getSharing(), "Socket Number");
             }
 
-            PortValidatorHelper.validateCarrierDetectWait(errors, detailBase.getCarrierDetectWaitInMilliseconds());
+            PortValidatorHelper.validateCarrierDetectWait(errors, detailBase.getCarrierDetectWaitInMilliseconds(),
+                    "Carrier Detect Wait");
 
             if (detailBase.getPortNumber() != null) {
-                YukonValidationUtils.validatePort(errors, "portNumber", String.valueOf(detailBase.getPortNumber()), "Port Number");
+                YukonValidationUtils.validatePort(errors, "portNumber", "Port Number",
+                        String.valueOf(detailBase.getPortNumber()));
             }
         }
 
@@ -75,14 +79,16 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
                 PortValidatorHelper.validatePortTimingFields(errors, localSharedPortDetail.getTiming());
             }
 
-            if (localSharedPortDetail.getSharing() != null && localSharedPortDetail.getSharing().getSharedSocketNumber() != null) {
-                PortValidatorHelper.validatePortSharingFields(errors, localSharedPortDetail.getSharing());
+            if (localSharedPortDetail.getSharing() != null
+                    && localSharedPortDetail.getSharing().getSharedSocketNumber() != null) {
+                PortValidatorHelper.validatePortSharingFields(errors, localSharedPortDetail.getSharing(), "Socket Number");
             }
 
-            PortValidatorHelper.validateCarrierDetectWait(errors, localSharedPortDetail.getCarrierDetectWaitInMilliseconds());
+            PortValidatorHelper.validateCarrierDetectWait(errors, localSharedPortDetail.getCarrierDetectWaitInMilliseconds(),
+                    "Carrier Detect Wait");
 
             if (localSharedPortDetail.getPhysicalPort() != null) {
-                PortValidatorHelper.validatePhysicalPort(errors, localSharedPortDetail.getPhysicalPort());
+                PortValidatorHelper.validatePhysicalPort(errors, localSharedPortDetail.getPhysicalPort(), "Physical Port");
             }
         }
 
@@ -104,7 +110,7 @@ public class PortApiValidator<T extends PortBase<?>> extends SimpleValidator<T> 
         if (port instanceof TcpSharedPortDetail) {
             TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;
             if (tcpSharedPortDetail.getIpAddress() != null) {
-                PortValidatorHelper.validateIPAddress(errors, tcpSharedPortDetail.getIpAddress(), false);
+                PortValidatorHelper.validateIPAddress(errors, tcpSharedPortDetail.getIpAddress(), "IP Address", false);
                 Integer existingPortId = portDao.findUniquePortTerminalServer(tcpSharedPortDetail.getIpAddress(),
                         tcpSharedPortDetail.getPortNumber());
                 PortValidatorHelper.validateUniquePortAndIpAddress(errors, tcpSharedPortDetail.getPortNumber(),
