@@ -261,8 +261,9 @@
     <!-- Virtual Devices pages -->
     <entry key="yukon.web.modules.operator.virtualDevices.list.pageName">Virtual Devices</entry>
     <entry key="yukon.web.modules.operator.virtualDevices.list.create">Create Virtual Device</entry>
-    <entry key="yukon.web.modules.operator.virtualDevices.list.name">Name</entry>
-    <entry key="yukon.web.modules.operator.virtualDevices.list.status">Status</entry>
     
-    
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageName">Virtual Device</entry>
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageTitle">{0}</entry>
+  
 </properties>
