@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "99e01ef2-5084-4f46-87ef-470d63066a98",
-		"name": "YukonAPITest copy",
+		"_postman_id": "2ba786f6-58b6-4956-bdaa-0f699435bc6c",
+		"name": "YukonAPITest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -686,7 +686,7 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "7d1700b2-b4e4-4806-b37a-14ac5bd45e67",
+												"id": "639630e6-1abb-439f-a9eb-b60c8fcc32a6",
 												"exec": [
 													"console.log('I am from ');"
 												],
@@ -1876,7 +1876,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8a554205-48ea-4f18-9c67-978c41f43c44",
+								"id": "9a9eee45-a3e7-47fe-adff-b0f4d9061f82",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -1886,7 +1886,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9d346f39-2a54-4c23-ae40-6c581cb9eba3",
+								"id": "341848e9-9765-4dbb-b651-ab0b4dfee26a",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -3070,7 +3070,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Brady NAY!\",\r\n    \"enable\": \"false\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Postman Virtual Device Test\",\r\n    \"enable\": \"false\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3120,6 +3120,26 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Delete Device",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"device",
+								"virtualDevices",
+								"{device-id}"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -3139,7 +3159,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "170297a6-7ac4-472e-a4f9-d6ab2a67f2de",
+				"id": "f17b903f-bafc-4107-ab8c-ff255fe31ad5",
 				"type": "text/javascript",
 				"exec": [
 					"",
@@ -3188,7 +3208,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "ed299091-7ca3-478d-8cf0-9e16aff484fa",
+				"id": "eb93ecce-8a94-4a6e-931b-1f7808588b1e",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3198,31 +3218,31 @@
 	],
 	"variable": [
 		{
-			"id": "e5d59f2f-604a-4ddb-902d-512f7c2529ff",
+			"id": "6a8edef5-2db2-44ad-bcfe-92d7989ea496",
 			"key": "api-url",
 			"value": "http://pspl-sw-night.eatoneaseng.net:8080",
 			"type": "string"
 		},
 		{
-			"id": "5367d7aa-4fa4-433b-86f4-eb2050bf0fa0",
+			"id": "b2e28bba-d09b-4569-9b94-28939ec2b6a8",
 			"key": "username",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "1064fb33-b14b-4ba3-a2a1-7f006027fe40",
+			"id": "cd7e17b9-ccee-4757-943a-563fe9d7f1c3",
 			"key": "password",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "c6640761-8988-4e26-88a3-6a605304f1ab",
+			"id": "7fea1a86-ca0a-4ce1-9181-5f2e760e8bac",
 			"key": "currentAccessToken",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "129a5f96-33da-4ca2-a62f-308115240d4e",
+			"id": "54e561b4-6bad-47d1-9076-6c56ebfa8ed3",
 			"key": "accessTokenExpiry",
 			"value": "",
 			"type": "string"

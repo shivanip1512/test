@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,6 +48,12 @@ public class VirtualDeviceApiController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<Object> update(@PathVariable int id, @Valid @RequestBody VirtualDeviceModel virtualDevice) {
         return new ResponseEntity<>(virtualDeviceService.update(id, virtualDevice), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
+    public ResponseEntity<Object> delete(@PathVariable int id) {
+        return new ResponseEntity<>(virtualDeviceService.delete(id), HttpStatus.OK);
     }
 
     @InitBinder("virtualDeviceBase")

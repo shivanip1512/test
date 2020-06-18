@@ -52,4 +52,15 @@ public class VirtualDeviceServiceImpl implements VirtualDeviceService {
         return virtualDevice;
     }
 
+    @Override
+    public int delete(int id) {
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(id);
+        if (pao == null) {
+            throw new NotFoundException("ID not found " + id);
+        }
+        VirtualDevice virtualDeviceRecord = (VirtualDevice) dBPersistentDao.retrieveDBPersistent(pao);
+        dBPersistentDao.performDBChange(virtualDeviceRecord, TransactionType.DELETE);
+        return virtualDeviceRecord.getPAObjectID();
+    }
+
 }
