@@ -8,9 +8,11 @@
 <cti:standardPage module="operator" page="commChannel">
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">
-        <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
-        <cti:url var="createUrl" value="/stars/device/commChannel/create" />
-        <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-comm-channel-popup"/>
+         <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE"> 
+            <cti:msg2 key="yukon.web.modules.operator.commChannel.create" var="popupTitle"/>
+            <cti:url var="createUrl" value="/stars/device/commChannel/create" />
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" data-popup="#js-create-comm-channel-popup"/>
+         </cti:checkRolesAndProperties> 
     </div>
 
     <c:choose>

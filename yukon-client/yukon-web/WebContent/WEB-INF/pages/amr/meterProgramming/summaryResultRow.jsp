@@ -24,6 +24,10 @@
             <cti:dataUpdaterCallback function="yukon.ami.meterProgramming.summary.refreshCheck(${result.device.id})" 
                 isInProgress="METER_PROGRAMMING/${result.device.id}/IS_IN_PROGRESS"/>
         </c:if>
+        <c:if test="${result.confirming}">
+            <cti:dataUpdaterCallback function="yukon.ami.meterProgramming.summary.refreshCheck(${result.device.id})" 
+                isConfirming="METER_PROGRAMMING/${result.device.id}/IS_CONFIRMING"/>
+        </c:if>
     </td>
     <td><cti:formatDate type="BOTH" value="${result.lastUpdate}"/></td>
     <td>

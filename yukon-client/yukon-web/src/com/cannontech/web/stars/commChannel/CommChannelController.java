@@ -54,8 +54,12 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/device/commChannel")
 public class CommChannelController {
 
@@ -122,6 +126,7 @@ public class CommChannelController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
             String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + id);
@@ -148,6 +153,7 @@ public class CommChannelController {
     }
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         PortBase commChannel = new PortBase();
@@ -164,6 +170,7 @@ public class CommChannelController {
     }
 
     @GetMapping("/create/{type}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, @PathVariable String type, @RequestParam String name,
             YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -180,6 +187,7 @@ public class CommChannelController {
     }
 
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String save(@ModelAttribute("commChannel") PortBase commChannel, BindingResult result, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request, HttpServletResponse resp, ModelMap model) throws IOException {
         try {

@@ -53,8 +53,13 @@ public class ApiURL {
     public static final String drControlScenarioUpdateUrl = "/dr/setup/controlScenario/update/";
     public static final String drControlScenarioDeleteUrl = "/dr/setup/controlScenario/delete/";
 
-    public static final String commChannelUrl = "/devices/commChannels";
-
-    public static final String trendCreateOrUpdateUrl = "/trends";
+    public static final String commChannelListUrl = "/device/commChannel/list";
+    public static final String commChannelViewUrl = "/device/commChannel/";
+    public static final String commChannelUpdateUrl = "/device/commChannel/update/";
+    public static final String commChannelDeleteUrl = "/device/commChannel/delete/";
+    public static final String commChannelDevicesAssignedUrl = "/device/commChannel/devicesAssigned/";
+    public static final String commChannelCreateUrl = "/device/commChannel/create";
+    
+    public static final String trendUrl = "/trends";
 
 }
