@@ -18,4 +18,6 @@ public interface VirtualDeviceService {
      * Update an existing virtual device
      */
     VirtualDeviceModel update(int virtualDeviceId, VirtualDeviceModel virtualDevice);
+
+    int delete(int id);
 }
