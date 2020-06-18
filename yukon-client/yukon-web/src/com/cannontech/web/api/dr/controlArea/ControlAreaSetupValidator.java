@@ -94,7 +94,8 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                     lmValidatorHelper.checkIfFieldRequired("triggerType", errors, trigger.getTriggerType(), "Trigger Type");
                     lmValidatorHelper.checkIfFieldRequired("triggerPointId", errors, trigger.getTriggerPointId(), "Trigger Point Id");
                     if (!errors.hasFieldErrors("triggerPointId")) {
-                        pointValidationUtil.validatePointId(errors, "triggerPointId", trigger.getTriggerPointId());
+                        pointValidationUtil.validatePointId(errors, "triggerPointId", trigger.getTriggerPointId(),
+                                "triggerPointId");
                     }
 
                     if (!errors.hasFieldErrors("triggerType") && !errors.hasFieldErrors("triggerPointId")) {
@@ -116,13 +117,15 @@ public class ControlAreaSetupValidator extends SimpleValidator<ControlArea> {
                             YukonValidationUtils.checkRange(errors, "minRestoreOffset", trigger.getMinRestoreOffset(), -99999.9999, 99999.9999, false);
 
                             if (trigger.getPeakPointId() != null) {
-                                pointValidationUtil.validatePointId(errors, "peakPointId", trigger.getPeakPointId());
+                                pointValidationUtil.validatePointId(errors, "peakPointId", trigger.getPeakPointId(),
+                                        "peakPointId");
                             }
 
                             if ((trigger.getTriggerType().getTriggerTypeValue()).equalsIgnoreCase( IlmDefines.TYPE_THRESHOLD_POINT)) {
                                 lmValidatorHelper.checkIfFieldRequired("thresholdPointId", errors, trigger.getThresholdPointId(), "Threshold Point Id");
                                 if (!errors.hasFieldErrors("thresholdPointId")) { 
-                                    pointValidationUtil.validatePointId(errors, "thresholdPointId", trigger.getThresholdPointId());
+                                    pointValidationUtil.validatePointId(errors, "thresholdPointId", trigger.getThresholdPointId(),
+                                            "peakPointId");
                                 }
                             } else {
                                 lmValidatorHelper.checkIfFieldRequired("threshold", errors, trigger.getThreshold(), "Threshold");
