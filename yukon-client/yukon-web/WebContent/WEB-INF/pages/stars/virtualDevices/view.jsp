@@ -2,13 +2,14 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="virtualDevice.detail">
 
     <c:if test="${not empty userMessage}">
-        <tags:alertBox type="success" includeCloseButton="true">${userMessage}</tags:alertBox>
+        <tags:alertBox type="success" includeCloseButton="true">${fn:escapeXml(userMessage)}</tags:alertBox>
     </c:if>
 
     <!-- Actions dropdown -->
@@ -25,7 +26,7 @@
             <cti:param name="collectionType" value="idList" />
             <cti:param name="idList.ids" value="${id}" />
         </cti:url>
-        <cm:dropdownOption icon="icon-cog" href="${actionsUrl}" key=".otherActions" />
+        <cm:dropdownOption icon="icon-cog" href="${actionsUrl}" key="yukon.common.otherActions" />
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <li class="divider" />
             <cm:dropdownOption key="yukon.web.components.button.delete.label" classes="js-hide-dropdown" id="deleteVirtualDevice"

@@ -116,11 +116,15 @@ public class VirtualDeviceController {
     @DeleteMapping("virtualDevice/{id}/delete")
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
+        String paoName = dbCache.getAllPaosMap().get(id).getPaoName();
         try {
             String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.virtualDeviceUrl + id);
-            String paoName = dbCache.getAllPaosMap().get(id).getPaoName();
-
-            ResponseEntity<? extends Object> deleteResponse = deleteVirtualDevice(userContext, request, deleteUrl);
+            ResponseEntity<? extends Object> deleteResponse = apiRequestHelper.callAPIForObject(userContext,
+                                                                                                request,
+                                                                                                deleteUrl,
+                                                                                                HttpMethod.DELETE,
+                                                                                                Object.class,
+                                                                                                Integer.class);
 
             if (deleteResponse.getStatusCode() == HttpStatus.OK) {
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", paoName));
@@ -132,25 +136,11 @@ public class VirtualDeviceController {
             flash.setError(new YukonMessageSourceResolvable(communicationKey));
             return "redirect:" + "/stars/virtualDevice/" + id;
         } catch (RestClientException ex) {
-            String paoName = dbCache.getAllPaosMap().get(id).getPaoName();
             log.error("Error deleting virtual device: {}. Error: {}", paoName, ex.getMessage());
             flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", paoName, ex.getMessage()));
             return "redirect:" + "/stars/virtualDevice/" + id;
         }
         return "redirect:" + "/stars/virtualDevices";
-    }
-    
-    /**
-     * Get the response for virtual device delete
-     */
-    private ResponseEntity<? extends Object> deleteVirtualDevice(YukonUserContext userContext, HttpServletRequest request, String url) throws RestClientException {
-        ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, 
-                                                                                      request,
-                                                                                      url, 
-                                                                                      HttpMethod.DELETE, 
-                                                                                      Object.class, 
-                                                                                      Integer.class);
-        return response;
     }
     
     /**

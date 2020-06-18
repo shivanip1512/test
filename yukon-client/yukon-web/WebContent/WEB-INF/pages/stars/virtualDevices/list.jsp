@@ -9,7 +9,7 @@
     <!-- Actions dropdown -->
     <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
         <div id="page-actions" class="dn">
-            <cm:dropdownOption icon="icon-plus-green" key=".create" data-popup="#js-create-virtual-device-popup"/>
+            <cm:dropdownOption icon="icon-plus-green" key="yukon.common.create" data-popup="#js-create-virtual-device-popup"/>
             <cti:url var="createUrl" value="/widget/virtualDeviceInfoWidget/create" />
             <cti:msg2 var="saveText" key="components.button.save.label"/>
             <cti:msg2 var="createPopupTitle" key="yukon.web.modules.operator.virtualDevices.list.create"/>

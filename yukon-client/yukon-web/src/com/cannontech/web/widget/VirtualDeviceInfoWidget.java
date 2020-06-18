@@ -63,7 +63,7 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
         setIdentityPath("common/deviceIdentity.jsp");
     }
 
-    @RequestMapping("render")
+    @GetMapping("render")
     public String render(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         int deviceId = 0;
         try {
@@ -113,8 +113,9 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
         } catch (RestClientException ex) {
             log.error("Error retrieving virtual device: " + ex.getMessage());
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = accessor.getMessage("yukon.web.modules.operator.virtualDeviceInfoWidget.retrieveError",
-                    ex.getMessage());
+            String virtualDeviceLabel = accessor.getMessage("yukon.web.modules.operator.virtualDevice.detail.pageName");
+            String errorMsg = accessor.getMessage("yukon.web.api.retrieve.error", 
+                                                  virtualDeviceLabel, ex.getMessage());
             model.addAttribute("errorMsg", errorMsg);
         }
     }
