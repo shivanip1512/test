@@ -1,0 +1,30 @@
+=== Create
+
+*Request Properties* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Create/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Create/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Create/response-fields.adoc[]
+*Response JSON* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Create/http-response.adoc[]
+
+=== Get
+
+*Request Properties* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Get/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Get/response-fields.adoc[]
+*Response JSON* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Get/http-response.adoc[]
+
+=== Update
+
+*Request Properties* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/response-fields.adoc[]
+*Response JSON* 
+include::{snippets}/VirtualDeviceApiDoc/Test_VirtualDevice_01_Update/http-response.adoc[]
