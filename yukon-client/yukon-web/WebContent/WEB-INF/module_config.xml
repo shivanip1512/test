@@ -1328,6 +1328,12 @@
             </page>
             <page name="virtualDevices.list" type="BASIC">
                 <link>/stars/virtualDevices</link>
+                <pages>
+                    <page name="virtualDevice.detail" type="DETAIL">
+                        <link>/stars/virtualDevice/${id}</link>
+                        <labelArgument>${name}</labelArgument>
+                    </page>
+                </pages>
             </page>
             <page name="scheduledDataImportList" type="BASIC" hideSearch="true">
                 <link>/stars/scheduledDataImport/list</link>

@@ -155,15 +155,17 @@
     </form:form>
     <cti:displayForPageEditModes modes="VIEW">
         <div class="action-area">
-            <cti:url var="editUrl" value="/widget/commChannelInfoWidget/${commChannel.id}/edit"/>
-            <cti:msg2 var="saveText" key="components.button.save.label"/>
-            <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.commChannelInfoWidget.edit" argument="${commChannel.name}"/>
-            <c:if test="${not empty commChannel}">
-                <cti:button icon="icon-pencil" 
-                            nameKey="edit" 
-                            data-popup="#js-edit-comm-channel-popup"
-                            id="edit-btn"/>
-            </c:if>
+             <cti:checkRolesAndProperties value="MANAGE_INFRASTRUCTURE" level="CREATE"> 
+                <cti:url var="editUrl" value="/widget/commChannelInfoWidget/${commChannel.id}/edit"/>
+                <cti:msg2 var="saveText" key="components.button.save.label"/>
+                <cti:msg2 var="editPopupTitle" key="yukon.web.modules.operator.commChannelInfoWidget.edit" argument="${commChannel.name}"/>
+                <c:if test="${not empty commChannel}">
+                    <cti:button icon="icon-pencil"
+                                nameKey="edit"
+                                data-popup="#js-edit-comm-channel-popup"
+                                id="edit-btn"/>
+                </c:if>
+             </cti:checkRolesAndProperties> 
         </div>
         <div class="dn" 
              id="js-edit-comm-channel-popup" 
