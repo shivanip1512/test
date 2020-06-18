@@ -28,43 +28,49 @@ import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
-@RequestMapping("/device/commChannel")
+@RequestMapping("/devices/commChannels")
 public class CommChannelApiController {
 
     @Autowired private PortService portService;
     @Autowired private PortCreateApiValidator<? extends PortBase<?>> portApiCreationValidator;
     @Autowired private PortApiValidator<? extends PortBase<?>> portApiValidator;
 
-    @PostMapping("/create")
+    //Create port
+    @PostMapping
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody PortBase<?> port) {
         return new ResponseEntity<>(portService.create(port), HttpStatus.OK);
     }
 
+    //Get port
     @GetMapping("/{portId}")
     public ResponseEntity<Object> retrieve(@PathVariable int portId) {
         return new ResponseEntity<>(portService.retrieve(portId), HttpStatus.OK);
     }
 
-    @PostMapping("/update/{id}")
+    //Update port
+    @PostMapping("/{portId}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
-    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable("id") int portId) {
+    public ResponseEntity<Object> update(@Valid @RequestBody PortBase<?> port, @PathVariable("portId") int portId) {
         return new ResponseEntity<>(portService.update(portId, port), HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete/{portId}")
+    //Delete port
+    @DeleteMapping("/{portId}")
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<Object> delete(@PathVariable int portId) {
         return new ResponseEntity<>(portService.delete(portId), HttpStatus.OK);
     }
 
-    @GetMapping("/list")
+    //Get all ports
+    @GetMapping("/")
     public ResponseEntity<Object> retrieveAllPorts() {
         List<PortBase> listOfPorts = portService.getAllPorts();
         return new ResponseEntity<>(listOfPorts, HttpStatus.OK);
     }
-    
-    @GetMapping("/devicesAssigned/{portId}")
+
+    //Get devices assigned to port
+    @GetMapping("/{portId}/devicesAssigned")
     public ResponseEntity<Object> retrieveAllDevicesForPort(@PathVariable int portId) {
         List<DeviceBaseModel> listOfDevices = portService.getDevicesAssignedPort(portId);
         return new ResponseEntity<>(listOfDevices, HttpStatus.OK);
