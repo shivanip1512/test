@@ -2995,7 +2995,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"10/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3010,6 +3010,34 @@
 							"path": [
 								"api",
 								"trends"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/trends/{id)",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"trends",
+								"{id)"
 							]
 						}
 					},
