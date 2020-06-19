@@ -4,14 +4,21 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
+<!-- TODO: Why do we need this? -->
+<style></style>
+
 <cti:msgScope paths="yukon.common,modules.tools.trend">
     <c:forEach items="${colors}" var="color">
         <input type="hidden" class="js-color-item" value="${color}" />
     </c:forEach>
-    
-    <cti:url var="addMarkerUrl" value="/tools/trend/addMarker" />
+
+    <cti:url var="addMarkerUrl" value="/tools/trend/addPointOrMarker" />
     <form:form id="js-marker-setup-form" modelAttribute="trendSeries" method="POST" action="${addMarkerUrl}">
         <cti:csrfToken />
+        <tags:hidden path="pointId"/>
+        <tags:hidden path="type"/>
+        <tags:hidden path="style"/>
+        <input type="hidden" name="isMarker" value="true"/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".valueTxt" nameClass="vam">
                 <tags:input path="multiplier" />
@@ -20,7 +27,8 @@
                 <tags:input path="label" maxlength="40" inputClass="js-marker-label-input" />
                 <cti:icon icon="icon-help" data-popup=".js-marker-value-help-dialog" classes="fn vatb cp" />
                 <cti:msg2 var="markerValueHelpTitle" key=".markerValueHelp.title" />
-                <div data-title="${markerValueHelpTitle}" class="dn js-marker-value-help-dialog" data-width="400" data-height="200">
+                <div data-title="${markerValueHelpTitle}" class="dn js-marker-value-help-dialog" data-width="400"
+                    data-height="200">
                     <i:inline key=".markerValueHelpTxt" />
                 </div>
             </tags:nameValue2>
