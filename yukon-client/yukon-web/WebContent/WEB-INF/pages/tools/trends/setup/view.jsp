@@ -13,8 +13,7 @@
                 <td class="js-device-name wbba" />
                 <td class="js-point-name wbba" />
                 <td class="js-label wbba">
-                    <input type="hidden" name="trendSeries[?]" class="js-row-data" value=""/>
-                    <span></span>
+                    <input type="hidden" name="trendSeries[?]" class="js-row-data" value="" /> <span></span>
                 </td>
                 <td class="js-color">
                     <div class="small-rectangle dib"></div>
@@ -84,39 +83,43 @@
                             <tbody>
                                 <c:if test="${fn:length(trendModel.trendSeries) > 0}">
                                     <c:forEach var="trendSeries" items="${trendModel.trendSeries}" varStatus="status">
-                                        <tr>
-                                            <td class="js-device-name wbba">
-                                                <cti:deviceNameFromPointId pointId="${trendSeries.pointId}"/>
-                                            </td>
-                                            <td class="js-point-name wbba">
-                                                <cti:pointName pointId="${trendSeries.pointId}"/>
-                                            </td>
-                                            <td class="js-label wbba">
-                                                <cti:toJson object="${trendSeries}" var="seriesJson"/>
-                                                <input type="hidden" name="trendSeries[${status.index}]" class="js-row-data" value="${seriesJson}"/>
-                                                <span>${fn:escapeXml(trendSeries.label)}</span>
-                                            </td>
-                                            <td class="js-color">
-                                                <div class="small-rectangle dib" style="background-color: ${trendSeries.color}"></div>
-                                                <span><i:inline key="${trendSeries.color}"/></span>
-                                            </td>
-                                            <td class="js-axis">
-                                                <i:inline key="${trendSeries.axis}" />
-                                            </td>
-                                            <td class="js-type">
-                                                <i:inline key="${trendSeries.type}" />
-                                            </td>
-                                            <td class="js-multiplier">${trendSeries.multiplier}</td>
-                                            <td class="js-style">
-                                                <i:inline key="${trendSeries.style}" />
-                                            </td>
-                                            <td class="js-actions">
-                                                <div class="button-group">
-                                                    <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit-point" />
-                                                    <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" />
-                                                </div>
-                                            </td>
-                                        </tr>
+                                        <c:if test="${not trendSeries.type.markerType}">
+                                            <tr>
+                                                <td class="js-device-name wbba">
+                                                    <cti:deviceNameFromPointId pointId="${trendSeries.pointId}" />
+                                                </td>
+                                                <td class="js-point-name wbba">
+                                                    <cti:pointName pointId="${trendSeries.pointId}" />
+                                                </td>
+                                                <td class="js-label wbba">
+                                                    <cti:toJson object="${trendSeries}" var="seriesJson" />
+                                                    <input type="hidden" name="trendSeries[${status.index}]" class="js-row-data" value="${seriesJson}" />
+                                                    <span>${fn:escapeXml(trendSeries.label)}</span>
+                                                </td>
+                                                <td class="js-color">
+                                                    <div class="small-rectangle dib" style="background-color: ${trendSeries.color}"></div>
+                                                    <span><i:inline key="${trendSeries.color}" /></span>
+                                                </td>
+                                                <td class="js-axis">
+                                                    <i:inline key="${trendSeries.axis}" />
+                                                </td>
+                                                <td class="js-type">
+                                                    <i:inline key="${trendSeries.type}" />
+                                                </td>
+                                                <td class="js-multiplier">
+                                                    ${trendSeries.multiplier}
+                                                </td>
+                                                <td class="js-style">
+                                                    <i:inline key="${trendSeries.style}" />
+                                                </td>
+                                                <td class="js-actions">
+                                                    <div class="button-group">
+                                                        <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit-point" />
+                                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </c:if>
                                     </c:forEach>
                                 </c:if>
                             </tbody>
@@ -128,10 +131,10 @@
                             <cti:param name="isMarker" value="false"/>
                         </cti:url>
                         <div id="js-add-point-dialog"
-                                data-dialog data-title="<i:inline key=".addPoint" />"
-                                data-url="${addPointUrl}"
-                                data-event="yukon:trend:setup:addPoint"
-                                data-load-event="yukon:trend:setup:pointPopupLoaded"></div>
+                                 data-dialog data-title="<i:inline key=".addPoint" />"
+                                 data-url="${addPointUrl}"
+                                 data-event="yukon:trend:setup:addPoint"
+                                 data-load-event="yukon:trend:setup:pointPopupLoaded"></div>
                     </tags:sectionContainer2>
                 </cti:tab>
                 <cti:msg2 key=".additionalOptions" var="additionalOptionsTxt" />
@@ -147,7 +150,37 @@
                                     <th style="width: 10%;"></th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
+                            <tbody>
+                                <c:if test="${fn:length(trendModel.trendSeries) > 0}">
+                                    <c:forEach var="trendSeries" items="${trendModel.trendSeries}" varStatus="status">
+                                        <c:if test="${trendSeries.type.markerType}">
+                                            <tr>
+                                                <td class="js-label wbba">
+                                                    <cti:toJson object="${trendSeries}" var="seriesJson" />
+                                                    <input type="hidden" name="trendSeries[${status.index}]" class="js-row-data" value="${seriesJson}" />
+                                                    <span>${fn:escapeXml(trendSeries.label)}</span>
+                                                </td>
+                                                <td class="js-color">
+                                                    <div class="small-rectangle dib" style="background-color: ${trendSeries.color}"></div>
+                                                    <span><i:inline key="${trendSeries.color}" /></span>
+                                                </td>
+                                                <td class="js-axis">
+                                                    <i:inline key="${trendSeries.axis}" />
+                                                </td>
+                                                <td class="js-multiplier">
+                                                    ${trendSeries.multiplier}
+                                                </td>
+                                                <td class="js-actions">
+                                                    <div class="button-group">
+                                                        <cti:button icon="icon-pencil" renderMode="buttonImage" classes="js-edit-point js-marker" />
+                                                        <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:if>
+                            </tbody>
                         </table>
                         <div class="action-area">
                             <cti:button nameKey="add" icon="icon-add" data-popup="#js-add-marker-dialog" />
