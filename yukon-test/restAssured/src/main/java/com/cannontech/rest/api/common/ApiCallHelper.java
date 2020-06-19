@@ -114,6 +114,15 @@ public class ApiCallHelper {
         return getHeader().body(body).delete(uri + param).then().log().all().extract();
     }
 
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP PUT method for specified URI
+     * and request parameter.
+     */
+    public static ExtractableResponse<?> put(String key, Object body, String param) {
+        String uri = getProperty(key);
+        return getHeader().body(body).put(uri + param).then().log().all().extract();
+    }
+
     private static RequestSpecification getHeader() {
         return given().accept("application/json").contentType("application/json").header("Authorization",
             "Bearer " + authToken).log().all();

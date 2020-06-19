@@ -9,6 +9,17 @@ include::{snippets}/TrendApiDoc/Test_Trend_01_Create/response-fields.adoc[]
 *Response JSON* 
 include::{snippets}/TrendApiDoc/Test_Trend_01_Create/http-response.adoc[]
 
+=== Update
+
+*Request Properties* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Update/request-fields.adoc[]
+*Request JSON* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Update/http-request.adoc[]
+*Response Properties* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Update/response-fields.adoc[]
+*Response JSON* 
+include::{snippets}/TrendApiDoc/Test_Trend_01_Update/http-response.adoc[]
+
 === Delete
 
 *Request* 

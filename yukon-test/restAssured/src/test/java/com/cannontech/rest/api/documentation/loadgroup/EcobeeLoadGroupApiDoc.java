@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.model.MockPaoType;
 import com.cannontech.rest.api.dr.helper.LoadGroupHelper;
@@ -34,7 +35,7 @@ public class EcobeeLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmEcobee_Get" })
     public void Test_LmEcobee_Update() {
-        paoId = updateDoc();
+        paoId = updateDoc(RequestMethod.POST);
     }
 
     @Test(dependsOnMethods = { "Test_LmEcobee_Update" })

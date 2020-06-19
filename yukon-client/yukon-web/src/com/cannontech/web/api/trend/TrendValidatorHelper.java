@@ -1,7 +1,6 @@
 package com.cannontech.web.api.trend;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
