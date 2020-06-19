@@ -47,4 +47,18 @@ public class TrendServiceImpl implements TrendService {
         return trend.getGraphDefinition().getGraphDefinitionID();
     }
 
+    @Override
+    public TrendModel update(int id, TrendModel trendModel) {
+        LiteGraphDefinition liteTrend = dbCache.getAllGraphDefinitions()
+                                               .stream()
+                                               .filter(group -> group.getLiteID() == id)
+                                               .findFirst()
+                                               .orElseThrow(() -> new NotFoundException("Trend Id not found"));
+        GraphDefinition trend = (GraphDefinition) LiteFactory.createDBPersistent(liteTrend);
+        trendModel.buildDBPersistent(trend);
+        dbPersistentDao.performDBChange(trend, TransactionType.UPDATE);
+        trendModel.buildModel(trend);
+        return trendModel;
+    }
+
 }

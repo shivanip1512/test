@@ -110,11 +110,11 @@ public class PointValidationUtil extends ValidationUtils {
     /**
      * Check if provided pointId is valid or not.
      */
-    public void validatePointId(Errors errors, String field, Integer pointId) {
+    public void validatePointId(Errors errors, String field, Integer pointId, String fieldName) {
         try {
             pointDao.getLitePoint(pointId);
         } catch (NotFoundException ex) {
-            errors.rejectValue(field, "yukon.web.modules.dr.setup.error.pointId.doesNotExist", new Object[] { field }, "");
+            errors.rejectValue(field, "yukon.web.modules.dr.setup.error.pointId.doesNotExist", new Object[] { fieldName }, "");
         }
     }
 }
