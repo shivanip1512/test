@@ -19,7 +19,7 @@ public class YukonValidationHelper {
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     private final static String key = "yukon.web.error.";
-
+    
     public void validatePaoName(String paoName, PaoType type, Errors errors, String fieldName, String paoId) {
         if (StringUtils.hasText(paoName)) {
             String paoNameWithoutSpace = paoName.trim();

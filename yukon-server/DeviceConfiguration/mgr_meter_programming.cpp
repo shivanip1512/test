@@ -227,6 +227,8 @@ auto MeterProgrammingManager::convertRawProgram(const RawProgram &raw, const std
     FILEINFO_t fileInfo{ charProgram.data(), static_cast<uint16_t>(charProgram.size()),
                             charPassword.data(), static_cast<uint8_t>(charPassword.size()) };
 
+    globalBuffer.clear();
+
     auto captureToBuffer = [](void *buf, size_t len) {
         CTILOG_DEBUG(dout, "Conversion callback " << buf << ":" << len);
         auto ucBuf = reinterpret_cast<unsigned char*>(buf);

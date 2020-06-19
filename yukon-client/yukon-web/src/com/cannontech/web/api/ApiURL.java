@@ -55,6 +55,8 @@ public class ApiURL {
 
     public static final String commChannelUrl = "/devices/commChannels";
 
+    public static final String virtualDeviceUrl = "/device/virtualDevices/";
+
     public static final String trendUrl = "/trends";
 
 }
