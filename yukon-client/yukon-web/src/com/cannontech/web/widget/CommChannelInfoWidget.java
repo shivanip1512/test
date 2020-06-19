@@ -83,7 +83,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
     private void retrieveCommChannel(YukonUserContext userContext, HttpServletRequest request, int id, ModelMap model) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelViewUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + id);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.GET, PortBase.class);
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -118,7 +118,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 setupErrorFields(resp, commChannel, model, result, userContext);
                 return "commChannelInfoWidget/render.jsp";
             }
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + commChannel.getId());
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.POST, Object.class, commChannel);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {

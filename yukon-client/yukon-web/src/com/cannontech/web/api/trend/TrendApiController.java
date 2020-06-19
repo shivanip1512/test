@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +38,12 @@ public class TrendApiController {
         HashMap<String, Integer> trendIdMap = new HashMap<>();
         trendIdMap.put("trendId", trendId);
         return new ResponseEntity<>(trendIdMap, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TrendModel> update(@Valid @RequestBody TrendModel trendModel, @PathVariable int id) {
+        TrendModel createdTrend = trendService.update(id, trendModel);
+        return new ResponseEntity<>(createdTrend, HttpStatus.OK);
     }
 
     @InitBinder("trendModel")

@@ -14,4 +14,9 @@ public interface TrendService {
      */
     int delete(int id);
 
+    /**
+     * Update a Trend
+     */
+    TrendModel update(int id, TrendModel trendModel);
+
 }

@@ -20,14 +20,13 @@ import com.cannontech.user.YukonUserContext;
 
 public class GlobalSettingTypeValidators {
     private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
-   
     private static YukonUserContextMessageSourceResolver messageResolver;
 
     @Autowired
-    public void setMessageResolver(YukonUserContextMessageSourceResolver messageResolver){
+    public GlobalSettingTypeValidators(YukonUserContextMessageSourceResolver messageResolver){
         GlobalSettingTypeValidators.messageResolver = messageResolver;
     }
-    
+
     public static TypeValidator<String> urlValidator = new TypeValidator<>() {
         private final String[] schemes = { "http", "https" };
 
