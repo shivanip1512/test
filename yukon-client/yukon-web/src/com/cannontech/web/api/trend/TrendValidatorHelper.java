@@ -76,13 +76,11 @@ public class TrendValidatorHelper {
      * Check if Trend name already exists.
      */
     private void validateUniqueTrendName(Errors errors, String trendName) {
-        Optional<LiteGraphDefinition> graphDefinition = dbCache.getAllGraphDefinitions()
-                                                               .stream()
-                                                               .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
-                                                               .findAny();
-        if (graphDefinition.isPresent()) {
-            errors.rejectValue("name", basekey + "nameConflict");
-        }
+        dbCache.getAllGraphDefinitions()
+               .stream()
+               .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
+               .findAny()
+               .ifPresent(def -> errors.rejectValue("name", basekey + "nameConflict"));
     }
 
     /**
