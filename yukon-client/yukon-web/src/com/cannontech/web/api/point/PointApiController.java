@@ -1,9 +1,6 @@
 
 package com.cannontech.web.api.point;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -23,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.api.token.ApiRequestContext;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.points.model.PointBaseModel;
@@ -61,9 +57,7 @@ public class PointApiController {
 
     @GetMapping("/devices/{paoId}/points")
     public ResponseEntity<Object> getPoints(@PathVariable int paoId) {
-        List<PointInfo> pointInfos = new ArrayList<>();
-        //TODO
-        return new ResponseEntity<>(pointInfos, HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.getPointInfo(paoId), HttpStatus.OK);
     }
 
     @InitBinder("pointBaseModel")

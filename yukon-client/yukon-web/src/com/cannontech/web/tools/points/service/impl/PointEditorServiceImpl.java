@@ -5,11 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -21,13 +19,18 @@ import com.cannontech.common.events.loggers.PointEventLogService;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceOption;
 import com.cannontech.common.fdr.FdrInterfaceType;
-import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
@@ -37,11 +40,11 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUtil;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
-import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -51,6 +54,8 @@ import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointInfoModel;
+import com.cannontech.web.tools.points.model.PointInfos;
 import com.cannontech.web.tools.points.model.PointModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.yukon.IDatabaseCache;
@@ -68,6 +73,9 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private PointEventLogService eventLog;
     @Autowired private IDatabaseCache cache;
+    @Autowired protected DeviceDao deviceDao;
+    @Autowired private IDatabaseCache serverDatabaseCache;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     protected static final Logger log = YukonLogManager.getLogger(PointEditorServiceImpl.class);
 
@@ -521,6 +529,21 @@ public class PointEditorServiceImpl implements PointEditorService {
             buildPointBaseModel(pointBase, pointBaseModel, staleData);
         }
         return pointBaseModel;
+    }
+
+    @Override
+    public PointInfos getPointInfo(int paoId) {
+        List<PointInfoModel> listOfPointInfoModel = new ArrayList<>();
+        PaoType paoType = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoType();
+        Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(paoId);
+        List<PointInfo> listOfPointInfo = points.values().stream().flatMap(List::stream).collect(Collectors.toList());
+        for (PointInfo pointInfo : listOfPointInfo) {
+            List<BuiltInAttribute> attributes = new ArrayList(paoDefinitionDao
+                    .findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, pointInfo.getPointIdentifier())));
+            listOfPointInfoModel.add(PointInfoModel.of(pointInfo, attributes));
+        }
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+        return PointInfos.of(paoIdentifier, listOfPointInfoModel);
     }
 
     private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {

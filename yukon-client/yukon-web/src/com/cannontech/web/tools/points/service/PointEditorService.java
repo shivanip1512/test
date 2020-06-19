@@ -13,6 +13,7 @@ import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
+import com.cannontech.web.tools.points.model.PointInfos;
 import com.cannontech.web.tools.points.model.PointModel;
 
 public interface PointEditorService {
@@ -158,6 +159,11 @@ public interface PointEditorService {
      * Retrieve Point for passed pointId.
      */
     PointBaseModel<? extends PointBase> retrieve(int pointId);
+    
+    /**
+     * Retrieve Points info for passed paoId.
+     */
+    PointInfos getPointInfo(int paoId);
 
 
 }
