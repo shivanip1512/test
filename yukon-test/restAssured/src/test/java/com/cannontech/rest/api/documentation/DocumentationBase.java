@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -47,14 +48,21 @@ public abstract class DocumentationBase {
     }
     
     /**
-     * Make a POST call for request and response fields to generate restDocumentation.
+     * Make a API call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains updated object.
      * @return value in response having identifier of responseFieldPath
      */
-    protected String updateDoc() {
+    protected String updateDoc(RequestMethod requestMethod) {
         Update fields = buildUpdateFields();
         validateFields("updateDoc", fields);
-        return post(fields);
+        switch (requestMethod) {
+        case POST:
+            return post(fields);
+        case PUT:
+            return put(fields);
+        default:
+            return null;
+        }
     }
     
     /**
@@ -75,6 +83,16 @@ public abstract class DocumentationBase {
     private String post(DocumentationFields.Create fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.post(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body, fields.url);
+    }
+
+    /**
+     * Helper method to make a PUT call having request and response fields with a body to generate restDocumentation.
+     * @return value in response having identifier of responseFieldPath
+     */
+    private String put(DocumentationFields.Create fields) {
+        RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
+        return RestApiDocumentationUtility.put(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
+                fields.url);
     }
 
     /**

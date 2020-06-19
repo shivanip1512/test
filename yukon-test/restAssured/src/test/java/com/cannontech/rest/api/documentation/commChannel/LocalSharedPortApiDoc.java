@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.model.MockPaoType;
@@ -39,7 +40,7 @@ public class LocalSharedPortApiDoc extends CommChannelApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LocalSharedPort_01_Create" })
     public void Test_LocalSharedPort_02_Update() {
-        portId = updateDoc();
+        portId = updateDoc(RequestMethod.POST);
     }
 
     @Test(dependsOnMethods = { "Test_LocalSharedPort_01_Create" })

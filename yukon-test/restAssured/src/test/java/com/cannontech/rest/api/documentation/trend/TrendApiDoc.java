@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
@@ -76,6 +77,11 @@ public class TrendApiDoc extends DocumentationBase {
     }
 
     @Test(dependsOnMethods = "Test_Trend_01_Create")
+    public void Test_Trend_01_Update() {
+        updateDoc(RequestMethod.PUT);
+    }
+
+    @Test(dependsOnMethods = "Test_Trend_01_Update")
     public void Test_Trend_01_Delete() {
         deleteDoc();
     }
@@ -96,7 +102,11 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Override
     protected Update buildUpdateFields() {
-        return null;
+        List<FieldDescriptor> requestFields = getFieldDescriptors();
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        String url = ApiCallHelper.getProperty("updateTrend") + trendId;
+        return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
 
     @Override

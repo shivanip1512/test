@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 import com.cannontech.rest.api.common.model.MockPaoType;
 
@@ -32,7 +33,7 @@ public class NestLoadGroupApiDoc extends LoadGroupApiDocBase {
 
     @Test(dependsOnMethods = { "Test_LmNest_Get" }, enabled = false)
     public void Test_LmNest_Update() {
-        paoId = updateDoc();
+        paoId = updateDoc(RequestMethod.POST);
     }
 
     @Test(dependsOnMethods = { "Test_LmNest_Update" }, enabled = false)

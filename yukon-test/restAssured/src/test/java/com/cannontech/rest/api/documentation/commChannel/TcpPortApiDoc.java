@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
@@ -29,7 +30,7 @@ public class TcpPortApiDoc extends CommChannelApiDocBase {
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
     public void Test_TcpPort_02_Update() {
-        portId = updateDoc();
+        portId = updateDoc(RequestMethod.POST);
     }
 
     @Test(dependsOnMethods = { "Test_TcpPort_01_Create" })
