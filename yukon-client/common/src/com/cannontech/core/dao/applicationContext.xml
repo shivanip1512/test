@@ -124,4 +124,5 @@
   
   <bean class="com.cannontech.common.pao.notes.dao.impl.PaoNotesDaoImpl"/>
   <bean class="com.cannontech.common.pao.notes.service.impl.PaoNotesServiceImpl"/>
+  <bean class="com.cannontech.system.GlobalSettingTypeValidators"/>
 </beans>

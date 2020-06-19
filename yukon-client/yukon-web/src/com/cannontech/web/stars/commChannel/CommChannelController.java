@@ -80,7 +80,7 @@ public class CommChannelController {
     public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash,
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelListUrl);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/");
             List<DeviceBaseModel> commChannelList = getDeviceBaseModelResponse(userContext, request, url);
 
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
@@ -129,7 +129,7 @@ public class CommChannelController {
     @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
-            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDeleteUrl + id);
+            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + id);
             String portName = dbCache.getAllPaosMap().get(id).getPaoName();
 
             ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
@@ -196,7 +196,7 @@ public class CommChannelController {
                 setupErrorFields(resp, commChannel, model, userContext, result);
                 return "/commChannel/create.jsp";
             }
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelCreateUrl);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl);
             ResponseEntity<? extends Object> response =
                     apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, commChannel);
 
@@ -258,7 +258,8 @@ public class CommChannelController {
      * Returns comma separated device names for that port 
      */
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId) {
-        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDevicesAssignedUrl + portId);
+        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext,
+                ApiURL.commChannelUrl + "/" + portId + "/devicesAssigned");
         List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
 
         if (!devicesList.isEmpty()) {
