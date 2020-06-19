@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.points.model;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -15,7 +16,7 @@ public class PointInfoModel {
     private String name;
     private PointIdentifier pointIdentifier;
     private int stateGroupId;
-    private List<BuiltInAttribute> attributes;
+    private Set<BuiltInAttribute> attributes;
 
     public int getPointId() {
         return pointId;
@@ -49,15 +50,15 @@ public class PointInfoModel {
         this.stateGroupId = stateGroupId;
     }
 
-    public List<BuiltInAttribute> getAttributes() {
+    public Set<BuiltInAttribute> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(List<BuiltInAttribute> attributes) {
+    public void setAttributes(Set<BuiltInAttribute> attributes) {
         this.attributes = attributes;
     }
     
-    public static PointInfoModel of(PointInfo pointInfo, List<BuiltInAttribute> attributes) {
+    public static PointInfoModel of(PointInfo pointInfo, Set<BuiltInAttribute> attributes) {
         PointInfoModel pointInfoModel = new PointInfoModel();
         pointInfoModel.setPointId(pointInfo.getPointId());
         pointInfoModel.setName(pointInfo.getName());

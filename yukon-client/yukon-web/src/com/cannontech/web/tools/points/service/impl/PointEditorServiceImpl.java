@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
@@ -534,15 +536,18 @@ public class PointEditorServiceImpl implements PointEditorService {
     @Override
     public PointInfos getPointInfo(int paoId) {
         List<PointInfoModel> listOfPointInfoModel = new ArrayList<>();
-        PaoType paoType = serverDatabaseCache.getAllPaosMap().get(paoId).getPaoType();
+        LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(paoId);
+        if (pao == null) {
+            throw new NotFoundException("Pao Id not found " + paoId);
+        }
         Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(paoId);
         List<PointInfo> listOfPointInfo = points.values().stream().flatMap(List::stream).collect(Collectors.toList());
         for (PointInfo pointInfo : listOfPointInfo) {
-            List<BuiltInAttribute> attributes = new ArrayList(paoDefinitionDao
-                    .findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(paoType, pointInfo.getPointIdentifier())));
+            Set<BuiltInAttribute> attributes = paoDefinitionDao
+                    .findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(pao.getPaoType(), pointInfo.getPointIdentifier()));
             listOfPointInfoModel.add(PointInfoModel.of(pointInfo, attributes));
         }
-        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, paoType);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, pao.getPaoType());
         return PointInfos.of(paoIdentifier, listOfPointInfoModel);
     }
 
