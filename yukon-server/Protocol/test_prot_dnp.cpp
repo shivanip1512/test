@@ -12,6 +12,11 @@ typedef Interface::stringlist_t stringlist_t;
 
 BOOST_AUTO_TEST_SUITE( test_prot_dnp )
 
+std::vector<int> getOutput(const CtiXfer& xfer)
+{
+    return { xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount() };
+}
+
 BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback)
 {
     DnpProtocol dnp;
@@ -36,10 +41,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback)
         const byte_str expected(
             "05 64 05 C9 04 00 03 00 B6 20");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -113,10 +115,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback_unsupported)
             const byte_str expected(
                 "05 64 05 C9 04 00 03 00 B6 20");
 
-            //  copy them into int vectors so they display nicely
-            const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-            BOOST_CHECK_EQUAL_RANGES(expected, output);
+            BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
         }
 
         {
@@ -228,10 +227,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_loopback_timeout_retry)
         const byte_str expected(
             "05 64 05 C9 04 00 03 00 B6 20");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -304,10 +300,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
                 "05 64 08 C4 04 00 03 00 B4 B8 "
                 "C0 C1 17 8C 0C");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -378,10 +371,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
                 "C0 C2 02 50 01 00 07 07 00 08 "
                 "65");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -510,10 +500,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
                 "05 64 08 C4 04 00 03 00 B4 B8 "
                 "C0 C1 17 8C 0C");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -584,10 +571,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
                 "C0 C2 02 50 01 00 07 07 00 08 "
                 "65");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -657,10 +641,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
             "05 64 0B C4 04 00 03 00 E4 2B "
             "C0 C3 14 3C 02 06 BA 3C");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -1181,17 +1162,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        const byte_str request(
+        const byte_str expected(
                 "05 64 17 c4 d2 04 01 00 85 40 "
                 "c0 c1 01 32 01 06 3c 02 06 3c "
                 "03 06 3c 04 06 3c fe e0 01 06 "
                 "75 e1");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -1352,17 +1329,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_empty_time_block)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        const byte_str request(
+        const byte_str expected(
                 "05 64 17 c4 d2 04 01 00 85 40 "
                 "c0 c1 01 32 01 06 3c 02 06 3c "
                 "03 06 3c 04 06 3c fe e0 01 06 "
                 "75 e1");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -1507,17 +1480,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_invalid_time_object)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        const byte_str request(
+        const byte_str expected(
             "05 64 17 c4 d2 04 01 00 85 40 "
             "c0 c1 01 32 01 06 3c 02 06 3c "
             "03 06 3c 04 06 3c fe e0 01 06 "
             "75 e1");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -1633,10 +1602,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
                 "03 06 3c 04 06 3c fe e0 01 06 "
                 "75 e1");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -1784,17 +1750,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        const byte_str request(
+        const byte_str expected(
                 "05 64 17 c4 d2 04 01 00 85 40 "
                 "c0 c1 01 32 01 06 3c 02 06 3c "
                 "03 06 3c 04 06 3c fe e0 01 06 "
                 "75 e1");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -1864,10 +1826,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
                 "05 64 08 c4 d2 04 01 00 a6 7c "
                 "c0 ca 00 42 e2");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -1971,10 +1930,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
                 "03 06 3c 04 06 3c fe e0 01 06 "
                 "75 e1");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2047,10 +2003,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
                 "05 64 08 c4 d2 04 01 00 a6 7c "
                 "c0 d5 00 9f d5");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2123,10 +2076,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
                 "05 64 08 c4 d2 04 01 00 a6 7c "
                 "c0 ca 00 42 e2");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2258,10 +2208,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
                 "c0 c1 01 3c 02 06 3c 03 06 3c "
                 "04 06 3c 01 06 7a 6f");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2414,10 +2361,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
                 "c0 c1 01 3c 02 06 3c 03 06 3c "
                 "04 06 3c 01 06 7a 6f");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2570,10 +2514,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
                 "c0 c1 01 3c 02 06 3c 03 06 3c "
                 "04 06 3c 01 06 7a 6f");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2643,10 +2584,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
                 "05 64 08 c4 d2 04 01 00 a6 7c "
                 "c0 ca 00 42 e2");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2749,10 +2687,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
                 "c0 c1 01 3c 02 06 3c 03 06 3c "
                 "04 06 3c 01 06 7a 6f");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2825,10 +2760,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
                 "05 64 08 c4 d2 04 01 00 a6 7c "
                 "c0 d5 00 9f d5");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -2901,10 +2833,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
                 "05 64 08 c4 d2 04 01 00 a6 7c "
                 "c0 ca 00 42 e2");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -3036,10 +2965,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_reversed_start_stop)
                 "c0 c1 01 3c 02 06 3c 03 06 3c "
                 "04 06 3c 01 06 7a 6f");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -3208,10 +3134,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
                 "05 64 08 c4 d2 04 01 00 a6 7c "
                 "c0 d5 00 9f d5");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
@@ -3298,10 +3221,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
                 "05 64 08 C4 04 00 03 00 B4 B8 "
                 "C0 C1 17 8C 0C");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -3374,10 +3294,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
                 "C0 C2 02 50 01 00 07 07 00 08 "
                 "65");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
 
     {
@@ -3612,10 +3529,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
                 "C0 C1 05 0C 01 17 01 00 41 01 00 00 00 00 00 00 84 A9 "
                 "00 00 00 FF FF");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
@@ -3718,10 +3632,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
                 "C0 C1 05 0C 01 17 01 00 41 01 00 00 00 00 00 00 84 A9 "
                 "00 00 00 FF FF");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
@@ -3825,10 +3736,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
                 "C0 C1 03 0C 01 17 01 00 41 01 00 00 00 00 00 00 A4 2F "
                 "00 00 00 FF FF");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
@@ -3903,10 +3811,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
                 "C0 C2 04 0C 01 17 01 00 41 01 00 00 00 00 00 00 5C 25 "
                 "00 00 00 FF FF");
 
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
+        BOOST_CHECK_EQUAL_RANGES(expected, getOutput(xfer));
     }
     {
         BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));

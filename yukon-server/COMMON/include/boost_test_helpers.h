@@ -14,11 +14,17 @@
 
 namespace Cti {
 
-#define BOOST_CHECK_EQUAL_RANGES(x, y) \
-BOOST_CHECK_EQUAL_COLLECTIONS((x).begin(), (x).end(), (y).begin(), (y).end())
+#define BOOST_CHECK_EQUAL_RANGES(x, y) do { \
+    const auto& l = (x); \
+    const auto& r = (y); \
+    BOOST_CHECK_EQUAL_COLLECTIONS(l.begin(), l.end(), r.begin(), r.end()); \
+} while ( false )
 
-#define BOOST_REQUIRE_EQUAL_RANGES(x, y) \
-BOOST_REQUIRE_EQUAL_COLLECTIONS((x).begin(), (x).end(), (y).begin(), (y).end())
+#define BOOST_REQUIRE_EQUAL_RANGES(x, y) do { \
+    const auto& l = (x); \
+    const auto& r = (y); \
+    BOOST_REQUIRE_EQUAL_COLLECTIONS(l.begin(), l.end(), r.begin(), r.end()); \
+} while ( false )
 
 }
 
