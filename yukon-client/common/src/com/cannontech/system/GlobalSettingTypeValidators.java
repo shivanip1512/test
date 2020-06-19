@@ -16,11 +16,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 
 public class GlobalSettingTypeValidators {
     private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
+    private static YukonUserContextMessageSourceResolver messageResolver;
+
+    @Autowired
+    public GlobalSettingTypeValidators(YukonUserContextMessageSourceResolver messageResolver){
+        GlobalSettingTypeValidators.messageResolver = messageResolver;
+    }
 
     public static TypeValidator<String> urlValidator = new TypeValidator<>() {
         private final String[] schemes = { "http", "https" };
@@ -83,7 +88,6 @@ public class GlobalSettingTypeValidators {
             if (port != null) {
                 String field = "values[" + globalSettingType + "]";
                 String key = globalSettingType.getFormatKey();
-                YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(YukonUserContextMessageSourceResolver.class);
                 MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
                 String fieldName = messageSourceAccessor.getMessage(key);
                 Range<Integer> range = Range.inclusive(1, 65535);
@@ -151,7 +155,6 @@ public class GlobalSettingTypeValidators {
                 String field = "values[" + globalSettingType + "]";
                 Range<Integer> range = (Range<Integer>)globalSettingType.getValidationValue();
                 String key = globalSettingType.getFormatKey();
-                YukonUserContextMessageSourceResolver messageResolver = YukonSpringHook.getBean(YukonUserContextMessageSourceResolver.class);
                 MessageSourceAccessor messageSourceAccessor = messageResolver.getMessageSourceAccessor(YukonUserContext.system);
                 String fieldName = messageSourceAccessor.getMessage(key);
                 YukonValidationUtils.checkRange(errors, field, fieldName, value, range, true);
