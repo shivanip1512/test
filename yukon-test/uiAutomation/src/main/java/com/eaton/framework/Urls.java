@@ -15,15 +15,24 @@ public final class Urls {
     public static final class Ami {
 
         public static final String AMI = "/dashboards/-2/view?dashboardPageType=AMI";
+        public static final String ARCHIVE_DATA_ANALYSIS = "/bulk/archiveDataAnalysis/list/view";
         public static final String DASHBOARD = "/meter/start";
         public static final String BILLING = "/billing/home";
+        public static final String BILLING_SCHEDULES = "/billing/schedules";
         public static final String BULK_IMPORT = "/bulk/import/upload";
         public static final String BULK_UPDATE = "/bulk/update/upload";
+        public static final String MANAGE_DASHBOARDS = "/dashboards/manage";
+        public static final String PHASE_DETECTION = "/amr/phaseDetect/home";
         public static final String POINT_IMPORT = "/bulk/pointImport/upload";
         public static final String LEGACY_IMPORTER = "/amr/bulkimporter/home";
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=METERING";
+        public static final String REVIEW_FLAGGED_POINTS = "/amr/veeReview/home";
+        public static final String USAGE_THRESHOLD_REPORT = "/amr/usageThresholdReport/report";
+        public static final String WATER_LEAK_REPORT = "/amr/waterLeakReport/report";
         
         public static final String METER_DETAIL = "/meter/home?deviceId=";
+        public static final String METER_EVENTS_REPORTS = "/amr/meterEventsReport/selectDevices";
+        public static final String METER_PROGRAMMING = "/amr/meterProgramming/home";
     }
     
     public static final class Meter {
@@ -80,6 +89,8 @@ public final class Urls {
         public static final String CI_GROUP_EDIT = "/dr/cc/groupDetail/";
 
         public static final String CI_CUSTOMER_LIST = "/dr/cc/customerList";
+        
+        public static final String ODDS_FOR_CONTROL = "/operator/Consumer/Odds.jsp";
     }
     
     public static final class Filters {
@@ -101,6 +112,7 @@ public final class Urls {
         public static final String REPORTS = "/analysis/Reports.jsp?groupType=CAP_CONTROL";
 
         public static final String POINT_IMPORT = "/bulk/pointImport/upload";
+        public static final String FDR_TRANSLATION_MANAGER = "/bulk/fdrTranslationManager/home";
 
         public static final String STRATEGIES_CREATE = "/capcontrol/strategies/create";
         public static final String MOVED_CAP_BANKS = "/capcontrol/move/movedCapBanks";
@@ -157,7 +169,15 @@ public final class Urls {
         public static final String OPT_OUT_STATUS = "/stars/operator/optOut/admin";
         public static final String WORK_ORDERS = "/operator/WorkOrder/WorkOrder.jsp";
         public static final String IMPORT = "/stars/operator/account/accountImport";
-        public static final String REPORTS = "/analysis/Reports.jsp?groupType=STARS";       
+        public static final String REPORTS = "/analysis/Reports.jsp?groupType=STARS";
+        public static final String COMPREHENSIVE_MAP = "/stars/comprehensiveMap/home";
+        public static final String CREATE_ACCOUNT = "/stars/operator/account/accountCreate";
+        public static final String OPT_OUT_SURVEYS = "/stars/optOutSurvey/list";
+        public static final String PURCHASING = "/operator/Hardware/PurchaseTrack.jsp";
+        public static final String SERVICE_ORDER_LIST = "/operator/WorkOrder/WOFilter.jsp";
+        public static final String VIEW_BATCH_COMMANDS = "/operator/Admin/SwitchCommands.jsp";
+        public static final String WORK_ORDER_REPORTS = "/operator/WorkOrder/Report.jsp";
+        public static final String ZIGBEE_PROBLEM_DEVICES = "/stars/operator/inventory/zbProblemDevices/view";
     }
     
     public static final class Tools {
@@ -172,6 +192,11 @@ public final class Urls {
         public static final String SCRIPTS = "/macsscheduler/schedules/view";
         public static final String TRENDS = "/tools/trends";
         public static final String REPORTS = "/analysis/Reports.jsp";
+        public static final String CREATE_SCHEDULE = "/group/scheduledGroupRequestExecution/home";
+        public static final String DEVICE_CONFIGURATION_SUMMARY = "/deviceConfiguration/summary/view";
+        public static final String DEVICE_GROUP_UPLOAD = "/group/updater/upload";
+        public static final String NOTES = "/tools/paoNotes/search";
+        public static final String RECENT_RESULTS = "/collectionActions/recentResults";
     }
     
     public static final class Admin {
@@ -206,5 +231,33 @@ public final class Urls {
         public static final String ENERGY_COMPANY_OPERATOR_USER_EDIT = "/admin/energyCompany/operatorLogin/edit?ecId=";
         public static final String ENERGY_COMPANY_OPERATOR_USER_DETAILS = "/admin/energyCompany/operatorLogin/view?ecId=";
         public static final String ENERGY_COMPANY_OPERATOR_LOGIN_ID = "&operatorLoginId=";
-    }    
+        
+        public static final String ACTIVE_JOBS = "/admin/jobsscheduler/active";
+        public static final String ALL_JOBS = "/admin/jobsscheduler/all";
+        public static final String JOB_STATUS = "/admin/jobsscheduler/status";
+        public static final String CI_REPORTS = "/analysis/Reports.jsp?groupType=CCURT";
+        public static final String DASHBOARD = "dashboards/admin";
+        public static final String DATABASE_REPORTS = "/analysis/Reports.jsp?groupType=DATABASE";
+        public static final String STATISTICAL_REPORTS = "/analysis/Reports.jsp?groupType=STATISTICAL";
+        public static final String SURVEYS = "/stars/survey/list";
+        public static final String THEMES = "/admin/config/themes";
+        
+    }
+    
+    public static final class Support {
+    	public static final String DATABASE_MIGRATION = "/support/database/migration/home";
+    	public static final String DATABASE_VALIDATION = "/support/database/validate/home";
+    	public static final String DEVICE_DEFINITIONS = "/common/deviceDefinition.xml";
+    	public static final String ERROR_CODES = "/support/errorCodes/view";
+    	public static final String EVENT_LOG = "/common/eventLog/viewByCategory";
+    	public static final String FILE_EXPORT_HISTORY = "/support/fileExportHistory/list";
+    	public static final String LOCALIZATION_HELPER = "/support/localization/view";
+    	public static final String LOG_EXPLORER = "/support/logging/menu";
+    	public static final String MANAGE_INDEXES = "/index/manage";
+    	public static final String ROUTE_USAGE = "/support/routeUsage";
+    	public static final String SYSTEM_HEALTH = "/support/systemHealth/home";
+    	public static final String SYSTEM_INFO = "/support/info";
+    	public static final String THIRD_PARTY_LIBRARIES = "/support/thirdParty/view";
+    	public static final String THREAD_DUMP = "/support/threadDump";
+    }
 }

@@ -2,7 +2,6 @@ package com.eaton.pages.support;
 
 import com.eaton.elements.Section;
 import com.eaton.elements.SimpleList;
-import com.eaton.elements.Refresh;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
@@ -13,21 +12,20 @@ public class SiteMapPage extends PageBase {
     public static final String DEFAULT_URL = Urls.SITE_MAP;
     
     //Private
-    private Refresh<Section> amiSection = new Refresh<Section>();
-    private Refresh<SimpleList> amiSimpleList = new Refresh<SimpleList>();
-    private Refresh<Section> drSection = new Refresh<Section>();
-    private Refresh<SimpleList> drSimpleList = new Refresh<SimpleList>();
-    private Refresh<Section> ccSection = new Refresh<Section>();
-    private Refresh<SimpleList> ccSimpleList = new Refresh<SimpleList>();
-    private Refresh<Section> assetsSection = new Refresh<Section>();
-    private Refresh<SimpleList> assetsSimpleList = new Refresh<SimpleList>();
-    private Refresh<Section> toolsSection = new Refresh<Section>();
-    private Refresh<SimpleList> toolsSimpleList = new Refresh<SimpleList>();
-    private Refresh<Section> adminSection = new Refresh<Section>();
-    private Refresh<SimpleList> adminSimpleList = new Refresh<SimpleList>();
-    private Refresh<Section> supportSection = new Refresh<Section>();
-    private Refresh<SimpleList> supportSimpleList = new Refresh<SimpleList>();
-
+    private Section amiSection;
+    private SimpleList amiSectionList;
+    private Section drSection;
+    private SimpleList drSectionList;
+    private Section ccSection;
+    private SimpleList ccSectionList;
+    private Section assetsSection;
+    private SimpleList assetsSectionList;
+    private Section toolsSection;
+    private SimpleList toolsSectionList;
+    private Section adminSection;
+    private SimpleList adminSectionList;
+    private Section supportSection;
+    private SimpleList supportSectionList;
     
 	//================================================================================
     // Constructors Section
@@ -40,128 +38,106 @@ public class SiteMapPage extends PageBase {
         pageUrl = DEFAULT_URL;
         
     }
-    
-	//================================================================================
-    // Public Functions Section
-    //================================================================================
-    
-    public void Refresh()
-    {
-    	amiSection.setIsDirty(true);
-    	amiSimpleList.setIsDirty(true);
-    	drSection.setIsDirty(true);
-    	drSimpleList.setIsDirty(true);
-    	ccSection.setIsDirty(true);
-    	ccSimpleList.setIsDirty(true);
-    	assetsSection.setIsDirty(true);
-    	assetsSimpleList.setIsDirty(true);
-    	toolsSection.setIsDirty(true);
-    	toolsSimpleList.setIsDirty(true);
-    	adminSection.setIsDirty(true);
-    	adminSimpleList.setIsDirty(true);
-    	supportSection.setIsDirty(true);
-    	supportSimpleList.setIsDirty(true);
-    }
-    
+        
     //================================================================================
     // Getters/Setters Section
     //================================================================================
     
     public Section getAMISection() {
-    	if(amiSection.getIsDirty())	{
-    		amiSection.setObject(new Section(driverExt, "AMI"));
+    	if(amiSection == null) {
+    		amiSection = new Section(driverExt, "AMI");
     	}
-    	return amiSection.getObject();
+    	return amiSection;
     }
     
     public SimpleList getAMISectionSimpleList() {
-    	if(amiSimpleList.getIsDirty())	{
-    		amiSimpleList.setObject(new SimpleList(driverExt, "simple-list", getAMISection().getSection()));
+    	if(amiSectionList == null) {
+    		amiSectionList = new SimpleList(driverExt, "simple-list", getAMISection().getSection());
     	}
-    	return amiSimpleList.getObject();
+    	return amiSectionList;
     }
     
     public Section getDRSection() {
-    	if(drSection.getIsDirty())	{
-    		drSection.setObject(new Section(driverExt, "Demand Response"));
+    	if(drSection == null) {
+    		drSection = new Section(driverExt, "Demand Response");
     	}
-    	return drSection.getObject();
+    	return drSection;
     }
     
     public SimpleList getDRSectionSimpleList() {
-    	if(drSimpleList.getIsDirty())	{
-    		drSimpleList.setObject(new SimpleList(driverExt, "simple-list", getDRSection().getSection()));
+    	if(drSectionList == null) {
+    		drSectionList = new SimpleList(driverExt, "simple-list", getDRSection().getSection());
     	}
-    	return drSimpleList.getObject();
+    	return drSectionList;
     }
     
     public Section getCCSection() {
-    	if(ccSection.getIsDirty())	{
-    		ccSection.setObject(new Section(driverExt, "Volt/Var"));
+    	if(ccSection == null) {
+    		ccSection = new Section(driverExt, "Volt/Var");
     	}
-    	return ccSection.getObject();
+    	return ccSection;
     }
     
     public SimpleList getCCSectionSimpleList() {
-    	if(ccSimpleList.getIsDirty()) {
-    		ccSimpleList.setObject(new SimpleList(driverExt, "simple-list", getCCSection().getSection()));
+    	if(ccSectionList == null) {
+    		ccSectionList = new SimpleList(driverExt, "simple-list", getCCSection().getSection());
     	}
-    	return ccSimpleList.getObject();
+    	return ccSectionList; 
     }
     
     public Section getAssetsSection() {
-    	if(assetsSection.getIsDirty()) {
-    		assetsSection.setObject(new Section(driverExt, "Assets"));
+    	if(assetsSection == null) {
+    		assetsSection = new Section(driverExt, "Assets");
     	}
-    	return assetsSection.getObject();
+    	return assetsSection;
     }
     
     public SimpleList getAssetsSectionSimpleList() {
-    	if(assetsSimpleList.getIsDirty()) {
-    		assetsSimpleList.setObject(new SimpleList(driverExt, "simple-list", getAssetsSection().getSection()));
+    	if(assetsSectionList == null) {
+    		assetsSectionList = new SimpleList(driverExt, "simple-list", getAssetsSection().getSection());
     	}
-    	return assetsSimpleList.getObject();
+    	return assetsSectionList; 
     }
     
     public Section getToolsSection() {
-    	if(toolsSection.getIsDirty()) {
-    		toolsSection.setObject(new Section(driverExt, "Tools"));
+    	if(toolsSection == null) {
+    		toolsSection = new Section(driverExt, "Tools");
     	}
-    	return toolsSection.getObject();
+    	return toolsSection;
     }
     
     public SimpleList getToolsSectionSimpleList() {
-    	if(toolsSimpleList.getIsDirty()) {
-    		toolsSimpleList.setObject(new SimpleList(driverExt, "simple-list", getToolsSection().getSection()));
+    	if(toolsSectionList == null) {
+    		toolsSectionList = new SimpleList(driverExt, "simple-list", getToolsSection().getSection());
     	}
-    	return toolsSimpleList.getObject();
+    	return toolsSectionList;
     }
     
     public Section getAdminSection() {
-    	if(adminSection.getIsDirty()) {
-    		adminSection.setObject(new Section(driverExt, "Admin"));
+    	if(adminSection == null) {
+    		adminSection = new Section(driverExt, "Admin");
     	}
-    	return adminSection.getObject();
+    	return adminSection;
     }
     
     public SimpleList getAdminSectionSimpleList() {
-    	if(adminSimpleList.getIsDirty()) {
-    		adminSimpleList.setObject(new SimpleList(driverExt, "simple-list", getAdminSection().getSection()));
+    	if(adminSectionList == null) {
+    		adminSectionList = new SimpleList(driverExt, "simple-list", getAdminSection().getSection());
     	}
-    	return adminSimpleList.getObject();
+    	return adminSectionList;
     }
     
     public Section getSupportSection() {
-    	if(supportSection.getIsDirty()) {
-    		supportSection.setObject(new Section(driverExt, "Support"));
+    	if(supportSection == null) {
+    		supportSection = new Section(driverExt, "Support");
     	}
-    	return supportSection.getObject();
+    	return supportSection;
     }
     
     public SimpleList getSupportSectionSimpleList() {
-    	if(supportSimpleList.getIsDirty()) {
-    		supportSimpleList.setObject(new SimpleList(driverExt, "simple-list", getSupportSection().getSection()));
+    	if(supportSectionList == null) {
+    		supportSectionList = new SimpleList(driverExt, "simple-list", getSupportSection().getSection());
     	}
-    	return supportSimpleList.getObject();
+    	return supportSectionList;
     }
 }
