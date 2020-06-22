@@ -159,12 +159,13 @@ public class VirtualDeviceInfoWidget extends AdvancedWidgetControllerBase {
                 model.clear();
                 Map<String, Object> json = new HashMap<>();
                 if (virtualDevice.getId() == null) {
-                    //device was created so we need id to redirect user to view page
+                    //device was created so we need to get id from response
                     HashMap<String, Integer> savedVirtualDevice = (HashMap<String, Integer>) response.getBody();
                     json.put("id", savedVirtualDevice.get("id"));
-                    flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", virtualDevice.getName()));
+                } else {
+                    json.put("id", virtualDevice.getId());
                 }
-                json.put("userMessage", accessor.getMessage("yukon.common.save.success", virtualDevice.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", virtualDevice.getName()));
                 return JsonUtils.writeResponse(resp, json);
             }
 
