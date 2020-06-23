@@ -8,12 +8,17 @@ import java.util.List;
 
 import org.springframework.restdocs.ManualRestDocumentation;
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.documentation.DocumentationFields.*;
+import com.cannontech.rest.api.documentation.DocumentationFields.Copy;
+import com.cannontech.rest.api.documentation.DocumentationFields.Create;
+import com.cannontech.rest.api.documentation.DocumentationFields.Delete;
+import com.cannontech.rest.api.documentation.DocumentationFields.DeleteWithBody;
+import com.cannontech.rest.api.documentation.DocumentationFields.Get;
+import com.cannontech.rest.api.documentation.DocumentationFields.GetWithBody;
+import com.cannontech.rest.api.documentation.DocumentationFields.Update;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
 import io.restassured.response.Response;
@@ -46,25 +51,41 @@ public abstract class DocumentationBase {
         validateFields("createDoc", fields);
         return post(fields);
     }
-    
+
     /**
-     * Make a API call for request and response fields to generate restDocumentation.
+     * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains updated object.
      * @return value in response having identifier of responseFieldPath
      */
-    protected String updateDoc(RequestMethod requestMethod) {
+    @Deprecated
+    protected String updateDoc() {
         Update fields = buildUpdateFields();
         validateFields("updateDoc", fields);
-        switch (requestMethod) {
-        case POST:
-            return post(fields);
-        case PUT:
-            return put(fields);
-        default:
-            return null;
-        }
+        return post(fields);
     }
-    
+
+    /**
+     * Make a PUT call for request and response fields to generate restDocumentation.
+     * Request contains object (as defined by body object), response contains updated object.
+     * @return value in response having identifier of responseFieldPath
+     */
+    protected String updateAllDoc() {
+        Update fields = buildUpdateFields();
+        validateFields("updateDoc", fields);
+        return put(fields);
+    }
+
+    /**
+     * Make a PATCH call for request and response fields to generate restDocumentation.
+     * Request contains object (as defined by body object), response contains updated object.
+     * @return value in response having identifier of responseFieldPath
+     */
+    protected String updatePartialDoc() {
+        Update fields = buildUpdateFields();
+        validateFields("updateDoc", fields);
+        return patch(fields);
+    }
+
     /**
      * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains newly created object (as copied from object with copyId). 
@@ -92,6 +113,17 @@ public abstract class DocumentationBase {
     private String put(DocumentationFields.Create fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.put(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
+                fields.url);
+    }
+    
+
+    /**
+     * Helper method to make a PATCH call having request and response fields with a body to generate restDocumentation.
+     * @return value in response having identifier of responseFieldPath
+     */
+    private String patch(DocumentationFields.Create fields) {
+        RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
+        return RestApiDocumentationUtility.patch(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
                 fields.url);
     }
 

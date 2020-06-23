@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.model.MockPaoType;
@@ -27,7 +26,7 @@ public class TcpTerminalServerApiDoc extends CommChannelApiDocBase {
 
     @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })
     public void Test_TcpTerminalServer_02_Update() {
-        portId = updateDoc(RequestMethod.POST);
+        portId = updateDoc();
     }
 
     @Test(dependsOnMethods = { "Test_TcpTerminalServer_01_Create" })

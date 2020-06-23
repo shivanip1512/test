@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.testng.annotations.Test;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
@@ -78,7 +77,7 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Test(dependsOnMethods = "Test_Trend_01_Create")
     public void Test_Trend_01_Update() {
-        updateDoc(RequestMethod.PUT);
+        updateAllDoc();
     }
 
     @Test(dependsOnMethods = "Test_Trend_01_Update")
