@@ -59,11 +59,11 @@ public class CalcAnalogPointBuilder extends ScalarPointBuilder {
                                                                                      archiveInterval, 
                                                                                      null,
                                                                                      pointOffset);
+        //TODO YUK-22357 - Add / verify importer support;
         
         point.setCalcComponents(calculation.copyComponentsAndInsertPointId(pointId));
         point.getCalcBase().setUpdateType(updateType.getDatabaseRepresentation());
         point.getCalcBase().setPeriodicRate(updateRate.getSeconds());
-        point.getPoint().setPointOffset(pointOffset);
         
         String calculateQuality = CtiUtilities.falseChar.toString();
         if(forceQualityNormal) calculateQuality = CtiUtilities.trueChar.toString();

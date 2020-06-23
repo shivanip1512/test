@@ -106,9 +106,7 @@ public class PointEditorServiceImpl implements PointEditorService {
             pointName = messageAccessor.getMessage("yukon.common.point.new.duplicate", duplicateNumber);
         }
 
-        int pointOffset = pointDao.getNextOffsetByPaoObjectIdAndPointType(paoId, PointType.getForId(pointType));
-
-        PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false, pointOffset);
+        PointBase point = PointUtil.createPoint(pointType, pointName, paoId, false);
         LiteYukonPAObject pao = cache.getAllPaosMap().get(point.getPoint().getPaoID());
         
         eventLog.pointCreated(pao.getPaoName(), point.getPoint().getPointName(), point.getPoint().getPointTypeEnum(),
