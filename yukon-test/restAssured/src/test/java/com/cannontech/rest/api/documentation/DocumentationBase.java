@@ -12,13 +12,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
 import com.cannontech.rest.api.common.ApiCallHelper;
-import com.cannontech.rest.api.documentation.DocumentationFields.Copy;
-import com.cannontech.rest.api.documentation.DocumentationFields.Create;
-import com.cannontech.rest.api.documentation.DocumentationFields.Delete;
-import com.cannontech.rest.api.documentation.DocumentationFields.DeleteWithBody;
-import com.cannontech.rest.api.documentation.DocumentationFields.Get;
-import com.cannontech.rest.api.documentation.DocumentationFields.GetWithBody;
-import com.cannontech.rest.api.documentation.DocumentationFields.Update;
+import com.cannontech.rest.api.documentation.DocumentationFields.*;
 import com.cannontech.rest.api.utilities.RestApiDocumentationUtility;
 
 import io.restassured.response.Response;
