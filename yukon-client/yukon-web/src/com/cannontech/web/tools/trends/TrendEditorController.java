@@ -116,7 +116,8 @@ public class TrendEditorController {
     }
 
     @GetMapping("/renderEditSetupPopup")
-    public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries, @RequestParam("isMarker") Boolean isMarker) {
+    public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries) {
+        boolean isMarker = trendSeries.getType().isMarkerType();
         model.addAttribute("trendSeries", trendSeries);
         if (!isMarker) {
             LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
@@ -167,11 +168,13 @@ public class TrendEditorController {
 
     @PostMapping("/addPointOrMarker")
     public String addPointOrMarker(ModelMap model, YukonUserContext userContext, HttpServletResponse response,
-            @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, @RequestParam("isMarker") Boolean isMarker, FlashScope flashScope)
+            @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, FlashScope flashScope)
             throws JsonGenerationException, JsonMappingException, IOException {
         trendSeriesValidator.validate(trendSeries, result);
         LitePoint litePoint = null;
         LiteYukonPAObject yukonPao = null;
+        
+        Boolean isMarker = trendSeries.getType().isMarkerType();
         
         if (trendSeries.getPointId() != null && !isMarker) {
             litePoint = pointDao.getLitePoint(trendSeries.getPointId());

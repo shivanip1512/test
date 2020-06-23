@@ -148,15 +148,9 @@ yukon.tools.trend.setup = (function() {
                        hiddenInput = $("<input/>").attr({
                            type: "hidden",
                            name: "trendSeries"
-                       }),
-                       hiddenMarkerInput = $("<input/>").attr({
-                           type: "hidden",
-                           name: "isMarker",
                        }); 
-                hiddenMarkerInput.val(isMarker);
                 hiddenInput.val(pointSetupData);
                 form.append(hiddenInput);
-                form.append(hiddenMarkerInput);
                 
                 if (isMarker) {
                     dailogTitle = yg.text.edit + " " + $(this).closest("tr").find(".js-label span").text();

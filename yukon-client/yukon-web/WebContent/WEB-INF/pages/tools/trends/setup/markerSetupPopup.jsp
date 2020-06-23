@@ -4,9 +4,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<!-- TODO: Why do we need this? -->
-<style></style>
-
 <cti:msgScope paths="yukon.common,modules.tools.trend">
     <c:forEach items="${colors}" var="color">
         <input type="hidden" class="js-color-item" value="${color}" />
@@ -18,7 +15,6 @@
         <tags:hidden path="pointId"/>
         <tags:hidden path="type"/>
         <tags:hidden path="style"/>
-        <input type="hidden" name="isMarker" value="true"/>
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".valueTxt" nameClass="vam">
                 <tags:input path="multiplier" />
