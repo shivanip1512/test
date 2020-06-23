@@ -36,7 +36,9 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.notification.NotificationGroup;
 import com.cannontech.web.editor.point.AlarmTableEntry;
 import com.cannontech.web.editor.point.StaleData;
+import com.cannontech.web.tools.points.model.AccumulatorPointModel;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
+import com.cannontech.web.tools.points.model.PointAccumulatorModel;
 import com.cannontech.web.tools.points.model.PointAlarming;
 import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
@@ -109,7 +111,9 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
         if (target instanceof AnalogPointModel) {
             validateAnalogPointModel(target, errors);
         }
-
+        if (target instanceof AccumulatorPointModel) {
+            validateAccumulatorPointModel(target, errors);
+        }
         validateFdrTranslation(target.getFdrList(), errors);
     }
 
@@ -501,6 +505,28 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                 errors.popNestedPath();
             }
 
+        }
+
+    }
+
+    /**
+     * Validate Accumulator Point Fields.
+     */
+
+    private void validateAccumulatorPointModel(T target, Errors errors) {
+        AccumulatorPointModel accumulatorPointModel = (AccumulatorPointModel) target;
+
+        if (accumulatorPointModel != null) {
+            PointAccumulatorModel pointAccumulator = accumulatorPointModel.getAccumulatorPoint();
+
+            if (pointAccumulator != null) {
+                if (pointAccumulator.getMultiplier() != null) {
+                    YukonValidationUtils.checkRange(errors, "accumulatorPoint.multiplier", pointAccumulator.getMultiplier(), -99999999.0, 99999999.0, false);
+                }
+                if (pointAccumulator.getDataOffset() != null) {
+                    YukonValidationUtils.checkRange(errors, "accumulatorPoint.dataOffset", pointAccumulator.getDataOffset(), -99999999.0, 99999999.0, false);
+                }
+            }
         }
 
     }
