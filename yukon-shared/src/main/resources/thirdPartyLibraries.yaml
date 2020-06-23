@@ -5385,6 +5385,33 @@ Network Manager :
     jira : NM-1421
     notes : YAJSW Wrapper App.  Maven version is 11.11, not 12.14.  
 
+  - filename : ojdbc10.jar
+    yukon group : Database - Oracle
+    project : Oracle JDBC Thin driver
+    version : 19.3.0.0
+    project URL : "https://www.oracle.com/database/technologies/appdev/jdbc.html"
+    license : Oracle Technology Network License
+    license URLs : "https://www.oracle.com/technetwork/licenses/distribution-license-152002.html"
+    maven URL : n/a
+    md5 : 4c78ba260b5c62dc32754a26d5f654f0
+    sha1 : bba59347e68c9416d14fcc9a9209e869f842e48d
+    updated : 2020-06-19
+    jira : NM-708
+    notes : ojdbc10 for Java 6+
+
+  - filename : 7z.exe
+    yukon group : IzPack
+    project : IzPack
+    version : 19.00
+    project URL : "https://www.7-zip.org/"
+    license : LGPL 2.1
+    license URLs : "https://www.gnu.org/licenses/lgpl-3.0.en.html, https://www.gnu.org/licenses/gpl-3.0.html"
+    maven URL : n/a
+    md5 : f7819520b096ae0fca4f76b2334dbc6a
+    sha1 : 12d07ec7c9332f88098a82bf6095aa61fcc3eea0
+    updated : 2020-06-17
+    jira : NM-1552
+    notes : 7zip is bundled in the nmee deploy scripts utilities.
 # -------
 JavaScript :
   - project : actual
