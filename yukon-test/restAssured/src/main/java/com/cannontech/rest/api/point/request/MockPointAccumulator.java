@@ -13,9 +13,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class MockAnalogPoint extends MockScalarPoint {
+public class MockPointAccumulator {
+    private Double multiplier;
+    private Double dataOffset;
 
-    private MockPointAnalog pointAnalog;
-    private MockPointAnalogControl pointAnalogControl;
-  
 }
