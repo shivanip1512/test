@@ -121,6 +121,7 @@ public class TrendEditorController {
     @GetMapping("/renderEditSetupPopup")
     public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries) {
         boolean isMarker = trendSeries.getType().isMarkerType();
+        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (!isMarker) {
             LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());

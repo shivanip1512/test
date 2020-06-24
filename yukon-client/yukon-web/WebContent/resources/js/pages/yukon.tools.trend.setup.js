@@ -192,6 +192,7 @@ yukon.tools.trend.setup = (function() {
             });
             
             $(document).on("click", ".js-save-trend", function () {
+                yukon.ui.reindexInputs($("#js-point-setup-table"));
                 var startIndex = Number($("#js-point-setup-table tbody tr").length);
                 $("#js-marker-setup-table .js-row-data").each(function (index, element) {
                     var name = $(element).attr('name'),
