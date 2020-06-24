@@ -127,9 +127,6 @@
                         <div class="action-area">
                             <cti:button nameKey="add" icon="icon-add" data-popup="#js-add-point-dialog" />
                         </div>
-                        <cti:url value="/tools/trend/renderSetupPopup" var="addPointUrl">
-                            <cti:param name="isMarker" value="false"/>
-                        </cti:url>
                     </tags:sectionContainer2>
                 </cti:tab>
                 <cti:msg2 key=".additionalOptions" var="additionalOptionsTxt" />
@@ -179,9 +176,6 @@
                         </table>
                         <div class="action-area">
                             <cti:button nameKey="add" icon="icon-add" data-popup="#js-add-marker-dialog" />
-                            <cti:url value="/tools/trend/renderSetupPopup" var="addMarkerUrl">
-                                <cti:param name="isMarker" value="true"/>
-                            </cti:url>
                         </div>
                     </tags:sectionContainer2>
                 </cti:tab>
@@ -192,11 +186,17 @@
                 <cti:button nameKey="cancel" href="${cancelUrl}" />
             </div>
         </form:form>
+        <cti:url value="/tools/trend/renderSetupPopup" var="addMarkerUrl">
+            <cti:param name="isMarker" value="true"/>
+        </cti:url>
         <div class="dn" id="js-add-marker-dialog"
                                     data-dialog data-title="<i:inline key=".addMarker" />"
                                     data-url="${addMarkerUrl}"
                                     data-event="yukon:trend:setup:addMarker"
                                     data-load-event="yukon:trend:setup:markerPopupLoaded"></div>
+        <cti:url value="/tools/trend/renderSetupPopup" var="addPointUrl">
+            <cti:param name="isMarker" value="false"/>
+        </cti:url>
         <div class="dn" id="js-add-point-dialog"
                                  data-dialog data-title="<i:inline key=".addPoint" />"
                                  data-url="${addPointUrl}"
