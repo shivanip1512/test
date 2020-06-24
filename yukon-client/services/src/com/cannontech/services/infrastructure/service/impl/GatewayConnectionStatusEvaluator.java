@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -32,9 +33,17 @@ import com.cannontech.system.dao.GlobalSettingDao;
 public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayConnectionStatusEvaluator.class);
     private static final DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-    @Autowired GlobalSettingDao globalSettingDao;
-    @Autowired RfnGatewayService rfnGatewayService;
-    @Autowired private RawPointHistoryDao rphDao;
+    private GlobalSettingDao globalSettingDao;
+    private RfnGatewayService rfnGatewayService;
+    private RawPointHistoryDao rphDao;
+    
+    @Autowired
+    public GatewayConnectionStatusEvaluator(GlobalSettingDao globalSettingDao, 
+            RfnGatewayService rfnGatewayService, RawPointHistoryDao rphDao) {
+        this.globalSettingDao = globalSettingDao;
+        this.rfnGatewayService = rfnGatewayService;
+        this.rphDao = rphDao;
+    }
     
     @Override
     public Set<PaoType> getSupportedTypes() {
@@ -53,9 +62,11 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
             rphDao.getMostRecentAttributeDataByValue(rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS,
                 false, CommStatusState.CONNECTED.getRawState(), null);
         
+        Instant now = Instant.now();
+        
         return gatewayToPointValue.entrySet()
                 .stream()
-                .map(entry -> buildConnectionStatusInfo(entry, warnableDuration))
+                .map(entry -> buildConnectionStatusInfo(entry, now, warnableDuration))
                 .filter(ConnectionStatusInfo::isWarnable)
                 .map(GatewayConnectionStatusEvaluator::buildWarning)
                 .collect(Collectors.toList());
@@ -64,10 +75,10 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
     /**
      * Build an object containing all the relevant info for a gateway connection status check.
      */
-    protected ConnectionStatusInfo buildConnectionStatusInfo(Map.Entry<PaoIdentifier, PointValueQualityHolder> entry, 
-                                                           Duration warnableDuration) {
+    ConnectionStatusInfo buildConnectionStatusInfo(Map.Entry<PaoIdentifier, PointValueQualityHolder> entry, 
+                                                   Instant evaluationTime, Duration warnableDuration) {
         
-        ConnectionStatusInfo info = new ConnectionStatusInfo(entry.getKey(), warnableDuration, entry.getValue());
+        ConnectionStatusInfo info = new ConnectionStatusInfo(entry.getKey(), warnableDuration, evaluationTime, entry.getValue());
         if (info.isLastConnectedTimestampWarnable()) {
             AdjacentPointValues adjacentPointValues = rphDao.getAdjacentPointValues(info.getLastConnectedPointValue());
             info.setNextDisconnectedPointValue(adjacentPointValues.getSucceeding());
@@ -78,10 +89,10 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
     /**
      * Builds a GATEWAY_CONNECTION_STATUS warning for the specified paoIdentifier and point value.
      */
-    private static InfrastructureWarning buildWarning(ConnectionStatusInfo info) {
+    static InfrastructureWarning buildWarning(ConnectionStatusInfo info) {
         return new InfrastructureWarning(info.getGatewayPaoId(),
                                          InfrastructureWarningType.GATEWAY_CONNECTION_STATUS,
-                                         dateFormat.format(info.getNextDisconnectedTimestamp()));
+                                         dateFormat.format(info.getNextDisconnectedTimestamp().toDate()));
     }
 
 }

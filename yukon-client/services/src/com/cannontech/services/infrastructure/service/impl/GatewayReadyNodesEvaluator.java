@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -102,7 +103,7 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
         var gatewayAndConnectionStatus = Map.entry(gateway, connectedValue);
         
         return !gatewayConnectionStatusEvaluator
-                .buildConnectionStatusInfo(gatewayAndConnectionStatus, connectionWarningDuration)
+                .buildConnectionStatusInfo(gatewayAndConnectionStatus, Instant.now(), connectionWarningDuration)
                 .isWarnable();
     }
 

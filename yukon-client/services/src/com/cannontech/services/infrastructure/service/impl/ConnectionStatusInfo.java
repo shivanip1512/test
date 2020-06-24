@@ -13,22 +13,25 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 public final class ConnectionStatusInfo {
     private PaoIdentifier gateway;
     private Duration warnableDuration;
+    private Instant evaluationTime;
     private PointValueQualityHolder lastConnectedPointValue;
     private Instant lastConnectedTimestamp;
     private boolean isLastConnectedTimestampWarnable;
     private Instant nextDisconnectedTimestamp;
     private boolean isNextDisconnectedTimestampWarnable;
     
-    public ConnectionStatusInfo(PaoIdentifier gateway, Duration warnableDuration,
+    public ConnectionStatusInfo(PaoIdentifier gateway, Duration warnableDuration, Instant evaluationTime,
                                 PointValueQualityHolder lastConnectedPointValue) {
         this.gateway = gateway;
         this.warnableDuration = warnableDuration;
+        this.evaluationTime = evaluationTime;
         this.lastConnectedPointValue = lastConnectedPointValue;
+        
         // If the gateway has never shown CONNECTED, don't warn.
         if (lastConnectedPointValue != null) {
             lastConnectedTimestamp = new Instant(lastConnectedPointValue.getPointDataTimeStamp());
             // Only warn if the last CONNECTED state occurred more than "warnableDuration" minutes ago.
-            if (lastConnectedTimestamp.plus(warnableDuration).isBeforeNow()) {
+            if (lastConnectedTimestamp.plus(warnableDuration).isBefore(evaluationTime)) {
                 isLastConnectedTimestampWarnable = true;
             }
         }
@@ -38,7 +41,7 @@ public final class ConnectionStatusInfo {
         if (nextDisconnectedPointValue != null) {
             nextDisconnectedTimestamp = new Instant(nextDisconnectedPointValue.getPointDataTimeStamp());
             // Only warn if the DISCONNECTED state occurred more than "warnableDuration" minutes ago.
-            if (nextDisconnectedTimestamp.plus(warnableDuration).isBeforeNow()) {
+            if (nextDisconnectedTimestamp.plus(warnableDuration).isBefore(evaluationTime)) {
                 isNextDisconnectedTimestampWarnable = true;
             }
         }
