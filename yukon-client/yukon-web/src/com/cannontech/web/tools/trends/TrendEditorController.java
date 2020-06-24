@@ -102,26 +102,32 @@ public class TrendEditorController {
         return "trends/setup/view.jsp";
     }
 
-    @GetMapping("/renderAddPointPopup")
-    public String renderAddPointPopup(ModelMap model) {
+    @GetMapping("/renderSetupPopup")
+    public String renderSetupPopup(ModelMap model, @RequestParam("isMarker") boolean isMarker) {
         model.addAttribute("mode", PageEditMode.CREATE);
         TrendSeries trendSeries = new TrendSeries();
         trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
-        model.addAttribute("graphTypeDateEnumValue", TrendType.GraphType.DATE_TYPE);
-        setPointPopupModel(model);
-        return "trends/setup/pointSetupPopup.jsp";
+        if (isMarker) {
+            trendSeries.setMarkerDefaults();
+        } else {
+            model.addAttribute("graphTypeDateEnumValue", TrendType.GraphType.DATE_TYPE);
+        }
+        setModel(model, isMarker);
+        return getSetupDialogJsp(isMarker);
     }
 
-    @GetMapping("/renderEditPointPopup")
-    public String renderEditPointPopup(ModelMap model,
-            @RequestParam("trendSeries") TrendSeries trendSeries) {
+    @GetMapping("/renderEditSetupPopup")
+    public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries) {
+        boolean isMarker = trendSeries.getType().isMarkerType();
         model.addAttribute("trendSeries", trendSeries);
-        LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
-        model.addAttribute("deviceName", yukonPao.getPaoName());
-        model.addAttribute("isDateTypeSelected", trendSeries.getType().isDateType());
-        setPointPopupModel(model);
-        return "trends/setup/pointSetupPopup.jsp";
+        if (!isMarker) {
+            LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
+            model.addAttribute("deviceName", yukonPao.getPaoName());
+            model.addAttribute("isDateTypeSelected", trendSeries.getType().isDateType());
+        }
+        setModel(model, isMarker);
+        return getSetupDialogJsp(isMarker);
     }
 
     @PostMapping("/save")
@@ -138,13 +144,11 @@ public class TrendEditorController {
             HttpMethod httpMethod = HttpMethod.POST;
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl);
             if (trendModel.getTrendId() != null) {
-                httpMethod = HttpMethod.PATCH;
+                httpMethod = HttpMethod.PUT;
                 url = "/" + trendModel.getTrendId();
             }
 
-            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod,
-                    TrendModel.class,
-                    trendModel);
+            ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, TrendModel.class, trendModel);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 TrendModel trend = (TrendModel) response.getBody();
@@ -164,25 +168,30 @@ public class TrendEditorController {
         return null;
     }
 
-    @PostMapping("/addPoint")
-    public String addPoint(ModelMap model, YukonUserContext userContext, HttpServletResponse response,
+    @PostMapping("/addPointOrMarker")
+    public String addPointOrMarker(ModelMap model, YukonUserContext userContext, HttpServletResponse response,
             @ModelAttribute("trendSeries") TrendSeries trendSeries, BindingResult result, FlashScope flashScope)
             throws JsonGenerationException, JsonMappingException, IOException {
         trendSeriesValidator.validate(trendSeries, result);
         LitePoint litePoint = null;
         LiteYukonPAObject yukonPao = null;
         
-        if (trendSeries.getPointId() != null) {
+        Boolean isMarker = trendSeries.getType().isMarkerType();
+        
+        if (trendSeries.getPointId() != null && !isMarker) {
             litePoint = pointDao.getLitePoint(trendSeries.getPointId());
             yukonPao = cache.getAllPaosMap().get(litePoint.getPaobjectID());
         }
         
         if (result.hasErrors()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            setPointPopupModel(model);
-            model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
-            model.addAttribute("isDateTypeSelected", trendSeries.getType().isDateType());
-            return "trends/setup/pointSetupPopup.jsp";
+            trendSeries.applyDefaults();
+            setModel(model, isMarker);
+            if (!isMarker) {
+                model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
+                model.addAttribute("isDateTypeSelected", trendSeries.getType().isDateType());
+            }
+            return getSetupDialogJsp(isMarker);
         }
 
         model.clear();
@@ -190,15 +199,18 @@ public class TrendEditorController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         json.put("trendSeries", trendSeries);
-        json.put("pointName", litePoint.getPointName());
-        json.put("deviceName", yukonPao.getPaoName());
+        if (!isMarker) {
+            json.put("pointName", litePoint.getPointName());
+            json.put("deviceName", yukonPao.getPaoName());
+            json.put("graphType", accessor.getMessage(trendSeries.getType().getFormatKey()));
+            json.put("style", accessor.getMessage(trendSeries.getStyle().getFormatKey()));
+            if (trendSeries.getType().isDateType()) {
+                json.put("dateStr", dateFormattingService.format(trendSeries.getDate(), DateFormatEnum.DATE, userContext));
+            }
+        }
         json.put("color", accessor.getMessage(trendSeries.getColor().getFormatKey()));
         json.put("axis", accessor.getMessage(trendSeries.getAxis().getFormatKey()));
-        json.put("graphType", accessor.getMessage(trendSeries.getType().getFormatKey()));
-        json.put("style", accessor.getMessage(trendSeries.getStyle().getFormatKey()));
-        if (trendSeries.getType().isDateType()) {
-            json.put("dateStr", dateFormattingService.format(trendSeries.getDate(), DateFormatEnum.DATE, userContext));
-        }
+        
         response.setContentType("application/json");
         JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
         return null;
@@ -229,15 +241,18 @@ public class TrendEditorController {
         return redirectLink;
     }
 
-    private void setPointPopupModel(ModelMap model) {
-        List<GraphType> graphTypes = Lists.newArrayList(GraphType.values());
-        graphTypes.remove(GraphType.MARKER_TYPE);
-        model.addAttribute("styles", RenderType.getWebSupportedTypes());
-        model.addAttribute("graphTypes", graphTypes);
-        model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
-        model.addAttribute("now", DateTime.now());
-        model.addAttribute("graphTypeDateEnumValue", GraphType.DATE_TYPE);
+    private void setModel(ModelMap model, boolean isMarker) {
         model.addAttribute("colors", Color.values());
+        model.addAttribute("axes", Lists.newArrayList(TrendAxis.values()));
+        
+        if (!isMarker) {
+            List<GraphType> graphTypes = Lists.newArrayList(GraphType.values());
+            graphTypes.remove(GraphType.MARKER_TYPE);
+            model.addAttribute("styles", RenderType.getWebSupportedTypes());
+            model.addAttribute("graphTypes", graphTypes);
+            model.addAttribute("now", DateTime.now());
+            model.addAttribute("graphTypeDateEnumValue", GraphType.DATE_TYPE);
+        }
     }
 
     @InitBinder
@@ -282,6 +297,10 @@ public class TrendEditorController {
                 }
             }
         });
+    }
+    
+    private String getSetupDialogJsp(boolean isMarker) {
+        return isMarker ? "trends/setup/markerSetupPopup.jsp" : "trends/setup/pointSetupPopup.jsp";
     }
 
     private String bindAndForward(TrendModel trendModel, BindingResult result, RedirectAttributes attrs) {

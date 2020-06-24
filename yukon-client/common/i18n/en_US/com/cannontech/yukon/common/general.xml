@@ -354,6 +354,7 @@
 <entry key="yukon.common.unavailable">Unavailable</entry>
 <entry key="yukon.common.unknown">Unknown</entry>
 <entry key="yukon.common.value">Value/State</entry>
+<entry key="yukon.common.valueTxt">Value</entry>
 <entry key="yukon.common.view">view</entry>
 <entry key="yukon.common.viewAll">View All</entry>
 <entry key="yukon.common.viewDetails">View Details</entry>

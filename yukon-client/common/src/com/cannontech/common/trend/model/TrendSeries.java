@@ -114,4 +114,9 @@ public class TrendSeries {
             setType(GraphType.BASIC_TYPE);
         }
     }
+    
+    public void setMarkerDefaults() {
+        setType(GraphType.MARKER_TYPE);
+        setPointId(-100);
+    }
 }
