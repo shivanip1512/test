@@ -329,18 +329,8 @@ public class MeterProgrammingSummaryDaoImpl implements MeterProgrammingSummaryDa
     }
 
     private void appendSourceFragment(Set<MeterProgramSource> sources, SqlStatementBuilder fragment) {
-        if (!sources.contains(MeterProgramSource.YUKON)) {
-            fragment.append("Source").in_k(sources);
-        } else {
-            List<MeterProgramSource> noneYukonSources = sources.stream().filter(source -> source != MeterProgramSource.YUKON)
-                    .collect(Collectors.toList());
-            if (!noneYukonSources.isEmpty()) {
-                fragment.append("Source").in_k(noneYukonSources);
-                fragment.append("AND");
-            }
-            fragment.append("(Source").eq_k(MeterProgramSource.YUKON);
-            fragment.append("AND ProgramForReportedGuid IS NULL)");
-        }
+        fragment.append("(Source").in_k(sources);
+        fragment.append("AND ProgramForReportedGuid IS NULL)");
     }
 
     private void addSelectCountGroupBy(boolean selectCount, SqlStatementBuilder sql) {
