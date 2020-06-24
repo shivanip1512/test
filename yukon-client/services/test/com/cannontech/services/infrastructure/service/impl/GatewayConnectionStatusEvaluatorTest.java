@@ -1,5 +1,6 @@
 package com.cannontech.services.infrastructure.service.impl;
 
+import java.util.AbstractMap;
 import java.util.Date;
 import java.util.Map;
 
@@ -54,6 +55,72 @@ public class GatewayConnectionStatusEvaluatorTest {
                 .withPointQuality(PointQuality.Normal)
                 .withType(PointType.Status)
                 .build();
+    }
+    
+    @Test
+    public void testNoConnectedStatus() {
+        
+        // Set up mocks so there's no CONNECTED status
+        
+        PaoIdentifier gatewayPaoId = new PaoIdentifier(1, PaoType.GWY800);
+        
+        // Build the connection status info, with warning duration of 60 minutes and no CONNECTED value
+        
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, null);
+        
+        Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
+                new AbstractMap.SimpleEntry<>(gatewayPaoId, null);
+        
+        ConnectionStatusInfo connectionStatusInfo = 
+                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        
+        // Check for correct logic on whether to warn or not, based on point value timestamps
+        
+        Assert.assertFalse("ConnectionStatusInfo should not have connected timestamp warnable, "
+                + "with no connected timestamp",
+                connectionStatusInfo.isLastConnectedTimestampWarnable());
+        
+        Assert.assertFalse("ConnectionStatusInfo should not be warnable with no connected timestamp",
+                connectionStatusInfo.isWarnable());
+    }
+    
+    @Test
+    public void testConnectedStatusWithNoDisconnectedStatus() {
+        
+        // Set up mocks so that last CONNECTED status was 59 minutes ago, and no last DISCONNECTED status
+        
+        PaoIdentifier gatewayPaoId = new PaoIdentifier(1, PaoType.GWY800);
+        
+        Date fiftyNineMinutesAgo = minutesAgo(59);
+        PointValueQualityHolder connectedPointValue = 
+                fakePointValue(fiftyNineMinutesAgo, CommStatusState.CONNECTED.getRawState());
+        
+        RawPointHistoryDao mockRphDao = EasyMock.createNiceMock(RawPointHistoryDao.class);
+        RawPointHistoryDao.AdjacentPointValues adjacentPointValues = 
+                new RawPointHistoryDao.AdjacentPointValues(null, null);
+        EasyMock.expect(mockRphDao.getAdjacentPointValues(connectedPointValue))
+                .andReturn(adjacentPointValues);
+        EasyMock.replay(mockRphDao);
+        
+        // Build the connection status info, with warning duration of 60 minutes
+        
+        GatewayConnectionStatusEvaluator evaluator = new GatewayConnectionStatusEvaluator(null, null, mockRphDao);
+        
+        Map.Entry<PaoIdentifier, PointValueQualityHolder> gatewayConnectionStatusEntry = 
+                Map.entry(gatewayPaoId, connectedPointValue);
+        
+        ConnectionStatusInfo connectionStatusInfo = 
+                evaluator.buildConnectionStatusInfo(gatewayConnectionStatusEntry, baseTimestampInstant, sixtyMinutes);
+        
+        // Check for correct logic on whether to warn or not, based on point value timestamps
+        
+        Assert.assertFalse("ConnectionStatusInfo considers last connected timestamp warnable, "
+                + "but timestamp isn't outside the warnable duration",
+                connectionStatusInfo.isLastConnectedTimestampWarnable());
+        
+        Assert.assertFalse("ConnectionStatusInfo marked as warnable, "
+                + "but there is no DISCONNECTED status",
+                connectionStatusInfo.isWarnable());
     }
     
     @Test
