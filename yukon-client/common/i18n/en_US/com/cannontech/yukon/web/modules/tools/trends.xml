@@ -78,4 +78,11 @@
    <entry key="yukon.web.modules.tools.trend.color.RED">Red</entry>
    <entry key="yukon.web.modules.tools.trend.color.YELLOW">Yellow</entry>
    
+   <entry key="yukon.web.modules.tools.trend.markerValueHelp.title">Marker Value</entry>
+    <entry key="yukon.web.modules.tools.trend.markerValueHelpTxt">
+        <![CDATA[A marker will display a line across the entire trend at the value specified.
+            <br><br>
+            <b>Note:</b> A marker will only display when values exists for a point specified in point setup and the marker’s value is within the range of a point’s values.]]>
+    </entry>
+   
 </properties>
