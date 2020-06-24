@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.util.Properties;
 
 import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPointType;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -71,7 +72,24 @@ public class ApiCallHelper {
         String uri = getProperty(key);
         return getHeader().get(uri + param).then().log().all().extract();
     }
+    
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP GET method for specified URI
+     * and request parameter and associated query parameters.
+     * 
+     */
+    public static ExtractableResponse<?> getPoints(String key, String param) {
+        String uri = getProperty(key);
 
+        RequestSpecification requestSpecification = getHeader().queryParam("types", MockPointType.CalcAnalog)
+                                                               .queryParam("pointNames", "TestCalcAnalog")
+                                                               .queryParam("page", 1)
+                                                               .queryParam("itemsPerPage", "50")
+                                                               .queryParam("dir", "asc")
+                                                               .queryParam("sort", "pointName");
+
+        return requestSpecification.when().get(uri + param + "/points").then().log().all().extract();
+    }
     
     /**
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP GET method for specified URI,

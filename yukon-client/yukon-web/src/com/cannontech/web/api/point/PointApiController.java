@@ -12,6 +12,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +20,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.api.token.ApiRequestContext;
+import com.cannontech.common.device.model.DevicePointsFilter;
+import com.cannontech.common.device.model.DevicePointsSortBy;
+import com.cannontech.common.model.DefaultItemsPerPage;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -56,8 +65,13 @@ public class PointApiController {
     }
 
     @GetMapping("/devices/{paoId}/points")
-    public ResponseEntity<Object> getPoints(@PathVariable int paoId) {
-        return new ResponseEntity<>(pointEditorService.getPointInfo(paoId), HttpStatus.OK);
+    public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
+            @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
+            @DefaultItemsPerPage(value = 250) PagingParameters paging) {
+
+        DevicePointsSortBy sortBy = DevicePointsSortBy.valueOf(sorting.getSort());
+        Direction direction = sorting.getDirection();
+        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy.getValue(), paging), HttpStatus.OK);
     }
 
     @InitBinder("pointBaseModel")

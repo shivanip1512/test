@@ -13,7 +13,6 @@ import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.cannontech.rest.api.common.model.MockPointType;
 import com.cannontech.rest.api.point.helper.PointHelper;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
-import com.cannontech.rest.api.point.request.MockFdrDirection;
 import com.cannontech.rest.api.point.request.MockFdrInterfaceType;
 import com.cannontech.rest.api.point.request.MockPointBase;
 import com.cannontech.rest.api.point.request.MockPointUnit;
@@ -464,5 +463,18 @@ public class AnalogPointApiTest {
         assertTrue(ValidationHelper.validateFieldError(createResponse, "fdrList[0].fdrInterfaceType",
                         "Interface is required."),
                 "Expected code in response is not correct");
+    }
+    
+     /**
+     * Test case for retrieve all points associated with paoId
+     */
+    @Test
+    public void getPoints(ITestContext context) {
+        String paoId = ApiCallHelper.getProperty("meterNumber");
+        Log.info("Point Id to retrive all points : " + paoId);
+
+        ExtractableResponse<?> getResponse = ApiCallHelper.getPoints("getPoints", paoId);
+
+        assertTrue("Status code should be 200", getResponse.statusCode() == 200);
     }
 }
