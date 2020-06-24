@@ -50,6 +50,7 @@ public abstract class DocumentationBase {
      * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains updated object.
      * @return value in response having identifier of responseFieldPath
+     * @deprecated Use for legacy API calls only which are using a POST verb for updating an object.
      */
     @Deprecated
     protected String updateDoc() {
