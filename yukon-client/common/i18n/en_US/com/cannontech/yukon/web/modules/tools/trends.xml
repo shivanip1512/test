@@ -36,6 +36,10 @@
     
     <!-- Create Trend -->
     <entry key="yukon.web.modules.tools.trend.CREATE.pageName">Create Trend</entry>
+    <entry key="yukon.web.modules.tools.trend.EDIT.pageHeading">Edit Trend: {0}</entry>
+    <entry key="yukon.web.modules.tools.trend.EDIT.pageTitle">Trend: {0}</entry>
+    <entry key="yukon.web.modules.tools.trend.EDIT.crumbTitle">Edit</entry>
+    
     <entry key="yukon.web.modules.tools.trend.setup">Setup</entry>
     <entry key="yukon.web.modules.tools.trend.additionalOptions">Additional Options</entry>
     <entry key="yukon.web.modules.tools.trend.general.title">General</entry>
@@ -55,6 +59,7 @@
     <entry key="yukon.web.modules.tools.trend.style.LINE">Line</entry>
     <entry key="yukon.web.modules.tools.trend.style.STEP">Step</entry>
     <entry key="yukon.web.modules.tools.trend.style.BAR">Bar</entry>
+    <entry key="yukon.web.modules.tools.trend">Trend</entry>
     
     <!-- =============== RenderType enum unused keys start =======================  -->
     <!-- The keys below are not used on UI. Added these since the RenderType enum implements Displayable  -->
