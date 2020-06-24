@@ -54,8 +54,12 @@ import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 
 @Controller
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 @RequestMapping("/device/commChannel")
 public class CommChannelController {
 
@@ -76,7 +80,7 @@ public class CommChannelController {
     public String list(ModelMap model, YukonUserContext userContext, HttpServletRequest request, FlashScope flash,
             @DefaultSort(dir = Direction.asc, sort = "name") SortingParameters sorting) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelListUrl);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/");
             List<DeviceBaseModel> commChannelList = getDeviceBaseModelResponse(userContext, request, url);
 
             CommChannelSortBy sortBy = CommChannelSortBy.valueOf(sorting.getSort());
@@ -122,9 +126,10 @@ public class CommChannelController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.OWNER)
     public String delete(@PathVariable int id, YukonUserContext userContext, FlashScope flash, HttpServletRequest request) {
         try {
-            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDeleteUrl + id);
+            String deleteUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + id);
             String portName = dbCache.getAllPaosMap().get(id).getPaoName();
 
             ResponseEntity<? extends Object> deleteResponse = deleteCommChannel(userContext, request, deleteUrl);
@@ -148,6 +153,7 @@ public class CommChannelController {
     }
 
     @GetMapping("/create")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
         PortBase commChannel = new PortBase();
@@ -164,6 +170,7 @@ public class CommChannelController {
     }
 
     @GetMapping("/create/{type}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, @PathVariable String type, @RequestParam String name,
             YukonUserContext userContext, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.CREATE);
@@ -180,6 +187,7 @@ public class CommChannelController {
     }
 
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String save(@ModelAttribute("commChannel") PortBase commChannel, BindingResult result, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request, HttpServletResponse resp, ModelMap model) throws IOException {
         try {
@@ -188,7 +196,7 @@ public class CommChannelController {
                 setupErrorFields(resp, commChannel, model, userContext, result);
                 return "/commChannel/create.jsp";
             }
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelCreateUrl);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl);
             ResponseEntity<? extends Object> response =
                     apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.POST, Object.class, commChannel);
 
@@ -250,7 +258,8 @@ public class CommChannelController {
      * Returns comma separated device names for that port 
      */
     private String getDevicesNamesForPort(YukonUserContext userContext, HttpServletRequest request, int portId) {
-        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext, ApiURL.commChannelDevicesAssignedUrl + portId);
+        String assignedDevicesUrl = helper.findWebServerUrl(request, userContext,
+                ApiURL.commChannelUrl + "/" + portId + "/devicesAssigned");
         List<DeviceBaseModel> devicesList = getDeviceBaseModelResponse(userContext, request, assignedDevicesUrl);
 
         if (!devicesList.isEmpty()) {

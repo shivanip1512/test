@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,6 +39,18 @@ public class TrendApiController {
         HashMap<String, Integer> trendIdMap = new HashMap<>();
         trendIdMap.put("trendId", trendId);
         return new ResponseEntity<>(trendIdMap, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TrendModel> update(@Valid @RequestBody TrendModel trendModel, @PathVariable int id) {
+        TrendModel createdTrend = trendService.update(id, trendModel);
+        return new ResponseEntity<>(createdTrend, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TrendModel> retrieve(@PathVariable int id) {
+        TrendModel trend = trendService.retrieve(id);
+        return new ResponseEntity<>(trend, HttpStatus.OK);
     }
 
     @InitBinder("trendModel")

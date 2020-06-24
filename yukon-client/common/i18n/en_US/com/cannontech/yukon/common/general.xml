@@ -118,6 +118,7 @@
 <entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
 <entry key="yukon.common.download">Download</entry>
 <entry key="yukon.common.edit">Edit</entry>
+<entry key="yukon.common.editWithName">Edit {0}</entry>
 <entry key="yukon.common.email">Email</entry>
 <entry key="yukon.common.email.address">Email Address</entry>
 <entry key="yukon.common.email.send">Send Email</entry>
@@ -212,6 +213,7 @@
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.on">On</entry>
 <entry key="yukon.common.or">or</entry>
+<entry key="yukon.common.otherActions">Other Actions</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
 <entry key="yukon.common.pageTitle">Energy Services Operations Center</entry>
 <entry key="yukon.common.pao.info.error.name.required">Name is required.</entry>

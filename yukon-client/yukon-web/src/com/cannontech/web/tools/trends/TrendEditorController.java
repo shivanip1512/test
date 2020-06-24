@@ -21,9 +21,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -140,7 +142,7 @@ public class TrendEditorController {
         // Call REST API to create or update trend
         try {
             HttpMethod httpMethod = HttpMethod.POST;
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendCreateOrUpdateUrl);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl);
             if (trendModel.getTrendId() != null) {
                 httpMethod = HttpMethod.PUT;
                 url = "/" + trendModel.getTrendId();
@@ -151,17 +153,17 @@ public class TrendEditorController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 TrendModel trend = (TrendModel) response.getBody();
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", trendModel.getName()));
-                return "redirect:/tools/trends/" + trend.getTrendId();
+                return redirectLink + "/" + trend.getTrendId();
             }
 
         } catch (ApiCommunicationException e) {
             log.error(e);
             flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
-            return "redirect:" + redirectLink;
+            return redirectLink;
         } catch (RestClientException ex) {
             log.error("Error saving trend: {}. Error: {}", trendModel.getName(), ex.getMessage());
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.save", trendModel.getName(), ex.getMessage()));
-            return "redirect:" + redirectLink;
+            return redirectLink;
         }
         return null;
     }
@@ -212,6 +214,31 @@ public class TrendEditorController {
         response.setContentType("application/json");
         JsonUtils.getWriter().writeValue(response.getOutputStream(), json);
         return null;
+    }
+    
+    @DeleteMapping("/{id}/delete")
+    public String delete(@PathVariable int id, @ModelAttribute TrendModel trendModel, YukonUserContext userContext,
+            FlashScope flash, HttpServletRequest request) {
+        try {
+            // Api call to delete trend
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" + id);
+            ResponseEntity<? extends Object> response =
+                apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, Integer.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", trendModel.getName()));
+                return redirectLink;
+            }
+        } catch (ApiCommunicationException e) {
+            log.error(e);
+            flash.setError(new YukonMessageSourceResolvable(communicationKey));
+            return redirectLink;
+        } catch (RestClientException ex) {
+            log.error("Error deleting trend: {}. Error: {}", trendModel.getName(), ex.getMessage());
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", trendModel.getName(), ex.getMessage()));
+            return redirectLink;
+        }
+        return redirectLink;
     }
 
     private void setModel(ModelMap model, boolean isMarker) {

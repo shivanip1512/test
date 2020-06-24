@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "99e01ef2-5084-4f46-87ef-470d63066a98",
-		"name": "YukonAPITest copy",
+		"_postman_id": "7d437393-da2a-4130-a581-3834c9a78dfe",
+		"name": "YukonAPITest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -686,7 +686,7 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "7d1700b2-b4e4-4806-b37a-14ac5bd45e67",
+												"id": "13c81ad4-2c45-4c1d-84bf-196ffe245e35",
 												"exec": [
 													"console.log('I am from ');"
 												],
@@ -1876,7 +1876,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "8a554205-48ea-4f18-9c67-978c41f43c44",
+								"id": "878c6dfa-254a-4081-a472-e1dc952f863d",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -1886,7 +1886,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "9d346f39-2a54-4c23-ae40-6c581cb9eba3",
+								"id": "82ff1eba-984c-4bd8-bb40-0c99c977f881",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2494,15 +2494,15 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels/",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels",
+										""
 									]
 								}
 							},
@@ -2514,14 +2514,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2543,15 +2543,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2573,15 +2572,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2610,15 +2608,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels"
 									]
 								}
 							},
@@ -2642,14 +2639,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2671,15 +2668,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2701,15 +2697,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2738,15 +2733,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels"
 									]
 								}
 							},
@@ -2767,15 +2761,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2788,14 +2781,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2817,15 +2810,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2854,15 +2846,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/create",
+									"raw": "{{api-url}}/api/devices/commChannels",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"create"
+										"devices",
+										"commChannels"
 									]
 								}
 							},
@@ -2883,15 +2874,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/update/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"update",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2916,14 +2906,14 @@
 									}
 								},
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2936,15 +2926,14 @@
 								"method": "DELETE",
 								"header": [],
 								"url": {
-									"raw": "{{api-url}}/api/device/commChannel/delete/{portId}",
+									"raw": "{{api-url}}/api/devices/commChannels/{portId}",
 									"host": [
 										"{{api-url}}"
 									],
 									"path": [
 										"api",
-										"device",
-										"commChannel",
-										"delete",
+										"devices",
+										"commChannels",
 										"{portId}"
 									]
 								}
@@ -2968,15 +2957,15 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{api-url}}/api/device/commChannel/list",
+							"raw": "{{api-url}}/api/devices/commChannels/",
 							"host": [
 								"{{api-url}}"
 							],
 							"path": [
 								"api",
-								"device",
-								"commChannel",
-								"list"
+								"devices",
+								"commChannels",
+								""
 							]
 						}
 					},
@@ -2995,7 +2984,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"10/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"raw": "{\r\n\t\"name\":\"Trend Test\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/06/2020\"\r\n\t\t}\r\n\t]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3010,6 +2999,34 @@
 							"path": [
 								"api",
 								"trends"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"name\":\"Trend Test Update\",\r\n\t\"trendSeries\": [\r\n\t\t{\r\n\t\t\"type\": \"DATE_TYPE\",\r\n\t\t\"pointId\":-110,\r\n\t\t\"label\" : \"System Device / System Point\",\r\n\t\t\"color\" : \"BLACK\",\r\n\t\t\"TrendAxis\" :\"LEFT\",\r\n\t\t\"multiplier\" : 1.2,\r\n\t\t\"style\" : \"LINE\",\r\n\t\t\"date\":\"06/10/2020\"\r\n\t\t}\r\n\t]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/trends/{id)",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"trends",
+								"{id)"
 							]
 						}
 					},
@@ -3139,7 +3156,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "170297a6-7ac4-472e-a4f9-d6ab2a67f2de",
+				"id": "dfdfbbbe-b549-40c6-bbd4-4429cf09beba",
 				"type": "text/javascript",
 				"exec": [
 					"",
@@ -3188,7 +3205,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "ed299091-7ca3-478d-8cf0-9e16aff484fa",
+				"id": "98d38167-3ab2-4c09-92c2-421266887de7",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3198,31 +3215,31 @@
 	],
 	"variable": [
 		{
-			"id": "e5d59f2f-604a-4ddb-902d-512f7c2529ff",
+			"id": "1e095ccf-fd79-4c14-b42b-db62413971cb",
 			"key": "api-url",
 			"value": "http://pspl-sw-night.eatoneaseng.net:8080",
 			"type": "string"
 		},
 		{
-			"id": "5367d7aa-4fa4-433b-86f4-eb2050bf0fa0",
+			"id": "ee3ad4ef-1040-446e-bee8-6e390b042d31",
 			"key": "username",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "1064fb33-b14b-4ba3-a2a1-7f006027fe40",
+			"id": "1371f0ed-decb-4c47-9caf-a019dbd45936",
 			"key": "password",
 			"value": "yukon",
 			"type": "string"
 		},
 		{
-			"id": "c6640761-8988-4e26-88a3-6a605304f1ab",
+			"id": "bc08df03-6f72-457d-b27e-edf78c88da77",
 			"key": "currentAccessToken",
 			"value": "",
 			"type": "string"
 		},
 		{
-			"id": "129a5f96-33da-4ca2-a62f-308115240d4e",
+			"id": "b6e84b20-a8d3-47fa-bd26-778d66f7549c",
 			"key": "accessTokenExpiry",
 			"value": "",
 			"type": "string"

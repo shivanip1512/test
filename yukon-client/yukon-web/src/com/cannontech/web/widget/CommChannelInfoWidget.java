@@ -24,6 +24,8 @@ import org.springframework.web.client.RestClientException;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -33,6 +35,7 @@ import com.cannontech.web.api.ApiURL;
 import com.cannontech.web.api.validation.ApiCommunicationException;
 import com.cannontech.web.api.validation.ApiControllerHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.stars.commChannel.CommChannelSetupHelper;
 import com.cannontech.web.stars.commChannel.CommChannelValidator;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
@@ -41,6 +44,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 
 @Controller
 @RequestMapping("/commChannelInfoWidget")
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private ApiControllerHelper helper;
@@ -70,6 +74,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     }
 
     @GetMapping("/{id}/edit")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String edit(ModelMap model, YukonUserContext userContext, @PathVariable int id, HttpServletRequest request) {
         model.addAttribute("mode", PageEditMode.EDIT);
         retrieveCommChannel(userContext, request, id, model);
@@ -78,7 +83,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
 
     private void retrieveCommChannel(YukonUserContext userContext, HttpServletRequest request, int id, ModelMap model) {
         try {
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelViewUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + id);
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.GET, PortBase.class);
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -103,6 +108,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
     }
 
     @PostMapping("/save")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.CREATE)
     public String save(@ModelAttribute("commChannel") PortBase commChannel, BindingResult result, YukonUserContext userContext,
             FlashScope flash, HttpServletRequest request, ModelMap model, HttpServletResponse resp) {
 
@@ -112,7 +118,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 setupErrorFields(resp, commChannel, model, result, userContext);
                 return "commChannelInfoWidget/render.jsp";
             }
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUpdateUrl + commChannel.getId());
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.commChannelUrl + "/" + commChannel.getId());
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url,
                     HttpMethod.POST, Object.class, commChannel);
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {

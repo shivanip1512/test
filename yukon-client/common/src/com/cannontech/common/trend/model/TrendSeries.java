@@ -3,9 +3,12 @@ package com.cannontech.common.trend.model;
 import org.joda.time.DateTime;
 
 import com.cannontech.common.trend.model.TrendType.GraphType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+@JsonInclude(Include.NON_NULL)
 public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
