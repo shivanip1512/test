@@ -3005,6 +3005,25 @@
 					"response": []
 				},
 				{
+					"name": "Retrieve",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/trends/{id}",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"trends",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update",
 					"request": {
 						"method": "PUT",
