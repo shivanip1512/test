@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.api.token.ApiRequestContext;
+import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointsFilter;
-import com.cannontech.common.device.model.DevicePointsSortBy;
 import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
@@ -30,7 +30,6 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.tools.points.model.PaoPointModel;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -91,6 +90,24 @@ public class PointApiController {
         LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
         YukonUserContext userContext = contextResolver.resolveContext(user, request);
         return userContext;
+    }
+
+    public enum DevicePointsSortBy {
+
+        pointName(SortBy.POINT_NAME),
+        offset(SortBy.POINT_OFFSET),
+        deviceName(SortBy.DEVICE_NAME),
+        pointType(SortBy.POINT_TYPE);
+
+        private DevicePointsSortBy(SortBy value) {
+            this.value = value;
+        }
+
+        private final SortBy value;
+
+        public SortBy getValue() {
+            return value;
+        }
     }
 
 }

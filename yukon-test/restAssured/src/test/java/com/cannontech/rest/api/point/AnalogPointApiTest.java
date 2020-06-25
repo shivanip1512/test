@@ -20,6 +20,7 @@ import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
+import io.restassured.specification.RequestSpecification;
 
 public class AnalogPointApiTest {
     MockPointBase analogPoint = null;
@@ -470,10 +471,17 @@ public class AnalogPointApiTest {
      */
     @Test
     public void getPoints(ITestContext context) {
-        String paoId = ApiCallHelper.getProperty("meterNumber");
+        RequestSpecification requestSpecification = ApiCallHelper.getHeader()
+                                                                 .queryParam("types", MockPointType.CalcAnalog)
+                                                                 .queryParam("pointNames", "TestCalcAnalog")
+                                                                 .queryParam("page", 1)
+                                                                 .queryParam("itemsPerPage", "50")
+                                                                 .queryParam("dir", "asc")
+                                                                 .queryParam("sort", "pointName");
+        String paoId = ApiCallHelper.getProperty("paoId");
         Log.info("Point Id to retrive all points : " + paoId);
 
-        ExtractableResponse<?> getResponse = ApiCallHelper.getPoints("getPoints", paoId);
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getPoints", paoId, requestSpecification);
 
         assertTrue("Status code should be 200", getResponse.statusCode() == 200);
     }

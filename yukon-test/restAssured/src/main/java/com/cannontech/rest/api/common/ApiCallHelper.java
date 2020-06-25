@@ -78,16 +78,8 @@ public class ApiCallHelper {
      * and request parameter and associated query parameters.
      * 
      */
-    public static ExtractableResponse<?> getPoints(String key, String param) {
+    public static ExtractableResponse<?> get(String key, String param, RequestSpecification requestSpecification) {
         String uri = getProperty(key);
-
-        RequestSpecification requestSpecification = getHeader().queryParam("types", MockPointType.CalcAnalog)
-                                                               .queryParam("pointNames", "TestCalcAnalog")
-                                                               .queryParam("page", 1)
-                                                               .queryParam("itemsPerPage", "50")
-                                                               .queryParam("dir", "asc")
-                                                               .queryParam("sort", "pointName");
-
         return requestSpecification.when().get(uri + param + "/points").then().log().all().extract();
     }
     
@@ -132,7 +124,7 @@ public class ApiCallHelper {
         return getHeader().body(body).delete(uri + param).then().log().all().extract();
     }
 
-    private static RequestSpecification getHeader() {
+    public static RequestSpecification getHeader() {
         return given().accept("application/json").contentType("application/json").header("Authorization",
             "Bearer " + authToken).log().all();
     }
