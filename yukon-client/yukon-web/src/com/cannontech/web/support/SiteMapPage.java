@@ -164,7 +164,9 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE , YukonRoleProperty.OPERATOR_SURVEY_EDIT),
     DASHBOARDS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.dashboards.pageName", "dashboards/admin",
                MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
-
+    ATTRIBUTES(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.attributes.pageName", "/admin/config/attributes",
+               MatchStyle.all, OtherPermission.HIDEABLE),
+    
     COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.tools.commander.pageHeading", "/tools/commander",
             MatchStyle.all, YukonRoleProperty.ENABLE_WEB_COMMANDER),
     CREATE_BILLING_SCHEDULES(SiteMapCategory.TOOLS, "yukon.web.modules.tools.schedules.home.CREATE.pageDescription", "/group/scheduledGroupRequestExecution/home",
