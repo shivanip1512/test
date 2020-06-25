@@ -106,6 +106,7 @@ public class TrendSeries {
         if (!results.hasFieldErrors("date")) {
             setDate(DateTime.now());
         }
+        setDefaultValues();
     }
     
     private void setDefaultValues() {

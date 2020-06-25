@@ -12,7 +12,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.trend.model.RenderType;
 import com.cannontech.common.trend.model.TrendSeries;
-import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
@@ -108,7 +107,7 @@ public class TrendValidatorHelper {
                 errors.rejectValue("style", basekey + "notSupported", new Object[] { trendSeries.getStyle() }, "");
             }
         }
-        if (trendSeries.getType() != null && trendSeries.getType() == GraphType.DATE_TYPE && !errors.hasFieldErrors("date")) {
+        if (trendSeries.getType() != null && trendSeries.getType().isDateType() && !errors.hasFieldErrors("date")) {
             YukonValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), dateI18nText,
                     false);
             if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
