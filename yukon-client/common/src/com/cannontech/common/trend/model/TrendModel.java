@@ -55,7 +55,11 @@ public class TrendModel {
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
                 GraphDataSeries graphSeries = new GraphDataSeries();
-                graphSeries.setPointID(series.getPointId());
+                if (series.getType() != GraphType.MARKER_TYPE) {
+                    graphSeries.setPointID(series.getPointId());
+                } else {
+                    graphSeries.setPointID(-100);
+                }
                 graphSeries.setLabel(series.getLabel());
                 graphSeries.setAxis(
                         series.getAxis() == null ? TrendAxis.LEFT.getAbbreviation() : series.getAxis().getAbbreviation());

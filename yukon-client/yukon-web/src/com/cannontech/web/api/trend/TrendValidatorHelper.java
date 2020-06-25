@@ -90,10 +90,12 @@ public class TrendValidatorHelper {
         String labelI18nText = accessor.getMessage(tdcBasekey + "label");
         String dateI18nText = accessor.getMessage(commonkey + "date");
 
-        YukonValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), pointI18nText,
-                false);
-        if (!errors.hasFieldErrors("pointId")) {
-            pointValidationUtil.validatePointId(errors, "pointId", trendSeries.getPointId(), pointI18nText);
+        if (trendSeries.getType() != GraphType.MARKER_TYPE) {
+            YukonValidationUtils.checkIsBlank(errors, "pointId", Objects.toString(trendSeries.getPointId(), null), pointI18nText,
+                    false);
+            if (!errors.hasFieldErrors("pointId")) {
+                pointValidationUtil.validatePointId(errors, "pointId", trendSeries.getPointId(), pointI18nText);
+            }
         }
 
         YukonValidationUtils.checkIsBlank(errors, "label", trendSeries.getLabel(), labelI18nText, false);

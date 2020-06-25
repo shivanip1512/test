@@ -42,7 +42,7 @@ public class TrendApiDoc extends DocumentationBase {
                     .description("Graph Type. Expected: BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE. Default Type: BASIC_TYPE"),
                 fieldWithPath("trendSeries[].pointId")
                     .type(JsonFieldType.NUMBER)
-                    .description("Point ID"),
+                    .description("Point ID. Point Id for MARKER_TYPE is -100."),
                 fieldWithPath("trendSeries[].label")
                     .type(JsonFieldType.STRING)
                     .description("Device Name / Point Name. Max length 40 Character"),
