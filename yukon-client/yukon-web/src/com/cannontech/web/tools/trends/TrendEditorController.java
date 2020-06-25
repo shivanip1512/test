@@ -85,6 +85,7 @@ public class TrendEditorController {
     @Autowired private TrendSeriesValidator trendSeriesValidator;
     @Autowired private ApiControllerHelper helper;
     @Autowired private ApiRequestHelper apiRequestHelper;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     private static final String communicationKey = "yukon.exception.apiCommunicationException.communicationError";
     private static final String redirectLink = "redirect:/tools/trends";
@@ -120,6 +121,7 @@ public class TrendEditorController {
     @GetMapping("/renderEditSetupPopup")
     public String renderEditSetupPopup(ModelMap model, @RequestParam("trendSeries") TrendSeries trendSeries) {
         boolean isMarker = trendSeries.getType().isMarkerType();
+        trendSeries.applyDefaults();
         model.addAttribute("trendSeries", trendSeries);
         if (!isMarker) {
             LiteYukonPAObject yukonPao = paoDao.getLiteYukonPaoByPointId(trendSeries.getPointId());
@@ -129,6 +131,38 @@ public class TrendEditorController {
         setModel(model, isMarker);
         return getSetupDialogJsp(isMarker);
     }
+    
+    @GetMapping("{id}/edit")
+    public String edit(ModelMap model, @PathVariable int id, HttpServletRequest request, YukonUserContext userContext, FlashScope flashScope) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        TrendModel trendModel = null;
+        if (model.containsKey("trendModel")) {
+            trendModel = (TrendModel) model.get("trendModel");
+        } else {
+            // Call REST API to retrieve trend
+            try {
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl +id);
+
+                ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, TrendModel.class, trendModel);
+
+                if (response.getStatusCode() == HttpStatus.OK) {
+                    trendModel = (TrendModel) response.getBody();
+                }
+            } catch (ApiCommunicationException e) {
+                log.error(e);
+                flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
+                return redirectLink;
+            } catch (RestClientException ex) {
+                log.error("Error in retrieving trend. Error: {}", trendModel.getName(), ex.getMessage());
+                MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+                flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", accessor.getMessage("yukon.web.modules.tools.trend"), ex.getMessage()));
+                return redirectLink;
+            }
+        }
+        model.addAttribute("trendModel", trendModel);
+        return "trends/setup/view.jsp";
+    }
+
 
     @PostMapping("/save")
     public String save(ModelMap model, YukonUserContext userContext,
@@ -145,7 +179,7 @@ public class TrendEditorController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl);
             if (trendModel.getTrendId() != null) {
                 httpMethod = HttpMethod.PUT;
-                url = "/" + trendModel.getTrendId();
+                url = url + trendModel.getTrendId();
             }
 
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, TrendModel.class, trendModel);
@@ -221,7 +255,7 @@ public class TrendEditorController {
             FlashScope flash, HttpServletRequest request) {
         try {
             // Api call to delete trend
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + id);
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, Integer.class);
 
