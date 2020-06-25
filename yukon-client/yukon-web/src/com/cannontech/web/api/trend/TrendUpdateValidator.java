@@ -8,7 +8,7 @@ import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.validator.SimpleValidator;
 
 public class TrendUpdateValidator extends SimpleValidator<TrendModel> {
-    @Autowired TrendValidatorHelper trendValidatorHelper;
+    @Autowired private TrendValidatorHelper trendValidatorHelper;
 
     public TrendUpdateValidator() {
         super(TrendModel.class);
