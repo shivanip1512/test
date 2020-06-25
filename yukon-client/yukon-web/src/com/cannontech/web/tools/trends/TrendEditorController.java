@@ -153,7 +153,7 @@ public class TrendEditorController {
                 flashScope.setError(new YukonMessageSourceResolvable(communicationKey));
                 return redirectLink;
             } catch (RestClientException ex) {
-                log.error("Error in retrieveing trend. Error: {}", trendModel.getName(), ex.getMessage());
+                log.error("Error in retrieving trend. Error: {}", trendModel.getName(), ex.getMessage());
                 MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.retrieve.error", accessor.getMessage("yukon.web.modules.tools.trend"), ex.getMessage()));
                 return redirectLink;
