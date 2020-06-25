@@ -141,7 +141,7 @@ public class TrendEditorController {
         } else {
             // Call REST API to retrieve trend
             try {
-                String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl +id);
+                String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/" +id);
 
                 ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.GET, TrendModel.class, trendModel);
 
@@ -179,7 +179,7 @@ public class TrendEditorController {
             String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl);
             if (trendModel.getTrendId() != null) {
                 httpMethod = HttpMethod.PUT;
-                url = url + trendModel.getTrendId();
+                url = url + "/"+ trendModel.getTrendId();
             }
 
             ResponseEntity<? extends Object> response = apiRequestHelper.callAPIForObject(userContext, request, url, httpMethod, TrendModel.class, trendModel);
@@ -196,7 +196,7 @@ public class TrendEditorController {
             return redirectLink;
         } catch (RestClientException ex) {
             log.error("Error saving trend: {}. Error: {}", trendModel.getName(), ex.getMessage());
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.save", trendModel.getName(), ex.getMessage()));
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", trendModel.getName(), ex.getMessage()));
             return redirectLink;
         }
         return null;
@@ -219,7 +219,7 @@ public class TrendEditorController {
         
         if (result.hasErrors()) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
-            trendSeries.applyDefaults();
+            trendSeries.applyDefaultsIfNoErrors(result);
             setModel(model, isMarker);
             if (!isMarker) {
                 model.addAttribute("deviceName", yukonPao != null ? yukonPao.getPaoName() : "");
@@ -255,7 +255,7 @@ public class TrendEditorController {
             FlashScope flash, HttpServletRequest request) {
         try {
             // Api call to delete trend
-            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + id);
+            String url = helper.findWebServerUrl(request, userContext, ApiURL.trendUrl + "/"+ id);
             ResponseEntity<? extends Object> response =
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, Integer.class);
 

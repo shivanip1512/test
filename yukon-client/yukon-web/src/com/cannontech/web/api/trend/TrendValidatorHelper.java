@@ -108,7 +108,7 @@ public class TrendValidatorHelper {
                 errors.rejectValue("style", basekey + "notSupported", new Object[] { trendSeries.getStyle() }, "");
             }
         }
-        if (trendSeries.getType() != null && trendSeries.getType() == GraphType.DATE_TYPE) {
+        if (trendSeries.getType() != null && trendSeries.getType() == GraphType.DATE_TYPE && !errors.hasFieldErrors("date")) {
             YukonValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), dateI18nText,
                     false);
             if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
