@@ -239,8 +239,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
             @Override
             public void complete() {
-                collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result,
-                        new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices()));
                 if (!result.isComplete()) {
                     collectionActionService.updateResult(result, !result.isCanceled()
                         ? CommandRequestExecutionStatus.COMPLETE : CommandRequestExecutionStatus.CANCELLED);
@@ -255,6 +253,8 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
             }
         };
 
+        collectionActionService.addUnsupportedToResult(CollectionActionDetail.UNSUPPORTED, result,
+                new ArrayList<>(deviceCollectionSummary.getUnsupportedDevices()));
         if (pointsForStrategy.isEmpty()) {
             strategyCallback.complete();
         } else {
