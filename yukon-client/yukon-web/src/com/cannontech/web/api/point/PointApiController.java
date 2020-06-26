@@ -67,10 +67,8 @@ public class PointApiController {
     public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging) {
-
-        DevicePointsSortBy sortBy = DevicePointsSortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
-        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy.getValue(), paging), HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sorting.getSort(), paging), HttpStatus.OK);
     }
 
     @InitBinder("pointBaseModel")
@@ -90,24 +88,6 @@ public class PointApiController {
         LiteYukonUser user = ApiRequestContext.getContext().getLiteYukonUser();
         YukonUserContext userContext = contextResolver.resolveContext(user, request);
         return userContext;
-    }
-
-    public enum DevicePointsSortBy {
-
-        pointName(SortBy.POINT_NAME),
-        offset(SortBy.POINT_OFFSET),
-        deviceName(SortBy.DEVICE_NAME),
-        pointType(SortBy.POINT_TYPE);
-
-        private DevicePointsSortBy(SortBy value) {
-            this.value = value;
-        }
-
-        private final SortBy value;
-
-        public SortBy getValue() {
-            return value;
-        }
     }
 
 }

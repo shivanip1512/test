@@ -103,8 +103,8 @@ public class RtuDnpServiceImpl implements RtuDnpService {
 
     @Override
     public List<DevicePointDetail> getRtuPointDetail(int rtuId) {
-        return getRtuPointDetail(rtuId, new RtuPointsFilter(), Direction.desc, SortBy.DEVICE_NAME,
-            PagingParameters.EVERYTHING).getResultList();
+        return getRtuPointDetail(rtuId, new RtuPointsFilter(), Direction.desc, SortBy.deviceName,
+                PagingParameters.EVERYTHING).getResultList();
 
     }
 

@@ -428,11 +428,10 @@ public class RtuController {
 
     public enum RtuPointsSortBy implements DisplayableEnum {
 
-        pointName(SortBy.POINT_NAME),
-        offset(SortBy.POINT_OFFSET),
-        deviceName(SortBy.DEVICE_NAME),
-        pointType(SortBy.POINT_TYPE);
-
+        pointName(SortBy.pointName),
+        offset(SortBy.pointOffset),
+        deviceName(SortBy.deviceName),
+        pointType(SortBy.pointType);
 
         private RtuPointsSortBy(SortBy value) {
             this.value = value;

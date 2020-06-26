@@ -11,10 +11,10 @@ import com.cannontech.database.data.point.PointType;
 public interface DevicePointDao {
 
     public enum SortBy{
-        DEVICE_NAME("PAOName"),
-        POINT_NAME("PointName"),
-        POINT_OFFSET("PointOffset"),
-        POINT_TYPE("PointType");
+        deviceName("PAOName"),
+        pointName("PointName"),
+        pointOffset("PointOffset"),
+        pointType("PointType");
         
         private SortBy(String dbString) {
             this.dbString = dbString;
