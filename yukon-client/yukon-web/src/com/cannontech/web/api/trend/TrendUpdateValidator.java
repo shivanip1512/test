@@ -23,18 +23,16 @@ public class TrendUpdateValidator extends SimpleValidator<TrendModel> {
     protected void doValidation(TrendModel trend, Errors errors) {
 
         if (trend.getName() != null) {
-            trendValidatorHelper.validateBlankName(errors, trend.getName());
-            if (!errors.hasFieldErrors("name")) {
-                String trendId = ServletUtils.getPathVariable("id");
-                LiteGraphDefinition existingTrend = dbCache.getAllGraphDefinitions()
-                                                           .stream()
-                                                           .filter(liteTrend -> liteTrend.getLiteID() == Integer.valueOf(trendId))
-                                                           .findAny()
-                                                           .orElseThrow(() -> new NotFoundException("Trend Id not found"));
-                if (!existingTrend.getName().equalsIgnoreCase(trend.getName().trim())) {
-                    trendValidatorHelper.validateTrendName(errors, trend.getName());
-                    trendValidatorHelper.validateUniqueTrendName(errors, trend.getName());
-                }
+            String trendId = ServletUtils.getPathVariable("id");
+            LiteGraphDefinition existingTrend = dbCache.getAllGraphDefinitions()
+                                                       .stream()
+                                                       .filter(liteTrend -> liteTrend.getLiteID() == Integer.valueOf(trendId))
+                                                       .findAny()
+                                                       .orElseThrow(() -> new NotFoundException("Trend Id not found"));
+            if (!existingTrend.getName().equalsIgnoreCase(trend.getName().trim())) {
+                trendValidatorHelper.validateBlankName(errors, trend.getName());
+                trendValidatorHelper.validateTrendName(errors, trend.getName());
+                trendValidatorHelper.validateUniqueTrendName(errors, trend.getName());
             }
         }
 
