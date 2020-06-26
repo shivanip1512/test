@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.api.token.ApiRequestContext;
+import com.cannontech.common.device.dao.DevicePointDao;
 import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DevicePointsFilter;
 import com.cannontech.common.model.DefaultItemsPerPage;
@@ -67,8 +68,9 @@ public class PointApiController {
     public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
             @DefaultItemsPerPage(value = 250) PagingParameters paging) {
+        SortBy sortBy = DevicePointDao.SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
-        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sorting.getSort(), paging), HttpStatus.OK);
+        return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
     }
 
     @InitBinder("pointBaseModel")

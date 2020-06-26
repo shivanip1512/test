@@ -540,7 +540,7 @@ public class PointEditorServiceImpl implements PointEditorService {
 
     @Override
     public PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
-            String sortBy, PagingParameters paging) {
+            SortBy sortBy, PagingParameters paging) {
         List<PointInfoModel> listOfPointInfoModel = new ArrayList<>();
         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
         if (pao == null) {
@@ -548,7 +548,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         }
 
         SearchResults<DevicePointDetail> devicePointDetails = devicePointDao.getDevicePointDetail(List.of(paoId),
-                                                              devicePointsFilter.getPointNames(), devicePointsFilter.getTypes(), direction, SortBy.valueOf(sortBy), paging);
+                                                              devicePointsFilter.getPointNames(), devicePointsFilter.getTypes(), direction, sortBy, paging);
 
         for (DevicePointDetail devicePointDetail : devicePointDetails.getResultList()) {
             Set<BuiltInAttribute> attributes = paoDefinitionDao.findAttributeForPaoTypeAndPoint(PaoTypePointIdentifier.of(pao.getPaoType(),

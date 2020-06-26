@@ -168,7 +168,7 @@ public interface PointEditorService {
      * Retrieve Points info for passed paoId.
      */
     PaoPointModel getDevicePointDetail(int paoId, DevicePointsFilter devicePointsFilter, Direction direction,
-                                       String sortBy, PagingParameters paging);
+                                       SortBy sortBy, PagingParameters paging);
 
 
 }
