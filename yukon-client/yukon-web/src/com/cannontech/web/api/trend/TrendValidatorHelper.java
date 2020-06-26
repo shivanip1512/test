@@ -35,34 +35,28 @@ public class TrendValidatorHelper {
     }
 
     /**
-     * Check if trend name is blank.
+     * Validate trend name.
      */
-    public void validateBlankName(Errors errors, String trendName) {
+    public void validateTrendName(Errors errors, String trendName, Integer trendId) {
+
         String nameI18nText = accessor.getMessage(commonkey + "name");
         YukonValidationUtils.checkIsBlank(errors, "name", trendName, nameI18nText, false);
-    }
 
-    /**
-     * Check if trend name exceeds max character length and contains illegal characters.
-     */
-    public void validateTrendName(Errors errors, String trendName) {
-
-        YukonValidationUtils.checkExceedsMaxLength(errors, "name", trendName, 40);
-
-        if (StringUtils.containsAny(trendName, PaoUtils.ILLEGAL_NAME_CHARS)) {
-            errors.rejectValue("name", basekey + "paoName.containsIllegalChars");
+        if (!errors.hasFieldErrors("name")) {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", trendName, 40);
+            if (StringUtils.containsAny(trendName, PaoUtils.ILLEGAL_NAME_CHARS)) {
+                errors.rejectValue("name", basekey + "paoName.containsIllegalChars");
+            }
+            dbCache.getAllGraphDefinitions()
+                   .stream()
+                   .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
+                   .findAny()
+                   .ifPresent(liteGraphDefinition -> {
+                       if (trendId == null || liteGraphDefinition.getGraphDefinitionID() != trendId) {
+                           errors.rejectValue("name", basekey + "nameConflict");
+                       }
+                   });
         }
-    }
-
-    /**
-     * Check if Trend name already exists.
-     */
-    public void validateUniqueTrendName(Errors errors, String trendName) {
-        dbCache.getAllGraphDefinitions()
-               .stream()
-               .filter(liteTrend -> liteTrend.getName().equalsIgnoreCase(trendName.trim()))
-               .findAny()
-               .ifPresent(def -> errors.rejectValue("name", basekey + "nameConflict"));
     }
 
     /**

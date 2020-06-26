@@ -27,7 +27,7 @@ import com.cannontech.stars.util.ServletUtils;
 public class TrendApiController {
     @Autowired private TrendService trendService;
     @Autowired private TrendCreateValidator trendCreateValidator;
-    @Autowired private TrendUpdateValidator trendUpdateValidator;
+    @Autowired private TrendValidator trendValidator;
 
     @PostMapping
     public ResponseEntity<Object> create(@Valid @RequestBody TrendModel trendModel) {
@@ -57,11 +57,11 @@ public class TrendApiController {
 
     @InitBinder("trendModel")
     public void setupBinder(WebDataBinder binder) {
+        binder.addValidators(trendValidator);
+
         String trendId = ServletUtils.getPathVariable("id");
         if (trendId == null) {
-            binder.setValidator(trendCreateValidator);
-        } else {
-            binder.setValidator(trendUpdateValidator);
+            binder.addValidators(trendCreateValidator);
         }
     }
 }
