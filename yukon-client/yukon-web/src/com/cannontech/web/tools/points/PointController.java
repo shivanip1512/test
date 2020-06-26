@@ -115,7 +115,7 @@ public class PointController {
     @Autowired private RtuService rtuService;
     @Autowired private CopyPointValidator copyPointValidator;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-    @Autowired private YukonPointHelper yukonPointHelper;
+    @Autowired private YukonPointHelper pointHelper;
     
     private static final String baseKey = "yukon.web.modules.tools.point";
 
@@ -130,7 +130,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext, HttpServletRequest request) {
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.VIEW);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.VIEW);
         model.addAttribute("mode", PageEditMode.VIEW);
         return retrievePointAndModel(model, userContext, flashScope, id, request);
     }
@@ -138,7 +138,7 @@ public class PointController {
     @RequestMapping(value = "/points/{pointId}/render-copy-point", method = RequestMethod.GET)
     public String renderCopyPoint(ModelMap model, FlashScope flashScope, @PathVariable Integer pointId,
             YukonUserContext userContext, HttpServletRequest request) {
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
         LitePointModel copyPointModel = null;
         if (model.containsAttribute("copyPointModel")) {
             copyPointModel = (LitePointModel) model.get("copyPointModel");
@@ -172,7 +172,7 @@ public class PointController {
     public String copyPoint(@ModelAttribute("copyPointModel") LitePointModel pointModel, BindingResult result,
             ModelMap model, FlashScope flashScope, YukonUserContext userContext, HttpServletResponse response)
             throws JsonGenerationException, JsonMappingException, IOException {
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
         copyPointValidator.validate(pointModel, result);
 
         if (result.hasErrors()) {
@@ -233,7 +233,7 @@ public class PointController {
 
     @RequestMapping(value = "/points/{id}/edit", method = RequestMethod.GET)
     public String edit(ModelMap model, FlashScope flashScope, @PathVariable int id, YukonUserContext userContext, HttpServletRequest request) {
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         model.addAttribute("mode", PageEditMode.EDIT);
         return retrievePointAndModel(model, userContext, flashScope, id, request);
     }
@@ -241,7 +241,7 @@ public class PointController {
     @RequestMapping("/points/{type}/create")
     public String create(@PathVariable String type, @RequestParam int parentId, YukonUserContext userContext) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.CREATE);
 
         int pointType = PointTypes.getType(type);
 
@@ -400,7 +400,7 @@ public class PointController {
     public String saveAnalog(@ModelAttribute("pointModel") AnalogPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
@@ -408,7 +408,7 @@ public class PointController {
     public String saveAccumulator(AccumulatorPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash, userContext);
     }
     
@@ -416,7 +416,7 @@ public class PointController {
     public String saveDemandAccumulator(AccumulatorPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
@@ -424,7 +424,7 @@ public class PointController {
     public String saveCalcAnalog(@ModelAttribute("pointModel") CalculatedPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
@@ -432,7 +432,7 @@ public class PointController {
     public String saveStatusAnalog(@ModelAttribute("pointModel") StatusPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
@@ -440,7 +440,7 @@ public class PointController {
     public String saveCalcStatusAnalog(@ModelAttribute("pointModel") CalcStatusPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
 
         return save(pointModel, result, redirectAttributes, flash, userContext);
     }
@@ -449,7 +449,7 @@ public class PointController {
     public String saveSystem(@ModelAttribute("pointModel") SystemPointModel pointModel, BindingResult result,
             RedirectAttributes redirectAttributes, YukonUserContext userContext, FlashScope flash) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return save(pointModel, result, redirectAttributes, flash, userContext);
     }
 
@@ -484,7 +484,7 @@ public class PointController {
     @RequestMapping(value = "/points/{id}", method = RequestMethod.POST)
     public String delete(@PathVariable int id, FlashScope flashScope, YukonUserContext userContext) {
 
-        yukonPointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.OWNER);
+        pointHelper.verifyRoles(userContext.getYukonUser(), HierarchyPermissionLevel.OWNER);
 
         PointModel pointModel = pointEditorService.getModelForId(id);
         int paoId = pointModel.getPointBase().getPoint().getPaoID();
