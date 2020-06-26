@@ -76,6 +76,11 @@ public class TrendApiDoc extends DocumentationBase {
     }
 
     @Test(dependsOnMethods = "Test_Trend_01_Create")
+    public void Test_Trend_01_Get() {
+        getDoc();
+    }
+
+    @Test(dependsOnMethods = "Test_Trend_01_Get")
     public void Test_Trend_01_Update() {
         updateAllDoc();
     }
@@ -87,7 +92,10 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Override
     protected Get buildGetFields() {
-        return null;
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        String url = ApiCallHelper.getProperty("getTrend") + trendId;
+        return new DocumentationFields.Get(responseFields, url);
     }
 
     @Override

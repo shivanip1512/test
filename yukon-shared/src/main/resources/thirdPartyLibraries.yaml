@@ -5886,12 +5886,12 @@ C++ :
     project URL : "https://logging.apache.org/log4cxx/latest_stable/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : 5d82af18447f83e657ea20f416d94004
-    sha1 : 75b531e36aab7113ddde6f0fa285f072fae6413f 
-    fileCount : 218
-    totalSize : 10789924
-    updated : 2018-05-17  
-    jira : YUK-18201
+    md5 : ef6679b1b75c30bdc07046b0799c3331
+    sha1 : ad7c3a28c6dc4fb9f0a46afb12a985c38bad3f30
+    fileCount : 187
+    totalSize : 9562547
+    updated : 2020-06-19  
+    jira : YUK-21543
     notes : 
     
   - project : Microsoft SQL Server Client
