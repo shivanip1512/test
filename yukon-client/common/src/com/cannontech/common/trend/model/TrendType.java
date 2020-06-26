@@ -32,6 +32,10 @@ public class TrendType {
         public boolean isDateType() {
             return this == DATE_TYPE;
         }
+        
+        public boolean isMarkerType() {
+            return this == GraphType.MARKER_TYPE;
+        }
     }
 
     private final GraphType graphType;

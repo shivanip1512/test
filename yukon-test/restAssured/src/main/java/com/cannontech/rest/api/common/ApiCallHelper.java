@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.util.Properties;
 
 import com.cannontech.rest.api.common.model.MockLMDto;
+import com.cannontech.rest.api.common.model.MockPointType;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -71,7 +72,16 @@ public class ApiCallHelper {
         String uri = getProperty(key);
         return getHeader().get(uri + param).then().log().all().extract();
     }
-
+    
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP GET method for specified URI
+     * and request parameter and associated query parameters.
+     * 
+     */
+    public static ExtractableResponse<?> get(String key, String param, RequestSpecification requestSpecification) {
+        String uri = getProperty(key);
+        return requestSpecification.when().get(uri + param + "/points").then().log().all().extract();
+    }
     
     /**
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP GET method for specified URI,
@@ -119,7 +129,16 @@ public class ApiCallHelper {
         return getHeader().body(body).delete(uri + param).then().log().all().extract();
     }
 
-    private static RequestSpecification getHeader() {
+    /**
+     * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP PUT method for specified URI
+     * and request parameter.
+     */
+    public static ExtractableResponse<?> put(String key, Object body, String param) {
+        String uri = getProperty(key);
+        return getHeader().body(body).put(uri + param).then().log().all().extract();
+    }
+
+    public static RequestSpecification getHeader() {
         return given().accept("application/json").contentType("application/json").header("Authorization",
             "Bearer " + authToken).log().all();
     }

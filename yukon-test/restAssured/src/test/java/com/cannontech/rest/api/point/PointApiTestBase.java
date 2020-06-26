@@ -16,6 +16,7 @@ import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
+import io.restassured.specification.RequestSpecification;
 
 public abstract class PointApiTestBase {
 
@@ -340,4 +341,24 @@ public abstract class PointApiTestBase {
         assertTrue(ValidationHelper.validateFieldError(createResponse, "fdrList[0].fdrInterfaceType", "Interface is required."),
                    "Expected code in response is not correct");
     }
+    
+    /**
+    * Test case for retrieve all points associated with paoId
+    */
+   @Test
+   public void getPoints(ITestContext context) {
+       RequestSpecification requestSpecification = ApiCallHelper.getHeader()
+                                                                .queryParam("types", MockPointType.CalcAnalog)
+                                                                .queryParam("pointNames", "TestCalcAnalog")
+                                                                .queryParam("page", 1)
+                                                                .queryParam("itemsPerPage", "50")
+                                                                .queryParam("dir", "asc")
+                                                                .queryParam("sort", "pointName");
+       String paoId = ApiCallHelper.getProperty("paoId");
+       Log.info("Point Id to retrive all points : " + paoId);
+
+       ExtractableResponse<?> getResponse = ApiCallHelper.get("getPoints", paoId, requestSpecification);
+
+       assertTrue("Status code should be 200", getResponse.statusCode() == 200);
+   }
 }

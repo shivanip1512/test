@@ -67,7 +67,8 @@ public enum PaoTag {
     METER_PROGRAMMING("Meter Programming"),
     DATA_STREAMING("Data Streaming Capable"),
     PORT_DETAIL_DISPLAYABLE("Port Detail Displayable"),
-    SUPPORTS_PING("Supports Device Pinging")
+    SUPPORTS_PING("Supports Device Pinging"),
+    VIRTUAL_DEVICE_DISPLAYABLE("Virtual Device Displayable")
     ;
 
     private final String description;

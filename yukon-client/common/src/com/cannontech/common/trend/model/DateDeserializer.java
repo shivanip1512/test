@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 public class DateDeserializer extends JsonDeserializer<DateTime> {
 
-    private static final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy").withZoneUTC();
+    private static final DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MM/dd/yyyy");
 
     @Override
     public DateTime deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)

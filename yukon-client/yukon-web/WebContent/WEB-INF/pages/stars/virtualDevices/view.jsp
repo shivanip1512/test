@@ -8,10 +8,6 @@
 
 <cti:standardPage module="operator" page="virtualDevice.detail">
 
-    <c:if test="${not empty userMessage}">
-        <tags:alertBox type="success" includeCloseButton="true">${fn:escapeXml(userMessage)}</tags:alertBox>
-    </c:if>
-
     <!-- Actions dropdown -->
     <div id="page-actions" class="dn">
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
@@ -42,8 +38,11 @@
     <tags:widgetContainer deviceId="${id}" identify="false">
         <div class="column-12-12 clearfix">
             <div class="one column">
-                <tags:widget bean="virtualDeviceInfoWidget" classes="js-virtual-device-info-widget"/>
+                <tags:widget bean="virtualDeviceInfoWidget"/>
             </div>
+        </div>
+        <div>
+            <tags:widget bean="devicePointsWidget"/>
         </div>
     </tags:widgetContainer>
     <cti:includeScript link="/resources/js/pages/yukon.assets.virtualDevice.js"/>

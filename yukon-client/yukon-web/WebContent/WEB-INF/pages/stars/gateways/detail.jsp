@@ -13,6 +13,10 @@
 
 <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
 
+<input id="gatewayTypes" type="hidden" value="${gatewayPaoTypes}"/>
+<input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
+<input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
+
 <d:confirm on="#gateway-delete" nameKey="delete.confirm"/>
 
 <div id="page-buttons" class="dn">

@@ -99,5 +99,4 @@ public class AnalogPointApiTest extends ScalarPointApiTest {
                 "Expected code in response is not correct");
     }
 
-
 }

@@ -1,11 +1,10 @@
 package com.cannontech.web.tools.points.model;
 
-import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.database.data.point.PointInfo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -58,12 +57,12 @@ public class PointInfoModel {
         this.attributes = attributes;
     }
     
-    public static PointInfoModel of(PointInfo pointInfo, Set<BuiltInAttribute> attributes) {
+    public static PointInfoModel of(DevicePointDetail devicePointDetail, Set<BuiltInAttribute> attributes) {
         PointInfoModel pointInfoModel = new PointInfoModel();
-        pointInfoModel.setPointId(pointInfo.getPointId());
-        pointInfoModel.setName(pointInfo.getName());
-        pointInfoModel.setPointIdentifier(pointInfo.getPointIdentifier());
-        pointInfoModel.setStateGroupId(pointInfo.getStateGroupId());
+        pointInfoModel.setPointId(devicePointDetail.getPointId());
+        pointInfoModel.setName(devicePointDetail.getPointName());
+        pointInfoModel.setPointIdentifier(devicePointDetail.getPaoPointIdentifier().getPointIdentifier());
+        pointInfoModel.setStateGroupId(devicePointDetail.getStateGroupId());
         pointInfoModel.setAttributes(attributes);
         return pointInfoModel;
     }

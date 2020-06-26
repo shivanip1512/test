@@ -85,6 +85,7 @@
 <entry key="yukon.common.dashesTwo">--</entry>
 <entry key="yukon.common.date">Date</entry>
 <entry key="yukon.common.dateRange">Date Range</entry>
+<entry key="yukon.common.dateTime">Date/Time</entry>
 <entry key="yukon.common.day">Day</entry>
 <entry key="yukon.common.default">(default)</entry>
 <entry key="yukon.common.degree">°</entry>
@@ -271,6 +272,7 @@
 <entry key="yukon.common.selectGroups">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selector.selectOne">-- Select One --</entry>
+<entry key="yukon.common.selectPointTypes">Select Point Type(s)</entry>
 <entry key="yukon.common.sendCommand">Send Command</entry>
 <entry key="yukon.common.settings">Settings</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
@@ -354,6 +356,7 @@
 <entry key="yukon.common.unavailable">Unavailable</entry>
 <entry key="yukon.common.unknown">Unknown</entry>
 <entry key="yukon.common.value">Value/State</entry>
+<entry key="yukon.common.valueTxt">Value</entry>
 <entry key="yukon.common.view">view</entry>
 <entry key="yukon.common.viewAll">View All</entry>
 <entry key="yukon.common.viewDetails">View Details</entry>
