@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,12 @@ public class TrendApiController {
     public ResponseEntity<TrendModel> update(@Valid @RequestBody TrendModel trendModel, @PathVariable int id) {
         TrendModel createdTrend = trendService.update(id, trendModel);
         return new ResponseEntity<>(createdTrend, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TrendModel> retrieve(@PathVariable int id) {
+        TrendModel trend = trendService.retrieve(id);
+        return new ResponseEntity<>(trend, HttpStatus.OK);
     }
 
     @InitBinder("trendModel")

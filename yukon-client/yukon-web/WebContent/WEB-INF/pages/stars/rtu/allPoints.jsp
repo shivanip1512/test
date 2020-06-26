@@ -14,7 +14,7 @@
         <tags:selectWithItems items="${devices}" path="deviceIds" itemLabel="name" itemValue="id"  dataPlaceholder="${selectDevices}" inputClass="js-chosen"/>
         <cti:msg2 var="selectPoints" key=".selectPoints"/>
         <tags:selectWithItems items="${pointNames}" path="pointNames" dataPlaceholder="${selectPoints}" inputClass="js-chosen"/>
-        <cti:msg2 var="selectTypes" key=".selectTypes"/>
+        <cti:msg2 var="selectTypes" key="yukon.common.selectPointTypes"/>
         <tags:selectWithItems items="${pointTypes}" path="types" dataPlaceholder="${selectTypes}" inputClass="js-chosen"/>
         <cti:button nameKey="filter" classes="action primary js-filter fn vab"/>
     </form:form>

@@ -167,7 +167,7 @@ public class YukonValidationUtils extends ValidationUtils {
     }
 
     /**
-     * Check to ensure that the given value is within the given range, checking inclusive/exclusive based off Range.
+     * Check to ensure that the given value is between the given range, expects a fully inclusive Range.
      */
     public static <T extends Comparable<T>> void checkRange(Errors errors, String field, String fieldname, T fieldValue,
             Range<T> range, boolean required) {
@@ -176,8 +176,7 @@ public class YukonValidationUtils extends ValidationUtils {
         }
 
         if (fieldValue == null || (fieldValue != null && !range.intersects(fieldValue))) {
-            
-            //expects a fully inclusive Range.
+           
             errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { fieldname, range.getMin(),
                     range.getMax() }, "");
         }

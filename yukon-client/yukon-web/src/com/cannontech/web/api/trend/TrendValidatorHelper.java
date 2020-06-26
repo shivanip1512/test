@@ -1,7 +1,6 @@
 package com.cannontech.web.api.trend;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
@@ -13,12 +12,10 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.trend.model.RenderType;
 import com.cannontech.common.trend.model.TrendSeries;
-import com.cannontech.common.trend.model.TrendType.GraphType;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.points.validators.PointValidationUtil;
 import com.cannontech.yukon.IDatabaseCache;
@@ -42,8 +39,7 @@ public class TrendValidatorHelper {
     /**
      * Validate Trend name.
      */
-    public void validateTrendName(Errors errors, String trendName, String fieldName) {
-        String trendId = ServletUtils.getPathVariable("id");
+    public void validateTrendName(Errors errors, String trendName, String fieldName, Integer trendId) {
         // Applicable for update flow. We must have trendId but trendName is optional, Skip name validation when it's null.
         if (trendId != null && trendName == null) {
             return;
@@ -111,7 +107,7 @@ public class TrendValidatorHelper {
                 errors.rejectValue("style", basekey + "notSupported", new Object[] { trendSeries.getStyle() }, "");
             }
         }
-        if (trendSeries.getType() != null && trendSeries.getType() == GraphType.DATE_TYPE) {
+        if (trendSeries.getType() != null && trendSeries.getType().isDateType() && !errors.hasFieldErrors("date")) {
             YukonValidationUtils.checkIsBlank(errors, "date", Objects.toString(trendSeries.getDate(), null), dateI18nText,
                     false);
             if (!errors.hasFieldErrors("date") && trendSeries.getDate().isAfterNow()) {
