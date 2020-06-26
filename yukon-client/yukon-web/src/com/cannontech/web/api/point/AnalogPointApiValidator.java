@@ -4,8 +4,6 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.point.AnalogControlType;
-import com.cannontech.database.data.point.PointType;
-import com.cannontech.web.tools.points.model.AccumulatorPointModel;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
@@ -21,6 +19,7 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
     public boolean supports(Class clazz) {
         return AnalogPointModel.class.isAssignableFrom(clazz);
     }
+
     @Override
     protected void doValidation(ScalarPointModel<?> target, Errors errors) {
         super.doValidation(target, errors);
