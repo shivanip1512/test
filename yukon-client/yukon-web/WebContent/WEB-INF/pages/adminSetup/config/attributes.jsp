@@ -25,13 +25,12 @@
         </div>
         
         <tags:sectionContainer2 nameKey="attributeDefinitions">
-            <cti:url value="/admin/config/attribute/create" var="createAttributeUrl" />
-            <form action="${createAttributeUrl}" method="POST" class="PB10">
-                <cti:csrfToken />
+            <span class="js-create-attribute-span">
                 <cti:msg2 var="attributePlaceholder" key=".attributeName"/>
                 <input type="text" name="name" placeholder="${attributePlaceholder}" maxlength="60" size="40"/>
-                <cti:button nameKey="create" type="submit" classes="fn vam" icon="icon-plus-green"/>
-            </form>
+                <cti:button nameKey="create" classes="js-create-attribute fn vam" icon="icon-plus-green"/>
+                <div class="error"></div>
+            </span>
             
             <div style="width:60%;">
                 <table class="compact-results-table row-highlighting has-actions js-attributes-table">
@@ -49,16 +48,15 @@
                                         ${fn:escapeXml(attribute.name)}
                                     </span>
                                     <span class="js-edit-attribute-${attribute.id} dn">
-                                        <cti:url value="/admin/config/attribute/${attribute.id}/update" var="updateAttributeUrl" />
-                                        <form:form action="${updateAttributeUrl}" method="POST">
-                                            <input type="text" name="name" maxlength="60" size="50" value="${attribute.name}"/>
-                                            <cti:csrfToken/>
-                                            <div class="button-group">
-                                                <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"/>
-                                                <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
-                                                    data-attribute-id="${attribute.id}"/>
-                                            </div>
-                                        </form:form>
+                                        <input type="hidden" name="savedName" value="${attribute.name}"/>
+                                        <input type="text" name="name" maxlength="60" size="50" value="${attribute.name}"/>
+                                        <div class="button-group">
+                                            <cti:button renderMode="buttonImage" icon="icon-disk" classes="js-save-edit-attribute" 
+                                                data-attribute-id="${attribute.id}"/>
+                                            <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
+                                                data-attribute-id="${attribute.id}"/>
+                                        </div>
+                                        <div class="error"></div>
                                     </span>
                                 </td>
                                 <td>
@@ -70,6 +68,7 @@
                                         <cti:url var="deleteUrl" value="/admin/config/attribute/${attribute.id}/delete"/>
                                         <form:form id="delete-attribute-form-${attribute.id}" action="${deleteUrl}" method="DELETE">
                                             <cti:csrfToken/>
+                                            <input type="hidden" name="name" value="${attribute.name}"/>
                                         </form:form>
                                     </cm:dropdown>
                                 </td>
