@@ -20,14 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.trend.service.TrendService;
-import com.cannontech.stars.util.ServletUtils;
 
 @RestController
 @RequestMapping("/trends")
 public class TrendApiController {
     @Autowired private TrendService trendService;
-    @Autowired private TrendCreateValidator trendCreateValidator;
-    @Autowired private TrendUpdateValidator trendUpdateValidator;
+    @Autowired private TrendValidator trendValidator;
 
     @PostMapping
     public ResponseEntity<Object> create(@Valid @RequestBody TrendModel trendModel) {
@@ -57,12 +55,7 @@ public class TrendApiController {
 
     @InitBinder("trendModel")
     public void setupBinder(WebDataBinder binder) {
-        String trendId = ServletUtils.getPathVariable("id");
-        if (trendId == null) {
-            binder.setValidator(trendCreateValidator);
-        } else {
-            binder.setValidator(trendUpdateValidator);
-        }
+        binder.setValidator(trendValidator);
     }
 
 }
