@@ -55,7 +55,7 @@ public class TrendModel {
         if (CollectionUtils.isNotEmpty(getTrendSeries())) {
             for (TrendSeries series : getTrendSeries()) {
                 GraphDataSeries graphSeries = new GraphDataSeries();
-                if (series.getType() == GraphType.MARKER_TYPE) {
+                if (series.getType().isMarkerType()) {
                     graphSeries.setPointID(-100);
                 } else {
                     graphSeries.setPointID(series.getPointId());
