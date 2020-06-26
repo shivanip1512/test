@@ -19,14 +19,14 @@ public class AccumulatorPointModel extends ScalarPointModel<AccumulatorPoint> {
 
     @Override
     public void buildDBPersistent(AccumulatorPoint accumulatorPoint) {
-        getAccumulatorPoint().buildDBPersistent(accumulatorPoint.getPointAccumulator());
         super.buildDBPersistent(accumulatorPoint);
+        getAccumulatorPoint().buildDBPersistent(accumulatorPoint.getPointAccumulator());
     }
 
     @Override
     public void buildModel(AccumulatorPoint accumulatorPoint) {
-        getAccumulatorPoint().buildModel(accumulatorPoint.getPointAccumulator());
         super.buildModel(accumulatorPoint);
+        getAccumulatorPoint().buildModel(accumulatorPoint.getPointAccumulator());
     }
 
 }

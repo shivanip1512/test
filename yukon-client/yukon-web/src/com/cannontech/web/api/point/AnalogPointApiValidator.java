@@ -7,7 +7,6 @@ import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointAnalog;
 import com.cannontech.web.tools.points.model.PointAnalogControl;
-import com.cannontech.web.tools.points.model.ScalarPointModel;
 
 public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPointModel> {
 
@@ -21,10 +20,8 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
     }
 
     @Override
-    protected void doValidation(ScalarPointModel<?> target, Errors errors) {
-        super.doValidation(target, errors);
-
-        AnalogPointModel analogPointModel = (AnalogPointModel) target;
+    protected void doValidation(AnalogPointModel analogPointModel, Errors errors) {
+        super.doValidation(analogPointModel, errors);
 
         validatePointAnalog(analogPointModel.getPointAnalog(), errors);
         validatePointAnalogControl(analogPointModel.getPointAnalogControl(), errors);

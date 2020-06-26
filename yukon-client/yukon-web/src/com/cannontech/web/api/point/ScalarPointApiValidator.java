@@ -13,14 +13,14 @@ import com.cannontech.web.tools.points.model.PointLimitModel;
 import com.cannontech.web.tools.points.model.PointUnit;
 import com.cannontech.web.tools.points.model.ScalarPointModel;
 
-public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends PointApiValidator<ScalarPointModel<?>> {
+public class ScalarPointApiValidator<T extends ScalarPointModel<?>> extends PointApiValidator<T> {
 
     public ScalarPointApiValidator() {
         super();
     }
 
     @Override
-    protected void doValidation(ScalarPointModel<?> target, Errors errors) {
+    protected void doValidation(T target, Errors errors) {
         super.doValidation(target, errors);
 
         validatePointLimit(target, errors);

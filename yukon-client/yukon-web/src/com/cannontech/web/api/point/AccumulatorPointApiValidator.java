@@ -5,7 +5,6 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.web.tools.points.model.AccumulatorPointModel;
 import com.cannontech.web.tools.points.model.PointAccumulatorModel;
-import com.cannontech.web.tools.points.model.ScalarPointModel;
 
 public class AccumulatorPointApiValidator extends ScalarPointApiValidator<AccumulatorPointModel> {
 
@@ -19,10 +18,8 @@ public class AccumulatorPointApiValidator extends ScalarPointApiValidator<Accumu
     }
 
     @Override
-    protected void doValidation(ScalarPointModel<?> target, Errors errors) {
-        super.doValidation(target, errors);
-
-        AccumulatorPointModel accumulatorPointModel = (AccumulatorPointModel) target;
+    protected void doValidation(AccumulatorPointModel accumulatorPointModel, Errors errors) {
+        super.doValidation(accumulatorPointModel, errors);
 
         if (accumulatorPointModel != null) {
             PointAccumulatorModel pointAccumulator = accumulatorPointModel.getAccumulatorPoint();
