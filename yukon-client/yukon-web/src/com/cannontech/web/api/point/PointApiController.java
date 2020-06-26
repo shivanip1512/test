@@ -30,9 +30,11 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.pao.service.YukonPointHelper;
 import com.cannontech.web.tools.points.model.PointBaseModel;
 import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.web.tools.points.service.PointEditorService.AttachedException;
@@ -45,31 +47,38 @@ public class PointApiController <T extends PointBaseModel<?>> {
     @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
     @Autowired private List<PointApiValidator<T>> pointApiValidators;
     @Autowired private YukonUserContextResolver contextResolver;
+    @Autowired private YukonPointHelper pointHelper;
 
     @PostMapping("/points")
-    public ResponseEntity<Object> create(@Valid @RequestBody T pointBase, HttpServletRequest request) {
+    public ResponseEntity<Object> create(@Valid @RequestBody PointBaseModel<?> pointBase, HttpServletRequest request) {
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.CREATE);
         return new ResponseEntity<>(pointEditorService.create(pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
     @GetMapping(value = "/points/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> retrieve(@PathVariable int id) {
+    public ResponseEntity<Object> retrieve(@PathVariable int id , HttpServletRequest request) {
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.VIEW);
         return new ResponseEntity<>(pointEditorService.retrieve(id), HttpStatus.OK);
     }
 
     @PatchMapping("/points/{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody T pointBase, @PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<Object> update(@Valid @RequestBody PointBaseModel<?> pointBase, @PathVariable("id") int id, HttpServletRequest request) {
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.UPDATE);
         return new ResponseEntity<>(pointEditorService.update(id, pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
     @DeleteMapping("/points/{id}")
     public ResponseEntity<Object> delete(@PathVariable int id, HttpServletRequest request) throws AttachedException {
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.OWNER);
         return new ResponseEntity<>(pointEditorService.delete(id, getYukonUserContext(request)), HttpStatus.OK);
     }
 
     @GetMapping("/devices/{paoId}/points")
     public ResponseEntity<Object> getPoints(@PathVariable int paoId, @ModelAttribute("filter") DevicePointsFilter filter,
             @DefaultSort(dir = Direction.asc, sort = "pointName") SortingParameters sorting,
-            @DefaultItemsPerPage(value = 250) PagingParameters paging) {
+            @DefaultItemsPerPage(value = 250) PagingParameters paging,
+            HttpServletRequest request) {
+        pointHelper.verifyRoles(getYukonUserContext(request).getYukonUser(), HierarchyPermissionLevel.VIEW);
         SortBy sortBy = DevicePointDao.SortBy.valueOf(sorting.getSort());
         Direction direction = sorting.getDirection();
         return new ResponseEntity<>(pointEditorService.getDevicePointDetail(paoId, filter, direction, sortBy, paging), HttpStatus.OK);
