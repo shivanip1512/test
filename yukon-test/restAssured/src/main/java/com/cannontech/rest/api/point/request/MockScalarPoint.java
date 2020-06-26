@@ -1,5 +1,7 @@
 package com.cannontech.rest.api.point.request;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -13,9 +15,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class MockAnalogPoint extends MockScalarPoint {
+public class MockScalarPoint extends MockPointBase {
 
-    private MockPointAnalog pointAnalog;
-    private MockPointAnalogControl pointAnalogControl;
-  
+    private MockPointUnit pointUnit;
+    private List<MockPointLimit> limits;
 }

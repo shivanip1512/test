@@ -98,6 +98,11 @@ public class ApiCallHelper {
         return getHeader().body(body).when().post(uri + param).then().log().all().extract();
     }
     
+    public static ExtractableResponse<?> patch(String key, Object body, String param) {
+        String uri = getProperty(key);
+        return getHeader().body(body).when().patch(uri + param).then().log().all().extract();
+    }
+    
     /**
      * Returns <code>ExtractableResponse</code> by invoking corresponding HTTP DELETE method for specified URI
      * and request parameter.
