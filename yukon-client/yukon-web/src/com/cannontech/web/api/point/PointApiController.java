@@ -39,15 +39,15 @@ import com.cannontech.web.tools.points.service.PointEditorService.AttachedExcept
 import com.cannontech.web.util.YukonUserContextResolver;
 
 @RestController
-public class PointApiController {
+public class PointApiController <T extends PointBaseModel<?>> {
 
     @Autowired private PointEditorService pointEditorService;
-    @Autowired private PointApiCreationValidator<? extends PointBaseModel<?>> pointApiCreationValidator;
-    @Autowired private List<PointApiValidator<? extends PointBaseModel<?>>> pointApiValidators;
+    @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
+    @Autowired private List<PointApiValidator<T>> pointApiValidators;
     @Autowired private YukonUserContextResolver contextResolver;
 
     @PostMapping("/points")
-    public ResponseEntity<Object> create(@Valid @RequestBody PointBaseModel<?> pointBase, HttpServletRequest request) {
+    public ResponseEntity<Object> create(@Valid @RequestBody T pointBase, HttpServletRequest request) {
         return new ResponseEntity<>(pointEditorService.create(pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
@@ -57,7 +57,7 @@ public class PointApiController {
     }
 
     @PatchMapping("/points/{id}")
-    public ResponseEntity<Object> update(@Valid @RequestBody PointBaseModel<?> pointBase, @PathVariable("id") int id, HttpServletRequest request) {
+    public ResponseEntity<Object> update(@Valid @RequestBody T pointBase, @PathVariable("id") int id, HttpServletRequest request) {
         return new ResponseEntity<>(pointEditorService.update(id, pointBase, getYukonUserContext(request)), HttpStatus.OK);
     }
 
@@ -100,7 +100,7 @@ public class PointApiController {
     }
 
     @Autowired
-    void setValidators(List<PointApiValidator<? extends PointBaseModel<?>>> validators) {
+    void setValidators(List<PointApiValidator<T>> validators) {
         this.pointApiValidators = validators;
     }
 }
