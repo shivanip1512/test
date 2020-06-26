@@ -13,7 +13,6 @@ import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.cannontech.rest.api.common.model.MockPointType;
 import com.cannontech.rest.api.point.helper.PointHelper;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
-import com.cannontech.rest.api.point.request.MockFdrDirection;
 import com.cannontech.rest.api.point.request.MockFdrInterfaceType;
 import com.cannontech.rest.api.point.request.MockPointBase;
 import com.cannontech.rest.api.point.request.MockPointUnit;
@@ -21,6 +20,7 @@ import com.cannontech.rest.api.utilities.Log;
 import com.cannontech.rest.api.utilities.ValidationHelper;
 
 import io.restassured.response.ExtractableResponse;
+import io.restassured.specification.RequestSpecification;
 
 public class AnalogPointApiTest {
     MockPointBase analogPoint = null;
@@ -464,5 +464,25 @@ public class AnalogPointApiTest {
         assertTrue(ValidationHelper.validateFieldError(createResponse, "fdrList[0].fdrInterfaceType",
                         "Interface is required."),
                 "Expected code in response is not correct");
+    }
+    
+     /**
+     * Test case for retrieve all points associated with paoId
+     */
+    @Test
+    public void getPoints(ITestContext context) {
+        RequestSpecification requestSpecification = ApiCallHelper.getHeader()
+                                                                 .queryParam("types", MockPointType.CalcAnalog)
+                                                                 .queryParam("pointNames", "TestCalcAnalog")
+                                                                 .queryParam("page", 1)
+                                                                 .queryParam("itemsPerPage", "50")
+                                                                 .queryParam("dir", "asc")
+                                                                 .queryParam("sort", "pointName");
+        String paoId = ApiCallHelper.getProperty("paoId");
+        Log.info("Point Id to retrive all points : " + paoId);
+
+        ExtractableResponse<?> getResponse = ApiCallHelper.get("getPoints", paoId, requestSpecification);
+
+        assertTrue("Status code should be 200", getResponse.statusCode() == 200);
     }
 }

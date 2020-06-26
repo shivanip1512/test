@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import com.cannontech.rest.api.trend.request.MockColor;
 import com.cannontech.rest.api.trend.request.MockRenderType;
@@ -16,7 +17,7 @@ public class TrendHelper {
     public final static String CONTEXT_TREND_ID = "trendId";
 
     public static MockTrendModel buildTrend() {
-        DateTime date = DateTime.now().minusDays(1);
+        DateTime date = new DateTime(DateTimeZone.UTC).withTimeAtStartOfDay().minusDays(1);
         MockTrendSeries series = MockTrendSeries.builder()
                 .type(MockGraphType.DATE_TYPE)
                 .pointId(-110)
