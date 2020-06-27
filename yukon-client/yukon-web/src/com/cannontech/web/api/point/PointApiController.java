@@ -1,6 +1,8 @@
 
 package com.cannontech.web.api.point;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -39,11 +41,11 @@ import com.cannontech.web.tools.points.service.PointEditorService.AttachedExcept
 import com.cannontech.web.util.YukonUserContextResolver;
 
 @RestController
-public class PointApiController {
+public class PointApiController <T extends PointBaseModel<?>> {
 
     @Autowired private PointEditorService pointEditorService;
-    @Autowired private PointApiCreationValidator<? extends PointBaseModel<?>> pointApiCreationValidator;
-    @Autowired private PointApiValidator<? extends PointBaseModel<?>> pointApiValidator;
+    @Autowired private PointApiCreationValidator<T> pointApiCreationValidator;
+    @Autowired private List<PointApiValidator<T>> pointApiValidators;
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private YukonPointHelper pointHelper;
 
@@ -84,7 +86,12 @@ public class PointApiController {
 
     @InitBinder("pointBaseModel")
     public void setupBinder(WebDataBinder binder) {
-        binder.addValidators(pointApiValidator);
+
+        pointApiValidators.stream().forEach(e -> {
+            if (e.supports(binder.getTarget().getClass())) {
+                binder.addValidators(e);
+            }
+        });
 
         String pointId = ServletUtils.getPathVariable("id");
         if (pointId == null) {
@@ -101,4 +108,8 @@ public class PointApiController {
         return userContext;
     }
 
+    @Autowired
+    void setValidators(List<PointApiValidator<T>> validators) {
+        this.pointApiValidators = validators;
+    }
 }
