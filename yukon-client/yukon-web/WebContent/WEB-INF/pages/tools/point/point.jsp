@@ -360,7 +360,7 @@
 
                 <c:if test="${isCalcType}">
                     <tags:nameValueContainer2 tableClass="${nameValueClass}">
-                        <tags:nameValue2 nameKey=".pointOffset">
+                        <tags:nameValue2 nameKey=".offset">
                             <tags:input path="pointBase.point.pointOffset" size="6"/>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
