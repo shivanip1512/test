@@ -19,7 +19,7 @@ SET git_hash=%%F
 rem Build Release Number
 FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list HEAD --count`) DO (
 SET git_commit_current_count=%%F
-SET /a build_release_number=%git_commit_current_count%-%props.git.commit.init.count%
+SET /a build_release_number=git_commit_current_count-props.git.commit.init.count
 )
 
 SET version_dot_triplet=%props.version.major%.%props.version.minor%.%props.version.revision%
