@@ -580,6 +580,13 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', GETDATE());
 /* @end YUK-22234 */
 
+/* @start YUK-22443 */
+UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD' 
+    WHERE SystemGroupEnum IN  ('SERVICE_ACTIVE_RFW_METERS', 'SERVICE_ACTIVE_RF_ELECTRIC_METERS');
+
+INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', GETDATE());
+/* @end YUK-22443 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
