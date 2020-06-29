@@ -73,7 +73,8 @@ public class CalcStatusPointBuilder extends PointBuilder {
             throw new IllegalStateException("No state \"" + initialStateName + "\" in state group \"" + stateGroupName + "\".");
         }
         
-        CalcStatusPoint point = (CalcStatusPoint) PointFactory.createCalcStatusPoint(paoId, pointName, stateGroupId);
+        CalcStatusPoint point = (CalcStatusPoint) PointFactory.createCalcStatusPoint(paoId, pointName, stateGroupId, 0);
+        // TODO YUK-22357 - Add importer support
         
         point.getPointStatus().setInitialState(initialStateId);
         

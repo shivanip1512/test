@@ -29,7 +29,8 @@
             <div id="page-actions" class="dn">
                 <cti:url value="/tools/trend/create" var="createUrl"/>
                 <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
-                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="#"/>
+                <cti:url value="/tools/trend/${trendId}/edit" var="editUrl"/>
+                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
                 <li class="divider">
                 <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
                                                       classes="js-hide-dropdown"/>

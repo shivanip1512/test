@@ -62,6 +62,7 @@
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".name">
                                 <tags:input path="name" maxlength="40" autofocus="autofocus" inputClass="w300" />
+                                <tags:hidden path="trendId"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </tags:sectionContainer2>
@@ -104,7 +105,14 @@
                                                     <i:inline key="${trendSeries.axis}" />
                                                 </td>
                                                 <td class="js-type">
-                                                    <i:inline key="${trendSeries.type}" />
+                                                    <c:choose>
+                                                        <c:when test="${trendSeries.type.dateType}">
+                                                            <cti:formatDate type="DATE" value="${trendSeries.date}"/>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <i:inline key="${trendSeries.type}" />
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                 </td>
                                                 <td class="js-multiplier">
                                                     ${trendSeries.multiplier}

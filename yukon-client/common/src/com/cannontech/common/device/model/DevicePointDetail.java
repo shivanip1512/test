@@ -1,12 +1,13 @@
-package com.cannontech.common.rtu.model;
+package com.cannontech.common.device.model;
 
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 
-public class RtuPointDetail {
+public class DevicePointDetail {
 
     private int pointId;
     private String pointName;
     private String deviceName;
+    private int stateGroupId;
     private PaoPointIdentifier paoPointIdentifier;
 
     private String format = "SHORT";
@@ -51,6 +52,14 @@ public class RtuPointDetail {
         this.paoPointIdentifier = paoPointIdentifier;
     }
 
+    public int getStateGroupId() {
+        return stateGroupId;
+    }
+
+    public void setStateGroupId(int stateGroupId) {
+        this.stateGroupId = stateGroupId;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -60,6 +69,7 @@ public class RtuPointDetail {
         result = prime * result + ((paoPointIdentifier == null) ? 0 : paoPointIdentifier.hashCode());
         result = prime * result + pointId;
         result = prime * result + ((pointName == null) ? 0 : pointName.hashCode());
+        result = prime * result + stateGroupId;
         return result;
     }
 
@@ -71,7 +81,7 @@ public class RtuPointDetail {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        RtuPointDetail other = (RtuPointDetail) obj;
+        DevicePointDetail other = (DevicePointDetail) obj;
         if (deviceName == null) {
             if (other.deviceName != null)
                 return false;
@@ -93,6 +103,8 @@ public class RtuPointDetail {
             if (other.pointName != null)
                 return false;
         } else if (!pointName.equals(other.pointName))
+            return false;
+        if (stateGroupId != other.stateGroupId)
             return false;
         return true;
     }
