@@ -37,11 +37,10 @@ FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --short HEAD`) DO (
 SET my_version_git=%%F
 )
 
-rem YUKON_BUILD_RELEASE_NUMBER
-
-SET my_build_release_number=0
-if not "%YUKON_BUILD_RELEASE_NUMBER%"=="" (
-SET my_build_release_number=%YUKON_BUILD_RELEASE_NUMBER%
+rem Build Release Number
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list HEAD --count`) DO (
+SET git_commit_current_count=%%F
+SET /a build_release_number=git_commit_current_count-props.git.commit.init.count
 )
 
 rem Use this file for communicating revision stuff to the .cpp and .rc build
