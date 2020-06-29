@@ -1,5 +1,5 @@
 
-    {    "name": "TestTCP1",    
+    {    "name": "TestTCP",    
           "enable": true,  
           "baudRate": "BAUD_1200",
           "type": "TCPPORT",    

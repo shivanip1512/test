@@ -11,8 +11,8 @@ public class ValidUserLogin {
     private static final String STARSOP_USER = "starsop";
     private static final String STARSOP_PASS = "starsop";
     
-    private static final String AUTOMATION_USER = "automation";
-    private static final String AUTOMATION_PASS = "automation";
+    private static final String AUTOMATION_USER = "yukon";
+    private static final String AUTOMATION_PASS = "yukon";
 
     public static String getUserName() {
 
