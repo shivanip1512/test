@@ -154,7 +154,7 @@ pipeline {
                             bat './yukon-build/go.bat init clean symstore build-dist'
                             bat 'net use p: /delete'
                         } else {
-                            bat './yukon-build/go.bat clean build-dist-pdb'
+                            bat './yukon-build/go.bat clean build-dist-server'
                         }
 
                         archiveArtifacts artifacts: 'yukon-build/dist/*'
