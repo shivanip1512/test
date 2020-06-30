@@ -76,6 +76,8 @@ Function Update-Signing () {
     $env:BAMBOO_SECRETPASSWORD
     Write-Host "Trying secret password"
     $env:SECRETPASSWORD
+    Write-Host "Trying variable secret password"
+    $env:variable_secretpassword
     #Invoke-Expresscion -Command '%SIGNSERVER_HOME%\bin\signclient.cmd signdocument -clientside -workername SW-Yukon-MSAuth-CMS -servlet /signserver/worker/SW-Yukon-MSAuth-CMS -infile "yukon-artifact\YukonInstall\SetupUnsigned.exe" -host signserver.tcc.etn.com -port 443 -username ${username} -outfile "yukon-artifact\YukonInstall\Setup.exe" -digestalgorithm SHA-256 -truststore %SIGNSERVER_HOME%\eaton-truststore.jks-truststorepwd eaton -password ${password}'
     #Remove-Item -Path "yukon-artifact\YukonInstall\SetupUnsigned.exe"
 }
