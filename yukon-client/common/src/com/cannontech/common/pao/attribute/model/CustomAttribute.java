@@ -1,5 +1,8 @@
 package com.cannontech.common.pao.attribute.model;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 public class CustomAttribute {
     private int id;
     private String name;
@@ -19,5 +22,11 @@ public class CustomAttribute {
     }
     public String getKey() {
         return key + id;
+    }
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
+            + System.getProperty("line.separator");
     }
 }
