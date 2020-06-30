@@ -31,7 +31,7 @@ for /f "tokens=1,2,3 delims=." %%p in ("%my_version_details%") do (
 )
 
 rem parse the build number out of the external version
-for /f "tokens=4 delims=_" %%p in ("%my_version%") do (
+for /f "tokens=3 delims=_" %%p in ("%my_version%") do (
         set my_version_build=%%p
 )
 
