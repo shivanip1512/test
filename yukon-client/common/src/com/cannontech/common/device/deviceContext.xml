@@ -48,6 +48,8 @@
     
     <bean id="attrDynamicDataSource" class="com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource"/>
     
+     <bean class="com.cannontech.common.pao.attribute.dao.impl.CustomAttributeDaoImpl"/>
+    
     <bean id="staticDeviceGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
