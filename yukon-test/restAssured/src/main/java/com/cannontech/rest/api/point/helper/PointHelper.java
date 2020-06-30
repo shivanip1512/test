@@ -9,12 +9,14 @@ import com.cannontech.rest.api.common.model.MockAnalogControlType;
 import com.cannontech.rest.api.common.model.MockPointArchiveType;
 import com.cannontech.rest.api.common.model.MockPointLogicalGroups;
 import com.cannontech.rest.api.common.model.MockPointType;
+import com.cannontech.rest.api.point.request.MockAccumulatorPoint;
 import com.cannontech.rest.api.point.request.MockAlarmNotificationTypes;
 import com.cannontech.rest.api.point.request.MockAlarmTableEntry;
 import com.cannontech.rest.api.point.request.MockAnalogPoint;
 import com.cannontech.rest.api.point.request.MockFdrDirection;
 import com.cannontech.rest.api.point.request.MockFdrInterfaceType;
 import com.cannontech.rest.api.point.request.MockFdrTranslation;
+import com.cannontech.rest.api.point.request.MockPointAccumulator;
 import com.cannontech.rest.api.point.request.MockPointAlarming;
 import com.cannontech.rest.api.point.request.MockPointAnalog;
 import com.cannontech.rest.api.point.request.MockPointAnalogControl;
@@ -25,7 +27,7 @@ import com.cannontech.rest.api.point.request.MockStaleData;
 
 public class PointHelper {
     public final static String CONTEXT_POINT_ID = "pointId";
-    public final static Integer paoId = Integer.valueOf(ApiCallHelper.getProperty("meterNumber"));
+    public final static Integer paoId = Integer.valueOf(ApiCallHelper.getProperty("paoId"));
     public final static Integer pointOffset = Integer.valueOf(ApiCallHelper.getProperty("pointOffset"));
     public final static Integer uomId = Integer.valueOf(ApiCallHelper.getProperty("uomId"));
     public final static Integer stateGroupId = Integer.valueOf(ApiCallHelper.getProperty("stateGroupId"));
@@ -34,37 +36,60 @@ public class PointHelper {
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
 
-        String name = ApiUtils.buildFriendlyName(MockPointType.Analog, "", "PointTest");
+        String name = ApiUtils.buildFriendlyName(MockPointType.Analog, "", "PointTest10");
+        List<MockPointLimit> pointLimit = new ArrayList<>();
+        pointLimit.add(buildPointLimit());
+        List<MockFdrTranslation> fdrTranslation = new ArrayList<>();
 
+        fdrTranslation.add(buildFdrTranslation());
         switch (pointType) {
-        case Analog:
-            List<MockPointLimit> pointLimit = new ArrayList<>();
-            pointLimit.add(buildPointLimit());
-            List<MockFdrTranslation> fdrTranslation = new ArrayList<>();
-            
-            fdrTranslation.add(buildFdrTranslation());
-            point = MockAnalogPoint.builder()
-                    .paoId(paoId)
-                    .pointName(name)
-                    .pointType(pointType.name())
-                    .pointOffset(pointOffset)
-                    .pointUnit(buildPointUnit())
-                    .timingGroup(MockPointLogicalGroups.SOE)
-                    .archiveType(MockPointArchiveType.ON_TIMER)
-                    .alarmsDisabled(false)
-                    .stateGroupId(stateGroupId)
-                    .archiveInterval(60)
-                    .enable(true)
-                    .pointAnalog(buildPointAnalog())
-                    .pointAnalogControl(buildPointAnalogControl())
-                    .staleData(buildStaleData())
-                    .limits(pointLimit)
-                    .alarming(buildPointAlarming())
-                    .fdrList(fdrTranslation)
-                    .build();
-            break;
-        default:
-            break;
+            case Analog:
+
+                point = MockAnalogPoint.builder()
+                                       .paoId(paoId)
+                                       .pointName(name)
+                                       .pointType(pointType)
+                                       .pointOffset(pointOffset)
+                                       .pointUnit(buildPointUnit())
+                                       .timingGroup(MockPointLogicalGroups.SOE)
+                                       .archiveType(MockPointArchiveType.ON_TIMER)
+                                       .alarmsDisabled(false)
+                                       .stateGroupId(stateGroupId)
+                                       .archiveInterval(60)
+                                       .enable(true)
+                                       .pointAnalog(buildPointAnalog())
+                                       .pointAnalogControl(buildPointAnalogControl())
+                                       .staleData(buildStaleData())
+                                       .limits(pointLimit)
+                                       .alarming(buildPointAlarming())
+                                       .fdrList(fdrTranslation)
+                                       .build();
+                break;
+            case DemandAccumulator:
+            case PulseAccumulator:
+
+                point = MockAccumulatorPoint.builder()
+                                            .paoId(paoId)
+                                            .pointName(name)
+                                            .pointType(pointType)
+                                            .pointOffset(pointOffset)
+                                            .pointUnit(buildPointUnit())
+                                            .timingGroup(MockPointLogicalGroups.SOE)
+                                            .archiveType(MockPointArchiveType.ON_TIMER)
+                                            .alarmsDisabled(false)
+                                            .stateGroupId(stateGroupId)
+                                            .archiveInterval(60)
+                                            .enable(true)
+                                            .pointAccumulator(buildPointAccumulator())
+                                            .staleData(buildStaleData())
+                                            .limits(pointLimit)
+                                            .alarming(buildPointAlarming())
+                                            .fdrList(fdrTranslation)
+                                            .build();
+                break;
+
+            default:
+                break;
         }
         return point;
     }
@@ -79,8 +104,8 @@ public class PointHelper {
 
     private static MockPointAnalogControl buildPointAnalogControl() {
         return MockPointAnalogControl.builder()
-                .controlInhibited(true)
-                .controlOffset(5)
+                .controlInhibited(false)
+                .controlOffset(0)
                 .controlType(MockAnalogControlType.NONE)
                 .build();
     }
@@ -105,7 +130,7 @@ public class PointHelper {
     private static MockPointLimit buildPointLimit() {
         return MockPointLimit.builder()
                 .limitNumber(1)
-                .highLimit(5.0)
+                .highLimit(7.0)
                 .lowLimit(6.0)
                 .limitDuration(2)
                 .build();
@@ -135,6 +160,13 @@ public class PointHelper {
                 .direction(MockFdrDirection.RECEIVE)
                 .fdrInterfaceType(MockFdrInterfaceType.ACS)
                 .translation("Category:PSEUDO;Remote:;Point:;")
+                .build();
+    }
+    
+    private static MockPointAccumulator buildPointAccumulator() {
+        return MockPointAccumulator.builder()
+                .dataOffset(0.0)
+                .multiplier(1.0)
                 .build();
     }
 }

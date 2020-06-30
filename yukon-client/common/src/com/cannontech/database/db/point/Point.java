@@ -127,7 +127,7 @@ public class Point extends DBPersistent {
     public Character getPseudoFlag() {
         if (getPointID() != null && getPointOffset() != null) {
             if (getPointID().intValue() > 0) {
-                return (getPointOffset().intValue() > 0 ? PSEUDOFLAG_REAL : PSEUDOFLAG_PSEUDO);
+                return (getPointOffset().intValue() < 1 || getPointTypeEnum().isCalcPoint()) ? PSEUDOFLAG_PSEUDO : PSEUDOFLAG_REAL;
             } else
                 return PSEUDOFLAG_SYSTEM;
 

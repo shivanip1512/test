@@ -42,7 +42,7 @@ public class TrendApiDoc extends DocumentationBase {
                     .description("Graph Type. Expected: BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE. Default Type: BASIC_TYPE"),
                 fieldWithPath("trendSeries[].pointId")
                     .type(JsonFieldType.NUMBER)
-                    .description("Point ID"),
+                    .description("Point ID. Point Id for MARKER_TYPE is -100."),
                 fieldWithPath("trendSeries[].label")
                     .type(JsonFieldType.STRING)
                     .description("Device Name / Point Name. Max length 40 Character"),
@@ -76,13 +76,26 @@ public class TrendApiDoc extends DocumentationBase {
     }
 
     @Test(dependsOnMethods = "Test_Trend_01_Create")
+    public void Test_Trend_01_Get() {
+        getDoc();
+    }
+
+    @Test(dependsOnMethods = "Test_Trend_01_Get")
+    public void Test_Trend_01_Update() {
+        updateAllDoc();
+    }
+
+    @Test(dependsOnMethods = "Test_Trend_01_Update")
     public void Test_Trend_01_Delete() {
         deleteDoc();
     }
 
     @Override
     protected Get buildGetFields() {
-        return null;
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        String url = ApiCallHelper.getProperty("getTrend") + trendId;
+        return new DocumentationFields.Get(responseFields, url);
     }
 
     @Override
@@ -96,7 +109,11 @@ public class TrendApiDoc extends DocumentationBase {
 
     @Override
     protected Update buildUpdateFields() {
-        return null;
+        List<FieldDescriptor> requestFields = getFieldDescriptors();
+        List<FieldDescriptor> responseFields = getFieldDescriptors();
+        responseFields.add(0, fieldWithPath(idStr).type(JsonFieldType.NUMBER).description(idDescStr));
+        String url = ApiCallHelper.getProperty("updateTrend") + trendId;
+        return new DocumentationFields.Update(requestFields, responseFields, idStr, idDescStr, getMockObject(), url);
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.trend.service.TrendService;
+import com.cannontech.stars.util.ServletUtils;
 
 @RestController
 @RequestMapping("/trends")
 public class TrendApiController {
     @Autowired private TrendService trendService;
+    @Autowired private TrendCreateValidator trendCreateValidator;
     @Autowired private TrendValidator trendValidator;
 
     @PostMapping
@@ -46,9 +49,19 @@ public class TrendApiController {
         return new ResponseEntity<>(createdTrend, HttpStatus.OK);
     }
 
-    @InitBinder("trendModel")
-    public void setupBinder(WebDataBinder binder) {
-        binder.setValidator(trendValidator);
+    @GetMapping("/{id}")
+    public ResponseEntity<TrendModel> retrieve(@PathVariable int id) {
+        TrendModel trend = trendService.retrieve(id);
+        return new ResponseEntity<>(trend, HttpStatus.OK);
     }
 
+    @InitBinder("trendModel")
+    public void setupBinder(WebDataBinder binder) {
+        binder.addValidators(trendValidator);
+
+        String trendId = ServletUtils.getPathVariable("id");
+        if (trendId == null) {
+            binder.addValidators(trendCreateValidator);
+        }
+    }
 }

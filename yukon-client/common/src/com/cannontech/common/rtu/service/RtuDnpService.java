@@ -2,11 +2,11 @@ package com.cannontech.common.rtu.service;
 
 import java.util.List;
 
+import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
-import com.cannontech.common.rtu.model.RtuPointDetail;
+import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.rtu.model.RtuPointsFilter;
 import com.cannontech.common.search.result.SearchResults;
 
@@ -28,7 +28,7 @@ public interface RtuDnpService {
      * @param direction - direction (asc/desc) for the order by, can't be null
      */
     
-    SearchResults<RtuPointDetail> getRtuPointDetail(int rtuId, RtuPointsFilter filter, Direction direction, SortBy sortBy, PagingParameters paging);
+    SearchResults<DevicePointDetail> getRtuPointDetail(int rtuId, RtuPointsFilter filter, Direction direction, SortBy sortBy, PagingParameters paging);
     
     /**
      * 
@@ -36,7 +36,7 @@ public interface RtuDnpService {
      * 
      * @param rtuId - Id of pao
      */
-    List<RtuPointDetail> getRtuPointDetail(int rtuId);
+    List<DevicePointDetail> getRtuPointDetail(int rtuId);
 
     /**
      * Returns list of devices that include parent and children.

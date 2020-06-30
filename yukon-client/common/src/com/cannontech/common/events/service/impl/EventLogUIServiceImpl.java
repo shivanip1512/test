@@ -39,7 +39,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
         
         List<List<String>> dataGrid = Lists.newArrayList();
         for (EventLog eventLog : resultList) {
-            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH;
+            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH_WITH_MILLIS;
             
             List<String> dataRow = Lists.newArrayList();
             
@@ -69,7 +69,7 @@ public class EventLogUIServiceImpl implements EventLogUIService {
 
         List<List<String>> dataGrid = Lists.newArrayListWithExpectedSize(resultList.size());
         for (EventLog eventLog : resultList) {
-            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH;
+            DateFormatEnum dateDisplayFormat = DateFormatEnum.BOTH_WITH_MILLIS;
             
             List<String> dataRow = Lists.newArrayListWithCapacity(3);
             

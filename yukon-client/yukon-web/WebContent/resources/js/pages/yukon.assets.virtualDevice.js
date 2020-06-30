@@ -35,17 +35,7 @@ yukon.assets.virtualDevice = (function () {
                     data: form.serialize()
                 }).done(function (data) {
                     if (data.id) {
-                        //if created, redirect user to view device
                         window.location.href = yukon.url('/stars/virtualDevice/' + data.id);
-                    } else {
-                        //just refresh widget if changed
-                        var widgetId = $('.js-virtual-device-info-widget').closest('.widgetWrapper').attr('id'),
-                            widgetId = widgetId.substring(widgetId.indexOf("_") + 1),
-                            widget = yukon.widgets[widgetId];
-                        dialog.dialog('close');
-                        dialog.empty();
-                        widget.render();
-                        yukon.ui.unblockPage();
                     }
                 }).fail(function (xhr, status, error){
                     dialog.html(xhr.responseText);
