@@ -123,6 +123,12 @@ yukon.ami.meterProgramming.summary = (function () {
                         url: yukon.url('/amr/meterProgramming/' + id + '/acceptProgramming')
                     }).done(function(data) {
                         if (data.successMsg) {
+                            //refresh row
+                            $.ajax(yukon.url('/amr/meterProgramming/' + id + '/refreshDeviceRow'))
+                            .done(function (rowData) {
+                                var deviceRow = $('#summary-table').find('tr[data-device-id=' + id + ']');
+                                deviceRow.html(rowData);
+                            });
                             yukon.ui.alertSuccess(data.successMsg);
                         } else {
                             yukon.ui.alertError(data.errorMsg);
