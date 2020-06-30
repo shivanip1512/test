@@ -62,26 +62,38 @@ public class CommChannelsListPageValidation extends SeleniumTestSetup{
     	}           
 }      
     
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "CommChannelListTitleVerification()" })
-    public void CommChannelListTitleVerification() {
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "CommChannelListTitleCorrect()" })
+    public void CommChannelListTitleCorrect() {
         String EXPECTED_TITLE = "Comm Channels";
         navigate(Urls.Assets.Comm_Channels_List);
         String actualPageTitle = listPage.getPageTitle();
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }   
+     
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "commChannelListHeadersCorrect()" })
+    public void commChannelListHeadersCorrect() {
+        int EXPECTED_COUNT = 3;
+        navigate(Urls.Assets.Comm_Channels_List);
+        List<String> headers = this.listPage.getTable().getListTableHeaders();
+        softly.assertThat(headers.size()).isEqualTo(EXPECTED_COUNT);
+        System.out.println(headers.size());
+        softly.assertThat(headers).contains("Name");
+        softly.assertThat(headers).contains("Type");
+        softly.assertThat(headers).contains("Status");
+        softly.assertAll();
+    }   
        
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "sortingOrderNameDesc()" })
-    public void sortingOrderNameDesc() {   	  	
-    		//get column list for name
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "commChannelListNameSortDescCorrectly()" })
+    public void commChannelListNameSortDescCorrectly() {   	  	
     		navigate(Urls.Assets.Comm_Channels_List);
-    		List<WebElement> columnName = webTableColumn.getColumn(1);
+    		List<WebElement> columnName = webTableColumn.getColumnValues(1);
     		List<String> sortedListName = SortWebColumn.getSortDesc(columnName);
     		
     		System.out.println(sortedListName);
     		
     			navigate(Urls.Assets.Comm_Channel_Name_Desc);
     			ArrayList<String> obtainedListDesc = new ArrayList<>();
-        		List<WebElement> columnNameDesc = webTableColumn.getColumn(1);
+        		List<WebElement> columnNameDesc = webTableColumn.getColumnValues(1);
 
         		for(WebElement webelement:columnNameDesc){
         			obtainedListDesc.add(webelement.getText());
@@ -89,17 +101,17 @@ public class CommChannelsListPageValidation extends SeleniumTestSetup{
         		System.out.println(obtainedListDesc);
         		Assert.assertTrue(sortedListName.equals(obtainedListDesc));       	
     	}
-    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "sortingOrderNameAsc" })
-    public void sortingOrderNameAsc() {   	  	
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, "commChannelListNameSortAscCorrectly" })
+    public void commChannelListNameSortAscCorrectly() {   	  	
     		navigate(Urls.Assets.Comm_Channels_List);
-    		List<WebElement> columnName = webTableColumn.getColumn(1);
+    		List<WebElement> columnName = webTableColumn.getColumnValues(1);
     		List<String> sortedListName = SortWebColumn.getSortAsc(columnName);
     		
     		System.out.println(sortedListName);
     		
     			navigate(Urls.Assets.Comm_Channel_Name_Asc);
     			ArrayList<String> obtainedListAsc = new ArrayList<>();
-        		List<WebElement> columnNameAsc = webTableColumn.getColumn(1);
+        		List<WebElement> columnNameAsc = webTableColumn.getColumnValues(1);
 
         		for(WebElement webelement:columnNameAsc){
         			obtainedListAsc.add(webelement.getText());
