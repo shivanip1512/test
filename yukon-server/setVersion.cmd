@@ -18,6 +18,9 @@ rem version.external.filenameSafe
     if "%%p" == "version.internal" (
         set my_version_details=%%q
     )
+    if "%%p" == "git.commit.init.count" (
+        set git_commit_init_count=%%q
+    )
 )
 
 rem parse the version into nodes.
@@ -40,7 +43,7 @@ SET my_version_git=%%F
 rem Build Release Number
 FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-list HEAD --count`) DO (
 SET git_commit_current_count=%%F
-SET /a build_release_number=git_commit_current_count-props.git.commit.init.count
+SET /a my_build_release_number=git_commit_current_count-git_commit_init_count
 )
 
 rem Use this file for communicating revision stuff to the .cpp and .rc build
