@@ -22,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestClientException;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.port.LocalSharedPortDetail;
 import com.cannontech.common.device.port.PortBase;
+import com.cannontech.common.device.port.SharedPortType;
+import com.cannontech.common.device.port.TerminalServerPortDetailBase;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -92,6 +95,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
                 model.addAttribute("commChannel", commChannel);
                 commChanelSetupHelper.setupCommChannelFields(commChannel, model);
                 commChanelSetupHelper.setupPhysicalPort(commChannel, model);
+                setupSharedType(commChannel, model);
             }
         } catch (ApiCommunicationException ex) {
             log.error(ex.getMessage());
@@ -101,8 +105,9 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         } catch (RestClientException ex) {
             log.error("Error retrieving comm Channel: " + ex.getMessage());
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = accessor.getMessage("yukon.web.modules.operator.commChannelInfoWidget.retrieveError",
-                    ex.getMessage());
+            String commChannelDeviceLabel = accessor.getMessage("yukon.web.modules.operator.commChannel.deviceName");
+            String errorMsg = accessor.getMessage("yukon.web.api.retrieve.error", 
+                    commChannelDeviceLabel, ex.getMessage());
             model.addAttribute("errorMsg", errorMsg);
         }
     }
@@ -153,5 +158,18 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         commChanelSetupHelper.setupCommChannelFields(commChannel, model);
         commChanelSetupHelper.setupPhysicalPort(commChannel, model);
         commChanelSetupHelper.setupGlobalError(result, model, userContext, commChannel.getType());
+        setupSharedType(commChannel, model);
+    }
+    
+    private void setupSharedType(PortBase commChannel, ModelMap model) {
+        if (commChannel instanceof TerminalServerPortDetailBase) {
+            model.addAttribute("isSharedPortTypeNone",
+                    ((TerminalServerPortDetailBase) commChannel).getSharing().getSharedPortType().equals(SharedPortType.NONE));
+        }
+        if (commChannel instanceof LocalSharedPortDetail) {
+            model.addAttribute("isSharedPortTypeNone",
+                    ((LocalSharedPortDetail) commChannel).getSharing().getSharedPortType().equals(SharedPortType.NONE));
+        }
+        model.addAttribute("sharedPortNone", SharedPortType.NONE);
     }
 }

@@ -1,16 +1,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.web.modules.operator.commChannelInfoWidget">
+<cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelInfoWidget">
     <tags:setFormEditMode mode="${mode}" />
-    <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
+    <c:if test="${not empty errorMsg}"><tags:alertBox>${fn:escapeXml(errorMsg)}</tags:alertBox></c:if>
     <div class="js-global-error">
         <c:if test="${not empty uniqueErrorMsg}">
             <c:forEach var="globalErrorMsg" items="${uniqueErrorMsg}">
-                <tags:alertBox>${globalErrorMsg}</tags:alertBox>
+                <tags:alertBox>${fn:escapeXml(globalErrorMsg)}</tags:alertBox>
             </c:forEach>
         </c:if>
     </div>
@@ -134,13 +135,24 @@
                         <c:if test="${isAdditionalConfigSupported}">
                             <tags:sectionContainer2 nameKey="shared">
                                 <tags:nameValueContainer2>
-                                    <tags:nameValue2 nameKey=".sharedPortType">
-                                        <tags:radio path="sharing.sharedPortType" value="NONE" classes="left yes ML0" key="yukon.web.modules.operator.commChannel.sharedPortType.NONE"/>
-                                        <tags:radio path="sharing.sharedPortType" value="ACS" classes="middle yes" key="yukon.web.modules.operator.commChannel.sharedPortType.ACS"/>
-                                        <tags:radio path="sharing.sharedPortType" value="ILEX" classes="right yes" key="yukon.web.modules.operator.commChannel.sharedPortType.ILEX"/>
+                                    <tags:nameValue2 nameKey=".sharedPortType" rowId="js-socket-type">
+                                        <tags:radio path="sharing.sharedPortType" value="NONE" classes="left yes ML0" inputClass="js-socket-type-val" key="yukon.web.modules.operator.commChannel.sharedPortType.NONE"/>
+                                        <tags:radio path="sharing.sharedPortType" value="ACS" classes="middle yes" inputClass="js-socket-type-val" key="yukon.web.modules.operator.commChannel.sharedPortType.ACS"/>
+                                        <tags:radio path="sharing.sharedPortType" value="ILEX" classes="right yes" inputClass="js-socket-type-val" key="yukon.web.modules.operator.commChannel.sharedPortType.ILEX"/>
                                     </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".socketNumber">
-                                        <tags:input path="sharing.sharedSocketNumber"/>
+                                    <input type="hidden" id="socketTypeNone" value="${sharedPortNone}">
+                                    <c:set var="socketNumberCssClass" value=""/>
+                                    <c:set var="socketNumberValueCssClass" value=""/>
+                                    <cti:displayForPageEditModes modes="EDIT">
+                                        <c:set var="socketNumberCssClass" value="js-socket-number"/>
+                                        <c:set var="socketNumberValueCssClass" value="js-socket-number-val"/>
+                                    </cti:displayForPageEditModes>
+                                    <c:set var="cssClassForSocketType" value=""/>
+                                    <c:if test="${isSharedPortTypeNone}">
+                                        <c:set var="cssClassForSocketType" value="dn"/>
+                                    </c:if>
+                                    <tags:nameValue2 nameKey=".socketNumber" rowClass="${cssClassForSocketType} ${socketNumberCssClass}">
+                                       <tags:input path="sharing.sharedSocketNumber" id="${socketNumberValueCssClass}"/>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
                             </tags:sectionContainer2>
@@ -173,7 +185,7 @@
              data-dialog
              data-load-event="yukon:assets:commChannel:load"
              data-ok-text="${saveText}" 
-             data-width="550"
+             data-width="555"
              data-height="450"
              data-event="yukon:assets:commChannel:save" 
              data-url="${editUrl}"/>
