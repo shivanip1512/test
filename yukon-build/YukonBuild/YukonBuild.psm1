@@ -68,6 +68,8 @@ Function Remove-Files () {
 Function Update-Signing () {
     Invoke-Expression -Command "signtool remove /s yukon-artifact\YukonInstall\Setup.exe"
     Rename-Item -Path "yukon-artifact\YukonInstall\Setup.exe" -NewName "SetupUnsigned.exe"
+    Write-Host "Path"
+    $ENV:Path
     Write-Host "Printing bamboo secret password"
     $ENV:bamboo_secretpassword
     $ENV:bamboo_secretlogin
