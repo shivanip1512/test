@@ -31,7 +31,6 @@ Function Store-Symbols () {
     Write-Host "Disconnect Symbol store drive"
     net use p: /delete
     Write-Host "Symbols are saved to drive"
-
 }
 
 <#
@@ -56,6 +55,29 @@ Function Remove-Files () {
         foreach ($file in $entry){$file.Delete()}
         $tempz.Dispose()
     }
+}
+
+<#
+.SYNOPSIS
+    Strips the original signing on Setup.exe and re-signs with the production signing key.
+.DESCRIPTION 
+    Strips the original signing on Setup.exe and re-signs with the production signing key.
+.EXAMPLE
+    Update-Signing
+#>
+Function Update-Signing () {
+    Invoke-Expression -Command "signtool remove /s yukon-artifact\YukonInstall\Setup.exe"
+    Rename-Item -Path "yukon-artifact\YukonInstall\Setup.exe" -NewName "SetupUnsigned.exe"
+    Write-Host "Trying bamboo secret password"
+    $env:bamboo_secretpassword
+    Write-Host "Trying secret password"
+    $env:secretpassword
+    Write-Host "Trying CAPS bamboo secret password"
+    $env:BAMBOO_SECRETPASSWORD
+    Write-Host "Trying secret password"
+    $env:SECRETPASSWORD
+    #Invoke-Expresscion -Command '%SIGNSERVER_HOME%\bin\signclient.cmd signdocument -clientside -workername SW-Yukon-MSAuth-CMS -servlet /signserver/worker/SW-Yukon-MSAuth-CMS -infile "yukon-artifact\YukonInstall\SetupUnsigned.exe" -host signserver.tcc.etn.com -port 443 -username ${username} -outfile "yukon-artifact\YukonInstall\Setup.exe" -digestalgorithm SHA-256 -truststore %SIGNSERVER_HOME%\eaton-truststore.jks-truststorepwd eaton -password ${password}'
+    #Remove-Item -Path "yukon-artifact\YukonInstall\SetupUnsigned.exe"
 }
 
 <#
