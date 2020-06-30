@@ -24,7 +24,6 @@ public class CalcAnalogPointBuilder extends ScalarPointBuilder {
     private PointPeriodicRate updateRate = PointPeriodicRate.ONE_SECOND;
     private boolean forceQualityNormal = false;
     
-    private int pointOffset = 0; //no physical point offset unless specified
     private final int stateGroupId = -1; //DefaultAnalog
     private int meterDials = 0;
     
@@ -59,7 +58,6 @@ public class CalcAnalogPointBuilder extends ScalarPointBuilder {
                                                                                      archiveInterval, 
                                                                                      null,
                                                                                      pointOffset);
-        //TODO YUK-22357 - Add / verify importer support;
         
         point.setCalcComponents(calculation.copyComponentsAndInsertPointId(pointId));
         point.getCalcBase().setUpdateType(updateType.getDatabaseRepresentation());
@@ -120,13 +118,5 @@ public class CalcAnalogPointBuilder extends ScalarPointBuilder {
     
     public void setUpdateRate(PointPeriodicRate updateRate) {
         this.updateRate = updateRate;
-    }
-    
-    /**
-     * Must be a non-negative value.
-     */
-    public void setPointOffset(int pointOffset) {
-        if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
-        this.pointOffset = pointOffset;
     }
 }
