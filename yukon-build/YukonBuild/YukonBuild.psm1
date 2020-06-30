@@ -68,16 +68,17 @@ Function Remove-Files () {
 Function Update-Signing () {
     Invoke-Expression -Command "signtool remove /s yukon-artifact\YukonInstall\Setup.exe"
     Rename-Item -Path "yukon-artifact\YukonInstall\Setup.exe" -NewName "SetupUnsigned.exe"
-    Write-Host "Trying bamboo secret password"
-    $env:bamboo_secretpassword
-    Write-Host "Trying secret password"
-    $env:secretpassword
-    Write-Host "Trying CAPS bamboo secret password"
-    $env:BAMBOO_SECRETPASSWORD
-    Write-Host "Trying secret password"
-    $env:SECRETPASSWORD
-    Write-Host "Trying variable secret password"
-    $env:variable_secretpassword
+    Write-Host "Printing bamboo secret password"
+    $ENV:bamboo_secretpassword
+    $ENV:bamboo_secretlogin
+
+    $signingCommand = ("$ENV:SIGNSERVER_HOME\bin\signclient.cmd signdocument -clientside " +
+    "-workername SW-Yukon-MSAuth-CMS -servlet /signserver/worker/SW-Yukon-MSAuth-CMS -infile 'yukon-artifact\YukonInstall\SetupUnsigned.exe' " +
+    "-host signserver.tcc.etn.com -port 443 -username $ENV:bamboo_secretlogin -outfile 'yukon-artifact\YukonInstall\Setup.exe' -digestalgorithm SHA-256 " +
+    "-truststore %SIGNSERVER_HOME%\eaton-truststore.jks -truststorepwd eaton -password $ENV:bamboo_secretpassword")
+
+    Invoke-Expression -Command $signingCommand
+
     #Invoke-Expresscion -Command '%SIGNSERVER_HOME%\bin\signclient.cmd signdocument -clientside -workername SW-Yukon-MSAuth-CMS -servlet /signserver/worker/SW-Yukon-MSAuth-CMS -infile "yukon-artifact\YukonInstall\SetupUnsigned.exe" -host signserver.tcc.etn.com -port 443 -username ${username} -outfile "yukon-artifact\YukonInstall\Setup.exe" -digestalgorithm SHA-256 -truststore %SIGNSERVER_HOME%\eaton-truststore.jks-truststorepwd eaton -password ${password}'
     #Remove-Item -Path "yukon-artifact\YukonInstall\SetupUnsigned.exe"
 }
