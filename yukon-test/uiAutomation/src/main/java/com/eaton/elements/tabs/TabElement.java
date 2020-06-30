@@ -43,6 +43,19 @@ public class TabElement {
         }
     }
     
+    public Boolean getTabPresence(String tabName) {
+        List<WebElement> list = getTabs();
+        Boolean tabPresenceFlag = false;
+        
+        for (WebElement element : list) {
+            String tab = element.findElement(By.cssSelector("a")).getText();
+            if(tab.equals(tabName)) {
+                tabPresenceFlag = true;
+                break;
+            }
+        }
+        return tabPresenceFlag;
+    }
     public void waitForTabToLoad() {
         //TODO add code
     }    
