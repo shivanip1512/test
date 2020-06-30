@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/8/2020 8:42:29 AM                          */
+/* Created on:     6/30/2020 10:29:12 AM                        */
 /*==============================================================*/
 
 
@@ -1994,6 +1994,18 @@ create table ControlEventDevice  (
    DeviceReceivedTime   DATE,
    constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 );
+
+/*==============================================================*/
+/* Table: CustomAttribute                                       */
+/*==============================================================*/
+create table CustomAttribute  (
+   AttributeId          NUMBER                          not null,
+   AttributeName        VARCHAR2(60)                    not null,
+   constraint PK_CUSTOMATTRIBUTE primary key (AttributeId)
+);
+
+alter table CustomAttribute
+   add constraint AK_ATTRIBUTENAME unique (AttributeName);
 
 /*==============================================================*/
 /* Table: Customer                                              */

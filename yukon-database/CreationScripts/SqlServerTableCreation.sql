@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/8/2020 8:41:28 AM                          */
+/* Created on:     6/30/2020 10:36:09 AM                        */
 /*==============================================================*/
 
 
@@ -2132,6 +2132,20 @@ create table ControlEventDevice (
    DeviceReceivedTime   datetime             null,
    constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 )
+go
+
+/*==============================================================*/
+/* Table: CustomAttribute                                       */
+/*==============================================================*/
+create table CustomAttribute (
+   AttributeId          numeric              not null,
+   AttributeName        varchar(60)          not null,
+   constraint PK_CUSTOMATTRIBUTE primary key (AttributeId)
+)
+go
+
+alter table CustomAttribute
+   add constraint AK_ATTRIBUTENAME unique (AttributeName)
 go
 
 /*==============================================================*/
