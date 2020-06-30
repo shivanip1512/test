@@ -6,7 +6,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointAnalog;
-import com.cannontech.web.tools.points.model.PointAnalogControl;
+import com.cannontech.web.tools.points.model.PointAnalogControlModel;
 
 public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPointModel> {
 
@@ -52,7 +52,7 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
     /**
      * Validate Point Analog Control Fields.
      */
-    private void validatePointAnalogControl(PointAnalogControl pointAnalogControl, Errors errors) {
+    private void validatePointAnalogControl(PointAnalogControlModel pointAnalogControl, Errors errors) {
         if (pointAnalogControl != null) {
             if (pointAnalogControl.getControlType() != null) {
 
@@ -64,18 +64,19 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
                                                     99999999,
                                                     false);
                 }
+            }
+            // if for accepting non-default values, need to specify control type in request otherwise it would accept only default values.
+            if (pointAnalogControl.getControlType() == null || pointAnalogControl.getControlType() == AnalogControlType.NONE) {
+                if (pointAnalogControl.getControlOffset() != null && pointAnalogControl.getControlOffset() != 0) {
+                    errors.rejectValue("pointAnalogControl.controlOffset", baseKey + ".invalid.controlOffset");
+                }
 
-                if (pointAnalogControl.getControlType() == AnalogControlType.NONE) {
-                    if (pointAnalogControl.getControlOffset() != null && pointAnalogControl.getControlOffset() != 0) {
-                        errors.rejectValue("pointAnalogControl.controlOffset", baseKey + ".invalid.controlOffset");
-                    }
-
-                    if (pointAnalogControl.getControlInhibited() != null && pointAnalogControl.getControlInhibited().equals(true)) {
-                        errors.rejectValue("pointAnalogControl.controlInhibited", baseKey + ".invalid.controlInhibited");
-                    }
+                if (pointAnalogControl.getControlInhibited() != null && pointAnalogControl.getControlInhibited().equals(true)) {
+                    errors.rejectValue("pointAnalogControl.controlInhibited", baseKey + ".invalid.controlInhibited");
                 }
             }
         }
+
     }
 
 }
