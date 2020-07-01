@@ -389,23 +389,23 @@ public class LayoutController {
     @ModelAttribute("buildInfo")
     public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
-        if (buildInfo.containsKey("BUILD_KEY")) {
-            String buildKey = buildInfo.get("BUILD_KEY");
-            if (!Strings.isNullOrEmpty(buildKey) && buildKey.contains("-")) {
-                List<String> keys = Lists.newArrayList(Splitter.on("-").split(buildKey));
-                if (!keys.isEmpty() && keys.size() == 4) {
-                    // Remove the second Element from buildKey to get the actual plan Key.
-                    keys.remove(2);
-                    String finalPlanKey = keys.stream()
-                                              .collect(Collectors.joining("-"));
-                    return "<a href=\"http://loutcsvbamboop1.napa.ad.etn.com:8085/browse/" + finalPlanKey + "\">"
-                            + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
-                }
+        String buildKey = buildInfo.get("BUILD_KEY");
+        if (!Strings.isNullOrEmpty(buildKey) && buildKey.contains("-")) {
+            List<String> keys = Lists.newArrayList(Splitter.on("-").split(buildKey));
+            if (!keys.isEmpty() && keys.size() == 4) {
+                // Remove the second Element from buildKey to get the actual plan Key.
+                keys.remove(2);
+                String finalPlanKey = keys.stream()
+                                          .collect(Collectors.joining("-"));
+                return "<a href=\"http://loutcsvbamboop1.napa.ad.etn.com:8085/browse/" + finalPlanKey + "\">"
+                        + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
             } else {
                 return "undefined";
             }
+        } else {
+            return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/"
+                    + buildInfo.get("JENKINS_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
         }
-        return "undefined";
     }
     
     private Module getModuleBase(String moduleName) {
