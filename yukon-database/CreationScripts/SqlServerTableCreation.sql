@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/30/2020 11:46:10 PM                        */
+/* Created on:     7/1/2020 9:38:14 AM                          */
 /*==============================================================*/
 
 
@@ -520,6 +520,27 @@ create table ArchiveValuesExportFormat (
    ExcludeAbnormal      char(1)              not null,
    constraint PK_ArchiveValuesExpFormat primary key (FormatId)
 )
+go
+
+/*==============================================================*/
+/* Table: AttributeAssignment                                   */
+/*==============================================================*/
+create table AttributeAssignment (
+   AttributeAssignmentId numeric              not null,
+   AttributeId          numeric              not null,
+   DeviceType           varchar(30)          not null,
+   PointType            varchar(30)          not null,
+   PointOffset          numeric              not null,
+   constraint PK_ATTRIBUTEASSIGNMENTID primary key (AttributeAssignmentId)
+)
+go
+
+alter table AttributeAssignment
+   add constraint AK_ASSIGNMENT unique (AttributeId, DeviceType, PointType, PointOffset)
+go
+
+alter table AttributeAssignment
+   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, DeviceType)
 go
 
 /*==============================================================*/
@@ -12202,6 +12223,12 @@ go
 alter table ArchiveDataAnalysisSlotValue
    add constraint FK_ArchDataAnalSlotVal_Device foreign key (DeviceId)
       references DEVICE (DEVICEID)
+         on delete cascade
+go
+
+alter table AttributeAssignment
+   add constraint FK_ATTRASSIGN_CUSTATTR foreign key (AttributeId)
+      references CustomAttribute (AttributeId)
          on delete cascade
 go
 

@@ -586,6 +586,30 @@ UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD'
 INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', SYSDATE);
 /* @end YUK-22443 */
 
+/* @start YUK-22330 */
+CREATE TABLE AttributeAssignment (
+   AttributeAssignmentId   NUMERIC              NOT NULL,
+   AttributeId             NUMERIC              NOT NULL,
+   DeviceType              VARCHAR(30)          NOT NULL,
+   PointType               VARCHAR(30)          NOT NULL,
+   PointOffset             NUMERIC              NOT NULL,
+   CONSTRAINT PK_AttributeAssignmentId PRIMARY KEY (AttributeAssignmentId)
+);
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, DeviceType, PointType, PointOffset);
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, DeviceType);
+
+ALTER TABLE AttributeAssignment
+   ADD CONSTRAINT FK_AttrAssign_CustAttr FOREIGN KEY (AttributeId)
+      REFERENCES CustomAttribute (AttributeId)
+         ON DELETE CASCADE;
+
+INSERT INTO DBUpdates VALUES ('YUK-22330', '7.5.0', SYSDATE);
+/* @end YUK-22330 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
