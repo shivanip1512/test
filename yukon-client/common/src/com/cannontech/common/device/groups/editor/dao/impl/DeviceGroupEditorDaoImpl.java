@@ -374,9 +374,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
             String groupName) throws NotFoundException, IllegalGroupNameException {
-        
-        DeviceGroupUtil.validateName(groupName);
-        
         return getGroupByName(parent, groupName, false);
     }
     
@@ -384,8 +381,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
             String groupName, boolean addGroup) throws NotFoundException, IllegalGroupNameException {
-        
-        DeviceGroupUtil.validateName(groupName);
         
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
