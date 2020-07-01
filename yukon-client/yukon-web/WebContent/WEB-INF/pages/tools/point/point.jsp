@@ -203,7 +203,6 @@
                 </c:if>
             </cti:tab>
 
-            <c:if test="${not isCalcType}">
             <cti:msg2 var="physicalTab" key=".tab.physical" />
             <cti:tab title="${physicalTab}">
 
@@ -358,9 +357,16 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </c:if>
-                
+
+                <c:if test="${isCalcType}">
+                    <tags:nameValueContainer2 tableClass="${nameValueClass}">
+                        <tags:nameValue2 nameKey=".offset">
+                            <tags:input path="pointBase.point.pointOffset" size="6"/>
+                        </tags:nameValue2>
+                    </tags:nameValueContainer2>
+                </c:if>
+
             </cti:tab>
-            </c:if>
 
             <c:if test="${not isSystemPoint}">
             <cti:msg2 var="limitsTab" key=".tab.limits"/>
