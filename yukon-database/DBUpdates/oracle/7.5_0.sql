@@ -586,6 +586,41 @@ UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD'
 INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', SYSDATE);
 /* @end YUK-22443 */
 
+/* @start YUK-22412 */
+UPDATE Point 
+SET PointName = 'Relay 1 Load State'
+WHERE PointType = 'Status' AND PointOffset = 3
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S', 'LCR-6601S')
+);
+
+UPDATE Point 
+SET PointName = 'Relay 2 Load State'
+WHERE PointType = 'Status' AND PointOffset = 5
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S', 'LCR-6601S')
+);
+
+UPDATE Point 
+SET PointName = 'Relay 3 Load State'
+WHERE PointType = 'Status' AND PointOffset = 7
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S')
+);
+
+UPDATE Point 
+SET PointName = 'Relay 4 Load State'
+WHERE PointType = 'Status' AND PointOffset = 9
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId FROM YukonPaobject 
+    WHERE Type IN ('LCR-6600S')
+);
+
+INSERT INTO DBUpdates VALUES ('YUK-22412', '7.5.0', SYSDATE);
+/* @end YUK-22412 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
