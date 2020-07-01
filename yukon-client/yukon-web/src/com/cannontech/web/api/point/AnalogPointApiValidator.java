@@ -6,7 +6,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.point.AnalogControlType;
 import com.cannontech.web.tools.points.model.AnalogPointModel;
 import com.cannontech.web.tools.points.model.PointAnalog;
-import com.cannontech.web.tools.points.model.PointAnalogControlModel;
+import com.cannontech.web.tools.points.model.PointAnalogControl;
 
 public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPointModel> {
 
@@ -52,7 +52,7 @@ public class AnalogPointApiValidator extends ScalarPointApiValidator<AnalogPoint
     /**
      * Validate Point Analog Control Fields.
      */
-    private void validatePointAnalogControl(PointAnalogControlModel pointAnalogControl, Errors errors) {
+    private void validatePointAnalogControl(PointAnalogControl pointAnalogControl, Errors errors) {
         if (pointAnalogControl != null) {
             if (pointAnalogControl.getControlType() != null) {
 

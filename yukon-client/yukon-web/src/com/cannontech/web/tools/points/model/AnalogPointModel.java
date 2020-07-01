@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public class AnalogPointModel extends ScalarPointModel<AnalogPoint> {
 
     private PointAnalog pointAnalog;
-    private PointAnalogControlModel pointAnalogControl;
+    private PointAnalogControl pointAnalogControl;
 
     public PointAnalog getPointAnalog() {
         if (pointAnalog == null) {
@@ -21,14 +21,14 @@ public class AnalogPointModel extends ScalarPointModel<AnalogPoint> {
         this.pointAnalog = pointAnalog;
     }
 
-    public PointAnalogControlModel getPointAnalogControl() {
+    public PointAnalogControl getPointAnalogControl() {
         if (pointAnalogControl == null) {
-            pointAnalogControl = new PointAnalogControlModel();
+            pointAnalogControl = new PointAnalogControl();
         }
         return pointAnalogControl;
     }
 
-    public void setPointAnalogControl(PointAnalogControlModel pointAnalogControl) {
+    public void setPointAnalogControl(PointAnalogControl pointAnalogControl) {
         this.pointAnalogControl = pointAnalogControl;
     }
 

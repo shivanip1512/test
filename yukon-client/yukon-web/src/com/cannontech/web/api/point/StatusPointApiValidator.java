@@ -8,8 +8,10 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.ControlStateType;
+import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.StatusControlType;
-import com.cannontech.web.tools.points.model.PointStatusControlModel;
+import com.cannontech.web.tools.points.model.PointStatusControl;
 import com.cannontech.web.tools.points.model.StatusPointModel;
 
 public class StatusPointApiValidator<T extends StatusPointModel<?>> extends PointApiValidator<T> {
@@ -47,7 +49,7 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
     /**
      *  Validate Point StatusControl
      */
-    private void validatePointStatusControl(PointStatusControlModel pointStatusControl, Errors errors) {
+    private void validatePointStatusControl(PointStatusControl pointStatusControl, Errors errors) {
 
         YukonValidationUtils.checkRange(errors, "pointStatusControl.controlOffset", pointStatusControl.getControlOffset(), -99999999, 99999999, false);
 
@@ -101,5 +103,14 @@ public class StatusPointApiValidator<T extends StatusPointModel<?>> extends Poin
             }
         }
 
+    }
+    
+    @Override
+    protected void validateArchiveSettings(T target, PointType pointType, Errors errors) {
+        super.validateArchiveSettings(target, pointType, errors);
+
+        if (target.getArchiveType() != PointArchiveType.NONE && target.getArchiveType() != PointArchiveType.ON_CHANGE) {
+            errors.rejectValue("archiveType", baseKey + ".invalid.archiveType", new Object[] { target.getArchiveType(), pointType}, "");
+        }
     }
 }

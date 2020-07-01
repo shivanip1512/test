@@ -20,7 +20,6 @@ import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrOptionType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
@@ -171,24 +170,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
      * Validate ArchiveSettings Fields.
      */
 
-    private void validateArchiveSettings(T target, PointType pointType, Errors errors) {
-
-        if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
-            if (target.getArchiveType() != PointArchiveType.NONE && target.getArchiveType() != PointArchiveType.ON_CHANGE) {
-                errors.rejectValue("archiveType", baseKey + ".invalid.archiveType", new Object[] { target.getArchiveType(), pointType}, "");
-            }
-        } else {
-            if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.ON_TIMER || target.getArchiveType() == PointArchiveType.ON_TIMER_OR_UPDATE)) {
-                if (target.getArchiveInterval() != null) {
-                    TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
-                    if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
-                        errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
-                    }
-                } else {
-                    errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveTimeInterval", new Object[] { "Archive Interval" }, "");
-                }
-            }
-        }
+    protected void validateArchiveSettings(T target, PointType pointType, Errors errors) {
 
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
             if (target.getArchiveInterval() != null && target.getArchiveInterval() != 0) {
