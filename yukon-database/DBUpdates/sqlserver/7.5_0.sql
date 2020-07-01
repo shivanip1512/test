@@ -580,6 +580,28 @@ GO
 INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', GETDATE());
 /* @end YUK-22234 */
 
+/* @start YUK-21829 */
+CREATE TABLE CustomAttribute (
+   AttributeId          NUMERIC              NOT NULL,
+   AttributeName        VARCHAR(60)          NOT NULL,
+   CONSTRAINT PK_CustomAttribute PRIMARY KEY (AttributeId)
+);
+GO
+
+ALTER TABLE CustomAttribute
+   ADD CONSTRAINT AK_AttributeName UNIQUE (AttributeName);
+GO
+
+INSERT INTO DBUpdates VALUES ('YUK-21829', '7.5.0', GETDATE());
+/* @end YUK-21829 */
+
+/* @start YUK-22443 */
+UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD' 
+    WHERE SystemGroupEnum IN  ('SERVICE_ACTIVE_RFW_METERS', 'SERVICE_ACTIVE_RF_ELECTRIC_METERS');
+
+INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', GETDATE());
+/* @end YUK-22443 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,20 +1,20 @@
-package com.cannontech.common.rtu.dao;
+package com.cannontech.common.device.dao;
 
 import java.util.List;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.rtu.model.RtuPointDetail;
+import com.cannontech.common.device.model.DevicePointDetail;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.point.PointType;
 
-public interface RtuDnpDao {
+public interface DevicePointDao {
 
     public enum SortBy{
-        DEVICE_NAME("PAOName"),
-        POINT_NAME("PointName"),
-        POINT_OFFSET("PointOffset"),
-        POINT_TYPE("PointType");
+        deviceName("PAOName"),
+        pointName("PointName"),
+        pointOffset("PointOffset"),
+        pointType("PointType");
         
         private SortBy(String dbString) {
             this.dbString = dbString;
@@ -39,7 +39,7 @@ public interface RtuDnpDao {
      * @param direction - direction (asc/desc) for the order by, can't be null
      */
     
-    SearchResults<RtuPointDetail> getRtuPointDetail(List<Integer> paoIds, List<String> pointNames,
+    SearchResults<DevicePointDetail> getDevicePointDetail(List<Integer> paoIds, List<String> pointNames,
             List<PointType> types, Direction direction, SortBy sortBy, PagingParameters paging);
 
 }

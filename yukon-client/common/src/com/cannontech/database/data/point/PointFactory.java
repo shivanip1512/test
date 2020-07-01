@@ -257,9 +257,9 @@ public final class PointFactory {
         return newPoint;
     }
 
-    public static PointBase createCalcStatusPoint(Integer paoId, String name, int stateGroupId) {
+    public static PointBase createCalcStatusPoint(Integer paoId, String name, int stateGroupId, int pointOffset) {
 
-        PointBase newPoint = createNewPoint(null, PointTypes.CALCULATED_STATUS_POINT, name, paoId, 0);
+        PointBase newPoint = createNewPoint(null, PointTypes.CALCULATED_STATUS_POINT, name, paoId, pointOffset);
 
         newPoint.getPoint().setStateGroupID(stateGroupId);
 
@@ -270,10 +270,10 @@ public final class PointFactory {
 
     }
 
-    public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId) {
-        
+    public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId, int pointOffset) {
+
         return createCalculatedPoint(paoIdentifier, name, stateGroupId, UnitOfMeasure.UNDEF.getId(),
-            PointUnit.DEFAULT_DECIMAL_PLACES, PointArchiveType.NONE, PointArchiveInterval.ZERO, null);
+            PointUnit.DEFAULT_DECIMAL_PLACES, PointArchiveType.NONE, PointArchiveInterval.ZERO, null, pointOffset);
     }
 
     /**
@@ -282,9 +282,9 @@ public final class PointFactory {
      */
     public static PointBase createCalculatedPoint(PaoIdentifier paoIdentifier, String name, int stateGroupId,
             int unitOfMeasure, int decimalPlaces, PointArchiveType pointArchiveType,
-            PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint) {
+            PointArchiveInterval pointArchiveInterval, CalcPointInfo calcPoint, int pointOffset) {
         
-        PointBase point = createNewPoint(null, PointTypes.CALCULATED_POINT, name, paoIdentifier.getPaoId(), 0);
+        PointBase point = createNewPoint(null, PointTypes.CALCULATED_POINT, name, paoIdentifier.getPaoId(), pointOffset);
 
         point.getPoint().setArchiveType(pointArchiveType);
         point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());

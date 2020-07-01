@@ -3005,6 +3005,25 @@
 					"response": []
 				},
 				{
+					"name": "Retrieve",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/trends/{id}",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"trends",
+								"{id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Update",
 					"request": {
 						"method": "PUT",
@@ -3087,7 +3106,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Brady NAY!\",\r\n    \"enable\": \"false\"\r\n}",
+							"raw": "{\r\n    \"name\": \"Postman Virtual Device Test\",\r\n    \"enable\": \"false\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -3123,6 +3142,26 @@
 								}
 							}
 						},
+						"url": {
+							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"device",
+								"virtualDevices",
+								"{device-id}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Device",
+					"request": {
+						"method": "DELETE",
+						"header": [],
 						"url": {
 							"raw": "{{api-url}}/api/device/virtualDevices/{device-id}",
 							"host": [

@@ -17,7 +17,9 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
     @Override
     protected void doValidation(TrendModel trend, Errors errors) {
 
-        trendValidatorHelper.validateTrendName(errors, trend.getName(), "name");
+        if (trend.getName() != null) {
+            trendValidatorHelper.validateTrendName(errors, trend.getName(), trend.getTrendId());
+        }
 
         if (CollectionUtils.isNotEmpty(trend.getTrendSeries())) {
             for (int i = 0; i < trend.getTrendSeries().size(); i++) {
