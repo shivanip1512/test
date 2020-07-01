@@ -7,18 +7,19 @@ import com.eaton.elements.modals.ConfirmModal;
 import com.eaton.elements.modals.CreateCommChannelModal;
 import com.eaton.elements.modals.EditCommChannelModal;
 import com.eaton.elements.panels.CommChannelInfoPanel;
+import com.eaton.elements.tabs.TabElement;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.Urls;
 import com.eaton.pages.PageBase;
 
 public class CommChannelDetailPage extends PageBase {
-
+    
     public CommChannelDetailPage(DriverExtensions driverExt, int id) {
         super(driverExt);
         
         requiresLogin = true;
-        pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL+id;
+        pageUrl = Urls.Assets.COMM_CHANNEL_DETAIL + id;
     }
     
     public CommChannelDetailPage(DriverExtensions driverExt) {
@@ -33,10 +34,14 @@ public class CommChannelDetailPage extends PageBase {
         return new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
     }
     
-    public String getCommChannelInfoPanelText() {
-        CommChannelInfoPanel infoPanel= new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
-        return infoPanel.getPanelNameText();
+    public TabElement getTabElement() {
+        return new TabElement(this.driverExt);
     }
+    
+//    public String getCommChannelInfoPanelText() {
+//        CommChannelInfoPanel infoPanel= new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
+//        return infoPanel.getPanelNameText();
+//    }
 
     public EditCommChannelModal showCommChannelEditModal(Optional<String> modalTitle) {
 

@@ -12,7 +12,7 @@ public class CommChannelUtils {
         
         public ExtractableResponse<?> createCommChannel(String payload) {
                 Object createBody = JsonFileHelper.parseJSONFile(payload);
-                return AssetsCreateRequestAPI.createCommChannelTCP(createBody);
+                return AssetsCreateRequestAPI.createCommChannel(createBody);
         }
         
         @SuppressWarnings("unchecked")

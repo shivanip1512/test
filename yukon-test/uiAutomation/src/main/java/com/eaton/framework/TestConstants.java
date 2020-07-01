@@ -11,5 +11,6 @@ public final class TestConstants {
     
     public static final String DEMAND_REPONSE = "Demand_Response";
     public static final String AMI = "AMI";
+    public static final String COMM_CHANNEL = "Comm_Channel";
 
 }
