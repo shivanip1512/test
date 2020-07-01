@@ -566,6 +566,19 @@ END;
 INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', SYSDATE);
 /* @end YUK-22234 */
 
+/* @start YUK-21829 */
+CREATE TABLE CustomAttribute (
+   AttributeId          NUMERIC              NOT NULL,
+   AttributeName        VARCHAR(60)          NOT NULL,
+   CONSTRAINT PK_CustomAttribute PRIMARY KEY (AttributeId)
+);
+
+ALTER TABLE CustomAttribute
+   ADD CONSTRAINT AK_AttributeName UNIQUE (AttributeName);
+
+INSERT INTO DBUpdates VALUES ('YUK-21829', '7.5.0', SYSDATE);
+/* @end YUK-21829 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
