@@ -1503,4 +1503,6 @@
     <bean class="com.cannontech.web.api.trend.TrendCreateValidator"/>
     <bean class="com.cannontech.web.api.trend.TrendValidator"/>
     <bean class="com.cannontech.web.api.trend.TrendValidatorHelper"/>
+    
+    <bean class="com.cannontech.web.admin.dao.impl.CustomAttributeDaoImpl"/>
 </beans>

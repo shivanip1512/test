@@ -16,8 +16,10 @@ public interface AttributeDao {
 
     /**
      * Deletes custom attribute
+     * 
+     * @return number of rows deleted. If 0 is returned row was not deleted.
      */
-    void deleteCustomAttribute(int attributeId);
+    int deleteCustomAttribute(int attributeId);
 
     /**
      * Returns the list of attributes

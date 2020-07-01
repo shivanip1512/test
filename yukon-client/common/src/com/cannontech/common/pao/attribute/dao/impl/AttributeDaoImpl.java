@@ -118,12 +118,13 @@ public class AttributeDaoImpl implements AttributeDao {
     }
 
     @Override
-    public void deleteCustomAttribute(int attributeId) {
-        // Check if a custom attribute is being used elsewhere in Yukon (to provide an error to a user attempting to delete it)
+    public int deleteCustomAttribute(int attributeId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM CustomAttribute");
         sql.append("WHERE AttributeId").eq(attributeId);
-        jdbcTemplate.update(sql);
+        sql.append("AND AttributeId NOT IN");
+        sql.append("  (SELECT AttributeId FROM AttributeAssignment)");
+        return jdbcTemplate.update(sql);
     }
 
     @Override
