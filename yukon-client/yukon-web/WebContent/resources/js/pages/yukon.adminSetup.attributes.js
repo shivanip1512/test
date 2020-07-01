@@ -34,29 +34,13 @@ yukon.adminSetup.attributes = (function () {
             
             if (_initialized) return;
             
-            $('.js-attributes-table').scrollTableBody({rowsToDisplay: 10});
+            $('.js-attributes-table').scrollTableBody();
             
             $(document).on('yukon:attribute:delete', function (ev) {
                 var attributeId = $(ev.target).data('attributeId'),
                     form = $('#delete-attribute-form-' + attributeId);
                 form.submit();
-            });
-            
-            $(document).on('click', '.js-create-attribute', function () {
-                var createSpan = $('.js-create-attribute-span'),
-                    nameField = createSpan.find('[name="name"]'),
-                    params = {
-                        name: nameField.val()
-                    };
-                $.post(yukon.url('/admin/config/attribute/save'), params, function (data) {
-                    if (data.errorMessage != null) {
-                        nameField.addClass('error');
-                        createSpan.find('.error').text(data.errorMessage);
-                    } else {
-                        window.location.href = window.location.href;
-                    }
-                });
-            });
+            });       
             
             $(document).on('click', '.js-save-edit-attribute', function () {
                 var attributeId = $(this).data('attributeId'),

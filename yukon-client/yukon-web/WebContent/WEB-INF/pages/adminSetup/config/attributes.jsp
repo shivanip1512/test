@@ -25,15 +25,23 @@
         </div>
         
         <tags:sectionContainer2 nameKey="attributeDefinitions">
-            <span class="js-create-attribute-span">
-                <cti:msg2 var="attributePlaceholder" key=".attributeName"/>
-                <input type="text" name="name" placeholder="${attributePlaceholder}" maxlength="60" size="40"/>
-                <cti:button nameKey="create" classes="js-create-attribute fn vam" icon="icon-plus-green"/>
-                <div class="error"></div>
-            </span>
+            <cti:url value="/admin/config/attribute/create" var="createAttributeUrl" />
+            <form:form modelAttribute="attribute" action="${createAttributeUrl}" method="POST">
+                <cti:csrfToken />
+                <div class="column-8-16 clearfix">
+                    <div class="column one">
+                        <cti:msg2 var="attributePlaceholder" key=".attributeName"/>
+                        <tags:input path="name" placeholder="${attributePlaceholder}" maxlength="60" size="40"/>
+                    </div>
+                    <div class="column two nogutter">
+                        <cti:button nameKey="create" type="submit" classes="fn vam ML15" icon="icon-plus-green"/>
+                    </div>
+                </div>
+            </form:form>
             
-            <div style="width:60%;">
-                <table class="compact-results-table row-highlighting has-actions js-attributes-table">
+            <div style="width:60%;" class="PT10">
+                <c:set var="tableClass" value="${attributes.size() > 10 ? 'js-attributes-table' : ''}"/>
+                <table class="compact-results-table row-highlighting has-actions ${tableClass}">
                     <thead>
                         <tr>
                             <th><i:inline key=".attributeName"></i:inline>
@@ -41,34 +49,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <c:forEach var="attribute" items="${attributes}">
+                        <c:forEach var="attr" items="${attributes}">
                             <tr>
                                 <td>
-                                    <span class="js-view-attribute-${attribute.id}">
-                                        ${fn:escapeXml(attribute.name)}
+                                    <span class="js-view-attribute-${attr.id}">
+                                        ${fn:escapeXml(attr.name)}
                                     </span>
-                                    <span class="js-edit-attribute-${attribute.id} dn">
-                                        <input type="hidden" name="savedName" value="${attribute.name}"/>
-                                        <input type="text" name="name" maxlength="60" size="50" value="${attribute.name}"/>
+                                    <span class="js-edit-attribute-${attr.id} dn">
+                                        <input type="hidden" name="savedName" value="${attr.name}"/>
+                                        <input type="text" name="name" maxlength="60" size="50" value="${attr.name}"/>
                                         <div class="button-group">
                                             <cti:button renderMode="buttonImage" icon="icon-disk" classes="js-save-edit-attribute" 
-                                                data-attribute-id="${attribute.id}"/>
+                                                data-attribute-id="${attr.id}"/>
                                             <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
-                                                data-attribute-id="${attribute.id}"/>
+                                                data-attribute-id="${attr.id}"/>
                                         </div>
                                         <div class="error"></div>
                                     </span>
                                 </td>
                                 <td>
-                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attribute.id}">
-                                        <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attribute.id}"/>
-                                        <cm:dropdownOption id="delete-attribute-${attribute.id}" key=".delete" icon="icon-cross" 
-                                            data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attribute.id}"/>
-                                        <d:confirm on="#delete-attribute-${attribute.id}" nameKey="confirmDelete" argument="${attribute.name}"  />
-                                        <cti:url var="deleteUrl" value="/admin/config/attribute/${attribute.id}/delete"/>
-                                        <form:form id="delete-attribute-form-${attribute.id}" action="${deleteUrl}" method="DELETE">
+                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attr.id}">
+                                        <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attr.id}"/>
+                                        <cm:dropdownOption id="delete-attribute-${attr.id}" key=".delete" icon="icon-cross" 
+                                            data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attr.id}"/>
+                                        <d:confirm on="#delete-attribute-${attr.id}" nameKey="confirmDelete" argument="${attr.name}"  />
+                                        <cti:url var="deleteUrl" value="/admin/config/attribute/${attr.id}/delete"/>
+                                        <form:form id="delete-attribute-form-${attr.id}" action="${deleteUrl}" method="DELETE">
                                             <cti:csrfToken/>
-                                            <input type="hidden" name="name" value="${attribute.name}"/>
+                                            <input type="hidden" name="name" value="${attr.name}"/>
                                         </form:form>
                                     </cm:dropdown>
                                 </td>
@@ -77,6 +85,10 @@
                     </tbody>
                 </table>
             </div>
+            
+            <c:if test="${empty attributes}">
+                <span class="empty-list compact-results-table"><i:inline key="yukon.common.search.noResultsFound"/></span>
+            </c:if>
      
         </tags:sectionContainer2>
         
