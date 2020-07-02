@@ -37,10 +37,14 @@ yukon.widget.commChannel.info = (function () {
                     carrierDetectWaitField = popup.find('.js-carrier-detect-wait-switch'),
                     carrierDetectWait = carrierDetectWaitField.exists() && !carrierDetectWaitField.hasClass('dn'),
                     encryptionKeyField = popup.find('.js-encryption-key-switch'),
-                    encryptionKey = encryptionKeyField.exists() && !encryptionKeyField.hasClass('dn');
+                    encryptionKey = encryptionKeyField.exists() && !encryptionKeyField.hasClass('dn'),
+                    selectedSocketType = popup.find("input[class='js-socket-type-val']:checked").val();
 
                 popup.find('.js-physical-port').prop('disabled', userPortEntered);
                 userPortField.prop('disabled', !userPortEntered);
+                if (selectedSocketType === $('#socketTypeNone').val()) {
+                    popup.find("input[id='js-socket-number-val']").val("1025");
+                }
 
                 if (carrierDetectWait) {
                     var carrierDetectWaitRow = carrierDetectWaitField.closest('tr'),
@@ -117,6 +121,16 @@ yukon.widget.commChannel.info = (function () {
 
             $(document).on("yukon:assets:commChannel:load", function(event) {
                 yukon.comm.channel.loadPhysicalPort();
+                var isUserMessageVisible = $('.ui-dialog').find('#user-message').is(":visible");
+                if (isUserMessageVisible) {
+                    $('.ui-dialog-buttonset').find('.js-primary-action').prop('disabled', true);
+                }
+            });
+
+            $(document).on('change', '#js-socket-type', function (event) {
+                var selectedSocketType = $("input[class='js-socket-type-val']:checked").val(),
+                    socketTypeNone = $('#socketTypeNone').val();
+                $('.js-socket-number').toggleClass('dn', selectedSocketType === socketTypeNone);
             });
 
             _initialized = true;
