@@ -602,7 +602,7 @@ BEGIN
         WHERE RolePropertyID = -10200;
 END;
 /* @end-block */
-INSERT INTO DBUpdates VALUES ('22371', '7.5.0', SYSDATE);
+INSERT INTO DBUpdates VALUES ('YUK-22371', '7.5.0', SYSDATE);
 /* @end YUK-22371 */
 
 /**************************************************************/
