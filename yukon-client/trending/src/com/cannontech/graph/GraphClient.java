@@ -1604,7 +1604,7 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
             HierarchyPermissionLevel graphEdit = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_TRENDS,
                     HierarchyPermissionLevel.class, session.getUser());
 
-            if (!graphEdit.equals(HierarchyPermissionLevel.OWNER)) {
+            if (graphEdit != HierarchyPermissionLevel.OWNER) {
                 getTrendMenu().getCreateMenuItem().setEnabled(false);
                 getTrendMenu().getEditMenuItem().setEnabled(false);
             }
