@@ -1498,9 +1498,12 @@
     <bean class="com.cannontech.web.api.point.PointApiCreationValidator"/>
     <bean class="com.cannontech.web.api.point.AccumulatorPointApiValidator"/>
     <bean class="com.cannontech.web.api.point.AnalogPointApiValidator"/>
+    <bean class="com.cannontech.web.api.point.StatusPointApiValidator"/>
     <bean class="com.cannontech.web.tools.points.service.impl.PointEditorServiceImpl"/>
     <bean class="com.cannontech.common.trend.service.impl.TrendServiceImpl"/>
     <bean class="com.cannontech.web.api.trend.TrendCreateValidator"/>
     <bean class="com.cannontech.web.api.trend.TrendValidator"/>
     <bean class="com.cannontech.web.api.trend.TrendValidatorHelper"/>
+    
+    <bean class="com.cannontech.web.admin.dao.impl.CustomAttributeDaoImpl"/>
 </beans>

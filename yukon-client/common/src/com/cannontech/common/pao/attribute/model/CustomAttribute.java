@@ -4,9 +4,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class CustomAttribute {
+
     private Integer id;
     private String name;
-    private String baseKey = "yukon.common.attribute.customAttribute.";
+    private String key = "yukon.common.attribute.customAttribute.";
         
     public Integer getId() {
         return id;
@@ -21,7 +22,7 @@ public class CustomAttribute {
         this.name = name;
     }
     public String getKey() {
-        return baseKey + id;
+        return key + id;
     }
     
     @Override

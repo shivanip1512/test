@@ -599,7 +599,7 @@ INSERT INTO DBUpdates VALUES ('YUK-21829', '7.5.0', GETDATE());
 UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD' 
     WHERE SystemGroupEnum IN  ('SERVICE_ACTIVE_RFW_METERS', 'SERVICE_ACTIVE_RF_ELECTRIC_METERS');
 
-INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', GETDATE());
 /* @end YUK-22443 */
 
 /**************************************************************/
