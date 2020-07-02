@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="adminSetup" page="config.attributes">
@@ -25,16 +26,16 @@
         </div>
         
         <tags:sectionContainer2 nameKey="attributeDefinitions">
-            <cti:url value="/admin/config/attribute/save" var="createAttributeUrl" />
-            <form:form modelAttribute="attribute" action="${createAttributeUrl}" method="POST">
+            <cti:url value="/admin/config/attribute/create" var="createAttributeUrl" />
+            <form:form modelAttribute="createAttribute" action="${createAttributeUrl}" method="POST">
                 <cti:csrfToken />
-                <div class="column-8-16 clearfix">
+                <div class="column-10-14 clearfix">
                     <div class="column one">
                         <cti:msg2 var="attributePlaceholder" key=".attributeName"/>
-                        <tags:input path="name" placeholder="${attributePlaceholder}" maxlength="60" size="40"/>
+                        <tags:input path="name" placeholder="${attributePlaceholder}" maxlength="60" size="50"/>
                     </div>
                     <div class="column two nogutter">
-                        <cti:button nameKey="create" type="submit" classes="fn vam ML15" icon="icon-plus-green"/>
+                        <cti:button nameKey="create" type="submit" classes="fn vam" icon="icon-plus-green"/>
                     </div>
                 </div>
             </form:form>
@@ -50,25 +51,38 @@
                     </thead>
                     <tbody>
                         <c:forEach var="attr" items="${attributes}">
+                            <c:set var="enableEdit" value="${enableEditId == attr.id}"/>
+                            <c:set var="editClass" value="${enableEdit ? '' : 'dn'}"/>
+                            <c:set var="viewClass" value="${enableEdit ? 'dn' : ''}"/>
                             <tr>
                                 <td>
-                                    <span class="js-view-attribute-${attr.id}">
+                                    <span class="js-view-attribute-${attr.id} ${viewClass}" title="${attr.key}">
                                         ${fn:escapeXml(attr.name)}
                                     </span>
-                                    <span class="js-edit-attribute-${attr.id} dn">
-                                        <input type="hidden" name="savedName" value="${attr.name}"/>
-                                        <input type="text" name="name" maxlength="60" size="50" value="${attr.name}"/>
-                                        <div class="button-group">
-                                            <cti:button renderMode="buttonImage" icon="icon-disk" classes="js-save-edit-attribute" 
-                                                data-attribute-id="${attr.id}"/>
-                                            <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
-                                                data-attribute-id="${attr.id}"/>
-                                        </div>
-                                        <div class="error"></div>
+                                    <span class="js-edit-attribute-${attr.id} ${editClass}">
+                                        <cti:url value="/admin/config/attribute/edit" var="editAttributeUrl" />
+                                        <form:form modelAttribute="editAttribute" action="${editAttributeUrl}" method="POST">
+                                            <cti:csrfToken />
+                                            <input type="hidden" name="id" value="${attr.id}"/>
+                                            <input type="hidden" name="savedName" value="${attr.name}"/>
+                                            <spring:bind path="name">
+                                                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                                                <form:input path="name" maxlength="60" size="60" cssClass="${clazz}"/>
+                                            </spring:bind>
+                                            <div class="button-group">
+                                                <cti:button renderMode="buttonImage" icon="icon-disk" type="submit"
+                                                    data-attribute-id="${attr.id}"/>
+                                                <cti:button renderMode="buttonImage" icon="icon-delete" classes="js-cancel-edit-attribute" 
+                                                    data-attribute-id="${attr.id}"/>
+                                            </div>
+                                            <spring:bind path="name">
+                                                <c:if test="${status.error}"><br><form:errors path="name" cssClass="error" /></c:if>
+                                            </spring:bind>
+                                        </form:form>
                                     </span>
                                 </td>
                                 <td>
-                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attr.id}">
+                                    <cm:dropdown icon="icon-cog" triggerClasses="js-view-attribute-${attr.id} ${viewClass}">
                                         <cm:dropdownOption key=".edit" icon="icon-pencil" classes="js-edit-attribute" data-attribute-id="${attr.id}"/>
                                         <cm:dropdownOption id="delete-attribute-${attr.id}" key=".delete" icon="icon-cross" 
                                             data-ok-event="yukon:attribute:delete" classes="js-hide-dropdown" data-attribute-id="${attr.id}"/>

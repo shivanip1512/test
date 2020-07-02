@@ -52,22 +52,38 @@ public class AttributesController {
     public String attributes(ModelMap model, YukonUserContext userContext, HttpServletRequest request) {
         retrieveCustomAttributes(model, userContext, request);
         CustomAttribute createAttribute = new CustomAttribute();
-        if (model.containsKey("attribute")) {
-            createAttribute = (CustomAttribute) model.get("attribute");
+        if (model.containsKey("createAttribute")) {
+            createAttribute = (CustomAttribute) model.get("createAttribute");
         }
-        model.addAttribute("attribute", createAttribute);
+        model.addAttribute("createAttribute", createAttribute);
+        CustomAttribute editAttribute = new CustomAttribute();
+        if (model.containsKey("editAttribute")) {
+            editAttribute = (CustomAttribute) model.get("editAttribute");
+        }
+        model.addAttribute("editAttribute", editAttribute);
         return "config/attributes.jsp";
     }
     
-    @PostMapping("/config/attribute/save")
-    public String saveAttribute(@ModelAttribute("attribute") CustomAttribute attribute, BindingResult result,
+    @PostMapping("/config/attribute/create")
+    public String createttribute(@ModelAttribute("createAttribute") CustomAttribute attribute, BindingResult result,
                                              ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
                                              HttpServletResponse resp, FlashScope flash, RedirectAttributes redirectAttributes) {
+        return saveAttribute(attribute, result, model, userContext, request, resp, flash, redirectAttributes, false);
+    }
+    
+    @PostMapping("/config/attribute/edit")
+    public String editAttribute(@ModelAttribute("editAttribute") CustomAttribute attribute, BindingResult result,
+                                             ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
+                                             HttpServletResponse resp, FlashScope flash, RedirectAttributes redirectAttributes) {
+        return saveAttribute(attribute, result, model, userContext, request, resp, flash, redirectAttributes, true);
+    }
+    
+    private String saveAttribute(CustomAttribute attribute, BindingResult result, ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
+                                 HttpServletResponse resp, FlashScope flash, RedirectAttributes redirectAttributes, Boolean isEditMode) {
         attributeValidator.validate(attribute, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            redirectAttributes.addFlashAttribute("attribute", attribute);
-            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.attribute", result);
+            setupErrorModel(redirectAttributes, attribute, result, isEditMode);
             return redirectLink;
         }
 
@@ -82,12 +98,11 @@ public class AttributesController {
             }
 
             if (response.getStatusCode() == HttpStatus.UNPROCESSABLE_ENTITY) {
-                BindException error = new BindException(attribute, "attribute");
+                BindException error = new BindException(attribute, "editAttribute");
                 result = helper.populateBindingError(result, error, response);
                 if (result.hasErrors()) {
                     resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                    redirectAttributes.addFlashAttribute("attribute", attribute);
-                    redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.attribute", result);
+                    setupErrorModel(redirectAttributes, attribute, result, isEditMode);
                     return redirectLink;
                 }
             }
@@ -105,6 +120,17 @@ public class AttributesController {
         return redirectLink;
     }
     
+    private void setupErrorModel(RedirectAttributes redirectAttributes, CustomAttribute attribute, BindingResult result, Boolean isEditMode) {
+        if (isEditMode) {
+            redirectAttributes.addFlashAttribute("enableEditId", attribute.getId());
+            redirectAttributes.addFlashAttribute("editAttribute", attribute);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.editAttribute", result);
+        } else {
+            redirectAttributes.addFlashAttribute("createAttribute", attribute);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.createAttribute", result);
+        }
+    }
+        
     @DeleteMapping("/config/attribute/{id}/delete")
     public String deleteAttribute(ModelMap model, @PathVariable int id, String name, HttpServletRequest request, 
                                   YukonUserContext userContext, FlashScope flash) {
