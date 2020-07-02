@@ -59,8 +59,8 @@ public class AttributesController {
         return "config/attributes.jsp";
     }
     
-    @PostMapping("/config/attribute/create")
-    public String createAttribute(@ModelAttribute("attribute") CustomAttribute attribute, BindingResult result,
+    @PostMapping("/config/attribute/save")
+    public String saveAttribute(@ModelAttribute("attribute") CustomAttribute attribute, BindingResult result,
                                              ModelMap model, YukonUserContext userContext, HttpServletRequest request, 
                                              HttpServletResponse resp, FlashScope flash, RedirectAttributes redirectAttributes) {
         attributeValidator.validate(attribute, result);
@@ -157,7 +157,7 @@ public class AttributesController {
         att3.setName("CustomAttribute-003");
         atts.add(att3);
         
-        att1 = new CustomAttribute();
+/*        att1 = new CustomAttribute();
         att1.setId(121);
         att1.setName("CustomAttribute-001");
         atts.add(att1);
@@ -194,7 +194,7 @@ public class AttributesController {
         att3 = new CustomAttribute();
         att3.setId(123);
         att3.setName("CustomAttribute-003");
-        atts.add(att3);
+        atts.add(att3);*/
         model.addAttribute("attributes", atts);
     }
     

@@ -15,6 +15,9 @@ yukon.adminSetup.attributes = (function () {
     _toggleEditViewAttribute = function (attributeId, editMode) {
         var editSpan = $('.js-edit-attribute-' + attributeId),
             viewSpan = $('.js-view-attribute-' + attributeId);
+        //close any other edit spans
+        $('[class*="js-edit-attribute-"]').addClass('dn');
+        $('[class*="js-view-attribute-"]').removeClass('dn');
         editSpan.toggleClass('dn', !editMode);
         viewSpan.toggleClass('dn', editMode);
         if (!editMode) {

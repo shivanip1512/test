@@ -32,7 +32,7 @@ public class AttributeValidator extends SimpleValidator<CustomAttribute> {
 
     @Override
     protected void doValidation(CustomAttribute attribute, Errors errors) {
-        String nameI18nText = accessor.getMessage("yukon.common.name");
+        String nameI18nText = accessor.getMessage("yukon.web.modules.adminSetup.config.attributes.attributeName");
         YukonValidationUtils.checkIsBlank(errors, "name", attribute.getName(), nameI18nText, false);
 
         if (!errors.hasFieldErrors("name")) {

@@ -25,7 +25,7 @@
         </div>
         
         <tags:sectionContainer2 nameKey="attributeDefinitions">
-            <cti:url value="/admin/config/attribute/create" var="createAttributeUrl" />
+            <cti:url value="/admin/config/attribute/save" var="createAttributeUrl" />
             <form:form modelAttribute="attribute" action="${createAttributeUrl}" method="POST">
                 <cti:csrfToken />
                 <div class="column-8-16 clearfix">
