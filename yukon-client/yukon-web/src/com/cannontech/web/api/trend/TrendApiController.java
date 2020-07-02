@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.trend.service.TrendService;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 
 @RestController
 @RequestMapping("/trends")
@@ -30,12 +33,14 @@ public class TrendApiController {
     @Autowired private TrendValidator trendValidator;
 
     @PostMapping
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.CREATE)
     public ResponseEntity<Object> create(@Valid @RequestBody TrendModel trendModel) {
         TrendModel createdTrend = trendService.create(trendModel);
         return new ResponseEntity<>(createdTrend, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.OWNER)
     public ResponseEntity<HashMap<String, Integer>> delete(@PathVariable int id) {
         int trendId = trendService.delete(id);
         HashMap<String, Integer> trendIdMap = new HashMap<>();
@@ -44,12 +49,14 @@ public class TrendApiController {
     }
 
     @PutMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.UPDATE)
     public ResponseEntity<TrendModel> update(@Valid @RequestBody TrendModel trendModel, @PathVariable int id) {
         TrendModel createdTrend = trendService.update(id, trendModel);
         return new ResponseEntity<>(createdTrend, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
+    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.VIEW)
     public ResponseEntity<TrendModel> retrieve(@PathVariable int id) {
         TrendModel trend = trendService.retrieve(id);
         return new ResponseEntity<>(trend, HttpStatus.OK);
