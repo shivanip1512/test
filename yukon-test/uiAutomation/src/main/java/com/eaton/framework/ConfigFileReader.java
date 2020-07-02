@@ -79,10 +79,10 @@ public class ConfigFileReader {
         throw new RuntimeException("screenShotPath is not specified in the Configuration.properties file.");
     }
 
+    
     public String getApiParameter(String param) {
-
+        
         String parameter = properties.getProperty(param);
-
         if (parameter != null)
             return parameter;
 

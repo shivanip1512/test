@@ -20,7 +20,6 @@ import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrOptionType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.TimeIntervals;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AlarmCatDao;
@@ -42,7 +41,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValidator<T> {
     @Autowired private PointValidationUtil pointValidationUtil;
     @Autowired private IDatabaseCache serverDatabaseCache;
-    @Autowired private StateGroupDao stateGroupDao;
+    @Autowired protected StateGroupDao stateGroupDao;
     @Autowired private AlarmCatDao alarmCatDao;
     protected static final String baseKey = "yukon.web.api.error";
     public static final int maxFdrInterfaceTranslations = 5;
@@ -60,9 +59,9 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     protected void doValidation(T target, Errors errors) {
         PointType pointType = target.getPointType();
         boolean isCreationOperation = target.getPointId() == null ? true : false;
-        
+
         if (target.getPointName() != null) {
-            pointValidationUtil.validateName("pointName", errors, target.getPointName());
+            YukonValidationUtils.checkIsBlank(errors, "pointName", target.getPointName(), "Name", false);
         }
         if (target.getPaoId() != null) {
             LiteYukonPAObject liteYukonPAObject = serverDatabaseCache.getAllPaosMap().get(target.getPaoId());
@@ -90,7 +89,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             pointValidationUtil.checkIfPointTypeChanged(errors, target, isCreationOperation);
         }
 
-        validateArchiveSettings(target, errors);
+        validateArchiveSettings(target, pointType, errors);
         validateStateGroupId(target, errors);
         validateStaleDataSettings(target, errors);
         validateAlarming(target.getAlarming(), pointType, errors, target.getStateGroupId());
@@ -120,12 +119,11 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
             // Validate alarmTableList
             List<AlarmTableEntry> alarmList = pointAlarming.getAlarmTableList();
             if (alarmList != null && CollectionUtils.isNotEmpty(alarmList)) {
-                List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
+                List<String> alarmStates = new ArrayList<String>(Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES));
                 if (pointType == PointType.Status || pointType == PointType.CalcStatus) {
-                    alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
+                    alarmStates = new ArrayList<String>(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES));
                     // Add all state present in the State Group
-                    // TODO : Case for stateGroupID = null need to handle for Status point type.
-                    if (stateGroupID != null) {
+                    if (!errors.hasFieldErrors("stateGroupId")) {
                         List<String> rawStates = stateGroupDao.getStateGroup(stateGroupID).getStatesList()
                                                                                           .stream()
                                                                                           .map(e -> String.valueOf(e.getLiteID()))
@@ -172,17 +170,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
      * Validate ArchiveSettings Fields.
      */
 
-    private void validateArchiveSettings(T target, Errors errors) {
-        if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.ON_TIMER || target.getArchiveType() == PointArchiveType.ON_TIMER_OR_UPDATE)) {
-            if (target.getArchiveInterval() != null) {
-                TimeIntervals archiveInterval = TimeIntervals.fromSeconds(target.getArchiveInterval());
-                if (!TimeIntervals.getArchiveIntervals().contains(archiveInterval)) {
-                    errors.rejectValue("archiveInterval", baseKey + ".invalid", new Object[] { "Archive Interval" }, "");
-                }
-            } else {
-                errors.rejectValue("archiveInterval", baseKey + ".invalid.archiveTimeInterval", new Object[] { "Archive Interval" }, "");
-            }
-        }
+    protected void validateArchiveSettings(T target, PointType pointType, Errors errors) {
 
         if (target.getArchiveType() != null && (target.getArchiveType() == PointArchiveType.NONE || target.getArchiveType() == PointArchiveType.ON_CHANGE || target.getArchiveType() == PointArchiveType.ON_UPDATE)) {
             if (target.getArchiveInterval() != null && target.getArchiveInterval() != 0) {

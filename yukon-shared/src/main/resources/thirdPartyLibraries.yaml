@@ -5774,13 +5774,13 @@ C++ :
     project URL : "http://activemq.apache.org/cms/"
     license : Apache 2.0
     license URLs : "http://www.apache.org/licenses/LICENSE-2.0.html"
-    md5 : f6024ae820400f1bcef26dc1bdc24134
-    sha1 : 3311d2e2d098953e48c56087ff37c532babcea09
+    md5 : 01c2e51bfced38625795d1a006f5a9bd
+    sha1 : 14c729fe48a88ca797fedb7a4327bc8f1078af65
     fileCount : 691
-    totalSize : 37532260
-    updated : 2019-12-08  
-    jira : YUK-20694
-    notes : 
+    totalSize : 36792387
+    updated : 2020-06-25  
+    jira : YUK-21544
+    notes : Updated internal zlib to 1.2.11
 
   - project : Apache Portable Runtime
     path : APR
