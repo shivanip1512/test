@@ -4755,19 +4755,19 @@ Network Manager :
     jira : none
     notes : 
 
-  - filename : libthrift-0.9.0.jar
+  - filename : libthrift-0.13.0.jar
     yukon group : Thrift
     project : Thrift
-    version : 0.9.0
+    version : 0.13.0
     project URL : "http://thrift.apache.org/"
     license : Apache 2.0
     license URLs : "https://opensource.org/licenses/Apache-2.0"
-    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.9.0"
-    md5 : d662808928b60a04a58960221d03eddd
-    sha1 : d3cd7c9a4261d4fb7e31aee70e4f568bc5973c96
-    updated : 2013-09-19
-    jira : none
-    notes : 
+    maven URL : "https://mvnrepository.com/artifact/org.apache.thrift/libthrift/0.13.0"
+    md5 : 31132a57eacc3e7cd2b7af626b5f1ff9
+    sha1 : 0e5af3b6dc164eb2c699b70bf67a0babef507faf
+    updated : 2020-07-02
+    jira : NM-705
+    notes : Used for communication between Yukon and NM through E2E channel
 
   - filename : liquidlnf.jar
     yukon group : IzPack
