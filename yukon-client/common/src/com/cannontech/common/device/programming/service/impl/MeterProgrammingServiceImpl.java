@@ -210,6 +210,8 @@ public class MeterProgrammingServiceImpl implements MeterProgrammingService, Col
         try {
             waitableCallback.waitForCompletion();
         } catch (InterruptedException | TimeoutException e) {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
+            result.setErrorText(accessor.getMessage(baseKey + "summary.timeout"));
             log.error(e);
         }
         return result;

@@ -59,7 +59,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
 
 @Controller
-@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.INTERACT)
+@CheckPermissionLevel(property = YukonRoleProperty.MANAGE_INFRASTRUCTURE, level = HierarchyPermissionLevel.VIEW)
 public class GatewayListController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
