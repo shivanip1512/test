@@ -55,5 +55,5 @@
     <entry key="yukon.web.error.paoTypeMismatch">Type {0} does not match existing type {1} for id: {2}.</entry>
     <entry key="yukon.web.error.nm.commsError">Unable to send request due to a communication error between Yukon and Network Manager.</entry>
     <entry key="yukon.web.error.nm.error">Received error from Network Manager.</entry>
-    <entry key="yukon.web.error.resetPeak.notApplicable">Cannot perform Reset Peak operation for this Trend.</entry>
+    <entry key="yukon.web.error.resetPeak.notApplicable">Reset peaks cannot be performed on this trend. No peak trend types found.</entry>
 </properties>

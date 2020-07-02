@@ -81,13 +81,9 @@ public class TrendServiceImpl implements TrendService {
     @SuppressWarnings("unchecked")
     @Override
     public int resetPeak(int id, ResetPeakModel resetPeakModel) {
-        LiteGraphDefinition liteTrend = dbCache.getAllGraphDefinitions().stream()
-                                                                        .filter(group -> group.getLiteID() == id)
-                                                                        .findFirst()
-                                                                        .orElseThrow(() -> new NotFoundException("Trend Id not found"));
-
-        GraphDefinition trend = (GraphDefinition) LiteFactory.createDBPersistent(liteTrend);
-        GraphDefinition graphDefinition = (GraphDefinition) dbPersistentDao.retrieveDBPersistent(trend);
+        GraphDefinition graphDefinition = new GraphDefinition();
+        graphDefinition.getGraphDefinition().setGraphDefinitionID(id);
+        graphDefinition = (GraphDefinition) dbPersistentDao.retrieveDBPersistent(graphDefinition);
 
         graphDefinition.getGraphDataSeries()
                        .stream()
