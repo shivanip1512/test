@@ -40,6 +40,12 @@ public class CommChannelDetailPage extends PageBase {
         return new TabElement(this.driverExt);
     }
 
+    
+    public String getCommChannelInfoPanelText() {
+        CommChannelInfoPanel infoPanel= new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
+        return infoPanel.getPanelNameText();
+    }
+
     public Section getTimingSection() {
         return new Section(this.driverExt, "Timing");
     }

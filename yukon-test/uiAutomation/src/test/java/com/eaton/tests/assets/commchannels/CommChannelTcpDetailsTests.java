@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -20,6 +20,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.assets.commChannels.CommChannelDetailPage;
 import com.eaton.rest.api.assets.AssetsCreateRequestAPI;
+import com.eaton.rest.api.dr.JsonFileHelper;
 
 import io.restassured.response.ExtractableResponse;
 
@@ -30,30 +31,25 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     private SoftAssertions softly;
     private String commChannelId;
     private String commChannelName;
-    private JSONObject json;
+    private JSONObject jo;
 
     @BeforeClass(alwaysRun = true)
     public void beforeClass() {
         driverExt = getDriverExt();
         softly = new SoftAssertions();
         
-      String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
-      commChannelName = "TCP Comm Channel " + timeStamp;
-              
-      json = new JSONObject()
-                .put("name", commChannelName)
-                .put("enable", true)
-                .put("baudRate", "BAUD_1200")
-                .put("type", "TCP")
-                .put("timing", new JSONObject()
-                      .put("preTxWait", 25)
-                      .put("rtsToTxWait", 0)
-                      .put("postTxWait", 10)
-                      .put("receiveDataWait", 0)
-                      .put("extraTimeOut", 0));
-        
-        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(json.toString());
-        commChannelId = createResponse.path("id").toString();                           
+    String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
+    commChannelName = "TCP Comm Channel " + timeStamp;
+    
+    // Creating one UDP port comm channel using hard coded json file.
+    String payloadFile = System.getProperty("user.dir")
+            + "\\src\\test\\resources\\payload\\payload.commchannel\\CommChannelTCP.json";
+
+    Object body = JsonFileHelper.parseJSONFile(payloadFile);
+    jo = (JSONObject) body;
+    jo.put("name", commChannelName);
+    ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(body);
+    commChannelId = createResponse.path("id").toString();
     } 
     
     @BeforeMethod(alwaysRun = true)
@@ -63,38 +59,38 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL})
-    public void commChannelDetailsTcpPageTitleCorrect() {
+    public void commChannelDetailsTcp__PageTitleCorrect() {
         String EXPECTED_TITLE = commChannelName;     
-        
         String actualPageTitle = channelDetailPage.getPageTitle();
-        
         assertThat(EXPECTED_TITLE).isEqualTo(actualPageTitle);
     }        
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void commChannelDetailsTcpTabTitlesCorrect() {        
+    public void commChannelDetailsTcp_TabTitlesCorrect() {        
         List<String> titles = channelDetailPage.getTabElement().getTitles();
         
-        softly.assertThat(titles).contains("Info");
-        softly.assertThat(titles).contains("Configuration");
+        softly.assertThat(titles.size()).isEqualTo(2);
+        softly.assertThat(titles.get(0)).isEqualTo("Info");
+        softly.assertThat(titles.get(1)).isEqualTo("Configuration");
         softly.assertAll();
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void commChannelDetailsTcpInfoTabLabelsCorrect() {
+    public void commChannelDetailsTcp_InfoTabLabelsCorrect() {
         String infoTitle = "Info";
         channelDetailPage.getTabElement().clickTab(infoTitle);
         List<String> labels = channelDetailPage.getTabElement().getTabLabels(infoTitle);
-        
-        softly.assertThat(labels).contains("Name:");
-        softly.assertThat(labels).contains("Type:");
-        softly.assertThat(labels).contains("Baud Rate:");
-        softly.assertThat(labels).contains("Status:");
+
+        softly.assertThat(labels.size()).isEqualTo(4);
+        softly.assertThat(labels.get(0)).isEqualTo("Name:");
+        softly.assertThat(labels.get(1)).contains("Type:");
+        softly.assertThat(labels.get(2)).contains("Baud Rate:");
+        softly.assertThat(labels.get(3)).contains("Status:");
         softly.assertAll();
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void commChannelDetailsTcpInfoTabValuesCorrect() {        
+    public void commChannelDetailsTcp_InfoTabValuesCorrect() {        
         List<String> values = channelDetailPage.getTabElement().getTabValues("Info");        
         
         softly.assertThat(values.size()).isEqualTo(4);           
@@ -117,7 +113,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void commChannelDetailsTcp_ConfigTabLabelsCorrect() {
+    public void commChannelDetailsTcp__ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
         
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -134,17 +130,17 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL})
-    public void commChannelDetailsTcp_ConfigTabValuesCorrect() {
+    public void commChannelDetailsTcp__ConfigTabValuesCorrect() {
         channelDetailPage.getTabElement().clickTab("Configuration");
         
         List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");        
         
         softly.assertThat(values.size()).isEqualTo(5);
         softly.assertThat(values.get(0)).isEqualTo("25  ms");
-        softly.assertThat(values.get(1)).isEqualTo("20  ms");
-        softly.assertThat(values.get(2)).isEqualTo("15  ms");
-        softly.assertThat(values.get(3)).isEqualTo("10  ms");
-        softly.assertThat(values.get(4)).isEqualTo("5  sec");
+        softly.assertThat(values.get(1)).isEqualTo("0  ms");
+        softly.assertThat(values.get(2)).isEqualTo("10  ms");
+        softly.assertThat(values.get(3)).isEqualTo("0  ms");
+        softly.assertThat(values.get(4)).isEqualTo("0  sec");
         softly.assertAll();
     }
 
