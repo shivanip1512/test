@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelInfoWidget">
+<cti:msgScope paths="yukon.common,yukon.web.modules.operator.commChannelInfoWidget,yukon.web.modules.operator.commChannel.sharedPortType">
     <tags:setFormEditMode mode="${mode}" />
     <c:if test="${not empty errorMsg}"><tags:alertBox>${fn:escapeXml(errorMsg)}</tags:alertBox></c:if>
     <div class="js-global-error">
@@ -136,9 +136,7 @@
                             <tags:sectionContainer2 nameKey="shared">
                                 <tags:nameValueContainer2>
                                     <tags:nameValue2 nameKey=".sharedPortType" rowId="js-socket-type">
-                                        <tags:radio path="sharing.sharedPortType" value="NONE" classes="left yes ML0" inputClass="js-socket-type-val" key="yukon.web.modules.operator.commChannel.sharedPortType.NONE"/>
-                                        <tags:radio path="sharing.sharedPortType" value="ACS" classes="middle yes" inputClass="js-socket-type-val" key="yukon.web.modules.operator.commChannel.sharedPortType.ACS"/>
-                                        <tags:radio path="sharing.sharedPortType" value="ILEX" classes="right yes" inputClass="js-socket-type-val" key="yukon.web.modules.operator.commChannel.sharedPortType.ILEX"/>
+                                        <tags:radioButtonGroup items="${sharedPortTypes}" path="sharing.sharedPortType" viewModeKey="${commChannel.sharing.sharedPortType}" inputCssClass="js-socket-type-val"/>
                                     </tags:nameValue2>
                                     <input type="hidden" id="socketTypeNone" value="${sharedPortNone}">
                                     <c:set var="socketNumberCssClass" value=""/>
@@ -147,10 +145,7 @@
                                         <c:set var="socketNumberCssClass" value="js-socket-number"/>
                                         <c:set var="socketNumberValueCssClass" value="js-socket-number-val"/>
                                     </cti:displayForPageEditModes>
-                                    <c:set var="cssClassForSocketType" value=""/>
-                                    <c:if test="${isSharedPortTypeNone}">
-                                        <c:set var="cssClassForSocketType" value="dn"/>
-                                    </c:if>
+                                    <c:set var="cssClassForSocketType" value="${isSharedPortTypeNone ? 'dn' : ''}"/>
                                     <tags:nameValue2 nameKey=".socketNumber" rowClass="${cssClassForSocketType} ${socketNumberCssClass}">
                                        <tags:input path="sharing.sharedSocketNumber" id="${socketNumberValueCssClass}"/>
                                     </tags:nameValue2>

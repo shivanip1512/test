@@ -105,7 +105,7 @@ public class CommChannelInfoWidget extends AdvancedWidgetControllerBase {
         } catch (RestClientException ex) {
             log.error("Error retrieving comm Channel: " + ex.getMessage());
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String commChannelDeviceLabel = accessor.getMessage("yukon.web.modules.operator.commChannel.deviceName");
+            String commChannelDeviceLabel = accessor.getMessage("yukon.web.modules.operator.commChannel");
             String errorMsg = accessor.getMessage("yukon.web.api.retrieve.error", 
                     commChannelDeviceLabel, ex.getMessage());
             model.addAttribute("errorMsg", errorMsg);
