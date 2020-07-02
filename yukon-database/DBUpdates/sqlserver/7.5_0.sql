@@ -618,7 +618,7 @@ BEGIN
 END;
 GO
 /* @end-block */
-INSERT INTO DBUpdates VALUES ('22371', '7.5.0', GETDATE());
+INSERT INTO DBUpdates VALUES ('YUK-22371', '7.5.0', GETDATE());
 /* @end YUK-22371 */
 
 /**************************************************************/
