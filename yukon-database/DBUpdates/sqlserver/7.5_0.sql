@@ -603,21 +603,16 @@ INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', GETDATE());
 /* @end YUK-22443 */
 
 /* @start YUK-22371 */
-/* @start-block */
-BEGIN
-    DECLARE @v_DefaultValue VARCHAR(5) = 'VIEW'
+UPDATE YukonGroupRole SET Value = 'OWNER'
+    WHERE RolePropertyID = -10200 AND Value = 'true';
 
-    IF (SELECT DefaultValue FROM YukonRoleProperty WHERE RolePropertyID = -10200 ) = 'true' 
-    BEGIN
-        SET @v_DefaultValue = 'OWNER'
-    END
+UPDATE YukonGroupRole SET Value = 'VIEW'
+    WHERE RolePropertyID = -10200 AND Value IN ('','false');
 
-    UPDATE YukonRoleProperty
-        SET KeyName = 'Manage Trends', Description = 'Controls access to view, create, edit, or delete Trends.', DefaultValue = @v_DefaultValue
-        WHERE RolePropertyID = -10200
-END;
+UPDATE YukonRoleProperty
+    SET KeyName = 'Manage Trends', Description = 'Controls access to view, create, edit, or delete Trends.', DefaultValue = 'VIEW'
+    WHERE RolePropertyID = -10200;
 GO
-/* @end-block */
 INSERT INTO DBUpdates VALUES ('YUK-22371', '7.5.0', GETDATE());
 /* @end YUK-22371 */
 
