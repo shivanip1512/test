@@ -1,8 +1,9 @@
 package com.cannontech.web.tools.points.model;
 
 import com.cannontech.common.device.port.DBPersistentConverter;
+import com.cannontech.database.db.point.calculation.CalcBase;
 
-public class CalcBase implements DBPersistentConverter<com.cannontech.database.db.point.calculation.CalcBase> {
+public class CalculationBase implements DBPersistentConverter<com.cannontech.database.db.point.calculation.CalcBase> {
 
     private CalcUpdateType updateType;
     private Integer periodicRate;
@@ -24,7 +25,7 @@ public class CalcBase implements DBPersistentConverter<com.cannontech.database.d
     }
 
     @Override
-    public void buildDBPersistent(com.cannontech.database.db.point.calculation.CalcBase calcBase) {
+    public void buildDBPersistent(CalcBase calcBase) {
         if (getUpdateType() != null) {
             calcBase.setUpdateType(getUpdateType());
         }
@@ -34,9 +35,8 @@ public class CalcBase implements DBPersistentConverter<com.cannontech.database.d
     }
 
     @Override
-    public void buildModel(com.cannontech.database.db.point.calculation.CalcBase calcBase) {
+    public void buildModel(CalcBase calcBase) {
         setUpdateType(CalcUpdateType.getCalcUpdateType(calcBase.getUpdateType()));
         setPeriodicRate(calcBase.getPeriodicRate());
-
     }
 }

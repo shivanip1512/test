@@ -12,19 +12,19 @@ import com.google.common.collect.Lists;
 
 public class CalcStatusPointModel extends StatusPointModel<CalcStatusPoint> {
 
-    private CalcBase calcBase;
+    private CalculationBase calculationBase;
     private List<CalculationComponent> calcComponents;
     private Integer baselineId;
 
-    public CalcBase getCalcBase() {
-        if (calcBase == null) {
-            calcBase = new CalcBase();
+    public CalculationBase getCalcBase() {
+        if (calculationBase == null) {
+            calculationBase = new CalculationBase();
         }
-        return calcBase;
+        return calculationBase;
     }
 
-    public void setCalcBase(CalcBase calcBase) {
-        this.calcBase = calcBase;
+    public void setCalcBase(CalculationBase calculationBase) {
+        this.calculationBase = calculationBase;
     }
 
     public List<CalculationComponent> getCalcComponents() {

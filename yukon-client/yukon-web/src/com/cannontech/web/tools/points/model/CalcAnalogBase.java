@@ -4,7 +4,7 @@ import org.apache.commons.lang3.BooleanUtils;
 
 import com.cannontech.database.db.point.calculation.CalcBase;
 
-public class CalcAnalogBase extends com.cannontech.web.tools.points.model.CalcBase {
+public class CalcAnalogBase extends CalculationBase {
 
     private Boolean calculateQuality;
 

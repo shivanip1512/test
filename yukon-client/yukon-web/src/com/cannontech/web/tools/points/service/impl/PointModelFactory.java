@@ -95,10 +95,17 @@ public class PointModelFactory {
                 if (pao == null) {
                     throw new NotFoundException("Pao Id not found " + baseModel.getPaoId());
                 }
-                pointBase = PointFactory.createCalculatedPoint(new PaoIdentifier(baseModel.getPaoId(), pao.getPaoType()), baseModel.getPointName(), StateGroupUtils.STATEGROUP_ANALOG, baseModel.getPointOffset());
+                pointBase = PointFactory.createCalculatedPoint(new PaoIdentifier(baseModel.getPaoId(),
+                                                              pao.getPaoType()),
+                                                              baseModel.getPointName(),
+                                                              StateGroupUtils.STATEGROUP_ANALOG,
+                                                              baseModel.getPointOffset());
                 break;
             case CalcStatus:
-                pointBase = PointFactory.createCalcStatusPoint(baseModel.getPaoId(), baseModel.getPointName(), StateGroupUtils.STATEGROUP_ANALOG, baseModel.getPointOffset());
+                pointBase = PointFactory.createCalcStatusPoint(baseModel.getPaoId(),
+                                                               baseModel.getPointName(),
+                                                               StateGroupUtils.STATEGROUP_ANALOG,
+                                                               baseModel.getPointOffset());
                 break;
             case DemandAccumulator:
                 pointBase =  PointFactory.createDmdAccumPoint(baseModel.getPointName(),
