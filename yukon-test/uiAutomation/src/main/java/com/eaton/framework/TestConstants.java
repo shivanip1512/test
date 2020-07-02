@@ -9,7 +9,7 @@ public final class TestConstants {
     
     public static final String DATE_FORMAT = "MMddyyyyHHmmss";
     
-    public static final String DEMAND_REPONSE = "Demand_Response";
+    public static final String DEMAND_RESPONSE = "Demand_Response";
     public static final String AMI = "AMI";
 
 }
