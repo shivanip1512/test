@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <c:if test="${isIpAddressSupported}">
-    <tags:nameValue2 nameKey=".ipAddress">
+    <tags:nameValue2 nameKey=".ipaddress">
         <tags:input path="ipAddress"/>
     </tags:nameValue2>
 </c:if>

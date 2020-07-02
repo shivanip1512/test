@@ -39,7 +39,6 @@ public class CommChannelDetailPage extends PageBase {
     public TabElement getTabElement() {
         return new TabElement(this.driverExt);
     }
-
     
     public String getCommChannelInfoPanelText() {
         CommChannelInfoPanel infoPanel= new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
