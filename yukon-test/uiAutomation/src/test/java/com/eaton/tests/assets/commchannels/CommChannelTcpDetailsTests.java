@@ -11,7 +11,9 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.eaton.elements.Section;
 import com.eaton.elements.modals.CreateCommChannelModal;
+import com.eaton.elements.modals.EditCommChannelModal;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -37,19 +39,20 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         
       String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
       commChannelName = "TCP Comm Channel " + timeStamp;
-        
+              
       json = new JSONObject()
                 .put("name", commChannelName)
                 .put("enable", true)
                 .put("baudRate", "BAUD_1200")
-                .put("type", "TCPPORT")
-                .put("timing", new JSONObject().put("preTxWait", 25))
-                .put("timing", new JSONObject().put("rtsToTxWait", 0))
-                .put("timing", new JSONObject().put("postTxWait", 10))
-                .put("timing", new JSONObject().put("receiveDataWait", 0))
-                .put("timing", new JSONObject().put("extraTimeOut", 0)); 
+                .put("type", "TCP")
+                .put("timing", new JSONObject()
+                      .put("preTxWait", 25)
+                      .put("rtsToTxWait", 0)
+                      .put("postTxWait", 10)
+                      .put("receiveDataWait", 0)
+                      .put("extraTimeOut", 0));
         
-        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(json);
+        ExtractableResponse<?> createResponse = AssetsCreateRequestAPI.createCommChannel(json.toString());
         commChannelId = createResponse.path("id").toString();                           
     } 
     
@@ -95,26 +98,30 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         List<String> values = channelDetailPage.getTabElement().getTabValues("Info");        
         
         softly.assertThat(values.size()).isEqualTo(4);           
-        softly.assertThat(values).contains(json.getString("name"));
+        softly.assertThat(values).contains(commChannelName);
         softly.assertThat(values).contains("TCP");
         softly.assertThat(values).contains("1200");
         softly.assertThat(values).contains("Enabled");
         softly.assertAll();
     }        
 
-//    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-//    public void commChannelDetailsTcpConfigTabTimingSectionDisplayed() {
-//        // using tab text clicking on particular comm channel tab
-//        tab.clickTab("Configuration");
-//        Section timingSection = new Section(driverExt, "Timing");
-//        assertThat(timingSection.sectionDisplayed()).isTrue();
-//    }
-//
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    public void commChannelDetailsTcp_ConfigTabTimingSectionDisplayed() {
+        String infoTitle = "Configuration";
+        
+        channelDetailPage.getTabElement().clickTab(infoTitle);
+        
+        Section timing = channelDetailPage.getTimingSection();
+        
+        assertThat(timing.getSection()).isNotNull();        
+    }
+
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelDetailsTcp_ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
         
         channelDetailPage.getTabElement().clickTab(infoTitle);
+        
         List<String> labels = channelDetailPage.getTabElement().getTabLabels(infoTitle);
                 
         softly.assertThat(labels.size()).isEqualTo(5);
@@ -133,35 +140,36 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
         List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");        
         
         softly.assertThat(values.size()).isEqualTo(5);
-        softly.assertThat(values.get(0)).isEqualTo("");
-        softly.assertThat(values.get(1)).isEqualTo("");
-        softly.assertThat(values.get(2)).isEqualTo("");
-        softly.assertThat(values.get(3)).isEqualTo("");
-        softly.assertThat(values.get(4)).isEqualTo("");
-
+        softly.assertThat(values.get(0)).isEqualTo("25  ms");
+        softly.assertThat(values.get(1)).isEqualTo("20  ms");
+        softly.assertThat(values.get(2)).isEqualTo("15  ms");
+        softly.assertThat(values.get(3)).isEqualTo("10  ms");
+        softly.assertThat(values.get(4)).isEqualTo("5  sec");
         softly.assertAll();
     }
 
-//    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-//    public void commChannelDetailsTcpPanelTitleCorrect() {
-//        // Validate Comm Channel Info Panel Text
-//        String expectedPanelText = "Comm Channel Information";
-//        // panel text validation
-//        String actualPanelText = channelDetailPage.getCommChannelInfoPanelText();
-//        assertThat(actualPanelText).isEqualTo(expectedPanelText);
-//    }
-//
-//    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-//    public void commChannelDetailsEditOpensCorrectModal() {
-//        Optional<String> expectedModalTitle = Optional.of("Edit " + commChannelName);
-//        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
-//        String actualModalTitle = editModal.getModalTitle();
-//        Optional<String> oActualModalTitle = Optional.of(actualModalTitle);
-//        assertThat(oActualModalTitle).isEqualTo(expectedModalTitle);
-//    }
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    public void commChannelDetailsTcp_PanelTitleCorrect() {       
+        String expectedPanelText = "Comm Channel Information";
+       
+        String actualPanelText = channelDetailPage.getCommChannelInfoPanel().getPanelName();
+        
+        assertThat(actualPanelText).isEqualTo(expectedPanelText);
+    }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void commChannelDetailsCreateOpensCorrectModal() {
+    public void commChannelDetailsEditOpensCorrectModal() {
+        String expectedModalTitle = "Edit " + commChannelName;
+        
+        EditCommChannelModal editModal = channelDetailPage.showCommChannelEditModal(expectedModalTitle);
+        
+        String actualModalTitle = editModal.getModalTitle();
+        
+        assertThat(actualModalTitle).isEqualTo(expectedModalTitle);
+    }
+
+    @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
+    public void commChannelDetailsTCP_CreateOpensCorrectModal() {
         String expectedModalTitle = "Create Comm Channel";
         
         CreateCommChannelModal createModal = channelDetailPage.showCreateCommChannelModal(expectedModalTitle);

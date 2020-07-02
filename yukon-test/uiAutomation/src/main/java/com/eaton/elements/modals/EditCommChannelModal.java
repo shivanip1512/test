@@ -24,10 +24,6 @@ public class EditCommChannelModal extends BaseModal {
         return new TextEditElement(this.driverExt, "name", getModal());
     }
 
-    /*public String getChannelType() {
-        return Label.getLabelText();
-    }
-*/
     public TextEditElement getIPAddress() {
         return new TextEditElement(this.driverExt, "meterNumber", getModal());
     }

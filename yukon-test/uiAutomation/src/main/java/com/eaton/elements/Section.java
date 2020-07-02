@@ -29,10 +29,5 @@ public class Section {
 
     public WebElement getSection() {        
         return section;
-    }
-    
-    public Boolean sectionDisplayed() {
-        Boolean sectionVisibility = getSection().isDisplayed();
-        return sectionVisibility;
-    }
+    }    
 }
