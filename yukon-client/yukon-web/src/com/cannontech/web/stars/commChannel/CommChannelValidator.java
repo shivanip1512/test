@@ -38,7 +38,7 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
     protected void doValidation(T commChannel, Errors errors) {
         String paoId = commChannel.getId() != null ? commChannel.getId().toString() : null;
 
-        yukonValidationHelper.validatePaoName(commChannel.getName(), commChannel.getType(), errors, "Name", paoId);
+        yukonValidationHelper.validatePaoName(commChannel.getName(), commChannel.getType(), errors, yukonValidationHelper.getMessage("yukon.common.name"), paoId);
         if (commChannel instanceof TcpPortDetail) {
             if (StringUtils.isNotEmpty(paoId)) {
                 validateTimingField(errors, ((TcpPortDetail) commChannel).getTiming());
@@ -59,7 +59,7 @@ public class CommChannelValidator<T extends PortBase<?>> extends SimpleValidator
 
             if (commChannel instanceof TcpSharedPortDetail) {
                 PortValidatorHelper.validateIPAddress(errors, ((TcpSharedPortDetail) commChannel).getIpAddress(),
-                        yukonValidationHelper.getMessage(baseKey + "ipAddress"), true);
+                        yukonValidationHelper.getMessage("yukon.common.ipaddress"), true);
                 validatePort(errors, terminalServerPortDetail.getPortNumber(), ((TcpSharedPortDetail) commChannel).getIpAddress(),
                         paoId, commChannel.getType());
             }
