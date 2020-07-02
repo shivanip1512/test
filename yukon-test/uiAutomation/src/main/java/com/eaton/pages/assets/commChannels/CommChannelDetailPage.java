@@ -38,10 +38,10 @@ public class CommChannelDetailPage extends PageBase {
         return new TabElement(this.driverExt);
     }
     
-//    public String getCommChannelInfoPanelText() {
-//        CommChannelInfoPanel infoPanel= new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
-//        return infoPanel.getPanelNameText();
-//    }
+    public String getCommChannelInfoPanelText() {
+        CommChannelInfoPanel infoPanel= new CommChannelInfoPanel(this.driverExt, "Comm Channel Information");
+        return infoPanel.getPanelNameText();
+    }
 
     public EditCommChannelModal showCommChannelEditModal(Optional<String> modalTitle) {
 

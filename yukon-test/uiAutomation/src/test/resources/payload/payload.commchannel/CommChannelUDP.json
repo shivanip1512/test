@@ -3,7 +3,7 @@
   "enable" : true,
   "baudRate" : "BAUD_2400",
   "type" : "UDPPORT",
-  "portNumber" : 5834,
+  "portNumber" : 5832,
   "carrierDetectWaitInMilliseconds" : 544,
   "protocolWrap" : "IDLC",
   "timing" : {
