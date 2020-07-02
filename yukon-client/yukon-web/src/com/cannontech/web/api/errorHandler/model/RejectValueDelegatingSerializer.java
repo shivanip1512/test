@@ -18,8 +18,8 @@ public class RejectValueDelegatingSerializer extends JsonSerializer<Object> {
     public void serialize(Object type, JsonGenerator gen, SerializerProvider provider) throws IOException {
         if (type instanceof DateTime) {
             new DateSerializer().serialize((DateTime) type, gen, provider);
+        } else {
+            gen.writeString(type.toString());
         }
-
-        // If no match found default serializer is used.
     }
 }
