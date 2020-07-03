@@ -178,6 +178,8 @@ public final class Urls {
         public static final String VIEW_BATCH_COMMANDS = "/operator/Admin/SwitchCommands.jsp";
         public static final String WORK_ORDER_REPORTS = "/operator/WorkOrder/Report.jsp";
         public static final String ZIGBEE_PROBLEM_DEVICES = "/stars/operator/inventory/zbProblemDevices/view";
+        public static final String COMM_CHANNELS = "/stars/device/commChannel/list";
+        public static final String VIRTUAL_DEVICES = "/stars/virtualDevices";
     }
     
     public static final class Tools {
@@ -197,6 +199,7 @@ public final class Urls {
         public static final String DEVICE_GROUP_UPLOAD = "/group/updater/upload";
         public static final String NOTES = "/tools/paoNotes/search";
         public static final String RECENT_RESULTS = "/collectionActions/recentResults";
+        public static final String DATA_STREAMING = "/tools/dataStreaming/configurations";
     }
     
     public static final class Admin {
@@ -259,5 +262,6 @@ public final class Urls {
     	public static final String SYSTEM_INFO = "/support/info";
     	public static final String THIRD_PARTY_LIBRARIES = "/support/thirdParty/view";
     	public static final String THREAD_DUMP = "/support/threadDump";
+    	public static final String DATA_STREAMING_DEVICE_ATTRIBUTES = "/support/dataStreamingSupport";
     }
 }
