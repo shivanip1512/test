@@ -607,7 +607,7 @@ UPDATE YukonGroupRole SET Value = 'OWNER'
     WHERE RolePropertyID = -10200 AND Value = 'true';
 
 UPDATE YukonGroupRole SET Value = 'VIEW'
-    WHERE RolePropertyID = -10200 AND Value IN ('','false');
+    WHERE RolePropertyID = -10200 AND Value = 'false';
 
 UPDATE YukonRoleProperty
     SET KeyName = 'Manage Trends', Description = 'Controls access to view, create, edit, or delete Trends.', DefaultValue = 'VIEW'
