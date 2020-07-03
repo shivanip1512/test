@@ -81,6 +81,7 @@ public class TrendServiceImpl implements TrendService {
     @SuppressWarnings("unchecked")
     @Override
     public int resetPeak(int id, ResetPeakModel resetPeakModel) {
+        // only need graphDefinitionId for retrieve
         GraphDefinition graphDefinition = new GraphDefinition();
         graphDefinition.getGraphDefinition().setGraphDefinitionID(id);
         graphDefinition = (GraphDefinition) dbPersistentDao.retrieveDBPersistent(graphDefinition);
