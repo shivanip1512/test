@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.stars.util.ServletUtils;
 
 public class TrendValidator extends SimpleValidator<TrendModel> {
     @Autowired private TrendValidatorHelper trendValidatorHelper;
@@ -18,7 +19,8 @@ public class TrendValidator extends SimpleValidator<TrendModel> {
     protected void doValidation(TrendModel trend, Errors errors) {
 
         if (trend.getName() != null) {
-            trendValidatorHelper.validateTrendName(errors, trend.getName(), trend.getTrendId());
+            String trendId = ServletUtils.getPathVariable("id");
+            trendValidatorHelper.validateTrendName(errors, trend.getName(), trendId);
         }
 
         if (CollectionUtils.isNotEmpty(trend.getTrendSeries())) {

@@ -18,6 +18,6 @@ public class TrendEditorValidator extends SimpleValidator<TrendModel> {
 
     @Override
     protected void doValidation(TrendModel trendModel, Errors errors) {
-        trendValidatorHelper.validateTrendName(errors, trendModel.getName(), trendModel.getTrendId());
+        trendValidatorHelper.validateTrendName(errors, trendModel.getName(), String.valueOf(trendModel.getTrendId()));
     }
 }
