@@ -1,5 +1,7 @@
 package com.cannontech.web.tools.trends.validator;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -18,6 +20,6 @@ public class TrendEditorValidator extends SimpleValidator<TrendModel> {
 
     @Override
     protected void doValidation(TrendModel trendModel, Errors errors) {
-        trendValidatorHelper.validateTrendName(errors, trendModel.getName(), String.valueOf(trendModel.getTrendId()));
+        trendValidatorHelper.validateTrendName(errors, trendModel.getName(), Objects.toString(trendModel.getTrendId(), null));
     }
 }
