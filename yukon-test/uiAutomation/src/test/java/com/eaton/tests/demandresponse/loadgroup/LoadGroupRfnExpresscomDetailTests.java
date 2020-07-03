@@ -1,11 +1,10 @@
-package com.eaton.tests.demandresponse;
+package com.eaton.tests.demandresponse.loadgroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
-import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -18,7 +17,7 @@ import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.DemandResponseSetupPage;
 import com.eaton.pages.demandresponse.LoadGroupDetailPage;
 
-public class LoadGroupDetailTests extends SeleniumTestSetup {
+public class LoadGroupRfnExpresscomDetailTests extends SeleniumTestSetup {
 
     private DriverExtensions driverExt;
 
@@ -27,7 +26,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_02_EditLoadGrp"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Load Group: AT Load Group";
         
@@ -40,7 +39,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_03_CopyLoadGrp"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void copyLoadGroupSuccess() {
         
         navigate(Urls.DemandResponse.LOAD_GROUP_DETAIL + "592");
@@ -67,7 +66,7 @@ public class LoadGroupDetailTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }
     
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM06_04_DeleteLoadGrp"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
     public void deleteLoadGroupSuccess() {
         final String EXPECTED_MSG = "AT Delete RFN Expresscom Ldgrp deleted successfully.";
         
