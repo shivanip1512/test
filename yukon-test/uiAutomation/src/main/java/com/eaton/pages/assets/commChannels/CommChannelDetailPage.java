@@ -48,6 +48,14 @@ public class CommChannelDetailPage extends PageBase {
     public Section getTimingSection() {
         return new Section(this.driverExt, "Timing");
     }
+    
+    public Section getGeneralSection() {
+        return new Section(this.driverExt, "General");
+    }
+    
+    public Section getSharedSection() {
+        return new Section(this.driverExt, "Shared");
+    }
 
     public EditCommChannelModal showCommChannelEditModal(String modalTitle) {
         getCommChannelInfoPanel().getEdit().click();

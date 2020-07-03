@@ -110,23 +110,26 @@ public class CommChannelUdpDetailsTests extends SeleniumTestSetup {
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelDetailsUdp_ConfigTabTimingSectionDisplayed() {
-        channelDetailPage.getTabElement().clickTab("Configuration");
-        Section timingSection = new Section(driverExt, "Timing");
-        assertThat(timingSection.sectionDisplayed()).isTrue();
+        String infoTitle = "Configuration";
+        channelDetailPage.getTabElement().clickTab(infoTitle);
+        Section timing = channelDetailPage.getTimingSection();
+        assertThat(timing.getSection()).isNotNull();
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelDetailsUdp_ConfigTabGeneralSectionDisplayed() {
-        channelDetailPage.getTabElement().clickTab("Configuration");
-        Section timingSection = new Section(driverExt, "General");
-        assertThat(timingSection.sectionDisplayed()).isTrue();
+        String infoTitle = "Configuration";
+        channelDetailPage.getTabElement().clickTab(infoTitle);
+        Section timing = channelDetailPage.getGeneralSection();
+        assertThat(timing.getSection()).isNotNull();
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelDetailsUdp_ConfigTabSharedSectionDisplayed() {
-        channelDetailPage.getTabElement().clickTab("Configuration");
-        Section timingSection = new Section(driverExt, "Shared");
-        assertThat(timingSection.sectionDisplayed()).isTrue();
+        String infoTitle = "Configuration";
+        channelDetailPage.getTabElement().clickTab(infoTitle);
+        Section timing = channelDetailPage.getSharedSection();
+        assertThat(timing.getSection()).isNotNull();
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })

@@ -104,16 +104,13 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
     public void commChannelDetailsTcp_ConfigTabTimingSectionDisplayed() {
         String infoTitle = "Configuration";
-        
         channelDetailPage.getTabElement().clickTab(infoTitle);
-        
         Section timing = channelDetailPage.getTimingSection();
-        
         assertThat(timing.getSection()).isNotNull();        
     }
 
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL })
-    public void commChannelDetailsTcp__ConfigTabLabelsCorrect() {
+    public void commChannelDetailsTcp_ConfigTabLabelsCorrect() {
         String infoTitle = "Configuration";
         
         channelDetailPage.getTabElement().clickTab(infoTitle);
@@ -130,7 +127,7 @@ public class CommChannelTcpDetailsTests extends SeleniumTestSetup {
     }
     
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.COMM_CHANNEL})
-    public void commChannelDetailsTcp__ConfigTabValuesCorrect() {
+    public void commChannelDetailsTcp_ConfigTabValuesCorrect() {
         channelDetailPage.getTabElement().clickTab("Configuration");
         
         List<String> values = channelDetailPage.getTabElement().getTabValues("Configuration");        
