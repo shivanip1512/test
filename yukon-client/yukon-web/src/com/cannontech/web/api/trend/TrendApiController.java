@@ -59,9 +59,11 @@ public class TrendApiController {
     }
     
     @PatchMapping("{id}/resetPeak")
-    public ResponseEntity<Integer> resetPeak(@PathVariable int id, @Valid @RequestBody ResetPeakModel resetPeakModel){
+    public ResponseEntity<HashMap<String, Integer>> resetPeak(@PathVariable int id, @Valid @RequestBody ResetPeakModel resetPeakModel){
         Integer trendId = trendService.resetPeak(id, resetPeakModel);
-        return new ResponseEntity<>(trendId, HttpStatus.OK);
+        HashMap<String, Integer> trendIdMap = new HashMap<>();
+        trendIdMap.put("trendId", trendId);
+        return new ResponseEntity<>(trendIdMap, HttpStatus.OK);
     }
 
     @InitBinder("trendModel")
