@@ -19,5 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class MockResetPeakModel {
-    @JsonSerialize(using = DateSerializer.class) @JsonDeserialize(using = DateDeserializer.class) private DateTime startDate;
+    @JsonSerialize(using = DateSerializer.class)
+    @JsonDeserialize(using = DateDeserializer.class)
+    private DateTime startDate;
 }
