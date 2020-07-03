@@ -17,10 +17,16 @@ public class WebTableColumn{
     	this.driverExt = driverExt;
     }
    
-    public List<WebElement> getColumn(int cellIndex) {
+    public List<WebElement> getColumnValues(int cellIndex) {
 
         return this.driverExt.findElements(By.cssSelector("tr td:nth-child(" + cellIndex + ")"), Optional.empty());
         		
     } 
+ 
     
+    public List<WebElement> getLinkValues(int cellIndex) {
+
+        return this.driverExt.findElements(By.cssSelector("tr td:nth-child(" + cellIndex + ") a"), Optional.empty());
+        		
+    } 
 }
