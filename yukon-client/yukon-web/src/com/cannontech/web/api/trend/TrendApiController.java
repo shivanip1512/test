@@ -21,13 +21,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cannontech.common.trend.model.TrendModel;
 import com.cannontech.common.trend.service.TrendService;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.security.annotation.CheckRole;
 
 @RestController
 @RequestMapping("/trends")
+@CheckRole(YukonRole.TRENDING)
+
 public class TrendApiController {
+    
     @Autowired private TrendService trendService;
     @Autowired private TrendCreateValidator trendCreateValidator;
     @Autowired private TrendValidator trendValidator;
@@ -56,7 +61,6 @@ public class TrendApiController {
     }
 
     @GetMapping("/{id}")
-    @CheckPermissionLevel(property = YukonRoleProperty.MANAGE_TRENDS, level = HierarchyPermissionLevel.VIEW)
     public ResponseEntity<TrendModel> retrieve(@PathVariable int id) {
         TrendModel trend = trendService.retrieve(id);
         return new ResponseEntity<>(trend, HttpStatus.OK);

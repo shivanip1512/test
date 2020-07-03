@@ -142,7 +142,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         setRoleProperty(roleGroup, YukonRoleProperty.DECIMAL_PLACES, "2");
         setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, true);
 
-        setRoleProperty(roleGroup, YukonRoleProperty.MANAGE_TRENDS, "VIEW");
+        setRoleProperty(roleGroup, YukonRoleProperty.MANAGE_TRENDS, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.TRENDING_DISCLAIMER, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.SCAN_NOW_ENABLED, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.MINIMUM_SCAN_FREQUENCY, " ");

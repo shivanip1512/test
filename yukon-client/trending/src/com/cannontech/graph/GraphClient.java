@@ -1601,11 +1601,13 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
             // Setup Role Property to create/edit trends.
             ClientSession session = ClientSession.getInstance();
             RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-            HierarchyPermissionLevel graphEdit = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MANAGE_TRENDS,
-                    HierarchyPermissionLevel.class, session.getUser());
 
-            if (graphEdit != HierarchyPermissionLevel.OWNER) {
+            if (!rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.CREATE,
+                    session.getUser())) {
                 getTrendMenu().getCreateMenuItem().setEnabled(false);
+            }
+            if (!rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_TRENDS, HierarchyPermissionLevel.UPDATE,
+                    session.getUser())) {
                 getTrendMenu().getEditMenuItem().setEnabled(false);
             }
 
