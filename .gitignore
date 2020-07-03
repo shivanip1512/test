@@ -57,11 +57,6 @@ hs_err_pid*
 *.out
 *.app
 
-# Rest Assured asciidoc file
-*.adoc
-
-*.classpath
-
 yukon-build/bin
 yukon-build/build
 yukon-client/.metadata

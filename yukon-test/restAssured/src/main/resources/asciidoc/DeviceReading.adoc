@@ -1,10 +1,10 @@
 
 === Retrieve Device Reading
 *Request Properties* 
-include::{snippets}/DeviceReadingsApiDoc/Test_DeviceReading_Get/request-fields.adoc[]
+include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DeviceReadingsApiDoc/Test_DeviceReading_Get/http-request.adoc[]
+include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/DeviceReadingsApiDoc/Test_DeviceReading_Get/response-fields.adoc[]
+include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/DeviceReadingsApiDoc/Test_DeviceReading_Get/http-response.adoc[]
+include::{snippets}/DeviceReadingsApiControllerTest/Test_DeviceReading_Get/http-response.adoc[]

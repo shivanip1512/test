@@ -105,55 +105,7 @@ public class RestApiDocumentationUtility {
         validateStatusCode(response);
         return idStr;
     }
-
-    /**
-     * Helper method to make a PUT call having request and response fields with a body to generate restDocumentation.
-     * @return value in response having identifier of responseFieldPath
-     */
-    public static String put(RequestSpecification header,
-            String responseFieldPath, String responseFieldDesc, Object body, String url) {
-        assertNotNull("RequestSpecification header cannot be null.", header);
-        assertNotNull("Url cannot be null.", url);
-
-        RequestSpecification spec = header;
-        if (body != null) {
-            spec.body(body);
-        }
-        Response response = spec
-                .when()
-                .put(url)
-                .then()
-                .extract()
-                .response();
-        String idStr = validateNotNull(response, responseFieldPath, responseFieldDesc);
-        validateStatusCode(response);
-        return idStr;
-    }
-
-    /**
-     * Helper method to make a PATCH call having request and response fields with a body to generate restDocumentation.
-     * @return value in response having identifier of responseFieldPath
-     */
-    public static String patch(RequestSpecification header,
-            String responseFieldPath, String responseFieldDesc, Object body, String url) {
-        assertNotNull("RequestSpecification header cannot be null.", header);
-        assertNotNull("Url cannot be null.", url);
-
-        RequestSpecification spec = header;
-        if (body != null) {
-            spec.body(body);
-        }
-        Response response = spec
-                .when()
-                .patch(url)
-                .then()
-                .extract()
-                .response();
-        String idStr = validateNotNull(response, responseFieldPath, responseFieldDesc);
-        validateStatusCode(response);
-        return idStr;
-    }
-
+    
     public static void delete(RequestSpecification header, Object body, String url) {
         assertNotNull("RequestSpecification header cannot be null.", header);
         assertNotNull("Url cannot be null.", url);

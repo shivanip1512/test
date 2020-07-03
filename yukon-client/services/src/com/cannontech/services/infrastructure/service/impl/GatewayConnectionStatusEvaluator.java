@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.AdjacentPointValues;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.db.point.stategroup.CommStatusState;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
@@ -32,18 +34,10 @@ import com.cannontech.system.dao.GlobalSettingDao;
  */
 public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayConnectionStatusEvaluator.class);
-    private static final DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-    private GlobalSettingDao globalSettingDao;
-    private RfnGatewayService rfnGatewayService;
-    private RawPointHistoryDao rphDao;
-    
-    @Autowired
-    public GatewayConnectionStatusEvaluator(GlobalSettingDao globalSettingDao, 
-            RfnGatewayService rfnGatewayService, RawPointHistoryDao rphDao) {
-        this.globalSettingDao = globalSettingDao;
-        this.rfnGatewayService = rfnGatewayService;
-        this.rphDao = rphDao;
-    }
+    private static final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    @Autowired GlobalSettingDao globalSettingDao;
+    @Autowired RfnGatewayService rfnGatewayService;
+    @Autowired private RawPointHistoryDao rphDao;
     
     @Override
     public Set<PaoType> getSupportedTypes() {
@@ -56,43 +50,46 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
         
         int warnableTimeMinutes = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTION_WARNING_MINUTES);
         Duration warnableDuration = Duration.standardMinutes(warnableTimeMinutes);
-        log.debug("Required disconnected minutes to warn: {}", warnableTimeMinutes);
+        log.debug("Required disconnected minutes to warn: " + warnableTimeMinutes);
         
         Map<PaoIdentifier, PointValueQualityHolder> gatewayToPointValue =
             rphDao.getMostRecentAttributeDataByValue(rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS,
                 false, CommStatusState.CONNECTED.getRawState(), null);
-        
-        Instant now = Instant.now();
-        
+
         return gatewayToPointValue.entrySet()
-                .stream()
-                .map(entry -> buildConnectionStatusInfo(entry, now, warnableDuration))
-                .filter(ConnectionStatusInfo::isWarnable)
-                .map(GatewayConnectionStatusEvaluator::buildWarning)
-                .collect(Collectors.toList());
+                                  .stream()
+                                  .filter(entry -> isWarnable(entry.getValue(), warnableDuration))
+                                  .map(entry -> buildWarning(entry.getKey(), entry.getValue()))
+                                  .collect(Collectors.toList());
     }
     
     /**
-     * Build an object containing all the relevant info for a gateway connection status check.
+     * Returns true if warning should be generated.
      */
-    ConnectionStatusInfo buildConnectionStatusInfo(Map.Entry<PaoIdentifier, PointValueQualityHolder> entry, 
-                                                   Instant evaluationTime, Duration warnableDuration) {
-        
-        ConnectionStatusInfo info = new ConnectionStatusInfo(entry.getKey(), warnableDuration, evaluationTime, entry.getValue());
-        if (info.isLastConnectedTimestampWarnable()) {
-            AdjacentPointValues adjacentPointValues = rphDao.getAdjacentPointValues(info.getLastConnectedPointValue());
-            info.setNextDisconnectedPointValue(adjacentPointValues.getSucceeding());
+    protected boolean isWarnable(PointValueQualityHolder point, Duration warnableDuration) {
+        if (Objects.nonNull(point)) {
+            if (new Instant(point.getPointDataTimeStamp()).plus(warnableDuration).isAfterNow()) {
+                return false;
+            } else {
+                AdjacentPointValues values = rphDao.getAdjacentPointValues(point);
+                if (values.getSucceeding() != null) {
+                    PointValueHolder valueHolder = values.getSucceeding();
+                    Instant dTimestamp = new Instant(valueHolder.getPointDataTimeStamp());
+                    if (dTimestamp.plus(warnableDuration).isBeforeNow()) {
+                        return true;
+                    }
+                }
+            }
         }
-        return info;
+        return false;
     }
     
     /**
      * Builds a GATEWAY_CONNECTION_STATUS warning for the specified paoIdentifier and point value.
      */
-    static InfrastructureWarning buildWarning(ConnectionStatusInfo info) {
-        return new InfrastructureWarning(info.getGatewayPaoId(),
+    private static InfrastructureWarning buildWarning(PaoIdentifier paoId, PointValueQualityHolder pvqh) {
+        return new InfrastructureWarning(paoId,
                                          InfrastructureWarningType.GATEWAY_CONNECTION_STATUS,
-                                         dateFormat.format(info.getNextDisconnectedTimestamp().toDate()));
+                                         df.format(pvqh.getPointDataTimeStamp()));
     }
-
 }

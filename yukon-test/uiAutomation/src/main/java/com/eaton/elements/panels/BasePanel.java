@@ -24,8 +24,4 @@ public class BasePanel {
         return elements.stream().filter(element -> element.findElement(By.cssSelector(".title")).getText().contains(panelName))
                 .findFirst().orElseThrow();
     }
-    
-    public String getPanelName() {
-        return panelName;
-    }
 }

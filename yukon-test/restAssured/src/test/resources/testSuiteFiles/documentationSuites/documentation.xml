@@ -5,6 +5,5 @@
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/drDocumentationSuite.xml"/>
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/deviceReadingDocumentation.xml"/>
         <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/commChannelDocumentation.xml"/>
-        <suite-file path="src/test/resources/testSuiteFiles/documentationSuites/trendDocumentationSuite.xml"/>
     </suite-files>
 </suite>

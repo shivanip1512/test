@@ -89,10 +89,6 @@ public class MeterProgramSummaryDetail {
     public boolean displayProgressBar() {
         return status == DisplayableStatus.IN_PROGRESS;
     }
-    
-    public boolean isConfirming() {
-        return status == DisplayableStatus.CONFIRMING;
-    }
 
     public boolean displayRead() {
         return status == DisplayableStatus.CONFIRMING || programInfo.getSource().isOldFirmware();

@@ -1,6 +1,6 @@
 package com.cannontech.services.infrastructure.service.impl;
 
-import static com.cannontech.infrastructure.model.InfrastructureWarningType.*;
+import static com.cannontech.infrastructure.model.InfrastructureWarningType.GATEWAY_READY_NODES;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -69,9 +69,9 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
         return gatewayToReadyNodes.entrySet()
                                   .stream()
                                   .filter(Objects::nonNull)
-                                  .filter(this::isWarnable)
+                                  .filter(entry -> isWarnable(entry))
                                   .filter(entry -> isConnected(entry.getKey(), gatewayToConnectionStatus, connectionWarningDuration)) 
-                                  .map(this::buildWarning)
+                                  .map(entry -> buildWarning(entry))
                                   .collect(Collectors.toList());
     }
     
@@ -98,13 +98,8 @@ public class GatewayReadyNodesEvaluator implements InfrastructureWarningEvaluato
     private boolean isConnected(PaoIdentifier gateway, 
                                 Map<PaoIdentifier, PointValueQualityHolder> gatewaysToConnectionStatus,
                                 Duration connectionWarningDuration) {
-        
-        PointValueQualityHolder connectedValue = gatewaysToConnectionStatus.get(gateway);
-        var gatewayAndConnectionStatus = Map.entry(gateway, connectedValue);
-        
-        return !gatewayConnectionStatusEvaluator
-                .buildConnectionStatusInfo(gatewayAndConnectionStatus, Instant.now(), connectionWarningDuration)
-                .isWarnable();
+        return !gatewayConnectionStatusEvaluator.isWarnable(gatewaysToConnectionStatus.get(gateway), 
+                                                           connectionWarningDuration);
     }
 
     private InfrastructureWarning buildWarning(Map.Entry<PaoIdentifier,PointValueQualityHolder> gatewayToReadyNodes) {

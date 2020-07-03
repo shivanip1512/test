@@ -6,6 +6,5 @@
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/drTest.xml"></suite-file>
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/deviceReadingsTest.xml"></suite-file>
         <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/commchannelTest.xml"></suite-file>
-        <suite-file path="src/test/resources/testSuiteFiles/testAutomationSuites/trendTest.xml"></suite-file>
     </suite-files>
 </suite>

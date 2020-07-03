@@ -89,7 +89,7 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     private Map<Integer, DeviceDataMonitor> pending = Collections.synchronizedMap(new HashMap<>());
     // monitorId / violation count
     private Map<Integer, Integer> monitorIdToViolationCount = Collections.synchronizedMap(new HashMap<>());
-    
+
     static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorCalculationServiceImpl.class);
 
     @PostConstruct
@@ -340,27 +340,22 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
     }
 
     @Override
-    public void updateViolationsGroupBasedOnNewPointData(DeviceDataMonitor monitor, RichPointData richPointData,
-            BuiltInAttribute attribute) {
-        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
-        try {
-            log.debug("Started recalculation monitor:{} device:{} point:{} attribute:{}",
-                    monitor.getName(), richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoId(),
-                    richPointData.getPointValue(),
-                    attribute);
-            Boolean addRemoveFromGroup = recalculateViolation(monitor, richPointData, attribute);
-            if (addRemoveFromGroup != null) {
-                addRemoveFromViolationGroup(monitor, device, addRemoveFromGroup, richPointData.getPointValue());
-            }
-            updateViolationCacheCount(monitor);
-            log.debug("Finished recalculation monitor:{} device:{} point:{} attribute:{}",
-                    monitor.getName(), richPointData.getPaoPointIdentifier().getPaoIdentifier().getPaoId(),
-                    richPointData.getPointValue(),
-                    attribute);
-        } catch (Exception e) {
-            log.error("Error while updating violation for monitor:" + monitor.getName() + "device:" + device.getDeviceId()
-                    + "pointId:" + richPointData.getPointValue().getId(), e);
+    public void updateViolationsGroupBasedOnNewPointData(DeviceDataMonitor monitor, RichPointData richPointData) {
+
+        BuiltInAttribute attribute = Iterables.getFirst(
+            attributeService.findAttributesForPoint(richPointData.getPaoPointIdentifier().getPaoTypePointIdentifier(),
+                Sets.newHashSet(monitor.getAttributes())), null);
+        if (attribute == null) {
+            log.debug("{} recalculation of violation for device {} is skipped. The processor for point id {} is not found.",
+                monitor, richPointData.getPaoPointIdentifier().getPaoIdentifier(), richPointData.getPointValue().getId());
+            return;
         }
+        SimpleDevice device = new SimpleDevice(richPointData.getPaoPointIdentifier().getPaoIdentifier());
+        Boolean addRemoveFromGroup = recalculateViolation(monitor, richPointData, attribute);
+        if (addRemoveFromGroup != null) {
+            addRemoveFromViolationGroup(monitor, device, addRemoveFromGroup);
+        }
+        updateViolationCacheCount(monitor);
     }
 
     private Boolean recalculateViolation(DeviceDataMonitor monitor, RichPointData richPointData, BuiltInAttribute attribute){
@@ -376,41 +371,33 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
             // if other violations found, keep the device in the group
             foundViolation = isOtherAttributeViolating(monitor, attribute, device);
         }
-        Boolean shouldTheGroupBeModified = ViolationHelper.shouldTheGroupBeModified(inViolationsGroup, foundViolation);
-        log.debug("monitor:{} device:{} point data:{} inViolationsGroup:{} violation found:{} shouldTheGroupBeModified:{}",
-                monitor.getName(), device.getDeviceId(),
-                richPointData.getPointValue(), inViolationsGroup, foundViolation, shouldTheGroupBeModified);
-        return shouldTheGroupBeModified;
+        log.debug("{} recalculation of violation for {} is complete, violation found:{}",  monitor, device, foundViolation);
+        return ViolationHelper.shouldTheGroupBeModified(inViolationsGroup, foundViolation);
     }
 
     /**
      * Adds or removes device from violation group and sends notification
      */
-    private void addRemoveFromViolationGroup(DeviceDataMonitor monitor, SimpleDevice device, boolean addToGroup,
-            PointValueQualityHolder point) {
-        // found violation and device is not in violation group
-        if (addToGroup) {
-            // add device to group
+    private void addRemoveFromViolationGroup(DeviceDataMonitor monitor, SimpleDevice device, boolean addToGroup) {
+        //found violation and device is not in violation group
+        if(addToGroup) {
+            //add device to group
             int rowsAdded = deviceGroupMemberEditorDao.addDevice(monitor.getViolationGroup(), device);
             if (rowsAdded > 0) {
                 sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.IN_VIOLATION);
-                log.debug("{} adding {} ({}) to violation group {}", monitor.getName(), device.getDeviceId(),
-                        point, monitor.getViolationGroup());
+                log.debug("{} adding {} to violation group {}", monitor, device, monitor.getViolationGroup());
             } else {
-                log.debug("{} adding {} ({}) to violation group {}. Device already in group, no notification.", monitor.getName(),
-                        device.getDeviceId(), monitor.getViolationGroup());
+                log.debug("{} adding {} to violation group {}. Device already in group, no notification.", monitor, device, monitor.getViolationGroup());
             }
-        } else {
+        }
+        else {
             // remove device from group
-            int rowsDeleted = deviceGroupMemberEditorDao.removeDevices(monitor.getViolationGroup(),
-                    Collections.singleton(device));
+            int rowsDeleted = deviceGroupMemberEditorDao.removeDevicesById(monitor.getViolationGroup(), Collections.singleton(device.getDeviceId()));
             if (rowsDeleted > 0) {
                 sendSmartNotificationEvent(monitor, device.getDeviceId(), MonitorState.OUT_OF_VIOLATION);
-                log.debug("{} removing {} ({}) from violation group {}", monitor.getName(), device.getDeviceId(), point,
-                        monitor.getViolationGroup());
+                log.debug("{} removing {} from violation group {}", monitor, device, monitor.getViolationGroup());
             } else {
-                log.debug("{} removing {} ({}) from violation group {}. Device already removed from group, no notification.",
-                        monitor.getName(), device.getDeviceId(), point, monitor.getViolationGroup());
+                log.debug("{} removing {} from violation group {}. Device already removed from group, no notification.", monitor, device, monitor.getViolationGroup());
             }
         }
     }
@@ -498,4 +485,5 @@ public class DeviceDataMonitorCalculationServiceImpl implements DeviceDataMonito
         log.debug("Sending event=" + events);
         smartNotificationEventCreationService.send(SmartNotificationEventType.DEVICE_DATA_MONITOR, events);
     }
+
 }

@@ -17,7 +17,6 @@ import com.cannontech.common.point.PointCalculation;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.point.PointType;
 
 import static com.cannontech.common.bulk.model.PointImportParameters.*;
 
@@ -42,17 +41,6 @@ public class CalcStatusPointImportProcessor extends PointImportProcessor {
         Boolean isDisabled = StrictBoolean.valueOf(row.getValue(DISABLED.NAME));
         
         CalcStatusPointBuilder builder = pointBuilderFactory.getCalcStatusPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled);
-        
-        if (row.hasValue(POINT_OFFSET.NAME)) {
-            int pointOffset = Integer.valueOf(row.getValue(POINT_OFFSET.NAME));
-            if (pointOffset > 0) {
-                if(pointDao.deviceHasPoint(paoId, pointOffset, getPointType(row))) {
-                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointOffsetInUse", pointOffset, deviceName);
-                    throw new ProcessingException(error, "pointOffsetInUse");
-                }
-            }
-            builder.setPointOffset(pointOffset);
-        }
         
         String calculationId = row.getValue(CALCULATION.NAME);
         PointCalculation calculation = calcMap.get(calculationId);
@@ -89,9 +77,5 @@ public class CalcStatusPointImportProcessor extends PointImportProcessor {
             throw new ProcessingException(error, "invalidStateOrGroup", e);
         }
     }
-    
-    @Override
-    protected PointType getPointType(ImportRow row) {
-        return PointType.CalcStatus;
-    }
+
 }

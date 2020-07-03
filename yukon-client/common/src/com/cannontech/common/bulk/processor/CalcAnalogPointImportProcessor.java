@@ -16,7 +16,6 @@ import com.cannontech.common.point.PointCalculation;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.data.point.PointType;
 
 import static com.cannontech.common.bulk.model.PointImportParameters.*;
 
@@ -42,8 +41,6 @@ private Map<String, PointCalculation> calcMap;
         
         CalcAnalogPointBuilder builder = pointBuilderFactory.getCalcAnalogPointBuilder(paoId, pointDao.getNextPointId(), pointName, isDisabled);
         
-        setPointOffset(builder, row, paoId, deviceName);
-        
         String calculationId = row.getValue(CALCULATION.NAME);
         PointCalculation calculation = calcMap.get(calculationId);
         if(calculation == null) {
@@ -65,9 +62,5 @@ private Map<String, PointCalculation> calcMap;
         
         builder.insert();
     }
-    
-    @Override
-    protected PointType getPointType(ImportRow row) {
-        return PointType.CalcAnalog;
-    }
+
 }

@@ -6,8 +6,12 @@
 <entry key="yukon.web.modules.dr.setup.createObject.title">Create Demand Response Object</entry>
 
 <!-- Common keys -->
+<entry key="yukon.web.modules.dr.setup.save.error">{0} could not be saved. Error: {1}</entry>
+<entry key="yukon.web.modules.dr.setup.save.success">{0} saved successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.copy.error">{0} could not be copied. Error: {1}</entry>
 <entry key="yukon.web.modules.dr.setup.copy.success">{0} copied successfully.</entry>
+<entry key="yukon.web.modules.dr.setup.delete.error">{0} could not be deleted. Error: {1}</entry>
+<entry key="yukon.web.modules.dr.setup.delete.success">{0} deleted successfully.</entry>
 <entry key="yukon.web.modules.dr.setup.select">Select</entry>
 <entry key="yukon.web.modules.dr.setup.selectPrograms.label">Select Program(s)</entry>
 <entry key="yukon.web.modules.dr.setup.programs">Programs</entry>

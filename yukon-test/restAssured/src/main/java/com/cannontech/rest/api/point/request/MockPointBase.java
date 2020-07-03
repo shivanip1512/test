@@ -1,10 +1,5 @@
 package com.cannontech.rest.api.point.request;
 
-import java.util.List;
-
-import com.cannontech.rest.api.common.model.MockPointArchiveType;
-import com.cannontech.rest.api.common.model.MockPointLogicalGroups;
-import com.cannontech.rest.api.common.model.MockPointType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -19,19 +14,9 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @RequiredArgsConstructor
 public class MockPointBase {
-
-    private Integer pointId;
-    private String pointName;
-    private MockPointType pointType;
-    private Integer pointOffset;
-    private Integer stateGroupId;
-    private Boolean enable;
-    private MockPointArchiveType archiveType;
-    private Integer archiveInterval;
-    private MockPointLogicalGroups timingGroup;
-    private Boolean alarmsDisabled;
-    private MockStaleData staleData;
     private Integer paoId;
-    private MockPointAlarming alarming;
-    private List<MockFdrTranslation> fdrList;
+    private String pointName;
+    private String pointType;
+    private Integer pointOffset;
+    private MockPointUnit pointUnit;
 }

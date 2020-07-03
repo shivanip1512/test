@@ -126,7 +126,7 @@ public class LocalSharedPortApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "physicalPort", "Physical Port is required."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "physicalPort", "Cannot be blank."),
                 "Expected code in response is not correct");
     }
 
@@ -171,15 +171,15 @@ public class LocalSharedPortApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Pre Tx Wait must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "RTS To Tx Wait must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Post Tx Wait must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Receive Data Wait must be between 0 and 1,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Additional Time Out must be between 0 and 999."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
                 "Expected code in response is not correct");
     }
 
@@ -188,7 +188,7 @@ public class LocalSharedPortApiTest {
      * error message in response
      */
     @Test
-    public void localSharedPortCommChannel_09_TimingBelowMinValue() {
+    public void localSharedPortCommChannel_09_TimingBlelowMinValue() {
         String name = "NegativeTestLocalSharedPort";
 
         localSharedPortForNegTest.setName(name);
@@ -205,15 +205,15 @@ public class LocalSharedPortApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Pre Tx Wait must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "RTS To Tx Wait must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Post Tx Wait must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Receive Data Wait must be between 0 and 1,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Additional Time Out must be between 0 and 999."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
                 "Expected code in response is not correct");
     }
 }

@@ -17,15 +17,15 @@ import com.cannontech.common.device.config.model.DNPConfiguration;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
-import com.cannontech.common.device.dao.DevicePointDao;
-import com.cannontech.common.device.dao.DevicePointDao.SortBy;
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rtu.dao.RtuDnpDao;
+import com.cannontech.common.rtu.dao.RtuDnpDao.SortBy;
 import com.cannontech.common.rtu.model.RtuDnp;
-import com.cannontech.common.device.model.DevicePointDetail;
+import com.cannontech.common.rtu.model.RtuPointDetail;
 import com.cannontech.common.rtu.model.RtuPointsFilter;
 import com.cannontech.common.rtu.service.RtuDnpService;
 import com.cannontech.common.search.result.SearchResults;
@@ -48,7 +48,7 @@ public class RtuDnpServiceImpl implements RtuDnpService {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DeviceConfigurationDao configurationDao;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private DevicePointDao devicePointDao;
+    @Autowired private RtuDnpDao rtuDnpDao;
     @Autowired private DeviceConfigurationService deviceConfigService;
     
     private static final Logger log = YukonLogManager.getLogger(RtuDnpServiceImpl.class);
@@ -89,22 +89,22 @@ public class RtuDnpServiceImpl implements RtuDnpService {
     }
     
     @Override
-    public SearchResults<DevicePointDetail> getRtuPointDetail(int rtuId, RtuPointsFilter filter, Direction direction,
+    public SearchResults<RtuPointDetail> getRtuPointDetail(int rtuId, RtuPointsFilter filter, Direction direction,
             SortBy sortBy, PagingParameters paging) {
 
         if (filter.getDeviceIds() != null && !filter.getDeviceIds().isEmpty()) {
-            return devicePointDao.getDevicePointDetail(filter.getDeviceIds(), filter.getPointNames(), filter.getTypes(),
+            return rtuDnpDao.getRtuPointDetail(filter.getDeviceIds(), filter.getPointNames(), filter.getTypes(),
                 direction, sortBy, paging);
         } else {
-            return devicePointDao.getDevicePointDetail(getParentAndChildDevices(rtuId), filter.getPointNames(), filter.getTypes(),
+            return rtuDnpDao.getRtuPointDetail(getParentAndChildDevices(rtuId), filter.getPointNames(), filter.getTypes(),
                 direction, sortBy, paging);
         }
     }
 
     @Override
-    public List<DevicePointDetail> getRtuPointDetail(int rtuId) {
-        return getRtuPointDetail(rtuId, new RtuPointsFilter(), Direction.desc, SortBy.deviceName,
-                PagingParameters.EVERYTHING).getResultList();
+    public List<RtuPointDetail> getRtuPointDetail(int rtuId) {
+        return getRtuPointDetail(rtuId, new RtuPointsFilter(), Direction.desc, SortBy.DEVICE_NAME,
+            PagingParameters.EVERYTHING).getResultList();
 
     }
 

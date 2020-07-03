@@ -9,7 +9,6 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationHelper;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -20,7 +19,6 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
     
     @Autowired private LocationValidator locationValidator;
     @Autowired private PaoDao paoDao;
-    @Autowired private YukonValidationHelper yukonValidationHelper;
 
     
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
@@ -64,7 +62,7 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         if (!settings.isUseDefaultPort()) {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "port", baseKey + "port.required");
             if (!errors.hasFieldErrors("port")) {
-               YukonValidationUtils.validatePort(errors, "port", yukonValidationHelper.getMessage(baseKey + "default.port"),settings.getPort().toString());
+                YukonValidationUtils.validatePort(errors, "port", settings.getPort().toString(), "yukon.web.error.port.required");
             }
         }
         

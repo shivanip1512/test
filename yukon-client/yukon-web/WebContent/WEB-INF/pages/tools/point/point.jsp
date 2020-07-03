@@ -203,6 +203,7 @@
                 </c:if>
             </cti:tab>
 
+            <c:if test="${not isCalcType}">
             <cti:msg2 var="physicalTab" key=".tab.physical" />
             <cti:tab title="${physicalTab}">
 
@@ -357,16 +358,9 @@
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
                 </c:if>
-
-                <c:if test="${isCalcType}">
-                    <tags:nameValueContainer2 tableClass="${nameValueClass}">
-                        <tags:nameValue2 nameKey=".offset">
-                            <tags:input path="pointBase.point.pointOffset" size="6"/>
-                        </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                </c:if>
-
+                
             </cti:tab>
+            </c:if>
 
             <c:if test="${not isSystemPoint}">
             <cti:msg2 var="limitsTab" key=".tab.limits"/>
@@ -510,13 +504,13 @@
                             </td>
                             <td>
                                 <%-- TODO this should take the liteID for the value rather than converting --%>
-                                <tags:selectWithItems path="alarmTableEntries[${status.index}].category" 
+                                <tags:selectWithItems path="alarmTableEntries[${status.index}].generate" 
                                     items="${alarmCategories}" itemValue="categoryName" itemLabel="categoryName" />
                             </td>
                             <td>
                                 <%-- TODO this should take the liteID for the value rather than converting --%>
-                                <tags:selectWithItems path="alarmTableEntries[${status.index}].notify" 
-                                    items="${alarmNotificationTypes}"/>
+                                <tags:selectWithItems path="alarmTableEntries[${status.index}].excludeNotify" 
+                                    items="${alarmNotificationTypes}" itemValue="dbString" />
                             </td>
                         </tr>
                         </c:forEach>

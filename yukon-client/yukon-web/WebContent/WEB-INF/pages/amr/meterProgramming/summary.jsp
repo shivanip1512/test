@@ -26,11 +26,9 @@
                 <select id="programSelect" class="js-selected-programs" multiple="multiple" data-placeholder="${allPrograms}">
                     <c:forEach var="program" items="${programList}">
                         <c:set var="selectedText" value=""/>
-                        <c:forEach var="selectedProgram" items="${selectedPrograms}">
-                            <c:if test="${selectedProgram == program.name}">
-                                <c:set var="selectedText" value="selected='selected'"/>
-                            </c:if>
-                        </c:forEach>
+                        <c:if test="${fn:contains(selectedPrograms, program.name)}">
+                            <c:set var="selectedText" value="selected='selected'"/>
+                        </c:if>
                         <option value="${program}" data-guid="${program.guid}" data-source="${program.source}" ${selectedText}>${fn:escapeXml(program.name)}</option>
                     </c:forEach>
                 </select>

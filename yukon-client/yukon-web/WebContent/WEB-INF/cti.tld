@@ -610,22 +610,6 @@
   </tag>
   
   <tag>
-    <name>deviceNameFromPointId</name>
-    <tag-class>com.cannontech.web.taglib.DeviceNameFromPointIdTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>pointId</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>var</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
     <name>inventoryCollection</name>
     <tag-class>com.cannontech.web.taglib.InventoryCollectionTag</tag-class>
     <body-content>empty</body-content>
@@ -937,22 +921,6 @@
     <attribute>
       <name>value</name>
       <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-  </tag>
-  
-  <tag>
-    <name>pointName</name>
-    <tag-class>com.cannontech.web.taglib.PointNameTag</tag-class>
-    <body-content>empty</body-content>
-    <attribute>
-      <name>pointId</name>
-      <required>true</required>
-      <rtexprvalue>true</rtexprvalue>
-    </attribute>
-    <attribute>
-      <name>var</name>
-      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>

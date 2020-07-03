@@ -444,9 +444,5 @@
       <sequence name="DrDisconnectDeviceStatus">
         <table name="DrDisconnectDeviceStatus" identitycolumn="EntryId" initsequence="true"/>
       </sequence>
-      <sequence name="CustomAttribute">
-        <table name="CustomAttribute" identitycolumn="AttributeId" initsequence="true"/>
-        <table name="AttributeAssignment" identitycolumn="AttributeAssignmentId" initsequence="true"/>
-      </sequence>
   </sequencetable>
 </sequencetables>

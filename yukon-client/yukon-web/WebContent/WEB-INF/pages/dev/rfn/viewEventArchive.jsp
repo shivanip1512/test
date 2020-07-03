@@ -104,38 +104,7 @@
             <div class="page-action-area">
                 <cti:button nameKey="send" classes="js-blocker js-sendEventArchive"/>
             </div>
-            
         </form:form>
     </tags:sectionContainer2>
-            
-    <br/><br/>
-    <tags:sectionContainer title="Send Outage/Restore Events">
-        <span>This Simulator will Send Outage/Restore Events to the selected Device Group, x Milliseconds apart. Select whether Outage or Restore will be the first message sent or if the first message should be random. Events sent are logged in Webserver_RfnComms.</span>
-        <br/><br/>
-        <form:form action="sendOutageRestore" method="post" modelAttribute="restoreOutageEvent">
-             <cti:csrfToken/>
-            <tags:nameValueContainer>
-                <tags:nameValue name="Device Group" nameColumnWidth="220px">
-                     <cti:list var="group"><cti:item value="${deviceGroup}"/></cti:list>
-                    <tags:deviceGroupPicker inputName="deviceGroup" inputValue="${group}"/>
-                </tags:nameValue>
-                <tags:nameValue name="Milliseconds" nameColumnWidth="220px">
-                    <tags:input path="milliseconds"/>
-                </tags:nameValue>
-                <tags:nameValue name="First Message" nameColumnWidth="220px">
-                    <tags:selectWithItems path="firstEvent" items="${outageRestoreEventTypes}"/>
-                </tags:nameValue>
-                <tags:nameValue name="Random Outage/Restore First" nameColumnWidth="220px">
-                    <tags:checkbox path="firstEventRandom"/>
-                </tags:nameValue>
-            </tags:nameValueContainer>
-            
-            <div class="page-action-area">
-                <button type="submit">Send Outage/Restore</button>
-            </div>
-        
-        </form:form>
-    
-    </tags:sectionContainer>   
     
 </cti:standardPage>

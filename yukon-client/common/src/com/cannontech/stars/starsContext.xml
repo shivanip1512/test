@@ -293,6 +293,6 @@
     <bean class="com.cannontech.common.tdc.service.impl.TdcServiceImpl"/>
     <bean class="com.cannontech.common.tag.service.impl.TagServiceImpl"/>   
     <bean class="com.cannontech.common.rtu.service.impl.RtuDnpServiceImpl"/>
-    <bean class="com.cannontech.common.device.dao.impl.DevicePointDaoImpl"/>
+    <bean class="com.cannontech.common.rtu.dao.impl.RtuDnpDaoImpl"/>
  
 </beans>

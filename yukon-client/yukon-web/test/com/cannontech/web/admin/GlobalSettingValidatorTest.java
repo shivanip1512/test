@@ -4,20 +4,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.context.support.StaticMessageSource;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
-import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.system.GlobalSettingSubCategory;
 import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.GlobalSettingTypeValidators;
 import com.cannontech.web.admin.YukonConfigurationController.GlobalSettingsEditorBean;
 
 public class GlobalSettingValidatorTest {
@@ -29,25 +24,6 @@ public class GlobalSettingValidatorTest {
     @Before
     public void setup() {
         service = new GlobalSettingValidator();
-        StaticMessageSource messageSource = new StaticMessageSource();
-        {
-            messageSource.addMessage("yukon.common.setting.JMS_BROKER_PORT", Locale.US, "Message Broker Port");
-            messageSource.addMessage("yukon.common.setting.SMTP_PORT", Locale.US, "Smtp Port");
-            messageSource.addMessage("yukon.common.setting.LAST_COMMUNICATION_HOURS", Locale.US, "Last Communication Hours");
-            messageSource.addMessage("yukon.common.setting.LAST_RUNTIME_HOURS", Locale.US, "Last Runtime Hours");
-            messageSource.addMessage("yukon.common.setting.AUTH_PORT", Locale.US, "Auth Port");
-            messageSource.addMessage("yukon.common.setting.ACCT_PORT", Locale.US, "Acct Port");
-            messageSource.addMessage("yukon.common.setting.LDAP_SERVER_PORT", Locale.US, "LDAP Server Port");
-            messageSource.addMessage("yukon.common.setting.AD_SERVER_PORT", Locale.US, "AD Server Port");
-            messageSource.addMessage("yukon.common.setting.PRODUCER_WINDOW_SIZE", Locale.US, "Producer Window Size");
-            messageSource.addMessage("yukon.common.setting.CLOUD_DATA_SENDING_FREQUENCY", Locale.US, "Cloud Data Sending Frequency");
-            messageSource.addMessage("yukon.common.setting.FDR_DNPSLAVE_APPLICATION_FRAGMENT_SIZE", Locale.US, "FDR DNP Slave Application Fragment Size ");
-            messageSource.addMessage("yukon.common.setting.RFN_INCOMING_DATA_TIMESTAMP_LIMIT", Locale.US, "RFN Incoming Data Timestamp Limit");
-            messageSource.addMessage("yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS", Locale.US, "Data Collection: Data Availability Window");
-        }
-        YukonUserContextMessageSourceResolverMock messageResolver = new YukonUserContextMessageSourceResolverMock();
-        messageResolver.setMessageSource(messageSource);
-        ReflectionTestUtils.setField(GlobalSettingTypeValidators.class, "messageResolver", messageResolver);
     }
 
     @Test

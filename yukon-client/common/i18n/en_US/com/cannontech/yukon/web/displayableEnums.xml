@@ -133,9 +133,6 @@
     <entry key="yukon.common.systemGroupEnum.LOADPROGRAMS">/System/Demand Response/Load Programs</entry>
     <entry key="yukon.common.systemGroupEnum.CISDEVICECLASS">/System/Meters/CIS DeviceClass</entry>
     <entry key="yukon.common.systemGroupEnum.METERPROGRAMMING">/System/Meters/Meter Programming</entry>
-    <entry key="yukon.common.systemGroupEnum.SERVICE">/Service/</entry>
-    <entry key="yukon.common.systemGroupEnum.SERVICE_ACTIVE_RF_ELECTRIC_METERS">/Service/Active RF Electric Meters</entry>
-    <entry key="yukon.common.systemGroupEnum.SERVICE_ACTIVE_RFW_METERS">/Service/Active RFW Meters</entry>
     
     
     

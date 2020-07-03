@@ -38,14 +38,12 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.Device;
@@ -76,7 +74,6 @@ public final class PaoDaoImpl implements PaoDao {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private PointDao pointDao;
 
     @Override
     public YukonPao getYukonPao(int paoId) {
@@ -669,13 +666,6 @@ public final class PaoDaoImpl implements PaoDao {
         } else {
             return pao;
         }
-    }
-
-    @Override
-    public LiteYukonPAObject getLiteYukonPaoByPointId(int pointId) {
-        LitePoint litePoint = pointDao.getLitePoint(pointId);
-        LiteYukonPAObject yukonPao = databaseCache.getAllPaosMap().get(litePoint.getPaobjectID());
-        return yukonPao;
     }
 
 }

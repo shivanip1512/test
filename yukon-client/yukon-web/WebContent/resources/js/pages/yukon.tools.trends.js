@@ -152,12 +152,6 @@ yukon.tools.trends = (function () {
                 window.location = yukon.url('/tools/trends/' + _trendId + '/csv?' 
                 + 'from=' + new Date(min).getTime() + '&to=' + new Date(max).getTime()); 
             });
-            
-            $(document).on("yukon:tools:trend:delete", function (event) {
-                yukon.ui.blockPage();
-                $("#js-delete-trend-form").submit();
-            });
-            
             /** Pause/Resume updating on updater button clicks. */
             $('#trend-updater .button').on('click', function(ev) {
                 var pause = $('#trend-updater .yes').is('.on'),

@@ -7,45 +7,35 @@ import com.cannontech.common.device.port.PortSharing;
 import com.cannontech.common.device.port.PortTiming;
 import com.cannontech.common.device.port.SharedPortType;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.Range;
 import com.cannontech.database.db.port.CommPort;
 import com.cannontech.util.Validator;
 
 public class PortValidatorHelper {
-    
+
     private final static String key = "yukon.web.api.error.";
-    private static final String baseKey = "yukon.web.modules.operator.commChannelInfoWidget.";
-    
+
     public static void validatePortTimingFields(Errors errors, PortTiming timing) {
         if (!errors.hasFieldErrors("timing.preTxWait")) {
-            Range<Integer> range = Range.inclusive(0, 10000000);
-            YukonValidationUtils.checkRange(errors, "timing.preTxWait", "Pre Tx Wait", timing.getPreTxWait(), range, false);
+            YukonValidationUtils.checkRange(errors, "timing.preTxWait", timing.getPreTxWait(), 0, 10000000, false);
         }
         if (!errors.hasFieldErrors("timing.rtsToTxWait")) {
-            Range<Integer> range = Range.inclusive(0, 10000000);
-            YukonValidationUtils.checkRange(errors, "timing.rtsToTxWait", "RTS To Tx Wait", timing.getRtsToTxWait(), range,
-                    false);
+            YukonValidationUtils.checkRange(errors, "timing.rtsToTxWait", timing.getRtsToTxWait(), 0, 10000000, false);
         }
         if (!errors.hasFieldErrors("timing.postTxWait")) {
-            Range<Integer> range = Range.inclusive(0, 10000000);
-            YukonValidationUtils.checkRange(errors, "timing.postTxWait", "Post Tx Wait", timing.getPostTxWait(), range, false);
+            YukonValidationUtils.checkRange(errors, "timing.postTxWait", timing.getPostTxWait(), 0, 10000000, false);
         }
         if (!errors.hasFieldErrors("timing.receiveDataWait")) {
-            Range<Integer> range = Range.inclusive(0, 1000);
-            YukonValidationUtils.checkRange(errors, "timing.receiveDataWait", "Receive Data Wait", timing.getReceiveDataWait(),
-                    range, false);
+            YukonValidationUtils.checkRange(errors, "timing.receiveDataWait", timing.getReceiveDataWait(), 0, 1000, false);
         }
         if (!errors.hasFieldErrors("timing.extraTimeOut")) {
-            Range<Integer> range = Range.inclusive(0, 999);
-            YukonValidationUtils.checkRange(errors, "timing.extraTimeOut", "Additional Time Out", timing.getExtraTimeOut(), range,
-                    false);
+            YukonValidationUtils.checkRange(errors, "timing.extraTimeOut", timing.getExtraTimeOut(), 0, 999, false);
         }
     }
     
-    public static void validatePortSharingFields(Errors errors, PortSharing sharing, String fieldName) {
+    public static void validatePortSharingFields(Errors errors, PortSharing sharing) {
         if (sharing.getSharedPortType() != null && sharing.getSharedPortType() != SharedPortType.NONE) {
-            YukonValidationUtils.validatePort(errors, "sharing.sharedSocketNumber", fieldName,
-                    String.valueOf(sharing.getSharedSocketNumber()));
+            YukonValidationUtils.validatePort(errors, "sharing.sharedSocketNumber",
+                    String.valueOf(sharing.getSharedSocketNumber()), "yukon.web.error.socketNumber.required");
         }
 
         if (sharing.getSharedSocketNumber() != null) {
@@ -65,8 +55,7 @@ public class PortValidatorHelper {
 
         if (existingPortId != null && !(existingPortId.equals(portId))) {
             if (PaoType.TSERVER_SHARED == portType) {
-                errors.reject(key + "field.combinationError",
-                        new Object[] { "IP Address", ipAddress, "Port Number", portNumber.toString() }, "");
+                errors.reject(key + "field.combinationError", new Object[] { "IP Address", ipAddress, "Port Number", portNumber.toString() }, "");
             } else {
                 errors.reject(key + "field.uniqueError", new Object[] { "Port Number", portNumber.toString() }, "");
             }
@@ -87,11 +76,11 @@ public class PortValidatorHelper {
     /**
      * Validate IP Address
      */
-    public static void validateIPAddress(Errors errors, String ipAddress, String fieldName, boolean isIpAddressRequired) {
+    public static void validateIPAddress(Errors errors, String ipAddress, boolean isIpAddressRequired) {
         if (isIpAddressRequired) {
-            YukonValidationUtils.checkIfFieldRequired("ipAddress", errors, ipAddress, fieldName);
+            YukonValidationUtils.checkIfFieldRequired("ipAddress", errors, ipAddress, "IP Address");
         } else {
-            YukonValidationUtils.checkIsBlank(errors, "ipAddress", ipAddress, fieldName, false);
+            YukonValidationUtils.checkIsBlank(errors, "ipAddress", ipAddress, false);
         }
         if (!errors.hasFieldErrors("ipAddress")) {
             YukonValidationUtils.ipHostNameValidator(errors, "ipAddress", ipAddress);
@@ -101,21 +90,22 @@ public class PortValidatorHelper {
     /**
      * Validate Carrier Detect Wait
      */
-    public static void validateCarrierDetectWait(Errors errors, Integer carrierDetectWaitInMilliseconds, String fieldName) {
+    public static void validateCarrierDetectWait(Errors errors, Integer carrierDetectWaitInMilliseconds) {
         if (carrierDetectWaitInMilliseconds != null) {
-            Range<Integer> range = Range.inclusive(0, 999);
-            YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", fieldName,
-                    carrierDetectWaitInMilliseconds, range, false);
+            YukonValidationUtils.checkRange(errors, "carrierDetectWaitInMilliseconds", carrierDetectWaitInMilliseconds, 0, 9999,
+                    false);
         }
     }
 
     /**
      * Validate Physical Port
      */
-    public static void validatePhysicalPort(Errors errors, String fieldValue, String fieldName) {
-        YukonValidationUtils.checkIsBlank(errors, "physicalPort", fieldValue, fieldName, true);
+    public static void validatePhysicalPort(Errors errors, String physicalPort) {
+        if (!org.springframework.util.StringUtils.hasText(physicalPort)) {
+            errors.rejectValue("physicalPort", "yukon.web.error.fieldrequired", new Object[] { "Physical Port" }, "");
+        }
         if (!errors.hasFieldErrors("physicalPort")) {
-            YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", fieldValue, 8);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "physicalPort", physicalPort, 8);
         }
     }
 
@@ -125,11 +115,11 @@ public class PortValidatorHelper {
     public static void validateEncryptionKey(Errors errors, String keyInHex) {
         if (StringUtils.isNotEmpty(keyInHex)) {
             if (!Validator.isHex(keyInHex)) {
-                errors.rejectValue("keyInHex", key + "udpPort.invalidHexFormat");
+                errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexFormat");
             }
             if (!errors.hasFieldErrors("keyInHex")) {
                 if (keyInHex.length() != 32) {
-                    errors.rejectValue("keyInHex", key + "udpPort.invalidHexLength");
+                    errors.rejectValue("keyInHex", "yukon.web.api.error.udpPort.invalidHexLength");
                 }
             }
         }

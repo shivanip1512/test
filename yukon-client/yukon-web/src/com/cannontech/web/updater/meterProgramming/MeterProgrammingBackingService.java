@@ -17,8 +17,7 @@ public class MeterProgrammingBackingService implements UpdateBackingService {
     
     private enum RequestType {
         PROGRESS,
-        IS_IN_PROGRESS,
-        IS_CONFIRMING
+        IS_IN_PROGRESS
         ;
     }
     
@@ -37,9 +36,6 @@ public class MeterProgrammingBackingService implements UpdateBackingService {
         } else if (type == RequestType.IS_IN_PROGRESS) {
             MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(Integer.valueOf(deviceId), userContext);
             return Boolean.toString(program.getStatus() == DisplayableStatus.IN_PROGRESS);
-        } else if (type == RequestType.IS_CONFIRMING) {
-            MeterProgramSummaryDetail program = meterProgrammingSummaryDao.getProgramConfigurationByDeviceId(Integer.valueOf(deviceId), userContext);
-            return Boolean.toString(program.getStatus() == DisplayableStatus.CONFIRMING);
         }
         return null;
     }

@@ -48,8 +48,6 @@
     
     <bean id="attrDynamicDataSource" class="com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource"/>
     
-     <bean class="com.cannontech.common.pao.attribute.dao.impl.AttributeDaoImpl"/>
-    
     <bean id="staticDeviceGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
@@ -256,7 +254,6 @@
     <bean class="com.cannontech.common.device.programming.dao.impl.MeterProgrammingDaoImpl"/>
     
     <bean class="com.cannontech.common.device.programming.service.impl.MeterProgrammingServiceImpl"/>
-    <bean class="com.cannontech.common.device.programming.service.impl.MeterProgramValidationServiceImpl"/>
     
     <bean class="com.cannontech.common.device.port.dao.impl.PortDaoImpl"/>
 </beans>

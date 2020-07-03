@@ -42,13 +42,13 @@
         <tags:nameValue2 nameKey=".useDefaultPort">
             <tags:switchButton path="useDefaultPort" onNameKey=".yes.label" offNameKey=".no.label" 
                 toggleGroup="virtual-gateway" toggleAction="invisible" toggleInverse="true"/>
+        </tags:nameValue2>
+        <tags:nameValue2 nameKey=".default.port" data-toggle-group="virtual-gateway">
+            <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
             <cti:msg2 var="portHelpTextTitle" key=".default.port.title"/>
             <tags:helpInfoPopup title="${portHelpTextTitle}" classes="vam">
                 <cti:msg2 key=".default.port.helpText"/>
             </tags:helpInfoPopup>
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".default.port" data-toggle-group="virtual-gateway">
-            <tags:input path="port" maxlength="5" size="5" tabindex="3"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
         </tags:nameValue2>

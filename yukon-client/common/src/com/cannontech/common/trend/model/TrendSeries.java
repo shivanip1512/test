@@ -1,15 +1,7 @@
 package com.cannontech.common.trend.model;
 
-import org.joda.time.DateTime;
-import org.springframework.validation.BindingResult;
+import org.joda.time.LocalDate;
 
-import com.cannontech.common.trend.model.TrendType.GraphType;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-@JsonInclude(Include.NON_NULL)
 public class TrendSeries {
     private TrendType.GraphType type;
     private Integer pointId;
@@ -18,7 +10,7 @@ public class TrendSeries {
     private TrendAxis axis;
     private Double multiplier;
     private RenderType style;
-    private DateTime date;
+    private LocalDate date;
 
     public TrendType.GraphType getType() {
         return type;
@@ -76,59 +68,12 @@ public class TrendSeries {
         this.style = style;
     }
 
-    @JsonSerialize(using=DateSerializer.class)
-    @JsonDeserialize(using=DateDeserializer.class)
-    public DateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(DateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
-    
-    @Override
-    public String toString() {
-        return String.format("TrendSeries [graphType=%s, pointId=%s, label=%s, color=%s, axis=%s, multiplier=%s, style=%s, date=%s]",
-                type, pointId, label, color, axis, multiplier, style, date);
-    }
-    
-    /**
-     * Update the TrendSeries with default values when null.
-     */
-    public void applyDefaults() {
-        if (getDate() == null) {
-            setDate(DateTime.now());
-        }
-        setDefaultValues();
-    }
-    
-    public void applyDefaultsIfNoErrors(BindingResult results) {
-        if (!results.hasFieldErrors("date")) {
-            setDate(DateTime.now());
-        }
-        setDefaultValues();
-    }
-    
-    private void setDefaultValues() {
-        if (getColor() == null) {
-            setColor(Color.BLUE);
-        }
-        if (getAxis() == null) {
-            setAxis(TrendAxis.LEFT);
-        }
-        if (getStyle() == null) {
-            setStyle(RenderType.LINE);
-        }
-        if (getType() == null) {
-            setType(GraphType.BASIC_TYPE);
-        }
-        if (getMultiplier() == null) {
-            setMultiplier(1d);
-        }
-    }
-    
-    public void setMarkerDefaults() {
-        setType(GraphType.MARKER_TYPE);
-        setPointId(-100);
-    }
+
 }

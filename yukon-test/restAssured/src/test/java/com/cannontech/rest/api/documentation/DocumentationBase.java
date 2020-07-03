@@ -45,42 +45,18 @@ public abstract class DocumentationBase {
         validateFields("createDoc", fields);
         return post(fields);
     }
-
+    
     /**
      * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains updated object.
      * @return value in response having identifier of responseFieldPath
-     * @deprecated Use for legacy API calls only which are using a POST verb for updating an object.
      */
-    @Deprecated
     protected String updateDoc() {
         Update fields = buildUpdateFields();
         validateFields("updateDoc", fields);
         return post(fields);
     }
-
-    /**
-     * Make a PUT call for request and response fields to generate restDocumentation.
-     * Request contains object (as defined by body object), response contains updated object.
-     * @return value in response having identifier of responseFieldPath
-     */
-    protected String updateAllDoc() {
-        Update fields = buildUpdateFields();
-        validateFields("updateDoc", fields);
-        return put(fields);
-    }
-
-    /**
-     * Make a PATCH call for request and response fields to generate restDocumentation.
-     * Request contains object (as defined by body object), response contains updated object.
-     * @return value in response having identifier of responseFieldPath
-     */
-    protected String updatePartialDoc() {
-        Update fields = buildUpdateFields();
-        validateFields("updateDoc", fields);
-        return patch(fields);
-    }
-
+    
     /**
      * Make a POST call for request and response fields to generate restDocumentation.
      * Request contains object (as defined by body object), response contains newly created object (as copied from object with copyId). 
@@ -99,27 +75,6 @@ public abstract class DocumentationBase {
     private String post(DocumentationFields.Create fields) {
         RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
         return RestApiDocumentationUtility.post(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body, fields.url);
-    }
-
-    /**
-     * Helper method to make a PUT call having request and response fields with a body to generate restDocumentation.
-     * @return value in response having identifier of responseFieldPath
-     */
-    private String put(DocumentationFields.Create fields) {
-        RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
-        return RestApiDocumentationUtility.put(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
-                fields.url);
-    }
-    
-
-    /**
-     * Helper method to make a PATCH call having request and response fields with a body to generate restDocumentation.
-     * @return value in response having identifier of responseFieldPath
-     */
-    private String patch(DocumentationFields.Create fields) {
-        RequestSpecification header = getHeader(fields.requestFields, fields.responseFields);
-        return RestApiDocumentationUtility.patch(header, fields.responseFieldPath, fields.responseFieldDesc, fields.body,
-                fields.url);
     }
 
     /**

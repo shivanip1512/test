@@ -95,11 +95,11 @@ public class PointUtil {
 
         case PointTypes.CALCULATED_POINT:
             YukonPao yukonPao = paoDao.getYukonPao(paoId);
-            point = PointFactory.createCalculatedPoint(yukonPao.getPaoIdentifier(), name, StateGroupUtils.STATEGROUP_ANALOG, validPointOffset);
+            point = PointFactory.createCalculatedPoint(yukonPao.getPaoIdentifier(), name, StateGroupUtils.STATEGROUP_ANALOG);
             break;
 
         case PointTypes.CALCULATED_STATUS_POINT:
-            point = PointFactory.createCalcStatusPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG, validPointOffset);
+            point = PointFactory.createCalcStatusPoint(paoId, name, StateGroupUtils.STATEGROUP_ANALOG);
             break;
 
         default:

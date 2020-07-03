@@ -1,11 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="tools" page="${pageName}">
 
@@ -25,24 +22,8 @@
                 <c:set var="offClasses" value="${autoUpdate ? 'no' : 'on no'}"/>
                 <cti:button nameKey="off" classes="${offClasses}"/>
             </div>
-            
-            <div id="page-actions" class="dn">
-                <cti:url value="/tools/trend/create" var="createUrl"/>
-                <cm:dropdownOption icon="icon-plus-green" key="yukon.web.components.button.create.label" href="${createUrl}"/>
-                <cti:url value="/tools/trend/${trendId}/edit" var="editUrl"/>
-                <cm:dropdownOption icon="icon-pencil" key="yukon.web.components.button.edit.label" href="${editUrl}"/>
-                <li class="divider">
-                <cm:dropdownOption icon="icon-cross" key="yukon.web.components.button.delete.label" id="js-delete-option" data-ok-event="yukon:tools:trend:delete"
-                                                      classes="js-hide-dropdown"/>
-                <d:confirm on="#js-delete-option" nameKey="confirmDelete" argument="${trendModel.name}" />
-                <cti:url var="deleteUrl" value="/tools/trend/${trendId}/delete"/>
-                <form:form id="js-delete-trend-form" action="${deleteUrl}" method="delete" modelAttribute="trendModel">
-                    <tags:hidden path="name"/>
-                    <cti:csrfToken/>
-                </form:form>
-                <li class="divider">
-                <cm:dropdownOption icon="icon-trend-up" key="yukon.web.modules.tools.trends.resetPeaks" href="#"/>
-                <li class="divider">
+    
+            <cm:dropdown type="button" icon="icon-download" key="yukon.web.components.button.export.label">
                 <cm:dropdownOption key=".printChart" icon="icon-printer" classes="js-print"/>
                 <li class="divider">
                 <cm:dropdownOption key=".downloadPng" icon="icon-picture" classes="js-dl-png"/>
@@ -50,7 +31,7 @@
                 <cm:dropdownOption key=".downloadPdf" icon="icon-page-white-acrobat" classes="js-dl-pdf"/>
                 <li class="divider">
                 <cm:dropdownOption key=".downloadCsv" icon="icon-page-white-excel" classes="js-dl-csv" data-trend-id="${trendId}"/>
-            </div>
+            </cm:dropdown>
         </c:if>
     </div>
     <hr>

@@ -1,16 +1,10 @@
 package com.cannontech.database.db.point;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.sql.SQLException;
 
-import org.apache.logging.log4j.Logger;
-
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.db.DBPersistent;
-import com.google.common.collect.ImmutableMap;
 
 public class PointAlarming extends DBPersistent {
     
@@ -22,22 +16,7 @@ public class PointAlarming extends DBPersistent {
         AUTO_ACK("Auto Ack"),
         BOTH_OPTIONS("Exclude Notify & Auto Ack");
 
-        private static final Logger log = YukonLogManager.getLogger(AlarmNotificationTypes.class);
         private static final String baseKey = "yukon.common.point.alarmNotificationType.";
-        private final static ImmutableMap<String, AlarmNotificationTypes> lookupByNotificationType;
-        
-        static {
-            try {
-                ImmutableMap.Builder<String, AlarmNotificationTypes> notificationTypeBuilder = ImmutableMap.builder();
-                for (AlarmNotificationTypes type : values()) {
-                    notificationTypeBuilder.put(type.dbString, type);
-                }
-                lookupByNotificationType = notificationTypeBuilder.build();
-            } catch (IllegalArgumentException e) {
-                log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
-                throw e;
-            }
-        }
         
         private String dbString;
         
@@ -61,12 +40,6 @@ public class PointAlarming extends DBPersistent {
         public String getDbString() {
             return dbString;
         }
-
-        public static AlarmNotificationTypes getAnalogControlTypeValue(String value) {
-            AlarmNotificationTypes alarmNotificationType = lookupByNotificationType.get(value);
-            checkArgument(alarmNotificationType != null, alarmNotificationType);
-            return alarmNotificationType;
-        } 
     }
     
     public static final String DEFAULT_EXCLUDE_NOTIFY = "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN";

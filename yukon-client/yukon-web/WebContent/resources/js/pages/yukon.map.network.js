@@ -26,12 +26,15 @@ yukon.map.network = (function () {
     _largerScale = 1.1,
     
     //order layers should display, Icons > Parent > Primary Route > Neighbors
+    _neighborsLayerIndex = 0,
     _primaryRouteLayerIndex = 1,
     _parentLayerIndex = 2,
     _iconLayerIndex = yukon.mapping.getIconLayerZIndex(),
     
     _devicePoints = [],
     _deviceIcon,
+    _deviceStandsOut = false,
+    _deviceOriginalStyle,
     _parentIcon,
     _parentLine,
     _neighborIcons = [],
@@ -73,16 +76,8 @@ yukon.map.network = (function () {
             
         icon.setId(feature.id);
 
-        var largerStyle = style.clone(),
-            circleStyle = new ol.style.Style({
-            image: new ol.style.Circle({
-                radius: 8,
-                fill: new ol.style.Fill({color: _routeColor}),
-                stroke: new ol.style.Stroke({color: 'black', width: 2}) 
-            })
-        });
-        largerStyle.getImage().setScale(_largerScale);
-        icon.setStyle([circleStyle, largerStyle]);
+        icon.setStyle(style);
+        _deviceOriginalStyle = style;
 
         var coord = ol.proj.transform(feature.geometry.coordinates, _srcProjection, _destProjection);
         icon.setGeometry(new ol.geom.Point(coord));
@@ -162,6 +157,8 @@ yukon.map.network = (function () {
             _map.addLayer(layerLines);
             
             yukon.mapping.updateZoom(_map);
+            
+            _makeCurrentDeviceStandOut();
         }
     },
     
@@ -172,9 +169,8 @@ yukon.map.network = (function () {
                 isPrimaryRoute = _isDeviceInArray(_primaryRouteIcons, id),
                 isNeighbor = _isDeviceInArray(_neighborIcons, id),
                 isNearby = _isDeviceInArray(_nearbyIcons, id),
-                isParent = _parentIcon != null && _parentIcon.getId() === id,
-                isMainDevice = _deviceIcon.getId() === id;
-            if (!isPrimaryRoute && !isNeighbor && !isNearby && !isParent && !isMainDevice && source.getFeatureById(id) != null) {
+                isParent = _parentIcon != null && _parentIcon.getId() === id;
+            if (!isPrimaryRoute && !isNeighbor && !isNearby && !isParent && source.getFeatureById(id) != null) {
                 source.removeFeature(icon);
             }
         });
@@ -184,7 +180,7 @@ yukon.map.network = (function () {
         _deviceFocusIcons = [];
         _deviceFocusLines = [];
         //set focus device back to normal style
-        if (_deviceFocusCurrentIcon != null && _deviceIcon.getId() != _deviceFocusCurrentIcon.getId()) {
+        if (_deviceFocusCurrentIcon != null) {
             yukon.mapping.setScaleForDevice(_deviceFocusCurrentIcon);
         }
     },
@@ -214,6 +210,10 @@ yukon.map.network = (function () {
         }
         
         yukon.mapping.updateZoom(_map);
+        
+        if (!isFocusDevice) {
+            _makeCurrentDeviceStandOut();
+        }
     },
     
     _loadNeighborData = function(neighbors) {
@@ -322,6 +322,10 @@ yukon.map.network = (function () {
         }
         
         yukon.mapping.updateZoom(_map);
+        
+        if (!isFocusDevice) {
+            _makeCurrentDeviceStandOut();
+        }
     }
     
     _loadPrimaryRouteData = function(routeInfo) {
@@ -357,7 +361,33 @@ yukon.map.network = (function () {
         }
         
         yukon.mapping.updateZoom(_map);
+        _makeCurrentDeviceStandOut();
     },
+    
+    _makeCurrentDeviceStandOut = function() {
+        /*Change device Icon to be larger and have colored circle underneath*/
+        if (!_deviceStandsOut) {
+            var largerStyle = _deviceIcon.getStyle().clone(),
+                circleStyle = new ol.style.Style({
+                image: new ol.style.Circle({
+                    radius: 8,
+                    fill: new ol.style.Fill({color: _routeColor}),
+                    stroke: new ol.style.Stroke({color: 'black', width: 2}) 
+                })
+            });
+            largerStyle.getImage().setScale(_largerScale);
+            _deviceIcon.setStyle([circleStyle, largerStyle]);
+            _deviceStandsOut = true;
+        }
+    },
+    
+    _checkToGoBackToDeviceOriginalStyle = function() {
+        //map originally has 5 layers (Map, Satellite, Hybrid, Device Feature, Icon Layer)
+        if (_map.getLayers().getArray().length < 6) {
+            _deviceIcon.setStyle(_deviceOriginalStyle);
+            _deviceStandsOut = false;
+        }
+    }
     
     _getNearbyDevices = function() {
         var fc = yukon.fromJson('#geojson'),
@@ -386,15 +416,15 @@ yukon.map.network = (function () {
                 id = nearby.getId(),
                 isPrimaryRoute = _isDeviceInArray(_primaryRouteIcons, id),
                 isNeighbor = _isDeviceInArray(_neighborIcons, id),
-                isParent = _parentIcon != null && _parentIcon.getId() === id,
-                isMainDevice = _deviceIcon.getId() === id;
+                isParent = _parentIcon != null && _parentIcon.getId() === id;
             //don't remove if exists in another area
-            if (!isPrimaryRoute && !isNeighbor && !isParent && !isMainDevice && source.getFeatureById(id) != null) {
+            if (!isPrimaryRoute && !isNeighbor && !isParent && source.getFeatureById(id) != null) {
                 source.removeFeature(nearby);
             }
         }
         _nearbyIcons = [];
         yukon.mapping.updateZoom(_map);
+        _checkToGoBackToDeviceOriginalStyle();
     },
     
     _addAllPrimaryRoutes = function() {
@@ -556,10 +586,9 @@ yukon.map.network = (function () {
                             var id = icon.getId(),
                                 isPrimaryRoute = _isDeviceInArray(_primaryRouteIcons, id),
                                 isNearby = _isDeviceInArray(_nearbyIcons, id),
-                                isParent = _parentIcon != null && _parentIcon.getId() === id,
-                                isMainDevice = _deviceIcon.getId() === id;
+                                isParent = _parentIcon != null && _parentIcon.getId() === id;
                             //don't remove if exists in another area
-                            if (!isPrimaryRoute && !isNearby && !isParent && !isMainDevice && source.getFeatureById(id) != null) {
+                            if (!isPrimaryRoute && !isNearby && !isParent && source.getFeatureById(id) != null) {
                                 source.removeFeature(icon);
                             }
                             icon.unset("neighbor");
@@ -571,6 +600,7 @@ yukon.map.network = (function () {
                         _neighborIcons = [];
                         _neighborLines = [];
                         yukon.mapping.updateZoom(_map);
+                        _checkToGoBackToDeviceOriginalStyle();
                     }
                     _addAllPrimaryRoutes();
                 });
@@ -621,9 +651,8 @@ yukon.map.network = (function () {
                             var id = icon.getId(),
                                 isNeighbor = _isDeviceInArray(_neighborIcons, id),
                                 isNearby = _isDeviceInArray(_nearbyIcons, id),
-                                isParent = _parentIcon != null && _parentIcon.getId() === id,
-                                isMainDevice = _deviceIcon.getId() === id;
-                            if (!isNeighbor && !isNearby && !isParent && !isMainDevice && source.getFeatureById(id) != null) {
+                                isParent = _parentIcon != null && _parentIcon.getId() === id;
+                            if (!isNeighbor && !isNearby && !isParent && source.getFeatureById(id) != null) {
                                 source.removeFeature(icon);
                             }
                         });
@@ -634,6 +663,7 @@ yukon.map.network = (function () {
                         _primaryRouteIcons = [];
                         _primaryRouteLines = [];
                         yukon.mapping.updateZoom(_map);
+                        _checkToGoBackToDeviceOriginalStyle();
                     }
                     _addAllPrimaryRoutes();
                 });
@@ -694,6 +724,7 @@ yukon.map.network = (function () {
                         _parentIcon = null;
                         _parentLine = null;
                         yukon.mapping.updateZoom(_map);
+                        _checkToGoBackToDeviceOriginalStyle();
                     }
                     _addAllPrimaryRoutes();
                 });

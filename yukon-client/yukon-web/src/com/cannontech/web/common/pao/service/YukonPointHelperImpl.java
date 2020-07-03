@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.model.PointSortField;
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
@@ -20,11 +19,8 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
@@ -32,7 +28,7 @@ public class YukonPointHelperImpl implements YukonPointHelper {
 
     @Autowired private PointDao pointDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
 
     @Override
     public List<LiteYukonPoint> getYukonPoints(final YukonPao pao, SortingParameters sorting,
@@ -90,15 +86,5 @@ public class YukonPointHelperImpl implements YukonPointHelper {
         List<LiteYukonPoint> liteYukonPoints = getYukonPointsForSorting(pao);
         Collections.sort(liteYukonPoints, LiteYukonPoint.getComparatorForSortField(PointSortField.POINTNAME));
         return liteYukonPoints;
-    }
-
-    @Override
-    public void verifyRoles(LiteYukonUser user, HierarchyPermissionLevel hierarchyPermissionLevel) throws NotAuthorizedException {
-        boolean capControlEditor = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        boolean isPointEditor = rolePropertyDao.checkLevel(YukonRoleProperty.MANAGE_POINTS, hierarchyPermissionLevel, user);
-
-        if (!capControlEditor && !isPointEditor) {
-            throw new NotAuthorizedException("User not allowed to edit points");
-        }
     }
 }

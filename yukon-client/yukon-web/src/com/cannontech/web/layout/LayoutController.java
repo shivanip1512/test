@@ -9,7 +9,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -55,10 +54,7 @@ import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebUtilityService;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableList.Builder;
 
 @Controller
@@ -389,23 +385,11 @@ public class LayoutController {
     @ModelAttribute("buildInfo")
     public String getYukonBuild() {
         Map<String, String> buildInfo = VersionTools.getBuildInfo();
-        String buildKey = buildInfo.get("BUILD_KEY");
-        if (!Strings.isNullOrEmpty(buildKey) && buildKey.contains("-")) {
-            List<String> keys = Lists.newArrayList(Splitter.on("-").split(buildKey));
-            if (!keys.isEmpty() && keys.size() == 4) {
-                // Remove the second Element from buildKey to get the actual plan Key.
-                keys.remove(2);
-                String finalPlanKey = keys.stream()
-                                          .collect(Collectors.joining("-"));
-                return "<a href=\"http://loutcsvbamboop1.napa.ad.etn.com:8085/browse/" + finalPlanKey + "\">"
-                        + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
-            } else {
-                return "undefined";
-            }
-        } else {
+        if (buildInfo.containsKey("JOB_NAME") && buildInfo.containsKey("YUKON_BUILD_NUMBER")) {
             return "<a href=\"http://swbuild.cooperpowereas.net/job/" + buildInfo.get("JOB_NAME") + "/"
-                    + buildInfo.get("JENKINS_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
+                + buildInfo.get("JENKINS_ID") + "\">" + buildInfo.get("YUKON_BUILD_NUMBER") + "</a>";
         }
+        return "undefined";
     }
     
     private Module getModuleBase(String moduleName) {

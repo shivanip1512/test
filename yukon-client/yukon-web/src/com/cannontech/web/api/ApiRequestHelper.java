@@ -6,9 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -16,7 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -42,19 +39,16 @@ import com.cannontech.web.api.token.TokenHelper;
 
 public class ApiRequestHelper {
 
-    private static final String authToken = "authToken";
+    private final static String authToken = "authToken";
     @Autowired private RestTemplate apiRestTemplate;
     @Autowired private GlobalSettingDao settingDao;
-    
+
     public synchronized void setProxy() {
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(httpProxy -> {
-            HttpHost proxyHost = new HttpHost(httpProxy.getHost(), httpProxy.getPort());
-            HttpClient httpClient = HttpClientBuilder.create()
-                    .setProxy(proxyHost)
-                    .build();
-            factory.setHttpClient(httpClient);
+            factory.setProxy(httpProxy.getJavaHttpProxy());
         });
+        factory.setOutputStreaming(false);
         apiRestTemplate.setRequestFactory(factory);
     }
 
@@ -162,9 +156,9 @@ public class ApiRequestHelper {
             Object... requestObject) {
         HttpEntity<Object> requestEntity = null;
         if (requestObject.length == 1) {
-            requestEntity = new HttpEntity<>(requestObject[0], getHttpHeaders(userContext, request));
+            requestEntity = new HttpEntity<Object>(requestObject[0], getHttpHeaders(userContext, request));
         } else {
-            requestEntity = new HttpEntity<>(getHttpHeaders(userContext, request));
+            requestEntity = new HttpEntity<Object>(getHttpHeaders(userContext, request));
         }
         return requestEntity;
     }

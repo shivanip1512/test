@@ -486,8 +486,6 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\MeterProgramming_constants.cpp" />
     <ClCompile Include="Serialization\Thrift\MeterProgramming_types.cpp" />
-    <ClCompile Include="Serialization\Thrift\MeterProgramValidation_constants.cpp" />
-    <ClCompile Include="Serialization\Thrift\MeterProgramValidation_types.cpp" />
     <ClCompile Include="Serialization\Thrift\Multi_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\Multi_types.cpp">
@@ -704,8 +702,6 @@
     <ClInclude Include="Serialization\Thrift\Message_types.h" />
     <ClInclude Include="Serialization\Thrift\MeterProgramming_constants.h" />
     <ClInclude Include="Serialization\Thrift\MeterProgramming_types.h" />
-    <ClInclude Include="Serialization\Thrift\MeterProgramValidation_constants.h" />
-    <ClInclude Include="Serialization\Thrift\MeterProgramValidation_types.h" />
     <ClInclude Include="Serialization\Thrift\Multi_constants.h" />
     <ClInclude Include="Serialization\Thrift\Multi_types.h" />
     <ClInclude Include="Serialization\Thrift\NetworkManagerMessaging_constants.h" />

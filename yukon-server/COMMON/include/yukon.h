@@ -424,7 +424,6 @@ struct ClientErrors
         NoMeterProgramAssigned,
         InvalidMeterProgram,
         MeterProgramNotFound,
-        MeterProgramPasswordInvalid,
     };
 };
 

@@ -1,6 +1,5 @@
 package com.cannontech.message.porter.message;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -9,7 +8,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import com.google.common.collect.ImmutableMap;
 
-public class DynamicPaoInfoResponse implements Serializable {
+public class DynamicPaoInfoResponse {
     
     private int deviceID;
     private ImmutableMap<DynamicPaoInfoTimestampKeyEnum, Instant> timestampValues;

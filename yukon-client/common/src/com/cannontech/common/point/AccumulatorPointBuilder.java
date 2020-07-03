@@ -15,6 +15,7 @@ import com.google.common.collect.Maps;
 public class AccumulatorPointBuilder extends ScalarPointBuilder {
     private final Logger log = YukonLogManager.getLogger(AccumulatorPointBuilder.class);
     private AccumulatorType accumulatorType;
+    private int pointOffset = 0; //no physical point offset unless specified
     private double multiplier = 1.0;
     private int stateGroupId = -2; //DefaultAccumulator
     private int meterDials = 0;
@@ -88,6 +89,14 @@ public class AccumulatorPointBuilder extends ScalarPointBuilder {
     @Override
     public AccumulatorPoint insert() {
         return (AccumulatorPoint) super.insert();
+    }
+    
+    /**
+     * Must be a non-negative value.
+     */
+    public void setPointOffset(int pointOffset) {
+        if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
+        this.pointOffset = pointOffset;
     }
     
     /**

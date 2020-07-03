@@ -19,8 +19,6 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.meter.model.PlcMeter;
-import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.model.CollectionAction;
 import com.cannontech.common.bulk.service.BulkImportType;
@@ -740,13 +738,6 @@ public class DevEventLogCreationService {
                 String serialNumberOrAddress = "45445";
                 PaoType paoType = PaoType.RFN410FD;
                 
-                PaoIdentifier paoId = new PaoIdentifier(12345, paoType);
-                RfnIdentifier rfnId = new RfnIdentifier(serialNumberOrAddress, "Manufacturer", "model");
-                
-                RfnMeter oldRfnMeter = new RfnMeter(paoId, rfnId, serialNumberOrAddress, deviceName, false);
-                RfnMeter newRfnMeter = new RfnMeter(paoId, rfnId, serialNumberOrAddress, deviceName, false);
-                
-                
                 meteringEventLogService.readNowPushedForReadingsWidget(user, meterNumber);
                 meteringEventLogService.scheduleDeleted(user, scheduleName);
                 meteringEventLogService.jobStarted(deviceRequestType, scheduleName, deviceGroup, retry, user, jobId);
@@ -761,7 +752,7 @@ public class DevEventLogCreationService {
                 meteringEventLogService.tryCompleted(deviceRequestType, scheduleName, tryNumber, commands, contextId, executionId);
                 meteringEventLogService.meterCreated(deviceName, meterNumber, serialNumberOrAddress, paoType, user.getUsername());
                 meteringEventLogService.meterDeleted(deviceName, meterNumber, user.getUsername());
-                meteringEventLogService.meterEdited(deviceName, meterNumber, user.getUsername(), oldRfnMeter, newRfnMeter);
+                meteringEventLogService.meterEdited(deviceName, meterNumber, user.getUsername());
             }
         });
         executables.put(LogType.MULTISPEAK, new DevEventLogExecutable() {

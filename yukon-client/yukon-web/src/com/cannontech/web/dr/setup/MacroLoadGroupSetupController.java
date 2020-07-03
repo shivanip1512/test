@@ -231,7 +231,7 @@ public class MacroLoadGroupSetupController {
             if (response.getStatusCode() == HttpStatus.OK) {
                 HashMap<String, Integer> paoIdMap = (HashMap<String, Integer>) response.getBody();
                 int groupId = paoIdMap.get("paoId");
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.save.success", macroLoadGroup.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "save.success", macroLoadGroup.getName()));
                 return "redirect:/dr/setup/macroLoadGroup/" + groupId;
             }
         } catch (ApiCommunicationException e) {
@@ -240,7 +240,7 @@ public class MacroLoadGroupSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error creating macro load group: {}. Error: {}", macroLoadGroup.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.save.error", macroLoadGroup.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "save.error", macroLoadGroup.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return null;
@@ -257,7 +257,7 @@ public class MacroLoadGroupSetupController {
                 apiRequestHelper.callAPIForObject(userContext, request, url, HttpMethod.DELETE, Object.class, lmDelete);
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.common.delete.success", lmDelete.getName()));
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", lmDelete.getName()));
                 return "redirect:" + setupRedirectLink;
             }
         } catch (ApiCommunicationException e) {
@@ -266,7 +266,7 @@ public class MacroLoadGroupSetupController {
             return "redirect:" + setupRedirectLink;
         } catch (RestClientException ex) {
             log.error("Error deleting macro load group: {}. Error: {}", lmDelete.getName(), ex.getMessage());
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.api.delete.error", lmDelete.getName(), ex.getMessage()));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.error", lmDelete.getName(), ex.getMessage()));
             return "redirect:" + setupRedirectLink;
         }
         return "redirect:" + setupRedirectLink;

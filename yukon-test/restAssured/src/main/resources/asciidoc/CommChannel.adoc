@@ -3,150 +3,150 @@
 
 ==== TCP Port
 *Request Properties* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_01_Create/request-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_01_Create/http-request.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_01_Create/response-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_01_Create/http-response.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_01_Create/http-response.adoc[]
 
 ==== TCP Terminal Server
 *Request Properties* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_01_Create/request-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_01_Create/http-request.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_01_Create/response-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_01_Create/http-response.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_01_Create/http-response.adoc[]
 
 ==== UDP Terminal Server
 *Request Properties* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_01_Create/request-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_01_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_01_Create/http-request.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_01_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_01_Create/response-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_01_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_01_Create/http-response.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_01_Create/http-response.adoc[]
 
 ==== Local Shared Port
 *Request Properties* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_01_Create/request-fields.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_01_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_01_Create/http-request.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_01_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_01_Create/response-fields.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_01_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_01_Create/http-response.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_01_Create/http-response.adoc[]
 
 === Update
 
 ==== TCP Port
 *Request Properties* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_02_Update/request-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_02_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_02_Update/http-request.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_02_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_02_Update/response-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_02_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_02_Update/http-response.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_02_Update/http-response.adoc[]
 
 ==== TCP Terminal Server
 *Request Properties* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_02_Update/request-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_02_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_02_Update/http-request.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_02_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_02_Update/response-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_02_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_02_Update/http-response.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_02_Update/http-response.adoc[]
 
 ==== UDP Terminal Server
 *Request Properties* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_02_Update/request-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_02_Update/http-request.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_02_Update/response-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_02_Update/http-response.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_02_Update/http-response.adoc[]
 
 ==== Local Shared Port
 *Request Properties* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_02_Update/request-fields.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_02_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_02_Update/http-request.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_02_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_02_Update/response-fields.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_02_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_02_Update/http-response.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_02_Update/http-response.adoc[]
 
 === Retrieve
 
 ==== All Port
 *Request JSON* 
-include::{snippets}/TcpPortApiDoc/Test_AllPorts_05_Get/http-request.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_AllPorts_05_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/TcpPortApiDoc/Test_AllPorts_05_Get/response-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_AllPorts_05_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/TcpPortApiDoc/Test_AllPorts_05_Get/http-response.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_AllPorts_05_Get/http-response.adoc[]
 
 ==== TCP Port
 *Request JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_03_Get/http-request.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_03_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_03_Get/response-fields.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_03_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_03_Get/http-response.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_03_Get/http-response.adoc[]
 
 ==== TCP Terminal Server
 *Request JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_03_Get/http-request.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_03_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_03_Get/response-fields.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_03_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_03_Get/http-response.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_03_Get/http-response.adoc[]
 
 ==== UDP Terminal Server
 *Request JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_03_Get/http-request.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_03_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_03_Get/response-fields.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_03_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_03_Get/http-response.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_03_Get/http-response.adoc[]
 
 ==== Local Shared Port
 *Request JSON* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_03_Get/http-request.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_03_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_03_Get/response-fields.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_03_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_03_Get/http-response.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_03_Get/http-response.adoc[]
 
 === Delete
 
 ==== TCP Port
 *Request JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_04_Delete/http-request.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_04_Delete/http-request.adoc[]
 *Response JSON* 
-include::{snippets}/TcpPortApiDoc/Test_TcpPort_04_Delete/http-response.adoc[]
+include::{snippets}/TcpPortApiDocumentationTest/Test_TcpPort_04_Delete/http-response.adoc[]
 
 ==== TCP Terminal Server
 *Request JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_04_Delete/http-request.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_04_Delete/http-request.adoc[]
 *Response JSON* 
-include::{snippets}/TcpTerminalServerApiDoc/Test_TcpTerminalServer_04_Delete/http-response.adoc[]
+include::{snippets}/TcpTerminalServerApiDocumentationTest/Test_TcpTerminalServer_04_Delete/http-response.adoc[]
 
 ==== UDP Terminal Server
 *Request JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_04_Delete/http-request.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_04_Delete/http-request.adoc[]
 *Response JSON* 
-include::{snippets}/UdpTerminalServerApiDoc/Test_UDPTerminalServer_04_Delete/http-response.adoc[]
+include::{snippets}/UDPTerminalServerApiDocumentationTest/Test_UDPTerminalServer_04_Delete/http-response.adoc[]
 
 ==== Local Shared Port
 *Request JSON*
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_04_Delete/http-request.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_04_Delete/http-request.adoc[]
 *Response JSON* 
-include::{snippets}/LocalSharedPortApiDoc/Test_LocalSharedPort_04_Delete/http-response.adoc[]
+include::{snippets}/LocalSharedPortApiDocumentationTest/Test_LocalSharedPort_04_Delete/http-response.adoc[]

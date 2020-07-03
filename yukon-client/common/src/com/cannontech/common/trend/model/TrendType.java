@@ -1,40 +1,15 @@
 package com.cannontech.common.trend.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.database.db.graph.GDSTypes;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 
 public class TrendType {
 
     public static enum GraphType implements DisplayableEnum {
-        BASIC_TYPE(GDSTypes.BASIC_GRAPH_TYPE_STRING),
-        USAGE_TYPE(GDSTypes.USAGE_TYPE_STRING),
-        PEAK_TYPE(GDSTypes.PEAK_GRAPH_TYPE_STRING),
-        YESTERDAY_TYPE(GDSTypes.YESTERDAY_GRAPH_TYPE_STRING),
-        MARKER_TYPE(GDSTypes.MARKER_TYPE_STRING),
-        DATE_TYPE(GDSTypes.DATE_TYPE_STRING);
-
-        private String stringType;
-
-        GraphType(String stringType) {
-            this.stringType = stringType;
-        }
-        
-        public String getStringType() {
-            return stringType;
-        }
-        
+        BASIC_TYPE, USAGE_TYPE, PEAK_TYPE, YESTERDAY_TYPE, MARKER_TYPE, DATE_TYPE;
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.tools.trends.data.trendType.graphType." + name();
-        }
-        
-        public boolean isDateType() {
-            return this == DATE_TYPE;
-        }
-        
-        public boolean isMarkerType() {
-            return this == GraphType.MARKER_TYPE;
         }
     }
 
@@ -88,7 +63,7 @@ public class TrendType {
         }
         return new TrendType(GraphType.BASIC_TYPE, isGraphType, isPrimaryType);
     }
-    
+
     /**
      * getGraphType gets the encapsulated graph type for the trend item. 
      * the datastore for the specific trend item.   

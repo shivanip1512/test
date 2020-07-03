@@ -9,7 +9,6 @@ import org.apache.commons.codec.DecoderException;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
-import com.cannontech.development.model.RfnTestOutageRestoreEvent;
 import com.cannontech.development.service.impl.DRReport;
 
 public interface RfnEventTestingService {
@@ -35,8 +34,4 @@ public interface RfnEventTestingService {
      */
     int sendConfigNotification(RfnTestMeterReading reading);
     
-    /**
-     * For each device in device group sends and Outage event, waits X milliseconds and sends Restore event
-     */
-    int sendOutageAndRestoreEvents(RfnTestOutageRestoreEvent event);
 }

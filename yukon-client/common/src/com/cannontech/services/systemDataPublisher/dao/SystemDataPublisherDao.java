@@ -3,10 +3,9 @@ package com.cannontech.services.systemDataPublisher.dao;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.device.data.collection.model.DataCollectionDetail;
 import com.cannontech.common.device.data.collection.model.DataCollectionSummary;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.services.systemDataPublisher.yaml.model.CloudDataConfiguration;
-import com.google.common.collect.ImmutableSet;
 
 public interface SystemDataPublisherDao {
 
@@ -31,8 +30,8 @@ public interface SystemDataPublisherDao {
     DataCollectionSummary getReadRate(String deviceGroupName);
 
     /**
-     * This method returns value for Data completeness of devices in the passed device group.
-     * Count of number of times device reported in defined number of days for every hour.
+     * This method returns Data Collection detail for Data completeness of devices in the passed device group.
+     * Count of device reported in defined number of days.
      */
-    double getDataCompleteness(String deviceGroupName, ImmutableSet<PaoType> paotype);
+    DataCollectionDetail getDataCompleteness(String deviceGroupName);
 }

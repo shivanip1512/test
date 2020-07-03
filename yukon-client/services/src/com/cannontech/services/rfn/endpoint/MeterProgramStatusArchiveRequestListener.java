@@ -49,6 +49,18 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
     private void processRequest(MeterProgramStatusArchiveRequest request, String processor) {
        
         int deviceId = rfnDeviceDao.getDeviceIdForRfnIdentifier(request.getRfnIdentifier());
+        if (request.getStatus() == ProgrammingStatus.INITIATING) {
+            MeterProgramStatus oldStatus = meterProgrammingDao.getMeterProgramStatus(deviceId);
+            if (!request.getTimestamp().isAfter(oldStatus.getLastUpdate())) {
+                log.info("(Request to initiate download is not newer then existing status. Discarding the record. Existing status {}",
+                         oldStatus);
+                return;
+            }
+            log.info("Updated status to Initiating for device {}.", request.getRfnIdentifier());
+            meterProgrammingDao.updateMeterProgramStatusToInitiating(deviceId, new Instant(request.getTimestamp()));
+            return;
+        }
+        
         StringBuilder configId = new StringBuilder(request.getConfigurationId());
 
         MeterProgramSource prefix = MeterProgramSource.getByPrefix(Character.toString(configId.charAt(0)));
@@ -134,12 +146,6 @@ public class MeterProgramStatusArchiveRequestListener implements RfnArchiveProce
                         oldStatus);
                 return;
             }
-        }
-        if (newStatus.getStatus() == ProgrammingStatus.FAILED ||
-            newStatus.getStatus() == ProgrammingStatus.CANCELED ||
-            newStatus.getStatus() == ProgrammingStatus.INITIATING) {
-            newStatus.setReportedGuid(oldStatus.getReportedGuid());
-            newStatus.setSource(oldStatus.getSource());
         }
         log.info("Updating meter program status.  \nNew Status {} \nExisting status {}", newStatus, oldStatus);
         meterProgrammingDao.updateMeterProgramStatus(newStatus);

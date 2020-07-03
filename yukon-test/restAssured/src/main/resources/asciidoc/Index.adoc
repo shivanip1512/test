@@ -34,6 +34,3 @@ include::DeviceReading.adoc[]
 == Comm Channel
 include::CommChannel.adoc[]
 
-== Trend
-include::Trend.adoc[]
-

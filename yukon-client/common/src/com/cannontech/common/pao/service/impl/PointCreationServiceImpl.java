@@ -126,8 +126,7 @@ public class PointCreationServiceImpl implements PointCreationService {
                                                        decimalPlaces,
                                                        pointArchiveType,
                                                        pointArchiveInterval,
-                                                       calcPoint,
-                                                       offset);
+                                                       calcPoint);
             
             break;
 

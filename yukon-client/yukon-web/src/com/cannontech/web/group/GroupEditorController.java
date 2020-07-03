@@ -64,7 +64,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeListType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsTreeNode;
-import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableSet;
 
@@ -84,7 +83,6 @@ public class GroupEditorController {
     @Autowired private DeviceGroupComposedDao deviceGroupComposedDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
-    @Autowired private IDatabaseCache databaseCache;
 
     private final int maxToShowImmediately = 10;
     private final int maxGetDevicesSize = 1000;
@@ -551,7 +549,7 @@ public class GroupEditorController {
 
             Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 
-            deviceGroupMemberEditorDao.removeDevices(group, Collections.singleton(databaseCache.getAllPaosMap().get(deviceId)));
+            deviceGroupMemberEditorDao.removeDevicesById(group, Collections.singleton(deviceId));
         } else {
             mav.addObject("errorMessage", "Cannot remove devices from " + group.getFullName());
             return mav;

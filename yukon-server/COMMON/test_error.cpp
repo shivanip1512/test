@@ -287,8 +287,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("No meter program assigned.")
     ("Invalid meter program.")
     ("Meter program not found.")
-    ("Meter program password not valid.")
-    .repeat(12, UnknownErrorHelper(338));
+    .repeat(13, UnknownErrorHelper(337));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {

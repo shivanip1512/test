@@ -1,12 +1,9 @@
 package com.cannontech.database.db.device.lm;
 
-import com.cannontech.common.userpage.dao.UserPageDao;
-import com.cannontech.common.userpage.model.UserPageType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author jdayton
@@ -98,8 +95,6 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException
 {
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getConstraintID());
-	UserPageDao userPageDao = YukonSpringHook.getBean(UserPageDao.class);
-	userPageDao.deleteUserPages(getConstraintID(), UserPageType.PROGRAM_CONSTRAINT);
 }
 
 public final static Integer getNextConstraintID() throws java.sql.SQLException 

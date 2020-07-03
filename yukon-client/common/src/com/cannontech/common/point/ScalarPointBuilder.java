@@ -23,7 +23,6 @@ public abstract class ScalarPointBuilder extends PointBuilder {
     protected Double highLimit2 = null;
     protected Double lowLimit2 = null;
     protected Integer limitDuration2 = null;
-    protected int pointOffset = 0; //no physical point offset unless specified
     
     protected ScalarPointBuilder(int paoId, int pointId, String pointName, boolean isDisabled, PointPropertyValueDao pointPropertyValueDao) {
         super(paoId, pointId, pointName, isDisabled, pointPropertyValueDao);
@@ -83,13 +82,5 @@ public abstract class ScalarPointBuilder extends PointBuilder {
     
     public void setLowReasonability(double lowReasonability) {
         this.lowReasonability = lowReasonability;
-    }
-    
-    /**
-     * Must be a non-negative value.
-     */
-    public void setPointOffset(int pointOffset) {
-        if(pointOffset < 0) throw new IllegalArgumentException("Point Offset cannot be negative.");
-        this.pointOffset = pointOffset;
     }
 }

@@ -3,298 +3,298 @@
 
 ==== Direct Program
 *Request Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Create/http-request.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Create/response-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Create/http-response.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Create/http-response.adoc[]
 
 ==== Ecobee Program
 *Request Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Create/request-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Create/http-request.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Create/response-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Create/http-response.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Create/http-response.adoc[]
 
 ==== Honeywell Program
 *Request Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Create/request-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Create/http-request.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Create/response-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Create/http-response.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Create/http-response.adoc[]
 
 ==== Itron Program
 *Request Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Create/request-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Create/http-request.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Create/response-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Create/http-response.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Create/http-response.adoc[]
 
 ==== SEP Program
 *Request Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepCycleProgram_Create/request-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepCycleProgram_Create/http-request.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepCycleProgram_Create/response-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepCycleProgram_Create/http-response.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepCycleProgram_Create/http-response.adoc[]
 
 ==== MeterDisconnect Program
 *Request Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Create/request-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Create/http-request.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Create/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Create/response-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Create/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Create/http-response.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Create/http-response.adoc[]
 
 === Retrieve
 ==== Direct Program
 *Request URL* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Get/http-request.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Get/response-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Get/http-response.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Get/http-response.adoc[]
 
 ==== Ecobee Program
 *Request URL* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Get/http-request.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Get/response-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Get/http-response.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Get/http-response.adoc[]
 
 ==== Honeywell Program
 *Request URL* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Get/http-request.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Get/response-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Get/http-response.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Get/http-response.adoc[]
 
 ==== Itron Program
 *Request URL* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Get/http-request.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Get/response-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Get/http-response.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Get/http-response.adoc[]
 
 ==== SEP Program
 *Request URL* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Get/http-request.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Get/response-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Get/http-response.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Get/http-response.adoc[]
 
 ==== MeterDisconnect Program
 *Request URL* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Get/http-request.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Get/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Get/response-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Get/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Get/http-response.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Get/http-response.adoc[]
 
 === Update
 ==== Direct Program
 *Request Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Update/request-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Update/http-request.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Update/response-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Update/http-response.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Update/http-response.adoc[]
 
 ==== Ecobee Program
 *Request Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Update/request-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Update/http-request.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Update/response-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Update/http-response.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Update/http-response.adoc[]
 
 ==== Honeywell Program
 *Request Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Update/request-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Update/http-request.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Update/response-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Update/http-response.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Update/http-response.adoc[]
 
 ==== Itron Program
 *Request Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Update/request-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Update/http-request.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Update/response-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Update/http-response.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Update/http-response.adoc[]
 
 ==== SEP Program
 *Request Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Update/request-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Update/http-request.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Update/response-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Update/http-response.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Update/http-response.adoc[]
 
 ==== MeterDisconnect Program
 *Request Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Update/request-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Update/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Update/http-request.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Update/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Update/response-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Update/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Update/http-response.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Update/http-response.adoc[]
 
 === Copy
 
 ==== Direct Program
 *Request Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Copy/request-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Copy/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Copy/http-request.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Copy/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Copy/response-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Copy/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Copy/http-response.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Copy/http-response.adoc[]
 
 ==== Ecobee Program
 *Request Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Copy/request-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Copy/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Copy/http-request.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Copy/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Copy/response-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Copy/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Copy/http-response.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Copy/http-response.adoc[]
 
 ==== Honeywell Program
 *Request Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Copy/request-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Copy/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Copy/http-request.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Copy/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Copy/response-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Copy/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Copy/http-response.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Copy/http-response.adoc[]
 
 ==== Itron Program
 *Request Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Copy/request-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Copy/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Copy/http-request.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Copy/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Copy/response-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Copy/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Copy/http-response.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Copy/http-response.adoc[]
 
 ==== SEP Program
 *Request Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Copy/request-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Copy/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Copy/http-request.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Copy/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Copy/response-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Copy/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Copy/http-response.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Copy/http-response.adoc[]
 
 
 ==== MeterDisconnect Program
 *Request Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Copy/request-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Copy/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Copy/http-request.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Copy/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Copy/response-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Copy/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Copy/http-response.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Copy/http-response.adoc[]
 
 === Delete
 
 ==== Direct Program
 *Request Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Delete/request-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Delete/http-request.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Delete/response-fields.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/DirectProgramApiDoc/Test_DirectProgram_Delete/http-response.adoc[]
+include::{snippets}/DirectProgramSetupApiControllerTest/Test_DirectProgram_Delete/http-response.adoc[]
 
 ==== Ecobee Program
 *Request Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Delete/request-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Delete/http-request.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Delete/response-fields.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/EcobeeProgramApiDoc/Test_EcobeeProgram_Delete/http-response.adoc[]
+include::{snippets}/EcobeeProgramSetupApiControllerTest/Test_EcobeeProgram_Delete/http-response.adoc[]
 
 ==== Honeywell Program
 *Request Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Delete/request-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Delete/http-request.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Delete/response-fields.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/HoneywellProgramApiDoc/Test_HoneywellProgram_Delete/http-response.adoc[]
+include::{snippets}/HoneywellProgramSetupApiControllerTest/Test_HoneywellProgram_Delete/http-response.adoc[]
 
 ==== Itron Program
 *Request Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Delete/request-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Delete/http-request.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Delete/response-fields.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/ItronProgramApiDoc/Test_ItronProgram_Delete/http-response.adoc[]
+include::{snippets}/ItronProgramSetupApiControllerTest/Test_ItronProgram_Delete/http-response.adoc[]
 
 ==== SEP Program
 *Request Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Delete/request-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Delete/http-request.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Delete/response-fields.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/SepProgramApiDoc/Test_SepProgram_Delete/http-response.adoc[]
+include::{snippets}/SepProgramSetupApiControllerTest/Test_SepProgram_Delete/http-response.adoc[]
 
 ==== MeterDisconnect Program
 *Request Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Delete/request-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Delete/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Delete/http-request.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Delete/http-request.adoc[]
 *Response Properties* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Delete/response-fields.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Delete/response-fields.adoc[]
 *Response JSON* 
-include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Delete/http-response.adoc[]
+include::{snippets}/MeterDisconnectProgramSetupApiControllerTest/Test_MeterDisconnectProgram_Delete/http-response.adoc[]
 
 === Supported Gear
 
@@ -302,75 +302,75 @@ include::{snippets}/MeterDisconnectProgramApiDoc/Test_MeterDisconnectProgram_Del
 
 ===== Time Refresh Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_TimeRefreshGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_TimeRefreshGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TimeRefreshGear_Create/http-request.adoc[]
 
 ===== Master Cycle Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_MasterCycleGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_MasterCycleGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MasterCycleGear_Create/http-request.adoc[]
 
 ===== True Cycle Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_TrueCycleGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_TrueCycleGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TrueCycleGear_Create/http-request.adoc[]
 
 ===== Magnitude Cycle Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_MagnitudeCycleGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_MagnitudeCycleGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_MagnitudeCycleGear_Create/http-request.adoc[]
 
 ===== Target Cycle Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_TargetCycleGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_TargetCycleGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_TargetCycleGear_Create/http-request.adoc[]
 
 ===== Latching Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_LatchingGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_LatchingGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_LatchingGear_Create/http-request.adoc[]
 
 ===== Thermostat Ramping
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_ThermostatGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_ThermostatGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_ThermostatGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_ThermostatGear_Create/http-request.adoc[]
 
 ===== Simple Thermostat Ramping
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_SimpleThermostatGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SimpleThermostatGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_SimpleThermostatGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_SimpleThermostatGear_Create/http-request.adoc[]
 
 ===== Beat The Peak Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_BeatThePeakGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_BeatThePeakGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_BeatThePeakGear_Create/http-request.adoc[]
 
 ===== No Control Gear
 *Request Properties* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_NoControlGear_Create/request-fields.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/DirectProgramGearApiDoc/Test_LoadProgram_NoControlGear_Create/http-request.adoc[]
+include::{snippets}/DirectProgramGearSetupApiControllerTest/Test_LoadProgram_NoControlGear_Create/http-request.adoc[]
 
 ==== SEP Program
 
 ===== SEP Temperature Offset Gear
 *Request Properties* 
-include::{snippets}/SepProgramGearApiDoc/Test_LoadProgram_SepTemperatureOffset_Create/request-fields.adoc[]
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_SepTemperatureOffset_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/SepProgramGearApiDoc/Test_LoadProgram_SepTemperatureOffset_Create/http-request.adoc[]
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_SepTemperatureOffset_Create/http-request.adoc[]
 
 ===== No Control
 *Request Properties* 
-include::{snippets}/SepProgramGearApiDoc/Test_LoadProgram_NoControl_Create/request-fields.adoc[]
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_NoControl_Create/request-fields.adoc[]
 *Request JSON* 
-include::{snippets}/SepProgramGearApiDoc/Test_LoadProgram_NoControl_Create/http-request.adoc[]
+include::{snippets}/SepProgramGearSetupApiControllerTest/Test_LoadProgram_NoControl_Create/http-request.adoc[]
 

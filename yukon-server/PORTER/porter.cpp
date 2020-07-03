@@ -38,7 +38,6 @@
 #include "c_port_interface.h"
 #include "mgr_port.h"
 #include "mgr_device.h"
-#include "mgr_meter_programming.h"
 #include "mgr_route.h"
 #include "mgr_config.h"
 #include "mgr_point.h"
@@ -995,27 +994,13 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     return 0;
 }
 
-using amq_cm = Cti::Messaging::ActiveMQConnectionManager;
-
-auto PorterDynamicPaoInfoService  (const amq_cm::MessageDescriptor&) -> std::unique_ptr<amq_cm::SerializedMessage>;
-auto MeterProgramValidationService(const amq_cm::MessageDescriptor&) -> std::unique_ptr<amq_cm::SerializedMessage>;
 
 void registerServices()
 {
+    using Cti::Messaging::ActiveMQConnectionManager;
+    using MessageDescriptor = ActiveMQConnectionManager::MessageDescriptor;
+    using SerializedMessage = ActiveMQConnectionManager::SerializedMessage;
     using Cti::Messaging::ActiveMQ::Queues::InboundQueue;
-
-    amq_cm::registerReplyHandler(
-        InboundQueue::PorterDynamicPaoInfoRequest,
-        PorterDynamicPaoInfoService);
-
-    amq_cm::registerReplyHandler(
-        InboundQueue::MeterProgramValidationRequest,
-        MeterProgramValidationService);
-}
-
-
-auto PorterDynamicPaoInfoService(const amq_cm::MessageDescriptor& md) -> std::unique_ptr<amq_cm::SerializedMessage>
-{
     using Cti::Messaging::Porter::DynamicPaoInfoDurationKeys;
     using Cti::Messaging::Porter::DynamicPaoInfoPercentageKeys;
     using Cti::Messaging::Porter::DynamicPaoInfoTimestampKeys;
@@ -1023,115 +1008,89 @@ auto PorterDynamicPaoInfoService(const amq_cm::MessageDescriptor& md) -> std::un
     using Cti::Messaging::Porter::DynamicPaoInfoResponseMsg;
     using Cti::Messaging::Serialization::MessageSerializer;
 
-    auto req = MessageSerializer<DynamicPaoInfoRequestMsg>::deserialize(md.msg);
-
-    if( ! req )
-    {
-        return nullptr;
-    }
-
-    DynamicPaoInfoResponseMsg rsp;
-
-    rsp.deviceId = req->deviceId;
-
-    static const std::map<DynamicPaoInfoDurationKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> durationKeyLookup{
-        { DynamicPaoInfoDurationKeys::RfnVoltageProfileInterval, CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval },
-        { DynamicPaoInfoDurationKeys::MctIedLoadProfileInterval, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval }};
-
-    for( const auto key : req->durationKeys )
-    {
-        if( const auto mappedKey = Cti::mapFind(durationKeyLookup, key) )
+    ActiveMQConnectionManager::registerReplyHandler(
+        InboundQueue::PorterDynamicPaoInfoRequest,
+        [](const MessageDescriptor &md) -> std::unique_ptr<SerializedMessage>
         {
-            long longValue;
-
-            if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, longValue) )
+            if( auto req = MessageSerializer<DynamicPaoInfoRequestMsg>::deserialize(md.msg) )
             {
-                //  switch per key, since some may be stored as minutes, some as seconds, etc
-                switch( *mappedKey )
+                DynamicPaoInfoResponseMsg rsp;
+
+                rsp.deviceId = req->deviceId;
+
+                static const std::map<DynamicPaoInfoDurationKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> durationKeyLookup{
+                    { DynamicPaoInfoDurationKeys::RfnVoltageProfileInterval, CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval },
+                    { DynamicPaoInfoDurationKeys::MctIedLoadProfileInterval, CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval }};
+
+                for( const auto key : req->durationKeys )
                 {
-                case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
-                    rsp.durationValues.emplace(key, std::chrono::seconds(longValue));
-                    break;
-                case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
-                    rsp.durationValues.emplace(key, std::chrono::minutes(longValue));
-                    break;
+                    if( const auto mappedKey = Cti::mapFind(durationKeyLookup, key) )
+                    {
+                        long longValue;
+
+                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, longValue) )
+                        {
+                            //  switch per key, since some may be stored as minutes, some as seconds, etc
+                            switch( *mappedKey )
+                            {
+                            case CtiTableDynamicPaoInfo::Key_MCT_IEDLoadProfileInterval:
+                                rsp.durationValues.emplace(key, std::chrono::seconds(longValue));
+                                break;
+                            case CtiTableDynamicPaoInfo::Key_RFN_LoadProfileInterval:
+                                rsp.durationValues.emplace(key, std::chrono::minutes(longValue));
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                static const std::map<DynamicPaoInfoTimestampKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> timestampKeyLookup{
+                    { DynamicPaoInfoTimestampKeys::RfnVoltageProfileEnabledUntil, CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil } };
+
+                for( const auto key : req->timestampKeys )
+                {
+                    if( const auto mappedKey = Cti::mapFind(timestampKeyLookup, key) )
+                    {
+                        CtiTime timeValue;
+
+                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, timeValue) )
+                        {
+                            //  presumably all timestamp values are stored as CtiTimes
+                            rsp.timestampValues.emplace(key,
+                                    std::chrono::system_clock::time_point(
+                                            std::chrono::seconds(timeValue.seconds())));
+                        }
+                    }
+                }
+
+                static const std::map<DynamicPaoInfoPercentageKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> percentageKeyLookup {
+                    { DynamicPaoInfoPercentageKeys::MeterProgrammingProgress, CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress } };
+
+                for( const auto key : req->percentageKeys )
+                {
+                    if( const auto mappedKey = Cti::mapFind(percentageKeyLookup, key) )
+                    {
+                        double percentage;
+
+                        if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, percentage) )
+                        {
+                            rsp.percentageValues.emplace(key, percentage);
+                        }
+                    }
+                }
+
+                auto serializedRsp = MessageSerializer<DynamicPaoInfoResponseMsg>::serialize(rsp);
+
+                if( !serializedRsp.empty() )
+                {
+                    return std::make_unique<SerializedMessage>(std::move(serializedRsp));
                 }
             }
-        }
-    }
 
-    static const std::map<DynamicPaoInfoTimestampKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> timestampKeyLookup{
-        { DynamicPaoInfoTimestampKeys::RfnVoltageProfileEnabledUntil, CtiTableDynamicPaoInfo::Key_RFN_VoltageProfileEnabledUntil } };
-
-    for( const auto key : req->timestampKeys )
-    {
-        if( const auto mappedKey = Cti::mapFind(timestampKeyLookup, key) )
-        {
-            CtiTime timeValue;
-
-            if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, timeValue) )
-            {
-                //  presumably all timestamp values are stored as CtiTimes
-                rsp.timestampValues.emplace(key,
-                        std::chrono::system_clock::time_point(
-                                std::chrono::seconds(timeValue.seconds())));
-            }
-        }
-    }
-
-    static const std::map<DynamicPaoInfoPercentageKeys, CtiTableDynamicPaoInfo::PaoInfoKeys> percentageKeyLookup {
-        { DynamicPaoInfoPercentageKeys::MeterProgrammingProgress, CtiTableDynamicPaoInfo::Key_RFN_MeterProgrammingProgress } };
-
-    for( const auto key : req->percentageKeys )
-    {
-        if( const auto mappedKey = Cti::mapFind(percentageKeyLookup, key) )
-        {
-            double percentage;
-
-            if( Cti::DynamicPaoInfoManager::getInfo(req->deviceId, *mappedKey, percentage) )
-            {
-                rsp.percentageValues.emplace(key, percentage);
-            }
-        }
-    }
-
-    auto serializedRsp = MessageSerializer<DynamicPaoInfoResponseMsg>::serialize(rsp);
-
-    if( serializedRsp.empty() )
-    {
-        return nullptr;
-    }
-
-    return std::make_unique<amq_cm::SerializedMessage>(std::move(serializedRsp));
+            return nullptr;
+        });
 }
 
-auto MeterProgramValidationService(const amq_cm::MessageDescriptor& md) -> std::unique_ptr<amq_cm::SerializedMessage>
-{
-    using Cti::Messaging::Porter::MeterProgramValidationRequestMsg;
-    using Cti::Messaging::Porter::MeterProgramValidationResponseMsg;
-    using Cti::Messaging::Serialization::MessageSerializer;
-
-    auto req = MessageSerializer<MeterProgramValidationRequestMsg>::deserialize(md.msg);
-
-    if( ! req )
-    {
-        return nullptr;
-    }
-
-    MeterProgramValidationResponseMsg rsp;
-
-    rsp.meterProgramGuid = req->meterProgramGuid;
-    rsp.status = Cti::MeterProgramming::gMeterProgrammingManager->isProgramValid(req->meterProgramGuid);
-
-    auto serializedRsp = MessageSerializer<MeterProgramValidationResponseMsg>::serialize(rsp);
-
-    if( serializedRsp.empty() )
-    {
-        return nullptr;
-    }
-
-    return std::make_unique<amq_cm::SerializedMessage>(std::move(serializedRsp));
-}
 
 /*
  *  called in an atexit() routine to clean up the schtick.

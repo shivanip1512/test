@@ -45,7 +45,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PointDataTracker pointDataTracker; 
-    private static final Logger rfnLogger = YukonLogManager.getRfnLogger();
 
     private AtomicInteger processedArchiveRequest = new AtomicInteger();
     
@@ -347,7 +346,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
         YukonJmsTemplate jmsTemplate = getJmsTemplate();
-        rfnLogger.info("<<< Sent " + response);
+        log.info("Sending Acknowledgement response=" + response + " queueName=" + jmsTemplate.getDefaultDestinationName());
         jmsTemplate.convertAndSend(response);
     }
 

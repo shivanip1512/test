@@ -275,20 +275,9 @@ yukon.mapping = (function () {
         },
         
         makeDeviceIconLarger: function(icon) {
-            var style = icon.getStyle();
-            if (style instanceof Array) {
-                var newStyles = [];
-                icon.getStyle().forEach(function (style) {
-                    var largerStyle = style.clone();
-                    largerStyle.getImage().setScale(_largerScale);
-                    newStyles.push(largerStyle);
-                });
-                icon.setStyle(newStyles);
-            } else {
-                var largerStyle = icon.getStyle().clone();
-                largerStyle.getImage().setScale(_largerScale);
-                icon.setStyle(largerStyle);
-            }
+            var largerStyle = icon.getStyle().clone();
+            largerStyle.getImage().setScale(_largerScale);
+            icon.setStyle(largerStyle);
         },
         
         setScaleForDevice: function(feature) {

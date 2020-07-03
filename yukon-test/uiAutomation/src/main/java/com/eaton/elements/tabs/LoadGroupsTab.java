@@ -14,6 +14,6 @@ public class LoadGroupsTab extends TabElement{
     }
 
     public SelectBoxElement getLoadGroups() {
-        return new SelectBoxElement(this.driverExt, this.getTabPanelByName("Load Groups"));
+        return new SelectBoxElement(this.driverExt, getTabPanel());
     }
 }

@@ -543,6 +543,6 @@
 <entry key="yukon.common.roleProperty.MANAGE_NOTES">Manage Notes</entry>
 <entry key="yukon.common.roleProperty.MANAGE_NOTES.description">Controls access to view, create, edit, or delete notes.</entry>
 <entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE">Manage Infrastructure</entry>
-<entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE.description">Controls access to manage infrastructure devices. i.e. RF Gateways, Comm Channels.</entry>
+<entry key="yukon.common.roleProperty.MANAGE_INFRASTRUCTURE.description">Controls access to manage infrastructure devices. i.e. RF Gateways.</entry>
 
 </properties>

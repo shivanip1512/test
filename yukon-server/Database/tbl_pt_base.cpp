@@ -45,9 +45,7 @@ void CtiTablePointBase::DecodeDatabaseReader(Cti::RowReader &rdr)
    _alarmDisable = ciStringEqual(tmpStr, "y");
 
    rdr                  >> tmpStr;
-   _pseudoPoint = !_pointOffset || ciStringEqual(tmpStr, "p")
-                     || _type == CalculatedPointType
-                     || _type == CalculatedStatusPointType;
+   _pseudoPoint = !_pointOffset || ciStringEqual(tmpStr, "p");
 
    rdr                 >> tmpStr;
    _archiveType = resolvePointArchiveType(tmpStr);

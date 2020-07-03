@@ -89,7 +89,6 @@ import com.cannontech.development.model.DeviceArchiveRequestParameters;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterInfoStatusReport;
 import com.cannontech.development.model.RfnTestMeterReading;
-import com.cannontech.development.model.RfnTestOutageRestoreEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.development.service.impl.DRReport;
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
@@ -136,7 +135,6 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
@@ -517,7 +515,6 @@ public class NmIntegrationController {
 
     @RequestMapping("viewEventArchiveRequest")
     public String viewEventArchiveRequest(ModelMap model) {
-        model.addAttribute("restoreOutageEvent", new RfnTestOutageRestoreEvent());
         return setupEventAlarmAttributes(model, new RfnTestEvent());
     }
 
@@ -812,7 +809,6 @@ public class NmIntegrationController {
         model.addAttribute("meterStatusDetails", meterStatusDetails);
         model.addAttribute("dataTypes", dataTypes);
         model.addAttribute("event", event);
-        model.addAttribute("outageRestoreEventTypes", ImmutableList.of(RfnConditionType.OUTAGE, RfnConditionType.RESTORE));
         return "rfn/viewEventArchive.jsp";
     }
 
@@ -854,25 +850,18 @@ public class NmIntegrationController {
     @RequestMapping("sendEvent")
     public String sendEvent(@ModelAttribute RfnTestEvent event, ModelMap model, FlashScope flashScope) {
         int numEventsSent = rfnEventTestingService.sendEventsAndAlarms(event);
-        addNumEventsSend(flashScope, numEventsSent);
+        
+        if (numEventsSent > 0) {
+            MessageSourceResolvable createMessage = 
+                    new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent", numEventsSent);
+            flashScope.setConfirm(createMessage);
+        } else {
+            MessageSourceResolvable createMessage = 
+                    new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent", numEventsSent);
+            flashScope.setError(createMessage);
+        }
+        
         return setupEventAlarmAttributes(model, event);
-    }
-
-    @RequestMapping("sendOutageRestore")
-    public String sendOutageRestore(@ModelAttribute RfnTestOutageRestoreEvent event, ModelMap model, FlashScope flashScope) {
-        int numEventsSent = rfnEventTestingService.sendOutageAndRestoreEvents(event);
-        addNumEventsSend(flashScope, numEventsSent);
-        model.addAttribute("restoreOutageEvent", event);
-        return setupEventAlarmAttributes(model, new RfnTestEvent());
-    }
-    
-    /**
-     * Adds message to flash scope  with number of events sent
-     */
-    private void addNumEventsSend(FlashScope flashScope, int numEventsSent) {
-        MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.numEventsSent",
-                numEventsSent);
-        flashScope.setError(createMessage);
     }
 
     @RequestMapping("calc-stress-test")
