@@ -511,7 +511,7 @@ public class SiteMapDetailsTests extends SeleniumTestSetup {
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS})
     public void siteMapDetails_pageCommChannelsLinkCorrect() {
     	final String EXPECTED_ANCHOR = "Comm Channels";
-        final String EXPECTED_LINK = Urls.Assets.COMM_CHANNELS;
+        final String EXPECTED_LINK = Urls.Assets.COMM_CHANNELS_LIST;
         final int POSITION = 1;
     	
         assertThat(siteMapPage.getAssetsSectionSimpleList().getSimpleListItemAnchorTextAt(POSITION)).isEqualTo(EXPECTED_ANCHOR);
