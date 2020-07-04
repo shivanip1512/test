@@ -19,6 +19,10 @@ yukon.tools.trends = (function () {
     _labels,
     _rangeSelectorButtons,
     
+    _initDatePickerInResetPeakPopup = function () {
+        yukon.ui.initDateTimePickers().ancestorInit($(".js-reset-peak-popup"));
+    },
+    
     _updateChart = function(blockPage) {
 
         if (blockPage) {
@@ -156,6 +160,62 @@ yukon.tools.trends = (function () {
             $(document).on("yukon:tools:trend:delete", function (event) {
                 yukon.ui.blockPage();
                 $("#js-delete-trend-form").submit();
+            });
+            
+            $(document).on("yukon:tools:trend:resetPeakPopupLoaded", function (event) {
+                _initDatePickerInResetPeakPopup();
+            });
+            
+            $(document).on("yukon:tools:trend:resetPeak", function (event) {
+                var form = $(event.target).find(".js-reset-peak-form");
+                       $('.js-reset-peak-date').removeAttr("disabled");
+                       /*startDate = $("<input type='hidden' name='startDate'/>");
+                       startDate.val($(".js-reset-peak-date").val());
+                       form.append(startDate);*/
+                form.ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        $(".js-reset-peak-popup").dialog('close');
+                        $("#reset-peak-success-message").empty();
+                        $("#reset-peak-error-message").empty();
+                        $("#reset-peak-success-message").toggleClass("dn", !data.hasOwnProperty("successMessage"));
+                        $("#reset-peak-error-message").toggleClass("dn", !data.hasOwnProperty("errorMessage"));
+                        if (data.hasOwnProperty("successMessage")) {
+                            $("#reset-peak-success-message").addMessage({
+                                message: data.successMessage,
+                                messageClass: 'success'
+                            });
+                        }
+                        if (data.hasOwnProperty("errorMessage")) {
+                            $("#reset-peak-error-message").addMessage({
+                                message: data.errorMessage,
+                                messageClass: 'error'
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $(".js-reset-peak-popup").empty();
+                        $(".js-reset-peak-popup").html(xhr.responseText);
+                        _initDatePickerInResetPeakPopup();
+                        $(".js-reset-peak-date").prop("disabled", !($(".js-reset-peak-duration").val() === $(".js-enum-val-selected-date").val()));
+                    }
+                });
+            });
+            
+            $(document).on("click", ".js-reset-peak-help-icon", function () {
+                $('.js-help-text-message').removeClass('dn');
+            });
+            
+            $(document).on("change", ".js-reset-peak-duration", function () {
+                var selectedDuration = $(this).val(),
+                      datePicker = $(".js-reset-peak-date");
+                if (selectedDuration === $(".js-enum-val-today").val()) {
+                    datePicker.val($(".js-todays-date-val").val());
+                } else if (selectedDuration === $(".js-enum-val-first-day-of-month").val()) {
+                    datePicker.val($(".js-first-date-of-month-val").val());
+                } else if (selectedDuration === $(".js-enum-val-first-day-of-year").val()) {
+                    datePicker.val($(".js-first-date-of-year-val").val());
+                }
+                datePicker.prop("disabled", !(selectedDuration === $(".js-enum-val-selected-date").val()));
             });
             
             /** Pause/Resume updating on updater button clicks. */

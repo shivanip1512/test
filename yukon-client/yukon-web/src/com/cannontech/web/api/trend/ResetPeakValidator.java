@@ -17,9 +17,7 @@ public class ResetPeakValidator extends SimpleValidator<ResetPeakModel> {
     @Override
     protected void doValidation(ResetPeakModel resetPeakModel, Errors errors) {
         String trendId = ServletUtils.getPathVariable("id");
-        if (!peakValidatorHelper.checkIfResetPeakApplicable(Integer.valueOf(trendId))) {
-            errors.reject("yukon.web.error.resetPeak.notApplicable");
-        }
+        peakValidatorHelper.validateIfResetPeakIsApplication(Integer.parseInt(trendId), errors);
         peakValidatorHelper.validateStartDate(resetPeakModel.getStartDate(), errors);
     }
 
