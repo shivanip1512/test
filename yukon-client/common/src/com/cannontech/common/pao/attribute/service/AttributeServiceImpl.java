@@ -32,6 +32,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.dao.AttributeDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -64,7 +65,6 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -93,7 +93,19 @@ public class AttributeServiceImpl implements AttributeService {
     @Autowired private PointService pointService;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-
+    @Autowired private AttributeDao attributeDao;
+    
+    @Override
+    public Map<AttributeGroup, List<Attribute>> getAllGroupedAttributes(YukonUserContext context){
+        Map<AttributeGroup, Set<Attribute>> groupedAttributes = new HashMap<>();
+        BuiltInAttribute.getAllGroupedAttributes().forEach((k,v) -> groupedAttributes.put(k, Sets.newHashSet(v)));
+        Set<Attribute> customAttributes =  Sets.newHashSet(attributeDao.getCustomAttributes());
+        if(!customAttributes.isEmpty()) {
+            groupedAttributes.put(AttributeGroup.CUSTOM, customAttributes);
+        }
+        return objectFormattingService.sortDisplayableValues(groupedAttributes, context);
+    }
+    
     @Override
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         try {

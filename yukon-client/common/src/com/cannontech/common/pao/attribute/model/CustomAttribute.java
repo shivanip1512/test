@@ -2,31 +2,47 @@ package com.cannontech.common.pao.attribute.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.context.MessageSourceResolvable;
 
-public class CustomAttribute {
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
+public class CustomAttribute implements Attribute {
     private int id;
     private String name;
-    private String key = "yukon.common.attribute.customAttribute.";
-        
+
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
-    public String getKey() {
-        return key + id;
+
+    public String getI18Key() {
+        return "yukon.common.attribute.customAttribute." + id;
     }
-    
+
+    @Override
+    public String getKey() {
+        return String.valueOf(id);
+    }
+
+    @Override
+    public MessageSourceResolvable getMessage() {
+        return YukonMessageSourceResolvable.createDefaultWithoutCode(name);
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE)
-            + System.getProperty("line.separator");
+                + System.getProperty("line.separator");
     }
 }

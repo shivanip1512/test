@@ -51,6 +51,7 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
@@ -92,6 +93,7 @@ public class DataExporterFormatController {
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private AttributeService attributeService;
 
     @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -192,8 +194,7 @@ public class DataExporterFormatController {
         
         model.addAttribute("attribute", new ExportAttribute());
         
-        Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
-                objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+        Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
         model.addAttribute("groupedAttributes", groupedAttributes);
         model.addAttribute("dataSelection", DataSelection.values());
         
@@ -212,8 +213,7 @@ public class DataExporterFormatController {
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             
-            Map<AttributeGroup, List<BuiltInAttribute>> groupedAttributes = 
-                    objectFormattingService.sortDisplayableValues(BuiltInAttribute.getAllGroupedAttributes(), userContext);
+            Map<AttributeGroup, List<Attribute>> groupedAttributes = attributeService.getAllGroupedAttributes(userContext);
             model.addAttribute("groupedAttributes", groupedAttributes);
             model.addAttribute("dataSelection", DataSelection.values());
             

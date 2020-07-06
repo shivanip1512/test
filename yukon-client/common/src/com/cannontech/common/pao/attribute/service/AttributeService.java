@@ -279,4 +279,9 @@ public interface AttributeService {
      * Combines create and find point for attribute
      */
     LitePoint createAndFindPointForAttribute(YukonPao pao, BuiltInAttribute attribute);
+
+    /**
+     * Returns a list of grouped attributes, including custom attributes
+     */
+    Map<AttributeGroup, List<Attribute>> getAllGroupedAttributes(YukonUserContext context);
 }
