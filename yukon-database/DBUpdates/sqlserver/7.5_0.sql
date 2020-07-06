@@ -602,6 +602,12 @@ UPDATE DeviceGroup SET Permission = 'NOEDIT_NOMOD'
 INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', GETDATE());
 /* @end YUK-22443 */
 
+/* @start YUK-22328 */
+INSERT INTO YukonRoleProperty VALUES(-20022,-200,'Manage Attributes','NO_ACCESS','Controls access to manage all user defined attributes.');
+
+INSERT INTO DBUpdates VALUES ('YUK-22328', '7.5.0', GETDATE());
+/* @end YUK-22328 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
