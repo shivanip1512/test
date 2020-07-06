@@ -21,6 +21,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -57,14 +59,17 @@ import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.services.systemDataPublisher.service.model.DataCompletenessSummary;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     private static final Logger log = YukonLogManager.getLogger(RawPointHistoryDaoImpl.class);
@@ -74,6 +79,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
+    @Autowired private DeviceGroupService deviceGroupService;
     
     YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>> rphYukonRowMapper =
         new YukonRowMapper<Map.Entry<Integer, PointValueQualityHolder>>() {
@@ -1186,5 +1192,76 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 OrderBy.TIMESTAMP, value, excludeQualities);
 
         return Maps.transformValues(limitedStuff.asMap(), Iterables::getOnlyElement);
+    }
+    /**
+     * This method generates device group SQL where clause
+     */
+    private SqlFragmentSource getDeviceGroupSql(DeviceGroup deviceGroup) {
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService
+                .getDeviceGroupSqlWhereClause(Collections.singleton(deviceGroup), "pao.PaObjectId");
+        return groupSqlWhereClause;
+    }
+
+    @Override
+    public DataCompletenessSummary getDataCompletenessRecords(DeviceGroup deviceGroup, Range<Date> dateRange,
+            ImmutableSet<PaoType> allPaoTypes) {
+        // These 4 RFN electric meters belongs to RFN530S4 family which have Usage attribute with point offset 3
+        // while other RFN electric meters have offset 1
+        ImmutableSet<PaoType> rfnTypes530S4 = ImmutableSet.of(
+                PaoType.RFN530S4EAX,
+                PaoType.RFN530S4EAXR,
+                PaoType.RFN530S4ERX,
+                PaoType.RFN530S4ERXR);
+        DataCompletenessSummary records = new DataCompletenessSummary();
+        // To deal with special kind for RFN530S4 types, we need to get its actual count with offset value 3
+        if (allPaoTypes.containsAll(rfnTypes530S4)) {
+            records.add(getCountOfReadings(deviceGroup, dateRange, rfnTypes530S4, 3));
+        }
+        // This gives paoTypes which do not have the set of Special RFN530S4 paotypes
+        ImmutableSet<PaoType> paoTypes = ImmutableSet.copyOf(Sets.difference(allPaoTypes, rfnTypes530S4));
+        // This list will be passed to get its actual count with offset value 1
+        records.add(getCountOfReadings(deviceGroup, dateRange, paoTypes, 1));
+        return records;
+    }
+    /**
+     * TODO : This method will be improve by removing hard coded value of point offset, 
+     *        deal with Special RFN whose Offset = 3 and also remove additional SQL for RF meter types under YUK-22341
+     * This method returns the list of counts of devices which are reported usage data every hour within 
+     * the date Range for particular PAO types and point offset.  
+     */
+
+    private DataCompletenessSummary getCountOfReadings(DeviceGroup deviceGroup, Range<Date> dateRange,
+            ImmutableSet<PaoType> paoTypesList, int pointOffset) {
+
+        SqlFragmentSource groupSqlWhereClause = getDeviceGroupSql(deviceGroup);
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        String timeStampFormat = "AND FORMAT(TimeStamp, 'mm:ss') = '00:00') AS";
+        if (databaseVendor.isOracle()) {
+            timeStampFormat = "AND TO_CHAR(TimeStamp, 'mm:ss') = '00:00')";
+        }
+        final DataCompletenessSummary summary = new DataCompletenessSummary();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) AS Actual,");
+        sql.append("COUNT(DISTINCT pao.PaobjectId) AS PaoCount FROM (");
+        sql.append("    SELECT DISTINCT p.PaObjectId, rph.PointId, TimeStamp, Value, Quality");
+        sql.append("    FROM RawPointHistory rph");
+        sql.append("    JOIN Point p ON rph.PointId = p.PointId");
+        sql.append("    AND PointType").eq_k(PointType.Analog);
+        sql.append("    AND PointOffset").eq(pointOffset);
+        appendTimeStampClause(sql, dateRange.translate(CtiUtilities.INSTANT_FROM_DATE));
+        sql.append(timeStampFormat);
+        sql.append("    distinctRph");
+        sql.append("JOIN YukonPaObject pao ON pao.PaObjectId = distinctRph.PaObjectId");
+        sql.append("WHERE").appendFragment(groupSqlWhereClause);
+        sql.append("AND pao.Type").in_k(paoTypesList);
+        yukonTemplate.query(sql, new YukonRowCallbackHandler() {
+
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                summary.setRecordCount(rs.getInt("Actual"));
+                summary.setPaoCount(rs.getInt("PaoCount"));
+            }
+        });
+        return summary;
     }
 }

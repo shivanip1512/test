@@ -92,6 +92,11 @@ public class GatewayDetailController {
         model.addAttribute("numLayers", 1);
         model.addAttribute("isVirtualGateway", gateway.getPaoIdentifier().getPaoType() == PaoType.VIRTUAL_GATEWAY);
         
+        //Needed for mapping
+        model.addAttribute("gatewayPaoTypes", PaoType.getRfGatewayTypes());
+        model.addAttribute("relayPaoTypes", PaoType.getRfRelayTypes());
+        model.addAttribute("wifiPaoTypes", PaoType.getWifiTypes());
+        
         model.addAttribute("mileValues", NearbyMiles.values());
         
         return "gateways/detail.jsp";

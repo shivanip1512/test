@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -773,7 +774,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
 
         PointData pointData = new PointData();
-        pointData = new PointData();
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setValue(value);

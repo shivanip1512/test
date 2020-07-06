@@ -85,6 +85,7 @@
 <entry key="yukon.common.dashesTwo">--</entry>
 <entry key="yukon.common.date">Date</entry>
 <entry key="yukon.common.dateRange">Date Range</entry>
+<entry key="yukon.common.dateTime">Date/Time</entry>
 <entry key="yukon.common.day">Day</entry>
 <entry key="yukon.common.default">(default)</entry>
 <entry key="yukon.common.degree">°</entry>
@@ -118,6 +119,7 @@
 <entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
 <entry key="yukon.common.download">Download</entry>
 <entry key="yukon.common.edit">Edit</entry>
+<entry key="yukon.common.editWithName">Edit {0}</entry>
 <entry key="yukon.common.email">Email</entry>
 <entry key="yukon.common.email.address">Email Address</entry>
 <entry key="yukon.common.email.send">Send Email</entry>
@@ -212,6 +214,7 @@
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.on">On</entry>
 <entry key="yukon.common.or">or</entry>
+<entry key="yukon.common.otherActions">Other Actions</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
 <entry key="yukon.common.pageTitle">Energy Services Operations Center</entry>
 <entry key="yukon.common.pao.info.error.name.required">Name is required.</entry>
@@ -269,6 +272,7 @@
 <entry key="yukon.common.selectGroups">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selector.selectOne">-- Select One --</entry>
+<entry key="yukon.common.selectPointTypes">Select Point Type(s)</entry>
 <entry key="yukon.common.sendCommand">Send Command</entry>
 <entry key="yukon.common.settings">Settings</entry>
 <entry key="yukon.common.serialNumber">Serial Number</entry>
@@ -352,6 +356,7 @@
 <entry key="yukon.common.unavailable">Unavailable</entry>
 <entry key="yukon.common.unknown">Unknown</entry>
 <entry key="yukon.common.value">Value/State</entry>
+<entry key="yukon.common.valueTxt">Value</entry>
 <entry key="yukon.common.view">view</entry>
 <entry key="yukon.common.viewAll">View All</entry>
 <entry key="yukon.common.viewDetails">View Details</entry>
@@ -363,4 +368,7 @@
 <entry key="yukon.common.yes">Yes</entry>
 <entry key="yukon.common.units.ms">ms</entry>
 <entry key="yukon.common.units.sec">sec</entry>
+
+<entry key="yukon.common.save.success">{0} saved successfully.</entry>
+<entry key="yukon.common.delete.success">{0} deleted successfully.</entry>
 </properties>

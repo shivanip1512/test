@@ -8,8 +8,11 @@ import org.springframework.validation.ValidationUtils;
 
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.web.tools.points.model.LitePointModel;
 import com.google.common.collect.ImmutableList;
 
@@ -31,7 +34,7 @@ public class PointValidationUtil extends ValidationUtils {
                  *  2. If the current operation is point edit and there exists any other point (other than the current 
                  *  one) with the same name attached to the PAO, we should not proceed with the operation.
                  */
-                if (isCopyOrCreate || (pointOnPao.getPointID() != pointModel.getPointId())) {
+                if (isCopyOrCreate || (pointModel.getPointId() != null && pointOnPao.getPointID() != pointModel.getPointId())) {
                     errors.rejectValue(fieldName, "yukon.web.error.nameConflict");
                 }
             }
@@ -68,7 +71,7 @@ public class PointValidationUtil extends ValidationUtils {
                      *  2. If the current operation is point edit and there exists any other point (other than the current 
                      *  one) with the same name attached to the PAO, we should not proceed with the operation.
                      */
-                    if (isCopyOrCreate || (pointOnPao.getPointID() != pointModel.getPointId())) {
+                    if (isCopyOrCreate || (pointModel.getPointId() != null && pointOnPao.getPointID() != pointModel.getPointId())) {
                         List<Object> arguments = ImmutableList.of(pointOnPao.getPointName());
                         errors.rejectValue(fieldName, baseKey + ".pointOffset", arguments.toArray(),
                             "Invalid point offset");
@@ -78,4 +81,40 @@ public class PointValidationUtil extends ValidationUtils {
         }
     }
 
+    /**
+     * Check if pointType is matched with the pointObject retrieved.
+     */
+    public void checkIfPointTypeChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
+        if (!isCreationOperation && litePointModel.getPointId() != null) {
+            PointBase pointBase = pointDao.get(litePointModel.getPointId());
+            if (litePointModel.getPointType() != null && litePointModel.getPointType() != PointType.getForString(pointBase.getPoint().getPointType())) {
+                errors.rejectValue("pointType", "yukon.web.api.error.pointTypeMismatch",
+                        new Object[] { litePointModel.getPointType(), pointBase.getPoint().getPointType(), litePointModel.getPointId() }, "");
+            }
+        }
+    }
+
+    /**
+     * Check if paoId is matched with the pointObject retrieved.
+     */
+    public void checkIfPaoIdChanged(Errors errors, LitePointModel litePointModel, boolean isCreationOperation) {
+        if (!isCreationOperation && litePointModel.getPointId() != null) {
+            PointBase pointBase = pointDao.get(litePointModel.getPointId());
+            if (litePointModel.getPaoId() != null && !litePointModel.getPaoId().equals(pointBase.getPoint().getPaoID())) {
+                errors.rejectValue("paoId", "yukon.web.api.error.paoIdMismatch",
+                        new Object[] { litePointModel.getPaoId(), pointBase.getPoint().getPaoID() }, "");
+            }
+        }
+    }
+
+    /**
+     * Check if provided pointId is valid or not.
+     */
+    public void validatePointId(Errors errors, String field, Integer pointId, String fieldName) {
+        try {
+            pointDao.getLitePoint(pointId);
+        } catch (NotFoundException ex) {
+            errors.rejectValue(field, "yukon.web.modules.dr.setup.error.pointId.doesNotExist", new Object[] { fieldName }, "");
+        }
+    }
 }

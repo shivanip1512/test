@@ -69,7 +69,11 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         return false;
     }
-
+    
+    /**
+     * @deprecated - Use {LINK #checkIsBlank(Errors errors, String field, String fieldValue, String messageArg, boolean fieldAllowsNull)} 
+     */
+   // @Deprecated(since="7.5", forRemoval=true)
     public static boolean checkIsBlank(Errors errors, String field, String fieldValue, boolean fieldAllowsNull) {
         // Skips error message when the field allows null and the field value is null,
         // otherwise validates using isBlank.
@@ -163,21 +167,18 @@ public class YukonValidationUtils extends ValidationUtils {
     }
 
     /**
-     * Check to ensure that the given value is within the given range, checking inclusive/exclusive based off Range.
+     * Check to ensure that the given value is between the given range, expects a fully inclusive Range.
      */
-    public static <T extends Comparable<T>> void checkRange(Errors errors, String field, T fieldValue, Range<T> range, boolean required) {
-        if (fieldValue == null) {
-            if (required) {
-                errors.rejectValue(field, "yukon.web.error.required", "Field is required");
-            }
+    public static <T extends Comparable<T>> void checkRange(Errors errors, String field, String fieldname, T fieldValue,
+            Range<T> range, boolean required) {
+        if (fieldValue == null && !required) {
             return;
         }
 
-        if (fieldValue != null && !range.intersects(fieldValue)) {
-            // using outOfRange for error message, could improve to something that better explains any inclusive/exclusive requirements as well
-            errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { range.isIncludesMinValue() ? 1 : 0, range.getMin(),
-                                                                                         range.isIncludesMaxValue() ? 1 : 0, range.getMax() },
-                                                                                         "Must be " + range.toString() + ".");
+        if (fieldValue == null || (fieldValue != null && !range.intersects(fieldValue))) {
+           
+            errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { fieldname, range.getMin(),
+                    range.getMax() }, "");
         }
     }
 
@@ -300,18 +301,21 @@ public class YukonValidationUtils extends ValidationUtils {
        }
    }
     
-    public static void validatePort(Errors errors, String field, String fieldValue, String errorMsg) {
-        rejectIfEmptyOrWhitespace(errors, field, errorMsg);
-        if (!errors.hasFieldErrors(field)) {
-            try {
-                 Integer portID = Integer.valueOf(fieldValue);
-                 checkRange(errors, field, portID, 1, 65535, true);
-            } catch (Exception e) {
-                errors.rejectValue(field, "yukon.web.error.invalidPort");
+    public static void validatePort(Errors errors, String field, String fieldName, String fieldValue) {
+        if (!StringUtils.isBlank(fieldValue)) {
+            if (!errors.hasFieldErrors(field)) {
+                Range<Integer> range = Range.inclusive(1, 65535);
+                try {
+                    Integer portID = Integer.valueOf(fieldValue);
+                    checkRange(errors, field, fieldName, Integer.valueOf(portID), range, true);
+                } catch (Exception e) {
+                    errors.rejectValue(field, "yukon.web.error.outOfRangeObject", new Object[] { fieldName, range.getMin(),
+                            range.getMax() }, "");
+                }
             }
         }
     }
-    
+  
     /* Validate string for exact length. */
     public static void checkExactLength(String field, Errors errors, String fieldValue, String fieldName,
             int stringLength) {
@@ -333,6 +337,21 @@ public class YukonValidationUtils extends ValidationUtils {
         if (fieldValue == null) {
             errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { fieldName }, "");
         }
+    }
+    
+    /**
+     * FieldValue must be not empty.
+     * @param field - model object name
+     * @param fieldValue - value of field
+     * @param messageArg - field name text for error message
+     * @param fieldAllowsNull
+     */
+    public static boolean checkIsBlank(Errors errors, String field, String fieldValue, String messageArg, boolean fieldAllowsNull) {
+        if (!(fieldAllowsNull && fieldValue == null) && StringUtils.isBlank(fieldValue)) {
+            errors.rejectValue(field, "yukon.web.error.fieldrequired", new Object[] { messageArg }, "");
+            return true;
+        }
+        return false;
     }
 }
 

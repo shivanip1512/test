@@ -158,7 +158,7 @@ public class UdpTerminalServerApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Cannot be blank."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "name", "Name is required."),
                 "Expected code in response is not correct");
     }
 
@@ -197,7 +197,7 @@ public class UdpTerminalServerApiTest {
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "name",
-                        "Cannot be blank or include any of the following characters: / \\ , ' \" |"),
+                        "Name must not contain any of the following characters: / \\ , ' \" |"),
                 "Expected code in response is not correct");
     }
 
@@ -216,7 +216,7 @@ public class UdpTerminalServerApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "portNumber", "Must be between 1 and 65,535."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "portNumber", "Port Number must be between 1 and 65,535."),
                 "Expected code in response is not correct");
     }
 
@@ -234,7 +234,7 @@ public class UdpTerminalServerApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "portNumber", "Port is required."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "portNumber", "Port Number must be between 1 and 65,535."),
                 "Expected code in response is not correct");
     }
 
@@ -334,7 +334,7 @@ public class UdpTerminalServerApiTest {
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "sharing.sharedSocketNumber",
-                        "Must be between 1 and 65,535."),
+                "Socket Number must be between 1 and 65,535."),
                 "Expected code in response is not correct");
     }
 
@@ -354,8 +354,8 @@ public class UdpTerminalServerApiTest {
                 "Expected message should be - Validation error");
         assertTrue(
                 ValidationHelper.validateFieldError(createResponse, "sharing.sharedSocketNumber",
-                        "Must be between 1 and 65,535."),
-                "Expected code in response is not correct");
+                        "Socket Number must be between 1 and 65,535."),
+                        "Expected code in response is not correct");
     }
     
     /**
@@ -380,15 +380,15 @@ public class UdpTerminalServerApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Pre Tx Wait must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "RTS To Tx Wait must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Post Tx Wait must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Receive Data Wait must be between 0 and 1,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Additional Time Out must be between 0 and 999."),
                 "Expected code in response is not correct");
     }
 
@@ -414,15 +414,15 @@ public class UdpTerminalServerApiTest {
         assertTrue(createResponse.statusCode() == 422, "Status code should be 422");
         assertTrue(ValidationHelper.validateErrorMessage(createResponse, "Validation error"),
                 "Expected message should be - Validation error");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.preTxWait", "Pre Tx Wait must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "Must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.rtsToTxWait", "RTS To Tx Wait must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Must be between 0 and 10,000,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.postTxWait", "Post Tx Wait must be between 0 and 10,000,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Must be between 0 and 1,000."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.receiveDataWait", "Receive Data Wait must be between 0 and 1,000."),
                 "Expected code in response is not correct");
-        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Must be between 0 and 999."),
+        assertTrue(ValidationHelper.validateFieldError(createResponse, "timing.extraTimeOut", "Additional Time Out must be between 0 and 999."),
                 "Expected code in response is not correct");
     }
 }
