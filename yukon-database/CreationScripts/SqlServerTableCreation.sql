@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/1/2020 9:38:14 AM                          */
+/* Created on:     7/6/2020 9:15:32 AM                          */
 /*==============================================================*/
 
 
@@ -528,7 +528,7 @@ go
 create table AttributeAssignment (
    AttributeAssignmentId numeric              not null,
    AttributeId          numeric              not null,
-   DeviceType           varchar(30)          not null,
+   PaoType              varchar(30)          not null,
    PointType            varchar(30)          not null,
    PointOffset          numeric              not null,
    constraint PK_ATTRIBUTEASSIGNMENTID primary key (AttributeAssignmentId)
@@ -536,11 +536,11 @@ create table AttributeAssignment (
 go
 
 alter table AttributeAssignment
-   add constraint AK_ASSIGNMENT unique (AttributeId, DeviceType, PointType, PointOffset)
+   add constraint AK_ASSIGNMENT unique (AttributeId, PaoType, PointType, PointOffset)
 go
 
 alter table AttributeAssignment
-   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, DeviceType)
+   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, PaoType)
 go
 
 /*==============================================================*/

@@ -568,8 +568,8 @@ INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', SYSDATE);
 
 /* @start YUK-21829 */
 CREATE TABLE CustomAttribute (
-   AttributeId          NUMERIC              NOT NULL,
-   AttributeName        VARCHAR(60)          NOT NULL,
+   AttributeId          NUMBER               NOT NULL,
+   AttributeName        VARCHAR2(60)         NOT NULL,
    CONSTRAINT PK_CustomAttribute PRIMARY KEY (AttributeId)
 );
 
@@ -588,19 +588,19 @@ INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', SYSDATE);
 
 /* @start YUK-22330 */
 CREATE TABLE AttributeAssignment (
-   AttributeAssignmentId   NUMERIC              NOT NULL,
-   AttributeId             NUMERIC              NOT NULL,
-   DeviceType              VARCHAR(30)          NOT NULL,
-   PointType               VARCHAR(30)          NOT NULL,
-   PointOffset             NUMERIC              NOT NULL,
+   AttributeAssignmentId   NUMBER               NOT NULL,
+   AttributeId             NUMBER               NOT NULL,
+   PaoType                 VARCHAR2(30)         NOT NULL,
+   PointType               VARCHAR2(30)         NOT NULL,
+   PointOffset             NUMBER               NOT NULL,
    CONSTRAINT PK_AttributeAssignmentId PRIMARY KEY (AttributeAssignmentId)
 );
 
 ALTER TABLE AttributeAssignment
-   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, DeviceType, PointType, PointOffset);
+   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, PaoType, PointType, PointOffset);
 
 ALTER TABLE AttributeAssignment
-   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, DeviceType);
+   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, PaoType);
 
 ALTER TABLE AttributeAssignment
    ADD CONSTRAINT FK_AttrAssign_CustAttr FOREIGN KEY (AttributeId)

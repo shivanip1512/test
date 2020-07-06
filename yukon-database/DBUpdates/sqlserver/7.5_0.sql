@@ -606,7 +606,7 @@ INSERT INTO DBUpdates VALUES ('YUK-22234', '7.5.0', GETDATE());
 CREATE TABLE AttributeAssignment (
    AttributeAssignmentId   NUMERIC              NOT NULL,
    AttributeId             NUMERIC              NOT NULL,
-   DeviceType              VARCHAR(30)          NOT NULL,
+   PaoType                 VARCHAR(30)          NOT NULL,
    PointType               VARCHAR(30)          NOT NULL,
    PointOffset             NUMERIC              NOT NULL,
    CONSTRAINT PK_AttributeAssignmentId PRIMARY KEY (AttributeAssignmentId)
@@ -614,11 +614,11 @@ CREATE TABLE AttributeAssignment (
 GO
 
 ALTER TABLE AttributeAssignment
-   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, DeviceType, PointType, PointOffset);
+   ADD CONSTRAINT AK_Assignment UNIQUE (AttributeId, PaoType, PointType, PointOffset);
 GO
 
 ALTER TABLE AttributeAssignment
-   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, DeviceType);
+   ADD CONSTRAINT AK_Attribute_Device UNIQUE (AttributeId, PaoType);
 GO
 
 ALTER TABLE AttributeAssignment

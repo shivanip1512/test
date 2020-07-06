@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/1/2020 9:46:42 AM                          */
+/* Created on:     7/6/2020 9:11:34 AM                          */
 /*==============================================================*/
 
 
@@ -499,17 +499,17 @@ create table ArchiveValuesExportFormat  (
 create table AttributeAssignment  (
    AttributeAssignmentId NUMBER                          not null,
    AttributeId          NUMBER                          not null,
-   DeviceType           VARCHAR2(30)                    not null,
+   PaoType              VARCHAR2(30)                    not null,
    PointType            VARCHAR2(30)                    not null,
    PointOffset          NUMBER                          not null,
    constraint PK_ATTRIBUTEASSIGNMENTID primary key (AttributeAssignmentId)
 );
 
 alter table AttributeAssignment
-   add constraint AK_ASSIGNMENT unique (AttributeId, DeviceType, PointType, PointOffset);
+   add constraint AK_ASSIGNMENT unique (AttributeId, PaoType, PointType, PointOffset);
 
 alter table AttributeAssignment
-   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, DeviceType);
+   add constraint AK_ATTRIBUTE_DEVICE unique (AttributeId, PaoType);
 
 /*==============================================================*/
 /* Table: BaseLine                                              */
