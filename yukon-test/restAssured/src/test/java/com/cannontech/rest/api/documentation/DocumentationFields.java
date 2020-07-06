@@ -149,4 +149,19 @@ public abstract class DocumentationFields {
             this.body = body;
         }
     }
+
+    static public class Miscellaneous extends Create {
+        /**
+         * @param requestFields     - Request fields definition
+         * @param responseFields    - Response fields definition
+         * @param responseFieldPath - PathParameter to validate in response
+         * @param responseFieldDesc - Field description for responseFieldPath
+         * @param body              - The object of the request
+         * @param url               - The URL to call
+         */
+        public Miscellaneous(List<FieldDescriptor> requestFields, List<FieldDescriptor> responseFields, String responseFieldPath,
+                String responseFieldDesc, Object body, String url) {
+            super(requestFields, responseFields, responseFieldPath, responseFieldDesc, body, url);
+        }
+    }
 }
