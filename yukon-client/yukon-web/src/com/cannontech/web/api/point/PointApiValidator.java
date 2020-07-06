@@ -3,9 +3,11 @@ package com.cannontech.web.api.point;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -219,7 +221,7 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
     private void validateFdrTranslation(List<FdrTranslation> fdrList, Errors errors) {
 
         if (CollectionUtils.isNotEmpty(fdrList)) {
-
+            Set<FdrTranslation> usedTypes = new HashSet<>();
             for (int i = 0; i < fdrList.size(); i++) {
                 errors.pushNestedPath("fdrList[" + i + "]");
                 FdrTranslation fdrTranslation = fdrList.get(i);
@@ -250,6 +252,12 @@ public class PointApiValidator<T extends PointBaseModel<?>> extends SimpleValida
                         if (parameterMap.size() > maxFdrInterfaceTranslations) {
                             errors.reject(baseKey + ".fdr.invalidTranslationPropertyCount", new Object[] { maxFdrInterfaceTranslations }, "");
                         }
+                        
+                        if (usedTypes.contains(fdrTranslation)) {
+                            errors.reject("yukon.web.modules.tools.point.error.fdr.unique", new Object[] { fdrInterfaceType },
+                                    "");
+                        }
+                        usedTypes.add(fdrTranslation);
 
                         for (String paramSet : parameters) {
                             int splitSpot = paramSet.indexOf(":");
