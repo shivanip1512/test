@@ -14,7 +14,7 @@ import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.demandresponse.ControlAreaListPage;
 
-@Test(groups = TestConstants.DEMAND_RESPONSE)
+@Test(groups = TestConstants.DemandResponse.DEMAND_RESPONSE)
 public class ControlAreaListTests extends SeleniumTestSetup {
 
     private ControlAreaListPage listPage;

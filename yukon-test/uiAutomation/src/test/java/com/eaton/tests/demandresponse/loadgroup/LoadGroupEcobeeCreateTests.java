@@ -37,7 +37,7 @@ public class LoadGroupEcobeeCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreateEcobee_AllFieldsDisableFalseSuccessfully() {
         
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());

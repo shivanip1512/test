@@ -29,7 +29,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         createPage = new LoadGroupCreatePage(driverExt);        
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_TitleCorrect() {
         final String EXPECTED_TITLE = "Create Load Group";
         
@@ -38,7 +38,7 @@ public class LoadGroupCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }  
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void ldGrpCreate_NameRequiredValidation() {                
         createPage.getSaveBtn().click();
         

@@ -41,7 +41,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         randomNum = getRandomNum();
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER })
     public void createMeterRfn420flSuccess() {
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
@@ -69,7 +69,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(METER + name + CREATED);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER})
     public void createMeterRfn430Sl4Success() {
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();
 
@@ -97,7 +97,7 @@ public class MeterCreateTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(METER + name + CREATED);
     }
     
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_06_createRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER})
     public void createMeterRfn530S4xSuccess() {
 
         CreateMeterModal createModal = amiDashboardPage.showAndWaitCreateMeterModal();

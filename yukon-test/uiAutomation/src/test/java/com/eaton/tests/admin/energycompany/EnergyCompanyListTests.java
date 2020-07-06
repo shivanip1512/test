@@ -26,7 +26,7 @@ public class EnergyCompanyListTests extends SeleniumTestSetup {
         page = new EnergyCompanyListPage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.Admin.ADMIN, TestConstants.Admin.ENERGY_COMPANY})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Energy Companies";
         

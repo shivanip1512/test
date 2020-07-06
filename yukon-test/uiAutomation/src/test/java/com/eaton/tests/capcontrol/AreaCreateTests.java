@@ -32,7 +32,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         this.createPage = new AreaCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Area";
         
@@ -41,7 +41,7 @@ public class AreaCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void createAreaRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "Area was saved successfully.";
         

@@ -33,7 +33,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
         this.createPage = new CapBankCreatePage(driverExt);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void pageTitleCorrect() {   
         final String EXPECTED_TITLE = "Create CapBank";
         
@@ -43,7 +43,7 @@ public class CapBankCreateTests extends SeleniumTestSetup {
 
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_03_CreateCCObjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR })
     public void createCapBankRequiredFieldsOnlySuccess() {
         final String EXPECTED_MSG = "CapBank was saved successfully.";
         

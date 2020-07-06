@@ -28,7 +28,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Area: AT Area";
         
@@ -41,7 +41,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void editAreaRequiredFieldsOnlySuccess() {   
         final String EXPECTED_MSG = "Area was saved successfully.";
                 
@@ -65,7 +65,7 @@ public class AreaEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }       
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void deleteAreaSuccess() {
         final String EXPECTED_MSG = "Area AT Delete Area Deleted successfully.";
         

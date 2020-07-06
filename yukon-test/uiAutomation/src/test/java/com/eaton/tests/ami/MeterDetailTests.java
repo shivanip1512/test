@@ -23,7 +23,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }     
     
-    @Test(enabled = true, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
+    @Test(enabled = true, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER })
     public void deleteMeterRfn530S4xSuccess() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-530S4x deleted successfully.";
         
@@ -44,7 +44,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg '" + EXPECTED_MSG + "' but found " + userMsg);
     }
     
-    @Test(enabled = true, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
+    @Test(enabled = true, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER })
     public void deleteMeterRfn420flSuccess() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-420fL deleted successfully.";
         
@@ -65,7 +65,7 @@ public class MeterDetailTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, EXPECTED_MSG, "Expected User Msg '" + EXPECTED_MSG + "' but found " + userMsg);
     }
     
-    @Test(enabled = true, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_08_deleteRFNOjects" })
+    @Test(enabled = true, groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER })
     public void deleteMeterRfn430Sl4Success() {
         final String EXPECTED_MSG = "Meter AT Delete RFN-430SL4 deleted successfully.";
         

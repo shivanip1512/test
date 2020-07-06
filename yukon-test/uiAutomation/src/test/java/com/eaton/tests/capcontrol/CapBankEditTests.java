@@ -26,7 +26,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit CapBank: AT Cap Bank";
         
@@ -39,7 +39,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_04_EditCCObjects"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void editCapBankUpdateNameOnlySuccess() {
         final String EXPECTED_MSG = "CapBank was saved successfully.";
         
@@ -63,7 +63,7 @@ public class CapBankEditTests extends SeleniumTestSetup {
         assertThat(userMsg).isEqualTo(EXPECTED_MSG);
     }    
     
-    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_05_DeleteCCOjects"})
+    @Test(enabled = true, groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.VoltVar.VOLT_VAR})
     public void deleteCapBankSuccess() {
         final String EXPECTED_MSG = "CapBank AT Delete CapBank deleted successfully.";
         

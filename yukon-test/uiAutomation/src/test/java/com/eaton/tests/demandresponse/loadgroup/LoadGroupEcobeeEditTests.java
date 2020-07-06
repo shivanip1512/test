@@ -24,7 +24,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Load Group: AT Load Group";
         
@@ -37,7 +37,7 @@ public class LoadGroupEcobeeEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DEMAND_RESPONSE})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.DemandResponse.DEMAND_RESPONSE})
     public void editLoadGroupNameOnlySuccess() {              
         navigate(Urls.DemandResponse.LOAD_GROUP_EDIT + "596" + Urls.EDIT);
         

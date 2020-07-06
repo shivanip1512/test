@@ -7,6 +7,7 @@ import org.testng.annotations.Test;
 
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
+import com.eaton.framework.TestConstants;
 import com.eaton.framework.Urls;
 import com.eaton.pages.HomePage;
 
@@ -28,7 +29,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         page = new HomePage(driverExt);
     }
 
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.CONFIGURATION, TestConstants.Admin.ADMIN})
     public void configurationUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 0);
@@ -38,7 +39,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Admin.CONFIGURATION);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.ENERGY_COMPANY, TestConstants.Admin.ADMIN})
     public void energyCompanyUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 1);
@@ -48,7 +49,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Admin.ENERGY_COMPANY);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.MAINTENANCE, TestConstants.Admin.ADMIN})
     public void maintenanceUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 2);
@@ -58,7 +59,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Admin.MAINTENANCE);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.MULTISPEAK, TestConstants.Admin.ADMIN})
     public void multiSpeakUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 3);
@@ -68,7 +69,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Admin.MULTI_SPEAK);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.SUBSTATIONS, TestConstants.Admin.ADMIN})
     public void substationsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 4);
@@ -78,7 +79,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Admin.SUBSTATIONS);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.USERS_AND_GROUPS, TestConstants.Admin.ADMIN})
     public void usersAndGroupsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 5);
@@ -88,7 +89,7 @@ public class AdminMenuTests extends SeleniumTestSetup {
         assertThat(url).contains(Urls.Admin.USERS_AND_GROUPS);
     }
     
-    @Test
+    @Test(groups = {TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.REPORTS, TestConstants.Admin.ADMIN})
     public void reportsUrlCorrect() {
 
         String url = page.getMenu().getMenuOptionUrl(ADMIN_INDEX, 6);

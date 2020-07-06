@@ -26,7 +26,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         driverExt = getDriverExt();                
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER  })
     public void editMeterRfn420flSuccess() {
         navigate(Urls.Ami.METER_DETAIL + "492");
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
@@ -48,7 +48,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, METER + name + UPDATED, "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER  })
     public void editMeterRfn430Sl4Success() {
         navigate(Urls.Ami.METER_DETAIL + "585");
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());
@@ -70,7 +70,7 @@ public class MeterEditTests extends SeleniumTestSetup {
         Assert.assertEquals(userMsg, METER + name + UPDATED, "Expected User Msg: '" + METER + name + UPDATED + "' but found " + userMsg);
     }
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Ami.AMI, TestConstants.Ami.METER  })
     public void editMeterRfn530S4xSuccess() {
         navigate(Urls.Ami.METER_DETAIL + "587");
         String timeStamp = new SimpleDateFormat(DATE_FORMAT).format(System.currentTimeMillis());

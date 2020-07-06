@@ -36,7 +36,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         page = new UsersAndGroupsPage(driverExt);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_06_CreateUser"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.USERS_AND_GROUPS, TestConstants.Admin.ADMIN})
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "User and Groups";
         
@@ -45,7 +45,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_06_CreateUser"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.USERS_AND_GROUPS, TestConstants.Admin.ADMIN})
     public void createUserSuccess() {
         CreateUserModal createModal = page.showAndWaitCreateUserModal();
         
@@ -69,7 +69,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("User (" + name + ")");
     }  
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_05_CreateRoleGroup"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.USERS_AND_GROUPS, TestConstants.Admin.ADMIN})
     public void createRoleGroupSuccess() {
         CreateRoleGroupModal createModal = page.showAndWaitCreateRoleGroupModal();
         
@@ -90,7 +90,7 @@ public class UsersAndGroupsTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo("Role Group (" + name + ")");
     } 
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_04_CreateUserGroup"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.USERS_AND_GROUPS, TestConstants.Admin.ADMIN})
     public void createUserGroupSuccess() {
         CreateUserGroupModal createModal = page.showAndWaitCreateUserGroupModal();
         

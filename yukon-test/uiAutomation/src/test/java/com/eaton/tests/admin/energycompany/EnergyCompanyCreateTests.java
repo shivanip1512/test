@@ -32,7 +32,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         createPage = new EnergyCompanyCreatePage(driverExt);
     }
 
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.ADMIN, TestConstants.Admin.ENERGY_COMPANY })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Create Energy Company";
         
@@ -41,7 +41,7 @@ public class EnergyCompanyCreateTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, "SM07_01_CreateAndDeleteEC()"})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.ADMIN, TestConstants.Admin.ENERGY_COMPANY })
     public void createEnergyCompanyRequiredFieldsOnlySuccess() {
         String timeStamp = new SimpleDateFormat(TestConstants.DATE_FORMAT).format(System.currentTimeMillis());
         String companyName = "AT Energy Company " + timeStamp;

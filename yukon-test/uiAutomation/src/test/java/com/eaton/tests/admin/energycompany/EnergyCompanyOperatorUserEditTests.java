@@ -28,7 +28,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         softly = new SoftAssertions();
     }
     
-    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, ""})
+    @Test(groups = {TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.ADMIN, TestConstants.Admin.ENERGY_COMPANY })
     public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Edit Operator User: automation";
         
@@ -41,7 +41,7 @@ public class EnergyCompanyOperatorUserEditTests extends SeleniumTestSetup {
         assertThat(actualPageTitle).isEqualTo(EXPECTED_TITLE);
     } 
 
-    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, "SM03_07_editRFNOjects" })
+    @Test(groups = { TestConstants.TestNgGroups.SMOKE_TESTS, TestConstants.TestNgGroups.REGRESSION_TESTS, TestConstants.Admin.ADMIN, TestConstants.Admin.ENERGY_COMPANY })
     public void deleteOperatorUserSuccess() {
         final String EXPECTED_USER_MSG = "Successfully deleted the user.";
         final String OPERATOR_USER = "ATDeleteUser";
