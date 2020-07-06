@@ -2,9 +2,12 @@ package com.cannontech.web.common.pao.service;
 
 import java.util.List;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface YukonPointHelper {
 
@@ -24,4 +27,9 @@ public interface YukonPointHelper {
      */
     public List<LiteYukonPoint> getYukonPoints(YukonPao pao);
 
+    /**
+     * Checks if the user has either the DB Editor Role, or the Cap Control Editor role
+     * @throws NotAuthorizedException if user doesn't have required permissions
+     */
+    public void verifyRoles(LiteYukonUser user, HierarchyPermissionLevel hierarchyPermissionLevel) throws NotAuthorizedException;
 }

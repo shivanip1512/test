@@ -257,6 +257,12 @@
         </permissions>
         <link>/stars/rtu-list</link>
       </option>
+      <option name="virtualDevices">
+        <permissions>
+            <roleProperty name="ENDPOINT_PERMISSION" level="VIEW"/>
+        </permissions>
+        <link>/stars/virtualDevices</link>
+      </option>
       <option name="optouts">
         <permissions>
           <or>

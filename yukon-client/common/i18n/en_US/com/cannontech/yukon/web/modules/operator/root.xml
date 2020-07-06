@@ -203,7 +203,7 @@
     <entry key="yukon.web.modules.operator.gateways.port">Port: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.default.port">Port</entry>
     <entry key="yukon.web.modules.operator.gateways.default.port.title">Port Selection</entry>
-    <entry key="yukon.web.modules.operator.gateways.default.port.helpText"><![CDATA[Default port for a physical gateway is <b>32030</b>.<BR/>For virtual gateway, enter the port (commonly <b>32035</b>) at which you deployed the virtual gateway.]]></entry>
+    <entry key="yukon.web.modules.operator.gateways.default.port.helpText"><![CDATA[Select No to enter a specific port number, else a default value will be automatically selected.<BR/>The default port for a physical gateway is <b>32030</b>.<BR/>For virtual gateway, select No and enter the port (commonly <b>32035</b>) at which you deployed the virtual gateway.]]></entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.RADIO">Radio</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.APPLICATION">Application</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.UPPER_STACK">Upper Stack</entry>
@@ -258,4 +258,12 @@
     <entry key="yukon.web.modules.operator.wifiConnection.allStatuses">All Communication Statuses</entry>
     <entry key="yukon.web.modules.operator.wifiConnection.queryAll">Query Status</entry>
     
+    <!-- Virtual Devices pages -->
+    <entry key="yukon.web.modules.operator.virtualDevices.list.pageName">Virtual Devices</entry>
+    <entry key="yukon.web.modules.operator.virtualDevices.list.create">Create Virtual Device</entry>
+    
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageName">Virtual Device</entry>
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.virtualDevice.detail.pageTitle">{0}</entry>
+  
 </properties>

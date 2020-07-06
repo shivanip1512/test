@@ -1391,6 +1391,7 @@
 
      <!-- Setup -->
     <bean id="customDefaultResponseErrorHandler" class = "com.cannontech.web.api.client.errorHandler.CustomDefaultResponseErrorHandler" />
+    <bean id="apacheHttpClientRequestFactory" class="org.springframework.http.client.HttpComponentsClientHttpRequestFactory"/>
     <bean id="apiRestTemplate" class="org.springframework.web.client.RestTemplate">
         <property name="messageConverters">
             <list>
@@ -1399,7 +1400,9 @@
                 <ref bean="jacksonHttpMessageConverter"/>
             </list>
         </property>
-        <property name="errorHandler" ref="customDefaultResponseErrorHandler"></property>
+        <property name="errorHandler" ref="customDefaultResponseErrorHandler"/>
+        <!-- Need to use Apache request factory for PATCH support -->
+        <property name="requestFactory" ref="apacheHttpClientRequestFactory"/>
      </bean>
 
     <bean class="com.cannontech.dr.loadgroup.service.impl.LoadGroupSetupServiceImpl"/>
@@ -1487,7 +1490,22 @@
     <bean class="com.cannontech.web.api.commChannel.PortApiValidator"/>
     <bean class="com.cannontech.common.validator.YukonValidationHelper"/>
     <bean class="com.cannontech.web.stars.commChannel.CommChannelValidator"/>
+
+    <bean class="com.cannontech.common.device.virtualDevice.service.impl.VirtualDeviceServiceImpl"/>
+
+    <bean class="com.cannontech.web.stars.commChannel.CommChannelSetupHelper"/>
     
     <bean class="com.cannontech.web.api.point.PointApiCreationValidator"/>
-    <bean class="com.cannontech.web.api.point.PointApiValidator"/>
+    <bean class="com.cannontech.web.api.point.AccumulatorPointApiValidator"/>
+    <bean class="com.cannontech.web.api.point.AnalogPointApiValidator"/>
+    <bean class="com.cannontech.web.api.point.StatusPointApiValidator"/>
+    <bean class="com.cannontech.web.tools.points.service.impl.PointEditorServiceImpl"/>
+    <bean class="com.cannontech.common.trend.service.impl.TrendServiceImpl"/>
+    <bean class="com.cannontech.web.api.trend.TrendCreateValidator"/>
+    <bean class="com.cannontech.web.api.trend.TrendValidator"/>
+    <bean class="com.cannontech.web.api.trend.TrendValidatorHelper"/>
+    <bean class="com.cannontech.web.api.trend.ResetPeakValidatorHelper"/>
+    <bean class="com.cannontech.web.api.trend.ResetPeakValidator"/>
+
+    <bean class="com.cannontech.web.admin.dao.impl.CustomAttributeDaoImpl"/>
 </beans>

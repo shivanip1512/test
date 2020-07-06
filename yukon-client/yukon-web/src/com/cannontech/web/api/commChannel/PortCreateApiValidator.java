@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.device.port.PortBase;
 import com.cannontech.common.device.port.TcpSharedPortDetail;
 import com.cannontech.common.device.port.TerminalServerPortDetailBase;
+import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
@@ -32,7 +33,8 @@ public class PortCreateApiValidator <T extends PortBase<?>> extends SimpleValida
 
         if (port instanceof TerminalServerPortDetailBase) {
             TerminalServerPortDetailBase<?> serverPortDetailBase = (TerminalServerPortDetailBase<?>) port;
-            YukonValidationUtils.checkIfFieldRequired("portNumber", errors, serverPortDetailBase.getPortNumber(), "Port");
+            YukonValidationUtils.validatePort(errors, "portNumber", "Port Number",
+                    String.valueOf(serverPortDetailBase.getPortNumber()));
 
             if (port instanceof TcpSharedPortDetail) {
                 TcpSharedPortDetail tcpSharedPortDetail = (TcpSharedPortDetail) port;

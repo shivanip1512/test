@@ -6,7 +6,6 @@ import org.openqa.selenium.WebDriver;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import com.eaton.elements.Section;
 import com.eaton.framework.DriverExtensions;
 import com.eaton.framework.SeleniumTestSetup;
 import com.eaton.framework.TestConstants;
@@ -26,9 +25,9 @@ public class SiteMapDetailsTests extends SeleniumTestSetup {
 
         siteMapPage = new SiteMapPage(driverExt);
     }
-    
+
     @Test(groups = { TestConstants.TestNgGroups.REGRESSION_TESTS})
-    public void siteMapDetails_pageTitleCorrect() {
+    public void pageTitleCorrect() {
         final String EXPECTED_TITLE = "Site Map";
 
         String actualPageTitle = siteMapPage.getPageTitle();

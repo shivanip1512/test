@@ -3,6 +3,7 @@ package com.cannontech.common.util.jms;
 import java.util.concurrent.CompletableFuture;
 
 import javax.jms.BytesMessage;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
@@ -11,7 +12,8 @@ import javax.jms.TemporaryQueue;
 
 import org.apache.logging.log4j.Logger;
 import org.joda.time.Duration;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.support.destination.DynamicDestinationResolver;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ExceptionHelper;
 import com.cannontech.messaging.serialization.thrift.ThriftByteDeserializer;
@@ -19,19 +21,17 @@ import com.cannontech.messaging.serialization.thrift.ThriftByteSerializer;
 
 public class ThriftRequestReplyTemplate<Q, R> {
 
-    @Autowired private YukonJmsTemplate jmsTemplate;
+    private YukonJmsTemplate jmsTemplate;
 
     private static final Logger log = YukonLogManager.getLogger(ThriftRequestReplyTemplate.class);
     private static final Duration timeout = Duration.standardMinutes(1); 
 
-    private String requestQueueName;
-    
     private ThriftByteSerializer<Q> requestSerializer;
     private ThriftByteDeserializer<R> replyDeserializer;
     
-    public ThriftRequestReplyTemplate(String requestQueueName, 
+    public ThriftRequestReplyTemplate(YukonJmsTemplate jmsTemplate, 
             ThriftByteSerializer<Q> requestSerializer, ThriftByteDeserializer<R> replyDeserializer) {
-        this.requestQueueName = requestQueueName;
+        this.jmsTemplate = jmsTemplate;
         this.requestSerializer = requestSerializer;
         this.replyDeserializer = replyDeserializer;
     }
@@ -56,20 +56,24 @@ public class ThriftRequestReplyTemplate<Q, R> {
     private void doJmsWork(Session session,
         final Q requestPayload, final CompletableFuture<R> callback) throws JMSException {
 
-        MessageProducer producer = session.createProducer(session.createQueue(requestQueueName));
+        var resolver = new DynamicDestinationResolver();
+        Destination destination = resolver.resolveDestinationName(session, jmsTemplate.getDefaultDestinationName(), jmsTemplate.isPubSubDomain());
         TemporaryQueue replyQueue = session.createTemporaryQueue();
-        MessageConsumer replyConsumer = session.createConsumer(replyQueue);
-        BytesMessage requestMessage = session.createBytesMessage();
-        
-        requestMessage.writeBytes(requestSerializer.toBytes(requestPayload));
-        requestMessage.setJMSReplyTo(replyQueue);
-        
-        producer.send(requestMessage);
-        
-        handleReplyOrTimeout(callback, timeout, replyConsumer);
-        
-        replyConsumer.close();
-        replyQueue.delete();
+        try ( 
+            MessageProducer producer = session.createProducer(destination);
+            MessageConsumer replyConsumer = session.createConsumer(replyQueue);
+        ) {
+            BytesMessage requestMessage = session.createBytesMessage();
+            
+            requestMessage.writeBytes(requestSerializer.toBytes(requestPayload));
+            requestMessage.setJMSReplyTo(replyQueue);
+            
+            producer.send(requestMessage);
+            
+            handleReplyOrTimeout(callback, timeout, replyConsumer);
+        } finally {
+            replyQueue.delete();
+        }
     }
 
     private void handleReplyOrTimeout(final CompletableFuture<R> callback, final Duration replyTimeout,

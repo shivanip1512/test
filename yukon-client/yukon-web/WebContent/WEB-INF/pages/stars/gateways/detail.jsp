@@ -13,6 +13,10 @@
 
 <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
 
+<input id="gatewayTypes" type="hidden" value="${gatewayPaoTypes}"/>
+<input id="relayTypes" type="hidden" value="${relayPaoTypes}"/>
+<input id="wifiTypes" type="hidden" value="${wifiPaoTypes}"/>
+
 <d:confirm on="#gateway-delete" nameKey="delete.confirm"/>
 
 <div id="page-buttons" class="dn">
@@ -146,7 +150,7 @@
             
             <cti:msg2 var="infraStructureWarningsTitle" key=".infraStructureWarnings.title"/>
             <tags:widget bean="deviceInfrastructureWarningsWidget" title="${infraStructureWarningsTitle}" container="section"/>
-            <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
+            <c:set var="attributes" value="READY_NODES"/>
             <cti:checkLicenseKey keyName="RF_DATA_STREAMING_ENABLED">
                 <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
             </cti:checkLicenseKey>

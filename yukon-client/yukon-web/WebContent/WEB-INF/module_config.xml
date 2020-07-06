@@ -190,9 +190,17 @@
         <link>/search</link>
       </page>
       <page name="commander" type="BASIC"/>
-      <page name="trends" type="BASIC"/>
-      <page name="trend" type="DETAIL">
-        <labelArgument>${trendName}</labelArgument>
+      <page name="trends" type="BASIC">
+        <link>/tools/trends</link>
+        <pages>
+            <page name="trend" type="DETAIL">
+                <labelArgument>${trendName}</labelArgument>
+             </page>
+             <page name="trend.CREATE" type="BASIC"/>
+             <page name="trend.EDIT" type="BASIC" hideFavorite="true">
+                 <labelArgument>${trendModel.name}</labelArgument>
+             </page>
+        </pages>
       </page>
       <page name="tdc.home" type="BASIC">
         <link>/tools/data-viewer</link>
@@ -1320,6 +1328,15 @@
                         <labelArgument>${rtu.name}</labelArgument>
                     </page>
                     <page name="rtuDetail.CREATE" type="BASIC"/>
+                </pages>
+            </page>
+            <page name="virtualDevices.list" type="BASIC">
+                <link>/stars/virtualDevices</link>
+                <pages>
+                    <page name="virtualDevice.detail" type="DETAIL">
+                        <link>/stars/virtualDevice/${id}</link>
+                        <labelArgument>${name}</labelArgument>
+                    </page>
                 </pages>
             </page>
             <page name="scheduledDataImportList" type="BASIC" hideSearch="true">
