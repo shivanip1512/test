@@ -22,8 +22,11 @@ import com.cannontech.rest.api.point.request.MockPointAnalog;
 import com.cannontech.rest.api.point.request.MockPointAnalogControl;
 import com.cannontech.rest.api.point.request.MockPointBase;
 import com.cannontech.rest.api.point.request.MockPointLimit;
+import com.cannontech.rest.api.point.request.MockPointStatusControl;
 import com.cannontech.rest.api.point.request.MockPointUnit;
 import com.cannontech.rest.api.point.request.MockStaleData;
+import com.cannontech.rest.api.point.request.MockStatusControlType;
+import com.cannontech.rest.api.point.request.MockStatusPoint;
 
 public class PointHelper {
     public final static String CONTEXT_POINT_ID = "pointId";
@@ -36,7 +39,7 @@ public class PointHelper {
     public final static MockPointBase buildPoint(MockPointType pointType) {
         MockPointBase point = null;
 
-        String name = ApiUtils.buildFriendlyName(MockPointType.Analog, "", "PointTest10");
+        String name = ApiUtils.buildFriendlyName(pointType, "", "PointTest");
         List<MockPointLimit> pointLimit = new ArrayList<>();
         pointLimit.add(buildPointLimit());
         List<MockFdrTranslation> fdrTranslation = new ArrayList<>();
@@ -87,7 +90,24 @@ public class PointHelper {
                                             .fdrList(fdrTranslation)
                                             .build();
                 break;
-
+            case Status:
+                point = MockStatusPoint.builder()
+                                       .paoId(paoId)
+                                       .pointName(name)
+                                       .pointType(pointType)
+                                       .pointOffset(pointOffset)
+                                       .timingGroup(MockPointLogicalGroups.SOE)
+                                       .archiveType(MockPointArchiveType.NONE)
+                                       .alarmsDisabled(false)
+                                       .stateGroupId(stateGroupId)
+                                       .initialState(0)
+                                       .pointStatusControl(buildPointStatusControl())
+                                       .archiveInterval(0)
+                                       .enable(true)
+                                       .staleData(buildStaleData())
+                                       .alarming(buildPointAlarming())
+                                       .fdrList(fdrTranslation)
+                                       .build();
             default:
                 break;
         }
@@ -150,7 +170,7 @@ public class PointHelper {
     private static MockAlarmTableEntry buildAlarmTableEntry() {
         return MockAlarmTableEntry.builder()
                 .category("(none)")
-                .condition("Rate Of Change")
+                .condition("Non-updated")
                 .notify(MockAlarmNotificationTypes.EXCLUDE_NOTIFY)
                 .build();
     }
@@ -169,4 +189,16 @@ public class PointHelper {
                 .multiplier(1.0)
                 .build();
     }
+    
+    private static MockPointStatusControl buildPointStatusControl() {
+        return MockPointStatusControl.builder()
+                .closeTime1(0)
+                .closeTime2(0)
+                .commandTimeOut(0)
+                .controlInhibited(false)
+                .controlType(MockStatusControlType.NONE)
+                .controlOffset(0)
+                .build();
+    }
+    
 }

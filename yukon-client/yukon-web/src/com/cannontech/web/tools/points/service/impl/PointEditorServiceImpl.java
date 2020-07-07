@@ -68,7 +68,6 @@ import com.cannontech.web.tools.points.service.PointEditorService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public class PointEditorServiceImpl implements PointEditorService {
     
     @Autowired private AlarmCatDao alarmCatDao;
@@ -93,7 +92,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         
         StaleData staleData = getStaleData(id);
         
-        List<AlarmTableEntry> alarmTableEntries = getAlarmTableEntries(base);
+        List<AlarmTableEntry> alarmTableEntries = getAlarmTableEntries(base, false);
 
         PointModel<PointBase> model = new PointModel<>(base, staleData, alarmTableEntries);
         
@@ -160,9 +159,12 @@ public class PointEditorServiceImpl implements PointEditorService {
     }
     
     /**
-     * Retrieves the AlarmTableEntries part of the model from the pointBase
+     * Retrieves the AlarmTableEntries part of the model from the pointBase 
+     * 
+     * If setRawStateInCondition is true then set stateId in condition field otherwise set state text 
+     * if condition value is not match in IAlarmDefs.STATUS_ALARM_STATES and This is applicable for Status/CalcStatus PointType.
      */
-    private List<AlarmTableEntry> getAlarmTableEntries(PointBase pointBase) {
+    private List<AlarmTableEntry> getAlarmTableEntries(PointBase pointBase, boolean setRawStateInCondition ) {
         
         PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
 
@@ -183,8 +185,13 @@ public class PointEditorServiceImpl implements PointEditorService {
         LiteStateGroup stateGroup = stateGroupDao.getStateGroup(pointBase.getPoint().getStateGroupID());
 
         String[] stateNames = new String[stateGroup.getStatesList().size()];
+        String[] rawStates = new String[stateGroup.getStatesList().size()];
         for (int j = 0; j < stateGroup.getStatesList().size(); j++) {
-            stateNames[j] = stateGroup.getStatesList().get(j).toString();
+            if (setRawStateInCondition) {
+                rawStates[j] = String.valueOf(stateGroup.getStatesList().get(j).getLiteID());
+            } else {
+                stateNames[j] = stateGroup.getStatesList().get(j).toString();
+            }
         }
         // insert all the predefined states into the table
         int i = 0;
@@ -205,8 +212,11 @@ public class PointEditorServiceImpl implements PointEditorService {
                 }
                 AlarmTableEntry entry = new AlarmTableEntry();
                 setupAlarmTableEntry(entry, excludeNotifyStates.toUpperCase().charAt(i), alarmStates.charAt(i));
-
-                entry.setCondition(stateNames[j]);
+                if (setRawStateInCondition) {
+                    entry.setCondition(rawStates[j]);
+                } else {
+                    entry.setCondition(stateNames[j]);
+                }
                 notifEntries.add(entry);
             }
         }
@@ -515,8 +525,9 @@ public class PointEditorServiceImpl implements PointEditorService {
         if (pointBaseModel.getStaleData() != null) {
             staleData = pointBaseModel.getStaleData().overwriteWith(staleData);
         }
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
 
-        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(getAlarmTableEntries(pointBase), pointBaseModel.getAlarming().getAlarmTableList());
+        List<AlarmTableEntry> alarmTableEntries = updateExistingAlarmTableEntries(pointBase, pointBaseModel, ptType);
 
         save(pointBase, staleData, alarmTableEntries, ApiRequestContext.getContext().getLiteYukonUser());
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
@@ -559,15 +570,25 @@ public class PointEditorServiceImpl implements PointEditorService {
         return PaoPointModel.of(paoIdentifier, listOfPointInfoModel);
     }
 
+    /**
+     *  Build Ordered Alarm Table Entries.
+     */
     private List<AlarmTableEntry> buildOrderedAlarmTable(List<AlarmTableEntry> entries, PointType pointType) {
         List<AlarmTableEntry> orderedAlarmTableEntries = new ArrayList<>();
 
         List<String> alarmStates = Arrays.asList(IAlarmDefs.OTHER_ALARM_STATES);
         if (pointType != null && (pointType == PointType.CalcStatus || pointType == PointType.Status)) {
-            alarmStates = Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES);
+            alarmStates = new ArrayList<String>(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES));
+            // Maintain Order of Alarm States which is not defined in IAlarmDefs.
+            List<String> rawAlarmStates = entries.stream()
+                                                 .filter(entry -> !(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES).contains(entry.getCondition())))
+                                                 .map(entry -> entry.getCondition())
+                                                 .sorted()
+                                                 .collect(Collectors.toList());
+            alarmStates.addAll(rawAlarmStates);
         }
 
-        // Iterate over all alarm state entries to maintain order and set default values if category and notify are null. 
+        // Iterate over all alarm state entries to maintain order and set default values if category and notify are null.
         for (String alarmState : alarmStates) {
             AlarmTableEntry entry = entries.stream()
                                            .filter(e -> e.getCondition().equals(alarmState))
@@ -595,17 +616,35 @@ public class PointEditorServiceImpl implements PointEditorService {
     private void buildPointBaseModel(PointBase pointBase, PointBaseModel pointBaseModel, StaleData staleData) {
         pointBaseModel.buildModel(pointBase);
         pointBaseModel.setStaleData(staleData);
-        pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(pointBase));
+        pointBaseModel.getAlarming().setAlarmTableList(getAlarmTableEntries(pointBase, true));
     }
     
 
-     /**
-     * Update existing alarm table entries with new Entries.
-     * 
+    /**
+     * Update existing alarm table entries with new Entries. In the case of Status/Calc Status PointType, Some Condition
+     * fields (Other than Non-updated, Abnormal, Uncommanded State Change,Command Failure,Stale) are dependent on State
+     * Group in Alarming functionality.
+     * If we will change the state group, condition fields will be changed but values
+     * of (Other than Non-updated, Abnormal, Uncommanded State Change,Command Failure,Stale) unchanged in edit/update
+     * operation.
      */
-    private List<AlarmTableEntry> updateExistingAlarmTableEntries(List<AlarmTableEntry> existingEntries, List<AlarmTableEntry> newEntries) {
-        Map<String, AlarmTableEntry> newEntryMap = newEntries.stream()
-                                                                 .collect(Collectors.toMap(e -> e.getCondition(), e -> e));
+    private List<AlarmTableEntry> updateExistingAlarmTableEntries(PointBase pointBase, PointBaseModel<?> pointBaseModel, PointType ptType) {
+
+        List<AlarmTableEntry> existingEntries = getAlarmTableEntries(pointBase, true);
+        List<AlarmTableEntry> newEntries = pointBaseModel.getAlarming().getAlarmTableList();
+
+        boolean isStateGroupChanged = pointBaseModel.getStateGroupId() != null ? pointBaseModel.getStateGroupId() != pointBase.getPoint().getStateGroupID()
+                : false;
+
+        Map<String, AlarmTableEntry> newEntryMap = newEntries.stream().collect(Collectors.toMap(e -> e.getCondition(), e -> e));
+
+        // Filter Status Alarm States if State Group has changed.
+        if (ptType != null && (ptType == PointType.CalcStatus || ptType == PointType.Status) && isStateGroupChanged) {
+            existingEntries = existingEntries.stream()
+                                             .filter(entry -> (Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES).contains(entry.getCondition())))
+                                             .collect(Collectors.toList());
+        }
+
         // Update existing AlarmTableEntry based on the new entries.
         for (AlarmTableEntry entry : existingEntries) {
             if (newEntryMap.get(entry.getCondition()) != null) {
@@ -617,6 +656,16 @@ public class PointEditorServiceImpl implements PointEditorService {
                 }
             }
         }
+        // Add new Status Alarm States and also set Default value if State Group has changed (Which is not defined in IAlarmDefs).
+        if (ptType != null && (ptType == PointType.CalcStatus || ptType == PointType.Status) && isStateGroupChanged) {
+            List<AlarmTableEntry> rawAlarmStates = newEntries.stream()
+                                                             .filter(entry -> !(Arrays.asList(IAlarmDefs.STATUS_ALARM_STATES).contains(entry.getCondition())))
+                                                             .map(entry -> setDefaultsForAlarmEntry(entry))
+                                                             .sorted()
+                                                             .collect(Collectors.toList());
+            existingEntries.addAll(rawAlarmStates);
+        }
+
         return existingEntries;
     }
 
