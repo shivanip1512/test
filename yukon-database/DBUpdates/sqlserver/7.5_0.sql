@@ -604,7 +604,7 @@ INSERT INTO DBUpdates VALUES ('YUK-22443', '7.5.0', GETDATE());
 
 /* @start YUK-22371 */
 UPDATE YukonGroupRole SET Value = 'OWNER'
-    WHERE RolePropertyID = -10200 AND Value = 'true';
+    WHERE RolePropertyID = -10200 AND Value IN (' ', 'true');
 
 UPDATE YukonGroupRole SET Value = 'VIEW'
     WHERE RolePropertyID = -10200 AND Value = 'false';
