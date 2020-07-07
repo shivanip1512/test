@@ -203,9 +203,9 @@ public class TrendsHomeController {
                 callResetPeakApi(userContext, request, resetPeakPopupModel, graphDefinition.getGraphDefinitionID(),resetPeakSuccess, resetPeakFailed);
             }
         } else {
-            ResetPeakModel model1 = new ResetPeakModel();
-            model1.setStartDate(resetPeakPopupModel.getStartDate());
-            callResetPeakApi(userContext, request, model1, resetPeakPopupModel.getTrendId(),resetPeakSuccess, resetPeakFailed);
+            ResetPeakModel resetPeakMdl = new ResetPeakModel();
+            resetPeakMdl.setStartDate(resetPeakPopupModel.getStartDate());
+            callResetPeakApi(userContext, request, resetPeakMdl, resetPeakPopupModel.getTrendId(),resetPeakSuccess, resetPeakFailed);
         }
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);

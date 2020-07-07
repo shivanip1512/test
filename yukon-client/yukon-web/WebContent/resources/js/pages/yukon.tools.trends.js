@@ -169,9 +169,6 @@ yukon.tools.trends = (function () {
             $(document).on("yukon:tools:trend:resetPeak", function (event) {
                 var form = $(event.target).find(".js-reset-peak-form");
                        $('.js-reset-peak-date').removeAttr("disabled");
-                       /*startDate = $("<input type='hidden' name='startDate'/>");
-                       startDate.val($(".js-reset-peak-date").val());
-                       form.append(startDate);*/
                 form.ajaxSubmit({
                     success: function(data, status, xhr, $form) {
                         $(".js-reset-peak-popup").dialog('close');
