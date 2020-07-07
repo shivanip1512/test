@@ -972,6 +972,7 @@
                     <page name="config.weather" type="BLANK"/>
                     <page name="config.dashboards" type="BLANK"/>
                     <page name="security" type="BLANK" />
+                    <page name="config.attributes" type="BLANK"/>
                 </pages>
             </page>
             
