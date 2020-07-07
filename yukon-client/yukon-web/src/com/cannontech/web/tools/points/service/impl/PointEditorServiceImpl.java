@@ -560,16 +560,13 @@ public class PointEditorServiceImpl implements PointEditorService {
 
         PointBase newPoint = (PointBase) dBPersistentDao.retrieveDBPersistent(pointBase);
         newPoint.setPointID(null);
-
         copyPoint.buildDBPersistent(newPoint);
-        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
-        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType); 
-        
         dBPersistentDao.performDBChange(pointBase, TransactionType.INSERT);
-       // copyPoint.buildModel(pointBase);
+
+        PointType ptType = PointType.getForString(pointBase.getPoint().getPointType());
+        PointBaseModel pointBaseModel = PointModelFactory.getModel(ptType);
         StaleData staleData = getStaleData(pointId);
         buildPointBaseModel(pointBase, pointBaseModel, staleData);
-         //pointBaseModel.buildModel(pointBase);
         return pointBaseModel;
     }
 
